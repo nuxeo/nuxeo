@@ -28,17 +28,15 @@ import org.nuxeo.ecm.platform.ui.web.renderer.NxSelectManyCheckboxListRenderer;
 /**
  * @since 6.0
  */
-public class SelectManyCheckboxAggregateWidgetTypeHandler extends
-        SelectAggregateWidgetTypeHandler {
+public class SelectManyCheckboxAggregateWidgetTypeHandler extends SelectAggregateWidgetTypeHandler {
 
     private static final long serialVersionUID = 1L;
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException {
-        return getFaceletHandler(ctx, tagConfig, widget, subHandlers,
-                HtmlSelectManyCheckbox.COMPONENT_TYPE, NxSelectManyCheckboxListRenderer.RENDERER_TYPE);
+    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers) throws WidgetException {
+        return getFaceletHandler(ctx, tagConfig, widget, subHandlers, HtmlSelectManyCheckbox.COMPONENT_TYPE,
+                NxSelectManyCheckboxListRenderer.RENDERER_TYPE);
     }
 
 }

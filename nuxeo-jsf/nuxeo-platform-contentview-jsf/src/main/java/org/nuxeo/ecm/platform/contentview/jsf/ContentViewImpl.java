@@ -46,18 +46,15 @@ import com.google.common.base.Function;
 /**
  * Default implementation for the content view object.
  * <p>
- * Provides simple getters for attributes defined in the XMap descriptor,
- * except cache key which is computed from currrent {@link FacesContext}
- * instance if cache key is an EL expression.
+ * Provides simple getters for attributes defined in the XMap descriptor, except cache key which is computed from
+ * currrent {@link FacesContext} instance if cache key is an EL expression.
  * <p>
- * The page provider is initialized calling
- * {@link ContentViewService#getPageProvider}.
+ * The page provider is initialized calling {@link ContentViewService#getPageProvider}.
  *
  * @author Anahide Tchertchian
  * @since 5.4
  */
-public class ContentViewImpl implements ContentView,
-        PageProviderChangedListener {
+public class ContentViewImpl implements ContentView, PageProviderChangedListener {
 
     private static final long serialVersionUID = 1L;
 
@@ -131,19 +128,14 @@ public class ContentViewImpl implements ContentView,
 
     protected String sortInfosBinding;
 
-    public ContentViewImpl(String name, String title, boolean translateTitle,
-            String iconPath, String selectionList, String pagination,
-            List<String> actionCategories, ContentViewLayout searchLayout,
-            List<ContentViewLayout> resultLayouts, List<String> flags,
-            String cacheKey, Integer cacheSize, List<String> refreshEventNames,
-            List<String> resetEventNames, boolean useGlobalPageSize,
-            String[] queryParameters, String searchDocumentModelBinding,
-            String searchDocumentModelType, String resultColumnsBinding,
-            String resultLayoutBinding, String sortInfosBinding,
-            String pageSizeBinding, boolean showTitle,
-            boolean showPageSizeSelector, boolean showRefreshCommand,
-            boolean showFilterForm, String emptySentence,
-            boolean translateEmptySentence) {
+    public ContentViewImpl(String name, String title, boolean translateTitle, String iconPath, String selectionList,
+            String pagination, List<String> actionCategories, ContentViewLayout searchLayout,
+            List<ContentViewLayout> resultLayouts, List<String> flags, String cacheKey, Integer cacheSize,
+            List<String> refreshEventNames, List<String> resetEventNames, boolean useGlobalPageSize,
+            String[] queryParameters, String searchDocumentModelBinding, String searchDocumentModelType,
+            String resultColumnsBinding, String resultLayoutBinding, String sortInfosBinding, String pageSizeBinding,
+            boolean showTitle, boolean showPageSizeSelector, boolean showRefreshCommand, boolean showFilterForm,
+            String emptySentence, boolean translateEmptySentence) {
         this.name = name;
         this.title = title;
         this.translateTitle = translateTitle;
@@ -178,51 +170,59 @@ public class ContentViewImpl implements ContentView,
         this.translateEmptySentence = translateEmptySentence;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public boolean getTranslateTitle() {
         return translateTitle;
     }
 
+    @Override
     public String getIconPath() {
         return iconPath;
     }
 
+    @Override
     public String getSelectionListName() {
         return selectionList;
     }
 
+    @Override
     public String getPagination() {
         return pagination;
     }
 
+    @Override
     public List<String> getActionsCategories() {
         return actionCategories;
     }
 
+    @Override
     public ContentViewLayout getSearchLayout() {
         return searchLayout;
     }
 
+    @Override
     public List<ContentViewLayout> getResultLayouts() {
         return resultLayouts;
     }
 
+    @Override
     public ContentViewLayout getCurrentResultLayout() {
         // resolve binding if it is set
-        if (!currentResultLayoutSet
-                && !StringUtils.isBlank(resultLayoutBinding)) {
+        if (!currentResultLayoutSet && !StringUtils.isBlank(resultLayoutBinding)) {
             Object res = resolveWithSearchDocument(new Function<FacesContext, Object>() {
                 @Override
                 public Object apply(FacesContext ctx) {
-                    return ComponentTagUtils.resolveElExpression(ctx,
-                            resultLayoutBinding);
+                    return ComponentTagUtils.resolveElExpression(ctx, resultLayoutBinding);
                 }
             });
             if (res != null && res instanceof String) {
@@ -230,26 +230,24 @@ public class ContentViewImpl implements ContentView,
                 currentResultLayoutSet = true;
             }
         }
-        if (currentResultLayout == null && resultLayouts != null
-                && !resultLayouts.isEmpty()) {
+        if (currentResultLayout == null && resultLayouts != null && !resultLayouts.isEmpty()) {
             // resolve first current result layout
             return resultLayouts.get(0);
         }
         return currentResultLayout;
     }
 
+    @Override
     public void setCurrentResultLayout(final ContentViewLayout layout) {
         setCurrentResultLayout(layout, true);
     }
 
     public void setCurrentResultLayout(final ContentViewLayout layout, boolean resetLayoutColumn) {
-        if (!isBlank(resultLayoutBinding)
-                && ComponentTagUtils.isStrictValueReference(resultLayoutBinding)) {
+        if (!isBlank(resultLayoutBinding) && ComponentTagUtils.isStrictValueReference(resultLayoutBinding)) {
             resolveWithSearchDocument(new Function<FacesContext, Object>() {
                 @Override
                 public Object apply(FacesContext ctx) {
-                    ComponentTagUtils.applyValueExpression(ctx,
-                            resultLayoutBinding,
+                    ComponentTagUtils.applyValueExpression(ctx, resultLayoutBinding,
                             layout == null ? null : layout.getName());
                     return null;
                 }
@@ -265,8 +263,7 @@ public class ContentViewImpl implements ContentView,
         }
     }
 
-    protected Object resolveWithSearchDocument(
-            Function<FacesContext, Object> func) {
+    protected Object resolveWithSearchDocument(Function<FacesContext, Object> func) {
         FacesContext ctx = FacesContext.getCurrentInstance();
         if (getSearchDocumentModel() == null) {
             return func.apply(ctx);
@@ -280,6 +277,7 @@ public class ContentViewImpl implements ContentView,
         }
     }
 
+    @Override
     public void setCurrentResultLayout(String resultLayoutName) {
         if (resultLayoutName != null) {
             for (ContentViewLayout layout : resultLayouts) {
@@ -296,17 +294,15 @@ public class ContentViewImpl implements ContentView,
     }
 
     /**
-     * Returns cached page provider if it exists or build a new one if
-     * parameters have changed.
+     * Returns cached page provider if it exists or build a new one if parameters have changed.
      * <p>
-     * The search document, current page and page size are set on the page
-     * provider anyway. Sort infos are not set again if page provider was not
-     * built again (e.g if parameters did not change) to avoid erasing sort
-     * infos already held by it.
+     * The search document, current page and page size are set on the page provider anyway. Sort infos are not set again
+     * if page provider was not built again (e.g if parameters did not change) to avoid erasing sort infos already held
+     * by it.
      */
-    public PageProvider<?> getPageProvider(DocumentModel searchDocument,
-            List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            Object... params) throws ClientException {
+    @Override
+    public PageProvider<?> getPageProvider(DocumentModel searchDocument, List<SortInfo> sortInfos, Long pageSize,
+            Long currentPage, Object... params) throws ClientException {
         // resolve search doc so that it can be used in EL expressions defined
         // in XML configuration
         boolean setSearchDoc = false;
@@ -314,7 +310,7 @@ public class ContentViewImpl implements ContentView,
         if (searchDocument != null) {
             setSearchDoc = true;
             finalSearchDocument = searchDocument;
-        } else if (this.searchDocumentModel == null) {
+        } else if (searchDocumentModel == null) {
             setSearchDoc = true;
             if (pageProvider != null) {
                 // try to retrieve it on current page provider
@@ -326,7 +322,7 @@ public class ContentViewImpl implements ContentView,
                 setSearchDoc = false;
             }
         } else {
-            finalSearchDocument = this.searchDocumentModel;
+            finalSearchDocument = searchDocumentModel;
         }
         if (setSearchDoc) {
             // set it on content view so that it can be used when resolving EL
@@ -367,11 +363,10 @@ public class ContentViewImpl implements ContentView,
                 // make the service build the provider
                 ContentViewService service = Framework.getLocalService(ContentViewService.class);
                 if (service == null) {
-                    throw new ClientException(
-                            "Could not resolve ContentViewService");
+                    throw new ClientException("Could not resolve ContentViewService");
                 }
-                pageProvider = service.getPageProvider(getName(), sortInfos,
-                        pageSize, currentPage, finalSearchDocument, params);
+                pageProvider = service.getPageProvider(getName(), sortInfos, pageSize, currentPage,
+                        finalSearchDocument, params);
             } catch (ClientException e) {
                 throw e;
             }
@@ -390,29 +385,34 @@ public class ContentViewImpl implements ContentView,
         return pageProvider;
     }
 
-    public PageProvider<?> getPageProviderWithParams(Object... params)
-            throws ClientException {
+    @Override
+    public PageProvider<?> getPageProviderWithParams(Object... params) throws ClientException {
         return getPageProvider(null, null, null, null, params);
     }
 
+    @Override
     public PageProvider<?> getPageProvider() throws ClientException {
         return getPageProviderWithParams((Object[]) null);
     }
 
+    @Override
     public PageProvider<?> getCurrentPageProvider() {
         return pageProvider;
     }
 
+    @Override
     public void resetPageProvider() {
         pageProvider = null;
     }
 
+    @Override
     public void refreshPageProvider() {
         if (pageProvider != null) {
             pageProvider.refresh();
         }
     }
 
+    @Override
     public void refreshAndRewindPageProvider() {
         if (pageProvider != null) {
             pageProvider.refresh();
@@ -420,20 +420,23 @@ public class ContentViewImpl implements ContentView,
         }
     }
 
+    @Override
     public String getCacheKey() {
         FacesContext context = FacesContext.getCurrentInstance();
         Object value = ComponentTagUtils.resolveElExpression(context, cacheKey);
         if (value != null && !(value instanceof String)) {
-            log.error(String.format("Error processing expression '%s', "
-                    + "result is not a String: %s", cacheKey, value));
+            log.error(String.format("Error processing expression '%s', " + "result is not a String: %s", cacheKey,
+                    value));
         }
         return (String) value;
     }
 
+    @Override
     public Integer getCacheSize() {
         return cacheSize;
     }
 
+    @Override
     public Object[] getQueryParameters() {
         if (queryParameters == null) {
             return null;
@@ -443,8 +446,7 @@ public class ContentViewImpl implements ContentView,
         try {
             Object[] res = new Object[queryParameters.length];
             for (int i = 0; i < queryParameters.length; i++) {
-                res[i] = ComponentTagUtils.resolveElExpression(context,
-                        queryParameters[i]);
+                res[i] = ComponentTagUtils.resolveElExpression(context, queryParameters[i]);
             }
             return res;
         } finally {
@@ -452,18 +454,22 @@ public class ContentViewImpl implements ContentView,
         }
     }
 
+    @Override
     public List<String> getRefreshEventNames() {
         return refreshEventNames;
     }
 
+    @Override
     public List<String> getResetEventNames() {
         return resetEventNames;
     }
 
+    @Override
     public boolean getUseGlobalPageSize() {
         return useGlobalPageSize;
     }
 
+    @Override
     public Long getCurrentPageSize() {
         // take actual value on page provider first in case it's reached its
         // max page size
@@ -483,21 +489,19 @@ public class ContentViewImpl implements ContentView,
 
     @Override
     public void setCurrentPageSize(Long pageSize) {
-        this.currentPageSize = pageSize;
+        currentPageSize = pageSize;
         raiseEvent(CONTENT_VIEW_PAGE_SIZE_CHANGED_EVENT);
     }
 
+    @Override
     public DocumentModel getSearchDocumentModel() {
         if (searchDocumentModel == null) {
             if (searchDocumentModelBinding != null) {
                 // initialize from binding
                 FacesContext context = FacesContext.getCurrentInstance();
-                Object value = ComponentTagUtils.resolveElExpression(context,
-                        searchDocumentModelBinding);
+                Object value = ComponentTagUtils.resolveElExpression(context, searchDocumentModelBinding);
                 if (value != null && !(value instanceof DocumentModel)) {
-                    log.error(String.format(
-                            "Error processing expression '%s', "
-                                    + "result is not a DocumentModel: %s",
+                    log.error(String.format("Error processing expression '%s', " + "result is not a DocumentModel: %s",
                             searchDocumentModelBinding, value));
                 } else {
                     setSearchDocumentModel((DocumentModel) value);
@@ -515,6 +519,7 @@ public class ContentViewImpl implements ContentView,
         return searchDocumentModel;
     }
 
+    @Override
     public void setSearchDocumentModel(DocumentModel searchDocumentModel) {
         this.searchDocumentModel = searchDocumentModel;
         if (pageProvider != null) {
@@ -522,6 +527,7 @@ public class ContentViewImpl implements ContentView,
         }
     }
 
+    @Override
     public void resetSearchDocumentModel() {
         searchDocumentModel = null;
         if (pageProvider != null) {
@@ -529,10 +535,12 @@ public class ContentViewImpl implements ContentView,
         }
     }
 
+    @Override
     public String getSearchDocumentModelType() {
         return searchDocumentModelType;
     }
 
+    @Override
     public List<String> getFlags() {
         return flags;
     }
@@ -550,12 +558,9 @@ public class ContentViewImpl implements ContentView,
             Object res = resolveWithSearchDocument(new Function<FacesContext, Object>() {
                 @Override
                 public Object apply(FacesContext ctx) {
-                    Object value = ComponentTagUtils.resolveElExpression(ctx,
-                            resultColumnsBinding);
+                    Object value = ComponentTagUtils.resolveElExpression(ctx, resultColumnsBinding);
                     if (value != null && !(value instanceof List)) {
-                        log.error(String.format(
-                                "Error processing expression '%s', "
-                                        + "result is not a List: %s",
+                        log.error(String.format("Error processing expression '%s', " + "result is not a List: %s",
                                 resultColumnsBinding, value));
                     }
                     return value;
@@ -570,16 +575,14 @@ public class ContentViewImpl implements ContentView,
 
     @Override
     public void setCurrentResultLayoutColumns(final List<String> resultColumns) {
-        if (isBlank(resultColumnsBinding)
-                || !ComponentTagUtils.isStrictValueReference(resultColumnsBinding)) {
+        if (isBlank(resultColumnsBinding) || !ComponentTagUtils.isStrictValueReference(resultColumnsBinding)) {
             // set local values
             currentResultLayoutColumns = resultColumns;
         } else {
             resolveWithSearchDocument(new Function<FacesContext, Object>() {
                 @Override
                 public Object apply(FacesContext ctx) {
-                    ComponentTagUtils.applyValueExpression(ctx,
-                            resultColumnsBinding, resultColumns);
+                    ComponentTagUtils.applyValueExpression(ctx, resultColumnsBinding, resultColumns);
                     return null;
                 }
             });
@@ -599,11 +602,10 @@ public class ContentViewImpl implements ContentView,
         FacesContext context = FacesContext.getCurrentInstance();
         Object previousSearchDocValue = addSearchDocumentToELContext(context);
         try {
-            Object value = ComponentTagUtils.resolveElExpression(context,
-                    sortInfosBinding);
+            Object value = ComponentTagUtils.resolveElExpression(context, sortInfosBinding);
             if (value != null && !(value instanceof List)) {
-                log.error(String.format("Error processing expression '%s', "
-                        + "result is not a List: %s", sortInfosBinding, value));
+                log.error(String.format("Error processing expression '%s', " + "result is not a List: %s",
+                        sortInfosBinding, value));
             }
             if (value == null) {
                 return null;
@@ -621,8 +623,7 @@ public class ContentViewImpl implements ContentView,
                         try {
                             listItem = ((MapProperty) listItem).getValue();
                         } catch (ClassCastException | PropertyException e) {
-                            log.error("Cannot resolve sort info item: "
-                                    + listItem, e);
+                            log.error("Cannot resolve sort info item: " + listItem, e);
                         }
                     }
                     Map map = (Map) listItem;
@@ -652,8 +653,7 @@ public class ContentViewImpl implements ContentView,
         FacesContext context = FacesContext.getCurrentInstance();
         Object previousSearchDocValue = addSearchDocumentToELContext(context);
         try {
-            Object value = ComponentTagUtils.resolveElExpression(context,
-                    pageSizeBinding);
+            Object value = ComponentTagUtils.resolveElExpression(context, pageSizeBinding);
             if (value == null) {
                 return null;
             }
@@ -661,9 +661,7 @@ public class ContentViewImpl implements ContentView,
                 try {
                     return Long.valueOf((String) value);
                 } catch (NumberFormatException e) {
-                    log.error(String.format(
-                            "Error processing expression '%s', "
-                                    + "result is not a Long: %s",
+                    log.error(String.format("Error processing expression '%s', " + "result is not a Long: %s",
                             pageSizeBinding, value));
                 }
             } else if (value instanceof Number) {
@@ -677,9 +675,7 @@ public class ContentViewImpl implements ContentView,
 
     protected Object addSearchDocumentToELContext(FacesContext facesContext) {
         if (facesContext == null) {
-            log.error(String.format(
-                    "Faces context is null: cannot expose variable '%s' "
-                            + "for content view '%s'",
+            log.error(String.format("Faces context is null: cannot expose variable '%s' " + "for content view '%s'",
                     SEARCH_DOCUMENT_EL_VARIABLE, getName()));
             return null;
         }
@@ -690,16 +686,13 @@ public class ContentViewImpl implements ContentView,
             requestMap.put(SEARCH_DOCUMENT_EL_VARIABLE, searchDocumentModel);
             return previousValue;
         } else {
-            log.error(String.format(
-                    "External context is null: cannot expose variable '%s' "
-                            + "for content view '%s'",
+            log.error(String.format("External context is null: cannot expose variable '%s' " + "for content view '%s'",
                     SEARCH_DOCUMENT_EL_VARIABLE, getName()));
             return null;
         }
     }
 
-    protected void removeSearchDocumentFromELContext(FacesContext facesContext,
-            Object previousValue) {
+    protected void removeSearchDocumentFromELContext(FacesContext facesContext, Object previousValue) {
         if (facesContext == null) {
             // ignore
             return;
@@ -713,8 +706,7 @@ public class ContentViewImpl implements ContentView,
             }
         } else {
             log.error(String.format(
-                    "External context is null: cannot dispose variable '%s' "
-                            + "for content view '%s'",
+                    "External context is null: cannot dispose variable '%s' " + "for content view '%s'",
                     SEARCH_DOCUMENT_EL_VARIABLE, getName()));
         }
     }
@@ -739,29 +731,26 @@ public class ContentViewImpl implements ContentView,
         return showTitle;
     }
 
+    @Override
     public String getEmptySentence() {
         return emptySentence;
     }
 
+    @Override
     public boolean getTranslateEmptySentence() {
         return translateEmptySentence;
     }
 
     @Override
     public String toString() {
-        return String.format("ContentViewImpl [name=%s, title=%s, "
-                + "translateTitle=%s, iconPath=%s, "
-                + "selectionList=%s, pagination=%s, "
-                + "actionCategories=%s, searchLayout=%s, "
+        return String.format("ContentViewImpl [name=%s, title=%s, " + "translateTitle=%s, iconPath=%s, "
+                + "selectionList=%s, pagination=%s, " + "actionCategories=%s, searchLayout=%s, "
                 + "resultLayouts=%s, currentResultLayout=%s, "
                 + "flags=%s, cacheKey=%s, cacheSize=%s, currentPageSize=%s"
-                + "refreshEventNames=%s, resetEventNames=%s,"
-                + "useGlobalPageSize=%s, searchDocumentModel=%s]", name, title,
-                Boolean.valueOf(translateTitle), iconPath, selectionList,
-                pagination, actionCategories, searchLayout, resultLayouts,
-                currentResultLayout, flags, cacheKey, cacheSize,
-                currentPageSize, refreshEventNames, resetEventNames,
-                Boolean.valueOf(useGlobalPageSize), searchDocumentModel);
+                + "refreshEventNames=%s, resetEventNames=%s," + "useGlobalPageSize=%s, searchDocumentModel=%s]", name,
+                title, Boolean.valueOf(translateTitle), iconPath, selectionList, pagination, actionCategories,
+                searchLayout, resultLayouts, currentResultLayout, flags, cacheKey, cacheSize, currentPageSize,
+                refreshEventNames, resetEventNames, Boolean.valueOf(useGlobalPageSize), searchDocumentModel);
     }
 
     /*

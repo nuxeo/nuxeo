@@ -61,13 +61,12 @@ public class JSONContentViewState {
      * Returns the String serialization in JSON format of a content view state.
      *
      * @param state the state to serialize
-     * @param encode if true, the resulting String will be zipped and encoded
-     *            in Base-64 format.
+     * @param encode if true, the resulting String will be zipped and encoded in Base-64 format.
      * @throws ClientException
      * @throws UnsupportedEncodingException
      */
-    public static String toJSON(ContentViewState state, boolean encode)
-            throws ClientException, UnsupportedEncodingException {
+    public static String toJSON(ContentViewState state, boolean encode) throws ClientException,
+            UnsupportedEncodingException {
         if (state == null) {
             return null;
         }
@@ -97,8 +96,7 @@ public class JSONContentViewState {
         }
         jsonObject.element("queryParameters", jsonQueryParams);
 
-        jsonObject.element("searchDocument",
-                getDocumentModelToJSON(state.getSearchDocumentModel()));
+        jsonObject.element("searchDocument", getDocumentModelToJSON(state.getSearchDocumentModel()));
 
         JSONArray jsonSortInfos = new JSONArray();
         List<SortInfo> sortInfos = state.getSortInfos();
@@ -109,8 +107,7 @@ public class JSONContentViewState {
         }
         jsonObject.element("sortInfos", jsonSortInfos);
 
-        jsonObject.element("resultLayout",
-                getContentViewLayoutToJSON(state.getResultLayout()));
+        jsonObject.element("resultLayout", getContentViewLayoutToJSON(state.getResultLayout()));
 
         List<String> resultColumns = state.getResultColumns();
         if (resultColumns != null) {
@@ -125,34 +122,29 @@ public class JSONContentViewState {
 
         // encoding
         if (encode) {
-            String encodedValues = Base64.encodeBytes(jsonString.getBytes(),
-                    Base64.GZIP | Base64.DONT_BREAK_LINES);
-            jsonString = URLEncoder.encode(encodedValues,
-                    ENCODED_VALUES_ENCODING);
+            String encodedValues = Base64.encodeBytes(jsonString.getBytes(), Base64.GZIP | Base64.DONT_BREAK_LINES);
+            jsonString = URLEncoder.encode(encodedValues, ENCODED_VALUES_ENCODING);
         }
         return jsonString;
     }
 
     /**
-     * Returns the content view state from its String serialization in JSON
-     * format.
+     * Returns the content view state from its String serialization in JSON format.
      *
      * @param json the state to de-serialize
-     * @param decode if true, the input String is decoded from Base-64 format
-     *            and unzipped.
+     * @param decode if true, the input String is decoded from Base-64 format and unzipped.
      * @throws ClientException
      * @throws UnsupportedEncodingException
      */
     @SuppressWarnings("unchecked")
-    public static ContentViewState fromJSON(String json, boolean decode)
-            throws UnsupportedEncodingException, ClientException {
+    public static ContentViewState fromJSON(String json, boolean decode) throws UnsupportedEncodingException,
+            ClientException {
         if (json == null || json.trim().length() == 0) {
             return null;
         }
         // decoding
         if (decode) {
-            String decodedValues = URLDecoder.decode(json,
-                    ENCODED_VALUES_ENCODING);
+            String decodedValues = URLDecoder.decode(json, ENCODED_VALUES_ENCODING);
             json = new String(Base64.decode(decodedValues));
         }
 
@@ -220,8 +212,7 @@ public class JSONContentViewState {
         return new SortInfo(sortColumn, sortAscending);
     }
 
-    protected static JSONObject getDocumentModelToJSON(DocumentModel doc)
-            throws ClientException {
+    protected static JSONObject getDocumentModelToJSON(DocumentModel doc) throws ClientException {
         if (doc == null) {
             return null;
         }
@@ -233,8 +224,7 @@ public class JSONContentViewState {
     }
 
     @SuppressWarnings("unchecked")
-    protected static DocumentModel getDocumentModelFromJSON(JSONObject jsonDoc)
-            throws ClientException {
+    protected static DocumentModel getDocumentModelFromJSON(JSONObject jsonDoc) throws ClientException {
         if (jsonDoc == null || jsonDoc.isNullObject()) {
             return null;
         }
@@ -249,8 +239,7 @@ public class JSONContentViewState {
         return doc;
     }
 
-    protected static JSONObject getContentViewLayoutToJSON(
-            ContentViewLayout cvLayout) {
+    protected static JSONObject getContentViewLayoutToJSON(ContentViewLayout cvLayout) {
         if (cvLayout == null) {
             return null;
         }
@@ -263,8 +252,7 @@ public class JSONContentViewState {
         return res;
     }
 
-    protected static ContentViewLayout getContentViewLayoutFromJSON(
-            JSONObject jsonCvLayout) {
+    protected static ContentViewLayout getContentViewLayoutFromJSON(JSONObject jsonCvLayout) {
         if (jsonCvLayout == null || jsonCvLayout.isNullObject()) {
             return null;
         }
@@ -273,13 +261,11 @@ public class JSONContentViewState {
         boolean translateTitle = jsonCvLayout.optBoolean("translateTitle");
         String iconPath = jsonCvLayout.optString("iconPath", null);
         boolean showCSVExport = jsonCvLayout.optBoolean("showCSVExport");
-        return new ContentViewLayoutImpl(name, title, translateTitle, iconPath,
-                showCSVExport);
+        return new ContentViewLayoutImpl(name, title, translateTitle, iconPath, showCSVExport);
     }
 
     @SuppressWarnings("unchecked")
-    protected static Serializable getDocumentPropertyValue(Object o)
-            throws JSONException {
+    protected static Serializable getDocumentPropertyValue(Object o) throws JSONException {
         if (o instanceof String) {
             Calendar calendar = null;
             try {

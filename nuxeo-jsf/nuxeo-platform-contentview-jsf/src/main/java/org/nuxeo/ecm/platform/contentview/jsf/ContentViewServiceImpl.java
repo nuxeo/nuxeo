@@ -48,8 +48,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author Anahide Tchertchian
  * @since 5.4
  */
-public class ContentViewServiceImpl extends DefaultComponent implements
-        ContentViewService {
+public class ContentViewServiceImpl extends DefaultComponent implements ContentViewService {
 
     public static final String CONTENT_VIEW_EP = "contentViews";
 
@@ -105,13 +104,11 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         if (refDesc != null && refDesc.isEnabled()) {
             PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
             if (ppService == null) {
-                throw new ClientException(
-                        "Page provider service cannot be resolved");
+                throw new ClientException("Page provider service cannot be resolved");
             }
             PageProviderDefinition def = ppService.getPageProviderDefinition(refDesc.getName());
             if (def == null) {
-                log.error("Could not resolve page provider with name "
-                        + refDesc.getName());
+                log.error("Could not resolve page provider with name " + refDesc.getName());
             } else if (def instanceof CoreQueryPageProviderDescriptor) {
                 coreDesc = (CoreQueryPageProviderDescriptor) def;
                 refQueryParams = refDesc.getQueryParameters();
@@ -139,27 +136,20 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             allQueryParams.addAll(Arrays.asList(refQueryParams));
         }
         String searchDocBinding = desc.getSearchDocumentBinding();
-        ContentViewImpl contentView = new ContentViewImpl(name,
-                desc.getTitle(), translateTitle.booleanValue(),
-                desc.getIconPath(), desc.getSelectionListName(),
-                desc.getPagination(), desc.getActionCategories(),
-                desc.getSearchLayout(), desc.getResultLayouts(),
-                desc.getFlags(), desc.getCacheKey(), desc.getCacheSize(),
-                desc.getRefreshEventNames(), desc.getResetEventNames(),
-                useGlobalPageSize.booleanValue(),
-                allQueryParams.toArray(new String[] {}), searchDocBinding,
-                searchDocumentType, desc.getResultColumnsBinding(),
-                desc.getResultLayoutBinding(), sortInfosBinding,
-                pageSizeBinding, showTitle.booleanValue(),
-                showPageSizeSelector.booleanValue(),
-                showRefreshPage.booleanValue(), showFilterForm.booleanValue(),
-                desc.getEmptySentence(), translateEmptySentence.booleanValue());
+        ContentViewImpl contentView = new ContentViewImpl(name, desc.getTitle(), translateTitle.booleanValue(),
+                desc.getIconPath(), desc.getSelectionListName(), desc.getPagination(), desc.getActionCategories(),
+                desc.getSearchLayout(), desc.getResultLayouts(), desc.getFlags(), desc.getCacheKey(),
+                desc.getCacheSize(), desc.getRefreshEventNames(), desc.getResetEventNames(),
+                useGlobalPageSize.booleanValue(), allQueryParams.toArray(new String[] {}), searchDocBinding,
+                searchDocumentType, desc.getResultColumnsBinding(), desc.getResultLayoutBinding(), sortInfosBinding,
+                pageSizeBinding, showTitle.booleanValue(), showPageSizeSelector.booleanValue(),
+                showRefreshPage.booleanValue(), showFilterForm.booleanValue(), desc.getEmptySentence(),
+                translateEmptySentence.booleanValue());
         return contentView;
     }
 
     protected ContentViewHeader getContentViewHeader(ContentViewDescriptor desc) {
-        return new ContentViewHeader(desc.getName(), desc.getTitle(),
-                Boolean.TRUE.equals(desc.getTranslateTitle()),
+        return new ContentViewHeader(desc.getName(), desc.getTitle(), Boolean.TRUE.equals(desc.getTranslateTitle()),
                 desc.getIconPath());
     }
 
@@ -172,6 +162,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         return getContentViewHeader(desc);
     }
 
+    @Override
     public Set<String> getContentViewNames() {
         return Collections.unmodifiableSet(contentViewReg.getContentViewNames());
     }
@@ -185,6 +176,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         return Collections.unmodifiableSet(res);
     }
 
+    @Override
     public Set<String> getContentViewNames(String flag) {
         Set<String> res = new HashSet<String>();
         Set<String> items = contentViewReg.getContentViewsByFlag(flag);
@@ -207,10 +199,9 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         return Collections.unmodifiableSet(res);
     }
 
-    public PageProvider<?> getPageProvider(String name,
-            List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            DocumentModel searchDocument, Object... parameters)
-            throws ClientException {
+    @Override
+    public PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
+            DocumentModel searchDocument, Object... parameters) throws ClientException {
         ContentViewDescriptor contentViewDesc = contentViewReg.getContentView(name);
         if (contentViewDesc == null) {
             return null;
@@ -220,15 +211,13 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             throw new ClientException("Page provider service is null");
         }
         String ppName = contentViewDesc.getPageProviderName();
-        PageProvider<?> provider = ppService.getPageProvider(ppName,
-                searchDocument, sortInfos, pageSize, currentPage,
-                resolvePageProviderProperties(contentViewDesc.getPageProviderProperties()),
-                parameters);
+        PageProvider<?> provider = ppService.getPageProvider(ppName, searchDocument, sortInfos, pageSize, currentPage,
+                resolvePageProviderProperties(contentViewDesc.getPageProviderProperties()), parameters);
         return provider;
     }
 
-    public Map<String, Serializable> resolvePageProviderProperties(
-            Map<String, String> stringProps) throws ClientException {
+    public Map<String, Serializable> resolvePageProviderProperties(Map<String, String> stringProps)
+            throws ClientException {
         // resolve properties
         Map<String, Serializable> resolvedProps = new HashMap<String, Serializable>();
         for (Map.Entry<String, String> prop : stringProps.entrySet()) {
@@ -239,11 +228,10 @@ public class ContentViewServiceImpl extends DefaultComponent implements
 
     protected Serializable resolveProperty(String elExpression) {
         FacesContext context = FacesContext.getCurrentInstance();
-        Object value = ComponentTagUtils.resolveElExpression(context,
-                elExpression);
+        Object value = ComponentTagUtils.resolveElExpression(context, elExpression);
         if (value != null && !(value instanceof Serializable)) {
-            log.error(String.format("Error processing expression '%s', "
-                    + "result is not serializable: %s", elExpression, value));
+            log.error(String.format("Error processing expression '%s', " + "result is not serializable: %s",
+                    elExpression, value));
             return null;
         }
         return (Serializable) value;
@@ -259,8 +247,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (CONTENT_VIEW_EP.equals(extensionPoint)) {
             ContentViewDescriptor desc = (ContentViewDescriptor) contribution;
@@ -270,28 +257,22 @@ public class ContentViewServiceImpl extends DefaultComponent implements
     }
 
     protected void registerPageProvider(ContentViewDescriptor desc) {
-        ReferencePageProviderDescriptor refDesc = desc
-                .getReferencePageProvider();
+        ReferencePageProviderDescriptor refDesc = desc.getReferencePageProvider();
         if (refDesc != null && refDesc.isEnabled()) {
             // we use an already registered pp
             return;
         }
-        PageProviderService ppService = Framework
-                .getLocalService(PageProviderService.class);
+        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
         if (ppService == null) {
             throw new ClientException("PageProviderService is not available");
         }
         String name = desc.getName();
-        PageProviderDefinition coreDef = getPageProviderDefWithName(name,
-                desc.getCoreQueryPageProvider());
-        PageProviderDefinition genDef = getPageProviderDefWithName(name,
-                desc.getGenericPageProvider());
+        PageProviderDefinition coreDef = getPageProviderDefWithName(name, desc.getCoreQueryPageProvider());
+        PageProviderDefinition genDef = getPageProviderDefWithName(name, desc.getGenericPageProvider());
         if (coreDef != null && genDef != null) {
-            log.error(String
-                    .format("Only one page provider should be registered on "
-                            + "content view '%s': take the reference "
-                            + "descriptor by default, then core query descriptor, "
-                            + "and then generic descriptor", name));
+            log.error(String.format("Only one page provider should be registered on "
+                    + "content view '%s': take the reference " + "descriptor by default, then core query descriptor, "
+                    + "and then generic descriptor", name));
         }
         PageProviderDefinition ppDef = (coreDef != null) ? coreDef : genDef;
         if (ppDef != null) {
@@ -300,8 +281,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         }
     }
 
-    protected PageProviderDefinition getPageProviderDefWithName(String name,
-            PageProviderDefinition ppDef) {
+    protected PageProviderDefinition getPageProviderDefWithName(String name, PageProviderDefinition ppDef) {
         if (ppDef != null && ppDef.isEnabled()) {
             if (ppDef.getName() == null) {
                 ppDef.setName(name);
@@ -312,8 +292,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (CONTENT_VIEW_EP.equals(extensionPoint)) {
             ContentViewDescriptor desc = (ContentViewDescriptor) contribution;
@@ -330,16 +309,15 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         }
         if (desc.getCoreQueryPageProvider() != null) {
 
-            ppService.unregisterPageProviderDefinition((PageProviderDefinition) desc.getCoreQueryPageProvider());
+            ppService.unregisterPageProviderDefinition(desc.getCoreQueryPageProvider());
         }
         if (desc.getGenericPageProvider() != null) {
-            ppService.unregisterPageProviderDefinition((PageProviderDefinition) desc.getGenericPageProvider());
+            ppService.unregisterPageProviderDefinition(desc.getGenericPageProvider());
         }
     }
 
     @Override
-    public ContentView restoreContentView(ContentViewState contentViewState)
-            throws ClientException {
+    public ContentView restoreContentView(ContentViewState contentViewState) throws ClientException {
         if (contentViewState == null) {
             return null;
         }
@@ -357,18 +335,15 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 // set on content view
                 String searchType = cv.getSearchDocumentModelType();
                 if (!searchDocument.getType().equals(searchType)) {
-                    log.warn(String.format(
-                            "Restored document type '%s' is different from "
-                                    + "the one declared on content view "
-                                    + "with name '%s': should be '%s'",
+                    log.warn(String.format("Restored document type '%s' is different from "
+                            + "the one declared on content view " + "with name '%s': should be '%s'",
                             searchDocument.getType(), name, searchType));
                 }
             }
             Long currentPage = contentViewState.getCurrentPage();
             Object[] params = contentViewState.getQueryParameters();
             // init page provider
-            cv.getPageProvider(searchDocument, contentViewState.getSortInfos(),
-                    pageSize, currentPage, params);
+            cv.getPageProvider(searchDocument, contentViewState.getSortInfos(), pageSize, currentPage, params);
             // restore rendering info, unless bindings are present on content
             // view configuration
             if (!cv.hasResultLayoutBinding()) {
@@ -378,8 +353,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 cv.setCurrentResultLayoutColumns(contentViewState.getResultColumns());
             }
         } else {
-            throw new ClientException(String.format(
-                    "Unknown content view with name '%s'", name));
+            throw new ClientException(String.format("Unknown content view with name '%s'", name));
         }
         return cv;
     }

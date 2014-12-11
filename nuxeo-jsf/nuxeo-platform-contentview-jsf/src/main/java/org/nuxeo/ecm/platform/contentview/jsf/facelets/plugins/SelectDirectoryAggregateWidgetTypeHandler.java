@@ -30,8 +30,7 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.plugins.AbstractDirectorySel
 /**
  * @since 6.0
  */
-public abstract class SelectDirectoryAggregateWidgetTypeHandler extends
-        AbstractDirectorySelectWidgetTypeHandler {
+public abstract class SelectDirectoryAggregateWidgetTypeHandler extends AbstractDirectorySelectWidgetTypeHandler {
 
     private static final long serialVersionUID = 1L;
 
@@ -44,10 +43,10 @@ public abstract class SelectDirectoryAggregateWidgetTypeHandler extends
         return res;
     }
 
-    protected Map<String, Serializable> getOptionProperties(FaceletContext ctx,
-            Widget widget, WidgetSelectOption selectOption) {
-        Map<String, Serializable> props = super.getOptionProperties(ctx,
-                widget, selectOption);
+    @Override
+    protected Map<String, Serializable> getOptionProperties(FaceletContext ctx, Widget widget,
+            WidgetSelectOption selectOption) {
+        Map<String, Serializable> props = super.getOptionProperties(ctx, widget, selectOption);
         props.put(SelectPropertyMappings.itemLabelSuffix.name(),
                 widget.getProperty(AggregatePropertyMappings.itemCount.name()));
         return props;

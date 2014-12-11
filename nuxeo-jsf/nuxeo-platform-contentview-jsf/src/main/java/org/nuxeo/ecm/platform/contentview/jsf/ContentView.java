@@ -27,17 +27,13 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 
 /**
- * A content view is a notion to handle lists of objects rendering, as well as
- * query filters to build the list.
+ * A content view is a notion to handle lists of objects rendering, as well as query filters to build the list.
  * <p>
- * It has a name that will be the resulting page provider name too. It handles
- * a page provider and accepts configuration needed to handle rendering, like
- * the search layout (for filtering options), the result layout (for results
- * rendering), actions (for buttons available when selecting result objects),
- * the selection list name...
+ * It has a name that will be the resulting page provider name too. It handles a page provider and accepts configuration
+ * needed to handle rendering, like the search layout (for filtering options), the result layout (for results
+ * rendering), actions (for buttons available when selecting result objects), the selection list name...
  * <p>
- * It also handles refresh or reset of its provider, depending on its cache key
- * and refresh events configuration.
+ * It also handles refresh or reset of its provider, depending on its cache key and refresh events configuration.
  *
  * @author Anahide Tchertchian
  * @since 5.4
@@ -47,24 +43,21 @@ public interface ContentView extends Serializable {
     public static final String SEARCH_DOCUMENT_EL_VARIABLE = "searchDocument";
 
     /**
-     * Seam event to be fired when the current page of the content view's page
-     * provider has changed
+     * Seam event to be fired when the current page of the content view's page provider has changed
      *
      * @since 5.7
      */
     public static final String CONTENT_VIEW_PAGE_CHANGED_EVENT = "contentViewPageChanged";
 
     /**
-     * Seam event to be fired when the content view's page provider has
-     * refreshed
+     * Seam event to be fired when the content view's page provider has refreshed
      *
      * @since 5.7
      */
     public static final String CONTENT_VIEW_REFRESH_EVENT = "contentViewRefresh";
 
     /**
-     * Seam event to be fired when the page size of the content view has
-     * changed
+     * Seam event to be fired when the page size of the content view has changed
      *
      * @since 5.7
      */
@@ -88,8 +81,7 @@ public interface ContentView extends Serializable {
     boolean getTranslateTitle();
 
     /**
-     * Returns true is the title should be displayed before the result layout
-     * selector.
+     * Returns true is the title should be displayed before the result layout selector.
      *
      * @since 5.4.2
      */
@@ -106,14 +98,13 @@ public interface ContentView extends Serializable {
     String getPagination();
 
     /**
-     * Returns the list of action categories to display buttons available on
-     * selection of items.
+     * Returns the list of action categories to display buttons available on selection of items.
      */
     List<String> getActionsCategories();
 
     /**
-     * Returns the list of flags set on this content view, useful to group
-     * them, see {@link ContentViewService#getContentViewNames(String)}
+     * Returns the list of flags set on this content view, useful to group them, see
+     * {@link ContentViewService#getContentViewNames(String)}
      */
     List<String> getFlags();
 
@@ -128,9 +119,8 @@ public interface ContentView extends Serializable {
     List<ContentViewLayout> getResultLayouts();
 
     /**
-     * Returns the current result layout, as set using
-     * {@link #setCurrentResultLayout(ContentViewLayout)}, or the first of
-     * defined result layouts when not set.
+     * Returns the current result layout, as set using {@link #setCurrentResultLayout(ContentViewLayout)}, or the first
+     * of defined result layouts when not set.
      */
     ContentViewLayout getCurrentResultLayout();
 
@@ -152,9 +142,8 @@ public interface ContentView extends Serializable {
     boolean hasResultLayoutBinding();
 
     /**
-     * Returns the current page size, as set using
-     * {@link #setCurrentPageSize(Long)}, or the page size set on current page
-     * provider if not null.
+     * Returns the current page size, as set using {@link #setCurrentPageSize(Long)}, or the page size set on current
+     * page provider if not null.
      */
     Long getCurrentPageSize();
 
@@ -170,9 +159,8 @@ public interface ContentView extends Serializable {
     List<String> getResultLayoutColumns();
 
     /**
-     * Returns the list of selected result layout columns, resolving the bound
-     * EL expression set in the content view definition if columns where not
-     * explicitely set with {@link #setCurrentResultLayoutColumns(List)}.
+     * Returns the list of selected result layout columns, resolving the bound EL expression set in the content view
+     * definition if columns where not explicitely set with {@link #setCurrentResultLayoutColumns(List)}.
      *
      * @since 5.4.2
      */
@@ -191,8 +179,8 @@ public interface ContentView extends Serializable {
     boolean hasResultLayoutColumnsBinding();
 
     /**
-     * Returns the cache key for this content view provider, resolving from the
-     * current {@link FacesContext} instance if it's an EL expression.
+     * Returns the cache key for this content view provider, resolving from the current {@link FacesContext} instance if
+     * it's an EL expression.
      */
     String getCacheKey();
 
@@ -207,66 +195,54 @@ public interface ContentView extends Serializable {
     String getIconPath();
 
     /**
-     * Returns the query parameters for this content view provider provider,
-     * resolving from the current {@link FacesContext} instance if they are EL
-     * expressions.
+     * Returns the query parameters for this content view provider provider, resolving from the current
+     * {@link FacesContext} instance if they are EL expressions.
      */
     Object[] getQueryParameters();
 
     /**
-     * Returns the list of event names that should trigger a refresh of this
-     * content view page provider.
+     * Returns the list of event names that should trigger a refresh of this content view page provider.
      */
     List<String> getRefreshEventNames();
 
     /**
-     * Returns the list of event names that should trigger a reset of this
-     * content view page provider.
+     * Returns the list of event names that should trigger a reset of this content view page provider.
      */
     List<String> getResetEventNames();
 
     /**
      * Gets page provider according to given parameters
      *
-     * @param searchDocument document that will be set on the page provider. If
-     *            this document is null, we try to retrieve the content view
-     *            document model calling {@link #getSearchDocumentModel()}. If
-     *            it is not null, it is set on the page provider.
-     * @param sortInfos if not null, will override default sort info put in the
-     *            page provider XML description
-     * @param pageSize if not null, will override default page size put in the
-     *            page provider XML description
+     * @param searchDocument document that will be set on the page provider. If this document is null, we try to
+     *            retrieve the content view document model calling {@link #getSearchDocumentModel()}. If it is not null,
+     *            it is set on the page provider.
+     * @param sortInfos if not null, will override default sort info put in the page provider XML description
+     * @param pageSize if not null, will override default page size put in the page provider XML description
      * @param currentPage if not null, will set the current page to given one
-     * @param params if not null, will set the parameters on provider. If null,
-     *            will take parameters as resolved on the content view from the
-     *            XML configuration, see {@link #getQueryParameters()}
+     * @param params if not null, will set the parameters on provider. If null, will take parameters as resolved on the
+     *            content view from the XML configuration, see {@link #getQueryParameters()}
      */
-    PageProvider<?> getPageProvider(DocumentModel searchDocument,
-            List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            Object... params) throws ClientException;
+    PageProvider<?> getPageProvider(DocumentModel searchDocument, List<SortInfo> sortInfos, Long pageSize,
+            Long currentPage, Object... params) throws ClientException;
 
     /**
      * Gets page provider according to given parameters
      *
-     * @see #getPageProvider(DocumentModel, List, Long, Long, Object...) using
-     *      null as every argument except params
+     * @see #getPageProvider(DocumentModel, List, Long, Long, Object...) using null as every argument except params
      * @throws ClientException
      */
-    PageProvider<?> getPageProviderWithParams(Object... params)
-            throws ClientException;
+    PageProvider<?> getPageProviderWithParams(Object... params) throws ClientException;
 
     /**
      * Gets page provider according to given parameters
      *
-     * @see #getPageProvider(DocumentModel, List, Long, Long, Object...) ,
-     *      using null as every argument
+     * @see #getPageProvider(DocumentModel, List, Long, Long, Object...) , using null as every argument
      * @throws ClientException
      */
     PageProvider<?> getPageProvider() throws ClientException;
 
     /**
-     * Returns the current page provider, or null if methods
-     * {@link #getPageProvider()},
+     * Returns the current page provider, or null if methods {@link #getPageProvider()},
      * {@link #getPageProvider(DocumentModel, List, Long, Long, Object...)} or
      * {@link #getPageProviderWithParams(Object...)} were never called before.
      */
@@ -275,24 +251,21 @@ public interface ContentView extends Serializable {
     /**
      * Resets the page provider.
      * <p>
-     * A new page provider will be computed next time
-     * {@link #getPageProviderWithParams(Object...)} is called. Sort
+     * A new page provider will be computed next time {@link #getPageProviderWithParams(Object...)} is called. Sort
      * information and query parameters will have to be re-generated.
      */
     void resetPageProvider();
 
     /**
-     * Refreshes the current page provider if not null, see
-     * {@link PageProvider#refresh()}.
+     * Refreshes the current page provider if not null, see {@link PageProvider#refresh()}.
      * <p>
      * Sort information and query parameters and current page are kept.
      */
     void refreshPageProvider();
 
     /**
-     * Refreshes the current page provider if not null, see
-     * {@link PageProvider#refresh()}, and resets the current page to the first
-     * one.
+     * Refreshes the current page provider if not null, see {@link PageProvider#refresh()}, and resets the current page
+     * to the first one.
      * <p>
      * Sort information and query parameters are kept.
      */
@@ -306,8 +279,7 @@ public interface ContentView extends Serializable {
     void resetPageProviderAggregates();
 
     /**
-     * Returns true is this content view can use the global page size set on
-     * the application.
+     * Returns true is this content view can use the global page size set on the application.
      */
     boolean getUseGlobalPageSize();
 
@@ -328,9 +300,8 @@ public interface ContentView extends Serializable {
     /**
      * Returns true is the filter form should be displayed.
      * <p>
-     * Filter form is displayed on top of content view results, using the
-     * search document model and search layout if they have been set on the
-     * content view.
+     * Filter form is displayed on top of content view results, using the search document model and search layout if
+     * they have been set on the content view.
      *
      * @since 5.4.2
      */
@@ -339,31 +310,28 @@ public interface ContentView extends Serializable {
     /**
      * Returns the search document model as set on the content view.
      * <p>
-     * If this document is null and a EL binding has been set on the content
-     * view description, the document model will be resolved from this binding,
-     * and set as the search document model.
+     * If this document is null and a EL binding has been set on the content view description, the document model will
+     * be resolved from this binding, and set as the search document model.
      * <p>
-     * Else, if the content view is using a provider that needs a search
-     * document model, a new one is created and attached to it thanks to the
-     * document type held in the definition.
+     * Else, if the content view is using a provider that needs a search document model, a new one is created and
+     * attached to it thanks to the document type held in the definition.
      */
     DocumentModel getSearchDocumentModel();
 
     /**
-     * Sets the search document model to be passed on the page provider, and
-     * set it also on the current page provider if not null.
+     * Sets the search document model to be passed on the page provider, and set it also on the current page provider if
+     * not null.
      */
     void setSearchDocumentModel(DocumentModel doc);
 
     /**
-     * Resets the search document model, setting it to null so that it's
-     * recomputed when calling {@link #getSearchDocumentModel()}
+     * Resets the search document model, setting it to null so that it's recomputed when calling
+     * {@link #getSearchDocumentModel()}
      */
     void resetSearchDocumentModel();
 
     /**
-     * Returns the search document model type as defined in the XML
-     * configuration.
+     * Returns the search document model type as defined in the XML configuration.
      */
     String getSearchDocumentModelType();
 
@@ -375,8 +343,7 @@ public interface ContentView extends Serializable {
     String getEmptySentence();
 
     /**
-     * Returns a boolean stating if sentence to display is empty has to be
-     * translated
+     * Returns a boolean stating if sentence to display is empty has to be translated
      *
      * @see #getEmptySentence()
      * @since 5.4.2

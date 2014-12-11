@@ -28,10 +28,8 @@ import org.nuxeo.ecm.platform.ui.web.cache.LRUCachingMap;
 /**
  * Cache for content views, handling cache keys set on content views.
  * <p>
- * Each content view instance will be cached if its cache key is not null. Each
- * instance will be cached using the cache key so its state is restored. Also
- * handles refresh of caches when receiving events configured on the content
- * view.
+ * Each content view instance will be cached if its cache key is not null. Each instance will be cached using the cache
+ * key so its state is restored. Also handles refresh of caches when receiving events configured on the content view.
  *
  * @author Anahide Tchertchian
  * @since 5.4
@@ -52,24 +50,20 @@ public class ContentViewCache implements Serializable {
     protected final Map<String, Map<String, ContentView>> cacheInstances = new HashMap<String, Map<String, ContentView>>();
 
     /**
-     * Map holding content view names that need their page provider to be
-     * refreshed for a given event
+     * Map holding content view names that need their page provider to be refreshed for a given event
      */
     protected final Map<String, Set<String>> refreshEventToContentViewName = new HashMap<String, Set<String>>();
 
     /**
-     * Map holding content view names that need their page provider to be reset
-     * for a given event
+     * Map holding content view names that need their page provider to be reset for a given event
      */
     protected final Map<String, Set<String>> resetEventToContentViewName = new HashMap<String, Set<String>>();
 
     /**
-     * Add given content view to the cache, resolving its cache key and
-     * initializing it with its cache size.
+     * Add given content view to the cache, resolving its cache key and initializing it with its cache size.
      * <p>
-     * Since 5.7, content views with a cache size <= 0 will be cached anyhow to
-     * handle selections, and rendering is in charge of forcing cache reset
-     * when re-displaying the page.
+     * Since 5.7, content views with a cache size <= 0 will be cached anyhow to handle selections, and rendering is in
+     * charge of forcing cache reset when re-displaying the page.
      */
     public void add(ContentView cView) {
         if (cView != null) {
@@ -94,8 +88,7 @@ public class ContentViewCache implements Serializable {
 
             Map<String, ContentView> cacheEntry = cacheInstances.get(name);
             if (cacheEntry == null) {
-                cacheEntry = new LRUCachingMap<String, ContentView>(
-                        cacheSize.intValue());
+                cacheEntry = new LRUCachingMap<String, ContentView>(cacheSize.intValue());
             }
             cacheEntry.put(cacheKey, cView);
             cacheInstances.put(name, cacheEntry);
@@ -153,11 +146,9 @@ public class ContentViewCache implements Serializable {
     }
 
     /**
-     * Refresh page providers for content views in the cache with given
-     * name.refreshEventToContentViewName
+     * Refresh page providers for content views in the cache with given name.refreshEventToContentViewName
      * <p>
-     * Other contextual information set on the content view and the page
-     * provider will be kept.
+     * Other contextual information set on the content view and the page provider will be kept.
      */
     public void refresh(String contentViewName, boolean rewind) {
         ContentView cv = namedContentViews.get(contentViewName);
@@ -224,11 +215,9 @@ public class ContentViewCache implements Serializable {
     }
 
     /**
-     * Refresh page providers for content views having declared given event as
-     * a refresh event.
+     * Refresh page providers for content views having declared given event as a refresh event.
      * <p>
-     * Other contextual information set on the content view and the page
-     * provider will be kept.
+     * Other contextual information set on the content view and the page provider will be kept.
      */
     public void refreshOnEvent(String eventName) {
         if (eventName != null) {
@@ -242,8 +231,7 @@ public class ContentViewCache implements Serializable {
     }
 
     /**
-     * Resets page providers for content views having declared given event as a
-     * reset event.
+     * Resets page providers for content views having declared given event as a reset event.
      * <p>
      * Other contextual information set on the content view will be kept.
      */
@@ -277,8 +265,8 @@ public class ContentViewCache implements Serializable {
     }
 
     /**
-     * Resets all cached information for all content views, as well as
-     * configuration caches (refresh and reset events linked to content views).
+     * Resets all cached information for all content views, as well as configuration caches (refresh and reset events
+     * linked to content views).
      */
     public void resetAll() {
         resetAllContent();
@@ -289,8 +277,7 @@ public class ContentViewCache implements Serializable {
     /**
      * Iterates over all cached content view instances to refresh them.
      * <p>
-     * Can be costly if some page providers need to fetch content or perform
-     * costly operations at refresh.
+     * Can be costly if some page providers need to fetch content or perform costly operations at refresh.
      *
      * @since 5.7
      */
@@ -301,8 +288,7 @@ public class ContentViewCache implements Serializable {
     /**
      * Iterates over all cached content view instances to refresh them.
      * <p>
-     * Can be costly if some page providers need to fetch content or perform
-     * costly operations at refresh.
+     * Can be costly if some page providers need to fetch content or perform costly operations at refresh.
      *
      * @since 5.7
      */

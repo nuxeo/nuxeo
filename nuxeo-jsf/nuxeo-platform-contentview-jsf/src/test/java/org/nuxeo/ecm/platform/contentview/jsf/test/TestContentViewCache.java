@@ -55,21 +55,18 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
 
     DocumentModel container2;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("org.nuxeo.ecm.platform.query.api",
-                "OSGI-INF/pageprovider-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf",
-                "OSGI-INF/contentview-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
-                "test-contentview-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.query.api", "OSGI-INF/pageprovider-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.contentview.jsf", "OSGI-INF/contentview-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-contrib.xml");
 
         // set mock faces context for needed properties resolution
         facesContext = new MockFacesContext();
-        facesContext.mapExpression("#{dummy.param}",
-                UUID.randomUUID().toString());
+        facesContext.mapExpression("#{dummy.param}", UUID.randomUUID().toString());
         facesContext.setCurrent();
         assertNotNull(FacesContext.getCurrentInstance());
 
@@ -93,6 +90,7 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         createTestDocuments(container2);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
@@ -102,14 +100,12 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         super.tearDown();
     }
 
-    protected void createTestDocuments(DocumentModel container)
-            throws ClientException {
+    protected void createTestDocuments(DocumentModel container) throws ClientException {
         // create docs in descending order so that docs are not ordered by
         // title by default
         for (int i = 4; i >= 0; i--) {
             DocumentModel doc = session.createDocumentModel("Folder");
-            doc.setPropertyValue("dc:title", container.getTitle()
-                    + ": Document number " + i);
+            doc.setPropertyValue("dc:title", container.getTitle() + ": Document number " + i);
             doc.setPathInfo(container.getPathAsString(), "doc_" + i);
             session.createDocument(doc);
         }
@@ -121,7 +117,7 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
     public void testContentViewCache() throws Exception {
         ContentViewCache cache = new ContentViewCache();
 
-        this.currentDocument = container1;
+        currentDocument = container1;
         facesContext.mapVariable("currentDocument", currentDocument);
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
@@ -141,10 +137,8 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         pp.nextPage();
         assertEquals(1, pp.getCurrentPageIndex());
         assertEquals(5, pp.getResultsCount());
-        assertEquals("document_listing",
-                contentView.getCurrentResultLayout().getName());
-        ContentViewLayout layout = new ContentViewLayoutImpl(
-                "document_listing_2", null, false, null, false);
+        assertEquals("document_listing", contentView.getCurrentResultLayout().getName());
+        ContentViewLayout layout = new ContentViewLayoutImpl("document_listing_2", null, false, null, false);
         contentView.setCurrentResultLayout(layout);
 
         cache.add(contentView);
@@ -155,15 +149,14 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         assertNotNull(pp);
         assertEquals(1, pp.getCurrentPageIndex());
         assertEquals(5, pp.getResultsCount());
-        assertEquals("document_listing_2",
-                contentView.getCurrentResultLayout().getName());
+        assertEquals("document_listing_2", contentView.getCurrentResultLayout().getName());
 
-        this.currentDocument = container2;
+        currentDocument = container2;
         facesContext.mapVariable("currentDocument", currentDocument);
         contentView = cache.get("CURRENT_DOCUMENT_CHILDREN");
         assertNull(contentView);
 
-        this.currentDocument = container1;
+        currentDocument = container1;
         facesContext.mapVariable("currentDocument", currentDocument);
         contentView = cache.get("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
@@ -171,8 +164,7 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         assertNotNull(pp);
         assertEquals(1, pp.getCurrentPageIndex());
         assertEquals(5, pp.getResultsCount());
-        assertEquals("document_listing_2",
-                contentView.getCurrentResultLayout().getName());
+        assertEquals("document_listing_2", contentView.getCurrentResultLayout().getName());
 
         cache.refreshOnEvent("documentChildrenChanged");
         contentView = cache.get("CURRENT_DOCUMENT_CHILDREN");
@@ -187,9 +179,8 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
     }
 
     /**
-     * Non-regression test for NXP-13604: check that a page provider triggering
-     * a call to {@link PageProvider#getCurrentPage()} on refresh is not
-     * refreshed more than once.
+     * Non-regression test for NXP-13604: check that a page provider triggering a call to
+     * {@link PageProvider#getCurrentPage()} on refresh is not refreshed more than once.
      *
      * @since 5.9.2
      */
@@ -212,16 +203,12 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         cache.add(cv);
 
         cv.getCurrentPageProvider().getCurrentPage();
-        assertEquals(
-                1,
-                ((MockDAMPageProvider) cv.getCurrentPageProvider()).getGetCounter());
+        assertEquals(1, ((MockDAMPageProvider) cv.getCurrentPageProvider()).getGetCounter());
 
         cache.refreshAndRewindAll();
 
         cv.getCurrentPageProvider().getCurrentPage();
-        assertEquals(
-                2,
-                ((MockDAMPageProvider) cv.getCurrentPageProvider()).getGetCounter());
+        assertEquals(2, ((MockDAMPageProvider) cv.getCurrentPageProvider()).getGetCounter());
 
     }
 }

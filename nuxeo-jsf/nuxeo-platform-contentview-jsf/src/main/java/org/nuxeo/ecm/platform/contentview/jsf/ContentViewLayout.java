@@ -47,68 +47,59 @@ public interface ContentViewLayout extends Serializable {
     String getIconPath();
 
     /**
-     * Returns true if CSV export is enabled for this layout. Defaults to
-     * false.
+     * Returns true if CSV export is enabled for this layout. Defaults to false.
      *
      * @since 5.4.2
      */
     boolean getShowCSVExport();
 
     /**
-     * Returns true if PDF export is enabled for this layout. Defaults to
-     * false.
+     * Returns true if PDF export is enabled for this layout. Defaults to false.
      *
      * @since 5.4.2
      */
     boolean getShowPDFExport();
 
     /**
-     * Returns true if syndication links are enabled for this layout. Defaults
-     * to false.
+     * Returns true if syndication links are enabled for this layout. Defaults to false.
      *
      * @since 5.5
      */
     boolean getShowSyndicationLinks();
 
     /**
-     * Returns true if 'slide show' link is enabled for this layout. Defaults
-     * to false.
+     * Returns true if 'slide show' link is enabled for this layout. Defaults to false.
      *
      * @since 6.0
      */
     boolean getShowSlideshow();
 
     /**
-     * Returns true if 'edit columns' link is enabled for this layout. Defaults
-     * to false.
+     * Returns true if 'edit columns' link is enabled for this layout. Defaults to false.
      *
      * @since 6.0
      */
     boolean getShowEditColumns();
 
     /**
-     * Returns true if 'edit rows' link is enabled for this layout. Defaults to
-     * false.
+     * Returns true if 'edit rows' link is enabled for this layout. Defaults to false.
      * <p>
-     * This marker is only useful to handle layout column selection when
-     * columns are actually rows (or display content differently that using
-     * columns).
+     * This marker is only useful to handle layout column selection when columns are actually rows (or display content
+     * differently that using columns).
      *
      * @since 6.0
      */
     boolean getShowEditRows();
 
     /**
-     * Returns true if 'spreadsheet' link is enabled for this layout. Defaults
-     * to false.
+     * Returns true if 'spreadsheet' link is enabled for this layout. Defaults to false.
      *
      * @since 6.0
      */
     boolean getShowSpreadsheet();
 
     /**
-     * Returns the filter display type to handle different kinds of filter
-     * display.
+     * Returns the filter display type to handle different kinds of filter display.
      *
      * @since 5.5
      */
@@ -117,8 +108,7 @@ public interface ContentViewLayout extends Serializable {
     /**
      * Returns true is the filter should be unfolded by default.
      * <p>
-     * Does not have any impact on the filter display if filter display type is
-     * "quick" (i.e. opens in a popup)
+     * Does not have any impact on the filter display if filter display type is "quick" (i.e. opens in a popup)
      *
      * @since 5.7.2
      */
