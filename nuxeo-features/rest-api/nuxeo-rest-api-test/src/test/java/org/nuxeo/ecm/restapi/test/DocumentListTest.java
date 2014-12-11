@@ -188,7 +188,7 @@ public class DocumentListTest extends BaseTest {
     }
 
     /**
-     * @since 6.0
+     * @since 7.1
      */
     @Test
     public void iCanPerformPageProviderWithNamedParametersInvalid() throws Exception {
@@ -257,8 +257,8 @@ public class DocumentListTest extends BaseTest {
     public void iCanPerformPageProviderWithNamedParametersInWhereClauseWithDoc() throws Exception {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("np:title", "Folder 0");
-        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderWithWhereClauseWithDoc",
-                queryParams);
+        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH
+                + "/namedParamProviderWithWhereClauseWithDoc", queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(1, getLogEntries(node).size());
@@ -276,7 +276,7 @@ public class DocumentListTest extends BaseTest {
     @Test
     public void iCanPerformPageProviderWithNamedParametersComplex() throws Exception {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.add("np:title", "Folder 0");
+        queryParams.add("parameter1", "Folder 0");
         queryParams.add("np:isCheckedIn", Boolean.FALSE.toString());
         queryParams.add("np:dateMin", "2007-01-30 01:02:03+04:00");
         queryParams.add("np:dateMax", "2007-03-23 01:02:03+04:00");
@@ -285,6 +285,20 @@ public class DocumentListTest extends BaseTest {
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(1, getLogEntries(node).size());
+
+        // remove filter on dates
+        queryParams.remove("np:dateMin");
+        queryParams.remove("np:dateMax");
+        response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderComplex", queryParams);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(1, getLogEntries(node).size());
+
+        queryParams.remove("parameter1");
+        response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderComplex", queryParams);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(2, getLogEntries(node).size());
     }
 
     @Test
