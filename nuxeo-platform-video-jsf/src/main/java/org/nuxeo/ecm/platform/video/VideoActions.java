@@ -31,15 +31,12 @@ import org.jboss.seam.core.Interpolator;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
-import org.nuxeo.ecm.platform.video.service.VideoConversionId;
 import org.nuxeo.ecm.platform.video.service.VideoService;
 import org.nuxeo.ecm.platform.web.common.UserAgentMatcher;
 
 /**
  * @author "<a href=\"mailto:bjalon@nuxeo.com\">Benjamin JALON</a>"
- *
  */
 @Name("videoActions")
 @Install(precedence = Install.FRAMEWORK)
@@ -67,8 +64,7 @@ public class VideoActions implements Serializable {
         }
 
         String blobPropertyName = transcodedVideo.getBlobPropertyName();
-        return DocumentModelFunctions.bigFileUrl(doc, blobPropertyName,
-                transcodedVideo.getBlob().getFilename());
+        return DocumentModelFunctions.bigFileUrl(doc, blobPropertyName, transcodedVideo.getBlob().getFilename());
     }
 
     public TranscodedVideo getTranscodedVideo(DocumentModel doc, String name) {
@@ -76,31 +72,24 @@ public class VideoActions implements Serializable {
         return videoDocument.getTranscodedVideo(name);
     }
 
-    public String getURLForStaticPreview(DocumentModel videoDoc)
-            throws ClientException {
-        String lastModification = ""
-                + (((Calendar) videoDoc.getPropertyValue("dc:modified")).getTimeInMillis());
-        return DocumentModelFunctions.fileUrl("downloadPicture", videoDoc,
-                "StaticPlayerView:content", lastModification);
+    public String getURLForStaticPreview(DocumentModel videoDoc) throws ClientException {
+        String lastModification = "" + (((Calendar) videoDoc.getPropertyValue("dc:modified")).getTimeInMillis());
+        return DocumentModelFunctions.fileUrl("downloadPicture", videoDoc, "StaticPlayerView:content", lastModification);
     }
 
-    public VideoConversionStatus getVideoConversionStatus(DocumentModel doc,
-            String conversionName) {
-        return videoService.getProgressStatus(doc.getRepositoryName(),
-                doc.getId(), conversionName);
+    public VideoConversionStatus getVideoConversionStatus(DocumentModel doc, String conversionName) {
+        return videoService.getProgressStatus(doc.getRepositoryName(), doc.getId(), conversionName);
     }
 
     public String getStatusMessageFor(VideoConversionStatus status) {
         if (status == null) {
             return "";
         }
-        String i18nMessageTemplate = messages.get(
-                status.getMessage());
+        String i18nMessageTemplate = messages.get(status.getMessage());
         if (i18nMessageTemplate == null) {
             return "";
         } else {
-            return Interpolator.instance().interpolate(i18nMessageTemplate,
-                    status.positionInQueue, status.queueSize);
+            return Interpolator.instance().interpolate(i18nMessageTemplate, status.positionInQueue, status.queueSize);
         }
     }
 

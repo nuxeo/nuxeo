@@ -46,8 +46,8 @@ public class VideoServiceBusinessDelegate implements Serializable {
     protected VideoService videoService;
 
     /**
-     * Acquires a new {@link VideoService} reference. The related service may be
-     * deployed on a local or remote AppServer.
+     * Acquires a new {@link VideoService} reference. The related service may be deployed on a local or remote
+     * AppServer.
      */
     @Unwrap
     public VideoService getService() throws ClientException {
@@ -55,8 +55,7 @@ public class VideoServiceBusinessDelegate implements Serializable {
             try {
                 videoService = Framework.getService(VideoService.class);
             } catch (Exception e) {
-                final String errMsg = "Error connecting to VideoService. "
-                        + e.getMessage();
+                final String errMsg = "Error connecting to VideoService. " + e.getMessage();
                 throw new ClientException(errMsg, e);
             }
             if (videoService == null) {

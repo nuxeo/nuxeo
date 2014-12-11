@@ -33,8 +33,7 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.video.VideoConstants;
 
 /**
- * Backing bean for the Storyboard view of an document with the video storyboard
- * facet.
+ * Backing bean for the Storyboard view of an document with the video storyboard facet.
  *
  * @author ogrisel
  */
@@ -42,9 +41,7 @@ import org.nuxeo.ecm.platform.video.VideoConstants;
 @Scope(ScopeType.EVENT)
 public class StoryboardActions {
 
-
-    public List<StoryboardItem> getItems(DocumentModel doc)
-            throws PropertyException, ClientException {
+    public List<StoryboardItem> getItems(DocumentModel doc) throws PropertyException, ClientException {
         if (!doc.hasFacet(VideoConstants.HAS_STORYBOARD_FACET)) {
             return Collections.emptyList();
         }
@@ -56,8 +53,7 @@ public class StoryboardActions {
         return items;
     }
 
-    public String getStoryboardItemsAsJsonSettings(DocumentModel doc)
-            throws PropertyException, ClientException {
+    public String getStoryboardItemsAsJsonSettings(DocumentModel doc) throws PropertyException, ClientException {
         List<StoryboardItem> items = getItems(doc);
         ObjectMapper o = new ObjectMapper();
         ObjectNode settings = o.createObjectNode();
