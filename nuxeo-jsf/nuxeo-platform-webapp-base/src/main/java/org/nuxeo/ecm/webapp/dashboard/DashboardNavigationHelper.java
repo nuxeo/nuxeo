@@ -14,12 +14,10 @@
 package org.nuxeo.ecm.webapp.dashboard;
 
 /**
- * Encapsulate navigation to Dashboard in order to provide more flexibility
- *  - dashboard view may depend on User/Browser
- *  - dashbord may need pre-processing for lazy creation
+ * Encapsulate navigation to Dashboard in order to provide more flexibility - dashboard view may depend on User/Browser
+ * - dashbord may need pre-processing for lazy creation
  *
  * @author Thierry Delprat
- *
  */
 public interface DashboardNavigationHelper {
 

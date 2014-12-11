@@ -24,8 +24,7 @@ package org.nuxeo.common.xmap;
 import java.lang.reflect.Field;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class XFieldAccessor implements XAccessor {
 

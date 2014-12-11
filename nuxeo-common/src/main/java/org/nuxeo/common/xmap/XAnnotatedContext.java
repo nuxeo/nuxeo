@@ -25,8 +25,7 @@ import org.nuxeo.common.xmap.annotation.XContext;
 import org.w3c.dom.Element;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class XAnnotatedContext extends XAnnotatedMember {
 

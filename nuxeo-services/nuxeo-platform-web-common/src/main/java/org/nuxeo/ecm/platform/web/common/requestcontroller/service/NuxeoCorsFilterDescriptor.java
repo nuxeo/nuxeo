@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.platform.web.common.requestcontroller.service;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import java.io.Serializable;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -30,8 +32,6 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
-
-import static org.apache.commons.lang.StringUtils.isEmpty;
 
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
@@ -107,8 +107,7 @@ public class NuxeoCorsFilterDescriptor implements Serializable, Cloneable {
     }
 
     public boolean isMatching(HttpServletRequest request) {
-        return !StringUtils.isEmpty(pattern)
-                && request.getRequestURI().matches(pattern);
+        return !StringUtils.isEmpty(pattern) && request.getRequestURI().matches(pattern);
     }
 
     public NuxeoCorsFilterDescriptor clone() throws CloneNotSupportedException {

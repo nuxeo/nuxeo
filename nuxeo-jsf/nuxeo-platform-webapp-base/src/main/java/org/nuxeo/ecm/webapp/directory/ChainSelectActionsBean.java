@@ -64,40 +64,33 @@ public class ChainSelectActionsBean implements ChainSelectActions, Serializable 
     public void add(ActionEvent event) {
         ChainSelect chainSelect = getChainSelect(event);
         FacesContext context = FacesContext.getCurrentInstance();
-        boolean allowBranchSelection = chainSelect.getBooleanProperty(
-                "allowBranchSelection", false);
-        boolean allowRootSelection = chainSelect.getBooleanProperty(
-                "allowRootSelection", false);
+        boolean allowBranchSelection = chainSelect.getBooleanProperty("allowBranchSelection", false);
+        boolean allowRootSelection = chainSelect.getBooleanProperty("allowRootSelection", false);
         int size = chainSelect.getSize();
         String clientId = chainSelect.getClientId(context);
 
         LinkedHashMap<String, Selection> map = new LinkedHashMap<String, Selection>();
         for (Selection selection : chainSelect.getComponentValue()) {
-            map.put(selection.getValue(chainSelect.getKeySeparator()),
-                    selection);
+            map.put(selection.getValue(chainSelect.getKeySeparator()), selection);
         }
         for (Selection selection : chainSelect.getSelections()) {
             int selectionSize = selection.getSize();
             if (!allowRootSelection && selectionSize == 0) {
-                String messageStr = ComponentUtils.translate(context,
-                        "label.chainSelect.empty_selection");
+                String messageStr = ComponentUtils.translate(context, "label.chainSelect.empty_selection");
                 FacesMessage message = new FacesMessage(messageStr);
                 context.addMessage(clientId, message);
                 chainSelect.setValid(false);
                 return;
             }
-            if (!allowBranchSelection && selectionSize > 0
-                    && selectionSize != size) {
-                String messageStr = ComponentUtils.translate(context,
-                        "label.chainSelect.incomplete_selection");
+            if (!allowBranchSelection && selectionSize > 0 && selectionSize != size) {
+                String messageStr = ComponentUtils.translate(context, "label.chainSelect.incomplete_selection");
                 FacesMessage message = new FacesMessage(messageStr);
                 context.addMessage(clientId, message);
                 chainSelect.setValid(false);
                 return;
             }
 
-            map.put(selection.getValue(chainSelect.getKeySeparator()),
-                    selection);
+            map.put(selection.getValue(chainSelect.getKeySeparator()), selection);
         }
 
         Selection[] componentValue = map.values().toArray(new Selection[0]);
@@ -124,8 +117,7 @@ public class ChainSelectActionsBean implements ChainSelectActions, Serializable 
         List<Selection> componentValueList = new ArrayList<Selection>();
         componentValueList.addAll(Arrays.asList(chainSelect.getComponentValue()));
 
-        String value = context.getExternalContext().getRequestParameterMap().get(
-                ChainSelectStatus.REMOVE_ID);
+        String value = context.getExternalContext().getRequestParameterMap().get(ChainSelectStatus.REMOVE_ID);
 
         for (Iterator<Selection> i = componentValueList.iterator(); i.hasNext();) {
             Selection selection = i.next();

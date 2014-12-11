@@ -44,8 +44,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 
 /**
- * Manage DocumentsLists Persistence.
- * Uses a SQL Directory as storage Backend.
+ * Manage DocumentsLists Persistence. Uses a SQL Directory as storage Backend.
  *
  * @author tiry
  */
@@ -78,8 +77,7 @@ public class DocumentsListsPersistenceManager {
 
     private String directorySchema;
 
-    private static String getIdForEntry(String userName, String listName,
-            DocumentModel doc) {
+    private static String getIdForEntry(String userName, String listName, DocumentModel doc) {
         String ref = doc.getRef().toString();
         int refType = doc.getRef().type();
         String repoId = doc.getRepositoryName();
@@ -87,8 +85,7 @@ public class DocumentsListsPersistenceManager {
         return getIdForEntry(userName, listName, ref, refType, repoId);
     }
 
-    private static String getIdForEntry(String userName, String listName, String ref,
-            int refType, String repoId) {
+    private static String getIdForEntry(String userName, String listName, String ref, int refType, String repoId) {
         StringBuilder sb = new StringBuilder();
         sb.append(listName);
         sb.append(ID_SEP);
@@ -102,8 +99,7 @@ public class DocumentsListsPersistenceManager {
 
         byte[] idDigest;
         try {
-            idDigest = MessageDigest.getInstance("MD5").digest(
-                    sb.toString().getBytes());
+            idDigest = MessageDigest.getInstance("MD5").digest(sb.toString().getBytes());
         } catch (NoSuchAlgorithmException e) {
             // should never append
             return sb.toString();
@@ -153,8 +149,7 @@ public class DocumentsListsPersistenceManager {
         dirSession = null;
     }
 
-    private static DocumentModel getDocModel(CoreSession session, String ref,
-            long refType, String repoId) {
+    private static DocumentModel getDocModel(CoreSession session, String ref, long refType, String repoId) {
 
         if (!session.getRepositoryName().equals(repoId)) {
             log.error("Multiple repository management is not handled in current implementation");
@@ -174,16 +169,14 @@ public class DocumentsListsPersistenceManager {
         try {
             doc = session.getDocument(docRef);
         } catch (ClientException e) {
-            log.warn("document with ref " + ref + " was not found : "
-                    + e.getMessage());
+            log.warn("document with ref " + ref + " was not found : " + e.getMessage());
             return null;
         }
 
         return doc;
     }
 
-    public List<DocumentModel> loadPersistentDocumentsLists(
-            CoreSession currentSession, String userName, String listName) {
+    public List<DocumentModel> loadPersistentDocumentsLists(CoreSession currentSession, String userName, String listName) {
         List<DocumentModel> docList = new ArrayList<DocumentModel>();
 
         if (!initPersistentService()) {
@@ -211,12 +204,9 @@ public class DocumentsListsPersistenceManager {
             long reftype;
             String repo;
             try {
-                ref = (String) entry.getProperty(directorySchema,
-                        DIR_COL_REF);
-                reftype = (Long) entry.getProperty(directorySchema,
-                        DIR_COL_REFTYPE);
-                repo = (String) entry.getProperty(directorySchema,
-                        DIR_COL_REPO);
+                ref = (String) entry.getProperty(directorySchema, DIR_COL_REF);
+                reftype = (Long) entry.getProperty(directorySchema, DIR_COL_REFTYPE);
+                repo = (String) entry.getProperty(directorySchema, DIR_COL_REPO);
             } catch (ClientException e1) {
                 releasePersistenceService();
                 throw new ClientRuntimeException(e1);
@@ -227,8 +217,7 @@ public class DocumentsListsPersistenceManager {
             if (doc != null) {
                 if (ENABLE_SANITY_CHECK) {
                     if (docList.contains(doc)) {
-                        log.warn("Document " + doc.getRef().toString()
-                                + " is duplicated in persistent list "
+                        log.warn("Document " + doc.getRef().toString() + " is duplicated in persistent list "
                                 + listName);
                         if (FIX_SANITY_ERROR) {
                             try {
@@ -258,8 +247,7 @@ public class DocumentsListsPersistenceManager {
         return docList;
     }
 
-    public Boolean addDocumentToPersistentList(String userName,
-            String listName, DocumentModel doc) {
+    public Boolean addDocumentToPersistentList(String userName, String listName, DocumentModel doc) {
 
         if (!initPersistentService()) {
             return false;
@@ -278,8 +266,7 @@ public class DocumentsListsPersistenceManager {
             if (ENABLE_SANITY_CHECK) {
                 DocumentModel badEntry = dirSession.getEntry(id);
                 if (badEntry != null) {
-                    log.warn("Entry with id " + id
-                            + " is already present : please check DB integrity");
+                    log.warn("Entry with id " + id + " is already present : please check DB integrity");
                     if (FIX_SANITY_ERROR) {
                         dirSession.deleteEntry(id);
                     }
@@ -296,8 +283,7 @@ public class DocumentsListsPersistenceManager {
         return true;
     }
 
-    public Boolean removeDocumentFromPersistentList(String userName,
-            String listName, DocumentModel doc) {
+    public Boolean removeDocumentFromPersistentList(String userName, String listName, DocumentModel doc) {
 
         if (!initPersistentService()) {
             return false;

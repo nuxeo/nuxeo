@@ -36,8 +36,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * POJO class that extracts and holds the list of the available permissions from
- * backend.
+ * POJO class that extracts and holds the list of the available permissions from backend.
  *
  * @author Razvan Caraghin
  */
@@ -55,7 +54,6 @@ public class PermissionListManager implements Serializable {
     protected SelectItem[] availablePermissions;
 
     protected String selectedPermission;
-
 
     public SelectItem[] getAvailablePermissions() throws ClientException {
         if (null == availablePermissions) {

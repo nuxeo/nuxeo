@@ -47,7 +47,7 @@ public class FilterConfigDescriptor implements Serializable {
 
     @XNode("@transactional")
     protected boolean useTx;
-    
+
     @XNode("@buffered")
     protected boolean useTxBuffered = true;
 
@@ -70,8 +70,8 @@ public class FilterConfigDescriptor implements Serializable {
     public FilterConfigDescriptor() {
     }
 
-    public FilterConfigDescriptor(String name, String pattern, boolean grant,
-            boolean useTx, boolean useSync, boolean cached, boolean isPrivate, String cacheTime) {
+    public FilterConfigDescriptor(String name, String pattern, boolean grant, boolean useTx, boolean useSync,
+            boolean cached, boolean isPrivate, String cacheTime) {
         this.name = name;
         this.pattern = Framework.expandVars(pattern);
         this.grant = grant;
@@ -100,7 +100,7 @@ public class FilterConfigDescriptor implements Serializable {
     public boolean useTxBuffered() {
         return useTxBuffered;
     }
-  
+
     public boolean isGrantRule() {
         return grant;
     }

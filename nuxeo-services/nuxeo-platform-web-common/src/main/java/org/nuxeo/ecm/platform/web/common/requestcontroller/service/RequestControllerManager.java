@@ -25,8 +25,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Interface for the service used to manage what {@link HttpServletRequest} must
- * be protected by the Filter.
+ * Interface for the service used to manage what {@link HttpServletRequest} must be protected by the Filter.
  *
  * @author tiry
  */
@@ -38,15 +37,13 @@ public interface RequestControllerManager {
      * Get contributed FilterConfig for an HttpServletRequest.
      *
      * @since 5.7.2
-     * @return filter config to init CorsFilter if there is a matching request,
-     *         null otherwise.
+     * @return filter config to init CorsFilter if there is a matching request, null otherwise.
      */
     FilterConfig getCorsConfigForRequest(HttpServletRequest request);
 
     /**
      * @since 6.0
-     * @return a map with the header names to add to the HTTP response with
-     *         their values
+     * @return a map with the header names to add to the HTTP response with their values
      */
     Map<String, String> getResponseHeaders();
 }

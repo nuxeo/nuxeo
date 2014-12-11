@@ -31,8 +31,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  *
  * @since 5.6
  */
-public class DirectoryTreeRegistry extends
-        ContributionFragmentRegistry<DirectoryTreeDescriptor> {
+public class DirectoryTreeRegistry extends ContributionFragmentRegistry<DirectoryTreeDescriptor> {
 
     private static final Log log = LogFactory.getLog(DirectoryTreeRegistry.class);
 
@@ -44,16 +43,14 @@ public class DirectoryTreeRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id, DirectoryTreeDescriptor contrib,
-            DirectoryTreeDescriptor newOrigContrib) {
+    public void contributionUpdated(String id, DirectoryTreeDescriptor contrib, DirectoryTreeDescriptor newOrigContrib) {
         if (registry.containsKey(contrib.getName())) {
             DirectoryTreeDescriptor existing_descriptor = registry.get(contrib.getName());
             existing_descriptor.merge(contrib);
             log.debug("merged DirectoryTreeDescriptor: " + contrib.getName());
         } else {
             registry.put(contrib.getName(), contrib);
-            log.debug("registered DirectoryTreeDescriptor: "
-                    + contrib.getName());
+            log.debug("registered DirectoryTreeDescriptor: " + contrib.getName());
         }
     }
 
@@ -96,14 +93,12 @@ public class DirectoryTreeRegistry extends
     }
 
     /**
-     * Returns only the enabled Directory Trees marked as being also Navigation
-     * Trees.
+     * Returns only the enabled Directory Trees marked as being also Navigation Trees.
      */
     public List<String> getNavigationDirectoryTrees() {
         List<String> directoryTrees = new ArrayList<String>();
         for (DirectoryTreeDescriptor desc : registry.values()) {
-            if (Boolean.TRUE.equals(desc.getEnabled())
-                    && desc.isNavigationTree()) {
+            if (Boolean.TRUE.equals(desc.getEnabled()) && desc.isNavigationTree()) {
                 directoryTrees.add(desc.getName());
             }
         }

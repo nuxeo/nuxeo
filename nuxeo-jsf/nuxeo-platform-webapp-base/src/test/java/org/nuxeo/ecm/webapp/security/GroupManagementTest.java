@@ -16,7 +16,8 @@
  */
 package org.nuxeo.ecm.webapp.security;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.nuxeo.ecm.webapp.security.AbstractUserGroupManagement.USERS_GROUPS_MANAGEMENT_ACCESS_FILTER;
@@ -27,7 +28,6 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 
 /**
  * @author dmetzler
- *
  */
 public class GroupManagementTest extends BaseUserGroupMock {
 
@@ -37,11 +37,9 @@ public class GroupManagementTest extends BaseUserGroupMock {
     public void doBefore() throws Exception {
         actions.userManager = mockUserManager();
 
-        //For this test, user is at least a power user
+        // For this test, user is at least a power user
         actions.webActions = mock(WebActions.class);
-        when(
-                actions.webActions.checkFilter(USERS_GROUPS_MANAGEMENT_ACCESS_FILTER)).thenReturn(
-                true);
+        when(actions.webActions.checkFilter(USERS_GROUPS_MANAGEMENT_ACCESS_FILTER)).thenReturn(true);
 
     }
 
@@ -49,7 +47,7 @@ public class GroupManagementTest extends BaseUserGroupMock {
     public void aPowerUserShouldNotBeAbleToEditAdminGroup() throws Exception {
 
         // Given a power user (not admin)
-        actions.currentUser = getMockedUser("Power",false);
+        actions.currentUser = getMockedUser("Power", false);
 
         // When selected group is administrators
         actions.selectedGroup = mockGroup("administrators");
@@ -67,8 +65,8 @@ public class GroupManagementTest extends BaseUserGroupMock {
 
     @Test
     public void anAdministratorShouldBeAbleToEditAdminGroup() throws Exception {
-        //Given an admin user
-        actions.currentUser = getMockedUser("Administrator",true);
+        // Given an admin user
+        actions.currentUser = getMockedUser("Administrator", true);
 
         // When selected group is administrators
         actions.selectedGroup = mockGroup("administrators");

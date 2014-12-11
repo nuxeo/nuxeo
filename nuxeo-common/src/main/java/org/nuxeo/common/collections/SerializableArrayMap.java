@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -25,8 +25,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * A mixture of an array list and a map used to store small table of elements
- * using both indices and keys.
+ * A mixture of an array list and a map used to store small table of elements using both indices and keys.
  * <p>
  * This map accepts null values.
  * <p>
@@ -36,7 +35,7 @@ import java.util.Map;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @SuppressWarnings({ "ClassWithoutToString" })
-public class SerializableArrayMap<K, V>  implements Serializable {
+public class SerializableArrayMap<K, V> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -53,8 +52,7 @@ public class SerializableArrayMap<K, V>  implements Serializable {
     }
 
     public SerializableArrayMap(int initialCapacity) {
-        elements = new Serializable[initialCapacity == 0 ? DEFAULT_SIZE
-                : initialCapacity * 2];
+        elements = new Serializable[initialCapacity == 0 ? DEFAULT_SIZE : initialCapacity * 2];
     }
 
     public SerializableArrayMap(Map map) {

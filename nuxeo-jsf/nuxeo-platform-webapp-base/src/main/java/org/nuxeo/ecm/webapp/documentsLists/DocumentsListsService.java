@@ -38,7 +38,6 @@ public class DocumentsListsService extends DefaultComponent {
 
     private Map<String, DocumentsListDescriptor> descriptors;
 
-
     public DocumentsListDescriptor getDocumentsListDescriptor(String descriptorName) {
         return descriptors.get(descriptorName);
     }
@@ -84,8 +83,7 @@ public class DocumentsListsService extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         DocumentsListDescriptor descriptor = (DocumentsListDescriptor) contribution;
         if (descriptors.containsKey(descriptor.getName())) {
@@ -93,19 +91,16 @@ public class DocumentsListsService extends DefaultComponent {
             log.debug("merged DocumentsListDescriptor: " + descriptor.getName());
         } else {
             descriptors.put(descriptor.getName(), descriptor);
-            log.debug("registered DocumentsListDescriptor: "
-                    + descriptor.getName());
+            log.debug("registered DocumentsListDescriptor: " + descriptor.getName());
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         DocumentsListDescriptor descriptor = (DocumentsListDescriptor) contribution;
         descriptors.remove(descriptor.getName());
-        log.debug("unregistered DocumentsListDescriptor: "
-                + descriptor.getName());
+        log.debug("unregistered DocumentsListDescriptor: " + descriptor.getName());
     }
 
 }

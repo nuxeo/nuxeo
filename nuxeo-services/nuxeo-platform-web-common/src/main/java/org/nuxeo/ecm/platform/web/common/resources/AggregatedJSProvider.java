@@ -45,6 +45,7 @@ public class AggregatedJSProvider extends HttpServlet {
     public static final String MINIMIZER_IMPL_KEY = "org.nuxeo.ecm.platform.web.common.resources.JSMinimizer";
 
     protected static final ReadWriteLock cacheLock = new ReentrantReadWriteLock();
+
     protected static final Map<String, String> cachedResponses = new HashMap<String, String>();
 
     protected static JSMinimizer minimizer;
@@ -52,11 +53,11 @@ public class AggregatedJSProvider extends HttpServlet {
     protected static final String SCRIPT_SEP = "\\|";
 
     private static final long serialVersionUID = 1L;
+
     private static final Log log = LogFactory.getLog(AggregatedJSProvider.class);
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         String scriptsStr = req.getParameter("scripts");
         String refreshStr = req.getParameter("refresh");
@@ -98,8 +99,7 @@ public class AggregatedJSProvider extends HttpServlet {
         resp.getWriter().write(resultScript);
     }
 
-    protected String computeResult(String[] scripts, boolean minimize)
-            throws IOException {
+    protected String computeResult(String[] scripts, boolean minimize) throws IOException {
         String fsPath = getServletContext().getRealPath("/");
 
         Path dirPath = new Path(fsPath).append("scripts");
@@ -108,7 +108,7 @@ public class AggregatedJSProvider extends HttpServlet {
         for (String script : scripts) {
 
             script = script.replaceAll("\\.\\./", ""); // be sure to remove any ../
-                                                        // ../
+                                                       // ../
             Path scriptPath = dirPath.append(script);
             File scriptFile = new File(scriptPath.toString());
             if (scriptFile.exists()) {
@@ -116,8 +116,7 @@ public class AggregatedJSProvider extends HttpServlet {
                 buf.append("// include script " + script + "\n");
 
                 InputStream is = new FileInputStream(scriptFile);
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(is));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
                 String line = null;
                 StringBuilder sb = new StringBuilder();
                 while ((line = reader.readLine()) != null) {
@@ -143,17 +142,15 @@ public class AggregatedJSProvider extends HttpServlet {
 
     protected JSMinimizer getMinimizer() {
         if (minimizer == null) {
-            String minimizerClassName = getServletContext().getInitParameter(
-                    MINIMIZER_IMPL_KEY);
+            String minimizerClassName = getServletContext().getInitParameter(MINIMIZER_IMPL_KEY);
             if (minimizerClassName == null) {
                 minimizerClassName = getInitParameter(MINIMIZER_IMPL_KEY);
             }
             if (minimizerClassName != null) {
 
                 try {
-                    Class<?> minimizerClass = Thread.currentThread()
-                            .getContextClassLoader().loadClass(
-                                    minimizerClassName);
+                    Class<?> minimizerClass = Thread.currentThread().getContextClassLoader().loadClass(
+                            minimizerClassName);
                     minimizer = (JSMinimizer) minimizerClass.newInstance();
                 } catch (Exception e) {
                     log.error("Error while getting minimizer implementation", e);

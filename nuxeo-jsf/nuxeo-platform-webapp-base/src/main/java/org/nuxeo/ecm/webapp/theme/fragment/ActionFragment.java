@@ -41,8 +41,7 @@ public final class ActionFragment extends AbstractFragment {
     @FieldInfo(type = "string", label = "category", description = "The action category.")
     public String category = "";
 
-    private final ActionService actionService = (ActionService) Framework.getRuntime().getComponent(
-            ActionService.ID);
+    private final ActionService actionService = (ActionService) Framework.getRuntime().getComponent(ActionService.ID);
 
     public ActionFragment() {
     }
@@ -80,8 +79,7 @@ public final class ActionFragment extends AbstractFragment {
             final String label = action.getLabel();
             // FIXME: use the actual link url, not a JSF view id
             final String url = action.getLink();
-            menu.addItem(new MenuItem(messages.get(label), "", url, true,
-                    action.getIcon()));
+            menu.addItem(new MenuItem(messages.get(label), "", url, true, action.getIcon()));
         }
         return menu;
     }

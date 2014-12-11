@@ -19,17 +19,14 @@ package org.nuxeo.ecm.webapp.security;
 import static org.jboss.seam.ScopeType.APPLICATION;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
-import static org.jboss.seam.international.StatusMessage.Severity.ERROR;
 import static org.nuxeo.ecm.platform.ui.web.api.WebActions.CURRENT_TAB_CHANGED_EVENT;
 import static org.nuxeo.ecm.platform.ui.web.api.WebActions.CURRENT_TAB_SELECTED_EVENT;
 import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod.EMAIL;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -42,7 +39,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Factory;
-import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
@@ -68,15 +64,13 @@ import org.nuxeo.runtime.api.Framework;
 @Name("userManagementActions")
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
-public class UserManagementActions extends AbstractUserGroupManagement
-        implements Serializable {
+public class UserManagementActions extends AbstractUserGroupManagement implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(UserManagementActions.class);
 
-    public static final String USERS_TAB = USER_CENTER_CATEGORY + ":"
-            + USERS_GROUPS_HOME + ":" + "UsersHome";
+    public static final String USERS_TAB = USER_CENTER_CATEGORY + ":" + USERS_GROUPS_HOME + ":" + "UsersHome";
 
     public static final String USERS_LISTING_CHANGED = "usersListingChanged";
 
@@ -117,7 +111,9 @@ public class UserManagementActions extends AbstractUserGroupManagement
         setSelectedUser(refreshUser(userName));
     }
 
-    /** UserRegistrationService userRegistrationService = Framework.getLocalService(UserRegistrationService.class);
+    /**
+     * UserRegistrationService userRegistrationService = Framework.getLocalService(UserRegistrationService.class);
+     *
      * @since 5.5
      */
     public void setSelectedUserName(String userName) throws ClientException {
@@ -138,8 +134,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
     }
 
     public void setSelectedLetter(String selectedLetter) {
-        if (selectedLetter != null
-                && !selectedLetter.equals(this.selectedLetter)) {
+        if (selectedLetter != null && !selectedLetter.equals(this.selectedLetter)) {
             this.selectedLetter = selectedLetter;
             fireSeamEvent(SELECTED_LETTER_CHANGED);
         }
@@ -160,20 +155,17 @@ public class UserManagementActions extends AbstractUserGroupManagement
     }
 
     public boolean getAllowEditUser() throws ClientException {
-        return getCanEditUsers(true)
-                && !BaseSession.isReadOnlyEntry(selectedUser);
+        return getCanEditUsers(true) && !BaseSession.isReadOnlyEntry(selectedUser);
     }
 
-    protected boolean getCanEditUsers(boolean allowCurrentUser)
-            throws ClientException {
+    protected boolean getCanEditUsers(boolean allowCurrentUser) throws ClientException {
         if (userManager.areUsersReadOnly()) {
             return false;
         }
 
         // if the selected user is the anonymous user, do not display
         // edit/password tabs
-        if (selectedUser != null
-                && userManager.getAnonymousUserId() != null
+        if (selectedUser != null && userManager.getAnonymousUserId() != null
                 && userManager.getAnonymousUserId().equals(selectedUser.getId())) {
 
             return false;
@@ -181,8 +173,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
 
         if (selectedUser != null) {
             NuxeoPrincipal selectedPrincipal = userManager.getPrincipal(selectedUser.getId());
-            if (selectedPrincipal.isAdministrator()
-                    && !((NuxeoPrincipal) currentUser).isAdministrator()) {
+            if (selectedPrincipal.isAdministrator() && !((NuxeoPrincipal) currentUser).isAdministrator()) {
                 return false;
             }
         }
@@ -202,8 +193,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
     }
 
     public boolean getAllowChangePassword() throws ClientException {
-        return getCanEditUsers(true)
-                && !BaseSession.isReadOnlyEntry(selectedUser);
+        return getCanEditUsers(true) && !BaseSession.isReadOnlyEntry(selectedUser);
     }
 
     public boolean getAllowCreateUser() throws ClientException {
@@ -211,8 +201,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
     }
 
     public boolean getAllowDeleteUser() throws ClientException {
-        return getCanEditUsers(false)
-                && !BaseSession.isReadOnlyEntry(selectedUser);
+        return getCanEditUsers(false) && !BaseSession.isReadOnlyEntry(selectedUser);
     }
 
     public void clearSearch() {
@@ -230,10 +219,8 @@ public class UserManagementActions extends AbstractUserGroupManagement
             newUser = null;
             // Set the default value for the creation
             immediateCreation = false;
-            facesMessages.add(
-                    StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get(
-                            "info.userManager.userCreated"));
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    resourcesAccessor.getMessages().get("info.userManager.userCreated"));
             if (createAnotherUser) {
                 showCreateForm = true;
             } else {
@@ -243,10 +230,8 @@ public class UserManagementActions extends AbstractUserGroupManagement
             }
             fireSeamEvent(USERS_LISTING_CHANGED);
         } catch (UserAlreadyExistsException e) {
-            facesMessages.add(
-                    StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "error.userManager.userAlreadyExists"));
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get("error.userManager.userAlreadyExists"));
         }
     }
 
@@ -264,8 +249,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
         updateUser();
         detailsMode = DETAILS_VIEW_MODE;
 
-        String message = resourcesAccessor.getMessages().get(
-                "label.userManager.password.changed");
+        String message = resourcesAccessor.getMessages().get("label.userManager.password.changed");
         facesMessages.add(FacesMessage.SEVERITY_INFO, message);
         fireSeamEvent(USERS_LISTING_CHANGED);
 
@@ -283,13 +267,10 @@ public class UserManagementActions extends AbstractUserGroupManagement
         }
     }
 
-    public void validateUserName(FacesContext context, UIComponent component,
-            Object value) {
-        if (!(value instanceof String)
-                || !StringUtils.containsOnly((String) value, VALID_CHARS)) {
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                            context, "label.userManager.wrong.username"), null);
+    public void validateUserName(FacesContext context, UIComponent component, Object value) {
+        if (!(value instanceof String) || !StringUtils.containsOnly((String) value, VALID_CHARS)) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                    "label.userManager.wrong.username"), null);
             // also add global message
             context.addMessage(null, message);
             throw new ValidatorException(message);
@@ -302,42 +283,34 @@ public class UserManagementActions extends AbstractUserGroupManagement
      * @param context
      * @param component
      * @param value
-     *
      * @since 5.9.2
      */
-    public void validateGroups(FacesContext context, UIComponent component,
-            Object value) {
+    public void validateGroups(FacesContext context, UIComponent component, Object value) {
 
-        UIInput groupsComponent = getReferencedComponent("groupsValueHolderId",
-                component);
+        UIInput groupsComponent = getReferencedComponent("groupsValueHolderId", component);
 
         @SuppressWarnings("unchecked")
-        List<String> groups = groupsComponent == null ? null
-                : (List<String>) groupsComponent.getLocalValue();
+        List<String> groups = groupsComponent == null ? null : (List<String>) groupsComponent.getLocalValue();
         if (groups == null || groups.isEmpty()) {
             return;
         }
 
         try {
             if (!isAllowedToAdminGroups(groups)) {
-                throwValidationException(context,
-                        "label.userManager.invalidGroupSelected");
+                throwValidationException(context, "label.userManager.invalidGroupSelected");
             }
         } catch (ClientException e) {
-            throwValidationException(context,
-                    "label.userManager.unableToValidateGroups", e.getMessage());
+            throwValidationException(context, "label.userManager.unableToValidateGroups", e.getMessage());
         }
 
     }
 
     /**
-     * Checks if the current user is allowed to aministrate (meaning add/remove)
-     * the given groups.
+     * Checks if the current user is allowed to aministrate (meaning add/remove) the given groups.
      *
      * @param groups
      * @return
      * @throws ClientException
-     *
      * @since 5.9.2
      */
     boolean isAllowedToAdminGroups(List<String> groups) throws ClientException {
@@ -356,46 +329,34 @@ public class UserManagementActions extends AbstractUserGroupManagement
         return true;
     }
 
-
-
-
-
     /**
-     * Throw a validation exception with a translated message that is show in
-     * the UI.
+     * Throw a validation exception with a translated message that is show in the UI.
      *
      * @param context the current faces context
      * @param message the error message
      * @param messageArgs the parameters for the message
-     *
      * @since 5.9.2
      */
-    private void throwValidationException(FacesContext context, String message,
-            Object... messageArgs) {
-        FacesMessage fmessage = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                ComponentUtils.translate(context, message, messageArgs), null);
+    private void throwValidationException(FacesContext context, String message, Object... messageArgs) {
+        FacesMessage fmessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                message, messageArgs), null);
         throw new ValidatorException(fmessage);
     }
 
     /**
-     * Return the value of the JSF component who's id is references in an
-     * attribute of the componet passed in parameter.
+     * Return the value of the JSF component who's id is references in an attribute of the componet passed in parameter.
      *
      * @param string the attribute holding the target component id
      * @param component the component holding the attribute
      * @return the UIInput component, null otherwise
-     *
      * @since 5.9.2
      */
-    private UIInput getReferencedComponent(String attribute,
-            UIComponent component) {
+    private UIInput getReferencedComponent(String attribute, UIComponent component) {
         Map<String, Object> attributes = component.getAttributes();
         String targetComponentId = (String) attributes.get(attribute);
 
         if (targetComponentId == null) {
-            log.error(String.format(
-                    "Target component id (%s) not found in attributes",
-                    attribute));
+            log.error(String.format("Target component id (%s) not found in attributes", attribute));
             return null;
         }
 
@@ -407,13 +368,10 @@ public class UserManagementActions extends AbstractUserGroupManagement
         return targetComponent;
     }
 
-    public void validatePassword(FacesContext context, UIComponent component,
-            Object value) {
+    public void validatePassword(FacesContext context, UIComponent component, Object value) {
 
-        Object firstPassword = getReferencedComponent("firstPasswordInputId",
-                component).getLocalValue();
-        Object secondPassword = getReferencedComponent("secondPasswordInputId",
-                component).getLocalValue();
+        Object firstPassword = getReferencedComponent("firstPasswordInputId", component).getLocalValue();
+        Object secondPassword = getReferencedComponent("secondPasswordInputId", component).getLocalValue();
 
         if (firstPassword == null || secondPassword == null) {
             log.error("Cannot validate passwords: value(s) not found");
@@ -421,8 +379,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
         }
 
         if (!firstPassword.equals(secondPassword)) {
-            throwValidationException(context,
-                    "label.userManager.password.not.match");
+            throwValidationException(context, "label.userManager.password.not.match");
         }
 
     }
@@ -432,7 +389,6 @@ public class UserManagementActions extends AbstractUserGroupManagement
      *
      * @param inviteAnotherUser Invite another user after executing the action.
      * @throws ClientException
-     *
      * @since 5.9.3
      */
     public void inviteUser(boolean inviteAnotherUser) throws ClientException {
@@ -443,10 +399,8 @@ public class UserManagementActions extends AbstractUserGroupManagement
             newUser = null;
             // Set the default value for the creation
             immediateCreation = false;
-            facesMessages.add(
-                    StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get(
-                            "info.userManager.userInvited"));
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    resourcesAccessor.getMessages().get("info.userManager.userInvited"));
             // Set the flags used for the display
             if (inviteAnotherUser) {
                 showCreateForm = true;
@@ -456,10 +410,8 @@ public class UserManagementActions extends AbstractUserGroupManagement
                 detailsMode = null;
             }
         } catch (UserAlreadyExistsException e) {
-            facesMessages.add(
-                    StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "error.userManager.userAlreadyExists"));
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get("error.userManager.userAlreadyExists"));
         }
     }
 
@@ -551,9 +503,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
     }
 
     /**
-     *
      * @return The type of creation for the user.
-     *
      * @since 5.9.3
      */
     public boolean isImmediateCreation() {
@@ -561,9 +511,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
     }
 
     /**
-     *
      * @param immediateCreation
-     *
      * @since 5.9.3
      */
     public void setImmediateCreation(boolean immediateCreation) {
@@ -571,16 +519,13 @@ public class UserManagementActions extends AbstractUserGroupManagement
     }
 
     /**
-     * Changes the type of newUser depending of the value defined in the
-     * checkbox "Set for immediate creation". Sets also the values previously
-     * entered in the form into the new DocumentModel.
+     * Changes the type of newUser depending of the value defined in the checkbox "Set for immediate creation". Sets
+     * also the values previously entered in the form into the new DocumentModel.
      *
      * @param event
-     *
      * @since 5.9.3
      */
-    public void changeTypeUserModel(ValueChangeEvent event)
-            throws ClientException {
+    public void changeTypeUserModel(ValueChangeEvent event) throws ClientException {
         Object newValue = event.getNewValue();
         if (newValue instanceof Boolean) {
             if ((Boolean) newValue) {

@@ -23,9 +23,8 @@ import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 
 /**
  * @author <a href="mailto:ei@nuxeo.com">Eugen Ionica</a>
- *
  */
-public class RepositoryInit extends DefaultRepositoryInit{
+public class RepositoryInit extends DefaultRepositoryInit {
 
     public static final String PATH_WORKSPACE_ROOT = "/default-domain/workspaces";
 

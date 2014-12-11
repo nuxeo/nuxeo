@@ -20,7 +20,8 @@ public class NuxeoAuthFilterChain implements FilterChain {
 
     protected FilterChain standardFilterChain;
 
-    public NuxeoAuthFilterChain(List<NuxeoAuthPreFilter> preFilters,FilterChain standardFilterChain, NuxeoAuthenticationFilter mainFilter ) {
+    public NuxeoAuthFilterChain(List<NuxeoAuthPreFilter> preFilters, FilterChain standardFilterChain,
+            NuxeoAuthenticationFilter mainFilter) {
         this.preFilters.addAll(preFilters);
         this.mainFilter = mainFilter;
         this.standardFilterChain = standardFilterChain;

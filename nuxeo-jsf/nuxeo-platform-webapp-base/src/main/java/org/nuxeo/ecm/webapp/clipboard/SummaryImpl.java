@@ -28,13 +28,12 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.IdRef;
 
 /**
- * This class is an implementation of the interface Summary. It intends to build
- * and display a summary, thanks to summary items in the HashMap.
+ * This class is an implementation of the interface Summary. It intends to build and display a summary, thanks to
+ * summary items in the HashMap.
  *
  * @author <a href="bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
  */
-public class SummaryImpl extends HashMap<String, SummaryEntry> implements
-        Summary, Serializable {
+public class SummaryImpl extends HashMap<String, SummaryEntry> implements Summary, Serializable {
 
     private static final long serialVersionUID = -7791997708511426604L;
 
@@ -43,8 +42,7 @@ public class SummaryImpl extends HashMap<String, SummaryEntry> implements
 
         for (String pathRef : key) {
             SummaryEntry summaryEntry = get(pathRef);
-            if (summaryEntry.getParent() != null
-                    && summaryEntry.getParent().equals(parentEntry)) {
+            if (summaryEntry.getParent() != null && summaryEntry.getParent().equals(parentEntry)) {
                 return true;
             }
         }
@@ -58,8 +56,7 @@ public class SummaryImpl extends HashMap<String, SummaryEntry> implements
         for (String pathRef : key) {
             SummaryEntry summaryEntry = get(pathRef);
 
-            if (summaryEntry.getParent() != null
-                    && summaryEntry.getParent().equals(parentEntry)) {
+            if (summaryEntry.getParent() != null && summaryEntry.getParent().equals(parentEntry)) {
                 if (children == null) {
                     children = new ArrayList<SummaryEntry>();
                 }
@@ -82,8 +79,7 @@ public class SummaryImpl extends HashMap<String, SummaryEntry> implements
             if (childrens != null && !childrens.isEmpty()) {
                 for (SummaryEntry child : childrens) {
                     // Force the marker to increment the blank space for a child
-                    child.setMarker(parentEntry.getMarker() + child.getMarker()
-                            + child.getMarker());
+                    child.setMarker(parentEntry.getMarker() + child.getMarker() + child.getMarker());
                     displayEntry(sb, child);
                 }
             }
@@ -119,8 +115,7 @@ public class SummaryImpl extends HashMap<String, SummaryEntry> implements
     }
 
     /**
-     * Gets the root SummaryEntry in the map, usually identified by
-     * a key in the map set to 0.
+     * Gets the root SummaryEntry in the map, usually identified by a key in the map set to 0.
      *
      * @return the root SummaryEntry in the map
      */

@@ -36,8 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Adding http cache header (Cache-Control : max-age AND Expire) to the
- * response.
+ * Adding http cache header (Cache-Control : max-age AND Expire) to the response.
  *
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
  */
@@ -50,14 +49,13 @@ public class SimpleCacheFilter implements Filter {
 
     private static DateFormat httpExpiresDateFormat() {
         // formatted http Expires: Thu, 01 Dec 1994 16:00:00 GMT
-        DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z",
-                Locale.US);
+        DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
         return df;
     }
 
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
@@ -67,7 +65,6 @@ public class SimpleCacheFilter implements Filter {
         }
         chain.doFilter(request, response);
     }
-
 
     public static void addCacheHeader(HttpServletResponse httpResponse, String cacheTime) {
         httpResponse.addHeader("Cache-Control", "max-age=" + cacheTime);
@@ -79,10 +76,8 @@ public class SimpleCacheFilter implements Filter {
         long newDate = date.getTime() + new Long(cacheTime) * 1000;
         date.setTime(newDate);
 
-        httpResponse.setHeader("Expires",
-                HTTP_EXPIRES_DATE_FORMAT.format(date));
+        httpResponse.setHeader("Expires", HTTP_EXPIRES_DATE_FORMAT.format(date));
     }
-
 
     public void destroy() {
         cacheTime = null;

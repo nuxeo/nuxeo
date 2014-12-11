@@ -27,8 +27,7 @@ public interface NuxeoExceptionHandler {
 
     String EXCEPTION_HANDLER_MARKER = "NuxeoExceptionHandlerMarker";
 
-    void handleException(HttpServletRequest request,
-            HttpServletResponse response, Throwable t) throws IOException,
+    void handleException(HttpServletRequest request, HttpServletResponse response, Throwable t) throws IOException,
             ServletException;
 
     void setParameters(NuxeoExceptionHandlerParameters parameters);

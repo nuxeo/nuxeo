@@ -49,8 +49,8 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * Used for Ajax requests that needs to be proxied to avoid XSiteScripting issues.
  * <p>
- * In order to avoid "open proxiying", only urls configured in the {@link AjaxProxyComponent}
- * via the extension point "proxyableURL" can be proxied.
+ * In order to avoid "open proxiying", only urls configured in the {@link AjaxProxyComponent} via the extension point
+ * "proxyableURL" can be proxied.
  *
  * @author tiry
  */
@@ -90,7 +90,8 @@ public class AjaxProxyServlet extends HttpServlet {
         handleProxy(req.getMethod(), req, resp);
     }
 
-    protected static void handleProxy(String method, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected static void handleProxy(String method, HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
         // fetch parameters
         String requestType = req.getParameter("type");
         if (requestType == null) {

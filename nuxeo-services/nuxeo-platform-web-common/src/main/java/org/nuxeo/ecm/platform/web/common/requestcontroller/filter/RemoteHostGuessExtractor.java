@@ -23,12 +23,11 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author matic
- *
  */
 public class RemoteHostGuessExtractor {
 
-    static final List<String> HEADER_NAMES = Arrays.asList(
-            "x-forwarded-for", "x-forwarded", "forwarded-for", "via", "x-coming-from", "coming-from");
+    static final List<String> HEADER_NAMES = Arrays.asList("x-forwarded-for", "x-forwarded", "forwarded-for", "via",
+            "x-coming-from", "coming-from");
 
     public static String getRemoteHost(HttpServletRequest request) {
         for (String name : HEADER_NAMES) {

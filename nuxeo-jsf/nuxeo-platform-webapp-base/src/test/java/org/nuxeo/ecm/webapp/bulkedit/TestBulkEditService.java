@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.webapp.bulkedit;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -50,8 +49,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(user = "Administrator", cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.webapp.base" })
+@Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.webapp.base" })
 public class TestBulkEditService {
 
     @Inject
@@ -116,8 +114,7 @@ public class TestBulkEditService {
         for (DocumentModel doc : docs) {
             doc = session.getDocument(doc.getRef());
             assertEquals("new title", doc.getPropertyValue("dc:title"));
-            assertEquals("new creator",
-                    doc.getProperty("dc:creator").getValue());
+            assertEquals("new creator", doc.getProperty("dc:creator").getValue());
             assertFalse("new description".equals(doc.getPropertyValue("dc:description")));
             assertFalse("new source".equals(doc.getPropertyValue("dc:source")));
 
@@ -135,8 +132,7 @@ public class TestBulkEditService {
 
     @Test
     public void testBulkEditNoVersion() throws Exception {
-        URL url = getClass().getClassLoader().getResource(
-                "test-bulkedit-noversion-contrib.xml");
+        URL url = getClass().getClassLoader().getResource("test-bulkedit-noversion-contrib.xml");
         runtimeHarness.deployTestContrib("org.nuxeo.ecm.webapp.base", url);
 
         List<DocumentModel> docs = createTestDocuments();
@@ -146,8 +142,7 @@ public class TestBulkEditService {
         for (DocumentModel doc : docs) {
             doc = session.getDocument(doc.getRef());
             assertEquals("new title", doc.getPropertyValue("dc:title"));
-            assertEquals("new creator",
-                    doc.getProperty("dc:creator").getValue());
+            assertEquals("new creator", doc.getProperty("dc:creator").getValue());
             assertFalse("new description".equals(doc.getPropertyValue("dc:description")));
             assertFalse("new source".equals(doc.getPropertyValue("dc:source")));
 
@@ -160,8 +155,7 @@ public class TestBulkEditService {
 
     @Test
     public void testBulkEditMajorVersion() throws Exception {
-        URL url = getClass().getClassLoader().getResource(
-                "test-bulkedit-majorversion-contrib.xml");
+        URL url = getClass().getClassLoader().getResource("test-bulkedit-majorversion-contrib.xml");
         runtimeHarness.deployTestContrib("org.nuxeo.ecm.webapp.base", url);
 
         List<DocumentModel> docs = createTestDocuments();
@@ -171,8 +165,7 @@ public class TestBulkEditService {
         for (DocumentModel doc : docs) {
             doc = session.getDocument(doc.getRef());
             assertEquals("new title", doc.getPropertyValue("dc:title"));
-            assertEquals("new creator",
-                    doc.getProperty("dc:creator").getValue());
+            assertEquals("new creator", doc.getProperty("dc:creator").getValue());
             assertFalse("new description".equals(doc.getPropertyValue("dc:description")));
             assertFalse("new source".equals(doc.getPropertyValue("dc:source")));
 

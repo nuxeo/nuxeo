@@ -67,20 +67,18 @@ public class NuxeoExceptionFilter implements Filter {
         return exceptionHandler;
     }
 
-    private void handleException(HttpServletRequest request,
-            HttpServletResponse response, Throwable t) throws IOException,
-            ServletException {
+    private void handleException(HttpServletRequest request, HttpServletResponse response, Throwable t)
+            throws IOException, ServletException {
         getHandler().handleException(request, response, t);
     }
 
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
         try {
             chain.doFilter(request, response);
         } catch (Throwable t) {
             try {
-                handleException((HttpServletRequest) request,
-                        (HttpServletResponse) response, t);
+                handleException((HttpServletRequest) request, (HttpServletResponse) response, t);
             } catch (ServletException e) {
                 throw e;
             } catch (Throwable newThrowable) {

@@ -28,8 +28,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  * @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
  * @since 6.0
  */
-public class NuxeoHeaderDescriptorRegistry extends
-        ContributionFragmentRegistry<NuxeoHeaderDescriptor> {
+public class NuxeoHeaderDescriptorRegistry extends ContributionFragmentRegistry<NuxeoHeaderDescriptor> {
 
     protected Map<String, NuxeoHeaderDescriptor> descs = new HashMap<>();
 
@@ -39,8 +38,7 @@ public class NuxeoHeaderDescriptorRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id, NuxeoHeaderDescriptor contrib,
-            NuxeoHeaderDescriptor newOrigContrib) {
+    public void contributionUpdated(String id, NuxeoHeaderDescriptor contrib, NuxeoHeaderDescriptor newOrigContrib) {
         if (descs.containsKey(id)) {
             descs.remove(id);
         }

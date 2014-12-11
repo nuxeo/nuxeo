@@ -56,8 +56,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Component that handles actions retrieval as well as current tab(s)
- * selection.
+ * Component that handles actions retrieval as well as current tab(s) selection.
  *
  * @author Eugen Ionica
  * @author Anahide Tchertchian
@@ -93,8 +92,7 @@ public class WebActionsBean implements WebActions, Serializable {
     // actions management
 
     @Override
-    public List<Action> getActionsList(String category, ActionContext context,
-            boolean hideUnavailableAction) {
+    public List<Action> getActionsList(String category, ActionContext context, boolean hideUnavailableAction) {
         List<Action> list = new ArrayList<Action>();
         List<String> categories = new ArrayList<String>();
         if (category != null) {
@@ -108,8 +106,7 @@ public class WebActionsBean implements WebActions, Serializable {
             }
         }
         for (String cat : categories) {
-            List<Action> actions = actionManager.getActions(cat, context,
-                    hideUnavailableAction);
+            List<Action> actions = actionManager.getActions(cat, context, hideUnavailableAction);
             if (actions != null) {
                 list.addAll(actions);
             }
@@ -118,10 +115,8 @@ public class WebActionsBean implements WebActions, Serializable {
     }
 
     @Override
-    public List<Action> getActionsList(String category,
-            Boolean hideUnavailableAction) {
-        return getActionsList(category, createActionContext(),
-                Boolean.TRUE.equals(hideUnavailableAction));
+    public List<Action> getActionsList(String category, Boolean hideUnavailableAction) {
+        return getActionsList(category, createActionContext(), Boolean.TRUE.equals(hideUnavailableAction));
     }
 
     public List<Action> getActionsList(String category, ActionContext context) {
@@ -129,18 +124,15 @@ public class WebActionsBean implements WebActions, Serializable {
     }
 
     @Override
-    public List<Action> getActionsListForDocument(String category,
-            DocumentModel document, boolean hideUnavailableAction) {
-        return getActionsList(category, createActionContext(document),
-                hideUnavailableAction);
+    public List<Action> getActionsListForDocument(String category, DocumentModel document, boolean hideUnavailableAction) {
+        return getActionsList(category, createActionContext(document), hideUnavailableAction);
     }
 
     public List<Action> getActionsList(String category) {
         return getActionsList(category, createActionContext());
     }
 
-    public List<Action> getUnfiltredActionsList(String category,
-            ActionContext context) {
+    public List<Action> getUnfiltredActionsList(String category, ActionContext context) {
         return getActionsList(category, context, false);
     }
 
@@ -162,20 +154,16 @@ public class WebActionsBean implements WebActions, Serializable {
 
     @Override
     public Action getAction(String actionId, boolean hideUnavailableAction) {
-        return actionManager.getAction(actionId, createActionContext(),
-                hideUnavailableAction);
+        return actionManager.getAction(actionId, createActionContext(), hideUnavailableAction);
     }
 
     @Override
-    public Action getActionForDocument(String actionId, DocumentModel document,
-            boolean hideUnavailableAction) {
-        return getAction(actionId, createActionContext(document),
-                hideUnavailableAction);
+    public Action getActionForDocument(String actionId, DocumentModel document, boolean hideUnavailableAction) {
+        return getAction(actionId, createActionContext(document), hideUnavailableAction);
     }
 
     @Override
-    public Action getAction(String actionId, ActionContext context,
-            boolean hideUnavailableAction) {
+    public Action getAction(String actionId, ActionContext context, boolean hideUnavailableAction) {
         return actionManager.getAction(actionId, context, hideUnavailableAction);
     }
 
@@ -209,8 +197,7 @@ public class WebActionsBean implements WebActions, Serializable {
                 }
             }
             // retrieve actions in given category and take the first one found
-            List<Action> actions = getActionsList(category,
-                    createActionContext());
+            List<Action> actions = getActionsList(category, createActionContext());
             if (actions != null && actions.size() > 0) {
                 // make sure selection event is sent
                 Action action = actions.get(0);
@@ -263,10 +250,8 @@ public class WebActionsBean implements WebActions, Serializable {
     }
 
     @Override
-    public void setCurrentTabId(String category, String tabId,
-            String... subTabIds) {
-        currentTabActions.setCurrentTabId(actionManager, createActionContext(),
-                category, tabId, subTabIds);
+    public void setCurrentTabId(String category, String tabId, String... subTabIds) {
+        currentTabActions.setCurrentTabId(actionManager, createActionContext(), category, tabId, subTabIds);
         // additional cleanup of this cache
         if (WebActions.DEFAULT_TABS_CATEGORY.equals(category)) {
             resetSubTabs();
@@ -280,8 +265,7 @@ public class WebActionsBean implements WebActions, Serializable {
 
     @Override
     public void setCurrentTabIds(String tabIds) {
-        currentTabActions.setCurrentTabIds(actionManager,
-                createActionContext(), tabIds);
+        currentTabActions.setCurrentTabIds(actionManager, createActionContext(), tabIds);
         // reset subtabs just in case
         resetSubTabs();
     }
@@ -307,8 +291,7 @@ public class WebActionsBean implements WebActions, Serializable {
         subTabsActionsList = null;
     }
 
-    @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED,
-            EventNames.LOCATION_SELECTION_CHANGED }, create = false)
+    @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, EventNames.LOCATION_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void resetTabList() {
         tabsActionsList = null;
@@ -358,16 +341,14 @@ public class WebActionsBean implements WebActions, Serializable {
         if (tabAction != null) {
             String[] categories = tabAction.getCategories();
             if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot set subtab with id '%s' "
-                        + "as this action does not hold any category",
+                log.error(String.format(
+                        "Cannot set subtab with id '%s' " + "as this action does not hold any category",
                         tabAction.getId()));
                 return;
             }
             if (categories.length != 1) {
-                log.error(String.format(
-                        "Setting subtab with id '%s' with category '%s': "
-                                + "use webActions#setCurrentTabAction(action, category) "
-                                + "to specify another category",
+                log.error(String.format("Setting subtab with id '%s' with category '%s': "
+                        + "use webActions#setCurrentTabAction(action, category) " + "to specify another category",
                         tabAction.getId(), categories[0]));
             }
             setCurrentTabAction(categories[0], tabAction);
@@ -404,9 +385,7 @@ public class WebActionsBean implements WebActions, Serializable {
             // is used for compatibility in default url pattern
             Action action = getCurrentTabAction();
             if (action != null) {
-                setCurrentTabId(
-                        TabActionsSelection.getSubTabCategory(action.getId()),
-                        tabId);
+                setCurrentTabId(TabActionsSelection.getSubTabCategory(action.getId()), tabId);
             }
         }
     }
@@ -414,12 +393,10 @@ public class WebActionsBean implements WebActions, Serializable {
     // navigation API
 
     public String setCurrentTabAndNavigate(String currentTabActionId) {
-        return setCurrentTabAndNavigate(navigationContext.getCurrentDocument(),
-                currentTabActionId);
+        return setCurrentTabAndNavigate(navigationContext.getCurrentDocument(), currentTabActionId);
     }
 
-    public String setCurrentTabAndNavigate(DocumentModel document,
-            String currentTabActionId) {
+    public String setCurrentTabAndNavigate(DocumentModel document, String currentTabActionId) {
         // navigate first because it will reset the tabs list
         String viewId = null;
         try {

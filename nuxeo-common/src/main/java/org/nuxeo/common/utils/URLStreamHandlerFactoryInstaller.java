@@ -20,15 +20,14 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 /**
- * Used to force installation of URLStreamHandlerFactory as the default
- * mechanism in Java is failing to set a new factory if one was already set.
+ * Used to force installation of URLStreamHandlerFactory as the default mechanism in Java is failing to set a new
+ * factory if one was already set.
  * <p>
- * This class provides the capability to stack any number of factories - each
- * factory having precedence over the last one.
+ * This class provides the capability to stack any number of factories - each factory having precedence over the last
+ * one.
  * <p>
- * Thus, when querying for a URL protocol handler all factories will be asked in
- * turn (from the newest one to the older one) until a stream handler is
- * obtained.
+ * Thus, when querying for a URL protocol handler all factories will be asked in turn (from the newest one to the older
+ * one) until a stream handler is obtained.
  * <p>
  * Contains some code from Eclipse Framework class.
  *
@@ -40,8 +39,8 @@ public class URLStreamHandlerFactoryInstaller {
 
     private static final FactoryStack stack = new FactoryStack();
 
-    private static class FactoryStackHolder extends
-            InheritableThreadLocal<FactoryStack> implements URLStreamHandlerFactory {
+    private static class FactoryStackHolder extends InheritableThreadLocal<FactoryStack> implements
+            URLStreamHandlerFactory {
 
         @Override
         public FactoryStack initialValue() {
@@ -66,8 +65,7 @@ public class URLStreamHandlerFactoryInstaller {
         FactoryStack factoryStack = factoryStackHolder.get();
         Field factoryField = getStaticField(URL.class, URLStreamHandlerFactory.class);
         if (factoryField == null) {
-            throw new IllegalArgumentException(
-                    "Could not find URLStreamHandlerFactory field");
+            throw new IllegalArgumentException("Could not find URLStreamHandlerFactory field");
         }
         // look for a lock to synchronize on
         Object lock = getURLStreamHandlerFactoryLock();
@@ -77,7 +75,7 @@ public class URLStreamHandlerFactoryInstaller {
                 if (factory == null) { // not installed - install it
                     factoryStack.push(shf); // push the new factory
                 } else if (factory != factoryStackHolder) { // another factory is
-                                                      // installed
+                    // installed
                     factoryStack.push(factory);
                     factoryStack.push(shf); // push the new factory
                 } else { // already installed
@@ -93,7 +91,7 @@ public class URLStreamHandlerFactoryInstaller {
     public static void uninstallURLStreamHandlerFactory() {
         factoryStackHolder.remove();
         try {
-           Field factoryField = getStaticField(URL.class, URLStreamHandlerFactory.class);
+            Field factoryField = getStaticField(URL.class, URLStreamHandlerFactory.class);
             if (factoryField == null) {
                 return; // oh well, we tried
             }
@@ -112,7 +110,7 @@ public class URLStreamHandlerFactoryInstaller {
         } catch (IllegalArgumentException e) {
             // ignore and continue closing the framework
         } catch (IllegalAccessException e) {
-           // ignore and continue closing the framework
+            // ignore and continue closing the framework
         }
     }
 
@@ -143,13 +141,12 @@ public class URLStreamHandlerFactoryInstaller {
         } catch (IllegalArgumentException e) {
             // ignore and continue closing the framework
         } catch (IllegalAccessException e) {
-           // ignore and continue closing the framework
+            // ignore and continue closing the framework
         }
 
     }
 
-    protected static void flush(Field factoryField)
-            throws IllegalArgumentException, IllegalAccessException {
+    protected static void flush(Field factoryField) throws IllegalArgumentException, IllegalAccessException {
         factoryField.set(null, null);
         resetURLStreamHandlers();
         URL.setURLStreamHandlerFactory(factoryStackHolder);
@@ -166,15 +163,14 @@ public class URLStreamHandlerFactoryInstaller {
         return null;
     }
 
-    public static void resetURLStreamHandlers()  {
+    public static void resetURLStreamHandlers() {
         Field handlersField = getStaticField(URL.class, Hashtable.class);
         if (handlersField != null) {
             Hashtable<?, ?> handlers;
             try {
                 handlers = (Hashtable<?, ?>) handlersField.get(null);
             } catch (IllegalAccessException e) {
-                throw new IllegalArgumentException(
-                        "Cannot clear URL handlers cache", e);
+                throw new IllegalArgumentException("Cannot clear URL handlers cache", e);
             }
             if (handlers != null) {
                 handlers.clear();
@@ -200,14 +196,12 @@ public class URLStreamHandlerFactoryInstaller {
     /**
      * Get the underlying stack.
      * <p>
-     * This should not be used to register/unregister factories (since it is not
-     * synchronized). To install / uninstall factories use the static method of
-     * that class.
+     * This should not be used to register/unregister factories (since it is not synchronized). To install / uninstall
+     * factories use the static method of that class.
      */
     public static FactoryStack getStack() {
         return factoryStackHolder.get();
     }
-
 
     public static class FactoryStack implements URLStreamHandlerFactory {
 

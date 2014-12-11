@@ -29,22 +29,20 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class NullExceptionHandlingListener implements ExceptionHandlingListener {
 
-    public void beforeForwardToErrorPage(Throwable t,
-            HttpServletRequest request, HttpServletResponse response)
+    public void beforeForwardToErrorPage(Throwable t, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
     }
 
-    public void beforeSetErrorPageAttribute(Throwable t,
-            HttpServletRequest request, HttpServletResponse response)
+    public void beforeSetErrorPageAttribute(Throwable t, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
     }
 
-    public void startHandling(Throwable t, HttpServletRequest request,
-            HttpServletResponse response) throws IOException, ServletException {
+    public void startHandling(Throwable t, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
     }
 
-    public void afterDispatch(Throwable t, HttpServletRequest request,
-            HttpServletResponse response) throws IOException, ServletException {
+    public void afterDispatch(Throwable t, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
     }
 
 }

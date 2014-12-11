@@ -22,18 +22,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class is used to build the summary file in a Zip export. It can displays
- * a summary in two ways:
- *
+ * This class is used to build the summary file in a Zip export. It can displays a summary in two ways:
  * <ul>
  * <li>Flat with for all entries the full path to document
  * <li>Hierarchical.
  * </ul>
- *
- * This class extends Map&lt;String,SummaryEntry&gt; to store all entries and to
- * allows to store the same document many times, at different level in the
- * workingList. That's why the key is a String : the full path to the item in
- * the workingList, using documents UUID.
+ * This class extends Map&lt;String,SummaryEntry&gt; to store all entries and to allows to store the same document many
+ * times, at different level in the workingList. That's why the key is a String : the full path to the item in the
+ * workingList, using documents UUID.
  *
  * @author <a href="mailto:bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
  */

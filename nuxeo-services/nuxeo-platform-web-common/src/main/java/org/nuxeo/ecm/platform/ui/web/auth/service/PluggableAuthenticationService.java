@@ -121,19 +121,16 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         if (extensionPoint.equals(EP_AUTHENTICATOR)) {
             AuthenticationPluginDescriptor descriptor = (AuthenticationPluginDescriptor) contribution;
             if (authenticatorsDescriptors.containsKey(descriptor.getName())) {
                 mergeDescriptors(descriptor);
-                log.debug("merged AuthenticationPluginDescriptor: "
-                        + descriptor.getName());
+                log.debug("merged AuthenticationPluginDescriptor: " + descriptor.getName());
             } else {
                 authenticatorsDescriptors.put(descriptor.getName(), descriptor);
-                log.debug("registered AuthenticationPluginDescriptor: "
-                        + descriptor.getName());
+                log.debug("registered AuthenticationPluginDescriptor: " + descriptor.getName());
             }
 
             // create the new instance
@@ -144,14 +141,12 @@ public class PluggableAuthenticationService extends DefaultComponent {
                 authenticators.put(actualDescriptor.getName(), authPlugin);
             } catch (InstantiationException e) {
                 log.error(
-                        "Unable to create AuthPlugin for : "
-                                + actualDescriptor.getName() + "Error : "
-                                + e.getMessage(), e);
+                        "Unable to create AuthPlugin for : " + actualDescriptor.getName() + "Error : " + e.getMessage(),
+                        e);
             } catch (IllegalAccessException e) {
                 log.error(
-                        "Unable to create AuthPlugin for : "
-                                + actualDescriptor.getName() + "Error : "
-                                + e.getMessage(), e);
+                        "Unable to create AuthPlugin for : " + actualDescriptor.getName() + "Error : " + e.getMessage(),
+                        e);
             }
 
         } else if (extensionPoint.equals(EP_CHAIN)) {
@@ -215,14 +210,12 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         if (extensionPoint.equals(EP_AUTHENTICATOR)) {
             AuthenticationPluginDescriptor descriptor = (AuthenticationPluginDescriptor) contribution;
             authenticatorsDescriptors.remove(descriptor.getName());
-            log.debug("unregistered AuthenticationPlugin: "
-                    + descriptor.getName());
+            log.debug("unregistered AuthenticationPlugin: " + descriptor.getName());
         }
     }
 
@@ -238,8 +231,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
         oldDescriptor.setParameters(oldParameters);
 
         // override LoginLModule
-        if (newContrib.getLoginModulePlugin() != null
-                && newContrib.getLoginModulePlugin().length() > 0) {
+        if (newContrib.getLoginModulePlugin() != null && newContrib.getLoginModulePlugin().length() > 0) {
             oldDescriptor.setLoginModulePlugin(newContrib.getLoginModulePlugin());
         }
 
@@ -299,8 +291,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
             for (String headerName : headerPattern.keySet()) {
                 String headerValue = request.getHeader(headerName);
                 if (headerValue != null) {
-                    Matcher m = headerPattern.get(headerName).matcher(
-                            headerValue);
+                    Matcher m = headerPattern.get(headerName).matcher(headerValue);
                     if (m.matches()) {
                         return specificAuthChainName;
                     }
@@ -310,8 +301,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
         return null;
     }
 
-    public UserIdentificationInfoCallbackHandler getCallbackHandler(
-            UserIdentificationInfo userIdent) {
+    public UserIdentificationInfoCallbackHandler getCallbackHandler(UserIdentificationInfo userIdent) {
         if (cbhFactory == null) {
             return new UserIdentificationInfoCallbackHandler(userIdent);
         }
@@ -341,8 +331,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
     public NuxeoAuthenticationPlugin getPlugin(String pluginName) {
-        if (authenticatorsDescriptors.containsKey(pluginName)
-                && authenticatorsDescriptors.get(pluginName).getEnabled()) {
+        if (authenticatorsDescriptors.containsKey(pluginName) && authenticatorsDescriptors.get(pluginName).getEnabled()) {
             if (authenticators.containsKey(pluginName)) {
                 return authenticators.get(pluginName);
             }
@@ -419,17 +408,15 @@ public class PluggableAuthenticationService extends DefaultComponent {
         return VirtualHostHelper.getBaseURL(request);
     }
 
-    public void onAuthenticatedSessionCreated(ServletRequest request,
-            HttpSession session, CachableUserIdentificationInfo cachebleUserInfo) {
+    public void onAuthenticatedSessionCreated(ServletRequest request, HttpSession session,
+            CachableUserIdentificationInfo cachebleUserInfo) {
 
-        NuxeoHttpSessionMonitor.instance().associatedUser(session,
-                cachebleUserInfo.getPrincipal().getName());
+        NuxeoHttpSessionMonitor.instance().associatedUser(session, cachebleUserInfo.getPrincipal().getName());
 
         if (!sessionManagers.isEmpty()) {
             for (String smName : sessionManagers.keySet()) {
                 NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
-                sm.onAuthenticatedSessionCreated(request, session,
-                        cachebleUserInfo);
+                sm.onAuthenticatedSessionCreated(request, session, cachebleUserInfo);
             }
         }
     }
@@ -456,8 +443,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
                     NuxeoAuthPreFilter preFilter = (NuxeoAuthPreFilter) desc.getClassName().newInstance();
                     preFilters.add(preFilter);
                 } catch (Exception e) {
-                    log.error("Unable to create preFilter " + desc.getName()
-                            + " and class" + desc.getClassName(), e);
+                    log.error("Unable to create preFilter " + desc.getName() + " and class" + desc.getClassName(), e);
                 }
             }
         }

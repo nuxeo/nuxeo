@@ -32,11 +32,9 @@ public interface NuxeoAuthenticationPlugin {
      *
      * @param httpRequest the request
      * @param httpResponse the response
-     * @return true if AuthFilter must stop execution (ie: login prompt generated a redirect),
-     *      false otherwise
+     * @return true if AuthFilter must stop execution (ie: login prompt generated a redirect), false otherwise
      */
-    Boolean handleLoginPrompt(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse, String baseURL);
+    Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL);
 
     /**
      * Retrieves user identification information from the request.
@@ -44,8 +42,7 @@ public interface NuxeoAuthenticationPlugin {
      * @param httpRequest the request
      * @param httpResponse the response
      */
-    UserIdentificationInfo handleRetrieveIdentity(
-            HttpServletRequest httpRequest, HttpServletResponse httpResponse);
+    UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest, HttpServletResponse httpResponse);
 
     /**
      * Defines if the authentication plugin needs to do a login prompt.
@@ -54,15 +51,13 @@ public interface NuxeoAuthenticationPlugin {
      */
     Boolean needLoginPrompt(HttpServletRequest httpRequest);
 
-
     /**
      * Initializes the Plugin from parameters set in the XML descriptor.
      */
     void initPlugin(Map<String, String> parameters);
 
     /**
-     * Returns the list of prefix for unauthenticated URLs,
-     * typically the URLs associated to login prompt.
+     * Returns the list of prefix for unauthenticated URLs, typically the URLs associated to login prompt.
      */
     List<String> getUnAuthenticatedURLPrefix();
 

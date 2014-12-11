@@ -32,11 +32,10 @@ import org.nuxeo.ecm.platform.ui.web.rest.RestfulPhaseListener;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
- * Conversation component that keeps the last update timestamp to handle hot
- * reload when this timestamp changes.
+ * Conversation component that keeps the last update timestamp to handle hot reload when this timestamp changes.
  * <p>
- * Triggered by {@link RestfulPhaseListener} at the beginning of render
- * response phase so that Seam components are not left in a strange state.
+ * Triggered by {@link RestfulPhaseListener} at the beginning of render response phase so that Seam components are not
+ * left in a strange state.
  *
  * @since 5.6
  * @see RestfulPhaseListener
@@ -77,8 +76,7 @@ public class NuxeoSeamHotReloadContextKeeper implements Serializable {
                 }
                 doLog(String.format("After reset, cache key=%s", lastCacheKey));
             } else {
-                doLog(String.format("No reset needed, cache key=%s",
-                        lastCacheKey));
+                doLog(String.format("No reset needed, cache key=%s", lastCacheKey));
             }
         }
     }

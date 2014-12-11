@@ -18,9 +18,9 @@
  */
 package org.nuxeo.ecm.platform.web.common.admin;
 
-import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
-
 import java.util.Calendar;
+
+import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 
 /**
  * Simple Helper class to hold {@link AdministrativeStatus} flags used by the Web Layer.
@@ -63,7 +63,7 @@ public class AdminStatusHelper {
     }
 
     public static boolean displayAdminMessage() {
-        return adminMessageActivated && adminMessage!=null && adminMessage.length()>0;
+        return adminMessageActivated && adminMessage != null && adminMessage.length() > 0;
     }
 
     public static boolean accessRestrictedToAdministrators() {

@@ -63,12 +63,10 @@ public class ActionContextProvider implements Serializable {
     }
 
     /**
-     * Returns an action context computed from current core session and current
-     * user, and document given as parameter.
+     * Returns an action context computed from current core session and current user, and document given as parameter.
      * <p>
-     * The action context uses the JSF context if available, or fallbacks on a
-     * Seam context only (useful for Seam remoting calls, for instance in
-     * contextual menu)
+     * The action context uses the JSF context if available, or fallbacks on a Seam context only (useful for Seam
+     * remoting calls, for instance in contextual menu)
      *
      * @since 5.7.3
      */

@@ -66,9 +66,8 @@ public class LoginScreenConfig implements Serializable {
     protected String logoHeight;
 
     /**
-     * Boolean to disable background-cover CSS behavior on login page
-     * background, as it may not be compliant with all browsers (see
-     * NXP-12972/NXP-12978).
+     * Boolean to disable background-cover CSS behavior on login page background, as it may not be compliant with all
+     * browsers (see NXP-12972/NXP-12978).
      *
      * @since 5.8
      */
@@ -135,8 +134,7 @@ public class LoginScreenConfig implements Serializable {
 
         if (providers == null) {
             providers = newConfig.providers;
-        } else if (newConfig.providers != null
-                && newConfig.providers.size() > 0) {
+        } else if (newConfig.providers != null && newConfig.providers.size() > 0) {
             for (LoginProviderLink link : newConfig.providers) {
 
                 int idx = providers.indexOf(link);
@@ -153,8 +151,8 @@ public class LoginScreenConfig implements Serializable {
         }
     }
 
-    public void registerLoginProvider(String name, String iconUrl, String link,
-            String label, String description, LoginProviderLinkComputer computer) {
+    public void registerLoginProvider(String name, String iconUrl, String link, String label, String description,
+            LoginProviderLinkComputer computer) {
 
         LoginProviderLink newProvider = new LoginProviderLink();
         newProvider.name = name;

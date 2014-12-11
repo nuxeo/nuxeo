@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *      M.-A. Darche
  *      Stefane Fermigier
@@ -22,13 +22,15 @@
 
 package org.nuxeo.common.utils;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class TestIdUtils {
 
@@ -52,8 +54,7 @@ public class TestIdUtils {
         // With max_chars = 0 the length of the generated ID should be the same
         // than this of the input.
         assertEquals(s.replace(" ", "-"), IdUtils.generateId(s, "-", false, 0));
-        assertEquals(s.replace(" ", "-"),
-                IdUtils.generateId(s, "-", false, s.length()));
+        assertEquals(s.replace(" ", "-"), IdUtils.generateId(s, "-", false, s.length()));
         // With max_chars > 0 the length of the generated ID should be lower or
         // equal to max_chars.
         int maxChars = 24;
@@ -76,11 +77,9 @@ public class TestIdUtils {
         examples.put("open+source", "open-source");
         examples.put("open + source", "open-source");
         examples.put("open  + source", "open-source");
-        examples.put("S. Fermigier first law of project management",
-                "S-Fermigier-first-law-of");
+        examples.put("S. Fermigier first law of project management", "S-Fermigier-first-law-of");
         for (Entry<String, String> example : examples.entrySet()) {
-            assertEquals(example.getValue(),
-                    IdUtils.generateId(example.getKey(), "-", false, 24));
+            assertEquals(example.getValue(), IdUtils.generateId(example.getKey(), "-", false, 24));
         }
     }
 
@@ -89,8 +88,7 @@ public class TestIdUtils {
         String s;
 
         // stupid ids -> random
-        for (String id : Arrays.asList("", " ", "  ", "-", "./", ".", "..",
-                " . ", " .. ", "\"", "'", "/", "//")) {
+        for (String id : Arrays.asList("", " ", "  ", "-", "./", ".", "..", " . ", " .. ", "\"", "'", "/", "//")) {
             String newId = IdUtils.generatePathSegment(id);
             assertTrue(id + " -> " + newId, newId.length() > 6);
             assertTrue(newId, Character.isDigit(newId.charAt(0)));

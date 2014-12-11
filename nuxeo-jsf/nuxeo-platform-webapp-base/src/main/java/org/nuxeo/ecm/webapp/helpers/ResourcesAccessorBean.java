@@ -30,17 +30,14 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 
 /**
- * Global resources can be injected by Seam into a application scoped component
- * that doesn't need to be serialized.
+ * Global resources can be injected by Seam into a application scoped component that doesn't need to be serialized.
  * <p>
- * This circumvents possible Seam bugs in Seam post-activation injection
- * problems regarding resource bundles.
+ * This circumvents possible Seam bugs in Seam post-activation injection problems regarding resource bundles.
  *
  * @author DM
- * @deprecated since 5.6: this is useless and does not play well with hot
- *             reload enabled because component has scope "Application". Just
- *             inject the component named "messages" in components needing
- *             translation features, instead of making them extend this class.
+ * @deprecated since 5.6: this is useless and does not play well with hot reload enabled because component has scope
+ *             "Application". Just inject the component named "messages" in components needing translation features,
+ *             instead of making them extend this class.
  */
 @Name("resourcesAccessor")
 @Scope(ScopeType.APPLICATION)
@@ -52,8 +49,7 @@ public class ResourcesAccessorBean implements ResourcesAccessor {
     /**
      * Seam built-in component.
      * <p>
-     * A map containing internationalized messages rendered from message
-     * templates defined in the Seam resource bundle.
+     * A map containing internationalized messages rendered from message templates defined in the Seam resource bundle.
      */
     @In(create = true)
     private Map<String, String> messages;

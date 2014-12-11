@@ -43,13 +43,11 @@ public final class I18NUtils {
         return loader;
     }
 
-    public static String getMessageString(String bundleName, String key,
-            Object[] params, Locale locale) {
+    public static String getMessageString(String bundleName, String key, Object[] params, Locale locale) {
 
         String text;
 
-        ResourceBundle bundle = ResourceBundle.getBundle(bundleName, locale,
-                getCurrentClassLoader(params));
+        ResourceBundle bundle = ResourceBundle.getBundle(bundleName, locale, getCurrentClassLoader(params));
 
         try {
             text = bundle.getString(key);

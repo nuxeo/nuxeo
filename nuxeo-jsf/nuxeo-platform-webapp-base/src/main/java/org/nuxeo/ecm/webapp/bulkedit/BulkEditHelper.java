@@ -61,17 +61,14 @@ public class BulkEditHelper {
     /**
      * Returns the common layouts of the {@code docs} for the {@code edit} mode.
      */
-    public static List<String> getCommonLayouts(TypeManager typeManager,
-            List<DocumentModel> docs) {
+    public static List<String> getCommonLayouts(TypeManager typeManager, List<DocumentModel> docs) {
         return getCommonLayouts(typeManager, docs, BuiltinModes.EDIT);
     }
 
     /**
-     * Returns the common layouts of the {@code docs} for the given layout
-     * {@code mode}.
+     * Returns the common layouts of the {@code docs} for the given layout {@code mode}.
      */
-    public static List<String> getCommonLayouts(TypeManager typeManager,
-            List<DocumentModel> docs, String mode) {
+    public static List<String> getCommonLayouts(TypeManager typeManager, List<DocumentModel> docs, String mode) {
         List<String> layouts = null;
         for (DocumentModel doc : docs) {
             Type type = typeManager.getType(doc.getType());
@@ -106,28 +103,24 @@ public class BulkEditHelper {
     }
 
     /**
-     * Copy all the marked properties (stored in the ContextData of
-     * {@code sourceDoc}) from {@code sourceDoc} to all the {@code targetDocs}.
+     * Copy all the marked properties (stored in the ContextData of {@code sourceDoc}) from {@code sourceDoc} to all the
+     * {@code targetDocs}.
      *
      * @param session the {@code CoreSession} to use
      * @param sourceDoc the doc where to get the metadata to copy
      * @param targetDocs the docs where to set the metadata
-     *
      * @deprecated since 5.7.3. Now in {@link BulkEditService}.
      */
     @Deprecated
-    public static void copyMetadata(CoreSession session,
-            DocumentModel sourceDoc, List<DocumentModel> targetDocs)
+    public static void copyMetadata(CoreSession session, DocumentModel sourceDoc, List<DocumentModel> targetDocs)
             throws ClientException {
-        Framework.getLocalService(BulkEditService.class).updateDocuments(session,
-                sourceDoc, targetDocs);
+        Framework.getLocalService(BulkEditService.class).updateDocuments(session, sourceDoc, targetDocs);
     }
 
     /**
-     * Extracts the properties to be copied from {@code sourceDoc}. The
-     * properties are stored in the ContextData of {@code sourceDoc}: the key is
-     * the xpath property, the value is {@code true} if the property has to be
-     * copied, {@code false otherwise}.
+     * Extracts the properties to be copied from {@code sourceDoc}. The properties are stored in the ContextData of
+     * {@code sourceDoc}: the key is the xpath property, the value is {@code true} if the property has to be copied,
+     * {@code false otherwise}.
      *
      * @deprecated since 5.7.3. Now in {@link BulkEditServiceImpl}.
      */
@@ -137,8 +130,7 @@ public class BulkEditHelper {
         for (Map.Entry<String, Serializable> entry : sourceDoc.getContextData().entrySet()) {
             String key = entry.getKey();
             if (key.startsWith(BULK_EDIT_PREFIX)) {
-                String[] properties = key.replace(BULK_EDIT_PREFIX, "").split(
-                        " ");
+                String[] properties = key.replace(BULK_EDIT_PREFIX, "").split(" ");
                 Serializable value = entry.getValue();
                 if (value instanceof Boolean && (Boolean) value) {
                     for (String property : properties) {

@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.web.requestcontroller.filter;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,15 +29,13 @@ import java.lang.reflect.Proxy;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
+import org.junit.Before;
+import org.junit.Test;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingHttpServletResponse;
+import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 
 public class TestBufferingServletResponse {
 
@@ -128,8 +128,8 @@ public class TestBufferingServletResponse {
 
     protected HttpServletResponse getFakeResponse(ResponseProxy responseProxy) {
         ClassLoader cl = getClass().getClassLoader();
-        HttpServletResponse response = (HttpServletResponse) Proxy.newProxyInstance(
-                cl, new Class[] { HttpServletResponse.class }, responseProxy);
+        HttpServletResponse response = (HttpServletResponse) Proxy.newProxyInstance(cl,
+                new Class[] { HttpServletResponse.class }, responseProxy);
         return response;
     }
 
@@ -147,8 +147,7 @@ public class TestBufferingServletResponse {
         }
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args)
-                throws Throwable {
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             String name = method.getName();
             if (name.equals("getOutputStream")) {
                 return sout;

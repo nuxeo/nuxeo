@@ -19,7 +19,6 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  * Common properties and methods for Users and Groups management.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  * @since 5.4.2
  */
 public abstract class AbstractUserGroupManagement {
@@ -36,13 +35,11 @@ public abstract class AbstractUserGroupManagement {
 
     public static final String USERS_GROUPS_MANAGER = "UsersGroupsManager";
 
-    public static final String USERS_GROUPS_MANAGER_SUB_TAB = USERS_GROUPS_MANAGER
-            + SUBTAB_CATEGORY_SUFFIX;
+    public static final String USERS_GROUPS_MANAGER_SUB_TAB = USERS_GROUPS_MANAGER + SUBTAB_CATEGORY_SUFFIX;
 
     public static final String USERS_GROUPS_HOME = "UsersGroupsHome";
 
-    public static final String USERS_GROUPS_HOME_SUB_TAB = USERS_GROUPS_HOME
-            + SUBTAB_CATEGORY_SUFFIX;
+    public static final String USERS_GROUPS_HOME_SUB_TAB = USERS_GROUPS_HOME + SUBTAB_CATEGORY_SUFFIX;
 
     public static final String VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789.@";
 
@@ -140,14 +137,14 @@ public abstract class AbstractUserGroupManagement {
 
     /**
      * Retrieve recursively the list of all groups that are admins.
+     *
      * @return
      * @throws ClientException
-     *
      * @since 5.9.3
      */
     protected List<String> getAllAdminGroups() throws ClientException {
         List<String> adminGroups = new ArrayList<>();
-        for(String adminGroup : userManager.getAdministratorsGroups()) {
+        for (String adminGroup : userManager.getAdministratorsGroups()) {
             adminGroups.add(adminGroup);
             adminGroups.addAll(getAllSubGroups(adminGroup));
         }
@@ -156,10 +153,10 @@ public abstract class AbstractUserGroupManagement {
 
     /**
      * Recursively lookup all the sub groups of a given group.
+     *
      * @param groupName
      * @return
      * @throws ClientException
-     *
      * @since 5.9.3
      */
     private List<String> getAllSubGroups(String groupName) throws ClientException {
@@ -168,15 +165,14 @@ public abstract class AbstractUserGroupManagement {
 
     /**
      * Recursively accumulate all the sub groups a a given group.
+     *
      * @param groupName
      * @param accumulator
      * @return
      * @throws ClientException
-     *
      * @since 5.9.3
      */
-    private List<String> getAllSubGroups(String groupName, List<String> accumulator)
-            throws ClientException {
+    private List<String> getAllSubGroups(String groupName, List<String> accumulator) throws ClientException {
         List<String> subGroups = userManager.getGroupsInGroup(groupName);
         if (!subGroups.isEmpty()) {
             accumulator.addAll(subGroups);

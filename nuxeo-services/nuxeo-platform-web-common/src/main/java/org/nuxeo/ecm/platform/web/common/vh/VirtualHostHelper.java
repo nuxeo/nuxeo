@@ -29,7 +29,6 @@ import org.nuxeo.runtime.api.Framework;
 
 public class VirtualHostHelper {
 
-
     private static final int HTTP_PORT_NUMBER = 80;
 
     private static final int HTTPS_PORT_NUMBER = 443;
@@ -48,8 +47,7 @@ public class VirtualHostHelper {
     private VirtualHostHelper() {
     }
 
-    private static HttpServletRequest getHttpServletRequest(
-            ServletRequest request) {
+    private static HttpServletRequest getHttpServletRequest(ServletRequest request) {
         if (request instanceof HttpServletRequest) {
             return (HttpServletRequest) request;
         }
@@ -70,15 +68,14 @@ public class VirtualHostHelper {
         return getServerURL(request, false);
     }
 
-    private static String getServerUrl(String scheme, String serverName,
-            int serverPort) {
+    private static String getServerUrl(String scheme, String serverName, int serverPort) {
         StringBuilder sbaseURL = new StringBuilder();
         sbaseURL.append(scheme);
         sbaseURL.append("://");
         sbaseURL.append(serverName);
         if (serverPort != 0) {
-            if ("http".equals(scheme) && serverPort != HTTP_PORT_NUMBER
-                    || "https".equals(scheme) && serverPort != HTTPS_PORT_NUMBER) {
+            if ("http".equals(scheme) && serverPort != HTTP_PORT_NUMBER || "https".equals(scheme)
+                    && serverPort != HTTPS_PORT_NUMBER) {
                 sbaseURL.append(':');
                 sbaseURL.append(serverPort);
             }
@@ -133,8 +130,6 @@ public class VirtualHostHelper {
                     }
                 }
 
-
-
                 baseURL = getServerUrl(scheme, serverName, serverPort);
             }
         }
@@ -154,18 +149,15 @@ public class VirtualHostHelper {
         if (serverUrl != null) {
             String webAppName = getWebAppName(request);
 
-            baseURL = StringUtils.isNotBlank(webAppName) ? serverUrl
-                    + webAppName + '/' : serverUrl;
+            baseURL = StringUtils.isNotBlank(webAppName) ? serverUrl + webAppName + '/' : serverUrl;
 
         }
         return baseURL;
     }
 
     /**
-     * Returns the context path of the application. Try to get it from the
-     * {@code ServletRequest} and then from the
-     * {@code org.nuxeo.ecm.contextPath} system property. Fallback on default
-     * context path {@code /nuxeo}.
+     * Returns the context path of the application. Try to get it from the {@code ServletRequest} and then from the
+     * {@code org.nuxeo.ecm.contextPath} system property. Fallback on default context path {@code /nuxeo}.
      */
     public static String getContextPath(ServletRequest request) {
         HttpServletRequest httpRequest = getHttpServletRequest(request);

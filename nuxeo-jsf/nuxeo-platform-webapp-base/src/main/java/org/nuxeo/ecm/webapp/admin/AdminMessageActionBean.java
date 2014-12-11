@@ -29,12 +29,9 @@ import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.platform.web.common.admin.AdminStatusHelper;
 
 /**
- *
- * Seam Bean to expose Administrator Message to the JSF Web Layer. (base on
- * {@link AdministrativeStatusManager}
+ * Seam Bean to expose Administrator Message to the JSF Web Layer. (base on {@link AdministrativeStatusManager}
  *
  * @author tiry
- *
  */
 @Name("adminMessageManager")
 @Scope(ScopeType.APPLICATION)
@@ -52,7 +49,7 @@ public class AdminMessageActionBean implements Serializable {
         return AdminStatusHelper.getAdminMessage();
     }
 
-    @Factory(value="adminMessageModificationDate", scope=ScopeType.EVENT)
+    @Factory(value = "adminMessageModificationDate", scope = ScopeType.EVENT)
     public Calendar getAdminMessageModificationDate() {
         return AdminStatusHelper.getAdminMessageModificationDate();
     }

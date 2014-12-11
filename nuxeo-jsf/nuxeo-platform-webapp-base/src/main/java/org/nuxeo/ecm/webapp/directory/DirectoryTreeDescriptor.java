@@ -48,15 +48,13 @@ public class DirectoryTreeDescriptor {
     public static final String DIR_ACTION_CATEGORY = "DIRECTORY_TREE_EXPLORER";
 
     /**
-     * @deprecated since 5.6, supports other schemas than 'vocabulary' and
-     *             'xvocabulary'.
+     * @deprecated since 5.6, supports other schemas than 'vocabulary' and 'xvocabulary'.
      */
     @Deprecated
     public static final String VOCABULARY_SCHEMA = "vocabulary";
 
     /**
-     * @deprecated since 5.6, supports other schemas than 'vocabulary' and
-     *             'xvocabulary'.
+     * @deprecated since 5.6, supports other schemas than 'vocabulary' and 'xvocabulary'.
      */
     @Deprecated
     public static final String XVOCABULARY_SCHEMA = "xvocabulary";
@@ -83,15 +81,13 @@ public class DirectoryTreeDescriptor {
     protected String contentView;
 
     /**
-     * Name of the QueryModel field that will be used updated on node
-     * selection.
+     * Name of the QueryModel field that will be used updated on node selection.
      */
     @XNode("@field")
     protected String fieldName;
 
     /**
-     * Name of the QueryModel schema for the field that will be used updated on
-     * node selection.
+     * Name of the QueryModel schema for the field that will be used updated on node selection.
      */
     @XNode("@schema")
     protected String schemaName;

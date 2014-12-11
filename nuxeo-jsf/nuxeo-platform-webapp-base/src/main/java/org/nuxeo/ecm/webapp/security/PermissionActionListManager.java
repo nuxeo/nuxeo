@@ -61,8 +61,7 @@ public class PermissionActionListManager implements Serializable {
      * @since 6.0
      */
     public boolean getAllowNegativeACL() {
-        return documentManager == null ? false
-                : documentManager.isNegativeAclAllowed();
+        return documentManager == null ? false : documentManager.isNegativeAclAllowed();
     }
 
     public SelectItem[] getPermissionActionItems() {
@@ -77,8 +76,7 @@ public class PermissionActionListManager implements Serializable {
 
         for (String permissionAction : permissionActions) {
             String label = labeler.makeLabel(permissionAction);
-            SelectItem it = new SelectItem(permissionAction,
-                    resourcesAccessor.getMessages().get(label));
+            SelectItem it = new SelectItem(permissionAction, resourcesAccessor.getMessages().get(label));
             jsfModelList.add(it);
         }
 

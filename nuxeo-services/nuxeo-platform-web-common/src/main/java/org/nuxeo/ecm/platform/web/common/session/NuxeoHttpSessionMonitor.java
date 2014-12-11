@@ -35,9 +35,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.management.counters.CounterHelper;
 
 /**
- * Singleton used to keep track of all HttpSessions. This Singleton is
- * populated/updated either via the HttpSessionListener or via directedly via
- * the Authentication filter
+ * Singleton used to keep track of all HttpSessions. This Singleton is populated/updated either via the
+ * HttpSessionListener or via directedly via the Authentication filter
  *
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.4.2

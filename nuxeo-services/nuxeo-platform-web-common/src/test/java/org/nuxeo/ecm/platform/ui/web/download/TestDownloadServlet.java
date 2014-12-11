@@ -128,7 +128,6 @@ public class TestDownloadServlet {
      * @param match may be null
      * @param blob
      * @return
-     *
      * @since 5.8
      */
     private String getDigestToTest(Boolean match, StorageBlob blob) {
@@ -149,11 +148,10 @@ public class TestDownloadServlet {
      * @return
      * @throws ServletException
      * @throws IOException
-     *
      * @since 5.8
      */
-    private HttpServletResponse getResponseForETag(String etag, Blob blob,
-            OutputStream out) throws IOException, ServletException {
+    private HttpServletResponse getResponseForETag(String etag, Blob blob, OutputStream out) throws IOException,
+            ServletException {
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         when(req.getHeader("If-None-Match")).thenReturn(etag);
@@ -170,11 +168,9 @@ public class TestDownloadServlet {
      *
      * @return
      * @throws IOException
-     *
      * @since 5.8
      */
-    private HttpServletResponse getMockResponse(OutputStream out)
-            throws IOException {
+    private HttpServletResponse getMockResponse(OutputStream out) throws IOException {
         HttpServletResponse resp = mock(HttpServletResponse.class);
         BufferingServletOutputStream sos = new BufferingServletOutputStream(out);
         PrintWriter printWriter = new PrintWriter(sos);
@@ -190,16 +186,13 @@ public class TestDownloadServlet {
      * @param digest
      * @return
      * @throws IOException
-     *
      * @since 5.8
      */
-    private StorageBlob getBlobWithFakeDigest(String stringValue, String digest)
-            throws IOException {
+    private StorageBlob getBlobWithFakeDigest(String stringValue, String digest) throws IOException {
         Binary binary = mock(Binary.class);
         final byte[] bytes = stringValue.getBytes();
         InputStream in = new ByteArrayInputStream(bytes);
-        StorageBlob blob = new StorageBlob(binary, "myFile.txt", "text/plain",
-                "UTF-8", digest, bytes.length);
+        StorageBlob blob = new StorageBlob(binary, "myFile.txt", "text/plain", "UTF-8", digest, bytes.length);
         when(binary.getStream()).thenReturn(in);
         when(binary.getDigest()).thenReturn(digest);
         when(binary.getLength()).thenReturn((long) bytes.length);

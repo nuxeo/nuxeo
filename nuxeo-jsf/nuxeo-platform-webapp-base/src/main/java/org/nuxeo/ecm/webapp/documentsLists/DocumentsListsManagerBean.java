@@ -38,8 +38,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 @Name("documentsListsManager")
 @Scope(SESSION)
-public class DocumentsListsManagerBean extends BaseDocumentsListsManager
-        implements DocumentsListsManager {
+public class DocumentsListsManagerBean extends BaseDocumentsListsManager implements DocumentsListsManager {
 
     private static final long serialVersionUID = 2895324573454635971L;
 
@@ -67,12 +66,10 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
             super.setUserName(currentUser.getName());
             List<String> listContribNames = getService().getDocumentsListDescriptorsName();
             for (String listName : listContribNames) {
-                DocumentsListDescriptor desc = getService().getDocumentsListDescriptor(
-                        listName);
+                DocumentsListDescriptor desc = getService().getDocumentsListDescriptor(listName);
 
                 if (desc.getIsSession()) {
-                    super.createWorkingList(listName, desc, documentManager,
-                            currentUser.getName());
+                    super.createWorkingList(listName, desc, documentManager, currentUser.getName());
                 } else {
                     // just store the descriptor
                     documentsLists_descriptors.put(listName, desc);
@@ -84,13 +81,11 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
 
     // Forward API
     @Override
-    public void createWorkingList(String listName,
-            DocumentsListDescriptor descriptor) {
+    public void createWorkingList(String listName, DocumentsListDescriptor descriptor) {
         if (descriptor.getIsSession()) {
             super.createWorkingList(listName, descriptor);
         } else {
-            conversationDocumentsListsManager.createWorkingList(listName,
-                    descriptor);
+            conversationDocumentsListsManager.createWorkingList(listName, descriptor);
             documentsLists_descriptors.put(listName, descriptor);
         }
     }
@@ -123,57 +118,47 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
     }
 
     @Override
-    public List<DocumentModel> addToWorkingList(String listName,
-            DocumentModel doc) {
+    public List<DocumentModel> addToWorkingList(String listName, DocumentModel doc) {
         if (isSessionOrIsNull(listName)) {
             return super.addToWorkingList(listName, doc);
         } else {
-            return conversationDocumentsListsManager.addToWorkingList(listName,
-                    doc);
+            return conversationDocumentsListsManager.addToWorkingList(listName, doc);
         }
     }
 
     @Override
-    public List<DocumentModel> addToWorkingList(String listName,
-            List<DocumentModel> docList) {
+    public List<DocumentModel> addToWorkingList(String listName, List<DocumentModel> docList) {
         if (isSessionOrIsNull(listName)) {
             return super.addToWorkingList(listName, docList);
         } else {
-            return conversationDocumentsListsManager.addToWorkingList(listName,
-                    docList);
+            return conversationDocumentsListsManager.addToWorkingList(listName, docList);
         }
     }
 
     @Override
-    public List<DocumentModel> addToWorkingList(String listName,
-            List<DocumentModel> docList, Boolean forceAppend) {
+    public List<DocumentModel> addToWorkingList(String listName, List<DocumentModel> docList, Boolean forceAppend) {
         if (isSessionOrIsNull(listName)) {
             return super.addToWorkingList(listName, docList, forceAppend);
         } else {
-            return conversationDocumentsListsManager.addToWorkingList(listName,
-                    docList, forceAppend);
+            return conversationDocumentsListsManager.addToWorkingList(listName, docList, forceAppend);
         }
     }
 
     @Override
-    public List<DocumentModel> removeFromWorkingList(String listName,
-            DocumentModel doc) {
+    public List<DocumentModel> removeFromWorkingList(String listName, DocumentModel doc) {
         if (isSessionOrIsNull(listName)) {
             return super.removeFromWorkingList(listName, doc);
         } else {
-            return conversationDocumentsListsManager.removeFromWorkingList(
-                    listName, doc);
+            return conversationDocumentsListsManager.removeFromWorkingList(listName, doc);
         }
     }
 
     @Override
-    public List<DocumentModel> removeFromWorkingList(String listName,
-            List<DocumentModel> lst) {
+    public List<DocumentModel> removeFromWorkingList(String listName, List<DocumentModel> lst) {
         if (isSessionOrIsNull(listName)) {
             return super.removeFromWorkingList(listName, lst);
         } else {
-            return conversationDocumentsListsManager.removeFromWorkingList(
-                    listName, lst);
+            return conversationDocumentsListsManager.removeFromWorkingList(listName, lst);
         }
     }
 
@@ -187,13 +172,11 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
     }
 
     @Override
-    public List<DocumentModel> resetWorkingList(String listName,
-            List<DocumentModel> newDocList) {
+    public List<DocumentModel> resetWorkingList(String listName, List<DocumentModel> newDocList) {
         if (isSessionOrIsNull(listName)) {
             return super.resetWorkingList(listName, newDocList);
         } else {
-            return conversationDocumentsListsManager.resetWorkingList(listName,
-                    newDocList);
+            return conversationDocumentsListsManager.resetWorkingList(listName, newDocList);
         }
     }
 
@@ -273,8 +256,7 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
     @Observer(value = { EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED }, create = false)
     public void refreshLists(DocumentModel currentDocument) {
 
-        if (lastDocumentRef != null
-                && lastDocumentRef.equals(currentDocument.getRef())) {
+        if (lastDocumentRef != null && lastDocumentRef.equals(currentDocument.getRef())) {
             return;
         }
 

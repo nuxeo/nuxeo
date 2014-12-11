@@ -46,29 +46,25 @@ public class MainTabsActions implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * @deprecated since 5.5, use {@link WebActions#MAIN_TABS_CATEGORY}
-     *             instead
+     * @deprecated since 5.5, use {@link WebActions#MAIN_TABS_CATEGORY} instead
      */
     @Deprecated
     public static final String MAIN_TABS_CATEGORY = WebActions.MAIN_TABS_CATEGORY;
 
     /**
-     * @deprecated since 5.5, use {@link WebActions#DOCUMENTS_MAIN_TAB_ID}
-     *             instead
+     * @deprecated since 5.5, use {@link WebActions#DOCUMENTS_MAIN_TAB_ID} instead
      */
     @Deprecated
     public static final String DOCUMENT_MANAGEMENT_ACTION = WebActions.DOCUMENTS_MAIN_TAB_ID;
 
     /**
-     * @deprecated since 5.5, use {@link WebActions#TAB_IDS_PARAMETER}
-     *             instead
+     * @deprecated since 5.5, use {@link WebActions#TAB_IDS_PARAMETER} instead
      */
     @Deprecated
     public static final String TAB_IDS_PARAMETER = WebActions.TAB_IDS_PARAMETER;
 
     /**
-     * @deprecated since 5.5, use {@link WebActions#MAIN_TAB_ID_PARAMETER}
-     *             instead
+     * @deprecated since 5.5, use {@link WebActions#MAIN_TAB_ID_PARAMETER} instead
      */
     @Deprecated
     public static final String MAIN_TAB_ID_PARAMETER = WebActions.MAIN_TAB_ID_PARAMETER;
@@ -131,8 +127,7 @@ public class MainTabsActions implements Serializable {
                 if (mainTabId != null && !mainTabId.isEmpty()) {
                     tabIds = mainTabId;
                 }
-                if (tabIds != null
-                        && tabIds.contains(WebActions.MAIN_TABS_CATEGORY)) {
+                if (tabIds != null && tabIds.contains(WebActions.MAIN_TABS_CATEGORY)) {
                     String[] encodedActions = tabIds.split(",");
                     for (String encodedAction : encodedActions) {
                         if (encodedAction.startsWith(WebActions.MAIN_TABS_CATEGORY)) {
@@ -159,18 +154,14 @@ public class MainTabsActions implements Serializable {
         documentsByMainTabs.put(mainTabId, doc);
     }
 
-    public DocumentModel getDocumentFor(String mainTabId)
-            throws ClientException {
+    public DocumentModel getDocumentFor(String mainTabId) throws ClientException {
         return getDocumentFor(mainTabId, navigationContext.getCurrentDocument());
     }
 
-    public DocumentModel getDocumentFor(String mainTabId,
-            DocumentModel defaultDocument) throws ClientException {
+    public DocumentModel getDocumentFor(String mainTabId, DocumentModel defaultDocument) throws ClientException {
         DocumentModel doc = documentsByMainTabs.get(mainTabId);
-        if (doc == null
-                || !documentManager.exists(doc.getRef())
-                || !documentManager.hasPermission(doc.getRef(),
-                        SecurityConstants.READ)) {
+        if (doc == null || !documentManager.exists(doc.getRef())
+                || !documentManager.hasPermission(doc.getRef(), SecurityConstants.READ)) {
             documentsByMainTabs.put(mainTabId, defaultDocument);
             doc = null;
         }
@@ -182,8 +173,7 @@ public class MainTabsActions implements Serializable {
             return mainTabAction.getLink();
         }
 
-        DocumentModel doc = getDocumentFor(mainTabAction.getId(),
-                navigationContext.getCurrentDocument());
+        DocumentModel doc = getDocumentFor(mainTabAction.getId(), navigationContext.getCurrentDocument());
         if (doc != null) {
             TypeInfo typeInfo = doc.getAdapter(TypeInfo.class);
             return typeInfo.getDefaultView();
@@ -202,8 +192,7 @@ public class MainTabsActions implements Serializable {
             // FIXME: find some way to reference the pattern in the action,
             // assume the pattern will be the same than the default one for
             // now, or use the default one.
-            if (!WebActions.DOCUMENTS_MAIN_TAB_ID.equals(mainTabId)
-                    && service.hasPattern(mainTabId)) {
+            if (!WebActions.DOCUMENTS_MAIN_TAB_ID.equals(mainTabId) && service.hasPattern(mainTabId)) {
                 return mainTabId;
             }
             return service.getDefaultPatternName();
@@ -213,8 +202,7 @@ public class MainTabsActions implements Serializable {
     }
 
     public boolean isOnMainTab(String mainTabId) {
-        if (mainTabId != null
-                && mainTabId.equals(webActions.getCurrentTabId(WebActions.MAIN_TABS_CATEGORY))) {
+        if (mainTabId != null && mainTabId.equals(webActions.getCurrentTabId(WebActions.MAIN_TABS_CATEGORY))) {
             return true;
         }
         return false;

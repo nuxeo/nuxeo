@@ -43,7 +43,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 @Name("eventManager")
 @Scope(APPLICATION)
 @Startup
-@Install(precedence=FRAMEWORK)
+@Install(precedence = FRAMEWORK)
 public class EventManager implements Serializable {
 
     private static final long serialVersionUID = -7572053704069819975L;
@@ -85,19 +85,16 @@ public class EventManager implements Serializable {
         evtManager.raiseEvent(EventNames.LOCATION_SELECTION_CHANGED);
         eventsFired.add(EventNames.LOCATION_SELECTION_CHANGED);
 
-        log.debug("Fire Event: "
-                + EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
-        evtManager.raiseEvent(
-                EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
+        log.debug("Fire Event: " + EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
+        evtManager.raiseEvent(EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
         eventsFired.add(EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
 
         return eventsFired;
     }
 
     /**
-     * Fires the necessary events so that the nuxeo infrastructure components get
-     * updated. The raised events will be processed immediately, before this
-     * call is ended. Intended to be used when a document gets selected. If the
+     * Fires the necessary events so that the nuxeo infrastructure components get updated. The raised events will be
+     * processed immediately, before this call is ended. Intended to be used when a document gets selected. If the
      * docType is NULL then the GO_HOME event is fired.
      *
      * @return events fired
@@ -118,8 +115,7 @@ public class EventManager implements Serializable {
                 eventName = EventNames.DOMAIN_SELECTION_CHANGED;
             } else if ("Root".equals(docType)) {
                 eventName = EventNames.GO_HOME;
-            } else if ("WorkspaceRoot".equals(docType)
-                    || "SectionRoot".equals(docType)) {
+            } else if ("WorkspaceRoot".equals(docType) || "SectionRoot".equals(docType)) {
                 eventName = EventNames.CONTENT_ROOT_SELECTION_CHANGED;
             } else {
                 // regular document is selected
@@ -127,19 +123,15 @@ public class EventManager implements Serializable {
             }
 
             if (document.isFolder()) {
-                evtManager.raiseEvent(
-                        EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
-                        document);
+                evtManager.raiseEvent(EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED, document);
             }
 
             log.debug("Fire Event: " + eventName);
             evtManager.raiseEvent(eventName, document);
             eventsFired.add(eventName);
 
-            log.debug("Fire Event: "
-                    + EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
-            evtManager.raiseEvent(
-                    EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
+            log.debug("Fire Event: " + EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
+            evtManager.raiseEvent(EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
             eventsFired.add(EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
         }
 
@@ -147,9 +139,8 @@ public class EventManager implements Serializable {
     }
 
     /**
-     * Fires the necessary events so that the nuxeo infrastructure components get
-     * updated. The raised events will be processed immediately, before this
-     * call is ended. Intended to be used when a document gets edited/changed.
+     * Fires the necessary events so that the nuxeo infrastructure components get updated. The raised events will be
+     * processed immediately, before this call is ended. Intended to be used when a document gets edited/changed.
      *
      * @return events fired
      */
@@ -161,27 +152,24 @@ public class EventManager implements Serializable {
         evtManager.raiseEvent(EventNames.DOCUMENT_CHANGED, document);
         eventsFired.add(EventNames.DOCUMENT_CHANGED);
 
-        log.debug("Fire Event: "
-                + EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
-        evtManager.raiseEvent(
-                EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
+        log.debug("Fire Event: " + EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
+        evtManager.raiseEvent(EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
         eventsFired.add(EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
         return eventsFired;
     }
 
     /**
-     * Dispatches an event to get interested components informed when a changeable
-     * document was created (thus not saved) and before the form is displayed.
+     * Dispatches an event to get interested components informed when a changeable document was created (thus not saved)
+     * and before the form is displayed.
      */
     public static void raiseEventsOnDocumentCreate(DocumentModel document) {
         Events.instance().raiseEvent(EventNames.NEW_DOCUMENT_CREATED);
-   }
+    }
 
     /**
-     * Fires the necessary events so that the nuxeo infrastructure components get
-     * updated. The raised events will be processed immediately, before this
-     * call is ended. Intended to be used when a the content of a folderish
-     * document gets changed.
+     * Fires the necessary events so that the nuxeo infrastructure components get updated. The raised events will be
+     * processed immediately, before this call is ended. Intended to be used when a the content of a folderish document
+     * gets changed.
      *
      * @return events fired
      */

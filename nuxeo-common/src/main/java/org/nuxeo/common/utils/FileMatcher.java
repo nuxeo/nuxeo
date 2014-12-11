@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FileMatcher {
 
@@ -61,9 +60,7 @@ public class FileMatcher {
      * Look for a matching file for the given path.
      *
      * @param path Searched file path, optionally including the pattern.
-     * @param map The pattern variable will be put in the given map if any.
-     *            Since 5.5, map can be null.
-     *
+     * @param map The pattern variable will be put in the given map if any. Since 5.5, map can be null.
      * @return File found. Null if none.
      */
     public static File getMatchingFile(String path, Map<String, Object> map) {

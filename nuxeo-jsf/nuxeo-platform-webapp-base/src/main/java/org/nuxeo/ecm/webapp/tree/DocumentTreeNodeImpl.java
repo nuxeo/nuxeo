@@ -75,8 +75,8 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
     protected Boolean expanded = null;
 
-    public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
-            Filter leafFilter, Sorter sorter, String pageProviderName) {
+    public DocumentTreeNodeImpl(DocumentModel document, Filter filter, Filter leafFilter, Sorter sorter,
+            String pageProviderName) {
         this.document = document;
         this.filter = filter;
         this.leafFilter = leafFilter;
@@ -88,9 +88,8 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
      * @deprecated since 5.9.1, sessionId not used.
      */
     @Deprecated
-    public DocumentTreeNodeImpl(String sessionId, DocumentModel document,
-            Filter filter, Filter leafFilter, Sorter sorter,
-            String pageProviderName) {
+    public DocumentTreeNodeImpl(String sessionId, DocumentModel document, Filter filter, Filter leafFilter,
+            Sorter sorter, String pageProviderName) {
         this(document, filter, leafFilter, sorter, pageProviderName);
     }
 
@@ -98,13 +97,11 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
      * @deprecated since 5.9.1, sessionId not used.
      */
     @Deprecated
-    public DocumentTreeNodeImpl(String sessionId, DocumentModel document,
-            Filter filter, Sorter sorter) {
+    public DocumentTreeNodeImpl(String sessionId, DocumentModel document, Filter filter, Sorter sorter) {
         this(document, filter, null, sorter, null);
     }
 
-    public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
-            Sorter sorter) {
+    public DocumentTreeNodeImpl(DocumentModel document, Filter filter, Sorter sorter) {
         this(document, filter, null, sorter, (String) null);
     }
 
@@ -134,12 +131,9 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
                 // check if it's the closest parent
                 String currentPath = currentDocument.getPathAsString();
                 String nodePath = getPath();
-                if (currentPath != null
-                        && nodePath != null
-                        && currentPath.startsWith(nodePath)
+                if (currentPath != null && nodePath != null && currentPath.startsWith(nodePath)
                         && currentPath.length() > nodePath.length()
-                        && !currentPath.substring(nodePath.length() + 1).contains(
-                                "/")) {
+                        && !currentPath.substring(nodePath.length() + 1).contains("/")) {
                     // direct parent
                     return true;
                 }
@@ -183,25 +177,21 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
             if (pageProviderName == null) {
                 // get the children using the core
                 Sorter sorterToUse = isOrderable ? null : sorter;
-                documents = session.getChildren(document.getRef(), null,
-                        SecurityConstants.READ, filter, sorterToUse);
+                documents = session.getChildren(document.getRef(), null, SecurityConstants.READ, filter, sorterToUse);
             } else {
                 // use page providers
                 try {
                     PageProviderService ppService = Framework.getService(PageProviderService.class);
                     List<SortInfo> sortInfos = null;
                     Map<String, Serializable> props = new HashMap<String, Serializable>();
-                    props.put(
-                            CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                            (Serializable) session);
+                    props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
                     if (isOrderable) {
                         // override sort infos to get default sort
                         sortInfos = new ArrayList<SortInfo>();
                         sortInfos.add(new SortInfo("ecm:pos", true));
                     }
                     PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                            pageProviderName, sortInfos, null, null, props,
-                            new Object[] { getId() });
+                            pageProviderName, sortInfos, null, null, props, new Object[] { getId() });
                     documents = pp.getCurrentPage();
                     documents = filterAndSort(documents, !isOrderable);
                 } catch (Exception e) {
@@ -212,8 +202,7 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
             for (DocumentModel child : documents) {
                 String identifier = child.getId();
                 DocumentTreeNodeImpl childNode;
-                childNode = new DocumentTreeNodeImpl(child, filter, leafFilter,
-                        sorter, pageProviderName);
+                childNode = new DocumentTreeNodeImpl(child, filter, leafFilter, sorter, pageProviderName);
                 children.put(identifier, childNode);
             }
         } catch (ClientException e) {
@@ -224,14 +213,12 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
     protected CoreSession getCoreSession() {
         CoreSession session = document.getCoreSession();
         if (session == null) {
-            session = (CoreSession) Component.getInstance("documentManager",
-                    ScopeType.CONVERSATION);
+            session = (CoreSession) Component.getInstance("documentManager", ScopeType.CONVERSATION);
         }
         return session;
     }
 
-    protected List<DocumentModel> filterAndSort(List<DocumentModel> docs,
-            boolean doSort) {
+    protected List<DocumentModel> filterAndSort(List<DocumentModel> docs, boolean doSort) {
         // filter and sort if defined
         List<DocumentModel> res = new ArrayList<DocumentModel>();
         if (docs != null) {
@@ -253,8 +240,7 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
     @Override
     public QuotaStats getQuotaStats() {
-        return document != null ? document.getAdapter(QuotaStatsNonFolderishCount.class)
-                : null;
+        return document != null ? document.getAdapter(QuotaStatsNonFolderishCount.class) : null;
     }
 
     @Override
@@ -263,11 +249,9 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
             final TreeActions treeActionBean = (TreeActionsBean) Component.getInstance("treeActions");
             if (!treeActionBean.isNodeExpandEvent()) {
                 String currentDocPath = treeActionBean.getCurrentDocumentPath();
-                if (currentDocPath != null && getPath() != null
-                        && currentDocPath.startsWith(getPath())) {
+                if (currentDocPath != null && getPath() != null && currentDocPath.startsWith(getPath())) {
                     // additional slower check for strict path prefix
-                    if ((currentDocPath + '/').startsWith(getPath() + '/')
-                            || "/".equals(getPath())) {
+                    if ((currentDocPath + '/').startsWith(getPath() + '/') || "/".equals(getPath())) {
                         expanded = Boolean.TRUE;
                     }
                 }

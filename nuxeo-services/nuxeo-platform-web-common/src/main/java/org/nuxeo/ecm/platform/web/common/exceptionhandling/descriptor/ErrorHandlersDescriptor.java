@@ -25,7 +25,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author arussel
- *
  */
 @XObject("errorHandlers")
 public class ErrorHandlersDescriptor {

@@ -20,8 +20,7 @@ package org.nuxeo.ecm.platform.web.common;
 import java.util.regex.Pattern;
 
 /**
- * Helper class to detect Html5 Dnd compliant browsers based on the User Agent
- * string
+ * Helper class to detect Html5 Dnd compliant browsers based on the User Agent string
  *
  * @author Tiry (tdelprat@nuxeo.com)
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -63,8 +62,8 @@ public class UserAgentMatcher {
     }
 
     public static boolean html5DndIsSupported(String UA) {
-        return isFirefox3(UA) || isFirefox4OrMore(UA) || isSafari5(UA)
-                || isChrome(UA) || isMSIEWithChromeFrame(UA) || isMSIE10OrMore(UA);
+        return isFirefox3(UA) || isFirefox4OrMore(UA) || isSafari5(UA) || isChrome(UA) || isMSIEWithChromeFrame(UA)
+                || isMSIE10OrMore(UA);
     }
 
     public static boolean isMSIE6or7(String UA) {
@@ -83,7 +82,6 @@ public class UserAgentMatcher {
     }
 
     public static boolean isHistoryPushStateSupported(String UA) {
-        return isFirefox4OrMore(UA) || isSafari5(UA) || isChrome(UA)
-                || isMSIEWithChromeFrame(UA) || isMSIE10OrMore(UA);
+        return isFirefox4OrMore(UA) || isSafari5(UA) || isChrome(UA) || isMSIEWithChromeFrame(UA) || isMSIE10OrMore(UA);
     }
 }

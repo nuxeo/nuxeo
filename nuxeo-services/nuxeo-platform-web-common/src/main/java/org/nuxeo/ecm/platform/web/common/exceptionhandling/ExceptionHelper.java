@@ -48,16 +48,13 @@ public class ExceptionHelper {
         }
     }
 
-    public static List<String> possibleSecurityErrorMessages = Arrays.asList(
-            "java.lang.SecurityException",
-            DocumentSecurityException.class.getName(),
-            SecurityException.class.getName());
+    public static List<String> possibleSecurityErrorMessages = Arrays.asList("java.lang.SecurityException",
+            DocumentSecurityException.class.getName(), SecurityException.class.getName());
 
     public static boolean isSecurityError(Throwable t) {
         if (t == null) {
             return false;
-        } else if (t instanceof DocumentSecurityException
-                || t.getCause() instanceof DocumentSecurityException
+        } else if (t instanceof DocumentSecurityException || t.getCause() instanceof DocumentSecurityException
                 || t.getCause() instanceof SecurityException) {
             return true;
         } else if (t.getMessage() != null) {
@@ -74,8 +71,7 @@ public class ExceptionHelper {
     public static boolean isClientAbortError(Throwable t) {
         if (t == null) {
             return false;
-        } else if (t instanceof SocketException
-                || t.getCause() instanceof SocketException) {
+        } else if (t instanceof SocketException || t.getCause() instanceof SocketException) {
             return true;
         } else {
             // handle all IOException that are ClientAbortException by looking
@@ -86,8 +82,7 @@ public class ExceptionHelper {
                 return true;
             }
             Throwable cause = t.getCause();
-            if (cause != null
-                    && CLIENT_ABORT_EXCEPTION.equals(cause.getClass().getSimpleName())) {
+            if (cause != null && CLIENT_ABORT_EXCEPTION.equals(cause.getClass().getSimpleName())) {
                 return true;
             }
         }

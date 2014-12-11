@@ -38,11 +38,9 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * @author Thierry Delprat
  */
-public class AnonymousAuthenticator implements NuxeoAuthenticationPlugin,
-        NuxeoAuthenticationPluginLogoutExtension {
+public class AnonymousAuthenticator implements NuxeoAuthenticationPlugin, NuxeoAuthenticationPluginLogoutExtension {
 
     public static final String BLOCK_ANONYMOUS_LOGIN_KEY = "org.nuxeo.ecm.platform.ui.web.auth.anonymous.block";
 
@@ -61,8 +59,8 @@ public class AnonymousAuthenticator implements NuxeoAuthenticationPlugin,
         return false;
     }
 
-    public UserIdentificationInfo handleRetrieveIdentity(
-            HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
         if (!initialized) {
             try {
                 UserManager userManager = Framework.getLocalService(UserManager.class);
@@ -92,8 +90,7 @@ public class AnonymousAuthenticator implements NuxeoAuthenticationPlugin,
         }
 
         HttpSession session = httpRequest.getSession(false);
-        if (session != null
-                && Boolean.TRUE.equals(session.getAttribute(BLOCK_ANONYMOUS_LOGIN_KEY))) {
+        if (session != null && Boolean.TRUE.equals(session.getAttribute(BLOCK_ANONYMOUS_LOGIN_KEY))) {
             // next logout will clear the session anyway !!
             // session.setAttribute(BLOCK_ANONYMOUS_LOGIN_KEY, false);
             return true;
@@ -113,13 +110,11 @@ public class AnonymousAuthenticator implements NuxeoAuthenticationPlugin,
         return null;
     }
 
-    public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse, String baseURL) {
+    public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
         return null;
     }
 
-    public Boolean handleLogout(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse) {
+    public Boolean handleLogout(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         return Boolean.FALSE;
     }
 

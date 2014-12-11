@@ -44,12 +44,10 @@ import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * A vocabulary tree node based on l10nvocabulary or l10nxvocabulary directory.
- * These schemas store translations in columns of the form label_xx_XX or
- * label_xx. The label of a node is retrieved from column label_xx_XX (where
- * xx_XX is the current locale name) if it exists, from column label_xx (where
- * xx is the current locale language) else. If this one doesn't exist either,
- * the english label (from label_en) is used.
+ * A vocabulary tree node based on l10nvocabulary or l10nxvocabulary directory. These schemas store translations in
+ * columns of the form label_xx_XX or label_xx. The label of a node is retrieved from column label_xx_XX (where xx_XX is
+ * the current locale name) if it exists, from column label_xx (where xx is the current locale language) else. If this
+ * one doesn't exist either, the english label (from label_en) is used.
  *
  * @since 5.5
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
@@ -90,25 +88,20 @@ public class VocabularyTreeNode {
 
     protected char keySeparator;
 
-    public VocabularyTreeNode(int level, String id, String description,
-            String path, String vocabularyName,
+    public VocabularyTreeNode(int level, String id, String description, String path, String vocabularyName,
             DirectoryService directoryService) {
-        this(level, id, description, path, vocabularyName, directoryService,
-                false, '/', null);
+        this(level, id, description, path, vocabularyName, directoryService, false, '/', null);
     }
 
-    public VocabularyTreeNode(int level, String id, String description,
-            String path, String vocabularyName,
-            DirectoryService directoryService, boolean displayObsoleteEntries,
-            char keySeparator, String orderingField) {
-        this(level, id, description, path, vocabularyName, directoryService,
-                displayObsoleteEntries, keySeparator, orderingField, null);
+    public VocabularyTreeNode(int level, String id, String description, String path, String vocabularyName,
+            DirectoryService directoryService, boolean displayObsoleteEntries, char keySeparator, String orderingField) {
+        this(level, id, description, path, vocabularyName, directoryService, displayObsoleteEntries, keySeparator,
+                orderingField, null);
     }
 
-    public VocabularyTreeNode(int level, String id, String description,
-            String path, String vocabularyName,
-            DirectoryService directoryService, boolean displayObsoleteEntries,
-            char keySeparator, String orderingField, Comparable orderingValue) {
+    public VocabularyTreeNode(int level, String id, String description, String path, String vocabularyName,
+            DirectoryService directoryService, boolean displayObsoleteEntries, char keySeparator, String orderingField,
+            Comparable orderingValue) {
         this.level = level;
         this.id = id;
         this.label = description;
@@ -141,19 +134,15 @@ public class VocabularyTreeNode {
                 }
                 Comparable orderingValue = null;
                 if (!StringUtils.isBlank(orderingField)) {
-                    orderingValue = (Comparable) result.getProperty(schemaName,
-                            orderingField);
+                    orderingValue = (Comparable) result.getProperty(schemaName, orderingField);
                 }
-                children.add(new VocabularyTreeNode(level + 1, childIdendifier,
-                        childLabel, childPath, vocabularyName,
-                        getDirectoryService(), displayObsoleteEntries,
-                        keySeparator, orderingField, orderingValue));
+                children.add(new VocabularyTreeNode(level + 1, childIdendifier, childLabel, childPath, vocabularyName,
+                        getDirectoryService(), displayObsoleteEntries, keySeparator, orderingField, orderingValue));
             }
 
             // sort children
             Comparator<? super VocabularyTreeNode> cmp;
-            if (StringUtils.isBlank(orderingField)
-                    || "label".equals(orderingField)) {
+            if (StringUtils.isBlank(orderingField) || "label".equals(orderingField)) {
                 cmp = new LabelComparator(); // sort alphabetically
             } else {
                 cmp = new OrderingComparator();
@@ -167,8 +156,7 @@ public class VocabularyTreeNode {
         }
     }
 
-    public static String computeLabel(Locale locale, DocumentModel entry,
-            String schemaName) {
+    public static String computeLabel(Locale locale, DocumentModel entry, String schemaName) {
         String fieldName = LABEL_FIELD_PREFIX + locale.toString();
         String label = null;
         try {
@@ -229,8 +217,7 @@ public class VocabularyTreeNode {
             SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
             Schema schema = schemaManager.getSchema(directorySchema);
             if (schema == null) {
-                throw new DirectoryException(directorySchema
-                        + " is not a registered directory");
+                throw new DirectoryException(directorySchema + " is not a registered directory");
             }
             if (level == 0 && schema.hasField(PARENT_FIELD_ID)) {
                 // filter on empty parent

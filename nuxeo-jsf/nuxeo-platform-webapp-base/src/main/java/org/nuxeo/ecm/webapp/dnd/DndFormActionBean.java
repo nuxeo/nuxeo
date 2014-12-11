@@ -42,11 +42,9 @@ import org.json.JSONObject;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 
 /**
- * Seam action bean that is used to handle the meta-data form for the Drag&Drop
- * feature
+ * Seam action bean that is used to handle the meta-data form for the Drag&Drop feature
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 @Name("dndFormActions")
 @Scope(ScopeType.PAGE)
@@ -150,8 +148,7 @@ public class DndFormActionBean implements Serializable {
         if (metadataCollector == null) {
             metadataCollector = new HashMap<String, Map<String, Serializable>>();
             for (String schema : getSchemas()) {
-                metadataCollector.put(schema,
-                        new HashMap<String, Serializable>());
+                metadataCollector.put(schema, new HashMap<String, Serializable>());
             }
         }
         return metadataCollector;

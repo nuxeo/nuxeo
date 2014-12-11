@@ -61,7 +61,6 @@ public abstract class InputController {
     protected EventManager eventManager;
 
     @In(required = false, create = true)
-
     /**
      * @deprecated injecting current document is not a good idea, should be
      *             fetched from navigationContext directly.
@@ -84,21 +83,19 @@ public abstract class InputController {
     protected Principal currentUser;
 
     /**
-     * Utility method that helps remove a {@link DocumentModel} from a list. The
-     * document models are compared on {@link DocumentRef}s.
+     * Utility method that helps remove a {@link DocumentModel} from a list. The document models are compared on
+     * {@link DocumentRef}s.
      *
      * @param documentList
      * @param document
      */
-    public void removeDocumentFromList(List<DocumentModel> documentList,
-            DocumentModel document) {
+    public void removeDocumentFromList(List<DocumentModel> documentList, DocumentModel document) {
         if (null == document) {
             log.error("Received nul doc, not removing anything...");
             return;
         }
 
-        log.debug("Removing document "
-                + document.getId() + " from list...");
+        log.debug("Removing document " + document.getId() + " from list...");
 
         for (int i = 0; i < documentList.size(); i++) {
             if (documentList.get(i).getRef().equals(document.getRef())) {
@@ -110,16 +107,12 @@ public abstract class InputController {
     /**
      * Logs a {@link DocumentModel} title and the passed string (info).
      */
-    public void logDocumentWithTitle(String someLogString,
-            DocumentModel document) {
+    public void logDocumentWithTitle(String someLogString, DocumentModel document) {
         if (null != document) {
-            log.trace('[' + getClass().getSimpleName() + "] "
-                    + someLogString + ' '
-                    + document.getId());
+            log.trace('[' + getClass().getSimpleName() + "] " + someLogString + ' ' + document.getId());
             log.debug("CURRENT DOC PATH: " + document.getPathAsString());
         } else {
-            log.trace('[' + getClass().getSimpleName() + "] "
-                    + someLogString + " NULL DOC");
+            log.trace('[' + getClass().getSimpleName() + "] " + someLogString + " NULL DOC");
         }
     }
 
@@ -128,11 +121,9 @@ public abstract class InputController {
      */
     public void logDocumentWithName(String someLogString, DocumentModel document) {
         if (null != document) {
-            log.debug('[' + getClass().getSimpleName() + "] "
-                    + someLogString + ' ' + document.getName());
+            log.debug('[' + getClass().getSimpleName() + "] " + someLogString + ' ' + document.getName());
         } else {
-            log.debug('[' + getClass().getSimpleName() + "] "
-                    + someLogString + " NULL DOC");
+            log.debug('[' + getClass().getSimpleName() + "] " + someLogString + " NULL DOC");
         }
     }
 
@@ -150,8 +141,7 @@ public abstract class InputController {
     }
 
     protected void setFacesMessage(String msg) {
-        facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get(msg));
+        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get(msg));
     }
 
     /**
@@ -168,22 +158,17 @@ public abstract class InputController {
     /**
      * Returns null.
      * <p>
-     * Previous behavior was: Utility method to return non 'null' JSF outcome
-     * that do not change the current view. The problem with null outcome is
-     * that some seam components are not refetched and thus the JSF tree might
-     * hold references that are no longer up-to-date, esp. in search results
-     * views whose documents lists are computed by an EVENT scoped seam factory.
+     * Previous behavior was: Utility method to return non 'null' JSF outcome that do not change the current view. The
+     * problem with null outcome is that some seam components are not refetched and thus the JSF tree might hold
+     * references that are no longer up-to-date, esp. in search results views whose documents lists are computed by an
+     * EVENT scoped seam factory.
      *
-     * @param actionOutcome a string that might be used in the future to compute
-     *            the JSF outcome in a cleaner way
-     *
-     * @return the same view as previously based on the expectation that the
-     *         'outcome_name' match the view id '/outcome_name.xhtml'
-     *         faces-config.xml
-     * @deprecated returning a non-null outcome is now useless since our
-     *             {@link FancyNavigationHandler} already performs redirection
-     *             to the right outcome when dealing with a null outcome. Plus
-     *             assumptions on the view/outcome names here was a buggy hack.
+     * @param actionOutcome a string that might be used in the future to compute the JSF outcome in a cleaner way
+     * @return the same view as previously based on the expectation that the 'outcome_name' match the view id
+     *         '/outcome_name.xhtml' faces-config.xml
+     * @deprecated returning a non-null outcome is now useless since our {@link FancyNavigationHandler} already performs
+     *             redirection to the right outcome when dealing with a null outcome. Plus assumptions on the
+     *             view/outcome names here was a buggy hack.
      */
     @Deprecated
     public String computeOutcome(String actionOutcome) {

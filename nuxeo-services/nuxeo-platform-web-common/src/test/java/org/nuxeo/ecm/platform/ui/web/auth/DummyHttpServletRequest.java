@@ -264,8 +264,7 @@ public class DummyHttpServletRequest implements HttpServletRequest {
     public void setAttribute(String name, Object o) {
     }
 
-    public void setCharacterEncoding(String env)
-            throws UnsupportedEncodingException {
+    public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
     }
 
     @Override
@@ -305,15 +304,13 @@ public class DummyHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
-    public AsyncContext startAsync(ServletRequest arg0, ServletResponse arg1)
-            throws IllegalStateException {
+    public AsyncContext startAsync(ServletRequest arg0, ServletResponse arg1) throws IllegalStateException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public boolean authenticate(HttpServletResponse arg0) throws IOException,
-            ServletException {
+    public boolean authenticate(HttpServletResponse arg0) throws IOException, ServletException {
         // TODO Auto-generated method stub
         return false;
     }

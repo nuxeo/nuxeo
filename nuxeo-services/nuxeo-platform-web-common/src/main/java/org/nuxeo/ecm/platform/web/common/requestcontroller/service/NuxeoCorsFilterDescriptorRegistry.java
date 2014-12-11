@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
@@ -31,8 +29,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.7.2
  */
-public class NuxeoCorsFilterDescriptorRegistry extends
-        ContributionFragmentRegistry<NuxeoCorsFilterDescriptor> {
+public class NuxeoCorsFilterDescriptorRegistry extends ContributionFragmentRegistry<NuxeoCorsFilterDescriptor> {
 
     protected Map<String, NuxeoCorsFilterDescriptor> descs = new HashMap<>();
 
@@ -42,7 +39,8 @@ public class NuxeoCorsFilterDescriptorRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id, NuxeoCorsFilterDescriptor contrib, NuxeoCorsFilterDescriptor newOrigContrib) {
+    public void contributionUpdated(String id, NuxeoCorsFilterDescriptor contrib,
+            NuxeoCorsFilterDescriptor newOrigContrib) {
         if (descs.containsKey(id)) {
             descs.remove(id);
         }

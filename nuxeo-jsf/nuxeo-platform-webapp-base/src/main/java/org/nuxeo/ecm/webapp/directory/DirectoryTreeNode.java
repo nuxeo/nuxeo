@@ -55,8 +55,8 @@ import org.nuxeo.ecm.webapp.tree.TreeActionsBean;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Register directory tree configurations to make them available to the
- * DirectoryTreeManagerBean to build DirectoryTreeNode instances.
+ * Register directory tree configurations to make them available to the DirectoryTreeManagerBean to build
+ * DirectoryTreeNode instances.
  *
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
  */
@@ -92,9 +92,8 @@ public class DirectoryTreeNode {
 
     protected List<DirectoryTreeNode> children;
 
-    public DirectoryTreeNode(int level, DirectoryTreeDescriptor config,
-            String identifier, String description, String path,
-            DirectoryService directoryService) {
+    public DirectoryTreeNode(int level, DirectoryTreeDescriptor config, String identifier, String description,
+            String path, DirectoryService directoryService) {
         this.level = level;
         this.config = config;
         this.identifier = identifier;
@@ -103,8 +102,7 @@ public class DirectoryTreeNode {
         this.directoryService = directoryService;
     }
 
-    protected List<String> processSelectedValuesOnMultiSelect(String value,
-            List<String> values) {
+    protected List<String> processSelectedValuesOnMultiSelect(String value, List<String> values) {
         if (values.contains(value)) {
             values.remove(value);
         } else {
@@ -114,8 +112,7 @@ public class DirectoryTreeNode {
             String valueSlash = value + "/";
             for (String existingSelection : values) {
                 String existingSelectionSlash = existingSelection + "/";
-                if (existingSelectionSlash.startsWith(valueSlash)
-                        || valueSlash.startsWith(existingSelectionSlash)) {
+                if (existingSelectionSlash.startsWith(valueSlash) || valueSlash.startsWith(existingSelectionSlash)) {
                     valuesToRemove.add(existingSelection);
                 }
             }
@@ -135,8 +132,7 @@ public class DirectoryTreeNode {
                 String fieldName = config.getFieldName();
                 String schemaName = config.getSchemaName();
                 if (config.isMultiselect()) {
-                    List<String> values = (List<String>) searchDoc.getProperty(
-                            schemaName, fieldName);
+                    List<String> values = (List<String>) searchDoc.getProperty(schemaName, fieldName);
                     values = processSelectedValuesOnMultiSelect(path, values);
                     searchDoc.setProperty(schemaName, fieldName, values);
                 } else {
@@ -149,15 +145,11 @@ public class DirectoryTreeNode {
                 log.error("Cannot select node: search document model is null");
             }
         } else {
-            log.error(String.format(
-                    "Cannot select node on tree '%s': no content view available",
-                    identifier));
+            log.error(String.format("Cannot select node on tree '%s': no content view available", identifier));
         }
         // raise this event in order to reset the documents lists from
         // 'conversationDocumentsListsManager'
-        Events.instance().raiseEvent(
-                EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
-                new DocumentModelImpl("Folder"));
+        Events.instance().raiseEvent(EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED, new DocumentModelImpl("Folder"));
         pathProcessing();
         return config.getOutcome();
     }
@@ -170,21 +162,17 @@ public class DirectoryTreeNode {
                 String fieldName = config.getFieldName();
                 String schemaName = config.getSchemaName();
                 if (config.isMultiselect()) {
-                    List<Object> values = (List<Object>) searchDoc.getProperty(
-                            schemaName, fieldName);
+                    List<Object> values = (List<Object>) searchDoc.getProperty(schemaName, fieldName);
                     return values.contains(path);
                 } else {
-                    return path.equals(searchDoc.getProperty(schemaName,
-                            fieldName));
+                    return path.equals(searchDoc.getProperty(schemaName, fieldName));
                 }
             } else {
-                log.error("Cannot check if node is selected: "
-                        + "search document model is null");
+                log.error("Cannot check if node is selected: " + "search document model is null");
             }
         } else {
-            log.error(String.format(
-                    "Cannot check if node is selected on tree '%s': no "
-                            + "content view available", identifier));
+            log.error(String.format("Cannot check if node is selected on tree '%s': no " + "content view available",
+                    identifier));
         }
         return false;
     }
@@ -216,16 +204,14 @@ public class DirectoryTreeNode {
             FacesContext context = FacesContext.getCurrentInstance();
             for (DocumentModel result : results) {
                 String childIdendifier = result.getId();
-                String childDescription = translate(context,
-                        (String) result.getProperty(schema, LABEL_FIELD_ID));
+                String childDescription = translate(context, (String) result.getProperty(schema, LABEL_FIELD_ID));
                 String childPath;
                 if ("".equals(path)) {
                     childPath = childIdendifier;
                 } else {
                     childPath = path + '/' + childIdendifier;
                 }
-                children.add(new DirectoryTreeNode(level + 1, config,
-                        childIdendifier, childDescription, childPath,
+                children.add(new DirectoryTreeNode(level + 1, config, childIdendifier, childDescription, childPath,
                         getDirectoryService()));
             }
 
@@ -337,8 +323,7 @@ public class DirectoryTreeNode {
     protected String getDirectoryName() throws ClientException {
         String name = config.getDirectories()[level];
         if (name == null) {
-            throw new ClientException(
-                    "could not find directory name for level=" + level);
+            throw new ClientException("could not find directory name for level=" + level);
         }
         return name;
     }
@@ -359,13 +344,11 @@ public class DirectoryTreeNode {
         ContentViewActions cva = (ContentViewActions) seamContextHelper.get("contentViewActions");
         contentView = cva.getContentView(config.getContentView());
         if (contentView == null) {
-            throw new ClientException("no content view registered as "
-                    + config.getContentView());
+            throw new ClientException("no content view registered as " + config.getContentView());
         }
     }
 
-    protected DocumentModel getContentViewSearchDocumentModel()
-            throws ClientException {
+    protected DocumentModel getContentViewSearchDocumentModel() throws ClientException {
         lookupContentView();
         if (contentView != null) {
             return contentView.getSearchDocumentModel();
@@ -387,11 +370,9 @@ public class DirectoryTreeNode {
             try {
                 DocumentModel searchDoc = getContentViewSearchDocumentModel();
                 if (searchDoc != null) {
-                    aPath = (String) searchDoc.getProperty(
-                            config.getSchemaName(), config.getFieldName());
+                    aPath = (String) searchDoc.getProperty(config.getSchemaName(), config.getFieldName());
                 } else {
-                    log.error("Cannot perform path preprocessing: "
-                            + "search document model is null");
+                    log.error("Cannot perform path preprocessing: " + "search document model is null");
                 }
             } catch (ClientException e) {
                 throw new ClientRuntimeException(e);
@@ -404,16 +385,14 @@ public class DirectoryTreeNode {
             for (int b = 0; b < bitsOfPath.length; b++) {
                 String dirName = config.getDirectories()[b];
                 if (dirName == null) {
-                    throw new DirectoryException(
-                            "Could not find directory name for key=" + b);
+                    throw new DirectoryException("Could not find directory name for key=" + b);
                 }
                 Session session = getDirectoryService().open(dirName);
                 DocumentModel docMod = session.getEntry(bitsOfPath[b]);
                 try {
                     // take first schema: directory entries only have one
                     final String schemaName = docMod.getSchemas()[0];
-                    property = (String) docMod.getProperty(schemaName,
-                            LABEL_FIELD_ID);
+                    property = (String) docMod.getProperty(schemaName, LABEL_FIELD_ID);
                 } catch (ClientException e) {
                     throw new DirectoryException(e);
                 }
@@ -445,19 +424,16 @@ public class DirectoryTreeNode {
                     if (searchDoc != null) {
                         String fieldName = config.getFieldName();
                         String schemaName = config.getSchemaName();
-                        Object value = searchDoc.getProperty(schemaName,
-                                fieldName);
+                        Object value = searchDoc.getProperty(schemaName, fieldName);
                         if (value instanceof String) {
                             open = Boolean.valueOf(((String) value).startsWith(path));
                         }
                     } else {
-                        log.error("Cannot check if node is opened: "
-                                + "search document model is null");
+                        log.error("Cannot check if node is opened: " + "search document model is null");
                     }
                 } else {
-                    log.error(String.format(
-                            "Cannot check if node is opened on tree '%s': no "
-                                    + "content view available", identifier));
+                    log.error(String.format("Cannot check if node is opened on tree '%s': no "
+                            + "content view available", identifier));
                 }
             }
         }

@@ -37,8 +37,7 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Component for tree service, handing registries for trees managing
- * {@link DocumentModel} object.
+ * Component for tree service, handing registries for trees managing {@link DocumentModel} object.
  *
  * @author Anahide Tchertchian
  */
@@ -89,8 +88,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (PLUGIN_EXTENSION_POINT.equals(extensionPoint)) {
             TreeManagerPluginDescriptor plugin = (TreeManagerPluginDescriptor) contribution;
@@ -132,8 +130,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (PLUGIN_EXTENSION_POINT.equals(extensionPoint)) {
             TreeManagerPluginDescriptor plugin = (TreeManagerPluginDescriptor) contribution;
@@ -180,14 +177,11 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         } else {
             // custom filter
             try {
-                Object instance = TreeManagerImpl.class.getClassLoader().loadClass(
-                        filterClass).newInstance();
+                Object instance = TreeManagerImpl.class.getClassLoader().loadClass(filterClass).newInstance();
                 if (instance instanceof Filter) {
                     filter = (Filter) instance;
                 } else {
-                    log.error(String.format(
-                            "Class %s should follow %s interface", filterClass,
-                            Filter.class.getName()));
+                    log.error(String.format("Class %s should follow %s interface", filterClass, Filter.class.getName()));
                 }
             } catch (Throwable e) {
                 log.error(e);
@@ -211,13 +205,11 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
             return null;
         }
         try {
-            Object instance = TreeManagerImpl.class.getClassLoader().loadClass(
-                    leafFilterClass).newInstance();
+            Object instance = TreeManagerImpl.class.getClassLoader().loadClass(leafFilterClass).newInstance();
             if (instance instanceof Filter) {
                 return (Filter) instance;
             } else {
-                log.error(String.format("Class %s should follow %s interface",
-                        leafFilterClass, Filter.class.getName()));
+                log.error(String.format("Class %s should follow %s interface", leafFilterClass, Filter.class.getName()));
             }
         } catch (Throwable e) {
             log.error(e);
@@ -240,14 +232,11 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         } else {
             // custom sorter
             try {
-                Object instance = TreeManagerImpl.class.getClassLoader().loadClass(
-                        sorterClass).newInstance();
+                Object instance = TreeManagerImpl.class.getClassLoader().loadClass(sorterClass).newInstance();
                 if (instance instanceof Sorter) {
                     sorter = (Sorter) instance;
                 } else {
-                    log.error(String.format(
-                            "Class %s should follow %s interface", sorterClass,
-                            Sorter.class.getName()));
+                    log.error(String.format("Class %s should follow %s interface", sorterClass, Sorter.class.getName()));
                 }
             } catch (Throwable e) {
                 log.error(e);

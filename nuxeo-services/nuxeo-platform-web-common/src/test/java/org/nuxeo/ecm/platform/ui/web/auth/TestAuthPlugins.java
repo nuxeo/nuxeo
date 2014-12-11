@@ -19,10 +19,14 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
@@ -79,9 +83,7 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
         assertFalse(plugin.getStateful());
         assertTrue(plugin.getNeedStartingURLSaving());
         assertEquals("Dummy_LM", plugin.getLoginModulePlugin());
-        assertSame(
-                Class.forName("org.nuxeo.ecm.platform.ui.web.auth.DummyAuthenticator"),
-                plugin.getClassName());
+        assertSame(Class.forName("org.nuxeo.ecm.platform.ui.web.auth.DummyAuthenticator"), plugin.getClassName());
     }
 
 }

@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.nuxeo.common.utils.FileMatcher;
 
 /**
  *
@@ -48,13 +47,11 @@ public class FileMatcherTest {
 
         fm = FileMatcher.getMatcher("{v:.+}.jar");
         assertTrue(fm.match("nuxeo-automation-1.2.jar"));
-        assertEquals("Value not extracted", "nuxeo-automation-1.2",
-                fm.getValue());
+        assertEquals("Value not extracted", "nuxeo-automation-1.2", fm.getValue());
 
         fm = FileMatcher.getMatcher("{v:.+}");
         assertTrue(fm.match("nuxeo-automation-1.2.jar"));
-        assertEquals("Value not extracted", "nuxeo-automation-1.2.jar",
-                fm.getValue());
+        assertEquals("Value not extracted", "nuxeo-automation-1.2.jar", fm.getValue());
 
         fm = FileMatcher.getMatcher("{n:.*-}[0-9]+.*\\.jar");
         assertTrue(fm.match("nuxeo-automation-5.5-SNAPSHOT.jar"));

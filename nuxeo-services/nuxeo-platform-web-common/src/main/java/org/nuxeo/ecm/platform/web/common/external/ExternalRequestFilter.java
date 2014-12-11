@@ -39,11 +39,9 @@ import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Filter that checks if the current request was called from an external tool
- * (MS Office for instance)
+ * Filter that checks if the current request was called from an external tool (MS Office for instance)
  * <p/>
- * Then if a session was already opened in user browser, it automatically
- * redirects to the requested URL
+ * Then if a session was already opened in user browser, it automatically redirects to the requested URL
  *
  * @author Thierry Martins
  * @since 5.6
@@ -57,20 +55,17 @@ public class ExternalRequestFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         /*
-         * Check if login page was accessed after a redirection and if a Nuxeo
-         * session has been started
+         * Check if login page was accessed after a redirection and if a Nuxeo session has been started
          */
-        if (request != null
-                && httpRequest.getParameter(NXAuthConstants.REQUESTED_URL) != null) {
+        if (request != null && httpRequest.getParameter(NXAuthConstants.REQUESTED_URL) != null) {
             HttpSession httpSession = httpRequest.getSession(false);
-            if (httpSession != null
-                    && httpSession.getAttribute(NXAuthConstants.USERIDENT_KEY) != null) {
+            if (httpSession != null && httpSession.getAttribute(NXAuthConstants.USERIDENT_KEY) != null) {
 
                 log.debug("Detect redirection while an active session is running");
 
@@ -79,8 +74,7 @@ public class ExternalRequestFilter implements Filter {
                     try {
                         requestedUrl = URLDecoder.decode(requestedUrl, "UTF-8");
                     } catch (UnsupportedEncodingException e) {
-                        log.error("Unable to get the requestedUrl parameter"
-                                + e);
+                        log.error("Unable to get the requestedUrl parameter" + e);
                     }
                 }
 

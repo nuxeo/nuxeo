@@ -21,12 +21,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Interface for services that knows how to handle login responses.
- * This was specially introduced to extend {@link NuxeoAuthenticationPlugin} interface
- * to add login response handling capabilities to existing authenticators.
+ * Interface for services that knows how to handle login responses. This was specially introduced to extend
+ * {@link NuxeoAuthenticationPlugin} interface to add login response handling capabilities to existing authenticators.
  * <p>
- * This interface should be implemented by {@link NuxeoAuthenticationPlugin} instances that needs
- * full control over the login response.
+ * This interface should be implemented by {@link NuxeoAuthenticationPlugin} instances that needs full control over the
+ * login response.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

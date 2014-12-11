@@ -23,9 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Listener performing operations when dealing with an error. Order of methods
- * called:
- *
+ * Listener performing operations when dealing with an error. Order of methods called:
  * <ul>
  * <li>1. startHandling</li>
  * <li>2. beforeSetErrorPageAttribute</li>
@@ -40,15 +38,15 @@ public interface ExceptionHandlingListener {
     /**
      * Error has happened, things to do before error is dealt with.
      */
-    void startHandling(Throwable t, HttpServletRequest request,
-            HttpServletResponse response) throws IOException, ServletException;
+    void startHandling(Throwable t, HttpServletRequest request, HttpServletResponse response) throws IOException,
+            ServletException;
 
-    void beforeSetErrorPageAttribute(Throwable t, HttpServletRequest request,
-            HttpServletResponse response) throws IOException, ServletException;
+    void beforeSetErrorPageAttribute(Throwable t, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException;
 
-    void beforeForwardToErrorPage(Throwable t, HttpServletRequest request,
-            HttpServletResponse response) throws IOException, ServletException;
+    void beforeForwardToErrorPage(Throwable t, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException;
 
-    void afterDispatch(Throwable t, HttpServletRequest request,
-            HttpServletResponse response) throws IOException, ServletException;
+    void afterDispatch(Throwable t, HttpServletRequest request, HttpServletResponse response) throws IOException,
+            ServletException;
 }

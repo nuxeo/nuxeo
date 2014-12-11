@@ -30,19 +30,17 @@ import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.platform.web.common.UserAgentMatcher;
 
 /**
- * Seam component used to outject a Session scoped flag that indicates if
- * client's browser supports HTML5 (plugin free) Drag&Drop feature
+ * Seam component used to outject a Session scoped flag that indicates if client's browser supports HTML5 (plugin free)
+ * Drag&Drop feature
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 @Name("dndConfigHelper")
 @Scope(ScopeType.EVENT)
 public class DndConfigurationHelper {
 
     /**
-     * Factory method used to push into the Session context a flag indicating if
-     * HTML5 Drag&Drop can be used
+     * Factory method used to push into the Session context a flag indicating if HTML5 Drag&Drop can be used
      *
      * @return
      */

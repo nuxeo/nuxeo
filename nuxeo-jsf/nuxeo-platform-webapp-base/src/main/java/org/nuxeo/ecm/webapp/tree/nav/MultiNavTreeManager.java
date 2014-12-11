@@ -66,8 +66,7 @@ public class MultiNavTreeManager implements Serializable {
     protected Map<String, String> messages;
 
     public void setSelectedNavigationTree(String selectedNavigationTree) {
-        webActions.setCurrentTabId(DirectoryTreeDescriptor.NAV_ACTION_CATEGORY,
-                selectedNavigationTree);
+        webActions.setCurrentTabId(DirectoryTreeDescriptor.NAV_ACTION_CATEGORY, selectedNavigationTree);
     }
 
     public String getSelectedNavigationTree() {
@@ -84,17 +83,12 @@ public class MultiNavTreeManager implements Serializable {
         return null;
     }
 
-    @Observer(value = {
-            WebActions.CURRENT_TAB_CHANGED_EVENT + "_"
-                    + DirectoryTreeDescriptor.NAV_ACTION_CATEGORY,
-            WebActions.CURRENT_TAB_CHANGED_EVENT + "_"
-                    + DirectoryTreeDescriptor.DIR_ACTION_CATEGORY }, create = true)
+    @Observer(value = { WebActions.CURRENT_TAB_CHANGED_EVENT + "_" + DirectoryTreeDescriptor.NAV_ACTION_CATEGORY,
+            WebActions.CURRENT_TAB_CHANGED_EVENT + "_" + DirectoryTreeDescriptor.DIR_ACTION_CATEGORY }, create = true)
     public void onCurrentTreeChange(String category, String tabId) {
         // raise this event in order to reset the documents lists from
         // 'conversationDocumentsListsManager'
-        Events.instance().raiseEvent(
-                EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
-                new DocumentModelImpl("Folder"));
+        Events.instance().raiseEvent(EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED, new DocumentModelImpl("Folder"));
         if (tabId != null) {
             if (tabId.startsWith(DirectoryTreeDescriptor.ACTION_ID_PREFIX)) {
                 directoryTreeManager.setSelectedTreeName(tabId.substring(DirectoryTreeDescriptor.ACTION_ID_PREFIX.length()));

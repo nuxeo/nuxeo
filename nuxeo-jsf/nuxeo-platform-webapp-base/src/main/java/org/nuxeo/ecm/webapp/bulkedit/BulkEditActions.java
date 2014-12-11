@@ -79,8 +79,7 @@ public class BulkEditActions implements Serializable {
     protected DocumentModel fictiveDocumentModel;
 
     /**
-     * Returns the common layouts of the current selected documents for the
-     * {@code edit} mode.
+     * Returns the common layouts of the current selected documents for the {@code edit} mode.
      */
     public List<String> getCommonsLayouts() {
         if (documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_SELECTION)) {
@@ -115,29 +114,24 @@ public class BulkEditActions implements Serializable {
     public String bulkEditSelection() throws ClientException {
         if (fictiveDocumentModel != null) {
             List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
-            Framework.getLocalService(BulkEditService.class).updateDocuments(
-                    documentManager, fictiveDocumentModel, selectedDocuments);
+            Framework.getLocalService(BulkEditService.class).updateDocuments(documentManager, fictiveDocumentModel,
+                    selectedDocuments);
 
             for (DocumentModel doc : selectedDocuments) {
                 Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED, doc);
             }
 
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    messages.get("label.bulk.edit.documents.updated"),
+            facesMessages.add(StatusMessage.Severity.INFO, messages.get("label.bulk.edit.documents.updated"),
                     selectedDocuments.size());
 
-            Events.instance().raiseEvent(SELECTION_EDITED, selectedDocuments,
-                    fictiveDocumentModel);
+            Events.instance().raiseEvent(SELECTION_EDITED, selectedDocuments, fictiveDocumentModel);
             fictiveDocumentModel = null;
         }
         return null;
     }
 
     /**
-     *
-     * @deprecated since 5.7. Use
-     *             {@link org.nuxeo.ecm.webapp.bulkedit.BulkEditActions#bulkEditSelection()}
-     *             .
+     * @deprecated since 5.7. Use {@link org.nuxeo.ecm.webapp.bulkedit.BulkEditActions#bulkEditSelection()} .
      */
     @Deprecated
     public void bulkEditSelectionNoRedirect() throws ClientException {
@@ -151,8 +145,7 @@ public class BulkEditActions implements Serializable {
 
         List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
         for (DocumentModel doc : docs) {
-            if (!documentManager.hasPermission(doc.getRef(),
-                    SecurityConstants.WRITE)) {
+            if (!documentManager.hasPermission(doc.getRef(), SecurityConstants.WRITE)) {
                 return false;
             }
         }

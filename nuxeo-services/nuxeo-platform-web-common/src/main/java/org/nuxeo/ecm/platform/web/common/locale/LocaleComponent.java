@@ -21,8 +21,7 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Allow external components to provide locale and timezone to be used in the
- * application.
+ * Allow external components to provide locale and timezone to be used in the application.
  *
  * @since 5.6
  */
@@ -31,8 +30,7 @@ public class LocaleComponent extends DefaultComponent {
     protected LocaleProvider provider;
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if ("providers".equals(extensionPoint)) {
             provider = ((LocaleProviderDescriptor) contribution).newProvider();

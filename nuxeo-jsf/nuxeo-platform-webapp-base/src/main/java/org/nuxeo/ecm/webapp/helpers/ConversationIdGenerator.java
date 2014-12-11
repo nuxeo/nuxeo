@@ -55,8 +55,7 @@ public class ConversationIdGenerator implements Serializable {
         if (mainConversationCounter == 0) {
             newMainConversationId = MAIN_CONVERSATION_PREFIX;
         } else {
-            newMainConversationId = MAIN_CONVERSATION_PREFIX
-                    + mainConversationCounter;
+            newMainConversationId = MAIN_CONVERSATION_PREFIX + mainConversationCounter;
         }
         mainConversationCounter += 1;
         return newMainConversationId;
@@ -67,8 +66,7 @@ public class ConversationIdGenerator implements Serializable {
         if (createConversationCounter == 0) {
             newCreateConversationId = CREATE_CONVERSATION_PREFIX;
         } else {
-            newCreateConversationId = CREATE_CONVERSATION_PREFIX
-                    + createConversationCounter;
+            newCreateConversationId = CREATE_CONVERSATION_PREFIX + createConversationCounter;
         }
         createConversationCounter += 1;
         return newCreateConversationId;
@@ -79,8 +77,7 @@ public class ConversationIdGenerator implements Serializable {
         // this case can happend if user logged in from a bookmarked URL that
         // contains conversation ID
         String existingConversationId = getConversationIdInURL();
-        if (existingConversationId != null
-                && existingConversationId.startsWith(MAIN_CONVERSATION_PREFIX)) {
+        if (existingConversationId != null && existingConversationId.startsWith(MAIN_CONVERSATION_PREFIX)) {
             return existingConversationId;
         }
 

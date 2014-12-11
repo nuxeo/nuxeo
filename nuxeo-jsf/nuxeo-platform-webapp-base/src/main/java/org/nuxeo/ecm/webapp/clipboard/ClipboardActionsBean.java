@@ -73,16 +73,14 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This is the action listener behind the copy/paste template that knows how to
- * copy/paste the selected user data to the target action listener, and also
- * create/remove the corresponding objects into the backend.
+ * This is the action listener behind the copy/paste template that knows how to copy/paste the selected user data to the
+ * target action listener, and also create/remove the corresponding objects into the backend.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
 @Name("clipboardActions")
 @Scope(SESSION)
-public class ClipboardActionsBean extends InputController implements
-        ClipboardActions, Serializable {
+public class ClipboardActionsBean extends InputController implements ClipboardActions, Serializable {
 
     private static final long serialVersionUID = -2407222456116573225L;
 
@@ -134,8 +132,7 @@ public class ClipboardActionsBean extends InputController implements
         canEditSelectedDocs = null;
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
             putSelectionInWorkList(
-                    documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION),
-                    forceAppend);
+                    documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION), forceAppend);
             autoSelectCurrentList(DocumentsListsManager.DEFAULT_WORKING_LIST);
         } else {
             log.debug("No selectable Documents in context to process copy on...");
@@ -152,11 +149,9 @@ public class ClipboardActionsBean extends InputController implements
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
             List<DocumentModel> docsList = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
             Object[] params = { docsList.size() };
-            facesMessages.add(StatusMessage.Severity.INFO, "#0 "
-                    + resourcesAccessor.getMessages().get("n_copied_docs"),
-                    params);
-            documentsListsManager.addToWorkingList(
-                    DocumentsListsManager.DEFAULT_WORKING_LIST, docsList);
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    "#0 " + resourcesAccessor.getMessages().get("n_copied_docs"), params);
+            documentsListsManager.addToWorkingList(DocumentsListsManager.DEFAULT_WORKING_LIST, docsList);
 
             // auto select clipboard
             autoSelectCurrentList(DocumentsListsManager.DEFAULT_WORKING_LIST);
@@ -170,11 +165,10 @@ public class ClipboardActionsBean extends InputController implements
     @WebRemote
     public void putInClipboard(String docId) throws ClientException {
         DocumentModel doc = documentManager.getDocument(new IdRef(docId));
-        documentsListsManager.addToWorkingList(DocumentsListsManager.CLIPBOARD,
-                doc);
+        documentsListsManager.addToWorkingList(DocumentsListsManager.CLIPBOARD, doc);
         Object[] params = { 1 };
-        facesMessages.add(StatusMessage.Severity.INFO, "#0 "
-                + resourcesAccessor.getMessages().get("n_copied_docs"), params);
+        facesMessages.add(StatusMessage.Severity.INFO, "#0 " + resourcesAccessor.getMessages().get("n_copied_docs"),
+                params);
 
         autoSelectCurrentList(DocumentsListsManager.CLIPBOARD);
     }
@@ -184,12 +178,10 @@ public class ClipboardActionsBean extends InputController implements
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
             List<DocumentModel> docsList = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
             Object[] params = { docsList.size() };
-            facesMessages.add(StatusMessage.Severity.INFO, "#0 "
-                    + resourcesAccessor.getMessages().get("n_copied_docs"),
-                    params);
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    "#0 " + resourcesAccessor.getMessages().get("n_copied_docs"), params);
 
-            documentsListsManager.addToWorkingList(
-                    DocumentsListsManager.CLIPBOARD, docsList);
+            documentsListsManager.addToWorkingList(DocumentsListsManager.CLIPBOARD, docsList);
 
             // auto select clipboard
             autoSelectCurrentList(DocumentsListsManager.CLIPBOARD);
@@ -204,20 +196,15 @@ public class ClipboardActionsBean extends InputController implements
         putSelectionInWorkList(docsList, false);
     }
 
-    public void putSelectionInWorkList(List<DocumentModel> docsList,
-            Boolean forceAppend) {
+    public void putSelectionInWorkList(List<DocumentModel> docsList, Boolean forceAppend) {
         canEditSelectedDocs = null;
         if (null != docsList) {
             Object[] params = { docsList.size() };
-            facesMessages.add(
-                    StatusMessage.Severity.INFO,
-                    "#0 "
-                            + resourcesAccessor.getMessages().get(
-                                    "n_added_to_worklist_docs"), params);
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    "#0 " + resourcesAccessor.getMessages().get("n_added_to_worklist_docs"), params);
 
             // Add to the default working list
-            documentsListsManager.addToWorkingList(
-                    getCurrentSelectedListName(), docsList, forceAppend);
+            documentsListsManager.addToWorkingList(getCurrentSelectedListName(), docsList, forceAppend);
             log.debug("Elements copied to clipboard...");
 
         } else {
@@ -231,16 +218,14 @@ public class ClipboardActionsBean extends InputController implements
     public void copySelection(List<DocumentModel> copiedDocs) {
         if (null != copiedDocs) {
             Object[] params = { copiedDocs.size() };
-            facesMessages.add(StatusMessage.Severity.INFO, "#0 "
-                    + resourcesAccessor.getMessages().get("n_copied_docs"),
-                    params);
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    "#0 " + resourcesAccessor.getMessages().get("n_copied_docs"), params);
 
             // clipboard.copy(copiedDocs);
 
             // Reset + Add to clipboard list
             documentsListsManager.resetWorkingList(DocumentsListsManager.CLIPBOARD);
-            documentsListsManager.addToWorkingList(
-                    DocumentsListsManager.CLIPBOARD, copiedDocs);
+            documentsListsManager.addToWorkingList(DocumentsListsManager.CLIPBOARD, copiedDocs);
 
             // Add to the default working list
             documentsListsManager.addToWorkingList(copiedDocs);
@@ -255,8 +240,7 @@ public class ClipboardActionsBean extends InputController implements
 
     public String removeWorkListItem(DocumentRef ref) throws ClientException {
         DocumentModel doc = documentManager.getDocument(ref);
-        documentsListsManager.removeFromWorkingList(
-                getCurrentSelectedListName(), doc);
+        documentsListsManager.removeFromWorkingList(getCurrentSelectedListName(), doc);
         return null;
     }
 
@@ -269,27 +253,21 @@ public class ClipboardActionsBean extends InputController implements
         return pasteDocumentList(documentsListsManager.getWorkingList(listName));
     }
 
-    public String pasteDocumentListInside(String listName, String docId)
-            throws ClientException {
-        return pasteDocumentListInside(
-                documentsListsManager.getWorkingList(listName), docId);
+    public String pasteDocumentListInside(String listName, String docId) throws ClientException {
+        return pasteDocumentListInside(documentsListsManager.getWorkingList(listName), docId);
     }
 
-    public String pasteDocumentList(List<DocumentModel> docPaste)
-            throws ClientException {
+    public String pasteDocumentList(List<DocumentModel> docPaste) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (null != docPaste) {
-            List<DocumentModel> newDocs = recreateDocumentsWithNewParent(
-                    getParent(currentDocument), docPaste);
+            List<DocumentModel> newDocs = recreateDocumentsWithNewParent(getParent(currentDocument), docPaste);
 
             Object[] params = { newDocs.size() };
-            facesMessages.add(StatusMessage.Severity.INFO, "#0 "
-                    + resourcesAccessor.getMessages().get("n_pasted_docs"),
-                    params);
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    "#0 " + resourcesAccessor.getMessages().get("n_pasted_docs"), params);
 
             EventManager.raiseEventsOnDocumentSelected(currentDocument);
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                    currentDocument);
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
 
             log.debug("Elements pasted and created into the backend...");
         } else {
@@ -299,21 +277,17 @@ public class ClipboardActionsBean extends InputController implements
         return computeOutcome(PASTE_OUTCOME);
     }
 
-    public String pasteDocumentListInside(List<DocumentModel> docPaste,
-            String docId) throws ClientException {
+    public String pasteDocumentListInside(List<DocumentModel> docPaste, String docId) throws ClientException {
         DocumentModel targetDoc = documentManager.getDocument(new IdRef(docId));
         if (null != docPaste) {
-            List<DocumentModel> newDocs = recreateDocumentsWithNewParent(
-                    targetDoc, docPaste);
+            List<DocumentModel> newDocs = recreateDocumentsWithNewParent(targetDoc, docPaste);
 
             Object[] params = { newDocs.size() };
-            facesMessages.add(StatusMessage.Severity.INFO, "#0 "
-                    + resourcesAccessor.getMessages().get("n_pasted_docs"),
-                    params);
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    "#0 " + resourcesAccessor.getMessages().get("n_pasted_docs"), params);
 
             EventManager.raiseEventsOnDocumentSelected(targetDoc);
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                    targetDoc);
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, targetDoc);
 
             log.debug("Elements pasted and created into the backend...");
         } else {
@@ -323,8 +297,7 @@ public class ClipboardActionsBean extends InputController implements
         return null;
     }
 
-    public List<DocumentModel> moveDocumentsToNewParent(
-            DocumentModel destFolder, List<DocumentModel> docs)
+    public List<DocumentModel> moveDocumentsToNewParent(DocumentModel destFolder, List<DocumentModel> docs)
             throws ClientException {
         DocumentRef destFolderRef = destFolder.getRef();
         boolean destinationIsDeleted = LifeCycleConstants.DELETED_STATE.equals(destFolder.getCurrentLifeCycleState());
@@ -334,25 +307,21 @@ public class ClipboardActionsBean extends InputController implements
             DocumentRef sourceFolderRef = docModel.getParentRef();
 
             String sourceType = docModel.getType();
-            boolean canRemoveDoc = documentManager.hasPermission(
-                    sourceFolderRef, SecurityConstants.REMOVE_CHILDREN);
-            boolean canPasteInCurrentFolder = typeManager.isAllowedSubType(
-                    sourceType, destFolder.getType(),
+            boolean canRemoveDoc = documentManager.hasPermission(sourceFolderRef, SecurityConstants.REMOVE_CHILDREN);
+            boolean canPasteInCurrentFolder = typeManager.isAllowedSubType(sourceType, destFolder.getType(),
                     navigationContext.getCurrentDocument());
             boolean sameFolder = sourceFolderRef.equals(destFolderRef);
             if (canRemoveDoc && canPasteInCurrentFolder && !sameFolder) {
                 if (destinationIsDeleted) {
                     if (checkDeletedState(docModel)) {
-                        DocumentModel newDoc = documentManager.move(
-                                docModel.getRef(), destFolderRef, null);
+                        DocumentModel newDoc = documentManager.move(docModel.getRef(), destFolderRef, null);
                         setDeleteState(newDoc);
                         newDocs.add(newDoc);
                     } else {
                         addWarnMessage(sb, docModel);
                     }
                 } else {
-                    DocumentModel newDoc = documentManager.move(
-                            docModel.getRef(), destFolderRef, null);
+                    DocumentModel newDoc = documentManager.move(docModel.getRef(), destFolderRef, null);
                     newDocs.add(newDoc);
                 }
             }
@@ -365,8 +334,7 @@ public class ClipboardActionsBean extends InputController implements
         return newDocs;
     }
 
-    public String moveDocumentList(String listName, String docId)
-            throws ClientException {
+    public String moveDocumentList(String listName, String docId) throws ClientException {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(listName);
         DocumentModel targetDoc = documentManager.getDocument(new IdRef(docId));
         // Get all parent folders
@@ -380,17 +348,15 @@ public class ClipboardActionsBean extends InputController implements
         documentsListsManager.resetWorkingList(listName);
 
         Object[] params = { newDocs.size() };
-        facesMessages.add(StatusMessage.Severity.INFO, "#0 "
-                + resourcesAccessor.getMessages().get("n_moved_docs"), params);
+        facesMessages.add(StatusMessage.Severity.INFO, "#0 " + resourcesAccessor.getMessages().get("n_moved_docs"),
+                params);
 
         EventManager.raiseEventsOnDocumentSelected(targetDoc);
-        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                targetDoc);
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, targetDoc);
 
         // Send event to all initial parents
         for (DocumentRef docRef : parentRefs) {
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                    documentManager.getDocument(docRef));
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, documentManager.getDocument(docRef));
         }
 
         log.debug("Elements moved and created into the backend...");
@@ -408,8 +374,7 @@ public class ClipboardActionsBean extends InputController implements
             moveDocumentList(getCurrentSelectedListName());
         } catch (ClientException e) {
             log.info("moveWorkingList failed" + e.getMessage(), e);
-            facesMessages.add(StatusMessage.Severity.WARN,
-                    resourcesAccessor.getMessages().get("invalid_operation"),
+            facesMessages.add(StatusMessage.Severity.WARN, resourcesAccessor.getMessages().get("invalid_operation"),
                     null);
         }
         return null;
@@ -420,8 +385,7 @@ public class ClipboardActionsBean extends InputController implements
             pasteDocumentList(getCurrentSelectedList());
         } catch (ClientException e) {
             log.info("pasteWorkingList failed" + e.getMessage(), e);
-            facesMessages.add(StatusMessage.Severity.WARN,
-                    resourcesAccessor.getMessages().get("invalid_operation"),
+            facesMessages.add(StatusMessage.Severity.WARN, resourcesAccessor.getMessages().get("invalid_operation"),
                     null);
         }
         return null;
@@ -433,8 +397,7 @@ public class ClipboardActionsBean extends InputController implements
             returnToPreviouslySelectedList();
         } catch (ClientException e) {
             log.info("pasteClipboard failed" + e.getMessage(), e);
-            facesMessages.add(StatusMessage.Severity.WARN,
-                    resourcesAccessor.getMessages().get("invalid_operation"),
+            facesMessages.add(StatusMessage.Severity.WARN, resourcesAccessor.getMessages().get("invalid_operation"),
                     null);
 
         }
@@ -456,8 +419,7 @@ public class ClipboardActionsBean extends InputController implements
     /**
      * Creates the documents in the backend under the target parent.
      */
-    protected List<DocumentModel> recreateDocumentsWithNewParent(
-            DocumentModel parent, List<DocumentModel> documents)
+    protected List<DocumentModel> recreateDocumentsWithNewParent(DocumentModel parent, List<DocumentModel> documents)
             throws ClientException {
 
         List<DocumentModel> newDocuments = new ArrayList<DocumentModel>();
@@ -471,8 +433,7 @@ public class ClipboardActionsBean extends InputController implements
 
         // filter list on content type
         for (DocumentModel doc : documents) {
-            if (typeManager.isAllowedSubType(doc.getType(), parent.getType(),
-                    navigationContext.getCurrentDocument())) {
+            if (typeManager.isAllowedSubType(doc.getType(), parent.getType(), navigationContext.getCurrentDocument())) {
                 documentsToPast.add(doc);
             }
         }
@@ -496,11 +457,10 @@ public class ClipboardActionsBean extends InputController implements
             }
         }
         if (!proxyRefs.isEmpty()) {
-            newDocuments.addAll(documentManager.copyProxyAsDocument(proxyRefs,
-                    parent.getRef(),true));
+            newDocuments.addAll(documentManager.copyProxyAsDocument(proxyRefs, parent.getRef(), true));
         }
         if (!docRefs.isEmpty()) {
-            newDocuments.addAll(documentManager.copy(docRefs, parent.getRef(),true));
+            newDocuments.addAll(documentManager.copy(docRefs, parent.getRef(), true));
         }
         if (destinationIsDeleted) {
             for (DocumentModel d : newDocuments) {
@@ -514,30 +474,25 @@ public class ClipboardActionsBean extends InputController implements
         return newDocuments;
     }
 
-    protected boolean checkDeletedState(DocumentModel doc)
-            throws ClientException {
+    protected boolean checkDeletedState(DocumentModel doc) throws ClientException {
         if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
             return true;
         }
-        if (doc.getAllowedStateTransitions().contains(
-                LifeCycleConstants.DELETE_TRANSITION)) {
+        if (doc.getAllowedStateTransitions().contains(LifeCycleConstants.DELETE_TRANSITION)) {
             return true;
         }
         return false;
     }
 
     protected void setDeleteState(DocumentModel doc) throws ClientException {
-        if (doc.getAllowedStateTransitions().contains(
-                LifeCycleConstants.DELETE_TRANSITION)) {
+        if (doc.getAllowedStateTransitions().contains(LifeCycleConstants.DELETE_TRANSITION)) {
             doc.followTransition(LifeCycleConstants.DELETE_TRANSITION);
         }
     }
 
-    protected void addWarnMessage(StringBuilder sb, DocumentModel doc)
-            throws ClientException {
+    protected void addWarnMessage(StringBuilder sb, DocumentModel doc) throws ClientException {
         if (sb.length() == 0) {
-            sb.append(resourcesAccessor.getMessages().get(
-                    "document_no_deleted_state"));
+            sb.append(resourcesAccessor.getMessages().get("document_no_deleted_state"));
             sb.append("'").append(doc.getTitle()).append("'");
         } else {
             sb.append(", '").append(doc.getTitle()).append("'");
@@ -545,11 +500,10 @@ public class ClipboardActionsBean extends InputController implements
     }
 
     /**
-     * Check if the container is a publish space. If this is not the case, a
-     * proxy copied to it will be recreated as a new document.
+     * Check if the container is a publish space. If this is not the case, a proxy copied to it will be recreated as a
+     * new document.
      */
-    protected boolean isPublishSpace(DocumentModel container)
-            throws ClientException {
+    protected boolean isPublishSpace(DocumentModel container) throws ClientException {
         SchemaManager schemaManager;
         try {
             schemaManager = Framework.getService(SchemaManager.class);
@@ -571,12 +525,10 @@ public class ClipboardActionsBean extends InputController implements
      * <p>
      * Rules:
      * <p>
-     * In general the currentDocument is the parent. Exceptions to this rule:
-     * when the currentDocument is a domain or null. If Domain then content root
-     * is the parent. If null is passed, then the JCR root is taken as parent.
+     * In general the currentDocument is the parent. Exceptions to this rule: when the currentDocument is a domain or
+     * null. If Domain then content root is the parent. If null is passed, then the JCR root is taken as parent.
      */
-    protected DocumentModel getParent(DocumentModel currentDocument)
-            throws ClientException {
+    protected DocumentModel getParent(DocumentModel currentDocument) throws ClientException {
 
         if (currentDocument.isFolder()) {
             return currentDocument;
@@ -614,20 +566,16 @@ public class ClipboardActionsBean extends InputController implements
         return exportWorklistAsZip();
     }
 
-    public String exportWorklistAsZip(List<DocumentModel> documents)
-            throws ClientException {
+    public String exportWorklistAsZip(List<DocumentModel> documents) throws ClientException {
         return exportWorklistAsZip(documents, true);
     }
 
-    public String exportWorklistAsZip(DocumentModel document)
-            throws ClientException {
-        return exportWorklistAsZip(
-                Arrays.asList(new DocumentModel[] { document }), true);
+    public String exportWorklistAsZip(DocumentModel document) throws ClientException {
+        return exportWorklistAsZip(Arrays.asList(new DocumentModel[] { document }), true);
     }
 
     /**
-     * Checks if copy action is available in the context of the current
-     * Document.
+     * Checks if copy action is available in the context of the current Document.
      * <p>
      * Condition: the list of selected documents is not empty.
      */
@@ -639,22 +587,19 @@ public class ClipboardActionsBean extends InputController implements
     }
 
     /**
-     * Checks if the Paste action is available in the context of the current
-     * Document. Conditions:
+     * Checks if the Paste action is available in the context of the current Document. Conditions:
      * <p>
      * <ul>
      * <li>list is not empty
      * <li>user has the needed permissions on the current document
-     * <li>the content of the list can be added as children of the current
-     * document
+     * <li>the content of the list can be added as children of the current document
      * </ul>
      */
     public boolean getCanPaste(String listName) throws ClientException {
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
-        if (documentsListsManager.isWorkingListEmpty(listName)
-                || currentDocument == null) {
+        if (documentsListsManager.isWorkingListEmpty(listName) || currentDocument == null) {
             return false;
         }
 
@@ -663,8 +608,7 @@ public class ClipboardActionsBean extends InputController implements
             // parent may be unreachable (right inheritance blocked)
             return false;
         }
-        if (!documentManager.hasPermission(pasteTarget.getRef(),
-                SecurityConstants.ADD_CHILDREN)) {
+        if (!documentManager.hasPermission(pasteTarget.getRef(), SecurityConstants.ADD_CHILDREN)) {
             return false;
         } else {
             // filter on allowed content types
@@ -672,8 +616,7 @@ public class ClipboardActionsBean extends InputController implements
             // String pasteTypeName = clipboard.getClipboardDocumentType();
             List<String> pasteTypesName = documentsListsManager.getWorkingListTypes(listName);
             for (String pasteTypeName : pasteTypesName) {
-                if (typeManager.isAllowedSubType(pasteTypeName,
-                        pasteTarget.getType(),
+                if (typeManager.isAllowedSubType(pasteTypeName, pasteTarget.getType(),
                         navigationContext.getCurrentDocument())) {
                     return true;
                 }
@@ -682,15 +625,12 @@ public class ClipboardActionsBean extends InputController implements
         }
     }
 
-    public boolean getCanPasteInside(String listName, DocumentModel document)
-            throws ClientException {
-        if (documentsListsManager.isWorkingListEmpty(listName)
-                || document == null) {
+    public boolean getCanPasteInside(String listName, DocumentModel document) throws ClientException {
+        if (documentsListsManager.isWorkingListEmpty(listName) || document == null) {
             return false;
         }
 
-        if (!documentManager.hasPermission(document.getRef(),
-                SecurityConstants.ADD_CHILDREN)) {
+        if (!documentManager.hasPermission(document.getRef(), SecurityConstants.ADD_CHILDREN)) {
             return false;
         } else {
             // filter on allowed content types
@@ -698,8 +638,7 @@ public class ClipboardActionsBean extends InputController implements
             // String pasteTypeName = clipboard.getClipboardDocumentType();
             List<String> pasteTypesName = documentsListsManager.getWorkingListTypes(listName);
             for (String pasteTypeName : pasteTypesName) {
-                if (typeManager.isAllowedSubType(pasteTypeName,
-                        document.getType(),
+                if (typeManager.isAllowedSubType(pasteTypeName, document.getType(),
                         navigationContext.getCurrentDocument())) {
                     return true;
                 }
@@ -709,26 +648,21 @@ public class ClipboardActionsBean extends InputController implements
     }
 
     /**
-     * Checks if the Move action is available in the context of the document
-     * document. Conditions:
+     * Checks if the Move action is available in the context of the document document. Conditions:
      * <p>
      * <ul>
      * <li>list is not empty
      * <li>user has the needed permissions on the document
-     * <li>an element in the list can be removed from its folder and added as
-     * child of the current document
+     * <li>an element in the list can be removed from its folder and added as child of the current document
      * </ul>
      */
-    public boolean getCanMoveInside(String listName, DocumentModel document)
-            throws ClientException {
-        if (documentsListsManager.isWorkingListEmpty(listName)
-                || document == null) {
+    public boolean getCanMoveInside(String listName, DocumentModel document) throws ClientException {
+        if (documentsListsManager.isWorkingListEmpty(listName) || document == null) {
             return false;
         }
         DocumentRef destFolderRef = document.getRef();
         DocumentModel destFolder = document;
-        if (!documentManager.hasPermission(destFolderRef,
-                SecurityConstants.ADD_CHILDREN)) {
+        if (!documentManager.hasPermission(destFolderRef, SecurityConstants.ADD_CHILDREN)) {
             return false;
         } else {
             // filter on allowed content types
@@ -736,10 +670,8 @@ public class ClipboardActionsBean extends InputController implements
             for (DocumentModel docModel : documentsListsManager.getWorkingList(listName)) {
                 DocumentRef sourceFolderRef = docModel.getParentRef();
                 String sourceType = docModel.getType();
-                boolean canRemoveDoc = documentManager.hasPermission(
-                        sourceFolderRef, SecurityConstants.REMOVE_CHILDREN);
-                boolean canPasteInCurrentFolder = typeManager.isAllowedSubType(
-                        sourceType, destFolder.getType(),
+                boolean canRemoveDoc = documentManager.hasPermission(sourceFolderRef, SecurityConstants.REMOVE_CHILDREN);
+                boolean canPasteInCurrentFolder = typeManager.isAllowedSubType(sourceType, destFolder.getType(),
                         navigationContext.getCurrentDocument());
                 boolean sameFolder = sourceFolderRef.equals(destFolderRef);
                 if (canRemoveDoc && canPasteInCurrentFolder && !sameFolder) {
@@ -751,14 +683,12 @@ public class ClipboardActionsBean extends InputController implements
     }
 
     /**
-     * Checks if the Move action is available in the context of the current
-     * Document. Conditions:
+     * Checks if the Move action is available in the context of the current Document. Conditions:
      * <p>
      * <ul>
      * <li>list is not empty
      * <li>user has the needed permissions on the current document
-     * <li>an element in the list can be removed from its folder and added as
-     * child of the current document
+     * <li>an element in the list can be removed from its folder and added as child of the current document
      * </ul>
      */
     public boolean getCanMove(String listName) throws ClientException {
@@ -778,13 +708,11 @@ public class ClipboardActionsBean extends InputController implements
         return getCanPaste(DocumentsListsManager.CLIPBOARD);
     }
 
-    public boolean getCanPasteFromClipboardInside(DocumentModel document)
-            throws ClientException {
+    public boolean getCanPasteFromClipboardInside(DocumentModel document) throws ClientException {
         return getCanPasteInside(DocumentsListsManager.CLIPBOARD, document);
     }
 
-    public boolean getCanMoveFromClipboardInside(DocumentModel document)
-            throws ClientException {
+    public boolean getCanMoveFromClipboardInside(DocumentModel document) throws ClientException {
         return getCanMoveInside(DocumentsListsManager.CLIPBOARD, document);
     }
 
@@ -855,8 +783,7 @@ public class ClipboardActionsBean extends InputController implements
                 actionCache = new HashMap<String, List<Action>>();
             }
             if (!actionCache.containsKey(lstName)) {
-                actionCache.put(lstName,
-                        webActions.getActionsList(lstName + "_LIST"));
+                actionCache.put(lstName, webActions.getActionsList(lstName + "_LIST"));
             }
             return actionCache.get(lstName);
         } else {
@@ -865,8 +792,7 @@ public class ClipboardActionsBean extends InputController implements
     }
 
     public List<Action> getActionsForSelection() {
-        return webActions.getUnfiltredActionsList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
-                + "_LIST");
+        return webActions.getUnfiltredActionsList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION + "_LIST");
     }
 
     private void autoSelectCurrentList(String listName) {
@@ -907,11 +833,9 @@ public class ClipboardActionsBean extends InputController implements
         return canEdit;
     }
 
-    private boolean checkWritePerm(List<DocumentModel> selectedDocs)
-            throws ClientException {
+    private boolean checkWritePerm(List<DocumentModel> selectedDocs) throws ClientException {
         for (DocumentModel documentModel : selectedDocs) {
-            boolean canWrite = documentManager.hasPermission(
-                    documentModel.getRef(), SecurityConstants.WRITE_PROPERTIES);
+            boolean canWrite = documentManager.hasPermission(documentModel.getRef(), SecurityConstants.WRITE_PROPERTIES);
             if (!canWrite) {
                 return false;
             }
@@ -927,8 +851,7 @@ public class ClipboardActionsBean extends InputController implements
     }
 
     public String getCacheKey() {
-        return getCurrentSelectedListName() + "::"
-                + localeSelector.getLocaleString();
+        return getCurrentSelectedListName() + "::" + localeSelector.getLocaleString();
     }
 
     public boolean isCacheEnabledForSelection() {
@@ -939,13 +862,11 @@ public class ClipboardActionsBean extends InputController implements
     }
 
     @Override
-    public String exportWorklistAsZip(List<DocumentModel> documents,
-            boolean exportAllBlobs) throws ClientException {
+    public String exportWorklistAsZip(List<DocumentModel> documents, boolean exportAllBlobs) throws ClientException {
         try {
             FacesContext context = FacesContext.getCurrentInstance();
             DocumentListZipExporter zipExporter = new DocumentListZipExporter();
-            File tmpFile = zipExporter.exportWorklistAsZip(documents,
-                    documentManager, exportAllBlobs);
+            File tmpFile = zipExporter.exportWorklistAsZip(documents, documentManager, exportAllBlobs);
             if (tmpFile == null) {
                 // empty zip file, do nothing
                 setFacesMessage("label.clipboard.emptyDocuments");
@@ -953,21 +874,17 @@ public class ClipboardActionsBean extends InputController implements
             } else {
                 if (tmpFile.length() > Functions.getBigFileSizeLimit()) {
                     HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-                    request.setAttribute(
-                            NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
+                    request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
                     String zipDownloadURL = BaseURL.getBaseURL(request);
                     zipDownloadURL += "nxbigzipfile" + "/";
                     zipDownloadURL += tmpFile.getName();
                     try {
                         context.getExternalContext().redirect(zipDownloadURL);
                     } catch (IOException e) {
-                        log.error(
-                                "Error while redirecting for big file downloader",
-                                e);
+                        log.error("Error while redirecting for big file downloader", e);
                     }
                 } else {
-                    ComponentUtils.downloadFile(context, "clipboard.zip",
-                            tmpFile);
+                    ComponentUtils.downloadFile(context, "clipboard.zip", tmpFile);
                 }
 
                 return "";

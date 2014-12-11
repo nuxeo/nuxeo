@@ -41,9 +41,8 @@ public class XAnnotatedMember {
     protected XAnnotatedObject xao;
 
     /**
-     * The value factory used to transform strings in objects compatible with
-     * this member type. In the case of collection types this factory is used
-     * for collection components.
+     * The value factory used to transform strings in objects compatible with this member type. In the case of
+     * collection types this factory is used for collection components.
      */
     protected XValueFactory valueFactory;
 
@@ -84,8 +83,7 @@ public class XAnnotatedMember {
             accessor.setValue(instance, value);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(
-                    String.format("%s, setter=%s, value=%s", e.getMessage(),
-                            accessor, value), e);
+                    String.format("%s, setter=%s, value=%s", e.getMessage(), accessor, value), e);
         }
     }
 
@@ -132,8 +130,7 @@ public class XAnnotatedMember {
                 val = val.trim();
             }
             if (valueFactory == null) {
-                throw new NullPointerException("Missing XValueFactory for "
-                        + type);
+                throw new NullPointerException("Missing XValueFactory for " + type);
             }
             return valueFactory.deserialize(ctx, val);
         }
