@@ -251,8 +251,6 @@ public class DocumentPageProviderOperation {
      * @since 5.8
      */
     private Object[] getParameters(final String pageProviderName, final Object[] givenParameters) {
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         // resolve additional parameters
         PageProviderDefinition ppDef = ppService.getPageProviderDefinition(pageProviderName);
         String[] params = ppDef.getQueryParameters();
