@@ -52,9 +52,14 @@ public class NuxeoValueHolderBean implements Serializable {
         super();
     }
 
+    /**
+     * Init marked public for NXP-16182.
+     *
+     * @since 7.1
+     */
     @PostConstruct
     @PreDestroy
-    protected void init() {
+    public void init() {
         values = new HashMap<>();
     }
 
