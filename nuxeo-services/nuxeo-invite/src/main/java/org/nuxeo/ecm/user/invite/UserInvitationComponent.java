@@ -413,7 +413,13 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     protected void sendValidationEmail(Map<String, Serializable> additionnalInfo, DocumentModel registrationDoc)
             throws ClientException {
+        UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
+        sendEmail(additionnalInfo, registrationDoc, configuration.getValidationEmailTemplate(),
+                configuration.getValidationEmailTitle());
+    }
 
+    protected void sendEmail(Map<String, Serializable> additionnalInfo, DocumentModel registrationDoc,
+            String emailTemplatePath, String emailTitle) throws ClientException {
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
 
         String emailAdress = (String) registrationDoc.getPropertyValue(configuration.getUserInfoEmailField());
@@ -440,17 +446,16 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         StringWriter writer = new StringWriter();
 
         try {
-            rh.getRenderingEngine().render(configuration.getValidationEmailTemplate(), input, writer);
+            rh.getRenderingEngine().render(emailTemplatePath, input, writer);
         } catch (RenderingException e) {
             throw new ClientException("Error during rendering email", e);
         }
 
         String body = writer.getBuffer().toString();
-        String title = configuration.getValidationEmailTitle();
         String copyTo = (String) registrationDoc.getPropertyValue("registration:copyTo");
         if (!isTestModeSet()) {
             try {
-                generateMail(emailAdress, copyTo, title, body);
+                generateMail(emailAdress, copyTo, emailTitle, body);
             } catch (NamingException | MessagingException e) {
                 throw new ClientException("Error while sending mail : ", e);
             }
@@ -727,49 +732,15 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     public void reviveRegistrationRequests(CoreSession session, List<DocumentModel> registrationDocs)
             throws ClientException {
         for (DocumentModel registrationDoc : registrationDocs) {
-            reviveRegistrationRequest(session, registrationDoc, new HashMap<String, Object>());
+            reviveRegistrationRequest(session, registrationDoc, new HashMap<String, Serializable>());
         }
     }
 
     protected void reviveRegistrationRequest(CoreSession session, DocumentModel registrationDoc,
-            Map<String, Object> additionalInfos) throws ClientException {
-        StringWriter writer = new StringWriter();
-        Map<String, Object> input = new HashMap<String, Object>();
-
-        // Get the base url
-        String baseUrl = Framework.getProperty(NUXEO_URL_KEY);
-
-        baseUrl = StringUtils.isBlank(baseUrl) ? "/" : baseUrl;
-        if (!baseUrl.endsWith("/")) {
-            baseUrl += "/";
-        }
-
-        additionalInfos.put("validationBaseURL", baseUrl + getConfiguration(registrationDoc).getValidationRelUrl());
-        input.put("info", additionalInfos);
-        input.put("userAlreadyExists", checkUserFromRegistrationExistence(registrationDoc));
-        input.put(REGISTRATION_DATA_DOC, registrationDoc);
-        input.put(UserInvitationService.REGISTRATION_CONFIGURATION_NAME, getConfiguration(registrationDoc).getName());
-
+            Map<String, Serializable> additionalInfos) throws ClientException {
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
-        try {
-            rh.getRenderingEngine().render(configuration.getReviveEmailTemplate(), input, writer);
-        } catch (RenderingException e) {
-            throw new ClientException("Error during templating email : ", e);
-        }
-
-        String emailAdress = (String) registrationDoc.getPropertyValue(configuration.getUserInfoEmailField());
-        String body = writer.getBuffer().toString();
-        String title = configuration.getReviveEmailTitle();
-
-        if (!Framework.isTestModeSet()) {
-            try {
-                generateMail(emailAdress, null, title, body);
-            } catch (NamingException | MessagingException e) {
-                throw new ClientException("Error while sending mail : ", e);
-            }
-        } else {
-            testRendering = body;
-        }
+        sendEmail(additionalInfos, registrationDoc, configuration.getReviveEmailTemplate(),
+                configuration.getReviveEmailTitle());
     }
 
     @Override
