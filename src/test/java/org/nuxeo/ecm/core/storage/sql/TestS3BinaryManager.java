@@ -184,7 +184,7 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
         // another binary we'll keep
         binaryManager.getBinary(new ByteArrayInputStream(CONTENT3.getBytes("UTF-8")));
 
-        assertEquals(new HashSet<String>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
+        assertEquals(new HashSet<>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
 
         // GC in non-delete mode
         BinaryGarbageCollector gc = binaryManager.getGarbageCollector();
@@ -201,7 +201,7 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
         assertEquals(bytes.length + 4, status.sizeBinaries);
         assertEquals(1, status.numBinariesGC);
         assertEquals(3, status.sizeBinariesGC);
-        assertEquals(new HashSet<String>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
+        assertEquals(new HashSet<>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
 
         // real GC
         gc = binaryManager.getGarbageCollector();
@@ -214,7 +214,7 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
         assertEquals(bytes.length + 4, status.sizeBinaries);
         assertEquals(1, status.numBinariesGC);
         assertEquals(3, status.sizeBinariesGC);
-        assertEquals(new HashSet<String>(Arrays.asList(CONTENT_MD5, CONTENT3_MD5)), listObjects());
+        assertEquals(new HashSet<>(Arrays.asList(CONTENT_MD5, CONTENT3_MD5)), listObjects());
 
         // another GC after not marking content3
         gc = binaryManager.getGarbageCollector();
@@ -283,7 +283,7 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
      * Lists all objects that look like MD5 digests.
      */
     protected Set<String> listObjects() {
-        Set<String> digests = new HashSet<String>();
+        Set<String> digests = new HashSet<>();
         ObjectListing list = null;
         do {
             if (list == null) {
