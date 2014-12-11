@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -54,9 +53,8 @@ public class OperationAdapter extends DefaultAdapter {
 
     @POST
     @Path("{operationName}")
-    public Response doPost(@PathParam("operationName")
-    String oid, @Context
-    HttpServletRequest request, ExecutionRequest xreq) throws Exception {
+    public Response doPost(@PathParam("operationName") String oid, @Context HttpServletRequest request,
+            ExecutionRequest xreq) throws Exception {
         try {
             AutomationServer srv = Framework.getLocalService(AutomationServer.class);
             if (!srv.accept(oid, false, request)) {
@@ -71,11 +69,9 @@ public class OperationAdapter extends DefaultAdapter {
             if (operationType instanceof ChainTypeImpl) {
                 OperationChain chain = ((ChainTypeImpl) operationType).getChain();
                 if (!chain.getOperations().isEmpty()) {
-                    operationType = service.getOperation(chain.getOperations().get(
-                            0).id());
+                    operationType = service.getOperation(chain.getOperations().get(0).id());
                 } else {
-                    throw new WebException("Chain '" + oid
-                            + "' doesn't contain any operation");
+                    throw new WebException("Chain '" + oid + "' doesn't contain any operation");
                 }
             }
 
@@ -86,8 +82,7 @@ public class OperationAdapter extends DefaultAdapter {
                 }
             }
 
-            OperationContext ctx = xreq.createContext(request,
-                    getContext().getCoreSession());
+            OperationContext ctx = xreq.createContext(request, getContext().getCoreSession());
             Object result = service.run(ctx, oid, xreq.getParams());
 
             int customHttpStatus = xreq.getCtx().getHttpStatus();
@@ -97,16 +92,11 @@ public class OperationAdapter extends DefaultAdapter {
 
             return Response.ok(result).build();
         } catch (OperationException cause) {
-            if (ExceptionHelper.unwrapException(cause) instanceof
-                    RestOperationException) {
-                int customHttpStatus = ((RestOperationException) ExceptionHelper
-                        .unwrapException(cause)).getStatus();
-                throw WebException.newException(
-                        "Failed to invoke operation: " + oid, cause,
-                        customHttpStatus);
+            if (ExceptionHelper.unwrapException(cause) instanceof RestOperationException) {
+                int customHttpStatus = ((RestOperationException) ExceptionHelper.unwrapException(cause)).getStatus();
+                throw WebException.newException("Failed to invoke operation: " + oid, cause, customHttpStatus);
             }
-            throw WebException.newException(
-                    "Failed to invoke operation: " + oid, cause);
+            throw WebException.newException("Failed to invoke operation: " + oid, cause);
         }
 
     }

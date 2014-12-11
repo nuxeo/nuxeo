@@ -31,8 +31,7 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Adapter that expose a page provider that needs only one parameter that is the
- * document Id
+ * Adapter that expose a page provider that needs only one parameter that is the document Id
  *
  * @since 5.7.2
  */
@@ -57,9 +56,8 @@ public class PageProviderAdapter extends DocumentModelListPaginableAdapter {
 
     @GET
     @Path("{pageProviderName}")
-    public Paginable<DocumentModel> getProviderDocs(
-            @PathParam("pageProviderName")
-            String providerName) throws ClientException {
+    public Paginable<DocumentModel> getProviderDocs(@PathParam("pageProviderName") String providerName)
+            throws ClientException {
         pageProviderName = providerName;
         return super.getPaginableEntries();
     }

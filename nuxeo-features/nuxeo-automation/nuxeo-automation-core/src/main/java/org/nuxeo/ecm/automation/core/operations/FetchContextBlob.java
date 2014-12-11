@@ -21,7 +21,6 @@ import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = FetchContextBlob.ID, category = Constants.CAT_FETCH, label = "Context File(s)", description = "Fetch the input of the context as a file or list of files. The file(s) will become the input for the next operation.")
@@ -32,7 +31,7 @@ public class FetchContextBlob {
     @Context
     protected OperationContext ctx;
 
-    @OperationMethod(collector=BlobCollector.class)
+    @OperationMethod(collector = BlobCollector.class)
     public Blob run(Blob blob) throws Exception {
         return blob;
     }

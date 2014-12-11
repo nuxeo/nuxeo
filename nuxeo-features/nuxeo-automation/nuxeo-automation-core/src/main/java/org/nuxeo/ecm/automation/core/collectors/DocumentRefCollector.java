@@ -20,14 +20,12 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentRefList;
 
 /**
- * This implementation collect {@link DocumentRef} objects and return them as a
- * {@link DocumentRefList} object.
+ * This implementation collect {@link DocumentRef} objects and return them as a {@link DocumentRefList} object.
  * <p>
- * You may use this to automatically iterate over iterable inputs in operation
- * methods that <b>return</b> a {@link DocumentRef} object.
+ * You may use this to automatically iterate over iterable inputs in operation methods that <b>return</b> a
+ * {@link DocumentRef} object.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocumentRefCollector extends ArrayList<DocumentRef> implements DocumentRefList,
         OutputCollector<DocumentRef, DocumentRefList> {
@@ -39,8 +37,8 @@ public class DocumentRefCollector extends ArrayList<DocumentRef> implements Docu
         return size();
     }
 
-    public void collect(OperationContext ctx, DocumentRef ref)
-            throws OperationException {
+    @Override
+    public void collect(OperationContext ctx, DocumentRef ref) throws OperationException {
         add(ref);
     }
 

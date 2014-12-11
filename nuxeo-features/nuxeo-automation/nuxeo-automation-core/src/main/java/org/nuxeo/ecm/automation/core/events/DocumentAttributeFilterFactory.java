@@ -18,8 +18,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
 
 /**
- * Create filters that are able to filter documents on their attribute (Regular
- * Doc, Published Doc, Version, Link, Proxy, Immutable, Mutable)
+ * Create filters that are able to filter documents on their attribute (Regular Doc, Published Doc, Version, Link,
+ * Proxy, Immutable, Mutable)
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -62,6 +62,7 @@ public class DocumentAttributeFilterFactory {
     static class RegularDocFilter implements Filter {
         private static final long serialVersionUID = 1L;
 
+        @Override
         public boolean accept(DocumentModel doc) {
             return !doc.isImmutable() && !doc.isProxy();
         }
@@ -70,6 +71,7 @@ public class DocumentAttributeFilterFactory {
     static class LinkDocFilter implements Filter {
         private static final long serialVersionUID = 1L;
 
+        @Override
         public boolean accept(DocumentModel doc) {
             return !doc.isImmutable() && doc.isProxy();
         }
@@ -78,6 +80,7 @@ public class DocumentAttributeFilterFactory {
     static class PublishedDocFilter implements Filter {
         private static final long serialVersionUID = 1L;
 
+        @Override
         public boolean accept(DocumentModel doc) {
             return doc.isImmutable() && doc.isProxy();
         }
@@ -86,6 +89,7 @@ public class DocumentAttributeFilterFactory {
     static class ProxyDocFilter implements Filter {
         private static final long serialVersionUID = 1L;
 
+        @Override
         public boolean accept(DocumentModel doc) {
             return doc.isProxy();
         }
@@ -94,6 +98,7 @@ public class DocumentAttributeFilterFactory {
     static class VersionDocFilter implements Filter {
         private static final long serialVersionUID = 1L;
 
+        @Override
         public boolean accept(DocumentModel doc) {
             return doc.isVersion();
         }
@@ -102,6 +107,7 @@ public class DocumentAttributeFilterFactory {
     static class ImmutableDocFilter implements Filter {
         private static final long serialVersionUID = 1L;
 
+        @Override
         public boolean accept(DocumentModel doc) {
             return doc.isImmutable();
         }
@@ -110,6 +116,7 @@ public class DocumentAttributeFilterFactory {
     static class MutableDocFilter implements Filter {
         private static final long serialVersionUID = 1L;
 
+        @Override
         public boolean accept(DocumentModel doc) {
             return !doc.isImmutable();
         }

@@ -25,7 +25,7 @@ import org.nuxeo.ecm.platform.convert.ConvertHelper;
 
 /**
  * Convert the given blob to a file with given mimetype.
- * 
+ *
  * @author ldoguin
  */
 @Operation(id = ConvertBlob.ID, category = Constants.CAT_CONVERSION, label = "Convert to given mime-type", description = "Convert the input file to a file of the given mime-type and return the new file.", since = "5.7")

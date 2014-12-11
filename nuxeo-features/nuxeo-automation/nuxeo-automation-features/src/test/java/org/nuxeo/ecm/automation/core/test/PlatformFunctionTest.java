@@ -28,16 +28,13 @@ import org.nuxeo.ecm.core.api.ClientException;
  */
 public class PlatformFunctionTest {
 
-    List<String> listOfString = Arrays.asList(new String[] { "value list 1",
-            "value list 2" });
+    List<String> listOfString = Arrays.asList(new String[] { "value list 1", "value list 2" });
 
-    List<Integer> listOfInteger = Arrays.asList(new Integer[] {
-            new Integer(-1), new Integer(-2) });
+    List<Integer> listOfInteger = Arrays.asList(new Integer[] { new Integer(-1), new Integer(-2) });
 
     String[] arrayOfString = new String[] { "value list 1", "value list 2" };
 
-    Integer[] arrayOfInteger = new Integer[] { new Integer(10),
-            new Integer(11), };
+    Integer[] arrayOfInteger = new Integer[] { new Integer(10), new Integer(11), };
 
     List<Object> listOfObjects = new ArrayList<Object>();
 
@@ -77,8 +74,7 @@ public class PlatformFunctionTest {
 
     @Test
     public void shouldConcatenateListString() throws ClientException {
-        List<String> result = pf.concatenateValuesAsNewList(listOfString, arrayOfString,
-                stringValue1);
+        List<String> result = pf.concatenateValuesAsNewList(listOfString, arrayOfString, stringValue1);
         assertEquals(5, result.size());
         assertEquals("value list 1", result.get(0));
         assertEquals("value list 2", result.get(1));
@@ -89,8 +85,7 @@ public class PlatformFunctionTest {
 
     @Test
     public void shouldConcatenateListInteger() throws ClientException {
-        List<Integer> result = pf.concatenateValuesAsNewList(listOfInteger, arrayOfInteger,
-                intValue1);
+        List<Integer> result = pf.concatenateValuesAsNewList(listOfInteger, arrayOfInteger, intValue1);
         assertEquals(5, result.size());
         assertEquals(new Integer(-1), result.get(0));
         assertEquals(new Integer(-2), result.get(1));

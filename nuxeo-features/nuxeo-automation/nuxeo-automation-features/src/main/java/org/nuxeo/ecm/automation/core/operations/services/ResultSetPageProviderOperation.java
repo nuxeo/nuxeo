@@ -45,16 +45,13 @@ import java.util.Map;
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.7
  */
-@Operation(id = ResultSetPageProviderOperation.ID,
-        category = Constants.CAT_FETCH, label = "QueryAndFetch",
-        description = "Perform "
-                + "a query or a named provider query on the repository. Result is "
-                + "paginated. The result is returned as a RecordSet (QueryAndFetch) " +
-                "rather than as a List of Document"
-                + "The query result will become the input for the next "
-                + "operation. If no query or provider name is given, a query returning "
-                + "all the documents that the user has access to will be executed.",
-        addToStudio = false)
+@Operation(id = ResultSetPageProviderOperation.ID, category = Constants.CAT_FETCH, label = "QueryAndFetch", description = "Perform "
+        + "a query or a named provider query on the repository. Result is "
+        + "paginated. The result is returned as a RecordSet (QueryAndFetch) "
+        + "rather than as a List of Document"
+        + "The query result will become the input for the next "
+        + "operation. If no query or provider name is given, a query returning "
+        + "all the documents that the user has access to will be executed.", addToStudio = false)
 public class ResultSetPageProviderOperation {
 
     public static final String ID = "Resultset.PageProvider";
@@ -79,14 +76,13 @@ public class ResultSetPageProviderOperation {
     protected String providerName;
 
     /**
-     * @deprecated since 6.0 use instead {@link org.nuxeo.ecm.automation
-     * .core.operations.services.query.ResultSetQuery}
+     * @deprecated since 6.0 use instead {@link org.nuxeo.ecm.automation .core.operations.services.query.ResultSetQuery}
      */
+    @Deprecated
     @Param(name = "query", required = false)
     protected String query;
 
-    @Param(name = "language", required = false, widget = Constants.W_OPTION,
-            values = { NXQL.NXQL, CMIS })
+    @Param(name = "language", required = false, widget = Constants.W_OPTION, values = { NXQL.NXQL, CMIS })
     protected String lang = NXQL.NXQL;
 
     @Param(name = "page", required = false)
@@ -117,32 +113,28 @@ public class ResultSetPageProviderOperation {
     /**
      * @since 6.0
      */
-    @Param(name = PageProviderServiceImpl.NAMED_PARAMETERS, required = false,
-            description = "Named parameters to pass to the page provider to " +
-                    "fill in query variables.")
+    @Param(name = PageProviderServiceImpl.NAMED_PARAMETERS, required = false, description = "Named parameters to pass to the page provider to "
+            + "fill in query variables.")
     protected Properties namedParameters;
 
     /**
      * @since 6.0
      */
-    @Param(name = "sortBy", required = false, description = "Sort by " +
-            "properties (separated by comma)")
+    @Param(name = "sortBy", required = false, description = "Sort by " + "properties (separated by comma)")
     protected String sortBy;
 
     /**
      * @since 6.0
      */
-    @Param(name = "sortOrder", required = false, description = "Sort order, " +
-            "ASC or DESC", widget = Constants.W_OPTION,
-            values = { ASC, DESC })
+    @Param(name = "sortOrder", required = false, description = "Sort order, " + "ASC or DESC", widget = Constants.W_OPTION, values = {
+            ASC, DESC })
     protected String sortOrder;
 
     @SuppressWarnings("unchecked")
     @OperationMethod
     public RecordSet run() throws Exception {
 
-        PageProviderService pps = Framework.getLocalService
-                (PageProviderService.class);
+        PageProviderService pps = Framework.getLocalService(PageProviderService.class);
 
         List<SortInfo> sortInfos = null;
         if (sortInfoAsStringList != null) {
@@ -151,8 +143,7 @@ public class ResultSetPageProviderOperation {
                 SortInfo sortInfo;
                 if (sortInfoDesc.contains("|")) {
                     String[] parts = sortInfoDesc.split("|");
-                    sortInfo = new SortInfo(parts[0],
-                            Boolean.parseBoolean(parts[1]));
+                    sortInfo = new SortInfo(parts[0], Boolean.parseBoolean(parts[1]));
                 } else {
                     sortInfo = new SortInfo(sortInfoDesc, true);
                 }
@@ -169,8 +160,7 @@ public class ResultSetPageProviderOperation {
                 }
                 for (int i = 0; i < sorts.length; i++) {
                     String sort = sorts[i];
-                    boolean sortAscending = (orders != null && orders.length
-                            > i && "asc".equals(orders[i].toLowerCase()));
+                    boolean sortAscending = (orders != null && orders.length > i && "asc".equals(orders[i].toLowerCase()));
                     sortInfos.add(new SortInfo(sort, sortAscending));
                 }
             }
@@ -179,8 +169,7 @@ public class ResultSetPageProviderOperation {
         Object[] parameters = null;
 
         if (strParameters != null && !strParameters.isEmpty()) {
-            parameters = strParameters.toArray(new String[strParameters.size
-                    ()]);
+            parameters = strParameters.toArray(new String[strParameters.size()]);
             // expand specific parameters
             for (int idx = 0; idx < parameters.length; idx++) {
                 String value = (String) parameters[idx];
@@ -193,11 +182,9 @@ public class ResultSetPageProviderOperation {
         }
 
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        if (query == null
-                && (providerName == null || providerName.length() == 0)) {
+        if (query == null && (providerName == null || providerName.length() == 0)) {
             // provide a defaut query
             query = "SELECT * from Document";
         }
@@ -214,20 +201,16 @@ public class ResultSetPageProviderOperation {
         SimpleDocumentModel searchDocumentModel = null;
         if (namedParameters != null && !namedParameters.isEmpty()) {
             searchDocumentModel = new SimpleDocumentModel();
-            searchDocumentModel.putContextData(PageProviderServiceImpl
-                            .NAMED_PARAMETERS,
-                    namedParameters);
+            searchDocumentModel.putContextData(PageProviderServiceImpl.NAMED_PARAMETERS, namedParameters);
         }
 
-        final class QueryAndFetchProviderDescriptor extends
-                GenericPageProviderDescriptor {
+        final class QueryAndFetchProviderDescriptor extends GenericPageProviderDescriptor {
             private static final long serialVersionUID = 1L;
 
             public QueryAndFetchProviderDescriptor() {
                 super();
                 try {
-                    this.klass = (Class<PageProvider<?>>) Class.forName
-                            (CoreQueryAndFetchPageProvider.class.getName());
+                    klass = (Class<PageProvider<?>>) Class.forName(CoreQueryAndFetchPageProvider.class.getName());
                 } catch (ClassNotFoundException e) {
 
                 }
@@ -236,23 +219,17 @@ public class ResultSetPageProviderOperation {
 
         PageProvider<Map<String, Serializable>> pp = null;
         if (query != null) {
-            QueryAndFetchProviderDescriptor desc = new
-                    QueryAndFetchProviderDescriptor();
+            QueryAndFetchProviderDescriptor desc = new QueryAndFetchProviderDescriptor();
             desc.setPattern(query);
-            if (maxResults != null && !maxResults.isEmpty()
-                    && !maxResults.equals("-1")) {
+            if (maxResults != null && !maxResults.isEmpty() && !maxResults.equals("-1")) {
                 // set the maxResults to avoid slowing down queries
                 desc.getProperties().put("maxResults", maxResults);
             }
-            pp = (CoreQueryAndFetchPageProvider) pps.getPageProvider("", desc,
-                    searchDocumentModel, sortInfos, targetPageSize,
-                    targetPage, props,
-                    parameters);
+            pp = (CoreQueryAndFetchPageProvider) pps.getPageProvider("", desc, searchDocumentModel, sortInfos,
+                    targetPageSize, targetPage, props, parameters);
         } else {
-            pp = (PageProvider<Map<String, Serializable>>) pps.getPageProvider(
-                    providerName, searchDocumentModel, sortInfos,
-                    targetPageSize, targetPage, props,
-                    parameters);
+            pp = (PageProvider<Map<String, Serializable>>) pps.getPageProvider(providerName, searchDocumentModel,
+                    sortInfos, targetPageSize, targetPage, props, parameters);
         }
         return new PaginableRecordSetImpl(pp);
 

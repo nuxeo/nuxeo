@@ -31,9 +31,7 @@ import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 @Operation(id = "runOnListItemWithTx")
 public class RunOnListItemWithTx {
@@ -88,8 +86,7 @@ public class RunOnListItemWithTx {
         return field;
     }
 
-    protected AbstractSession unwrap(CoreSession session)
-            throws OperationException {
+    protected AbstractSession unwrap(CoreSession session) throws OperationException {
         Class<? extends CoreSession> clazz = session.getClass();
         if (AbstractSession.class.isAssignableFrom(clazz)) {
             return (AbstractSession) session;
@@ -97,17 +94,14 @@ public class RunOnListItemWithTx {
         if (Proxy.isProxyClass(clazz)) {
             InvocationHandler handler = Proxy.getInvocationHandler(session);
             if (!(handler instanceof TransactionalCoreSessionWrapper)) {
-                throw new OperationException("Unsupported session proxy "
-                        + handler.getClass());
+                throw new OperationException("Unsupported session proxy " + handler.getClass());
             }
             try {
                 return (AbstractSession) wrappedSession.get(handler);
             } catch (IllegalArgumentException | IllegalAccessException e) {
-                throw new OperationException(
-                        "Cannot unwrap core session proxy", e);
+                throw new OperationException("Cannot unwrap core session proxy", e);
             }
         }
-        throw new OperationException("Unknown core session " + clazz
-                + " , cannot dispose");
+        throw new OperationException("Unknown core session " + clazz + " , cannot dispose");
     }
 }

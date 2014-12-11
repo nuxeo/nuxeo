@@ -20,7 +20,6 @@ import java.io.Serializable;
 
 /**
  * @author Anahide Tchertchian
- *
  */
 public class MockPagedListItem implements Serializable {
 

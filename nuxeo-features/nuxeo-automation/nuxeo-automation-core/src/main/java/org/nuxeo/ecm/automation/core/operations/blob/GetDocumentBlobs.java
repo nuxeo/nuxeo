@@ -39,15 +39,15 @@ public class GetDocumentBlobs {
     @Param(name = "xpath", required = false, values = "files:files")
     protected String xpath = "files:files";
 
-    @OperationMethod(collector=BlobListCollector.class)
+    @OperationMethod(collector = BlobListCollector.class)
     public BlobList run(DocumentModel doc) throws Exception {
         BlobList blobs = new BlobList();
         ListProperty list = (ListProperty) doc.getProperty(xpath);
         if (list == null) {
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
-            if (bh!=null) {
+            if (bh != null) {
                 List<Blob> docBlobs = bh.getBlobs();
-                if (docBlobs!=null) {
+                if (docBlobs != null) {
                     for (Blob blob : docBlobs) {
                         blobs.add(blob);
                     }
@@ -60,6 +60,5 @@ public class GetDocumentBlobs {
         }
         return blobs;
     }
-
 
 }

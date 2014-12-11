@@ -13,8 +13,7 @@
 package org.nuxeo.ecm.automation;
 
 /**
- * @since 5.7.2 Operation composite exception containing multiple @{link
- *        OperationException}
+ * @since 5.7.2 Operation composite exception containing multiple @{link OperationException}
  */
 public class OperationCompoundException extends OperationException {
 
@@ -22,8 +21,7 @@ public class OperationCompoundException extends OperationException {
 
     public final OperationException[] operationExceptions;
 
-    public OperationCompoundException(String message,
-            OperationException[] operationExceptions) {
+    public OperationCompoundException(String message, OperationException[] operationExceptions) {
         super(message);
         this.operationExceptions = operationExceptions;
     }

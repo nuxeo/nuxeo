@@ -26,8 +26,8 @@ import org.nuxeo.ecm.automation.core.util.StringList;
  */
 public class ArrayStringToList implements TypeAdapter {
 
-    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
-            throws TypeAdaptException {
+    @Override
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         String[] content = (String[]) objectToAdapt;
         return new StringList(content);
     }

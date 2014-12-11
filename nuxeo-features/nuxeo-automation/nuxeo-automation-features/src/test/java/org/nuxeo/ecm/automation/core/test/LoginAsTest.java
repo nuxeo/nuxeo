@@ -38,9 +38,8 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core",
-    "org.nuxeo.ecm.automation.features",
-    "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.platform.login" })
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.web.common",
+        "org.nuxeo.ecm.platform.login" })
 public class LoginAsTest {
 
     protected DocumentModel src;
@@ -88,7 +87,7 @@ public class LoginAsTest {
         chain.add(FetchContextDocument.ID);
         chain.add(LoginAs.ID).set("name", "Foo");
         chain.add(CreateDocument.ID).set("type", "Folder").set("name", "myfolder");
-        DocumentModel doc = (DocumentModel)service.run(ctx, chain);
+        DocumentModel doc = (DocumentModel) service.run(ctx, chain);
 
         Assert.assertEquals(origPrincipal, ctx.getPrincipal().getName());
         Assert.assertEquals("Foo", doc.getPropertyValue("dc:creator"));

@@ -81,14 +81,12 @@ public class GetActions {
         return automation.getAdaptedValue(ctx, cdRef, DocumentModel.class);
     }
 
-    protected ActionContext getActionContext(DocumentModel currentDocument)
-            throws Exception {
+    protected ActionContext getActionContext(DocumentModel currentDocument) throws Exception {
         if (ctx.containsKey(SEAM_ACTION_CONTEXT)) {
             // if Seam Context has been initialized, use it
             return (ActionContext) ctx.get(SEAM_ACTION_CONTEXT);
         }
-        ActionContext actionContext = new ELActionContext(
-                new ExpressionContext(), new ExpressionFactoryImpl());
+        ActionContext actionContext = new ELActionContext(new ExpressionContext(), new ExpressionFactoryImpl());
         actionContext.setDocumentManager(session);
         actionContext.setCurrentPrincipal((NuxeoPrincipal) session.getPrincipal());
         if (currentDocument != null) {
@@ -114,8 +112,7 @@ public class GetActions {
         if (key == null) {
             return "";
         }
-        return I18NUtils.getMessageString("messages", key, new Object[0],
-                getLocale());
+        return I18NUtils.getMessageString("messages", key, new Object[0], getLocale());
     }
 
     @OperationMethod
@@ -151,7 +148,6 @@ public class GetActions {
             obj.element("properties", properties);
             rows.add(obj);
         }
-        return new ByteArrayBlob(rows.toString().getBytes("UTF-8"),
-                "application/json");
+        return new ByteArrayBlob(rows.toString().getBytes("UTF-8"), "application/json");
     }
 }

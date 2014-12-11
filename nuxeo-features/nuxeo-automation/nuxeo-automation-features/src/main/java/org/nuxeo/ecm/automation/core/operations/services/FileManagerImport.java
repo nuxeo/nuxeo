@@ -36,7 +36,6 @@ import org.nuxeo.ecm.platform.filemanager.api.FileManager;
  * Use {@link FileManager} to create documents from blobs
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 @Operation(id = FileManagerImport.ID, category = Constants.CAT_SERVICES, label = "Create Document from file", description = "Create Document(s) from Blob(s) using the FileManagerService.")
 public class FileManagerImport {
@@ -66,7 +65,8 @@ public class FileManagerImport {
     @OperationMethod
     public DocumentModel run(Blob blob) throws Exception {
         DocumentModel currentDocument = getCurrentDocument();
-        return fileManager.createDocumentFromBlob(session, blob, currentDocument.getPathAsString(),overwite , blob.getFilename());
+        return fileManager.createDocumentFromBlob(session, blob, currentDocument.getPathAsString(), overwite,
+                blob.getFilename());
     }
 
     @OperationMethod

@@ -21,23 +21,28 @@ import org.nuxeo.ecm.platform.query.api.Bucket;
 
 /**
  * Immutable bucket for date range.
+ *
  * @since 6.0
  */
 public class BucketRangeDate implements Bucket {
 
     private final BucketRange range;
+
     // joda DateTime are immutables
     private final DateTime fromDate;
+
     private final DateTime toDate;
 
     public BucketRangeDate(String key, DateTime from, DateTime to, long docCount) {
         if (key == null) {
             throw new IllegalArgumentException("key is null");
-        };
-        //fromDate.
-        range = new BucketRange(key, from != null ? from.getMillis() : null, to != null ? to.getMillis() : null, docCount);
-        this.fromDate = from;
-        this.toDate = to;
+        }
+        ;
+        // fromDate.
+        range = new BucketRange(key, from != null ? from.getMillis() : null, to != null ? to.getMillis() : null,
+                docCount);
+        fromDate = from;
+        toDate = to;
     }
 
     @Override
@@ -53,6 +58,7 @@ public class BucketRangeDate implements Bucket {
     public Double getFrom() {
         return range.getFrom();
     }
+
     /**
      * @return null if there are no minimal limit
      */
@@ -73,7 +79,6 @@ public class BucketRangeDate implements Bucket {
 
     @Override
     public String toString() {
-            return String.format("BucketRangeDate(%s, %d, %s, %s)", getKey(), getDocCount(), fromDate,
-                    toDate);
+        return String.format("BucketRangeDate(%s, %d, %s, %s)", getKey(), getDocCount(), fromDate, toDate);
     }
 }

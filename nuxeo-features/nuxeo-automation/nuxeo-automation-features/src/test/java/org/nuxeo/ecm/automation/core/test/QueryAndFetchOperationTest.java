@@ -44,8 +44,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.automation.features" })
+@Deploy({ "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features" })
 @LocalDeploy({ "org.nuxeo.ecm.automation.core:test-qf-providers.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class QueryAndFetchOperationTest {
@@ -90,12 +89,10 @@ public class QueryAndFetchOperationTest {
         params.put("queryParams", session.getRootDocument().getId());
 
         OperationChain chain = new OperationChain("fakeChain");
-        OperationParameters oparams = new OperationParameters(
-                ResultSetPageProviderOperation.ID, params);
+        OperationParameters oparams = new OperationParameters(ResultSetPageProviderOperation.ID, params);
         chain.add(oparams);
 
-        PaginableRecordSetImpl result = (PaginableRecordSetImpl) service.run(
-                ctx, chain);
+        PaginableRecordSetImpl result = (PaginableRecordSetImpl) service.run(ctx, chain);
 
         // test page size
         assertEquals(2, result.getPageSize());
@@ -125,8 +122,8 @@ public class QueryAndFetchOperationTest {
         Properties namedProperties = new Properties(namedParameters);
         params.put("namedParameters", namedProperties);
 
-        PaginableRecordSetImpl result = (PaginableRecordSetImpl) service.run(
-                ctx, ResultSetPageProviderOperation.ID, params);
+        PaginableRecordSetImpl result = (PaginableRecordSetImpl) service.run(ctx, ResultSetPageProviderOperation.ID,
+                params);
 
         // test page size
         assertEquals(2, result.getPageSize());
@@ -150,12 +147,10 @@ public class QueryAndFetchOperationTest {
         params.put("pageSize", 2);
 
         OperationChain chain = new OperationChain("fakeChain");
-        OperationParameters oparams = new OperationParameters(
-                DocumentPageProviderOperation.ID, params);
+        OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, params);
         chain.add(oparams);
 
-        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(
-                ctx, chain);
+        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
         // test page size
         assertEquals(2, result.getPageSize());

@@ -28,8 +28,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.operations.execution.RunDocumentChain;
 import org.nuxeo.ecm.automation.core.operations.execution.RunFileChain;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnList;
-import org.nuxeo.ecm.automation.core.operations.execution
-        .RunOperationOnListInNewTransaction;
+import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnListInNewTransaction;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -59,8 +58,7 @@ import static org.junit.Assert.assertTrue;
 @Deploy("org.nuxeo.ecm.automation.core")
 @TransactionalConfig(autoStart = false)
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-operations.xml")
-@RepositoryConfig(cleanup = Granularity.METHOD, init = DefaultRepositoryInit
-        .class)
+@RepositoryConfig(cleanup = Granularity.METHOD, init = DefaultRepositoryInit.class)
 public class OperationsAndTxTests {
 
     protected DocumentModel document;
@@ -100,9 +98,8 @@ public class OperationsAndTxTests {
                 OperationChain chain = new OperationChain("testChain");
 
                 // Test with deprecated RunOperationOnListInNewTransaction.ID
-                chain.add(RunOperationOnListInNewTransaction.ID)
-                        .set("list", "groups").set("id", "runOnListItemWithTx")
-                        .set("isolate", "false");
+                chain.add(RunOperationOnListInNewTransaction.ID).set("list", "groups").set("id", "runOnListItemWithTx").set(
+                        "isolate", "false");
                 service.run(ctx, chain);
                 List<String> result = (List<String>) ctx.get("result");
                 List<String> txids = (List<String>) ctx.get("txids");
@@ -115,13 +112,11 @@ public class OperationsAndTxTests {
                 assertFalse(txids.get(0).equals(txids.get(1)));
                 assertTrue(sids.get(0).equals(sids.get(1)));
                 assertTrue(sids.get(2).equals(sids.get(1)));
-                assertFalse(sqlsids.get(0).equals(sqlsids.get(1)) && sqlsids
-                        .get(2).equals(sqlsids.get(1)));
+                assertFalse(sqlsids.get(0).equals(sqlsids.get(1)) && sqlsids.get(2).equals(sqlsids.get(1)));
 
                 // Same test with RunOperationOnList.ID
-                chain.add(RunOperationOnList.ID)
-                        .set("list", "groups").set("id", "runOnListItemWithTx")
-                        .set("isolate", "false").set("newTx", "true");
+                chain.add(RunOperationOnList.ID).set("list", "groups").set("id", "runOnListItemWithTx").set("isolate",
+                        "false").set("newTx", "true");
                 service.run(ctx, chain);
                 result = (List<String>) ctx.get("result");
                 txids = (List<String>) ctx.get("txids");
@@ -153,14 +148,13 @@ public class OperationsAndTxTests {
                 // storing in context which session and transaction id is
                 // used in main process.
                 ctx = new OperationContext(session);
-                Transaction tx = TransactionHelper.lookupTransactionManager()
-                        .getTransaction();
+                Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
                 getOrCreateList(ctx, "sids").add(session.getSessionId());
                 getOrCreateList(ctx, "txids").add(tx.toString());
                 ctx.setInput(document);
                 OperationChain chain = new OperationChain("testChain");
-                chain.add(RunDocumentChain.ID).set("id", "runOnListItemWithTx")
-                        .set("isolate", "false").set("newTx", "true");
+                chain.add(RunDocumentChain.ID).set("id", "runOnListItemWithTx").set("isolate", "false").set("newTx",
+                        "true");
                 DocumentModel result = (DocumentModel) service.run(ctx, chain);
 
                 // Checking if new transaction id has been registered if same
@@ -191,15 +185,13 @@ public class OperationsAndTxTests {
                 // storing in context which session and transaction id is
                 // used in main process.
                 ctx = new OperationContext(session);
-                Transaction tx = TransactionHelper.lookupTransactionManager()
-                        .getTransaction();
+                Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
                 getOrCreateList(ctx, "sids").add(session.getSessionId());
                 getOrCreateList(ctx, "txids").add(tx.toString());
                 Blob blob = new StringBlob("blob");
                 ctx.setInput(blob);
                 OperationChain chain = new OperationChain("testChain");
-                chain.add(RunFileChain.ID).set("id", "runOnListItemWithTx")
-                        .set("isolate", "false").set("newTx", "true");
+                chain.add(RunFileChain.ID).set("id", "runOnListItemWithTx").set("isolate", "false").set("newTx", "true");
                 Blob result = (Blob) service.run(ctx, chain);
 
                 // Checking if new transaction id has been registered if same

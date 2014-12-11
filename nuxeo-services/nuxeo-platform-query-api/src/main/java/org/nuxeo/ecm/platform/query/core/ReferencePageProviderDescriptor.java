@@ -65,6 +65,7 @@ public class ReferencePageProviderDescriptor implements Serializable {
     /**
      * @since 5.6
      */
+    @Override
     public ReferencePageProviderDescriptor clone() {
         ReferencePageProviderDescriptor clone = new ReferencePageProviderDescriptor();
         clone.name = getName();

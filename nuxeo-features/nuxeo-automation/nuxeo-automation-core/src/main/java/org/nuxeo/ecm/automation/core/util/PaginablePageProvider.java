@@ -18,7 +18,6 @@
 package org.nuxeo.ecm.automation.core.util;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.query.api.Aggregate;
@@ -31,6 +30,10 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
  */
 public class PaginablePageProvider<T> extends ArrayList<T> implements Paginable<T> {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     protected PageProvider<T> pageProvider;
 
     public PaginablePageProvider(PageProvider<T> pageProvider) {

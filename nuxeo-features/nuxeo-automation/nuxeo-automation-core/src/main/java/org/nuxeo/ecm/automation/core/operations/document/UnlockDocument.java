@@ -31,13 +31,13 @@ public class UnlockDocument {
     @Context
     protected CoreSession session;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentRef doc) throws Exception {
         session.removeLock(doc);
         return session.getDocument(doc);
     }
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         session.removeLock(doc.getRef());
         return session.getDocument(doc.getRef());

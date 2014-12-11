@@ -58,15 +58,15 @@ public class JSONDocumentNode {
 
     /**
      * Put a json array a a property.
+     *
      * @param key
      * @param values
-     *
      * @since 5.9.2
      */
     public void setPropertyArray(String key, String... values) {
         ObjectNode on = (ObjectNode) node.findValue("properties");
         ArrayNode array = on.putArray(key);
-        for(String value : values) {
+        for (String value : values) {
             array.add(value);
         }
         node.put("properties", on);

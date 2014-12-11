@@ -79,8 +79,7 @@ public class PrincipalWrapper extends HashMap<String, Serializable> {
         try {
             return principal.getModel().getPropertyValue(xpath);
         } catch (ClientException e) {
-            throw new RuntimeException(
-                    "Principal property not found: " + xpath, e);
+            throw new RuntimeException("Principal property not found: " + xpath, e);
         }
     }
 
@@ -97,8 +96,7 @@ public class PrincipalWrapper extends HashMap<String, Serializable> {
     }
 
     /**
-     * The behavior of this method was changed -> it is checking if an xpath
-     * has a value attached.
+     * The behavior of this method was changed -> it is checking if an xpath has a value attached.
      */
     @Override
     public boolean containsValue(Object value) {

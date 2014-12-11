@@ -29,8 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Run an embedded operation chain that returns a Blob using the
- * current input.
+ * Run an embedded operation chain that returns a Blob using the current input.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -51,46 +50,40 @@ public class RunFileChain {
     @Param(name = "id")
     protected String chainId;
 
-    @Param(name="isolate", required = false, values = "false")
+    @Param(name = "isolate", required = false, values = "false")
     protected boolean isolate = false;
 
     @Param(name = "parameters", description = "Accessible in the subcontext ChainParameters. For instance, @{ChainParameters['parameterKey']}.", required = false)
     protected Properties chainParameters;
 
     /**
-     * @since 6.0
-     * Define if the chain in parameter should be executed in new transaction.
+     * @since 6.0 Define if the chain in parameter should be executed in new transaction.
      */
     @Param(name = "newTx", required = false, values = "false", description = "Define if the chain in parameter should be executed in new transaction.")
     protected boolean newTx = false;
 
     /**
-     * @since 6.0
-     * Define transaction timeout (default to 60 sec).
+     * @since 6.0 Define transaction timeout (default to 60 sec).
      */
     @Param(name = "timeout", required = false, description = "Define transaction timeout (default to 60 sec).")
     protected Integer timeout = 60;
 
     /**
-     * @since 6.0
-     * Define if transaction should rollback or not (default to true).
+     * @since 6.0 Define if transaction should rollback or not (default to true).
      */
     @Param(name = "rollbackGlobalOnError", required = false, values = "true", description = "Define if transaction should rollback or not (default to true)")
     protected boolean rollbackGlobalOnError = true;
 
-
     @OperationMethod
     public Blob run(Blob blob) throws Exception {
         // Handle isolation option
-        Map<String, Object> vars = isolate ? new HashMap<>(
-                ctx.getVars()) : ctx.getVars();
+        Map<String, Object> vars = isolate ? new HashMap<>(ctx.getVars()) : ctx.getVars();
         OperationContext subctx = ctx.getSubContext(isolate, blob);
 
         // Running chain/operation
         Blob result = null;
         if (newTx) {
-            result = (Blob) service.runInNewTx(subctx, chainId, chainParameters,
-                    timeout, rollbackGlobalOnError);
+            result = (Blob) service.runInNewTx(subctx, chainId, chainParameters, timeout, rollbackGlobalOnError);
         } else {
             result = (Blob) service.run(subctx, chainId, (Map) chainParameters);
         }
@@ -103,9 +96,7 @@ public class RunFileChain {
                 } else {
                     Object value = vars.get(varName);
                     if (value != null && value instanceof DocumentModel) {
-                        ctx.getVars().put(
-                                varName,
-                                session.getDocument(((DocumentModel) value).getRef()));
+                        ctx.getVars().put(varName, session.getDocument(((DocumentModel) value).getRef()));
                     } else {
                         ctx.getVars().put(varName, value);
                     }

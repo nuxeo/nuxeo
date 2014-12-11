@@ -37,17 +37,15 @@ public class JSONDocumentHelper {
 
     private static final String[] DEFAULT_SCHEMAS = new String[] {};
 
-    public static String getDocAsJson(String[] schemas, DocumentModel doc)
-            throws Exception {
+    public static String getDocAsJson(String[] schemas, DocumentModel doc) throws Exception {
         OutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = getJsonGenerator(out);
-        JsonDocumentWriter.writeDocument(jg, doc, DEFAULT_SCHEMAS,null);
+        JsonDocumentWriter.writeDocument(jg, doc, DEFAULT_SCHEMAS, null);
         return out.toString();
 
     }
 
-    private static JsonGenerator getJsonGenerator(OutputStream out)
-            throws IOException {
+    private static JsonGenerator getJsonGenerator(OutputStream out) throws IOException {
         JsonFactoryManager factoryProvider = Framework.getLocalService(JsonFactoryManager.class);
         return factoryProvider.getJsonFactory().createJsonGenerator(out);
     }
@@ -56,18 +54,14 @@ public class JSONDocumentHelper {
         return getDocAsJson(DEFAULT_SCHEMAS, doc);
     }
 
-    public static String getDocsListAsJson(String[] schemas,
-            DocumentModel... docs) throws Exception {
+    public static String getDocsListAsJson(String[] schemas, DocumentModel... docs) throws Exception {
         OutputStream out = new ByteArrayOutputStream();
-        DocumentModelList docList = new DocumentModelListImpl(
-                Arrays.asList(docs));
-        JsonDocumentListWriter.writeDocuments(getJsonGenerator(out), docList,
-                schemas,null);
+        DocumentModelList docList = new DocumentModelListImpl(Arrays.asList(docs));
+        JsonDocumentListWriter.writeDocuments(getJsonGenerator(out), docList, schemas, null);
         return out.toString();
     }
 
-    public static String getDocsListAsJson(DocumentModel... docs)
-            throws Exception {
+    public static String getDocsListAsJson(DocumentModel... docs) throws Exception {
         return getDocsListAsJson(DEFAULT_SCHEMAS, docs);
     }
 

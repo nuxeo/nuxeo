@@ -38,13 +38,11 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Basic implementation for a {@link PageProvider}.
  * <p>
- * Provides next/prev standard logics, and helper methods for retrieval of
- * items and first/next/prev/last buttons display as well as other display
- * information (number of pages for instance).
+ * Provides next/prev standard logics, and helper methods for retrieval of items and first/next/prev/last buttons
+ * display as well as other display information (number of pages for instance).
  * <p>
- * Also handles selection by providing a default implementation of
- * {@link #getCurrentSelectPage()} working in conjunction with
- * {@link #setSelectedEntries(List)}.
+ * Also handles selection by providing a default implementation of {@link #getCurrentSelectPage()} working in
+ * conjunction with {@link #setSelectedEntries(List)}.
  *
  * @author Anahide Tchertchian
  */
@@ -67,9 +65,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     protected int currentEntryIndex = 0;
 
     /**
-     * Integer keeping track of the higher page index giving results. Useful
-     * for enabling or disabling the nextPage action when number of results
-     * cannot be known.
+     * Integer keeping track of the higher page index giving results. Useful for enabling or disabling the nextPage
+     * action when number of results cannot be known.
      *
      * @since 5.5
      */
@@ -100,39 +97,33 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     /**
      * Returns the list of current page items.
      * <p>
-     * Custom implementation can be added here, based on the page provider
-     * properties, parameters and {@link WhereClauseDefinition} on the
-     * {@link PageProviderDefinition}, as well as search document, sort
+     * Custom implementation can be added here, based on the page provider properties, parameters and
+     * {@link WhereClauseDefinition} on the {@link PageProviderDefinition}, as well as search document, sort
      * information, etc...
      * <p>
-     * Implementation of this method usually consists in setting a non-null
-     * value to a field caching current items, and nullifying this field by
-     * overriding {@link #pageChanged()} and {@link #refresh()}.
+     * Implementation of this method usually consists in setting a non-null value to a field caching current items, and
+     * nullifying this field by overriding {@link #pageChanged()} and {@link #refresh()}.
      * <p>
-     * Fields {@link #errorMessage} and {@link #error} can also be filled to
-     * provide accurate feedback in case an error occurs during the search.
+     * Fields {@link #errorMessage} and {@link #error} can also be filled to provide accurate feedback in case an error
+     * occurs during the search.
      * <p>
-     * When items are retrieved, a call to {@link #setResultsCount(long)}
-     * should be made to ensure proper pagination as implemented in this
-     * abstract class. The implementation in
-     * {@link CoreQueryAndFetchPageProvider} is a good example when the total
-     * results count is known.
+     * When items are retrieved, a call to {@link #setResultsCount(long)} should be made to ensure proper pagination as
+     * implemented in this abstract class. The implementation in {@link CoreQueryAndFetchPageProvider} is a good example
+     * when the total results count is known.
      * <p>
-     * If for performance reasons, for instance, the number of results cannot
-     * be known, a fall-back strategy can be applied to provide the "next"
-     * button but not the "last" one, by calling
-     * {@link #getCurrentHigherNonEmptyPageIndex()} and
-     * {@link #setCurrentHigherNonEmptyPageIndex(int)}. In this case,
+     * If for performance reasons, for instance, the number of results cannot be known, a fall-back strategy can be
+     * applied to provide the "next" button but not the "last" one, by calling
+     * {@link #getCurrentHigherNonEmptyPageIndex()} and {@link #setCurrentHigherNonEmptyPageIndex(int)}. In this case,
      * {@link CoreQueryDocumentPageProvider} is a good example.
      */
+    @Override
     public abstract List<T> getCurrentPage();
 
     /**
      * Page change hook, to override for custom behavior
      * <p>
-     * When overriding it, call {@code super.pageChanged()} as last statement
-     * to make sure that the {@link PageProviderChangedListener} is called with
-     * the up-to-date @{code PageProvider} state.
+     * When overriding it, call {@code super.pageChanged()} as last statement to make sure that the
+     * {@link PageProviderChangedListener} is called with the up-to-date @{code PageProvider} state.
      */
     protected void pageChanged() {
         currentEntryIndex = 0;
@@ -140,6 +131,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         notifyPageChanged();
     }
 
+    @Override
     public void firstPage() {
         long pageSize = getPageSize();
         if (pageSize == 0) {
@@ -161,6 +153,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         firstPage();
     }
 
+    @Override
     public long getCurrentPageIndex() {
         long pageSize = getPageSize();
         if (pageSize == 0) {
@@ -170,14 +163,17 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         return offset / pageSize;
     }
 
+    @Override
     public long getCurrentPageOffset() {
         return offset;
     }
 
+    @Override
     public void setCurrentPageOffset(long offset) {
         this.offset = offset;
     }
 
+    @Override
     public long getCurrentPageSize() {
         List<T> currentItems = getCurrentPage();
         if (currentItems != null) {
@@ -186,10 +182,12 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         return 0;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public long getNumberOfPages() {
         long pageSize = getPageSize();
         // ensure 1 if no pagination
@@ -217,15 +215,18 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         pageChanged();
     }
 
+    @Override
     public List<T> setCurrentPage(long page) {
         setCurrentPageIndex(page);
         return getCurrentPage();
     }
 
+    @Override
     public long getPageSize() {
         return pageSize;
     }
 
+    @Override
     public void setPageSize(long pageSize) {
         long localPageSize = getPageSize();
         if (localPageSize != pageSize) {
@@ -236,6 +237,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         }
     }
 
+    @Override
     public List<SortInfo> getSortInfos() {
         // break reference
         List<SortInfo> res = new ArrayList<SortInfo>();
@@ -245,6 +247,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         return res;
     }
 
+    @Override
     public SortInfo getSortInfo() {
         if (sortInfos != null && !sortInfos.isEmpty()) {
             return sortInfos.get(0);
@@ -252,8 +255,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         return null;
     }
 
-    protected boolean sortInfoChanged(List<SortInfo> oldSortInfos,
-            List<SortInfo> newSortInfos) {
+    protected boolean sortInfoChanged(List<SortInfo> oldSortInfos, List<SortInfo> newSortInfos) {
         if (oldSortInfos == null && newSortInfos == null) {
             return false;
         } else if (oldSortInfos == null) {
@@ -279,6 +281,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         return false;
     }
 
+    @Override
     public void setSortInfos(List<SortInfo> sortInfo) {
         if (sortInfoChanged(this.sortInfos, sortInfo)) {
             this.sortInfos = sortInfo;
@@ -286,6 +289,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         }
     }
 
+    @Override
     public void setSortInfo(SortInfo sortInfo) {
         List<SortInfo> newSortInfos = new ArrayList<SortInfo>();
         if (sortInfo != null) {
@@ -294,8 +298,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         setSortInfos(newSortInfos);
     }
 
-    public void setSortInfo(String sortColumn, boolean sortAscending,
-            boolean removeOtherSortInfos) {
+    @Override
+    public void setSortInfo(String sortColumn, boolean sortAscending, boolean removeOtherSortInfos) {
         if (removeOtherSortInfos) {
             SortInfo sortInfo = new SortInfo(sortColumn, sortAscending);
             setSortInfo(sortInfo);
@@ -320,6 +324,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         }
     }
 
+    @Override
     public void addSortInfo(String sortColumn, boolean sortAscending) {
         SortInfo sortInfo = new SortInfo(sortColumn, sortAscending);
         List<SortInfo> sortInfos = getSortInfos();
@@ -331,6 +336,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         }
     }
 
+    @Override
     public int getSortInfoIndex(String sortColumn, boolean sortAscending) {
         List<SortInfo> sortInfos = getSortInfos();
         if (sortInfos == null || sortInfos.isEmpty()) {
@@ -341,6 +347,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         }
     }
 
+    @Override
     public boolean isNextPageAvailable() {
         long pageSize = getPageSize();
         if (pageSize == 0) {
@@ -349,8 +356,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         long resultsCount = getResultsCount();
         if (resultsCount < 0) {
             long currentPageIndex = getCurrentPageIndex();
-            return currentPageIndex < getCurrentHigherNonEmptyPageIndex()
-                    + getMaxNumberOfEmptyPages();
+            return currentPageIndex < getCurrentHigherNonEmptyPageIndex() + getMaxNumberOfEmptyPages();
         } else {
             long offset = getCurrentPageOffset();
             return resultsCount > pageSize + offset;
@@ -366,11 +372,13 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         return isNextPageAvailable();
     }
 
+    @Override
     public boolean isPreviousPageAvailable() {
         long offset = getCurrentPageOffset();
         return offset > 0;
     }
 
+    @Override
     public void lastPage() {
         long pageSize = getPageSize();
         long resultsCount = getResultsCount();
@@ -394,6 +402,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         lastPage();
     }
 
+    @Override
     public void nextPage() {
         long pageSize = getPageSize();
         if (pageSize == 0) {
@@ -414,6 +423,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         nextPage();
     }
 
+    @Override
     public void previousPage() {
         long pageSize = getPageSize();
         if (pageSize == 0) {
@@ -439,10 +449,10 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     /**
      * Refresh hook, to override for custom behavior
      * <p>
-     * When overriding it, call {@code super.refresh()} as last statement to
-     * make sure that the {@link PageProviderChangedListener} is called with
-     * the up-to-date @{code PageProvider} state.
+     * When overriding it, call {@code super.refresh()} as last statement to make sure that the
+     * {@link PageProviderChangedListener} is called with the up-to-date @{code PageProvider} state.
      */
+    @Override
     public void refresh() {
         setResultsCount(UNKNOWN_SIZE);
         setCurrentHigherNonEmptyPageIndex(-1);
@@ -453,10 +463,12 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String getCurrentPageStatus() {
         long total = getNumberOfPages();
         long current = getCurrentPageIndex() + 1;
@@ -464,11 +476,11 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
             // number of pages unknown or there is only one page
             return String.format("%d", Long.valueOf(current));
         } else {
-            return String.format("%d/%d", Long.valueOf(current),
-                    Long.valueOf(total));
+            return String.format("%d/%d", Long.valueOf(current), Long.valueOf(total));
         }
     }
 
+    @Override
     public boolean isNextEntryAvailable() {
         long pageSize = getPageSize();
         long resultsCount = getResultsCount();
@@ -494,10 +506,12 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         }
     }
 
+    @Override
     public boolean isPreviousEntryAvailable() {
         return (currentEntryIndex != 0 || isPreviousPageAvailable());
     }
 
+    @Override
     public void nextEntry() {
         long pageSize = getPageSize();
         long resultsCount = getResultsCount();
@@ -534,6 +548,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     }
 
+    @Override
     public void previousEntry() {
         if (currentEntryIndex > 0) {
             currentEntryIndex--;
@@ -553,6 +568,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         }
     }
 
+    @Override
     public T getCurrentEntry() {
         List<T> currentPage = getCurrentPage();
         if (currentPage == null || currentPage.isEmpty()) {
@@ -561,45 +577,44 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         return currentPage.get(currentEntryIndex);
     }
 
+    @Override
     public void setCurrentEntry(T entry) throws ClientException {
         List<T> currentPage = getCurrentPage();
         if (currentPage == null || currentPage.isEmpty()) {
-            throw new ClientException(String.format(
-                    "Entry '%s' not found in current page", entry));
+            throw new ClientException(String.format("Entry '%s' not found in current page", entry));
         }
         int i = currentPage.indexOf(entry);
         if (i == -1) {
-            throw new ClientException(String.format(
-                    "Entry '%s' not found in current page", entry));
+            throw new ClientException(String.format("Entry '%s' not found in current page", entry));
         }
         currentEntryIndex = i;
     }
 
+    @Override
     public void setCurrentEntryIndex(long index) throws ClientException {
         int intIndex = new Long(index).intValue();
         List<T> currentPage = getCurrentPage();
         if (currentPage == null || currentPage.isEmpty()) {
-            throw new ClientException(
-                    String.format("Index %s not found in current page",
-                            new Integer(intIndex)));
+            throw new ClientException(String.format("Index %s not found in current page", new Integer(intIndex)));
         }
         if (index >= currentPage.size()) {
-            throw new ClientException(
-                    String.format("Index %s not found in current page",
-                            new Integer(intIndex)));
+            throw new ClientException(String.format("Index %s not found in current page", new Integer(intIndex)));
         }
         currentEntryIndex = intIndex;
     }
 
+    @Override
     public long getResultsCount() {
         return resultsCount;
     }
 
+    @Override
     public Map<String, Serializable> getProperties() {
         // break reference
         return new HashMap<String, Serializable>(properties);
     }
 
+    @Override
     public void setProperties(Map<String, Serializable> properties) {
         this.properties = properties;
     }
@@ -620,19 +635,23 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         return defaultValue;
     }
 
+    @Override
     public void setResultsCount(long resultsCount) {
         this.resultsCount = resultsCount;
         setCurrentHigherNonEmptyPageIndex(-1);
     }
 
+    @Override
     public void setSortable(boolean sortable) {
         this.sortable = sortable;
     }
 
+    @Override
     public boolean isSortable() {
         return sortable;
     }
 
+    @Override
     public PageSelections<T> getCurrentSelectPage() {
         if (currentSelectPage == null) {
             List<PageSelection<T>> entries = new ArrayList<PageSelection<T>>();
@@ -643,8 +662,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
                 if (selectedEntries == null || selectedEntries.isEmpty()) {
                     // no selection at all
                     for (int i = 0; i < currentPage.size(); i++) {
-                        entries.add(new PageSelection<T>(currentPage.get(i),
-                                false));
+                        entries.add(new PageSelection<T>(currentPage.get(i), false));
                     }
                 } else {
                     boolean allSelected = true;
@@ -654,8 +672,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
                         if (!Boolean.TRUE.equals(selected)) {
                             allSelected = false;
                         }
-                        entries.add(new PageSelection<T>(entry,
-                                selected.booleanValue()));
+                        entries.add(new PageSelection<T>(entry, selected.booleanValue()));
                     }
                     if (allSelected) {
                         currentSelectPage.setSelected(true);
@@ -667,26 +684,29 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         return currentSelectPage;
     }
 
+    @Override
     public void setSelectedEntries(List<T> entries) {
         this.selectedEntries = entries;
         // reset current select page so that it's rebuilt
         currentSelectPage = null;
     }
 
+    @Override
     public Object[] getParameters() {
         return parameters;
     }
 
+    @Override
     public void setParameters(Object[] parameters) {
         this.parameters = parameters;
     }
 
+    @Override
     public DocumentModel getSearchDocumentModel() {
         return searchDocumentModel;
     }
 
-    protected boolean searchDocumentModelChanged(DocumentModel oldDoc,
-            DocumentModel newDoc) {
+    protected boolean searchDocumentModelChanged(DocumentModel oldDoc, DocumentModel newDoc) {
         if (oldDoc == null && newDoc == null) {
             return false;
         } else if (oldDoc == null || newDoc == null) {
@@ -696,22 +716,25 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         return true;
     }
 
+    @Override
     public void setSearchDocumentModel(DocumentModel searchDocumentModel) {
-        if (searchDocumentModelChanged(this.searchDocumentModel,
-                searchDocumentModel)) {
+        if (searchDocumentModelChanged(this.searchDocumentModel, searchDocumentModel)) {
             refresh();
         }
         this.searchDocumentModel = searchDocumentModel;
     }
 
+    @Override
     public String getErrorMessage() {
         return errorMessage;
     }
 
+    @Override
     public Throwable getError() {
         return error;
     }
 
+    @Override
     public boolean hasError() {
         return error != null;
     }
@@ -726,17 +749,19 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         this.definition = providerDefinition;
     }
 
+    @Override
     public long getMaxPageSize() {
         return maxPageSize;
     }
 
+    @Override
     public void setMaxPageSize(long maxPageSize) {
         this.maxPageSize = maxPageSize;
     }
 
     /**
-     * Returns the minimal value for the max page size, taking the lower value
-     * between the requested page size and the maximum accepted page size.
+     * Returns the minimal value for the max page size, taking the lower value between the requested page size and the
+     * maximum accepted page size.
      *
      * @since 5.4.2
      */
@@ -756,9 +781,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     /**
-     * Returns an integer keeping track of the higher page index giving
-     * results. Useful for enabling or disabling the nextPage action when
-     * number of results cannot be known.
+     * Returns an integer keeping track of the higher page index giving results. Useful for enabling or disabling the
+     * nextPage action when number of results cannot be known.
      *
      * @since 5.5
      */
@@ -771,6 +795,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
      *
      * @since 5.8
      */
+    @Override
     public long getPageLimit() {
         return PAGE_LIMIT_UNKNOWN;
     }
@@ -780,9 +805,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     /**
-     * Returns the maximum number of empty pages that can be fetched empty
-     * (defaults to 1). Can be useful for displaying pages of a provider
-     * without results count.
+     * Returns the maximum number of empty pages that can be fetched empty (defaults to 1). Can be useful for displaying
+     * pages of a provider without results count.
      *
      * @since 5.5
      */
@@ -798,10 +822,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
                 try {
                     res = Long.parseLong(maxPageSize.trim());
                 } catch (NumberFormatException e) {
-                    log.warn(String.format(
-                            "Invalid max page size defined for property "
-                                    + "\"%s\": %s (waiting for a long value)",
-                            DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP, maxPageSize));
+                    log.warn(String.format("Invalid max page size defined for property "
+                            + "\"%s\": %s (waiting for a long value)", DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP, maxPageSize));
                 }
             }
         }
@@ -809,14 +831,13 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     @Override
-    public void setPageProviderChangedListener(
-            PageProviderChangedListener listener) {
+    public void setPageProviderChangedListener(PageProviderChangedListener listener) {
         pageProviderChangedListener = listener;
     }
 
     /**
-     * Call the registered {@code PageProviderChangedListener}, if any, to
-     * notify that the page provider current page has changed.
+     * Call the registered {@code PageProviderChangedListener}, if any, to notify that the page provider current page
+     * has changed.
      *
      * @since 5.7
      */
@@ -827,8 +848,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     /**
-     * Call the registered {@code PageProviderChangedListener}, if any, to
-     * notify that the page provider has refreshed.
+     * Call the registered {@code PageProviderChangedListener}, if any, to notify that the page provider has refreshed.
      *
      * @since 5.7
      */
@@ -838,12 +858,12 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         }
     }
 
+    @Override
     public boolean hasChangedParameters(Object[] parameters) {
         return getParametersChanged(getParameters(), parameters);
     }
 
-    protected boolean getParametersChanged(Object[] oldParams,
-            Object[] newParams) {
+    protected boolean getParametersChanged(Object[] oldParams, Object[] newParams) {
         if (oldParams == null && newParams == null) {
             return true;
         } else if (oldParams != null && newParams != null) {
@@ -853,16 +873,12 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
             for (int i = 0; i < oldParams.length; i++) {
                 if (oldParams[i] == null && newParams[i] == null) {
                     continue;
-                } else if (newParams[i] instanceof String[]
-                        && oldParams[i] instanceof String[]
-                        && Arrays.equals((String[]) oldParams[i],
-                                (String[]) newParams[i])) {
+                } else if (newParams[i] instanceof String[] && oldParams[i] instanceof String[]
+                        && Arrays.equals((String[]) oldParams[i], (String[]) newParams[i])) {
                     continue;
-                } else if (oldParams[i] != null
-                        && !oldParams[i].equals(newParams[i])) {
+                } else if (oldParams[i] != null && !oldParams[i].equals(newParams[i])) {
                     return true;
-                } else if (newParams[i] != null
-                        && !newParams[i].equals(oldParams[i])) {
+                } else if (newParams[i] != null && !newParams[i].equals(oldParams[i])) {
                     return true;
                 }
             }

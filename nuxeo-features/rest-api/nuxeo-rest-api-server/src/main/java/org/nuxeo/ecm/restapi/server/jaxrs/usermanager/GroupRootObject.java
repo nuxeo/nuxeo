@@ -31,8 +31,6 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @WebObject(type = "groups")
@@ -58,42 +56,33 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
     }
 
     @Override
-    protected NuxeoGroup createArtifact(NuxeoGroup group)
-            throws ClientException {
+    protected NuxeoGroup createArtifact(NuxeoGroup group) throws ClientException {
         DocumentModel groupModel = buildModelFromGroup(group, um);
 
         um.createGroup(groupModel);
         return um.getGroup(group.getName());
     }
 
-    private DocumentModel buildModelFromGroup(NuxeoGroup group, UserManager um)
-            throws ClientException {
+    private DocumentModel buildModelFromGroup(NuxeoGroup group, UserManager um) throws ClientException {
         DocumentModel groupModel = um.getBareGroupModel();
         String schemaName = um.getGroupSchemaName();
-        groupModel.setProperty(schemaName, um.getGroupIdField(),
-                group.getName());
-        groupModel.setProperty(schemaName, um.getGroupLabelField(),
-                group.getLabel());
+        groupModel.setProperty(schemaName, um.getGroupIdField(), group.getName());
+        groupModel.setProperty(schemaName, um.getGroupLabelField(), group.getLabel());
 
-        groupModel.setPropertyValue(um.getGroupMembersField(),
-                (Serializable) group.getMemberUsers());
-        groupModel.setPropertyValue(um.getGroupSubGroupsField(),
-                (Serializable) group.getMemberGroups());
+        groupModel.setPropertyValue(um.getGroupMembersField(), (Serializable) group.getMemberUsers());
+        groupModel.setPropertyValue(um.getGroupSubGroupsField(), (Serializable) group.getMemberGroups());
         return groupModel;
     }
 
-    private void checkGroupDoesNotAlreadyExists(NuxeoGroup group, UserManager um)
-            throws ClientException {
+    private void checkGroupDoesNotAlreadyExists(NuxeoGroup group, UserManager um) throws ClientException {
         if (um.getGroup(group.getName()) != null) {
-            throw new WebException("Group already exists",
-                    Response.Status.PRECONDITION_FAILED.getStatusCode());
+            throw new WebException("Group already exists", Response.Status.PRECONDITION_FAILED.getStatusCode());
         }
     }
 
     private void checkGroupHasAName(NuxeoGroup group) {
         if (group.getName() == null) {
-            throw new WebException("Group MUST have a name",
-                    Response.Status.PRECONDITION_FAILED.getStatusCode());
+            throw new WebException("Group MUST have a name", Response.Status.PRECONDITION_FAILED.getStatusCode());
         }
     }
 

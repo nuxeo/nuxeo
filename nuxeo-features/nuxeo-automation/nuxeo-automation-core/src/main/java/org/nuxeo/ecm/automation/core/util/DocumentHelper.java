@@ -52,23 +52,19 @@ public class DocumentHelper {
     }
 
     /**
-     * Saves the document and clear context data to avoid incrementing version
-     * in next operations if not needed.
+     * Saves the document and clear context data to avoid incrementing version in next operations if not needed.
      */
-    public static DocumentModel saveDocument(CoreSession session,
-            DocumentModel doc) throws ClientException {
+    public static DocumentModel saveDocument(CoreSession session, DocumentModel doc) throws ClientException {
         doc = session.saveDocument(doc);
         return session.getDocument(doc.getRef());
     }
 
     /**
-     * Removes a property from a document given the xpath. If the xpath points
-     * to a list property the list will be cleared. If the path points to a blob
-     * in a list the property is removed from the list. Otherwise the xpath
-     * should point to a non list property that will be removed.
+     * Removes a property from a document given the xpath. If the xpath points to a list property the list will be
+     * cleared. If the path points to a blob in a list the property is removed from the list. Otherwise the xpath should
+     * point to a non list property that will be removed.
      */
-    public static void removeProperty(DocumentModel doc, String xpath)
-            throws ClientException {
+    public static void removeProperty(DocumentModel doc, String xpath) throws ClientException {
         Property p = doc.getProperty(xpath);
         if (p instanceof ListProperty) {
             ((ListProperty) p).clear();
@@ -83,11 +79,9 @@ public class DocumentHelper {
     }
 
     /**
-     * Given a document property, updates its value with the given blob. The
-     * property can be a blob list or a blob. If a blob list the blob is
-     * appended to the list, if a blob then it will be set as the property
-     * value. Both blob list formats are supported: the file list (blob holder
-     * list) and simple blob list.
+     * Given a document property, updates its value with the given blob. The property can be a blob list or a blob. If a
+     * blob list the blob is appended to the list, if a blob then it will be set as the property value. Both blob list
+     * formats are supported: the file list (blob holder list) and simple blob list.
      */
     public static void addBlob(Property p, Blob blob) throws PropertyException {
         if (p.isList()) {
@@ -111,8 +105,8 @@ public class DocumentHelper {
         return map;
     }
 
-    public static void setProperties(CoreSession session, DocumentModel doc,
-            Properties properties) throws ClientException, IOException {
+    public static void setProperties(CoreSession session, DocumentModel doc, Properties properties)
+            throws ClientException, IOException {
         if (properties instanceof DataModelProperties) {
             DataModelProperties dataModelProperties = (DataModelProperties) properties;
             for (Map.Entry<String, Serializable> entry : dataModelProperties.getMap().entrySet()) {
@@ -128,15 +122,13 @@ public class DocumentHelper {
     }
 
     /**
-     * Sets the properties given as a map of xpath:value to the given document.
-     * There is one special property: ecm:acl that can be used to set the local
-     * acl. The format of this property value is: [string username]:[string
-     * permission]:[boolean grant], [string username]:[string
-     * permission]:[boolean grant], ... TODO list properties are not yet
-     * supported
+     * Sets the properties given as a map of xpath:value to the given document. There is one special property: ecm:acl
+     * that can be used to set the local acl. The format of this property value is: [string username]:[string
+     * permission]:[boolean grant], [string username]:[string permission]:[boolean grant], ... TODO list properties are
+     * not yet supported
      */
-    public static void setProperties(CoreSession session, DocumentModel doc,
-            Map<String, String> values) throws Exception {
+    public static void setProperties(CoreSession session, DocumentModel doc, Map<String, String> values)
+            throws Exception {
         for (Map.Entry<String, String> entry : values.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
@@ -144,13 +136,12 @@ public class DocumentHelper {
         }
     }
 
-    public static void setProperty(CoreSession session, DocumentModel doc,
-            String key, String value) throws ClientException, IOException {
+    public static void setProperty(CoreSession session, DocumentModel doc, String key, String value)
+            throws ClientException, IOException {
         setProperty(session, doc, key, value, false);
     }
 
-    protected static void setLocalAcl(CoreSession session, DocumentModel doc,
-            String value) throws ClientException {
+    protected static void setLocalAcl(CoreSession session, DocumentModel doc, String value) throws ClientException {
         ACPImpl acp = new ACPImpl();
         ACLImpl acl = new ACLImpl(ACL.LOCAL_ACL);
         acp.addACL(acl);
@@ -166,10 +157,9 @@ public class DocumentHelper {
     }
 
     /**
-     * Read an encoded string list as a comma separated list. To use comma
-     * inside list element values you need to escape them using '\'. If the
-     * given type is different from {@link StringType#ID} then array elements
-     * will be converted to the actual type.
+     * Read an encoded string list as a comma separated list. To use comma inside list element values you need to escape
+     * them using '\'. If the given type is different from {@link StringType#ID} then array elements will be converted
+     * to the actual type.
      *
      * @param value
      * @param type
@@ -220,13 +210,12 @@ public class DocumentHelper {
             return r;
         }
         throw new IllegalArgumentException(
-                "Unsupported type when updating document properties from string representation: "
-                        + type);
+                "Unsupported type when updating document properties from string representation: " + type);
     }
 
     /**
-     * Read an encoded string list as a comma separated list. To use comma
-     * inside list element values you need to escape them using '\'.
+     * Read an encoded string list as a comma separated list. To use comma inside list element values you need to escape
+     * them using '\'.
      *
      * @param value
      * @return
@@ -268,20 +257,17 @@ public class DocumentHelper {
     }
 
     /**
-     * Sets the properties of a document based on their JSON representation
-     * (especially for scalar lists).
+     * Sets the properties of a document based on their JSON representation (especially for scalar lists).
      *
      * @param session
      * @param doc
      * @param properties
      * @throws ClientException
      * @throws IOException
-     *
      * @since 5.9.2
      */
-    public static void setJSONProperties(CoreSession session,
-            DocumentModel doc, Properties properties) throws ClientException,
-            IOException {
+    public static void setJSONProperties(CoreSession session, DocumentModel doc, Properties properties)
+            throws ClientException, IOException {
 
         for (Map.Entry<String, String> entry : properties.entrySet()) {
             String key = entry.getKey();
@@ -291,7 +277,6 @@ public class DocumentHelper {
     }
 
     /**
-     *
      * @param session
      * @param doc
      * @param key
@@ -299,12 +284,10 @@ public class DocumentHelper {
      * @param decodeStringListAsJSON
      * @throws ClientException
      * @throws IOException
-     *
      * @since 5.9.2
      */
-    public static void setProperty(CoreSession session, DocumentModel doc,
-            String key, String value, boolean decodeStringListAsJSON)
-            throws ClientException, IOException {
+    public static void setProperty(CoreSession session, DocumentModel doc, String key, String value,
+            boolean decodeStringListAsJSON) throws ClientException, IOException {
         if ("ecm:acl".equals(key)) {
             setLocalAcl(session, doc, value);
         }
@@ -318,8 +301,7 @@ public class DocumentHelper {
             if (type.isListType()) {
                 ListType ltype = (ListType) type;
                 if (ltype.isScalarList() && !decodeStringListAsJSON) {
-                    p.setValue(readStringList(value,
-                            (SimpleType) ltype.getFieldType()));
+                    p.setValue(readStringList(value, (SimpleType) ltype.getFieldType()));
                     return;
                 } else {
                     Object val = ComplexTypeJSONDecoder.decodeList(ltype, value);
@@ -327,13 +309,11 @@ public class DocumentHelper {
                     return;
                 }
             } else if (type.isComplexType()) {
-                Object val = ComplexTypeJSONDecoder.decode((ComplexType) type,
-                        value);
+                Object val = ComplexTypeJSONDecoder.decode((ComplexType) type, value);
                 p.setValue(val);
                 return;
             }
-            throw new ClientException(
-                    "Property type is not supported by this operation");
+            throw new ClientException("Property type is not supported by this operation");
         } else {
             p.setValue(((SimpleType) type).getPrimitiveType().decode(value));
         }

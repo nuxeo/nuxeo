@@ -20,18 +20,15 @@ import org.nuxeo.ecm.automation.core.util.PaginableRecordSet;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 
 /**
- *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.7
  */
-public class PaginableRecordSetImpl extends
-        PaginablePageProvider<Map<String, Serializable>> implements
+public class PaginableRecordSetImpl extends PaginablePageProvider<Map<String, Serializable>> implements
         PaginableRecordSet {
 
     private static final long serialVersionUID = 1L;
 
-    public PaginableRecordSetImpl(
-            PageProvider<Map<String, Serializable>> provider) {
+    public PaginableRecordSetImpl(PageProvider<Map<String, Serializable>> provider) {
         super(provider);
     }
 }

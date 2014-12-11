@@ -59,8 +59,7 @@ public class Scripting {
         String path = script.getPath();
         int p = path.lastIndexOf('.');
         if (p == -1) {
-            throw new OperationException(
-                    "Script files must have an extension: " + script);
+            throw new OperationException("Script files must have an extension: " + script);
         }
         String ext = path.substring(p + 1).toLowerCase();
         if ("mvel".equals(ext)) {
@@ -90,21 +89,18 @@ public class Scripting {
             map.put(Constants.VAR_WORKFLOW, ctx.get(Constants.VAR_WORKFLOW));
         }
         if (ctx.get(Constants.VAR_WORKFLOW_NODE) != null) {
-            map.put(Constants.VAR_WORKFLOW_NODE,
-                    ctx.get(Constants.VAR_WORKFLOW_NODE));
+            map.put(Constants.VAR_WORKFLOW_NODE, ctx.get(Constants.VAR_WORKFLOW_NODE));
         }
         map.put("This", input);
         map.put("Session", ctx.getCoreSession());
-        PrincipalWrapper principalWrapper = new PrincipalWrapper(
-                (NuxeoPrincipal) ctx.getPrincipal());
+        PrincipalWrapper principalWrapper = new PrincipalWrapper((NuxeoPrincipal) ctx.getPrincipal());
         map.put("CurrentUser", principalWrapper);
         // Alias
         map.put("currentUser", principalWrapper);
         map.put("Env", Framework.getProperties());
         map.put("Fn", Functions.getInstance());
         if (input instanceof DocumentModel) {
-            DocumentWrapper documentWrapper = new DocumentWrapper(
-                    ctx.getCoreSession(), (DocumentModel) input);
+            DocumentWrapper documentWrapper = new DocumentWrapper(ctx.getCoreSession(), (DocumentModel) input);
             map.put("Document", documentWrapper);
             // Alias
             map.put("currentDocument", documentWrapper);
@@ -138,6 +134,7 @@ public class Scripting {
             this.c = c;
         }
 
+        @Override
         public Object eval(OperationContext ctx) throws Exception {
             return MVEL.executeExpression(c, Scripting.initBindings(ctx));
         }
@@ -150,6 +147,7 @@ public class Scripting {
             this.c = gscripting.getScript(c, new Binding());
         }
 
+        @Override
         public Object eval(OperationContext ctx) throws Exception {
             Binding binding = new Binding();
             for (Map.Entry<String, Object> entry : initBindings(ctx).entrySet()) {

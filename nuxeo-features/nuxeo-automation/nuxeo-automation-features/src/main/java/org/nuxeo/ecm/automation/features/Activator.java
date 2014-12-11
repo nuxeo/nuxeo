@@ -17,7 +17,6 @@ import org.osgi.framework.BundleContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Activator implements BundleActivator {
 

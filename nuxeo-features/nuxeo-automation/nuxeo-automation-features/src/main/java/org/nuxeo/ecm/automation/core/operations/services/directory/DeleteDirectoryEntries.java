@@ -45,8 +45,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
  * <p>
  * Entries ids to delete are sent through a JSON array.
  * <p>
- * Instead of being deleted, the entries can be marked as obsolete using the
- * {@code markObsolete} parameter.
+ * Instead of being deleted, the entries can be marked as obsolete using the {@code markObsolete} parameter.
  * <p>
  * Returns deleted, or marked as obsolete, entries id as a JSON array.
  *
@@ -82,9 +81,8 @@ public class DeleteDirectoryEntries extends AbstractDirectoryOperation {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        List<String> entries = mapper.readValue(jsonEntries,
-                new TypeReference<List<String>>() {
-                });
+        List<String> entries = mapper.readValue(jsonEntries, new TypeReference<List<String>>() {
+        });
         List<String> ids = new ArrayList<String>();
         Session session = null;
         try {
@@ -105,12 +103,10 @@ public class DeleteDirectoryEntries extends AbstractDirectoryOperation {
 
         StringWriter writer = new StringWriter();
         mapper.writeValue(writer, ids);
-        return new InputStreamBlob(new ByteArrayInputStream(
-                writer.toString().getBytes("UTF-8")), "application/json");
+        return new InputStreamBlob(new ByteArrayInputStream(writer.toString().getBytes("UTF-8")), "application/json");
     }
 
-    protected void markObsoleteOrDelete(Session session, String id)
-            throws ClientException {
+    protected void markObsoleteOrDelete(Session session, String id) throws ClientException {
         Directory directory = directoryService.getDirectory(directoryName);
         String schemaName = directory.getSchema();
         Schema schema = schemaManager.getSchema(schemaName);

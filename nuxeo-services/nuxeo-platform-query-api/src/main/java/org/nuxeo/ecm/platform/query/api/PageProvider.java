@@ -25,8 +25,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 
 /**
- * Basic interface for a page provider, independent of type of items in the
- * list
+ * Basic interface for a page provider, independent of type of items in the list
  * <p>
  * Provides APIs to navigate between result pages
  *
@@ -40,14 +39,13 @@ public interface PageProvider<T> extends Serializable {
     public static final String DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP = "nuxeo.pageprovider.default-max-page-size";
 
     /**
-     * Constant to express that the total number of result elements is unknown
-     * (usually because the query has not been done yet).
+     * Constant to express that the total number of result elements is unknown (usually because the query has not been
+     * done yet).
      */
     public static final long UNKNOWN_SIZE = -1;
 
     /**
-     * Constant to express that the total number of result elements is unknown
-     * even after performing a query.
+     * Constant to express that the total number of result elements is unknown even after performing a query.
      *
      * @since 5.5
      */
@@ -55,6 +53,7 @@ public interface PageProvider<T> extends Serializable {
 
     /**
      * Default maximum page size value.
+     *
      * @since 6.0, default value is 1000.
      */
     public static final long DEFAULT_MAX_PAGE_SIZE = 1000;
@@ -79,18 +78,16 @@ public interface PageProvider<T> extends Serializable {
     /**
      * Gets properties set on the provider.
      * <p>
-     * Useful to retrieve a provider specific field attributes after
-     * instantiation. Other contextual parameters can be passed through API
-     * constructing the result provider.
+     * Useful to retrieve a provider specific field attributes after instantiation. Other contextual parameters can be
+     * passed through API constructing the result provider.
      */
     Map<String, Serializable> getProperties();
 
     /**
      * Sets properties set on the provider.
      * <p>
-     * Useful to initialize a provider specific field attributes after
-     * instantiation. Other contextual parameters can be passed through API
-     * constructing the result provider.
+     * Useful to initialize a provider specific field attributes after instantiation. Other contextual parameters can be
+     * passed through API constructing the result provider.
      */
     void setProperties(Map<String, Serializable> properties);
 
@@ -111,8 +108,7 @@ public interface PageProvider<T> extends Serializable {
     /**
      * Returns the max number of results per page. 0 means no pagination.
      * <p>
-     * If page size is greater than this maximum value, it will be taken into
-     * account instead.
+     * If page size is greater than this maximum value, it will be taken into account instead.
      *
      * @since 5.4.2
      */
@@ -121,18 +117,16 @@ public interface PageProvider<T> extends Serializable {
     /**
      * Sets the max number of results per page. 0 means no pagination.
      * <p>
-     * If page size is greater than this maximum value, it will be taken into
-     * account instead.
+     * If page size is greater than this maximum value, it will be taken into account instead.
      *
      * @since 5.4.2
      */
     void setMaxPageSize(long pageSize);
 
     /**
-     * Returns the number of result elements if available or a negative value
-     * if it is unknown: <code>UNKNOWN_SIZE</code> if it is unknown as query
-     * was not done, and since 5.5, <code>UNKNOWN_SIZE_AFTER_QUERY</code> if it
-     * is still unknown after query was done.
+     * Returns the number of result elements if available or a negative value if it is unknown:
+     * <code>UNKNOWN_SIZE</code> if it is unknown as query was not done, and since 5.5,
+     * <code>UNKNOWN_SIZE_AFTER_QUERY</code> if it is still unknown after query was done.
      */
     long getResultsCount();
 
@@ -158,9 +152,8 @@ public interface PageProvider<T> extends Serializable {
     /**
      * Returns the current page of results.
      * <p>
-     * This method is designed to be called from higher levels. It therefore
-     * ensures cheapness of repeated calls, rather than data consistency. There
-     * is a refresh() method for that.
+     * This method is designed to be called from higher levels. It therefore ensures cheapness of repeated calls, rather
+     * than data consistency. There is a refresh() method for that.
      * <p>
      *
      * @return the current page
@@ -168,25 +161,21 @@ public interface PageProvider<T> extends Serializable {
     List<T> getCurrentPage();
 
     /**
-     * Returns the current page of results wrapped in a {@link PageSelection}
-     * item.
+     * Returns the current page of results wrapped in a {@link PageSelection} item.
      * <p>
-     * By default, no entry is selected, unless
-     * {@link #setSelectedEntries(List)} has been called before.
+     * By default, no entry is selected, unless {@link #setSelectedEntries(List)} has been called before.
      */
     PageSelections<T> getCurrentSelectPage();
 
     /**
-     * Sets the list of selected entries to take into account in
-     * {@link #getCurrentSelectPage()}.
+     * Sets the list of selected entries to take into account in {@link #getCurrentSelectPage()}.
      */
     void setSelectedEntries(List<T> entries);
 
     /**
      * Sets the current page offset.
      * <p>
-     * If the provider keeps information linked to the current page, they
-     * should be reset after calling this method.
+     * If the provider keeps information linked to the current page, they should be reset after calling this method.
      *
      * @since 5.5
      */
@@ -235,8 +224,7 @@ public interface PageProvider<T> extends Serializable {
     long getCurrentPageSize();
 
     /**
-     * Returns the offset (starting from 0) of the first element in the current
-     * page or <code>UNKNOWN_SIZE</code>.
+     * Returns the offset (starting from 0) of the first element in the current page or <code>UNKNOWN_SIZE</code>.
      */
     long getCurrentPageOffset();
 
@@ -266,8 +254,8 @@ public interface PageProvider<T> extends Serializable {
     void nextPage();
 
     /**
-     * Go to the last page. Does not do anything if there is only one page
-     * displayed, or if the number of results is unknown.
+     * Go to the last page. Does not do anything if there is only one page displayed, or if the number of results is
+     * unknown.
      */
     void lastPage();
 
@@ -293,8 +281,7 @@ public interface PageProvider<T> extends Serializable {
     /**
      * Returns true if there is a next entry.
      * <p>
-     * The next entry might be in next page, except if results count is
-     * unknown.
+     * The next entry might be in next page, except if results count is unknown.
      */
     boolean isNextEntryAvailable();
 
@@ -308,17 +295,16 @@ public interface PageProvider<T> extends Serializable {
     /**
      * Move the current entry to the previous one, if applicable.
      * <p>
-     * No exception: this method is intended to be plugged directly at the UI
-     * layer. In case there's no previous entry, nothing will happen.
+     * No exception: this method is intended to be plugged directly at the UI layer. In case there's no previous entry,
+     * nothing will happen.
      */
     void previousEntry();
 
     /**
      * Move the current entry to the next one, if applicable.
      * <p>
-     * If needed and possible, the provider will forward to next page. No
-     * special exceptions: this method is intended to be plugged directly at
-     * the UI layer. In case there's no next entry, nothing happens.
+     * If needed and possible, the provider will forward to next page. No special exceptions: this method is intended to
+     * be plugged directly at the UI layer. In case there's no next entry, nothing happens.
      */
     void nextEntry();
 
@@ -354,12 +340,10 @@ public interface PageProvider<T> extends Serializable {
     void setSortInfo(SortInfo sortInfo);
 
     /**
-     * Sets the first and only sorting info for this provider if parameter
-     * removeOtherSortInfos is true. Otherwise, adds or changes the
-     * sortAscending information according to given direction.
+     * Sets the first and only sorting info for this provider if parameter removeOtherSortInfos is true. Otherwise, adds
+     * or changes the sortAscending information according to given direction.
      */
-    void setSortInfo(String sortColumn, boolean sortAscending,
-            boolean removeOtherSortInfos);
+    void setSortInfo(String sortColumn, boolean sortAscending, boolean removeOtherSortInfos);
 
     /**
      * Add the given sort info to the list of sorting infos.
@@ -367,9 +351,8 @@ public interface PageProvider<T> extends Serializable {
     void addSortInfo(String sortColumn, boolean sortAscending);
 
     /**
-     * Returns a positive 0-based integer if given sort information is found on
-     * the set sort infos, indicating the sort index, or -1 if this sort
-     * information is not found.
+     * Returns a positive 0-based integer if given sort information is found on the set sort infos, indicating the sort
+     * index, or -1 if this sort information is not found.
      */
     int getSortInfoIndex(String sortColumn, boolean sortAscending);
 
@@ -388,8 +371,7 @@ public interface PageProvider<T> extends Serializable {
     PageProviderDefinition getDefinition();
 
     /**
-     * Sets the {@link PageProviderChangedListener} for this
-     * {@code PageProvider}.
+     * Sets the {@link PageProviderChangedListener} for this {@code PageProvider}.
      *
      * @since 5.7
      */

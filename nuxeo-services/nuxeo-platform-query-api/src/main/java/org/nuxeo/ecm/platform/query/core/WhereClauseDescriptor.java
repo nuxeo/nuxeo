@@ -27,8 +27,7 @@ import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 
 /**
- * Generic descriptor for query where clause, accepting predicates and a fixed
- * part. A custom escaper can also be set.
+ * Generic descriptor for query where clause, accepting predicates and a fixed part. A custom escaper can also be set.
  *
  * @author Anahide Tchertchian
  * @since 5.4
@@ -37,8 +36,7 @@ import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 public class WhereClauseDescriptor implements WhereClauseDefinition {
 
     /**
-     * @deprecated since 6.0: doc type moved up to the page provider
-     *             descriptor.
+     * @deprecated since 6.0: doc type moved up to the page provider descriptor.
      */
     @Deprecated
     @XNode("@docType")
@@ -53,9 +51,8 @@ public class WhereClauseDescriptor implements WhereClauseDefinition {
     protected String fixedPart;
 
     /**
-     * This parameter allows to override the default select statement used by
-     * the fixed part ("select * from Document" for NXQL queries, for
-     * instance).
+     * This parameter allows to override the default select statement used by the fixed part ("select * from Document"
+     * for NXQL queries, for instance).
      *
      * @since 5.9.2
      */
@@ -69,44 +66,52 @@ public class WhereClauseDescriptor implements WhereClauseDefinition {
     protected boolean escapeFixedPartParameters = true;
 
     /**
-     * @deprecated since 6.0: use
-     *             {@link BasePageProviderDescriptor#getSearchDocumentType()}
+     * @deprecated since 6.0: use {@link BasePageProviderDescriptor#getSearchDocumentType()}
      */
+    @Override
     @Deprecated
     public String getDocType() {
         return docType;
     }
 
+    @Override
     @XNode("fixedPart")
     public void setFixedPath(String fixedPart) {
         // remove new lines and following spaces
         this.fixedPart = fixedPart.replaceAll("\r?\n\\s*", " ");
     }
 
+    @Override
     public boolean getQuoteFixedPartParameters() {
         return quoteFixedPartParameters;
     }
 
+    @Override
     public boolean getEscapeFixedPartParameters() {
         return escapeFixedPartParameters;
     }
 
+    @Override
     public PredicateDefinition[] getPredicates() {
         return predicates;
     }
 
+    @Override
     public void setPredicates(PredicateDefinition[] predicates) {
         this.predicates = predicates;
     }
 
+    @Override
     public String getFixedPart() {
         return fixedPart;
     }
 
+    @Override
     public void setFixedPart(String fixedPart) {
         this.fixedPart = fixedPart;
     }
 
+    @Override
     public Class<? extends Escaper> getEscaperClass() {
         return escaperClass;
     }
@@ -119,6 +124,7 @@ public class WhereClauseDescriptor implements WhereClauseDefinition {
     /**
      * @since 5.6
      */
+    @Override
     public WhereClauseDescriptor clone() {
         WhereClauseDescriptor clone = new WhereClauseDescriptor();
         clone.docType = getDocType();

@@ -52,8 +52,7 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Nuxeo component that provide an implementation of the
- * {@link AutomationService} and handle extensions registrations.
+ * Nuxeo component that provide an implementation of the {@link AutomationService} and handle extensions registrations.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
@@ -87,20 +86,16 @@ public class AutomationComponent extends DefaultComponent {
         handlers = new EventHandlerRegistry(service);
     }
 
-    protected void bindManagement() throws MalformedObjectNameException,
-            NotCompliantMBeanException, InstanceAlreadyExistsException,
-            MBeanRegistrationException {
-        final ObjectName objectName = new ObjectName(
-                "org.nuxeo.automation:name=tracerfactory");
+    protected void bindManagement() throws MalformedObjectNameException, NotCompliantMBeanException,
+            InstanceAlreadyExistsException, MBeanRegistrationException {
+        final ObjectName objectName = new ObjectName("org.nuxeo.automation:name=tracerfactory");
         MBeanServer mBeanServer = Framework.getLocalService(ServerLocator.class).lookupServer();
         mBeanServer.registerMBean(tracerFactory, objectName);
     }
 
-    protected void unBindManagement() throws MalformedObjectNameException,
-            NotCompliantMBeanException, InstanceAlreadyExistsException,
-            MBeanRegistrationException, InstanceNotFoundException {
-        final ObjectName on = new ObjectName(
-                "org.nuxeo.automation:name=tracerfactory");
+    protected void unBindManagement() throws MalformedObjectNameException, NotCompliantMBeanException,
+            InstanceAlreadyExistsException, MBeanRegistrationException, InstanceNotFoundException {
+        final ObjectName on = new ObjectName("org.nuxeo.automation:name=tracerfactory");
         final ServerLocator locator = Framework.getLocalService(ServerLocator.class);
         if (locator != null) {
             MBeanServer mBeanServer = locator.lookupServer();
@@ -116,8 +111,7 @@ public class AutomationComponent extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (XP_OPERATIONS.equals(extensionPoint)) {
             OperationContribution opc = (OperationContribution) contribution;
@@ -127,29 +121,24 @@ public class AutomationComponent extends DefaultComponent {
                     widgetDefinitionList.add(widgetDescriptor.getWidgetDefinition());
                 }
             }
-            service.putOperation(opc.type, opc.replace,
-                    contributor.getName().toString(), widgetDefinitionList);
+            service.putOperation(opc.type, opc.replace, contributor.getName().toString(), widgetDefinitionList);
         } else if (XP_CHAINS.equals(extensionPoint)) {
             OperationChainContribution occ = (OperationChainContribution) contribution;
             // Register the chain
             OperationType docChainType = new ChainTypeImpl(service,
-                    occ.toOperationChain(contributor.getContext().getBundle()),
-                    occ);
+                    occ.toOperationChain(contributor.getContext().getBundle()), occ);
             service.putOperation(docChainType, occ.replace);
         } else if (XP_CHAIN_EXCEPTION.equals(extensionPoint)) {
             ChainExceptionDescriptor chainExceptionDescriptor = (ChainExceptionDescriptor) contribution;
-            ChainException chainException = new ChainExceptionImpl(
-                    chainExceptionDescriptor);
+            ChainException chainException = new ChainExceptionImpl(chainExceptionDescriptor);
             service.putChainException(chainException);
         } else if (XP_AUTOMATION_FILTER.equals(extensionPoint)) {
             AutomationFilterDescriptor automationFilterDescriptor = (AutomationFilterDescriptor) contribution;
-            ChainExceptionFilter chainExceptionFilter = new ChainExceptionFilter(
-                    automationFilterDescriptor);
+            ChainExceptionFilter chainExceptionFilter = new ChainExceptionFilter(automationFilterDescriptor);
             service.putAutomationFilter(chainExceptionFilter);
         } else if (XP_ADAPTERS.equals(extensionPoint)) {
             TypeAdapterContribution tac = (TypeAdapterContribution) contribution;
-            service.putTypeAdapter(tac.accept, tac.produce,
-                    tac.clazz.newInstance());
+            service.putTypeAdapter(tac.accept, tac.produce, tac.clazz.newInstance());
         } else if (XP_EVENT_HANDLERS.equals(extensionPoint)) {
             EventHandler eh = (EventHandler) contribution;
             if (eh.isPostCommit()) {
@@ -161,8 +150,7 @@ public class AutomationComponent extends DefaultComponent {
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (XP_OPERATIONS.equals(extensionPoint)) {
             service.removeOperation(((OperationContribution) contribution).type);
@@ -171,13 +159,11 @@ public class AutomationComponent extends DefaultComponent {
             service.removeOperationChain(occ.getId());
         } else if (XP_CHAIN_EXCEPTION.equals(extensionPoint)) {
             ChainExceptionDescriptor chainExceptionDescriptor = (ChainExceptionDescriptor) contribution;
-            ChainException chainException = new ChainExceptionImpl(
-                    chainExceptionDescriptor);
+            ChainException chainException = new ChainExceptionImpl(chainExceptionDescriptor);
             service.removeExceptionChain(chainException);
         } else if (XP_AUTOMATION_FILTER.equals(extensionPoint)) {
             AutomationFilterDescriptor automationFilterDescriptor = (AutomationFilterDescriptor) contribution;
-            AutomationFilter automationFilter = new ChainExceptionFilter(
-                    automationFilterDescriptor);
+            AutomationFilter automationFilter = new ChainExceptionFilter(automationFilterDescriptor);
             service.removeAutomationFilter(automationFilter);
         } else if (XP_ADAPTERS.equals(extensionPoint)) {
             TypeAdapterContribution tac = (TypeAdapterContribution) contribution;
@@ -194,8 +180,7 @@ public class AutomationComponent extends DefaultComponent {
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (adapter == AutomationService.class || adapter == AutomationAdmin
-                .class) {
+        if (adapter == AutomationService.class || adapter == AutomationAdmin.class) {
             return adapter.cast(service);
         }
         if (adapter == EventHandlerRegistry.class) {
@@ -224,11 +209,8 @@ public class AutomationComponent extends DefaultComponent {
                 Framework.removeListener(this);
                 try {
                     unBindManagement();
-                } catch (MalformedObjectNameException
-                        | NotCompliantMBeanException
-                        | InstanceAlreadyExistsException
-                        | MBeanRegistrationException
-                        | InstanceNotFoundException cause) {
+                } catch (MalformedObjectNameException | NotCompliantMBeanException | InstanceAlreadyExistsException
+                        | MBeanRegistrationException | InstanceNotFoundException cause) {
                     log.error("Cannot unbind management", cause);
                 }
             }

@@ -19,8 +19,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
-import org.nuxeo.ecm.automation.jaxrs.io.documents
-        .PaginableDocumentModelListImpl;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -40,13 +39,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @since 6.0
- * Document query operation to perform queries on the repository.
+ * @since 6.0 Document query operation to perform queries on the repository.
  */
-@Operation(id = DocumentPaginatedQuery.ID, category = Constants.CAT_FETCH,
-        label = "Query", description = "Perform a query on the repository. " +
-        "The document list returned will become the input for the next " +
-        "operation.", since = "6.0", addToStudio = true)
+@Operation(id = DocumentPaginatedQuery.ID, category = Constants.CAT_FETCH, label = "Query", description = "Perform a query on the repository. "
+        + "The document list returned will become the input for the next " + "operation.", since = "6.0", addToStudio = true)
 public class DocumentPaginatedQuery {
 
     public static final String ID = "Document.Query";
@@ -65,39 +61,30 @@ public class DocumentPaginatedQuery {
     @Context
     protected PageProviderService pageProviderService;
 
-    @Param(name = "query", required = true, description = "The query to " +
-            "perform.")
+    @Param(name = "query", required = true, description = "The query to " + "perform.")
     protected String query;
 
-    @Param(name = "language", required = false, description = "The query " +
-            "language.", widget = Constants.W_OPTION,
-            values = { NXQL.NXQL })
+    @Param(name = "language", required = false, description = "The query " + "language.", widget = Constants.W_OPTION, values = { NXQL.NXQL })
     protected String lang = NXQL.NXQL;
 
-    @Param(name = "currentPageIndex", required = false,
-            description = "Target listing page.")
+    @Param(name = "currentPageIndex", required = false, description = "Target listing page.")
     protected Integer currentPageIndex;
 
-    @Param(name = "pageSize", required = false, description = "Entries number" +
-            " per page.")
+    @Param(name = "pageSize", required = false, description = "Entries number" + " per page.")
     protected Integer pageSize;
 
-    @Param(name = "queryParams", required = false, description = "Ordered " +
-            "query parameters.")
+    @Param(name = "queryParams", required = false, description = "Ordered " + "query parameters.")
     protected StringList strParameters;
 
-    @Param(name = "sortBy", required = false, description = "Sort by " +
-            "properties (separated by comma)")
+    @Param(name = "sortBy", required = false, description = "Sort by " + "properties (separated by comma)")
     protected String sortBy;
 
-    @Param(name = "sortOrder", required = false, description = "Sort order, " +
-            "ASC or DESC", widget = Constants.W_OPTION,
-            values = { ASC, DESC })
+    @Param(name = "sortOrder", required = false, description = "Sort order, " + "ASC or DESC", widget = Constants.W_OPTION, values = {
+            ASC, DESC })
     protected String sortOrder;
 
-    @Param(name = PageProviderServiceImpl.NAMED_PARAMETERS, required = false,
-            description = "Named parameters to pass to the page provider to " +
-                    "fill in query variables.")
+    @Param(name = PageProviderServiceImpl.NAMED_PARAMETERS, required = false, description = "Named parameters to pass to the page provider to "
+            + "fill in query variables.")
     protected Properties namedParameters;
 
     @SuppressWarnings("unchecked")
@@ -106,9 +93,7 @@ public class DocumentPaginatedQuery {
         // Ordered parameters
         Object[] orderedParameters = null;
         if (strParameters != null && !strParameters.isEmpty()) {
-            orderedParameters = strParameters.toArray(new
-                    String[strParameters.size
-                    ()]);
+            orderedParameters = strParameters.toArray(new String[strParameters.size()]);
             // expand specific parameters
             for (int idx = 0; idx < orderedParameters.length; idx++) {
                 String value = (String) orderedParameters[idx];
@@ -140,31 +125,22 @@ public class DocumentPaginatedQuery {
             }
             for (int i = 0; i < sorts.length; i++) {
                 String sort = sorts[i];
-                boolean sortAscending = (orders != null && orders.length
-                        > i && "asc".equals(orders[i].toLowerCase()));
+                boolean sortAscending = (orders != null && orders.length > i && "asc".equals(orders[i].toLowerCase()));
                 sortInfoList.add(new SortInfo(sort, sortAscending));
             }
         }
 
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         SimpleDocumentModel searchDocumentModel = null;
         if (namedParameters != null && !namedParameters.isEmpty()) {
             searchDocumentModel = new SimpleDocumentModel();
-            searchDocumentModel.putContextData(PageProviderServiceImpl
-                            .NAMED_PARAMETERS,
-                    namedParameters);
+            searchDocumentModel.putContextData(PageProviderServiceImpl.NAMED_PARAMETERS, namedParameters);
         }
-        CoreQueryPageProviderDescriptor desc = new
-                CoreQueryPageProviderDescriptor();
+        CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
         desc.setPattern(query);
-        return new PaginableDocumentModelListImpl(
-                (PageProvider<DocumentModel>) pageProviderService
-                        .getPageProvider(StringUtils.EMPTY, desc,
-                                searchDocumentModel, sortInfoList,
-                                targetPageSize,
-                                targetPage, props, orderedParameters), null);
+        return new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                StringUtils.EMPTY, desc, searchDocumentModel, sortInfoList, targetPageSize, targetPage, props,
+                orderedParameters), null);
     }
 }
-

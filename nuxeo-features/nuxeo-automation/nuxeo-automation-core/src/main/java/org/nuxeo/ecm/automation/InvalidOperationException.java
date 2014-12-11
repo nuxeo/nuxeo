@@ -20,10 +20,8 @@ package org.nuxeo.ecm.automation;
 
 /**
  * Dedicated to bad requests: operation unsupported, invalid, not implemented...
- *
- * {@link org.nuxeo.ecm.automation.core.impl.InvokableMethod#invoke(OperationContext, java.util.Map)}
- * is automatically wrapping {@link java.lang.UnsupportedOperationException}
- * into an {@link InvalidOperationException}.
+ * {@link org.nuxeo.ecm.automation.core.impl.InvokableMethod#invoke(OperationContext, java.util.Map)} is automatically
+ * wrapping {@link java.lang.UnsupportedOperationException} into an {@link InvalidOperationException}.
  *
  * @since 5.7
  */

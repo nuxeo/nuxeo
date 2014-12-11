@@ -27,8 +27,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
- * Provides helper methods to find extract permissions/principals info from
- * documents.
+ * Provides helper methods to find extract permissions/principals info from documents.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author Anahide Tchertchian
@@ -39,56 +38,45 @@ public class PrincipalHelper {
 
     protected PermissionProvider permissionProvider;
 
-    public PrincipalHelper(UserManager userManager,
-            PermissionProvider permissionProvider) {
+    public PrincipalHelper(UserManager userManager, PermissionProvider permissionProvider) {
         this.userManager = userManager;
         this.permissionProvider = permissionProvider;
     }
 
     @SuppressWarnings("unchecked")
-    public Set<String> getEmailsForPermission(DocumentModel input,
-            String permission, boolean ignoreGroups) throws ClientException {
-        return (Set<String>) collectObjectsMatchingPermission(input,
-                permission, ignoreGroups, true, new EmailCollector(
-                        userManager.getUserSchemaName(),
-                        userManager.getUserEmailField()));
+    public Set<String> getEmailsForPermission(DocumentModel input, String permission, boolean ignoreGroups)
+            throws ClientException {
+        return (Set<String>) collectObjectsMatchingPermission(input, permission, ignoreGroups, true,
+                new EmailCollector(userManager.getUserSchemaName(), userManager.getUserEmailField()));
     }
 
     /**
-     * Resolves the list of identifiers for users and groups who have the given
-     * permission on given document.
+     * Resolves the list of identifiers for users and groups who have the given permission on given document.
      *
      * @param input document model to resolve users and groups on.
      * @param permission the permission to check
      * @param ignoreGroups if true, will ignore groups in resolution of ids
-     * @param resolveGroups if true, will resolve user members, iterating in
-     *            the hierarchy of groups
-     * @param prefixIds if true, will prefix identifiers with
-     *            {@link NuxeoPrincipal#PREFIX} and {@link NuxeoGroup#PREFIX}
+     * @param resolveGroups if true, will resolve user members, iterating in the hierarchy of groups
+     * @param prefixIds if true, will prefix identifiers with {@link NuxeoPrincipal#PREFIX} and
+     *            {@link NuxeoGroup#PREFIX}
      * @throws ClientException
      */
     @SuppressWarnings("unchecked")
-    public Set<String> getUserAndGroupIdsForPermission(DocumentModel input,
-            String permission, boolean ignoreGroups, boolean resolveGroups,
-            boolean prefixIds) throws ClientException {
-        return (Set<String>) collectObjectsMatchingPermission(input,
-                permission, ignoreGroups, resolveGroups, new IdCollector(
-                        prefixIds));
+    public Set<String> getUserAndGroupIdsForPermission(DocumentModel input, String permission, boolean ignoreGroups,
+            boolean resolveGroups, boolean prefixIds) throws ClientException {
+        return (Set<String>) collectObjectsMatchingPermission(input, permission, ignoreGroups, resolveGroups,
+                new IdCollector(prefixIds));
     }
 
     @SuppressWarnings("unchecked")
-    public Set<NuxeoPrincipal> getPrincipalsForPermission(DocumentModel input,
-            String permission, boolean ignoreGroups, boolean resolveGroups)
-            throws ClientException {
-        return (Set<NuxeoPrincipal>) collectObjectsMatchingPermission(input,
-                permission, ignoreGroups, resolveGroups,
+    public Set<NuxeoPrincipal> getPrincipalsForPermission(DocumentModel input, String permission, boolean ignoreGroups,
+            boolean resolveGroups) throws ClientException {
+        return (Set<NuxeoPrincipal>) collectObjectsMatchingPermission(input, permission, ignoreGroups, resolveGroups,
                 new PrincipalCollector());
     }
 
-
     public Set<String> getEmailsFromGroup(String groupId, boolean resolveGroups) throws ClientException {
-        EmailCollector collector = new EmailCollector(userManager.getUserSchemaName(),
-                userManager.getUserEmailField());
+        EmailCollector collector = new EmailCollector(userManager.getUserSchemaName(), userManager.getUserEmailField());
         collectObjectsFromGroup(groupId, resolveGroups, collector);
         return collector.getResult();
     }
@@ -99,13 +87,15 @@ public class PrincipalHelper {
         return collector.getResult();
     }
 
-    public Set<String> getUserNamesFromGroup(String groupId, boolean resolveGroups, boolean prefixIds) throws ClientException {
+    public Set<String> getUserNamesFromGroup(String groupId, boolean resolveGroups, boolean prefixIds)
+            throws ClientException {
         IdCollector collector = new IdCollector(prefixIds);
         collectObjectsFromGroup(groupId, resolveGroups, collector);
         return collector.getResult();
     }
 
-    public void collectObjectsFromGroup(String groupId, boolean resolveGroups, Collector<?> collector) throws ClientException {
+    public void collectObjectsFromGroup(String groupId, boolean resolveGroups, Collector<?> collector)
+            throws ClientException {
         NuxeoGroup group = userManager.getGroup(groupId);
         if (group == null) {
             userManager.getPrincipal(groupId);
@@ -124,15 +114,13 @@ public class PrincipalHelper {
         }
     }
 
-    public HashSet<?> collectObjectsMatchingPermission(DocumentModel input,
-            String permission, boolean ignoreGroups, boolean resolveGroups,
-            Collector<?> collector) throws ClientException {
+    public HashSet<?> collectObjectsMatchingPermission(DocumentModel input, String permission, boolean ignoreGroups,
+            boolean resolveGroups, Collector<?> collector) throws ClientException {
         String[] perms = getPermissionsToCheck(permission);
         ACP acp = input.getACP();
         for (ACL acl : acp.getACLs()) {
             for (ACE ace : acl.getACEs()) {
-                if (ace.isGranted()
-                        && permissionMatch(perms, ace.getPermission())) {
+                if (ace.isGranted() && permissionMatch(perms, ace.getPermission())) {
                     NuxeoGroup group = userManager.getGroup(ace.getUsername());
                     if (group == null) {
                         // this may be a user
@@ -150,8 +138,7 @@ public class PrincipalHelper {
         return collector.getResult();
     }
 
-    public void resolveGroups(NuxeoGroup group, Collector<?> collector)
-            throws ClientException {
+    public void resolveGroups(NuxeoGroup group, Collector<?> collector) throws ClientException {
         if (group != null) {
             for (String memberUser : group.getMemberUsers()) {
                 collector.collect(userManager.getPrincipal(memberUser));
@@ -206,22 +193,24 @@ public class PrincipalHelper {
             this.userEmailFieldName = userEmailFieldName;
         }
 
+        @Override
         public void collect(NuxeoPrincipal principal) throws ClientException {
             if (principal == null) {
                 return;
             }
             DocumentModel userEntry = principal.getModel();
-            String email = (String) userEntry.getProperty(userSchemaName,
-                    userEmailFieldName);
+            String email = (String) userEntry.getProperty(userSchemaName, userEmailFieldName);
             if (!StringUtils.isEmpty(email)) {
                 result.add(email);
             }
         }
 
+        @Override
         public void collect(NuxeoGroup group) throws ClientException {
             // do nothing
         }
 
+        @Override
         public HashSet<String> getResult() {
             return result;
         }
@@ -231,6 +220,7 @@ public class PrincipalHelper {
 
         protected HashSet<NuxeoPrincipal> result = new HashSet<NuxeoPrincipal>();
 
+        @Override
         public void collect(NuxeoPrincipal principal) throws ClientException {
             if (principal == null) {
                 return;
@@ -238,10 +228,12 @@ public class PrincipalHelper {
             result.add(principal);
         }
 
+        @Override
         public void collect(NuxeoGroup group) throws ClientException {
             // do nothing
         }
 
+        @Override
         public HashSet<NuxeoPrincipal> getResult() {
             return result;
         }
@@ -257,6 +249,7 @@ public class PrincipalHelper {
             this.prefixIds = prefixIds;
         }
 
+        @Override
         public void collect(NuxeoPrincipal principal) throws ClientException {
             if (principal != null) {
                 String name = principal.getName();
@@ -270,6 +263,7 @@ public class PrincipalHelper {
             }
         }
 
+        @Override
         public void collect(NuxeoGroup group) throws ClientException {
             if (group != null) {
                 String name = group.getName();
@@ -283,6 +277,7 @@ public class PrincipalHelper {
             }
         }
 
+        @Override
         public HashSet<String> getResult() {
             return result;
         }

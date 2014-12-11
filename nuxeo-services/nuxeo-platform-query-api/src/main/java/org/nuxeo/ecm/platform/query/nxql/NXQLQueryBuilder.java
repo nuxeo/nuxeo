@@ -59,8 +59,7 @@ public class NXQLQueryBuilder {
     // @since 5.9
     public static final String SORTED_COLUMN = "SORTED_COLUMN";
 
-    public static final String REGEXP_NAMED_PARAMETER = "[^a-zA-Z]:\\s*" +
-            "([a-zA-Z0-9]*)";
+    public static final String REGEXP_NAMED_PARAMETER = "[^a-zA-Z]:\\s*" + "([a-zA-Z0-9]*)";
 
     public static final String REGEXP_EXCLUDE_QUOTE = "'[^']*'";
 
@@ -77,11 +76,9 @@ public class NXQLQueryBuilder {
                 String sortColumn = sortInfo.getSortColumn();
                 boolean sortAscending = sortInfo.getSortAscending();
                 if (index == 0) {
-                    queryBuilder.append("ORDER BY ").append(sortColumn).append(
-                            ' ').append(sortAscending ? "" : "DESC");
+                    queryBuilder.append("ORDER BY ").append(sortColumn).append(' ').append(sortAscending ? "" : "DESC");
                 } else {
-                    queryBuilder.append(", ").append(sortColumn).append(' ').append(
-                            sortAscending ? "" : "DESC");
+                    queryBuilder.append(", ").append(sortColumn).append(' ').append(sortAscending ? "" : "DESC");
                 }
                 index++;
             }
@@ -89,8 +86,7 @@ public class NXQLQueryBuilder {
         return queryBuilder.toString();
     }
 
-    public static String getQuery(DocumentModel model,
-            WhereClauseDefinition whereClause, Object[] params,
+    public static String getQuery(DocumentModel model, WhereClauseDefinition whereClause, Object[] params,
             SortInfo... sortInfos) throws ClientException {
         StringBuilder queryBuilder = new StringBuilder();
         String selectStatement = whereClause.getSelectStatement();
@@ -109,8 +105,7 @@ public class NXQLQueryBuilder {
         return queryBuilder.toString().trim();
     }
 
-    public static String getQueryElement(DocumentModel model,
-            WhereClauseDefinition whereClause, Object[] params)
+    public static String getQueryElement(DocumentModel model, WhereClauseDefinition whereClause, Object[] params)
             throws ClientException {
         List<String> elements = new ArrayList<String>();
         PredicateDefinition[] predicates = whereClause.getPredicates();
@@ -122,8 +117,7 @@ public class NXQLQueryBuilder {
                     escaper = escaperClass.newInstance();
                 }
                 for (PredicateDefinition predicate : predicates) {
-                    String predicateString = getQueryElement(model, predicate,
-                            escaper);
+                    String predicateString = getQueryElement(model, predicate, escaper);
                     if (predicateString == null) {
                         continue;
                     }
@@ -143,12 +137,10 @@ public class NXQLQueryBuilder {
         String fixedPart = whereClause.getFixedPart();
         if (!StringUtils.isBlank(fixedPart)) {
             if (elements.isEmpty()) {
-                elements.add(getQuery(fixedPart, params,
-                        whereClause.getQuoteFixedPartParameters(),
+                elements.add(getQuery(fixedPart, params, whereClause.getQuoteFixedPartParameters(),
                         whereClause.getEscapeFixedPartParameters(), model));
             } else {
-                elements.add('(' + getQuery(fixedPart, params,
-                        whereClause.getQuoteFixedPartParameters(),
+                elements.add('(' + getQuery(fixedPart, params, whereClause.getQuoteFixedPartParameters(),
                         whereClause.getEscapeFixedPartParameters(), model) + ')');
             }
         }
@@ -161,8 +153,7 @@ public class NXQLQueryBuilder {
         String clauseValues = StringUtils.join(elements, " AND ").trim();
 
         // GR: WHERE (x = 1) is invalid NXQL
-        while (elements.size() == 1 && clauseValues.startsWith("(")
-                && clauseValues.endsWith(")")) {
+        while (elements.size() == 1 && clauseValues.startsWith("(") && clauseValues.endsWith(")")) {
             clauseValues = clauseValues.substring(1, clauseValues.length() - 1).trim();
         }
         if (clauseValues.length() == 0) {
@@ -171,10 +162,8 @@ public class NXQLQueryBuilder {
         return " WHERE " + clauseValues;
     }
 
-    public static String getQuery(String pattern, Object[] params,
-            boolean quoteParameters, boolean escape,
-            DocumentModel searchDocumentModel, SortInfo... sortInfos)
-            throws ClientException {
+    public static String getQuery(String pattern, Object[] params, boolean quoteParameters, boolean escape,
+            DocumentModel searchDocumentModel, SortInfo... sortInfos) throws ClientException {
         String sortedColumn;
         if (sortInfos == null || sortInfos.length == 0) {
             // If there is no ORDER BY use the id
@@ -186,9 +175,9 @@ public class NXQLQueryBuilder {
             pattern = pattern.replace(SORTED_COLUMN, sortedColumn);
         }
         StringBuilder queryBuilder;
-        Map<String, Object> namedParameters = searchDocumentModel !=
-                null ? (Map<String, Object>) searchDocumentModel.getContextData().getScopedValue
-                (ScopeType.DEFAULT, PageProviderServiceImpl.NAMED_PARAMETERS) : null;
+        Map<String, Object> namedParameters = searchDocumentModel != null ? (Map<String, Object>) searchDocumentModel.getContextData().getScopedValue(
+                ScopeType.DEFAULT, PageProviderServiceImpl.NAMED_PARAMETERS)
+                : null;
         if (namedParameters != null) {
             // Find all query named parameters as ":parameter" not between
             // quotes and add them to matches
@@ -207,29 +196,22 @@ public class NXQLQueryBuilder {
                 }
                 key = ":" + key;
                 if (parameter instanceof String[]) {
-                    replaceStringList(pattern, Arrays.asList((String[])
-                            parameter), quoteParameters, escape, key);
+                    replaceStringList(pattern, Arrays.asList((String[]) parameter), quoteParameters, escape, key);
                 } else if (parameter instanceof List) {
-                    replaceStringList(pattern, (List<?>) parameter,
-                            quoteParameters, escape, key);
+                    replaceStringList(pattern, (List<?>) parameter, quoteParameters, escape, key);
                 } else if (parameter instanceof Boolean) {
-                    pattern = pattern.replaceAll(key,
-                            ((Boolean) parameter) ? "1" : "0");
+                    pattern = pattern.replaceAll(key, ((Boolean) parameter) ? "1" : "0");
                 } else if (parameter instanceof Number) {
                     pattern = pattern.replaceAll(key, parameter.toString());
                 } else if (parameter instanceof Literal) {
                     if (quoteParameters) {
-                        pattern = pattern.replaceAll(key,
-                                "'" + parameter.toString() +
-                                "'");
+                        pattern = pattern.replaceAll(key, "'" + parameter.toString() + "'");
                     } else {
-                        pattern = pattern.replaceAll(key,
-                                ((Literal) parameter).asString());
+                        pattern = pattern.replaceAll(key, ((Literal) parameter).asString());
                     }
                 } else {
                     if (quoteParameters) {
-                        pattern = pattern.replaceAll(key,
-                                "'" + parameter + "'");
+                        pattern = pattern.replaceAll(key, "'" + parameter + "'");
                     } else {
                         pattern = pattern.replaceAll(key, (String) parameter);
                     }
@@ -245,12 +227,9 @@ public class NXQLQueryBuilder {
             queryBuilder = new StringBuilder(queryStrList[0]);
             for (int i = 0; i < params.length; i++) {
                 if (params[i] instanceof String[]) {
-                    appendStringList(queryBuilder,
-                            Arrays.asList((String[]) params[i]),
-                            quoteParameters, escape);
+                    appendStringList(queryBuilder, Arrays.asList((String[]) params[i]), quoteParameters, escape);
                 } else if (params[i] instanceof List) {
-                    appendStringList(queryBuilder, (List<?>) params[i],
-                            quoteParameters, escape);
+                    appendStringList(queryBuilder, (List<?>) params[i], quoteParameters, escape);
                 } else if (params[i] instanceof Boolean) {
                     boolean b = ((Boolean) params[i]).booleanValue();
                     queryBuilder.append(b ? 1 : 0);
@@ -269,8 +248,7 @@ public class NXQLQueryBuilder {
                         }
                     } else {
                         String queryParam = params[i].toString();
-                        queryBuilder.append(prepareStringLiteral(queryParam,
-                                quoteParameters, escape));
+                        queryBuilder.append(prepareStringLiteral(queryParam, quoteParameters, escape));
                     }
                 }
                 queryBuilder.append(queryStrList[i + 1]);
@@ -280,8 +258,8 @@ public class NXQLQueryBuilder {
         return queryBuilder.toString().trim();
     }
 
-    public static void appendStringList(StringBuilder queryBuilder,
-            List<?> listParam, boolean quoteParameters, boolean escape) {
+    public static void appendStringList(StringBuilder queryBuilder, List<?> listParam, boolean quoteParameters,
+            boolean escape) {
         // avoid appending parentheses if the query builder ends with one
         boolean addParentheses = !queryBuilder.toString().endsWith("(");
         if (addParentheses) {
@@ -289,8 +267,7 @@ public class NXQLQueryBuilder {
         }
         List<String> result = new ArrayList<String>(listParam.size());
         for (Object param : listParam) {
-            result.add(prepareStringLiteral(param.toString(), quoteParameters,
-                    escape));
+            result.add(prepareStringLiteral(param.toString(), quoteParameters, escape));
         }
         queryBuilder.append(StringUtils.join(result, ", "));
         if (addParentheses) {
@@ -298,22 +275,19 @@ public class NXQLQueryBuilder {
         }
     }
 
-    public static String replaceStringList(String pattern, List<?> listParams,
-            boolean quoteParameters, boolean escape, String key) {
+    public static String replaceStringList(String pattern, List<?> listParams, boolean quoteParameters, boolean escape,
+            String key) {
         List<String> result = new ArrayList<String>(listParams.size());
         for (Object param : listParams) {
-            result.add(prepareStringLiteral(param.toString(), quoteParameters,
-                    escape));
+            result.add(prepareStringLiteral(param.toString(), quoteParameters, escape));
         }
-        return pattern.replaceAll(key, '(' + StringUtils.join(result, ", " +
-                "") + ')');
+        return pattern.replaceAll(key, '(' + StringUtils.join(result, ", " + "") + ')');
     }
 
     /**
      * Return the string literal in a form ready to embed in an NXQL statement.
      */
-    public static String prepareStringLiteral(String s, boolean quoteParameter,
-            boolean escape) {
+    public static String prepareStringLiteral(String s, boolean quoteParameter, boolean escape) {
         if (escape) {
             if (quoteParameter) {
                 return NXQL.escapeString(s);
@@ -329,8 +303,7 @@ public class NXQLQueryBuilder {
         }
     }
 
-    public static String getQueryElement(DocumentModel model,
-            PredicateDefinition predicateDescriptor, Escaper escaper)
+    public static String getQueryElement(DocumentModel model, PredicateDefinition predicateDescriptor, Escaper escaper)
             throws ClientException {
         String type = predicateDescriptor.getType();
         if (PredicateDefinition.ATOMIC_PREDICATE.equals(type)) {
@@ -342,22 +315,18 @@ public class NXQLQueryBuilder {
         throw new ClientException("Unknown predicate type: " + type);
     }
 
-    protected static String subClauseQueryElement(DocumentModel model,
-            PredicateDefinition predicateDescriptor) throws ClientException {
+    protected static String subClauseQueryElement(DocumentModel model, PredicateDefinition predicateDescriptor)
+            throws ClientException {
         PredicateFieldDefinition[] values = predicateDescriptor.getValues();
         if (values == null || values.length != 1) {
-            throw new ClientException(
-                    "subClause predicate needs exactly one field");
+            throw new ClientException("subClause predicate needs exactly one field");
         }
         PredicateFieldDefinition fieldDescriptor = values[0];
         if (!getFieldType(model, fieldDescriptor).equals("string")) {
             if (fieldDescriptor.getXpath() != null) {
-                throw new ClientException(String.format(
-                        "type of field %s is not string",
-                        fieldDescriptor.getXpath()));
+                throw new ClientException(String.format("type of field %s is not string", fieldDescriptor.getXpath()));
             } else {
-                throw new ClientException(String.format(
-                        "type of field %s.%s is not string",
+                throw new ClientException(String.format("type of field %s.%s is not string",
                         fieldDescriptor.getSchema(), fieldDescriptor.getName()));
             }
         }
@@ -369,17 +338,15 @@ public class NXQLQueryBuilder {
         return "(" + subclauseValue + ")";
     }
 
-    protected static String atomicQueryElement(DocumentModel model,
-            PredicateDefinition predicateDescriptor, Escaper escaper)
-            throws ClientException {
+    protected static String atomicQueryElement(DocumentModel model, PredicateDefinition predicateDescriptor,
+            Escaper escaper) throws ClientException {
         String operator = null;
         String operatorField = predicateDescriptor.getOperatorField();
         String operatorSchema = predicateDescriptor.getOperatorSchema();
         String parameter = predicateDescriptor.getParameter();
         PredicateFieldDefinition[] values = predicateDescriptor.getValues();
         if (operatorField != null && operatorSchema != null) {
-            PredicateFieldDefinition operatorFieldDescriptor = new FieldDescriptor(
-                    operatorSchema, operatorField);
+            PredicateFieldDefinition operatorFieldDescriptor = new FieldDescriptor(operatorSchema, operatorField);
             operator = getPlainStringValue(model, operatorFieldDescriptor);
             if (operator != null) {
                 operator = operator.toUpperCase();
@@ -389,10 +356,8 @@ public class NXQLQueryBuilder {
             operator = predicateDescriptor.getOperator();
         }
 
-        if (operator.equals("=") || operator.equals("!=")
-                || operator.equals("<") || operator.equals(">")
-                || operator.equals("<=") || operator.equals(">=")
-                || operator.equals("<>") || operator.equals("LIKE")
+        if (operator.equals("=") || operator.equals("!=") || operator.equals("<") || operator.equals(">")
+                || operator.equals("<=") || operator.equals(">=") || operator.equals("<>") || operator.equals("LIKE")
                 || operator.equals("ILIKE")) {
             // Unary predicate
             String value = getStringValue(model, values[0]);
@@ -400,8 +365,7 @@ public class NXQLQueryBuilder {
                 // value not provided: ignore predicate
                 return "";
             }
-            if (escaper != null
-                    && (operator.equals("LIKE") || operator.equals("ILIKE"))) {
+            if (escaper != null && (operator.equals("LIKE") || operator.equals("ILIKE"))) {
                 value = escaper.escape(value);
             }
             return serializeUnary(parameter, operator, value);
@@ -466,12 +430,10 @@ public class NXQLQueryBuilder {
                     StringBuilder builder = new StringBuilder();
                     builder.append('(');
                     for (int i = 0; i < options.size() - 1; i++) {
-                        builder.append(serializeUnary(parameter, operator,
-                                options.get(i)));
+                        builder.append(serializeUnary(parameter, operator, options.get(i)));
                         builder.append(" OR ");
                     }
-                    builder.append(serializeUnary(parameter, operator,
-                            options.get(options.size() - 1)));
+                    builder.append(serializeUnary(parameter, operator, options.get(options.size() - 1)));
                     builder.append(')');
                     return builder.toString();
                 }
@@ -485,8 +447,7 @@ public class NXQLQueryBuilder {
                 // value not provided: ignore predicate
                 return "";
             }
-            String lhs = parameter.startsWith(NXQL.ECM_FULLTEXT) ? parameter
-                    : NXQL.ECM_FULLTEXT + '.' + parameter;
+            String lhs = parameter.startsWith(NXQL.ECM_FULLTEXT) ? parameter : NXQL.ECM_FULLTEXT + '.' + parameter;
             if (escaper != null) {
                 value = escaper.escape(value);
             }
@@ -507,8 +468,8 @@ public class NXQLQueryBuilder {
     }
 
     /**
-     * Prepares a statement for a fulltext field by converting FULLTEXT virtual
-     * operators to a syntax that the search syntax accepts.
+     * Prepares a statement for a fulltext field by converting FULLTEXT virtual operators to a syntax that the search
+     * syntax accepts.
      *
      * @param value
      * @return the serialized statement
@@ -519,10 +480,9 @@ public class NXQLQueryBuilder {
     public static final String IGNORED_CHARS_KEY = "org.nuxeo.query.builder.ignored.chars";
 
     /**
-     * Remove any special character that could be mis-interpreted as a low
-     * level full-text query operator. This method should be used by user
-     * facing callers of CoreQuery*PageProviders that use a fixed part or a
-     * pattern query. Fields in where clause already dealt with.
+     * Remove any special character that could be mis-interpreted as a low level full-text query operator. This method
+     * should be used by user facing callers of CoreQuery*PageProviders that use a fixed part or a pattern query. Fields
+     * in where clause already dealt with.
      *
      * @since 5.6
      * @return sanitized text value
@@ -532,15 +492,13 @@ public class NXQLQueryBuilder {
         // parser should be robust to any user input however this is much more
         // complicated to implement correctly than the following simple user
         // input filtering scheme.
-        String ignoredChars = Framework.getProperty(IGNORED_CHARS_KEY,
-                DEFAULT_SPECIAL_CHARACTERS_REGEXP);
+        String ignoredChars = Framework.getProperty(IGNORED_CHARS_KEY, DEFAULT_SPECIAL_CHARACTERS_REGEXP);
         String res = "";
         value = value.replaceAll("[" + ignoredChars + "]", " ");
         value = value.trim();
         String[] tokens = value.split("[\\s]+");
         for (int i = 0; i < tokens.length; i++) {
-            if ("-".equals(tokens[i]) || "*".equals(tokens[i])
-                    || "*-".equals(tokens[i]) || "-*".equals(tokens[i])) {
+            if ("-".equals(tokens[i]) || "*".equals(tokens[i]) || "*-".equals(tokens[i]) || "-*".equals(tokens[i])) {
                 continue;
             }
             if (res.length() > 0) {
@@ -560,8 +518,7 @@ public class NXQLQueryBuilder {
         return "= " + NXQL.escapeString(value);
     }
 
-    protected static String serializeUnary(String parameter, String operator,
-            String rvalue) {
+    protected static String serializeUnary(String parameter, String operator, String rvalue) {
         StringBuilder builder = new StringBuilder();
         builder.append(parameter);
         builder.append(' ');
@@ -571,8 +528,7 @@ public class NXQLQueryBuilder {
         return builder.toString();
     }
 
-    public static String getPlainStringValue(DocumentModel model,
-            PredicateFieldDefinition fieldDescriptor) {
+    public static String getPlainStringValue(DocumentModel model, PredicateFieldDefinition fieldDescriptor) {
         Object rawValue = getRawValue(model, fieldDescriptor);
         if (rawValue == null) {
             return null;
@@ -584,8 +540,7 @@ public class NXQLQueryBuilder {
         return value;
     }
 
-    public static Integer getIntValue(DocumentModel model,
-            PredicateFieldDefinition fieldDescriptor) {
+    public static Integer getIntValue(DocumentModel model, PredicateFieldDefinition fieldDescriptor) {
         Object rawValue = getRawValue(model, fieldDescriptor);
         if (rawValue == null || "".equals(rawValue)) {
             return null;
@@ -598,8 +553,8 @@ public class NXQLQueryBuilder {
         }
     }
 
-    public static String getFieldType(DocumentModel model,
-            PredicateFieldDefinition fieldDescriptor) throws ClientException {
+    public static String getFieldType(DocumentModel model, PredicateFieldDefinition fieldDescriptor)
+            throws ClientException {
         String xpath = fieldDescriptor.getXpath();
         String schema = fieldDescriptor.getSchema();
         String name = fieldDescriptor.getName();
@@ -613,24 +568,21 @@ public class NXQLQueryBuilder {
             } else {
                 Schema schemaObj = typeManager.getSchema(schema);
                 if (schemaObj == null) {
-                    throw new ClientException("failed to obtain schema: "
-                            + schema);
+                    throw new ClientException("failed to obtain schema: " + schema);
                 }
                 field = schemaObj.getField(name);
             }
             if (field == null) {
-                throw new ClientException("failed to obtain field: " + schema
-                        + ":" + name);
+                throw new ClientException("failed to obtain field: " + schema + ":" + name);
             }
             return field.getType().getName();
         } catch (Exception e) {
-            throw new ClientException("failed to get field type for "
-                    + (xpath != null ? xpath : (schema + ":" + name)), e);
+            throw new ClientException(
+                    "failed to get field type for " + (xpath != null ? xpath : (schema + ":" + name)), e);
         }
     }
 
-    public static Object getRawValue(DocumentModel model,
-            PredicateFieldDefinition fieldDescriptor) {
+    public static Object getRawValue(DocumentModel model, PredicateFieldDefinition fieldDescriptor) {
         String xpath = fieldDescriptor.getXpath();
         String schema = fieldDescriptor.getSchema();
         String name = fieldDescriptor.getName();
@@ -645,8 +597,8 @@ public class NXQLQueryBuilder {
         }
     }
 
-    public static String getStringValue(DocumentModel model,
-            PredicateFieldDefinition fieldDescriptor) throws ClientException {
+    public static String getStringValue(DocumentModel model, PredicateFieldDefinition fieldDescriptor)
+            throws ClientException {
         Object rawValue = getRawValue(model, fieldDescriptor);
         if (rawValue == null) {
             return null;
@@ -658,8 +610,7 @@ public class NXQLQueryBuilder {
         } else if (rawValue instanceof Date) {
             Date date = (Date) rawValue;
             value = "TIMESTAMP '" + getDateFormat().format(date) + "'";
-        } else if (rawValue instanceof Integer || rawValue instanceof Long
-                || rawValue instanceof Double) {
+        } else if (rawValue instanceof Integer || rawValue instanceof Long || rawValue instanceof Double) {
             value = rawValue.toString(); // no quotes
         } else if (rawValue instanceof Boolean) {
             value = ((Boolean) rawValue).booleanValue() ? "1" : "0";
@@ -669,8 +620,7 @@ public class NXQLQueryBuilder {
                 return null;
             }
             String fieldType = getFieldType(model, fieldDescriptor);
-            if ("long".equals(fieldType) || "integer".equals(fieldType)
-                    || "double".equals(fieldType)) {
+            if ("long".equals(fieldType) || "integer".equals(fieldType) || "double".equals(fieldType)) {
                 return value;
             } else {
                 return NXQL.escapeString(value);
@@ -685,8 +635,7 @@ public class NXQLQueryBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    public static List<String> getListValue(DocumentModel model,
-            PredicateFieldDefinition fieldDescriptor) {
+    public static List<String> getListValue(DocumentModel model, PredicateFieldDefinition fieldDescriptor) {
         Object rawValue = getRawValue(model, fieldDescriptor);
         if (rawValue == null) {
             return null;
@@ -710,8 +659,7 @@ public class NXQLQueryBuilder {
         return values;
     }
 
-    public static Boolean getBooleanValue(DocumentModel model,
-            PredicateFieldDefinition fieldDescriptor) {
+    public static Boolean getBooleanValue(DocumentModel model, PredicateFieldDefinition fieldDescriptor) {
         Object rawValue = getRawValue(model, fieldDescriptor);
         if (rawValue == null) {
             return null;

@@ -85,8 +85,7 @@ public class RelationOperationsTest {
         ctx.setInput(src);
         OperationChain chain = new OperationChain("createRelation");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateRelation.ID).set("predicate", conformsTo).set("object",
-                dst.getId());
+        chain.add(CreateRelation.ID).set("predicate", conformsTo).set("object", dst.getId());
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
 
         assertEquals(doc, src);

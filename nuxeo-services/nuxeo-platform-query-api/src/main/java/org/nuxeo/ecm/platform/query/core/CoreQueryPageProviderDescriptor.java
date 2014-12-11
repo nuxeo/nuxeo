@@ -26,8 +26,7 @@ import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
  * @since 5.4
  */
 @XObject("coreQueryPageProvider")
-public class CoreQueryPageProviderDescriptor extends BasePageProviderDescriptor
-        implements PageProviderDefinition {
+public class CoreQueryPageProviderDescriptor extends BasePageProviderDescriptor implements PageProviderDefinition {
 
     private static final long serialVersionUID = 1L;
 
@@ -36,6 +35,7 @@ public class CoreQueryPageProviderDescriptor extends BasePageProviderDescriptor
         return new CoreQueryPageProviderDescriptor();
     }
 
+    @Override
     public CoreQueryPageProviderDescriptor clone() {
         return (CoreQueryPageProviderDescriptor) super.cloneDescriptor();
     }

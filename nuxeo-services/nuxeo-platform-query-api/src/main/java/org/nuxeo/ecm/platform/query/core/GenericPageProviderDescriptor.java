@@ -22,16 +22,14 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 
 /**
- * Page provider descriptor accepting a custom class name. The expected
- * interface is {@link ContentViewPageProvider}, all other attributes are
- * common to other page provider descriptors.
+ * Page provider descriptor accepting a custom class name. The expected interface is {@link ContentViewPageProvider},
+ * all other attributes are common to other page provider descriptors.
  *
  * @author Anahide Tchertchian
  * @since 5.4
  */
 @XObject("genericPageProvider")
-public class GenericPageProviderDescriptor extends BasePageProviderDescriptor
-        implements PageProviderDefinition {
+public class GenericPageProviderDescriptor extends BasePageProviderDescriptor implements PageProviderDefinition {
 
     private static final long serialVersionUID = 1L;
 
@@ -47,6 +45,7 @@ public class GenericPageProviderDescriptor extends BasePageProviderDescriptor
         return new GenericPageProviderDescriptor();
     }
 
+    @Override
     public GenericPageProviderDescriptor clone() {
         GenericPageProviderDescriptor clone = (GenericPageProviderDescriptor) super.cloneDescriptor();
         clone.klass = getPageProviderClass();

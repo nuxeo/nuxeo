@@ -28,12 +28,12 @@ import freemarker.template.Template;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FreemarkerRender extends FreemarkerEngine implements Renderer {
 
     public FreemarkerRender() {
         setResourceLocator(new ResourceLocator() {
+            @Override
             public URL getResourceURL(String key) {
                 try {
                     if (key.startsWith(Renderer.TEMPLATE_PREFIX)) {
@@ -47,22 +47,21 @@ public class FreemarkerRender extends FreemarkerEngine implements Renderer {
                 }
             }
 
+            @Override
             public File getResourceFile(String key) {
                 return null;
             }
         });
     }
 
-    public void renderContent(String content, Object ctx, Writer writer)
-            throws Exception {
+    public void renderContent(String content, Object ctx, Writer writer) throws Exception {
         StringReader reader = new StringReader(content);
-        Template tpl = new Template("@inline", reader, getConfiguration(),
-                "UTF-8");
-        Environment env = tpl.createProcessingEnvironment(ctx, writer,
-                getObjectWrapper());
+        Template tpl = new Template("@inline", reader, getConfiguration(), "UTF-8");
+        Environment env = tpl.createProcessingEnvironment(ctx, writer, getObjectWrapper());
         env.process();
     }
 
+    @Override
     public String render(String uriOrContent, Map<String, Object> root) throws Exception {
         if (root.get("Document") != null) {
             // mvel wrapper not supported in freemarker

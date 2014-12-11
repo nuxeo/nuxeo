@@ -24,13 +24,12 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class IterableInputHelper {
 
     // protected static ConcurrentMap<String,String> cache;
 
-    private IterableInputHelper () {
+    private IterableInputHelper() {
     }
 
     public static Class<?> getIterableType(Class<?> cl) {
@@ -49,10 +48,8 @@ public class IterableInputHelper {
                 }
             }
         }
-        throw new IllegalArgumentException(
-                "Invalid output collector class: "
-                        + cl
-                        + ". The class must explicitely impelement the OutputCollector interface.");
+        throw new IllegalArgumentException("Invalid output collector class: " + cl
+                + ". The class must explicitely impelement the OutputCollector interface.");
     }
 
     public static Class<?> findIterableType(Class<?> cl) {
@@ -69,8 +66,7 @@ public class IterableInputHelper {
         for (Type itf : cl.getGenericInterfaces()) {
             if (itf instanceof ParameterizedType) {
                 ParameterizedType ptype = (ParameterizedType) itf;
-                if (ptype.getRawType() == Iterable.class
-                        || ptype.getRawType() == Collection.class
+                if (ptype.getRawType() == Iterable.class || ptype.getRawType() == Collection.class
                         || ptype.getRawType() == List.class) {
                     return (Class<?>) ptype.getActualTypeArguments()[0];
                 }

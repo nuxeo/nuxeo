@@ -27,12 +27,10 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
  *
  * @since 5.7.3
  */
-public abstract class DocumentModelListPaginableAdapter extends
-        PaginableAdapter<DocumentModel> {
+public abstract class DocumentModelListPaginableAdapter extends PaginableAdapter<DocumentModel> {
 
     @Override
-    protected Paginable<DocumentModel> getPaginableEntries(
-            PageProvider<DocumentModel> pageProvider) {
+    protected Paginable<DocumentModel> getPaginableEntries(PageProvider<DocumentModel> pageProvider) {
         return new PaginableDocumentModelListImpl(pageProvider, "restdocid");
     }
 }

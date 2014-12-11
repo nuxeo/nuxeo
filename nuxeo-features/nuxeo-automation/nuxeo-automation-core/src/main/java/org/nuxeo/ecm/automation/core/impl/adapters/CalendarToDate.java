@@ -22,8 +22,8 @@ import org.nuxeo.ecm.automation.TypeAdapter;
  */
 public class CalendarToDate implements TypeAdapter {
 
-    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
-            throws TypeAdaptException {
+    @Override
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         return ((Calendar) objectToAdapt).getTime();
     }
 

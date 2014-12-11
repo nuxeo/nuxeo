@@ -53,14 +53,17 @@ public class FieldDescriptor implements PredicateFieldDefinition {
         this.xpath = xpath;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getSchema() {
         return schema;
     }
 
+    @Override
     public String getXpath() {
         return xpath;
     }
@@ -68,6 +71,7 @@ public class FieldDescriptor implements PredicateFieldDefinition {
     /**
      * @since 5.6
      */
+    @Override
     public FieldDescriptor clone() {
         FieldDescriptor clone = new FieldDescriptor();
         clone.name = name;

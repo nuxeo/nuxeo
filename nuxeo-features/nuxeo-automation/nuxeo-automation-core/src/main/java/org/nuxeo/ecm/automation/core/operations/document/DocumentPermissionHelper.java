@@ -47,11 +47,9 @@ public final class DocumentPermissionHelper {
      * @param permissionName
      * @param blockInheritance Should we block inheritance
      * @return true if something has changed on the document security
-     *
      */
-    public static boolean addPermission(ACP acp, String aclName,
-            String userName, String permission, boolean blockInheritance,
-            String currentPrincipalName) {
+    public static boolean addPermission(ACP acp, String aclName, String userName, String permission,
+            boolean blockInheritance, String currentPrincipalName) {
         boolean securityHasChanged = false;
 
         ACL acl = acp.getOrCreateACL(aclName);
@@ -61,16 +59,14 @@ public final class DocumentPermissionHelper {
 
         if (blockInheritance) {
             if (StringUtils.isEmpty(currentPrincipalName)) {
-                throw new IllegalArgumentException(
-                        "Can't block inheritance without a current principal");
+                throw new IllegalArgumentException("Can't block inheritance without a current principal");
             }
 
             aceList.clear();
             aceList.add(aceToAdd);
 
             if (!userName.equals(currentPrincipalName)) {
-                aceList.add(new ACE(currentPrincipalName,
-                        SecurityConstants.EVERYTHING, true));
+                aceList.add(new ACE(currentPrincipalName, SecurityConstants.EVERYTHING, true));
             }
 
             aceList.addAll(getAdminEverythingACES());
@@ -110,15 +106,13 @@ public final class DocumentPermissionHelper {
     }
 
     private static ACE getBlockInheritanceACE() {
-        return new ACE(SecurityConstants.EVERYONE,
-                SecurityConstants.EVERYTHING, false);
+        return new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false);
     }
 
     /**
      * Return a list of ACE giving everything permission to admin groups.
      *
      * @return
-     *
      */
     private static List<ACE> getAdminEverythingACES() {
         List<ACE> result = new ArrayList<>();
@@ -136,7 +130,6 @@ public final class DocumentPermissionHelper {
      *
      * @param acEs
      * @return
-     *
      */
     private static List<ACE> getACEAsList(ACE[] acEs) {
         List<ACE> aces = new ArrayList<>();
@@ -149,10 +142,8 @@ public final class DocumentPermissionHelper {
      * @param aclName the name of the ACL to target
      * @param principalName the name of the principal (user or group)
      * @return true if something has changed on the document security
-     *
      */
-    public static boolean removePermission(ACP acp, String aclName,
-            String principalName) {
+    public static boolean removePermission(ACP acp, String aclName, String principalName) {
 
         boolean securityHasChanged = false;
 

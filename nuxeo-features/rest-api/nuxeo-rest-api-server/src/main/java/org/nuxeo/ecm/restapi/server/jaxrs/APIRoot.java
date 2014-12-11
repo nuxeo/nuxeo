@@ -43,8 +43,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 public class APIRoot extends ModuleRoot {
 
     @Path("/")
-    public Object doGetRepository(@PathParam("repo")
-    String repositoryParam) throws NoSuchDocumentException {
+    public Object doGetRepository(@PathParam("repo") String repositoryParam) throws NoSuchDocumentException {
         if (StringUtils.isNotBlank(repositoryParam)) {
             String repoName = repositoryParam.substring("repo/".length() + 1);
             try {
@@ -96,12 +95,9 @@ public class APIRoot extends ModuleRoot {
     public Object handleError(final WebApplicationException cause) {
         Throwable unWrapException = ExceptionHelper.unwrapException(cause);
         if (unWrapException instanceof RestOperationException) {
-            int customHttpStatus = ((RestOperationException) unWrapException)
-                    .getStatus();
-            return WebException.newException(
-                    cause.getMessage(), cause, customHttpStatus);
+            int customHttpStatus = ((RestOperationException) unWrapException).getStatus();
+            return WebException.newException(cause.getMessage(), cause, customHttpStatus);
         }
-        return WebException.newException(
-                cause.getMessage(), unWrapException);
+        return WebException.newException(cause.getMessage(), unWrapException);
     }
 }

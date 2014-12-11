@@ -26,8 +26,7 @@ import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
- * Retrieve the emails from users/groups who have the given permission on given
- * document.
+ * Retrieve the emails from users/groups who have the given permission on given document.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -62,14 +61,13 @@ public class GetDocumentPrincipalEmails {
     @Param(name = "variable name")
     protected String key;
 
-    @Param(name = "ignore groups", required = false, values = {"false"})
+    @Param(name = "ignore groups", required = false, values = { "false" })
     protected boolean ignoreGroups = false;
 
     @OperationMethod
     public DocumentModel run(DocumentModel input) throws Exception {
         PrincipalHelper ph = new PrincipalHelper(umgr, permissionProvider);
-        Set<String> result = ph.getEmailsForPermission(input, permission,
-                ignoreGroups);
+        Set<String> result = ph.getEmailsForPermission(input, permission, ignoreGroups);
         ctx.put(key, new StringList(result));
         return input;
     }

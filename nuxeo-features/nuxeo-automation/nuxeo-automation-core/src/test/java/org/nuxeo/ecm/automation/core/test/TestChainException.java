@@ -52,7 +52,7 @@ import com.google.inject.Inject;
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-exception-chain.xml")
-@RepositoryConfig(cleanup=Granularity.METHOD, init=TestChainException.Populate.class)
+@RepositoryConfig(cleanup = Granularity.METHOD, init = TestChainException.Populate.class)
 public class TestChainException {
 
     protected DocumentModel src;
@@ -88,14 +88,12 @@ public class TestChainException {
         doc = session.getDocument(new PathRef("/doc"));
     }
 
-
     @Test
     public void testChainExceptionContribution() throws Exception {
         ChainException chainException = service.getChainException("contributedchain");
         assertNotNull(chainException);
         assertEquals(3, chainException.getCatchChainExceptions().size());
-        assertEquals("chainExceptionA",
-                chainException.getCatchChainExceptions().get(0).getChainId());
+        assertEquals("chainExceptionA", chainException.getCatchChainExceptions().get(0).getChainId());
     }
 
     @Test
@@ -104,9 +102,8 @@ public class TestChainException {
         assertNotNull(automationFilter);
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
-        assertEquals(
-                Scripting.newTemplate("@{Document['dc:title']=='Source'}").eval(
-                        ctx), automationFilter.getValue().eval(ctx));
+        assertEquals(Scripting.newTemplate("@{Document['dc:title']=='Source'}").eval(ctx),
+                automationFilter.getValue().eval(ctx));
     }
 
     @Test

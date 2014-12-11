@@ -37,27 +37,23 @@ import org.nuxeo.ecm.platform.query.api.PageSelections;
 /**
  * Page provider performing a queryAndFetch on a core session.
  * <p>
- * It builds the query at each call so that it can refresh itself when the
- * query changes.
+ * It builds the query at each call so that it can refresh itself when the query changes.
  * <p>
  * <p>
- * The page provider property named {@link #CORE_SESSION_PROPERTY} is used to
- * pass the {@link CoreSession} instance that will perform the query. The
- * optional property {@link #CHECK_QUERY_CACHE_PROPERTY} can be set to "true"
- * to avoid performing the query again if it did not change.
+ * The page provider property named {@link #CORE_SESSION_PROPERTY} is used to pass the {@link CoreSession} instance that
+ * will perform the query. The optional property {@link #CHECK_QUERY_CACHE_PROPERTY} can be set to "true" to avoid
+ * performing the query again if it did not change.
  * <p>
- * Since 6.0, the page provider property named {@link #LANGUAGE_PROPERTY}
- * allows specifying the query language (NXQL, NXTAG,...).
+ * Since 6.0, the page provider property named {@link #LANGUAGE_PROPERTY} allows specifying the query language (NXQL,
+ * NXTAG,...).
  * <p>
- * Also since 6.0, the page provider property named
- * {@link #USE_UNRESTRICTED_SESSION_PROPERTY} allows specifying whether the
- * query should be run as unrestricted.
+ * Also since 6.0, the page provider property named {@link #USE_UNRESTRICTED_SESSION_PROPERTY} allows specifying whether
+ * the query should be run as unrestricted.
  *
  * @author Anahide Tchertchian
  * @since 5.4
  */
-public class CoreQueryAndFetchPageProvider extends
-        AbstractPageProvider<Map<String, Serializable>> {
+public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<String, Serializable>> {
 
     public static final String CORE_SESSION_PROPERTY = "coreSession";
 
@@ -94,8 +90,7 @@ public class CoreQueryAndFetchPageProvider extends
                 buildQuery();
             }
             if (query == null) {
-                throw new ClientRuntimeException(String.format(
-                        "Cannot perform null query: check provider '%s'",
+                throw new ClientRuntimeException(String.format("Cannot perform null query: check provider '%s'",
                         getName()));
             }
 
@@ -114,10 +109,8 @@ public class CoreQueryAndFetchPageProvider extends
 
                 long offset = getCurrentPageOffset();
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "Perform query for provider '%s': '%s' with pageSize=%s, offset=%s",
-                            getName(), query, Long.valueOf(minMaxPageSize),
-                            Long.valueOf(offset)));
+                    log.debug(String.format("Perform query for provider '%s': '%s' with pageSize=%s, offset=%s",
+                            getName(), query, Long.valueOf(minMaxPageSize), Long.valueOf(offset)));
                 }
 
                 final String language = getQueryLanguage();
@@ -138,17 +131,15 @@ public class CoreQueryAndFetchPageProvider extends
 
                 Iterator<Map<String, Serializable>> it = result.iterator();
                 int pos = 0;
-                while (it.hasNext()
-                        && (maxPageSize == 0 || pos < minMaxPageSize)) {
+                while (it.hasNext() && (maxPageSize == 0 || pos < minMaxPageSize)) {
                     pos += 1;
                     Map<String, Serializable> item = it.next();
                     currentItems.add(item);
                 }
 
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "Performed query for provider '%s': got %s hits",
-                            getName(), Long.valueOf(resultsCount)));
+                    log.debug(String.format("Performed query for provider '%s': got %s hits", getName(),
+                            Long.valueOf(resultsCount)));
                 }
 
                 // refresh may have triggered display of an empty page => go
@@ -160,22 +151,17 @@ public class CoreQueryAndFetchPageProvider extends
                         if (resultsCount == 0) {
                             // fetch first page directly
                             if (log.isDebugEnabled()) {
-                                log.debug(String.format(
-                                        "Current page %s is not the first one but "
-                                                + "shows no result and there are "
-                                                + "no results => rewind to first page",
+                                log.debug(String.format("Current page %s is not the first one but "
+                                        + "shows no result and there are " + "no results => rewind to first page",
                                         Long.valueOf(getCurrentPageIndex())));
                             }
                             firstPage();
                         } else {
                             // fetch last page
                             if (log.isDebugEnabled()) {
-                                log.debug(String.format(
-                                        "Current page %s is not the first one but "
-                                                + "shows no result and there are "
-                                                + "%s results => fetch last page",
-                                        Long.valueOf(getCurrentPageIndex()),
-                                        Long.valueOf(resultsCount)));
+                                log.debug(String.format("Current page %s is not the first one but "
+                                        + "shows no result and there are " + "%s results => fetch last page",
+                                        Long.valueOf(getCurrentPageIndex()), Long.valueOf(resultsCount)));
                             }
                             lastPage();
                         }
@@ -207,9 +193,9 @@ public class CoreQueryAndFetchPageProvider extends
             if (sortInfos != null) {
                 sortArray = sortInfos.toArray(new SortInfo[] {});
             }
-            String newQuery = NXQLQueryBuilder.getQuery(originalQuery,
-                    getParameters(), def.getQuotePatternParameters(),
-                    def.getEscapePatternParameters(), getSearchDocumentModel(), sortArray);
+            String newQuery = NXQLQueryBuilder.getQuery(originalQuery, getParameters(),
+                    def.getQuotePatternParameters(), def.getEscapePatternParameters(), getSearchDocumentModel(),
+                    sortArray);
 
             if (query != null && newQuery != null && !newQuery.equals(query)) {
                 // query has changed => refresh

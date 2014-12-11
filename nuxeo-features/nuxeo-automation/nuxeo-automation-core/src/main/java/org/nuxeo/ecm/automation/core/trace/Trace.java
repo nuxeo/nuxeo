@@ -47,17 +47,16 @@ public class Trace {
         // If chain doesn't exist, this should be one operation call
         this.chain = chain != null ? chain : operations.get(0).getType();
         this.operations = new ArrayList<Call>(operations);
-        this.output = null;
-        this.error = null;
+        output = null;
+        error = null;
     }
 
-    Trace(Call parent, OperationType chain, List<Call> calls,
-            OperationException error) {
+    Trace(Call parent, OperationType chain, List<Call> calls, OperationException error) {
         this.parent = parent;
         // If chain doesn't exist, this should be one operation call
         this.chain = chain != null ? chain : calls.get(0).getType();
-        this.operations = new ArrayList<Call>(calls);
-        this.output = null;
+        operations = new ArrayList<Call>(calls);
+        output = null;
         this.error = error;
     }
 
@@ -65,9 +64,9 @@ public class Trace {
         this.parent = parent;
         // If chain doesn't exist, this should be one operation call
         this.chain = chain != null ? chain : calls.get(0).getType();
-        this.operations = new ArrayList<Call>(calls);
+        operations = new ArrayList<Call>(calls);
         this.output = output;
-        this.error = null;
+        error = null;
     }
 
     public Call getParent() {
@@ -100,8 +99,7 @@ public class Trace {
                 new TracePrinter(out).litePrint(this);
             }
         } catch (IOException e) {
-            LogFactory.getLog(Trace.class).error(
-                    "Cannot print trace of " + chain.getId(), e);
+            LogFactory.getLog(Trace.class).error("Cannot print trace of " + chain.getId(), e);
             return chain.getId();
         }
         return out.toString();

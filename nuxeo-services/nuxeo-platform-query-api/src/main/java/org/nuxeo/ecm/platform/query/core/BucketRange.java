@@ -22,19 +22,24 @@ import java.util.Locale;
 
 /**
  * Immutable bucket for range.
+ *
  * @since 6.0
  */
 public final class BucketRange implements Bucket {
 
     private final String key;
+
     private final long docCount;
+
     private final Double from;
+
     private final Double to;
 
     public BucketRange(String key, Number from, Number to, long docCount) {
         if (key == null) {
             throw new IllegalArgumentException("key is null");
-        };
+        }
+        ;
         this.key = key;
         if (from != null) {
             this.from = from.doubleValue();
@@ -75,7 +80,6 @@ public final class BucketRange implements Bucket {
 
     @Override
     public String toString() {
-        return String.format(Locale.ENGLISH, "BucketRange(%s, %d, %.2f, %.2f)", key, docCount, from,
-                        to);
+        return String.format(Locale.ENGLISH, "BucketRange(%s, %d, %.2f, %.2f)", key, docCount, from, to);
     }
 }

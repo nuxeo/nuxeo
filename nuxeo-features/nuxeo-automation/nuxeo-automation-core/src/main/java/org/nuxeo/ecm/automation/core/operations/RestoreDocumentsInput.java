@@ -46,8 +46,7 @@ public class RestoreDocumentsInput {
         } else if (obj instanceof DocumentRefList) {
             CoreSession session = ctx.getCoreSession();
             DocumentRefList refs = (DocumentRefList) obj;
-            DocumentModelListImpl list = new DocumentModelListImpl(
-                    (int) refs.totalSize());
+            DocumentModelListImpl list = new DocumentModelListImpl((int) refs.totalSize());
             for (DocumentRef ref : refs) {
                 list.add(session.getDocument(ref));
             }

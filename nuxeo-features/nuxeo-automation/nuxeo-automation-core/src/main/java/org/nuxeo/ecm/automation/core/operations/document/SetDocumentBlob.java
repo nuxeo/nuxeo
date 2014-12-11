@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 // TODO accept xpath that points to a blob entry in a list and insert a blob
@@ -45,7 +44,7 @@ public class SetDocumentBlob {
     @Param(name = "save", required = false, values = "true")
     protected boolean save = true;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         DocumentHelper.addBlob(doc.getProperty(xpath), blob);
         if (save) {

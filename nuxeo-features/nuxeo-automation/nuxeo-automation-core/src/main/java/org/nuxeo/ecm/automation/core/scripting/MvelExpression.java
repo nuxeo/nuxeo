@@ -33,14 +33,13 @@ public class MvelExpression implements Expression {
         this.expr = expr;
     }
 
+    @Override
     public Object eval(OperationContext ctx) throws Exception {
         if (compiled == null) {
             compiled = MVEL.compileExpression(expr);
         }
         Object result = MVEL.executeExpression(compiled, getBindings(ctx));
-        return result != null
-                && result.getClass().isAssignableFrom(BlankLiteral.class) ? ""
-                : result;
+        return result != null && result.getClass().isAssignableFrom(BlankLiteral.class) ? "" : result;
     }
 
     /**

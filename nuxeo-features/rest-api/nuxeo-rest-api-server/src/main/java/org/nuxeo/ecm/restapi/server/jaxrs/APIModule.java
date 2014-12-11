@@ -55,12 +55,9 @@ import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoGroupWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoPrincipalListWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoPrincipalReader;
 import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoPrincipalWriter;
-import org.nuxeo.ecm.webengine.app.JsonExceptionWriter;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 
 /**
- *
- *
  * @since 5.8
  */
 public class APIModule extends WebEngineModule {

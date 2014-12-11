@@ -40,8 +40,7 @@ public class LogOperation {
     @Param(name = "message", required = true)
     protected String message;
 
-    @Param(name = "level", required = true, widget = Constants.W_OPTION, values = {
-            "info", "debug", "warn", "error" })
+    @Param(name = "level", required = true, widget = Constants.W_OPTION, values = { "info", "debug", "warn", "error" })
     protected String level = "info";
 
     @OperationMethod

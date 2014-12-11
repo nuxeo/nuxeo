@@ -154,18 +154,15 @@ public class SendMail {
             map.put("to", to);
             map.put("toResolved", MailBox.fetchPersonsFromList(to, isStrict));
             map.put("from", from);
-            map.put("fromResolved",
-                    MailBox.fetchPersonsFromString(from, isStrict));
+            map.put("fromResolved", MailBox.fetchPersonsFromString(from, isStrict));
             map.put("from", cc);
             map.put("fromResolved", MailBox.fetchPersonsFromList(cc, isStrict));
             map.put("from", bcc);
             map.put("fromResolved", MailBox.fetchPersonsFromList(bcc, isStrict));
             map.put("from", replyto);
-            map.put("fromResolved",
-                    MailBox.fetchPersonsFromList(replyto, isStrict));
+            map.put("fromResolved", MailBox.fetchPersonsFromList(replyto, isStrict));
             map.put("viewId", viewId);
-            map.put("baseUrl",
-                    NotificationServiceHelper.getNotificationService().getServerUrlPrefix());
+            map.put("baseUrl", NotificationServiceHelper.getNotificationService().getServerUrlPrefix());
             map.put("Runtime", Framework.getRuntime());
             Mailer.Message msg = createMessage(doc, getContent(), map);
             msg.setSubject(subject, "UTF-8");
@@ -188,8 +185,7 @@ public class SendMail {
     /**
      * @since 5.9.1
      */
-    private void addMailBoxInfo(Mailer.Message msg) throws MessagingException,
-            ClientException {
+    private void addMailBoxInfo(Mailer.Message msg) throws MessagingException, ClientException {
         List<MailBox> persons = MailBox.fetchPersonsFromString(from, isStrict);
         addMailBoxInfoInMessageHeader(msg, AS.FROM, persons);
 
@@ -212,15 +208,13 @@ public class SendMail {
     /**
      * @since 5.9.1
      */
-    private void addMailBoxInfoInMessageHeader(Message msg, AS as,
-            List<MailBox> persons) throws MessagingException {
+    private void addMailBoxInfoInMessageHeader(Message msg, AS as, List<MailBox> persons) throws MessagingException {
         for (MailBox person : persons) {
             msg.addInfoInMessageHeader(person.toString(), as);
         }
     }
 
-    protected Mailer.Message createMessage(DocumentModel doc, String message,
-            Map<String, Object> map) throws Exception {
+    protected Mailer.Message createMessage(DocumentModel doc, String message, Map<String, Object> map) throws Exception {
         if (blobXpath == null) {
             if (asHtml) {
                 return COMPOSER.newHtmlMessage(message, map);
@@ -254,17 +248,14 @@ public class SendMail {
                     continue;
                 }
             }
-            return COMPOSER.newMixedMessage(message, map, asHtml ? "html"
-                    : "plain", blobs);
+            return COMPOSER.newMixedMessage(message, map, asHtml ? "html" : "plain", blobs);
         }
     }
 
     /**
-     *
      * @since 5.7
      * @param o: the object to introspect to find a blob
-     * @param blobs: the Blob list where the blobs are put during property
-     *            introspection
+     * @param blobs: the Blob list where the blobs are put during property introspection
      */
     @SuppressWarnings("unchecked")
     private void getBlob(Object o, List<Blob> blobs) {

@@ -51,13 +51,11 @@ public abstract class AbstractUMRootObject<T> extends PaginableObject<T> {
     }
 
     @Path("{artName}")
-    public Object getArtifactWebObject(@PathParam("artName")
-    String artName) {
+    public Object getArtifactWebObject(@PathParam("artName") String artName) {
         try {
             T artifact = getArtifact(artName);
             if (artifact == null) {
-                throw new WebResourceNotFoundException(getArtifactType()
-                        + " does not exist");
+                throw new WebResourceNotFoundException(getArtifactType() + " does not exist");
             }
             return newObject(getArtifactType(), artifact);
         } catch (ClientException e) {
@@ -94,17 +92,14 @@ public abstract class AbstractUMRootObject<T> extends PaginableObject<T> {
     protected abstract T getArtifact(String id) throws ClientException;
 
     /**
-     * Returns the type of the current artifact needed for
-     * {@link #newObject(String, Object...)}.
+     * Returns the type of the current artifact needed for {@link #newObject(String, Object...)}.
      */
     protected abstract String getArtifactType();
 
     /**
-     * Checks the precondition to create an artifact (for instance validity,
-     * duplicate detection, guards...).
+     * Checks the precondition to create an artifact (for instance validity, duplicate detection, guards...).
      */
-    protected abstract void checkPrecondition(T artifact)
-            throws ClientException;
+    protected abstract void checkPrecondition(T artifact) throws ClientException;
 
     /**
      * Persist an artifact in the underlying persistence system.
@@ -114,8 +109,7 @@ public abstract class AbstractUMRootObject<T> extends PaginableObject<T> {
     protected void checkCurrentUserCanCreateArtifact(T artifact) {
         NuxeoPrincipal currentUser = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
         if (!currentUser.isAdministrator()) {
-            if (!currentUser.isMemberOf("powerusers")
-                    || !isAPowerUserEditableArtifact(artifact)) {
+            if (!currentUser.isMemberOf("powerusers") || !isAPowerUserEditableArtifact(artifact)) {
                 throw new WebSecurityException("Cannot create artifact");
             }
         }

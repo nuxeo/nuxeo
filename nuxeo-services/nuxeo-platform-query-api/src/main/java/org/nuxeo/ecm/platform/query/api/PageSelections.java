@@ -92,8 +92,7 @@ public class PageSelections<T> {
     }
 
     /**
-     * @deprecated just here for compatibility with SelectDatamodel methods,
-     *             use {@link #getSize()} instead
+     * @deprecated just here for compatibility with SelectDatamodel methods, use {@link #getSize()} instead
      */
     @Deprecated
     public int getRowCount() {
@@ -101,8 +100,7 @@ public class PageSelections<T> {
     }
 
     /**
-     * @deprecated just here for compatibility with SelectDatamodel methods,
-     *             use {@link #getEntries()} instead
+     * @deprecated just here for compatibility with SelectDatamodel methods, use {@link #getEntries()} instead
      */
     @Deprecated
     public List<PageSelection<T>> getRows() {

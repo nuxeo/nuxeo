@@ -50,7 +50,6 @@ public class BaseUserTest extends BaseTest {
      * @return
      * @throws IOException
      * @throws ClientException
-     *
      */
     protected String getGroupAsJson(NuxeoGroup group) throws IOException, ClientException {
         OutputStream out = new ByteArrayOutputStream();
@@ -61,15 +60,13 @@ public class BaseUserTest extends BaseTest {
     }
 
     /**
-     * Assert that the given node represents a group which properties are given
-     * in parameters
+     * Assert that the given node represents a group which properties are given in parameters
      *
      * @param groupName
      * @param groupLabel
      * @param node
      */
-    protected void assertEqualsGroup(String groupName, String groupLabel,
-            JsonNode node) {
+    protected void assertEqualsGroup(String groupName, String groupLabel, JsonNode node) {
         assertEquals("group", node.get("entity-type").getValueAsText());
         assertEquals(groupName, node.get("groupname").getValueAsText());
         assertEquals(groupLabel, node.get("grouplabel").getValueAsText());
@@ -82,7 +79,6 @@ public class BaseUserTest extends BaseTest {
      * @return
      * @throws IOException
      * @throws ClientException
-     *
      */
     protected String getPrincipalAsJson(NuxeoPrincipal user) throws IOException, ClientException {
         OutputStream out = new ByteArrayOutputStream();
@@ -94,22 +90,18 @@ public class BaseUserTest extends BaseTest {
     }
 
     /**
-     * Assert that the given node represents a user which properties are given
-     * in parameters.
+     * Assert that the given node represents a user which properties are given in parameters.
      *
      * @param username
      * @param firstname
      * @param lastname
      * @param node
      */
-    protected void assertEqualsUser(String username, String firstname,
-            String lastname, JsonNode node) {
+    protected void assertEqualsUser(String username, String firstname, String lastname, JsonNode node) {
         assertEquals("user", node.get("entity-type").getValueAsText());
         assertEquals(username, node.get("id").getValueAsText());
-        assertEquals(firstname,
-                node.get("properties").get("firstName").getValueAsText());
-        assertEquals(lastname,
-                node.get("properties").get("lastName").getValueAsText());
+        assertEquals(firstname, node.get("properties").get("firstName").getValueAsText());
+        assertEquals(lastname, node.get("properties").get("lastName").getValueAsText());
     }
 
 }

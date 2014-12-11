@@ -23,8 +23,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 
 /**
- * This operation map pojo client side to document adapter server side and
- * fetch the related NX document.
+ * This operation map pojo client side to document adapter server side and fetch the related NX document.
  *
  * @since 5.7
  */
@@ -37,8 +36,7 @@ public class BusinessFetchOperation {
     protected CoreSession session;
 
     @OperationMethod
-    public BusinessAdapter run(BusinessAdapter input) throws ClientException,
-            ClassNotFoundException {
+    public BusinessAdapter run(BusinessAdapter input) throws ClientException, ClassNotFoundException {
         DocumentModel document = session.getDocument(new IdRef(input.getId()));
         return document.getAdapter(input.getClass());
     }

@@ -16,7 +16,6 @@ import java.util.Properties;
 
 import javax.mail.Address;
 import javax.mail.Authenticator;
-import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
@@ -43,9 +42,8 @@ public class Mailer {
     protected Authenticator auth;
 
     /**
-     * The JNDI session name. If not null JNDI will be used to lookup the
-     * default session, otherwise local configuration (through {@link #config})
-     * will be used to create a session.
+     * The JNDI session name. If not null JNDI will be used to lookup the default session, otherwise local configuration
+     * (through {@link #config}) will be used to create a session.
      */
     protected final String sessionName;
 
@@ -70,8 +68,7 @@ public class Mailer {
     }
 
     /**
-     * Create a mailer using a session that lookup for the session in JNDI
-     * under the given session name.
+     * Create a mailer using a session that lookup for the session in JNDI under the given session name.
      *
      * @param sessionName
      */
@@ -80,9 +77,8 @@ public class Mailer {
     }
 
     /**
-     * Create a mailer using a session that lookup for the session in JNDI
-     * under the given session name. If the JNDI binding doesn't exists use the
-     * given properties to cinfiugure the session.
+     * Create a mailer using a session that lookup for the session in JNDI under the given session name. If the JNDI
+     * binding doesn't exists use the given properties to cinfiugure the session.
      *
      * @param sessionName
      * @param config
@@ -125,8 +121,7 @@ public class Mailer {
             if (port == null) {
                 port = "465";
             }
-            config.put("mail.smtp.socketFactory.class",
-                    "javax.net.ssl.SSLSocketFactory");
+            config.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
             config.put("mail.smtp.socketFactory.fallback", "false");
             config.put("mail.smtp.socketFactory.port", port);
 
@@ -146,7 +141,7 @@ public class Mailer {
      */
     public void setCredentials(final String user, final String pass) {
         config.setProperty("mail.smtp.auth", "true");
-        this.auth = new Authenticator() {
+        auth = new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(user, pass);
@@ -174,8 +169,7 @@ public class Mailer {
                             InitialContext ic = new InitialContext();
                             session = (Session) ic.lookup(sessionName);
                         } catch (NamingException e) {
-                            log.warn("Failed to lookup mail session using JNDI name "
-                                    + sessionName
+                            log.warn("Failed to lookup mail session using JNDI name " + sessionName
                                     + ". Falling back on local configuration.");
                             session = Session.getInstance(config, auth);
                         }
@@ -211,8 +205,7 @@ public class Mailer {
     /**
      * Send a single email.
      */
-    public void sendEmail(String from, String to, String subject, String body)
-            throws MessagingException {
+    public void sendEmail(String from, String to, String subject, String body) throws MessagingException {
         // Here, no Authenticator argument is used (it is null).
         // Authenticators are used to prompt the user for user
         // name and password.
@@ -220,7 +213,7 @@ public class Mailer {
         // the "from" address may be set in code, or set in the
         // config file under "mail.from" ; here, the latter style is used
         message.setFrom(new InternetAddress(from));
-        message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+        message.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to));
         message.setSubject(subject);
         message.setText(body);
         Transport.send(message);
@@ -236,23 +229,22 @@ public class Mailer {
             super(session);
         }
 
-        public Message(Session session, InputStream in)
-                throws MessagingException {
+        public Message(Session session, InputStream in) throws MessagingException {
             super(session, in);
         }
 
         public Message addTo(String to) throws MessagingException {
-            addRecipient(RecipientType.TO, new InternetAddress(to));
+            addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to));
             return this;
         }
 
         public Message addCc(String cc) throws MessagingException {
-            addRecipient(RecipientType.CC, new InternetAddress(cc));
+            addRecipient(javax.mail.Message.RecipientType.CC, new InternetAddress(cc));
             return this;
         }
 
         public Message addBcc(String bcc) throws MessagingException {
-            addRecipient(RecipientType.BCC, new InternetAddress(bcc));
+            addRecipient(javax.mail.Message.RecipientType.BCC, new InternetAddress(bcc));
             return this;
         }
 
@@ -261,8 +253,7 @@ public class Mailer {
             return this;
         }
 
-        public void addInfoInMessageHeader(String address, AS as)
-                throws MessagingException {
+        public void addInfoInMessageHeader(String address, AS as) throws MessagingException {
             switch (as) {
             case FROM:
                 addFrom(address);
@@ -291,8 +282,7 @@ public class Mailer {
                 setReplyTo(replyToValue);
                 break;
             default:
-                throw new MessagingException("Unknown header info "
-                        + as.toString());
+                throw new MessagingException("Unknown header info " + as.toString());
             }
         }
 

@@ -42,13 +42,13 @@ public class PageProviderClassReplacerRegistry extends
 
     @Override
     public void contributionUpdated(String id, PageProviderClassReplacerDefinition desc,
-                                    PageProviderClassReplacerDefinition newOrigContrib) {
+            PageProviderClassReplacerDefinition newOrigContrib) {
         String name = desc.getPageProviderClassName();
         if (name == null) {
             log.error("Cannot register page provider class replacer without class name");
             return;
         }
-        if (! desc.isEnabled()) {
+        if (!desc.isEnabled()) {
             return;
         }
         log.debug("Registering page provider class replacer using " + name);
@@ -60,8 +60,7 @@ public class PageProviderClassReplacerRegistry extends
     }
 
     @Override
-    public void contributionRemoved(String id,
-                                    PageProviderClassReplacerDefinition origContrib) {
+    public void contributionRemoved(String id, PageProviderClassReplacerDefinition origContrib) {
         log.debug("Unregistering page provider replacer for class " + id);
         for (String providerName : origContrib.getPageProviderNames()) {
             replacerMap.remove(providerName);
@@ -83,8 +82,7 @@ public class PageProviderClassReplacerRegistry extends
         throw new UnsupportedOperationException();
     }
 
-    protected Class<? extends PageProvider> getPageProviderClass(
-            final String className) {
+    protected Class<? extends PageProvider> getPageProviderClass(final String className) {
         Class<? extends PageProvider> ret;
         try {
             ret = (Class<? extends PageProvider>) Class.forName(className);
@@ -92,8 +90,7 @@ public class PageProviderClassReplacerRegistry extends
             throw new IllegalStateException(String.format("Class %s not found", className));
         }
         if (!PageProvider.class.isAssignableFrom(ret)) {
-            throw new IllegalStateException(String.format(
-                    "Class %s does not implement PageProvider interface",
+            throw new IllegalStateException(String.format("Class %s does not implement PageProvider interface",
                     className));
         }
         return ret;
@@ -111,7 +108,7 @@ public class PageProviderClassReplacerRegistry extends
         }
         StringBuilder out = new StringBuilder();
         out.append("List of page provider names that are superseded: \n");
-        for (String name: replacerMap.keySet()) {
+        for (String name : replacerMap.keySet()) {
             out.append(String.format("  - %s: %s\n", name, replacerMap.get(name).getName()));
         }
         log.info(out.toString());

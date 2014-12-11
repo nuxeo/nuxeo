@@ -36,13 +36,9 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.automation.features",
-        "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.platform.picture.api",
-        "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.platform.picture.core",
-        "org.nuxeo.ecm.platform.picture.convert" })
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api",
+        "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.commandline.executor",
+        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.picture.convert" })
 public class ResizeTester {
 
     @Inject
@@ -60,16 +56,16 @@ public class ResizeTester {
         ctx.setInput(source);
 
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("maxWidth",150);
-        params.put("maxHeight",300);
+        params.put("maxWidth", 150);
+        params.put("maxHeight", 300);
         OperationChain chain = new OperationChain("fakeChain");
         OperationParameters oparams = new OperationParameters(PictureResize.ID, params);
         chain.add(oparams);
 
-        Blob result  = (Blob) service.run(ctx, chain);
+        Blob result = (Blob) service.run(ctx, chain);
 
         assertNotNull(result);
-        //FileUtils.copyToFile(result.getStream(), new File("/tmp/convert.test"));
+        // FileUtils.copyToFile(result.getStream(), new File("/tmp/convert.test"));
     }
 
 }

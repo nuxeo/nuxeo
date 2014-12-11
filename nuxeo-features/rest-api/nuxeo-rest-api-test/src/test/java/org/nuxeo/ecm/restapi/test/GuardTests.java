@@ -64,8 +64,7 @@ public class GuardTests extends BaseUserTest {
         ClientResponse response = getResponse(RequestType.DELETE, "/user/user2");
 
         // Then it returns a 401
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
 
     }
 
@@ -74,12 +73,10 @@ public class GuardTests extends BaseUserTest {
         NuxeoPrincipal user = um.getPrincipal("user1");
 
         // When i POST this group
-        ClientResponse response = getResponse(RequestType.PUT,
-                "/user/" + user.getName(), getPrincipalAsJson(user));
+        ClientResponse response = getResponse(RequestType.PUT, "/user/" + user.getName(), getPrincipalAsJson(user));
 
         // Then it returns a 401
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
 
     }
 
@@ -89,12 +86,10 @@ public class GuardTests extends BaseUserTest {
         NuxeoPrincipal principal = new NuxeoPrincipalImpl("newuser");
 
         // When i POST it on the user endpoint
-        ClientResponse response = getResponse(RequestType.POST, "/user",
-                getPrincipalAsJson(principal));
+        ClientResponse response = getResponse(RequestType.POST, "/user", getPrincipalAsJson(principal));
 
         // Then it returns a 401
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
 
     }
 
@@ -104,12 +99,10 @@ public class GuardTests extends BaseUserTest {
         NuxeoGroup group = new NuxeoGroupImpl("newGroup");
 
         // When i POST this group
-        ClientResponse response = getResponse(RequestType.POST, "/group/",
-                getGroupAsJson(group));
+        ClientResponse response = getResponse(RequestType.POST, "/group/", getGroupAsJson(group));
 
         // Then it returns a 401
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
 
     }
 
@@ -119,24 +112,20 @@ public class GuardTests extends BaseUserTest {
         NuxeoGroup group = um.getGroup("group1");
 
         // When i POST this group
-        ClientResponse response = getResponse(RequestType.PUT, "/group/"
-                + group.getName(), getGroupAsJson(group));
+        ClientResponse response = getResponse(RequestType.PUT, "/group/" + group.getName(), getGroupAsJson(group));
 
         // Then it returns a 401
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
 
     }
 
     @Test
     public void onlyAdminCanDeleteGroups() throws Exception {
         // When i DELETE this group
-        ClientResponse response = getResponse(RequestType.DELETE,
-                "/group/group1");
+        ClientResponse response = getResponse(RequestType.DELETE, "/group/group1");
 
         // Then it returns a 401
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
     }
 
     @Test
@@ -146,13 +135,11 @@ public class GuardTests extends BaseUserTest {
         NuxeoPrincipal principal = um.getPrincipal("user1");
 
         // When i POST this group
-        ClientResponse response = getResponse(RequestType.POST, "/group/"
-                + group.getName() + "/user/" + principal.getName(),
-                getGroupAsJson(group));
+        ClientResponse response = getResponse(RequestType.POST,
+                "/group/" + group.getName() + "/user/" + principal.getName(), getGroupAsJson(group));
 
         // Then it returns a 401
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
 
     }
 
@@ -163,12 +150,11 @@ public class GuardTests extends BaseUserTest {
         NuxeoPrincipal principal = um.getPrincipal("user1");
 
         // When i DELETE this group
-        ClientResponse response = getResponse(RequestType.DELETE, "/group/"
-                + group.getName() + "/user/" + principal.getName());
+        ClientResponse response = getResponse(RequestType.DELETE,
+                "/group/" + group.getName() + "/user/" + principal.getName());
 
         // Then it returns a 401
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
 
     }
 
@@ -179,17 +165,14 @@ public class GuardTests extends BaseUserTest {
         service = getServiceFor(principal.getName(), principal.getName());
 
         // When i try to delete admin user
-        ClientResponse response = getResponse(RequestType.DELETE,
-                "/user/Administrator");
+        ClientResponse response = getResponse(RequestType.DELETE, "/user/Administrator");
         // Then it returns a 401
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
 
         // When i try to delete admin user
         response = getResponse(RequestType.DELETE, "/group/administrators");
         // Then it returns a 401
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
 
     }
 
@@ -202,8 +185,7 @@ public class GuardTests extends BaseUserTest {
         // When i try to delete admin user
         ClientResponse response = getResponse(RequestType.DELETE, "/user/user2");
         // Then it return a NO_CONTENT response
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
 
         assertNull(um.getPrincipal("user2"));
 

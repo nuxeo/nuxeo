@@ -86,9 +86,8 @@ public class ReadDirectoryEntries extends AbstractDirectoryOperation {
     public Blob run() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
 
-        List<String> ids = mapper.readValue(jsonEntries,
-                new TypeReference<List<String>>() {
-                });
+        List<String> ids = mapper.readValue(jsonEntries, new TypeReference<List<String>>() {
+        });
         List<Map<String, Object>> entries = new ArrayList<Map<String, Object>>();
         Session session = null;
         try {
@@ -120,8 +119,7 @@ public class ReadDirectoryEntries extends AbstractDirectoryOperation {
 
         StringWriter writer = new StringWriter();
         mapper.writeValue(writer, entries);
-        return new InputStreamBlob(new ByteArrayInputStream(
-                writer.toString().getBytes("UTF-8")), "application/json");
+        return new InputStreamBlob(new ByteArrayInputStream(writer.toString().getBytes("UTF-8")), "application/json");
     }
 
     protected Locale getLocale() {
@@ -138,8 +136,7 @@ public class ReadDirectoryEntries extends AbstractDirectoryOperation {
         if (key == null) {
             return "";
         }
-        return I18NUtils.getMessageString("messages", key, new Object[0],
-                getLocale());
+        return I18NUtils.getMessageString("messages", key, new Object[0], getLocale());
     }
 
 }

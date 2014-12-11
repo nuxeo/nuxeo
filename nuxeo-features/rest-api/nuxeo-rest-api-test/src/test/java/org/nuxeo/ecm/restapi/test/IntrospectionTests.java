@@ -24,8 +24,7 @@ public class IntrospectionTests extends BaseTest {
 
     @Test
     public void itCanFetchSchemas() throws Exception {
-        ClientResponse response = getResponse(RequestType.GET,
-                "/config/schemas");
+        ClientResponse response = getResponse(RequestType.GET, "/config/schemas");
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         Assert.assertTrue(node.size() > 0);
@@ -41,17 +40,14 @@ public class IntrospectionTests extends BaseTest {
 
     @Test
     public void itCanFetchASchema() throws Exception {
-        ClientResponse response = getResponse(RequestType.GET,
-                "/config/schemas/dublincore");
+        ClientResponse response = getResponse(RequestType.GET, "/config/schemas/dublincore");
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
 
         Assert.assertEquals("dublincore", node.get("name").getValueAsText());
         Assert.assertEquals("dc", node.get("@prefix").getValueAsText());
-        Assert.assertEquals("string",
-                node.get("fields").get("creator").getValueAsText());
-        Assert.assertEquals("string[]",
-                node.get("fields").get("contributors").getValueAsText());
+        Assert.assertEquals("string", node.get("fields").get("creator").getValueAsText());
+        Assert.assertEquals("string[]", node.get("fields").get("contributors").getValueAsText());
     }
 
     @Test
@@ -73,14 +69,12 @@ public class IntrospectionTests extends BaseTest {
 
     @Test
     public void itCanFetchAFacet() throws Exception {
-        ClientResponse response = getResponse(RequestType.GET,
-                "/config/facets/HasRelatedText");
+        ClientResponse response = getResponse(RequestType.GET, "/config/facets/HasRelatedText");
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
 
         Assert.assertEquals("HasRelatedText", node.get("name").getValueAsText());
-        Assert.assertEquals("relatedtext",
-                node.get("schemas").get(0).get("name").getValueAsText());
+        Assert.assertEquals("relatedtext", node.get("schemas").get(0).get("name").getValueAsText());
     }
 
     @Test
@@ -100,8 +94,7 @@ public class IntrospectionTests extends BaseTest {
 
     @Test
     public void itCanFetchAType() throws Exception {
-        ClientResponse response = getResponse(RequestType.GET,
-                "/config/types/File");
+        ClientResponse response = getResponse(RequestType.GET, "/config/types/File");
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
 

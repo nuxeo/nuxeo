@@ -23,16 +23,13 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.webengine.WebException;
 
 /**
- *
- *
  * @since 5.7.3
  */
 public abstract class DirectorySessionRunner<T> {
 
     abstract T run(Session session) throws ClientException;
 
-    public static <T> T withDirectorySession(Directory directory,
-            DirectorySessionRunner<T> runner) {
+    public static <T> T withDirectorySession(Directory directory, DirectorySessionRunner<T> runner) {
         Session session = null;
         try {
             session = directory.getSession();

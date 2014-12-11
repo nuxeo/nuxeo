@@ -44,8 +44,7 @@ public class AdaptableOperation1 {
     @OperationMethod
     public DocumentRef noInput() throws Exception {
         DocumentModel doc = session.getRootDocument();
-        Helper.updateContext(ctx, "A1:void:docref", message,
-                doc.getPathAsString());
+        Helper.updateContext(ctx, "A1:void:docref", message, doc.getPathAsString());
         return doc.getRef();
     }
 

@@ -23,8 +23,8 @@ import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
 /**
  * Simple Operation to extract an image view from a Picture Document.
  * <p>
- * This operation is needed because using the default blob operation is too
- * complicated in the case of the Picture DocumentType.
+ * This operation is needed because using the default blob operation is too complicated in the case of the Picture
+ * DocumentType.
  *
  * @author Tiry (tdelprat@nuxeo.com)
  */

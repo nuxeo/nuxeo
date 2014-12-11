@@ -21,15 +21,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.google.common.base.Objects;
-import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Inline properties file content. This class exists to have a real type for
- * parameters accepting properties content.
+ * Inline properties file content. This class exists to have a real type for parameters accepting properties content.
  *
  * @see Constants
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -38,11 +36,10 @@ public class Properties extends HashMap<String, String> {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String PROPERTIES_MULTILINE_ESCAPE = "nuxeo" +
-            ".automation.properties.multiline.escape";
+    public static final String PROPERTIES_MULTILINE_ESCAPE = "nuxeo" + ".automation.properties.multiline.escape";
 
-    protected static final String multiLineEscape = Objects.firstNonNull
-            (Framework.getProperty(PROPERTIES_MULTILINE_ESCAPE), "true");
+    protected static final String multiLineEscape = Objects.firstNonNull(
+            Framework.getProperty(PROPERTIES_MULTILINE_ESCAPE), "true");
 
     public Properties() {
     }
@@ -65,7 +62,6 @@ public class Properties extends HashMap<String, String> {
      *
      * @param node
      * @throws IOException
-     *
      * @since 5.7.3
      */
     public Properties(JsonNode node) throws IOException {
@@ -84,28 +80,23 @@ public class Properties extends HashMap<String, String> {
      * @param subNode
      * @return
      * @throws IOException
-     *
      * @since 5.8-HF01
      */
-    private String extractValueFromNode(JsonNode node, ObjectMapper om)
-            throws IOException {
+    private String extractValueFromNode(JsonNode node, ObjectMapper om) throws IOException {
         if (!node.isNull()) {
-            return node.isContainerNode() ? om.writeValueAsString(node)
-                    : node.getValueAsText();
+            return node.isContainerNode() ? om.writeValueAsString(node) : node.getValueAsText();
         } else {
             return null;
         }
     }
 
-    public static Map<String, String> loadProperties(Reader reader)
-            throws Exception {
+    public static Map<String, String> loadProperties(Reader reader) throws Exception {
         Map<String, String> map = new HashMap<String, String>();
         loadProperties(reader, map);
         return map;
     }
 
-    public static void loadProperties(Reader reader, Map<String, String> map)
-            throws Exception {
+    public static void loadProperties(Reader reader, Map<String, String> map) throws Exception {
         BufferedReader in = new BufferedReader(reader);
         String line = in.readLine();
         String prevLine = null;
@@ -134,8 +125,7 @@ public class Properties extends HashMap<String, String> {
         }
     }
 
-    protected static void setPropertyLine(Map<String, String> map, String line)
-            throws Exception {
+    protected static void setPropertyLine(Map<String, String> map, String line) throws Exception {
         int i = line.indexOf('=');
         if (i == -1) {
             throw new IOException("Invalid property line: " + line);

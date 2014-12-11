@@ -36,8 +36,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Features({ DocumentUpdatePropertiesWithMultilineTest.InitFeature.class,
-        TransactionalFeature.class, CoreFeature.class })
+@Features({ DocumentUpdatePropertiesWithMultilineTest.InitFeature.class, TransactionalFeature.class, CoreFeature.class })
 @Deploy("org.nuxeo.ecm.automation.core")
 public class DocumentUpdatePropertiesWithMultilineTest {
 
@@ -53,8 +52,7 @@ public class DocumentUpdatePropertiesWithMultilineTest {
                         return;
                     }
                     Framework.removeListener(this);
-                    event.runtime.getProperties().setProperty(
-                            Properties.PROPERTIES_MULTILINE_ESCAPE, "true");
+                    event.runtime.getProperties().setProperty(Properties.PROPERTIES_MULTILINE_ESCAPE, "true");
                 }
             });
         }
@@ -99,30 +97,23 @@ public class DocumentUpdatePropertiesWithMultilineTest {
 
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "Note").set("properties",
-                new Properties("dc:title=MyDoc")).set("name", "note");
+        chain.add(CreateDocument.ID).set("type", "Note").set("properties", new Properties("dc:title=MyDoc")).set(
+                "name", "note");
         chain.add(PushDocument.ID);
         chain.add(GetDocumentParent.ID);
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set(
-                "value", "parentdoc");
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value", "parentdoc");
         chain.add(SaveDocument.ID);
         chain.add(PopDocument.ID);
-        chain.add(UpdateDocument.ID).set(
-                "properties",
-                new Properties("dc:title=MyDoc2\ndc:description="
-                        + "mydesc\notherdesc".replace("\n", "\\\n")));
+        chain.add(UpdateDocument.ID).set("properties",
+                new Properties("dc:title=MyDoc2\ndc:description=" + "mydesc\notherdesc".replace("\n", "\\\n")));
         chain.add(LockDocument.ID);
         chain.add(SaveDocument.ID);
 
         assertNull(src.getPropertyValue("dc:description"));
         DocumentModel out = (DocumentModel) service.run(ctx, chain);
-        assertEquals("mydesc\notherdesc",
-                out.getPropertyValue("dc:description"));
+        assertEquals("mydesc\notherdesc", out.getPropertyValue("dc:description"));
         assertEquals("MyDoc2", out.getPropertyValue("dc:title"));
         assertTrue(out.isLocked());
-        assertEquals(
-                "parentdoc",
-                session.getDocument(src.getRef()).getPropertyValue(
-                        "dc:description"));
+        assertEquals("parentdoc", session.getDocument(src.getRef()).getPropertyValue("dc:description"));
     }
 }

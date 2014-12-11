@@ -29,8 +29,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  *
  * @since 5.6
  */
-public class PageProviderRegistry extends
-        ContributionFragmentRegistry<PageProviderDefinition> {
+public class PageProviderRegistry extends ContributionFragmentRegistry<PageProviderDefinition> {
 
     private static final Log log = LogFactory.getLog(PageProviderRegistry.class);
 
@@ -42,8 +41,7 @@ public class PageProviderRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id, PageProviderDefinition desc,
-            PageProviderDefinition newOrigContrib) {
+    public void contributionUpdated(String id, PageProviderDefinition desc, PageProviderDefinition newOrigContrib) {
         String name = desc.getName();
         if (name == null) {
             log.error("Cannot register page provider without a name");
@@ -59,8 +57,7 @@ public class PageProviderRegistry extends
     }
 
     @Override
-    public void contributionRemoved(String id,
-            PageProviderDefinition origContrib) {
+    public void contributionRemoved(String id, PageProviderDefinition origContrib) {
         providers.remove(id);
         log.info("Unregistering page provider with name " + id);
     }

@@ -56,8 +56,7 @@ public class CreateDocument {
         if (name == null) {
             name = "Untitled";
         }
-        DocumentModel newDoc = session.createDocumentModel(
-                doc.getPathAsString(), name, type);
+        DocumentModel newDoc = session.createDocumentModel(doc.getPathAsString(), name, type);
         if (content != null) {
             DocumentHelper.setProperties(session, newDoc, content);
         }

@@ -39,25 +39,20 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Page provider performing a query on a core session.
  * <p>
- * It builds the query at each call so that it can refresh itself when the
- * query changes.
+ * It builds the query at each call so that it can refresh itself when the query changes.
  * <p>
- * The page provider property named {@link #CORE_SESSION_PROPERTY} is used to
- * pass the {@link CoreSession} instance that will perform the query. The
- * optional property {@link #CHECK_QUERY_CACHE_PROPERTY} can be set to "true"
- * to avoid performing the query again if it did not change.
+ * The page provider property named {@link #CORE_SESSION_PROPERTY} is used to pass the {@link CoreSession} instance that
+ * will perform the query. The optional property {@link #CHECK_QUERY_CACHE_PROPERTY} can be set to "true" to avoid
+ * performing the query again if it did not change.
  * <p>
- * Since 6.0, the page provider property named
- * {@link #USE_UNRESTRICTED_SESSION_PROPERTY} allows specifying whether the
- * query should be run as unrestricted. When such a property is set to "true",
- * the additional property {@link #DETACH_DOCUMENTS_PROPERTY} is used to detach
- * documents (defaults to true when session is unrestricted).
+ * Since 6.0, the page provider property named {@link #USE_UNRESTRICTED_SESSION_PROPERTY} allows specifying whether the
+ * query should be run as unrestricted. When such a property is set to "true", the additional property
+ * {@link #DETACH_DOCUMENTS_PROPERTY} is used to detach documents (defaults to true when session is unrestricted).
  *
  * @author Anahide Tchertchian
  * @since 5.4
  */
-public class CoreQueryDocumentPageProvider extends
-        AbstractPageProvider<DocumentModel> {
+public class CoreQueryDocumentPageProvider extends AbstractPageProvider<DocumentModel> {
 
     public static final String CORE_SESSION_PROPERTY = "coreSession";
 
@@ -83,8 +78,8 @@ public class CoreQueryDocumentPageProvider extends
     public static final String USE_UNRESTRICTED_SESSION_PROPERTY = "useUnrestrictedSession";
 
     /**
-     * Boolean property stating that documents should be detached, only useful
-     * when property {@link #USE_UNRESTRICTED_SESSION_PROPERTY} is set to true.
+     * Boolean property stating that documents should be detached, only useful when property
+     * {@link #USE_UNRESTRICTED_SESSION_PROPERTY} is set to true.
      * <p>
      * When an unrestricted session is used, this property defaults to true.
      *
@@ -114,8 +109,7 @@ public class CoreQueryDocumentPageProvider extends
                 buildQuery(coreSession);
             }
             if (query == null) {
-                throw new ClientRuntimeException(String.format(
-                        "Cannot perform null query: check provider '%s'",
+                throw new ClientRuntimeException(String.format("Cannot perform null query: check provider '%s'",
                         getName()));
             }
 
@@ -127,10 +121,8 @@ public class CoreQueryDocumentPageProvider extends
 
                 final long offset = getCurrentPageOffset();
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "Perform query for provider '%s': '%s' with pageSize=%s, offset=%s",
-                            getName(), query, Long.valueOf(minMaxPageSize),
-                            Long.valueOf(offset)));
+                    log.debug(String.format("Perform query for provider '%s': '%s' with pageSize=%s, offset=%s",
+                            getName(), query, Long.valueOf(minMaxPageSize), Long.valueOf(offset)));
                 }
 
                 final DocumentModelList docs;
@@ -141,27 +133,23 @@ public class CoreQueryDocumentPageProvider extends
                 final boolean detachDocs = detachDocuments();
                 if (maxResults > 0) {
                     if (useUnrestricted) {
-                        CoreQueryUnrestrictedSessionRunner r = new CoreQueryUnrestrictedSessionRunner(
-                                coreSession, query, filter, minMaxPageSize,
-                                offset, false, maxResults, detachDocs);
+                        CoreQueryUnrestrictedSessionRunner r = new CoreQueryUnrestrictedSessionRunner(coreSession,
+                                query, filter, minMaxPageSize, offset, false, maxResults, detachDocs);
                         r.runUnrestricted();
                         docs = r.getDocs();
                     } else {
-                        docs = coreSession.query(query, getFilter(),
-                                minMaxPageSize, offset, maxResults);
+                        docs = coreSession.query(query, getFilter(), minMaxPageSize, offset, maxResults);
                     }
                 } else {
                     // use a totalCount=true instead of countUpTo=-1 to
                     // enable global limitation described in NXP-9381
                     if (useUnrestricted) {
-                        CoreQueryUnrestrictedSessionRunner r = new CoreQueryUnrestrictedSessionRunner(
-                                coreSession, query, filter, minMaxPageSize,
-                                offset, true, maxResults, detachDocs);
+                        CoreQueryUnrestrictedSessionRunner r = new CoreQueryUnrestrictedSessionRunner(coreSession,
+                                query, filter, minMaxPageSize, offset, true, maxResults, detachDocs);
                         r.runUnrestricted();
                         docs = r.getDocs();
                     } else {
-                        docs = coreSession.query(query, getFilter(),
-                                minMaxPageSize, offset, true);
+                        docs = coreSession.query(query, getFilter(), minMaxPageSize, offset, true);
                     }
                 }
 
@@ -175,10 +163,8 @@ public class CoreQueryDocumentPageProvider extends
                 currentPageDocuments = docs;
 
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "Performed query for provider '%s': got %s hits (limit %s)",
-                            getName(), Long.valueOf(resultsCount),
-                            Long.valueOf(getMaxResults())));
+                    log.debug(String.format("Performed query for provider '%s': got %s hits (limit %s)", getName(),
+                            Long.valueOf(resultsCount), Long.valueOf(getMaxResults())));
                 }
 
                 // refresh may have triggered display of an empty page => go
@@ -190,22 +176,17 @@ public class CoreQueryDocumentPageProvider extends
                         if (resultsCount == 0) {
                             // fetch first page directly
                             if (log.isDebugEnabled()) {
-                                log.debug(String.format(
-                                        "Current page %s is not the first one but "
-                                                + "shows no result and there are "
-                                                + "no results => rewind to first page",
+                                log.debug(String.format("Current page %s is not the first one but "
+                                        + "shows no result and there are " + "no results => rewind to first page",
                                         Long.valueOf(getCurrentPageIndex())));
                             }
                             firstPage();
                         } else {
                             // fetch last page
                             if (log.isDebugEnabled()) {
-                                log.debug(String.format(
-                                        "Current page %s is not the first one but "
-                                                + "shows no result and there are "
-                                                + "%s results => fetch last page",
-                                        Long.valueOf(getCurrentPageIndex()),
-                                        Long.valueOf(resultsCount)));
+                                log.debug(String.format("Current page %s is not the first one but "
+                                        + "shows no result and there are " + "%s results => fetch last page",
+                                        Long.valueOf(getCurrentPageIndex()), Long.valueOf(resultsCount)));
                             }
                             lastPage();
                         }
@@ -217,13 +198,10 @@ public class CoreQueryDocumentPageProvider extends
                 if (getResultsCount() < 0) {
                     // additional info to handle next page when results count
                     // is unknown
-                    if (currentPageDocuments != null
-                            && currentPageDocuments.size() > 0) {
+                    if (currentPageDocuments != null && currentPageDocuments.size() > 0) {
                         int higherNonEmptyPage = getCurrentHigherNonEmptyPageIndex();
-                        int currentFilledPage = Long.valueOf(
-                                getCurrentPageIndex()).intValue();
-                        if ((docs.size() >= getPageSize())
-                                && (currentFilledPage > higherNonEmptyPage)) {
+                        int currentFilledPage = Long.valueOf(getCurrentPageIndex()).intValue();
+                        if ((docs.size() >= getPageSize()) && (currentFilledPage > higherNonEmptyPage)) {
                             setCurrentHigherNonEmptyPageIndex(currentFilledPage);
                         }
                     }
@@ -246,19 +224,17 @@ public class CoreQueryDocumentPageProvider extends
             String newQuery;
             PageProviderDefinition def = getDefinition();
             if (def.getWhereClause() == null) {
-                newQuery = NXQLQueryBuilder.getQuery(def.getPattern(),
-                        getParameters(), def.getQuotePatternParameters(),
-                        def.getEscapePatternParameters(), getSearchDocumentModel(), sortArray);
+                newQuery = NXQLQueryBuilder.getQuery(def.getPattern(), getParameters(),
+                        def.getQuotePatternParameters(), def.getEscapePatternParameters(), getSearchDocumentModel(),
+                        sortArray);
             } else {
                 DocumentModel searchDocumentModel = getSearchDocumentModel();
                 if (searchDocumentModel == null) {
-                    throw new ClientException(String.format(
-                            "Cannot build query of provider '%s': "
-                                    + "no search document model is set",
-                            getName()));
+                    throw new ClientException(String.format("Cannot build query of provider '%s': "
+                            + "no search document model is set", getName()));
                 }
-                newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel,
-                        def.getWhereClause(), getParameters(), sortArray);
+                newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel, def.getWhereClause(), getParameters(),
+                        sortArray);
             }
 
             if (query != null && newQuery != null && !newQuery.equals(query)) {
@@ -297,20 +273,17 @@ public class CoreQueryDocumentPageProvider extends
     }
 
     /**
-     * Returns the maximum number of results or
-     * <code>0<code> if there is no limit.
+     * Returns the maximum number of results or <code>0<code> if there is no limit.
      *
      * @since 5.6
      */
     public long getMaxResults() {
         if (maxResults == null) {
             maxResults = Long.valueOf(0);
-            String maxResultsStr = (String) getProperties().get(
-                    MAX_RESULTS_PROPERTY);
+            String maxResultsStr = (String) getProperties().get(MAX_RESULTS_PROPERTY);
             if (maxResultsStr != null) {
                 if (DEFAULT_NAVIGATION_RESULTS_KEY.equals(maxResultsStr)) {
-                    maxResultsStr = Framework.getProperty(
-                            DEFAULT_NAVIGATION_RESULTS_PROPERTY,
+                    maxResultsStr = Framework.getProperty(DEFAULT_NAVIGATION_RESULTS_PROPERTY,
                             DEFAULT_NAVIGATION_RESULTS_VALUE);
                 } else if (PAGE_SIZE_RESULTS_KEY.equals(maxResultsStr)) {
                     maxResultsStr = Long.valueOf(getPageSize()).toString();
@@ -328,8 +301,8 @@ public class CoreQueryDocumentPageProvider extends
     }
 
     /**
-     * Returns the page limit. The n first page we know they exist. We don't
-     * compute the number of page beyond this limit.
+     * Returns the page limit. The n first page we know they exist. We don't compute the number of page beyond this
+     * limit.
      *
      * @since 5.8
      */

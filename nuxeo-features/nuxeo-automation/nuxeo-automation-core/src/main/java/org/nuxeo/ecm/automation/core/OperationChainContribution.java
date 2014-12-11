@@ -150,11 +150,9 @@ public class OperationChainContribution {
                 if (param.value.startsWith("expr:")) {
                     param.value = param.value.substring(5);
                     if (param.value.contains("@{")) {
-                        params.set(param.name,
-                                Scripting.newTemplate(param.value));
+                        params.set(param.name, Scripting.newTemplate(param.value));
                     } else {
-                        params.set(param.name,
-                                Scripting.newExpression(param.value));
+                        params.set(param.name, Scripting.newExpression(param.value));
                     }
                 } else {
                     Object val = null;
@@ -193,16 +191,13 @@ public class OperationChainContribution {
                     case 'd':
                         if (T_DOCUMENT.equals(type)) {
                             if (param.value.startsWith(".")) {
-                                val = Scripting.newExpression("Document.resolvePathAsRef(\""
-                                        + param.value + "\")");
+                                val = Scripting.newExpression("Document.resolvePathAsRef(\"" + param.value + "\")");
                             } else {
                                 val = StringToDocRef.createRef(param.value);
                             }
                         } else if (T_DOCUMENTS.equals(type)) {
-                            String[] ar = StringUtils.split(param.value, ',',
-                                    true);
-                            DocumentRefListImpl result = new DocumentRefListImpl(
-                                    ar.length);
+                            String[] ar = StringUtils.split(param.value, ',', true);
+                            DocumentRefListImpl result = new DocumentRefListImpl(ar.length);
                             for (String ref : ar) {
                                 result.add(StringToDocRef.createRef(ref));
                             }

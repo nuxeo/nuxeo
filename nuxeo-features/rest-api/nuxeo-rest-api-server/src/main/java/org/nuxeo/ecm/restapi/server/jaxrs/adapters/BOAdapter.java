@@ -58,8 +58,7 @@ public class BOAdapter extends DefaultAdapter {
 
     @GET
     @Path("{adapterName}")
-    public Object doGetAdapter(@PathParam("adapterName")
-    String adapterName) throws Exception {
+    public Object doGetAdapter(@PathParam("adapterName") String adapterName) throws Exception {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         if (doc != null) {
             BusinessAdapter adapter = getAdapter(adapterName, doc);
@@ -71,8 +70,7 @@ public class BOAdapter extends DefaultAdapter {
             return doGetAdapterOnList(list, adapterName);
         }
 
-        return Response.status(Status.BAD_REQUEST).entity(
-                "Adapter can only be executed on Document or DocumentList").build();
+        return Response.status(Status.BAD_REQUEST).entity("Adapter can only be executed on Document or DocumentList").build();
 
     }
 
@@ -80,7 +78,6 @@ public class BOAdapter extends DefaultAdapter {
      * @param list
      * @param adapterName
      * @return
-     *
      * @since 5.8
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -88,8 +85,7 @@ public class BOAdapter extends DefaultAdapter {
 
         List<BusinessAdapter> adapters;
         if (list instanceof Paginable) {
-            adapters = new PaginableWithDelegate(
-                    (Paginable<DocumentModel>) list);
+            adapters = new PaginableWithDelegate((Paginable<DocumentModel>) list);
         } else {
             adapters = new ArrayList<BusinessAdapter>();
         }
@@ -97,8 +93,7 @@ public class BOAdapter extends DefaultAdapter {
         for (DocumentModel docItem : list) {
             adapters.add(getAdapter(adapterName, docItem));
         }
-        GenericEntity<List<BusinessAdapter>> entity = new GenericEntity<List<BusinessAdapter>>(
-                adapters) {
+        GenericEntity<List<BusinessAdapter>> entity = new GenericEntity<List<BusinessAdapter>>(adapters) {
         };
         return entity;
     }
@@ -106,8 +101,7 @@ public class BOAdapter extends DefaultAdapter {
     @PUT
     @Path("{adapterName}")
     @Consumes({ "application/json+nxentity", "application/json" })
-    public Object doPostAdapter(@PathParam("adapterName")
-    String adapterName, BusinessAdapter input) throws Exception {
+    public Object doPostAdapter(@PathParam("adapterName") String adapterName, BusinessAdapter input) throws Exception {
         ctx.getCoreSession().saveDocument(input.getDocument());
 
         ctx.getCoreSession().save();
@@ -117,9 +111,8 @@ public class BOAdapter extends DefaultAdapter {
 
     @POST
     @Path("{adapterName}/{docName}")
-    public Object doPutAdapter(@PathParam("adapterName")
-    String adapterName, @PathParam("docName")
-    String docName, BusinessAdapter input) throws Exception {
+    public Object doPutAdapter(@PathParam("adapterName") String adapterName, @PathParam("docName") String docName,
+            BusinessAdapter input) throws Exception {
         DocumentModel document = input.getDocument();
 
         DocumentObject dobj = (DocumentObject) getTarget();
@@ -139,8 +132,7 @@ public class BOAdapter extends DefaultAdapter {
         if (codec != null) {
             return (BusinessAdapter) doc.getAdapter(codec.getJavaType());
         } else {
-            throw new WebException(String.format("Unable to find [%s] adapter",
-                    adapterName));
+            throw new WebException(String.format("Unable to find [%s] adapter", adapterName));
         }
 
     }

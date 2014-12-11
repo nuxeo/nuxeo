@@ -86,15 +86,13 @@ public class TestOperationChainParametrization {
         chain.add(FetchContextDocument.ID);
         chain.add("o1").set("message", "Hello 1!");
         chain.add("o2").set("message", "Hello 2!");
-        chain.add("oChainCtx").set("message",
-                "expr:@{ChainParameters['messageChain']}");
+        chain.add("oChainCtx").set("message", "expr:@{ChainParameters['messageChain']}");
         // Setting parameters of the chain
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("messageChain", "Hello i'm a chain!");
         chain.addChainParameters(params);
         // Checking if chain parameter is taken into account
-        DocumentModel doc = (DocumentModel) ((OperationServiceImpl) service).run(
-                ctx, chain);
+        DocumentModel doc = (DocumentModel) ((OperationServiceImpl) service).run(ctx, chain);
         Assert.assertNotNull(doc);
     }
 
@@ -109,14 +107,12 @@ public class TestOperationChainParametrization {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("messageChain", "Hello i'm a chain!");
         // Checking if chain parameter is taken into account
-        DocumentModel doc = (DocumentModel) service.run(ctx,
-                "contributedchain", params);
+        DocumentModel doc = (DocumentModel) service.run(ctx, "contributedchain", params);
         Assert.assertNotNull(doc);
     }
 
     /**
-     * Check if using new chain parameters in an execution flow operation is
-     * working
+     * Check if using new chain parameters in an execution flow operation is working
      */
     @Test
     public void testExecutionFlowOperation() throws Exception {
@@ -125,10 +121,8 @@ public class TestOperationChainParametrization {
         ctx.setInput(src);
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(RunDocumentChain.ID).set("id", "contributedchain2").set(
-                "parameters",
-                new Properties(
-                        "exampleKey=exampleValue\nexampleKey2=exampleValue2"));
+        chain.add(RunDocumentChain.ID).set("id", "contributedchain2").set("parameters",
+                new Properties("exampleKey=exampleValue\nexampleKey2=exampleValue2"));
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
         assertNotNull(doc);
     }

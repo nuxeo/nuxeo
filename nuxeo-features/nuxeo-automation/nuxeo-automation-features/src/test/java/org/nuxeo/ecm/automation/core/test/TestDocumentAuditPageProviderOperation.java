@@ -43,8 +43,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ AuditFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.automation.features" })
+@Deploy({ "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features" })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = TestDocumentAuditPageProviderOperation.Populate.class, repositoryFactoryClass = PoolingRepositoryFactory.class)
 public class TestDocumentAuditPageProviderOperation {
 
@@ -57,12 +56,10 @@ public class TestDocumentAuditPageProviderOperation {
             AuditLogger auditLogger = Framework.getLocalService(AuditLogger.class);
 
             try {
-                DocumentModel section = session.createDocumentModel("/",
-                        "section", "Folder");
+                DocumentModel section = session.createDocumentModel("/", "section", "Folder");
                 section = session.createDocument(section);
 
-                DocumentModel doc = session.createDocumentModel("/", "doc",
-                        "File");
+                DocumentModel doc = session.createDocumentModel("/", "doc", "File");
                 doc.setPropertyValue("dc:title", "TestDoc");
 
                 // create the doc
@@ -81,8 +78,7 @@ public class TestDocumentAuditPageProviderOperation {
                 Thread.sleep(1100);
 
                 // create a version
-                doc.putContextData(VersioningService.VERSIONING_OPTION,
-                        VersioningOption.MINOR);
+                doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
                 doc = session.saveDocument(doc);
 
                 // wait at least 1s to be sure we have a precise timestamp in
@@ -169,14 +165,14 @@ public class TestDocumentAuditPageProviderOperation {
     @Inject
     protected AuditLogger auditLogger;
 
-    protected int nbEntries=0;
+    protected int nbEntries = 0;
 
     @Before
     public void initRepo() throws Exception {
         waitForEventsDispatched();
         List<LogEntry> entries = (List<LogEntry>) reader.nativeQuery("from LogEntry", 0, MAX_ENTRIES);
         nbEntries = entries.size();
-        //dump(entries);
+        // dump(entries);
     }
 
     @Test
@@ -194,7 +190,7 @@ public class TestDocumentAuditPageProviderOperation {
         params.put("pageSize", 5);
         entries = (List<LogEntry>) service.run(ctx, AuditPageProviderOperation.ID, params);
         assertEquals(5, entries.size());
-        //dump(entries);
+        // dump(entries);
     }
 
     @Test
@@ -212,8 +208,8 @@ public class TestDocumentAuditPageProviderOperation {
         params.put("queryParams", queryParams);
 
         List<LogEntry> entries = (List<LogEntry>) service.run(ctx, AuditPageProviderOperation.ID, params);
-        Assert.assertTrue(entries.size()>0);
-        //dump(entries);
+        Assert.assertTrue(entries.size() > 0);
+        // dump(entries);
     }
 
     @Test
@@ -230,19 +226,18 @@ public class TestDocumentAuditPageProviderOperation {
 
         assertEquals(10, entries.size());
         assertEquals(nbEntries, entries.getResultsCount());
-        Assert.assertTrue(entries.getNumberOfPages()>1);
+        Assert.assertTrue(entries.getNumberOfPages() > 1);
 
         int total = entries.size();
 
-        for (int i = 1; i < entries.getNumberOfPages(); i++ ) {
+        for (int i = 1; i < entries.getNumberOfPages(); i++) {
             params.put("currentPageIndex", i);
             entries = (Paginable<LogEntry>) service.run(ctx, AuditPageProviderOperation.ID, params);
-            total+=entries.size();
+            total += entries.size();
         }
         assertEquals(nbEntries, total);
-        //dump(entries);
+        // dump(entries);
     }
-
 
     @Test
     public void testNonEmptyPageProviderQuery() throws Exception {
@@ -259,9 +254,9 @@ public class TestDocumentAuditPageProviderOperation {
         params.put("namedQueryParams", namedParams);
 
         List<LogEntry> entries = (List<LogEntry>) service.run(ctx, AuditPageProviderOperation.ID, params);
-        Assert.assertTrue(entries.size()>0);
-        Assert.assertTrue(nbEntries> entries.size());
-        //dump(entries);
+        Assert.assertTrue(entries.size() > 0);
+        Assert.assertTrue(nbEntries > entries.size());
+        // dump(entries);
     }
 
     @Test
@@ -281,9 +276,9 @@ public class TestDocumentAuditPageProviderOperation {
         params.put("namedQueryParams", namedParams);
 
         List<LogEntry> entries = (List<LogEntry>) service.run(ctx, AuditPageProviderOperation.ID, params);
-        Assert.assertTrue(entries.size()>0);
-        Assert.assertTrue(entries.size() < nbEntries );
-        //dump(entries);
+        Assert.assertTrue(entries.size() > 0);
+        Assert.assertTrue(entries.size() < nbEntries);
+        // dump(entries);
     }
 
     @Test
@@ -297,18 +292,18 @@ public class TestDocumentAuditPageProviderOperation {
         params.put("currentPageIndex", 0);
 
         List<LogEntry> entries = (List<LogEntry>) service.run(ctx, AuditPageProviderOperation.ID, params);
-        //dump(entries);
+        // dump(entries);
 
-        long lastId = entries.get(entries.size()-1).getId();
+        long lastId = entries.get(entries.size() - 1).getId();
 
         Properties namedParams = new Properties();
-        namedParams.put("bas:logId", ""+lastId);
+        namedParams.put("bas:logId", "" + lastId);
         params.put("namedQueryParams", namedParams);
 
         entries = (List<LogEntry>) service.run(ctx, AuditPageProviderOperation.ID, params);
 
-        Assert.assertEquals(lastId+1, entries.get(0).getId());
-        //dump(entries);
+        Assert.assertEquals(lastId + 1, entries.get(0).getId());
+        // dump(entries);
     }
 
 }

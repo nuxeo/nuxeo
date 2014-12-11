@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
  * @since 5.5
  */
 public class JSONStringBlobDecoder implements JSONBlobDecoder {
+    @Override
     public Blob getBlobFromJSON(ObjectNode jsonObject) {
         Blob blob = null;
 

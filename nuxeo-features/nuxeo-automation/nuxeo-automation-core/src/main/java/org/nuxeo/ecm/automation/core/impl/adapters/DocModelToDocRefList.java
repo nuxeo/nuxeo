@@ -23,8 +23,8 @@ import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
  */
 public class DocModelToDocRefList implements TypeAdapter {
 
-    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
-            throws TypeAdaptException {
+    @Override
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         DocumentRefList docs = new DocumentRefListImpl();
         docs.add(((DocumentModel) objectToAdapt).getRef());
         return docs;

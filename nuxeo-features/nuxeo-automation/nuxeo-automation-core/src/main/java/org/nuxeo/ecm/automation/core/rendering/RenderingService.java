@@ -18,11 +18,10 @@ import org.nuxeo.ecm.automation.core.scripting.Scripting;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class RenderingService {
 
-    //TODO use a runtime service
+    // TODO use a runtime service
     private static RenderingService instance = new RenderingService();
 
     public static RenderingService getInstance() {
@@ -33,10 +32,9 @@ public class RenderingService {
 
     protected FreemarkerRender ftl = new FreemarkerRender();
 
-
     public String render(String type, String uriOrContent, OperationContext ctx) throws Exception {
         Map<String, Object> map = Scripting.initBindings(ctx);
-        //map.put("DocUrl", MailTemplateHelper.getDocumentUrl(doc, viewId));
+        // map.put("DocUrl", MailTemplateHelper.getDocumentUrl(doc, viewId));
         return getRenderer(type).render(uriOrContent, map);
     }
 

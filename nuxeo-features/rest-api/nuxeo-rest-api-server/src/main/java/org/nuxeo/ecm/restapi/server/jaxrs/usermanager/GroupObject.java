@@ -31,16 +31,13 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @WebObject(type = "group")
 public class GroupObject extends AbstractUMObject<NuxeoGroup> {
 
     @Path("user/{username}")
-    public Object doGetUserToGroup(@PathParam("username")
-    String username) {
+    public Object doGetUserToGroup(@PathParam("username") String username) {
         try {
             UserManager um = Framework.getLocalService(UserManager.class);
             NuxeoPrincipal principal = um.getPrincipal(username);
@@ -56,15 +53,11 @@ public class GroupObject extends AbstractUMObject<NuxeoGroup> {
     }
 
     @Override
-    protected NuxeoGroup updateArtifact(NuxeoGroup updateGroup)
-            throws ClientException {
+    protected NuxeoGroup updateArtifact(NuxeoGroup updateGroup) throws ClientException {
         DocumentModel groupModel = um.getGroupModel(currentArtifact.getName());
-        groupModel.setPropertyValue(um.getGroupLabelField(),
-                updateGroup.getLabel());
-        groupModel.setPropertyValue(um.getGroupMembersField(),
-                (Serializable) updateGroup.getMemberUsers());
-        groupModel.setPropertyValue(um.getGroupSubGroupsField(),
-                (Serializable) updateGroup.getMemberGroups());
+        groupModel.setPropertyValue(um.getGroupLabelField(), updateGroup.getLabel());
+        groupModel.setPropertyValue(um.getGroupMembersField(), (Serializable) updateGroup.getMemberUsers());
+        groupModel.setPropertyValue(um.getGroupSubGroupsField(), (Serializable) updateGroup.getMemberGroups());
 
         um.updateGroup(groupModel);
         return um.getGroup(currentArtifact.getName());

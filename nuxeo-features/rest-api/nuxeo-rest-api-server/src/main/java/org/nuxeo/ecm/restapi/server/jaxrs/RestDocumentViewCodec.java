@@ -36,8 +36,6 @@ public class RestDocumentViewCodec extends AbstractDocumentViewCodec {
 
     public static final String PREFIX = "site/api/v1/id";
 
-
-
     public RestDocumentViewCodec() {
     }
 
@@ -65,8 +63,7 @@ public class RestDocumentViewCodec extends AbstractDocumentViewCodec {
             }
             items.add(docRef.toString());
             String uri = Joiner.on("/").join(items);
-            return URIUtils.addParametersToURIQuery(uri,
-                    docView.getParameters());
+            return URIUtils.addParametersToURIQuery(uri, docView.getParameters());
         }
         return null;
     }

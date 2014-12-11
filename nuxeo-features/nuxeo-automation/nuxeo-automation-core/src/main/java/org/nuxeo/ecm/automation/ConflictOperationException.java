@@ -12,18 +12,15 @@ package org.nuxeo.ecm.automation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Marker Exception to identify Dirty update detected by using the ChangeToken
- * of the DocumentModel
+ * Marker Exception to identify Dirty update detected by using the ChangeToken of the DocumentModel
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public class ConflictOperationException extends OperationException {
 
     private static final long serialVersionUID = 1L;
 
     public ConflictOperationException(DocumentModel doc) {
-        super("Conflict detected while trying to update document "
-                + doc.getId());
+        super("Conflict detected while trying to update document " + doc.getId());
     }
 }

@@ -21,7 +21,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = PublishDocument.ID, category = Constants.CAT_DOCUMENT, label = "Publish Document", description = "Publish the input document into the target section. Existing proxy is overrided if the override attribute is set. Return the created proxy.")
@@ -38,7 +37,7 @@ public class PublishDocument {
     @Param(name = "override", required = false, values = "true")
     protected boolean override = true;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         return session.publishDocument(doc, target, override);
     }

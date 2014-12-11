@@ -62,9 +62,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-@Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.directory.types.contrib",
-        "org.nuxeo.ecm.actions", "org.nuxeo.ecm.automation.core",
+@Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
+        "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.actions", "org.nuxeo.ecm.automation.core",
         "org.nuxeo.ecm.automation.features" })
 @LocalDeploy("org.nuxeo.ecm.automation.features:test-directories-sql-contrib.xml")
 public class DirectoryOperationsTest {
@@ -78,8 +77,7 @@ public class DirectoryOperationsTest {
     @Inject
     protected DirectoryService directoryService;
 
-    protected void createEntry(String id, String label, int obsolete)
-            throws ClientException {
+    protected void createEntry(String id, String label, int obsolete) throws ClientException {
         Map<String, Object> m = new HashMap<String, Object>();
         m.put("id", id);
         m.put("label", label);
@@ -98,16 +96,13 @@ public class DirectoryOperationsTest {
 
     @Test
     public void shouldCreateNewEntries() throws Exception {
-        String newEntries = "[{\"id\": \"newContinent\","
-                + "\"label\": \"newLabel\"," + "\"obsolete\": 0},"
-                + "{\"id\": \"anotherContinent\","
-                + "\"label\": \"anotherLabel\"," + "\"obsolete\": 0}]";
+        String newEntries = "[{\"id\": \"newContinent\"," + "\"label\": \"newLabel\"," + "\"obsolete\": 0},"
+                + "{\"id\": \"anotherContinent\"," + "\"label\": \"anotherLabel\"," + "\"obsolete\": 0}]";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("directoryName", "continent");
         params.put("entries", newEntries);
-        OperationParameters oparams = new OperationParameters(
-                CreateDirectoryEntries.ID, params);
+        OperationParameters oparams = new OperationParameters(CreateDirectoryEntries.ID, params);
 
         OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("fakeChain");
@@ -116,9 +111,8 @@ public class DirectoryOperationsTest {
         assertNotNull(result);
 
         ObjectMapper mapper = new ObjectMapper();
-        List<String> createdIds = mapper.readValue(result.getString(),
-                new TypeReference<List<String>>() {
-                });
+        List<String> createdIds = mapper.readValue(result.getString(), new TypeReference<List<String>>() {
+        });
         assertEquals(2, createdIds.size());
         assertEquals("newContinent", createdIds.get(0));
         assertEquals("anotherContinent", createdIds.get(1));
@@ -131,8 +125,7 @@ public class DirectoryOperationsTest {
             assertEquals("newLabel", entry.getProperty("vocabulary", "label"));
             entry = directorySession.getEntry("anotherContinent");
             assertNotNull(entry);
-            assertEquals("anotherLabel",
-                    entry.getProperty("vocabulary", "label"));
+            assertEquals("anotherLabel", entry.getProperty("vocabulary", "label"));
         } finally {
             if (directorySession != null) {
                 directorySession.close();
@@ -142,14 +135,12 @@ public class DirectoryOperationsTest {
 
     @Test
     public void shouldNotCreateNewEntryIFEntryAlreadyExsists() throws Exception {
-        String newEntries = "[{\"id\": \"europe\"," + "\"label\": \"europe\","
-                + "\"obsolete\": 0}]";
+        String newEntries = "[{\"id\": \"europe\"," + "\"label\": \"europe\"," + "\"obsolete\": 0}]";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("directoryName", "continent");
         params.put("entries", newEntries);
-        OperationParameters oparams = new OperationParameters(
-                CreateDirectoryEntries.ID, params);
+        OperationParameters oparams = new OperationParameters(CreateDirectoryEntries.ID, params);
 
         OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("fakeChain");
@@ -161,8 +152,7 @@ public class DirectoryOperationsTest {
             if (!(e.getCause() instanceof OperationException)) {
                 fail();
             }
-            assertEquals(e.getCause().getCause().getMessage(),
-                    "Entry with id europe already exists");
+            assertEquals(e.getCause().getCause().getMessage(), "Entry with id europe already exists");
         }
 
     }
@@ -174,8 +164,7 @@ public class DirectoryOperationsTest {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("directoryName", "continent");
         params.put("entries", "[\"entryToDelete\"]");
-        OperationParameters oparams = new OperationParameters(
-                DeleteDirectoryEntries.ID, params);
+        OperationParameters oparams = new OperationParameters(DeleteDirectoryEntries.ID, params);
 
         OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("fakeChain");
@@ -184,9 +173,8 @@ public class DirectoryOperationsTest {
         assertNotNull(result);
 
         ObjectMapper mapper = new ObjectMapper();
-        List<String> deleteIds = mapper.readValue(result.getString(),
-                new TypeReference<List<String>>() {
-                });
+        List<String> deleteIds = mapper.readValue(result.getString(), new TypeReference<List<String>>() {
+        });
         assertEquals(1, deleteIds.size());
         assertEquals("entryToDelete", deleteIds.get(0));
 
@@ -209,8 +197,7 @@ public class DirectoryOperationsTest {
         params.put("directoryName", "continent");
         params.put("markObsolete", true);
         params.put("entries", "[\"entryToMarkAsObsolete\"]");
-        OperationParameters oparams = new OperationParameters(
-                DeleteDirectoryEntries.ID, params);
+        OperationParameters oparams = new OperationParameters(DeleteDirectoryEntries.ID, params);
 
         OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("fakeChain");
@@ -219,9 +206,8 @@ public class DirectoryOperationsTest {
         assertNotNull(result);
 
         ObjectMapper mapper = new ObjectMapper();
-        List<String> deleteIds = mapper.readValue(result.getString(),
-                new TypeReference<List<String>>() {
-                });
+        List<String> deleteIds = mapper.readValue(result.getString(), new TypeReference<List<String>>() {
+        });
         assertEquals(1, deleteIds.size());
         assertEquals("entryToMarkAsObsolete", deleteIds.get(0));
 
@@ -242,14 +228,13 @@ public class DirectoryOperationsTest {
     public void shouldUpdateEntries() throws Exception {
         createEntry("entryToUpdate", "entryToUpdateLabel", 0);
 
-        String entriesToUpdate = "[{\"id\": \"entryToUpdate\","
-                + "\"label\": \"newEntryToUpdateLabel\"," + "\"obsolete\": 0}]";
+        String entriesToUpdate = "[{\"id\": \"entryToUpdate\"," + "\"label\": \"newEntryToUpdateLabel\","
+                + "\"obsolete\": 0}]";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("directoryName", "continent");
         params.put("entries", entriesToUpdate);
-        OperationParameters oparams = new OperationParameters(
-                UpdateDirectoryEntries.ID, params);
+        OperationParameters oparams = new OperationParameters(UpdateDirectoryEntries.ID, params);
 
         OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("fakeChain");
@@ -258,9 +243,8 @@ public class DirectoryOperationsTest {
         assertNotNull(result);
 
         ObjectMapper mapper = new ObjectMapper();
-        List<String> updatedIds = mapper.readValue(result.getString(),
-                new TypeReference<List<String>>() {
-                });
+        List<String> updatedIds = mapper.readValue(result.getString(), new TypeReference<List<String>>() {
+        });
         assertEquals(1, updatedIds.size());
         assertEquals("entryToUpdate", updatedIds.get(0));
 
@@ -269,8 +253,7 @@ public class DirectoryOperationsTest {
             directorySession = directoryService.open("continent");
             DocumentModel entry = directorySession.getEntry("entryToUpdate");
             assertNotNull(entry);
-            assertEquals("newEntryToUpdateLabel",
-                    entry.getProperty("vocabulary", "label"));
+            assertEquals("newEntryToUpdateLabel", entry.getProperty("vocabulary", "label"));
         } finally {
             if (directorySession != null) {
                 directorySession.close();
@@ -285,8 +268,7 @@ public class DirectoryOperationsTest {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("directoryName", "continent");
         params.put("entries", entriesToRead);
-        OperationParameters oparams = new OperationParameters(
-                ReadDirectoryEntries.ID, params);
+        OperationParameters oparams = new OperationParameters(ReadDirectoryEntries.ID, params);
 
         OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("fakeChain");
@@ -295,8 +277,7 @@ public class DirectoryOperationsTest {
         assertNotNull(result);
 
         ObjectMapper mapper = new ObjectMapper();
-        List<Map<String, Object>> entries = mapper.readValue(
-                result.getString(),
+        List<Map<String, Object>> entries = mapper.readValue(result.getString(),
                 new TypeReference<List<Map<String, Object>>>() {
                 });
         assertEquals(3, entries.size());

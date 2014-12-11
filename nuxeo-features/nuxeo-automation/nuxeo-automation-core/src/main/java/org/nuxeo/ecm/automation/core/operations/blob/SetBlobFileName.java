@@ -40,18 +40,18 @@ public class SetBlobFileName {
     @Param(name = "name")
     protected String name;
 
-    @Param(name = "xpath", required=false, values="file:content")
+    @Param(name = "xpath", required = false, values = "file:content")
     protected String xpath = "file:content";
 
-    @Param(name = "save", required = false, values="true")
+    @Param(name = "save", required = false, values = "true")
     protected boolean save = true;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws java.lang.Exception {
         Property p = doc.getProperty(xpath);
         Object o = p.getValue();
         if (o instanceof Blob) {
-            Blob blob = (Blob)o;
+            Blob blob = (Blob) o;
             blob.setFilename(name);
             p.setValue(blob);
         }

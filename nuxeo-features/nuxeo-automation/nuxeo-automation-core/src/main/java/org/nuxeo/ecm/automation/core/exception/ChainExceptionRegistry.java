@@ -26,28 +26,23 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 /**
  * @since 5.7.3
  */
-public class ChainExceptionRegistry extends
-        ContributionFragmentRegistry<ChainException> {
+public class ChainExceptionRegistry extends ContributionFragmentRegistry<ChainException> {
 
     /**
-     * Modifiable automation filter registry. Modifying the registry is using a
-     * lock and it's thread safe. Modifications are removing the cache.
+     * Modifiable automation filter registry. Modifying the registry is using a lock and it's thread safe. Modifications
+     * are removing the cache.
      */
     protected final Map<String, ChainException> chainExceptions = new HashMap<>();
 
     /**
-     * Read only cache for automation filter lookup. Thread safe. Not using
-     * synchronization if cache already created.
+     * Read only cache for automation filter lookup. Thread safe. Not using synchronization if cache already created.
      */
     protected volatile Map<String, ChainException> lookup;
 
-    public synchronized void addContribution(ChainException chainException,
-            boolean replace) throws OperationException {
+    public synchronized void addContribution(ChainException chainException, boolean replace) throws OperationException {
         if (!replace && chainExceptions.containsKey(chainException.getId())) {
-            throw new OperationException(
-                    "An exception chain is already bound to: "
-                            + chainException.getId()
-                            + ". Use 'replace=true' to replace an existing exception chain");
+            throw new OperationException("An exception chain is already bound to: " + chainException.getId()
+                    + ". Use 'replace=true' to replace an existing exception chain");
         }
         super.addContribution(chainException);
     }
@@ -63,8 +58,7 @@ public class ChainExceptionRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id, ChainException contrib,
-            ChainException newOrigContrib) {
+    public void contributionUpdated(String id, ChainException contrib, ChainException newOrigContrib) {
         chainExceptions.put(id, contrib);
         lookup = null;
     }

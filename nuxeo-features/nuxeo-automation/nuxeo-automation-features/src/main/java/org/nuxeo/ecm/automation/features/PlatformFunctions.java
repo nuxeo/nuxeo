@@ -34,7 +34,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PlatformFunctions extends CoreFunctions {
 
-
     private volatile DirectoryService dirService;
 
     private volatile UserManager userMgr;
@@ -72,19 +71,17 @@ public class PlatformFunctions extends CoreFunctions {
         return getUserManager().getPrincipal(username);
     }
 
-    protected String getEmail(NuxeoPrincipal principal, String userSchemaName,
-            String userEmailFieldName) throws ClientException {
+    protected String getEmail(NuxeoPrincipal principal, String userSchemaName, String userEmailFieldName)
+            throws ClientException {
         if (principal == null) {
             return null;
         }
-        return (String) principal.getModel().getProperty(userSchemaName,
-                userEmailFieldName);
+        return (String) principal.getModel().getProperty(userSchemaName, userEmailFieldName);
     }
 
     public String getEmail(String username) throws Exception {
         UserManager userManager = getUserManager();
-        return getEmail(userManager.getPrincipal(username),
-                userManager.getUserSchemaName(),
+        return getEmail(userManager.getPrincipal(username), userManager.getUserSchemaName(),
                 userManager.getUserEmailField());
     }
 
@@ -107,8 +104,7 @@ public class PlatformFunctions extends CoreFunctions {
         return new StringList(emails);
     }
 
-    public StringList getPrincipalEmails(List<NuxeoPrincipal> principals)
-            throws Exception {
+    public StringList getPrincipalEmails(List<NuxeoPrincipal> principals) throws Exception {
         StringList result = new StringList(principals.size());
         String schemaName = getUserManager().getUserSchemaName();
         String fieldName = getUserManager().getUserEmailField();
@@ -126,17 +122,13 @@ public class PlatformFunctions extends CoreFunctions {
     }
 
     /**
-     *
      * Returns user emails
      *
      * @param usernames list of user names
-     * @param usePrefix indicates if user resolution takes into account nuxeo
-     *            prefix <b>user:</b>
-     *
+     * @param usePrefix indicates if user resolution takes into account nuxeo prefix <b>user:</b>
      * @since 5.5
      */
-    public StringList getEmails(List<String> usernames, boolean usePrefix)
-            throws Exception {
+    public StringList getEmails(List<String> usernames, boolean usePrefix) throws Exception {
         if (usernames == null) {
             return new StringList(0);
         }
@@ -148,8 +140,7 @@ public class PlatformFunctions extends CoreFunctions {
             NuxeoPrincipal principal = null;
             if (usePrefix) {
                 if (username.startsWith(NuxeoPrincipal.PREFIX)) {
-                    principal = userManager.getPrincipal(username.replace(
-                            NuxeoPrincipal.PREFIX, ""));
+                    principal = userManager.getPrincipal(username.replace(NuxeoPrincipal.PREFIX, ""));
                 }
             } else {
                 principal = userManager.getPrincipal(username);
@@ -174,29 +165,21 @@ public class PlatformFunctions extends CoreFunctions {
     }
 
     /**
-     * Concatenate into the list given as first argument other arguments. Other
-     * arguments will be explosed if it is a list of object. ex:
-     * concatenateInto(myList, a, anotherList) with a is scalar object and
-     * anotherList is a list of object will produced myList.add(a) and the same
-     * for each object contained into the anotherList list.
+     * Concatenate into the list given as first argument other arguments. Other arguments will be explosed if it is a
+     * list of object. ex: concatenateInto(myList, a, anotherList) with a is scalar object and anotherList is a list of
+     * object will produced myList.add(a) and the same for each object contained into the anotherList list.
      *
      * @param <T>
-     *
      * @param list List of values of type A
-     * @param value Value can be instance of java.util.Collection<Object> or an
-     *            array of Objects or simply a scalar Object. If Null, the
-     *            parameter is ignored
-     * @return the list that contains the list contain and value (see value
-     *         description)
-     * @exception ClientException if value if a collection but not contains only
-     *                A values and type that extends A.
+     * @param value Value can be instance of java.util.Collection<Object> or an array of Objects or simply a scalar
+     *            Object. If Null, the parameter is ignored
+     * @return the list that contains the list contain and value (see value description)
+     * @exception ClientException if value if a collection but not contains only A values and type that extends A.
      * @exception ClientException if list is null
-     * @exception xxxxx if in values there is at least one object type not
-     *                compatible with the collection list
+     * @exception xxxxx if in values there is at least one object type not compatible with the collection list
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> concatenateIntoList(List<T> list, Object... values)
-            throws ClientException {
+    public <T> List<T> concatenateIntoList(List<T> list, Object... values) throws ClientException {
 
         if (list == null) {
             throw new ClientException("First parameter must not be null");
@@ -234,8 +217,7 @@ public class PlatformFunctions extends CoreFunctions {
     /**
      * Idem than concatenateInto except that a new list is created.
      */
-    public <T> List<T> concatenateValuesAsNewList(Object... values)
-            throws ClientException {
+    public <T> List<T> concatenateValuesAsNewList(Object... values) throws ClientException {
 
         List<T> result = new ArrayList<T>();
         return concatenateIntoList(result, values);

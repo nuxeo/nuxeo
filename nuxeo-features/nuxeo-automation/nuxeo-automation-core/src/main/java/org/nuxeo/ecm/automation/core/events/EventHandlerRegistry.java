@@ -23,8 +23,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
- * TODO: This service should be moved in another project, and renamed since
- * it's a service, not a simple registry...
+ * TODO: This service should be moved in another project, and renamed since it's a service, not a simple registry...
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -96,8 +95,7 @@ public class EventHandlerRegistry {
                     return true;
                 }
             } catch (Exception e) {
-                log.error("Failed to check event " + event.getName()
-                        + " using chain: " + handler.getChainId(), e);
+                log.error("Failed to check event " + event.getName() + " using chain: " + handler.getChainId(), e);
             }
         }
         return false;
@@ -106,8 +104,7 @@ public class EventHandlerRegistry {
     // TODO: impl remove handlers method? or should refactor runtime to be able
     // to redeploy only using clear() method
 
-    public void handleEvent(Event event, List<EventHandler> handlers,
-            boolean saveSession) {
+    public void handleEvent(Event event, List<EventHandler> handlers, boolean saveSession) {
         if (handlers == null || handlers.isEmpty()) {
             return; // ignore
         }
@@ -130,8 +127,7 @@ public class EventHandlerRegistry {
                     svc.run(ctx, handler.getChainId());
                 }
             } catch (Exception e) {
-                log.error("Failed to handle event " + event.getName()
-                        + " using chain: " + handler.getChainId(), e);
+                log.error("Failed to handle event " + event.getName() + " using chain: " + handler.getChainId(), e);
             }
         }
     }

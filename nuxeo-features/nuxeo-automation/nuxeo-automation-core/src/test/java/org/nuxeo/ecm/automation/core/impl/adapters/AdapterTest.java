@@ -70,8 +70,7 @@ public class AdapterTest {
     public void shouldAdaptArrayStringAsStringList() throws Exception {
         String[] value = new String[] { "a", "b", };
 
-        Object result = automationService.getAdaptedValue(ctx, value,
-                StringList.class);
+        Object result = automationService.getAdaptedValue(ctx, value, StringList.class);
         assertNotNull(result);
         assertTrue(result instanceof StringList);
         StringList list = (StringList) result;
@@ -84,11 +83,9 @@ public class AdapterTest {
     @Test
     public void shouldAdaptArrayStringAsDocumentModelList() throws Exception {
 
-        String[] value = new String[] { documentModel.getId(),
-                documentModel.getRef().toString() };
+        String[] value = new String[] { documentModel.getId(), documentModel.getRef().toString() };
 
-        Object result = automationService.getAdaptedValue(ctx, value,
-                DocumentModelList.class);
+        Object result = automationService.getAdaptedValue(ctx, value, DocumentModelList.class);
         assertNotNull(result);
         assertTrue(result instanceof DocumentModelList);
         DocumentModelList list = (DocumentModelList) result;

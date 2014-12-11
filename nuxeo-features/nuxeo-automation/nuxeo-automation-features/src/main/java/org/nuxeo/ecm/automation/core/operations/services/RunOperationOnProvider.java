@@ -28,8 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 
 /**
- * Run an embedded operation chain for each page of the pageProvider given as
- * input. The output is undefined (Void)
+ * Run an embedded operation chain for each page of the pageProvider given as input. The output is undefined (Void)
  *
  * @since 5.6
  */
@@ -46,7 +45,7 @@ public class RunOperationOnProvider {
     @Param(name = "id")
     protected String chainId;
 
-    @Param(name = "isolate", required = false, values = {"true"})
+    @Param(name = "isolate", required = false, values = { "true" })
     protected boolean isolate = true;
 
     @OperationMethod
@@ -54,15 +53,12 @@ public class RunOperationOnProvider {
 
     throws InvalidChainException, OperationException, Exception {
         PageProvider<DocumentModel> pageProvider = paginableList.getProvider();
-        Map<String, Object> vars = isolate ? new HashMap<String, Object>(
-                ctx.getVars()) : ctx.getVars();
-        OperationContext subctx = new OperationContext(ctx.getCoreSession(),
-                vars);
+        Map<String, Object> vars = isolate ? new HashMap<String, Object>(ctx.getVars()) : ctx.getVars();
+        OperationContext subctx = new OperationContext(ctx.getCoreSession(), vars);
         final long initialRC = pageProvider.getResultsCount();
         final long initialNoPages = pageProvider.getNumberOfPages();
 
-        PaginableDocumentModelListImpl input = new PaginableDocumentModelListImpl(
-                pageProvider);
+        PaginableDocumentModelListImpl input = new PaginableDocumentModelListImpl(pageProvider);
         while (pageProvider.getCurrentPageIndex() < initialNoPages) {
             subctx.setInput(input);
             service.run(subctx, chainId);

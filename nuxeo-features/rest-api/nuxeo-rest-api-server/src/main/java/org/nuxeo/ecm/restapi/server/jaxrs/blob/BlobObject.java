@@ -40,8 +40,6 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
 /**
- *
- *
  * @since 5.8
  */
 @WebObject(type = "blob")
@@ -77,8 +75,7 @@ public class BlobObject extends DefaultObject {
     }
 
     @GET
-    public Response doGet(@Context
-    Request request) throws ClientException {
+    public Response doGet(@Context Request request) throws ClientException {
 
         if (xpath == null) {
             xpath = getXpathFromRequest();
@@ -88,8 +85,7 @@ public class BlobObject extends DefaultObject {
             Property p = doc.getProperty(xpath);
             Blob blob = (Blob) p.getValue();
             if (blob == null) {
-                throw new WebResourceNotFoundException("No attached file at "
-                        + xpath);
+                throw new WebResourceNotFoundException("No attached file at " + xpath);
             }
             String fileName = blob.getFilename();
             if (fileName == null) {
@@ -114,11 +110,9 @@ public class BlobObject extends DefaultObject {
                     return builder.build();
                 }
             }
-            String contentDisposition = ServletHelper.getRFC2231ContentDisposition(
-                    ctx.getRequest(), fileName);
+            String contentDisposition = ServletHelper.getRFC2231ContentDisposition(ctx.getRequest(), fileName);
             // cached resource did change or no ETag -> serve updated content
-            Response.ResponseBuilder builder = Response.ok(blob).header(
-                    "Content-Disposition", contentDisposition).type(
+            Response.ResponseBuilder builder = Response.ok(blob).header("Content-Disposition", contentDisposition).type(
                     blob.getMimeType());
             if (etag != null) {
                 builder.tag(etag);
@@ -132,7 +126,6 @@ public class BlobObject extends DefaultObject {
     /**
      * @param request
      * @return
-     *
      * @since 5.8
      */
     private String getXpathFromRequest() {
@@ -152,11 +145,9 @@ public class BlobObject extends DefaultObject {
             session.saveDocument(doc);
             session.save();
         } catch (PropertyException e) {
-            throw WebException.wrap(
-                    "Failed to delete attached file into property: " + xpath, e);
+            throw WebException.wrap("Failed to delete attached file into property: " + xpath, e);
         } catch (ClientException e) {
-            throw WebException.wrap(
-                    "Failed to delete attached file into property: " + xpath, e);
+            throw WebException.wrap("Failed to delete attached file into property: " + xpath, e);
         }
         return Response.noContent().build();
     }
@@ -167,8 +158,7 @@ public class BlobObject extends DefaultObject {
         FormData form = ctx.getForm();
         Blob blob = form.getFirstBlob();
         if (blob == null) {
-            throw new IllegalArgumentException(
-                    "Could not find any uploaded file");
+            throw new IllegalArgumentException("Could not find any uploaded file");
         }
 
         try {
@@ -182,8 +172,7 @@ public class BlobObject extends DefaultObject {
                 p.setValue(blob);
             }
             // make snapshot
-            doc.putContextData(VersioningService.VERSIONING_OPTION,
-                    form.getVersioningOption());
+            doc.putContextData(VersioningService.VERSIONING_OPTION, form.getVersioningOption());
             CoreSession session = ctx.getCoreSession();
             session.saveDocument(doc);
             session.save();

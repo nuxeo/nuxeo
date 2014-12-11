@@ -123,8 +123,7 @@ public class CoreOperationsTest {
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
-        chain.add(RunScript.ID).set("script",
-                "Context[\"script_title\"] = This.title;");
+        chain.add(RunScript.ID).set("script", "Context[\"script_title\"] = This.title;");
 
         service.run(ctx, chain);
         assertEquals(src.getTitle(), ctx.get("script_title"));
@@ -136,8 +135,7 @@ public class CoreOperationsTest {
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
-        chain.add(RunScript.ID).set("script",
-                "This.setPropertyValue(\"dc:title\",\"modified from mvel\");");
+        chain.add(RunScript.ID).set("script", "This.setPropertyValue(\"dc:title\",\"modified from mvel\");");
 
         service.run(ctx, chain);
         String title = src.getProperty("dc:title").getValue(String.class);
@@ -150,8 +148,7 @@ public class CoreOperationsTest {
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
-        chain.add(RunScript.ID).set(
-                "script",
+        chain.add(RunScript.ID).set("script",
                 "if (This.id != null &amp;&amp; This.id != '') {This.setPropertyValue(\"dc:title\",\"modified from mvel\");}");
         service.run(ctx, chain);
         String title = src.getProperty("dc:title").getValue(String.class);
@@ -159,8 +156,8 @@ public class CoreOperationsTest {
     }
 
     /*
-     * This test is not enabled for now since the operation is disabled until
-     * fully implemented Enable this test when the operation will be enabled.
+     * This test is not enabled for now since the operation is disabled until fully implemented Enable this test when
+     * the operation will be enabled.
      */
     @Ignore
     @Test
@@ -169,8 +166,7 @@ public class CoreOperationsTest {
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
-        chain.add(RunScriptFile.ID).set("script",
-                CoreOperationsTest.class.getResource("/test-script.mvel"));
+        chain.add(RunScriptFile.ID).set("script", CoreOperationsTest.class.getResource("/test-script.mvel"));
 
         String oldTitle = src.getTitle();
         service.run(ctx, chain);
@@ -192,11 +188,9 @@ public class CoreOperationsTest {
 
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set(
-                "properties", "dc:title=MyDoc");
+        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set("properties", "dc:title=MyDoc");
         chain.add(CopyDocument.ID).set("target", dst).set("name", "note_copy");
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set(
-                "value", "mydesc");
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value", "mydesc");
 
         DocumentModel out = (DocumentModel) service.run(ctx, chain);
         DocumentModel doc = session.getDocument(new PathRef("/dst/note_copy"));
@@ -231,8 +225,7 @@ public class CoreOperationsTest {
     }
 
     /**
-     * Same as before Create | Copy | Set Property But also test properties
-     * specified using a mvel Expression
+     * Same as before Create | Copy | Set Property But also test properties specified using a mvel Expression
      *
      * @throws Exception
      */
@@ -245,12 +238,10 @@ public class CoreOperationsTest {
 
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set(
-                "properties",
+        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set("properties",
                 new MvelExpression("This.getPropertyValue(\"dc:description\")"));
         chain.add(CopyDocument.ID).set("target", dst).set("name", "note_copy");
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set(
-                "value", "mydesc");
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value", "mydesc");
 
         DocumentModel out = (DocumentModel) service.run(ctx, chain);
         DocumentModel doc = session.getDocument(new PathRef("/dst/note_copy"));
@@ -276,12 +267,10 @@ public class CoreOperationsTest {
 
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set(
-                "properties",
+        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set("properties",
                 new MvelExpression("Document[\"dc:description\"]"));
         chain.add(CopyDocument.ID).set("target", dst).set("name", "note_copy");
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set(
-                "value", "mydesc");
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value", "mydesc");
 
         DocumentModel out = (DocumentModel) service.run(ctx, chain);
         DocumentModel doc = session.getDocument(new PathRef("/dst/note_copy"));
@@ -303,11 +292,10 @@ public class CoreOperationsTest {
 
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set(
-                "properties", new Properties("dc:title=MyDoc"));
+        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set("properties",
+                new Properties("dc:title=MyDoc"));
         chain.add(MoveDocument.ID).set("target", dst).set("name", "note_copy");
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set(
-                "value", "mydesc");
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value", "mydesc");
 
         DocumentModel out = (DocumentModel) service.run(ctx, chain);
         DocumentModel doc = session.getDocument(new PathRef("/dst/note_copy"));
@@ -332,16 +320,14 @@ public class CoreOperationsTest {
 
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "Note").set("properties",
-                new Properties("dc:title=MyDoc")).set("name", "note");
+        chain.add(CreateDocument.ID).set("type", "Note").set("properties", new Properties("dc:title=MyDoc")).set(
+                "name", "note");
         chain.add(PushDocument.ID);
         chain.add(GetDocumentParent.ID);
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set(
-                "value", "parentdoc");
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value", "parentdoc");
         chain.add(SaveDocument.ID);
         chain.add(PopDocument.ID);
-        chain.add(UpdateDocument.ID).set("properties",
-                new Properties("dc:title=MyDoc2\ndc:description=mydesc"));
+        chain.add(UpdateDocument.ID).set("properties", new Properties("dc:title=MyDoc2\ndc:description=mydesc"));
         chain.add(LockDocument.ID);
         chain.add(SaveDocument.ID);
 
@@ -350,15 +336,11 @@ public class CoreOperationsTest {
         assertEquals("mydesc", out.getPropertyValue("dc:description"));
         assertEquals("MyDoc2", out.getPropertyValue("dc:title"));
         assertTrue(out.isLocked());
-        assertEquals(
-                "parentdoc",
-                session.getDocument(src.getRef()).getPropertyValue(
-                        "dc:description"));
+        assertEquals("parentdoc", session.getDocument(src.getRef()).getPropertyValue("dc:description"));
     }
 
     /**
-     * Context Fetch | Create | GetParent | Create. Context Fetch | GetChildren
-     * | Delete.
+     * Context Fetch | Create | GetParent | Create. Context Fetch | GetChildren | Delete.
      */
     @Test
     public void testChain4() throws Exception {
@@ -367,11 +349,11 @@ public class CoreOperationsTest {
 
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note1").set(
-                "properties", new Properties("dc:title=MyDoc1"));
+        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note1").set("properties",
+                new Properties("dc:title=MyDoc1"));
         chain.add(GetDocumentParent.ID);
-        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note2").set(
-                "properties", new Properties("dc:title=MyDoc2"));
+        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note2").set("properties",
+                new Properties("dc:title=MyDoc2"));
         service.run(ctx, chain);
         assertEquals(2, session.getChildren(src.getRef()).size());
 
@@ -387,8 +369,7 @@ public class CoreOperationsTest {
     }
 
     /**
-     * Context Fetch | Create | GetParent | Create. Context Fetch | GetChildren
-     * | Delete.
+     * Context Fetch | Create | GetParent | Create. Context Fetch | GetChildren | Delete.
      */
     @Test
     public void testBlobChain() throws Exception {
@@ -401,25 +382,20 @@ public class CoreOperationsTest {
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
         chain.add(CreateDocument.ID).set("type", "File").set("name", "file2");
-        chain.add(SetVar.ID).set("name", "file2").set("value",
-                Scripting.newExpression("This"));
+        chain.add(SetVar.ID).set("name", "file2").set("value", Scripting.newExpression("This"));
         chain.add(GetDocumentParent.ID);
         chain.add(CreateDocument.ID).set("type", "File").set("name", "file1");
-        chain.add(SetDocumentBlob.ID).set("xpath", "file:content").set("file",
-                blob);
+        chain.add(SetDocumentBlob.ID).set("xpath", "file:content").set("file", blob);
         chain.add(GetDocumentBlob.ID).set("xpath", "file:content");
-        chain.add(AttachBlob.ID).set("xpath", "file:content").set("document",
-                Scripting.newExpression("file2"));
+        chain.add(AttachBlob.ID).set("xpath", "file:content").set("document", Scripting.newExpression("file2"));
 
         service.run(ctx, chain);
         session.save();
 
-        blob = (Blob) session.getDocument(new PathRef("/src/file1")).getPropertyValue(
-                "file:content");
+        blob = (Blob) session.getDocument(new PathRef("/src/file1")).getPropertyValue("file:content");
         assertEquals("blob content", blob.getString());
 
-        blob = (Blob) session.getDocument(new PathRef("/src/file2")).getPropertyValue(
-                "file:content");
+        blob = (Blob) session.getDocument(new PathRef("/src/file2")).getPropertyValue("file:content");
         assertEquals("blob content", blob.getString());
     }
 
@@ -440,8 +416,7 @@ public class CoreOperationsTest {
     }
 
     /**
-     * Alternate version - use xml properties instead of java properties when
-     * defining a properties value
+     * Alternate version - use xml properties instead of java properties when defining a properties value
      *
      * @throws Exception
      */
@@ -468,8 +443,7 @@ public class CoreOperationsTest {
 
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(SetVar.ID).set("name", "mydoc").set("value",
-                new PathRef("/dst"));
+        chain.add(SetVar.ID).set("name", "mydoc").set("value", new PathRef("/dst"));
         chain.add(RestoreDocumentInput.ID).set("name", "mydoc");
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
         assertEquals(dst, doc);
@@ -492,8 +466,7 @@ public class CoreOperationsTest {
     }
 
     /**
-     * Create a document and copy it by giving the destination path as a
-     * template expression.
+     * Create a document and copy it by giving the destination path as a template expression.
      */
     @Test
     public void testStringToDocAdapters() throws Exception {
@@ -503,14 +476,10 @@ public class CoreOperationsTest {
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
         chain.add(SetVar.ID).set("name", "st").set("value", "st");
-        chain.add(SetVar.ID).set("name", "pathVar").set("value",
-                Scripting.newTemplate("/d@{st}"));
-        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set(
-                "properties", "dc:title=MyDoc");
-        chain.add(CopyDocument.ID).set("target",
-                Scripting.newExpression("pathVar")).set("name", "note_copy");
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set(
-                "value", "mydesc");
+        chain.add(SetVar.ID).set("name", "pathVar").set("value", Scripting.newTemplate("/d@{st}"));
+        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set("properties", "dc:title=MyDoc");
+        chain.add(CopyDocument.ID).set("target", Scripting.newExpression("pathVar")).set("name", "note_copy");
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value", "mydesc");
 
         DocumentModel out = (DocumentModel) service.run(ctx, chain);
 
@@ -531,8 +500,7 @@ public class CoreOperationsTest {
         Expression expr = Scripting.newExpression("Document.versionLabel");
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set(
-                "properties", "dc:title=MyDoc");
+        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set("properties", "dc:title=MyDoc");
         chain.add(SetVar.ID).set("name", "versionLabel_1").set("value", expr);
         chain.add(CreateVersion.ID).set("increment", "Major");
         chain.add(SetVar.ID).set("name", "versionLabel_2").set("value", expr);
@@ -540,8 +508,7 @@ public class CoreOperationsTest {
         chain.add(CreateVersion.ID).set("increment", "Minor");
         chain.add(SetVar.ID).set("name", "versionLabel_3").set("value", expr);
         // update document to test if version change (auto-checkout)
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:title").set("value",
-                "MyDoc4");
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:title").set("value", "MyDoc4");
 
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
 
@@ -560,12 +527,10 @@ public class CoreOperationsTest {
         Expression expr = Scripting.newExpression("Document.versionLabel");
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set(
-                "properties", "dc:title=MyDoc");
+        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set("properties", "dc:title=MyDoc");
         chain.add(SetVar.ID).set("name", "versionLabel_1").set("value", expr);
         // update document to test if version change (it should not change)
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:title").set("value",
-                "MyDoc2");
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:title").set("value", "MyDoc2");
 
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
 
@@ -582,19 +547,15 @@ public class CoreOperationsTest {
         Expression expr = Scripting.newExpression("Document.versionLabel");
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set(
-                "properties", "dc:title=MyDoc");
+        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set("properties", "dc:title=MyDoc");
         chain.add(SetVar.ID).set("name", "versionLabel_1").set("value", expr);
         chain.add(SetDocumentLifeCycle.ID).set("value", "approve");
-        chain.add(CheckInDocument.ID).set("version", "major").set("comment",
-                "yo").set("versionVarName", "ver");
+        chain.add(CheckInDocument.ID).set("version", "major").set("comment", "yo").set("versionVarName", "ver");
         chain.add(SetVar.ID).set("name", "versionLabel_2").set("value", expr);
         // update document to test if version change (it should not change)
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:title").set("value",
-                "MyDoc2");
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:title").set("value", "MyDoc2");
         chain.add(SetVar.ID).set("name", "versionLabel_3").set("value", expr);
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:title").set("value",
-                "MyDoc3");
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:title").set("value", "MyDoc3");
 
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
 
@@ -619,8 +580,7 @@ public class CoreOperationsTest {
             users.add("bar");
             ctx.put("users", users);
             OperationChain chain = new OperationChain("testChain");
-            chain.add(RunOperationOnList.ID).set("list", "users").set("id",
-                    "runOnList").set("isolate", "false");
+            chain.add(RunOperationOnList.ID).set("list", "users").set("id", "runOnList").set("isolate", "false");
             service.run(ctx, chain);
             String result = (String) ctx.get("result");
             assertEquals("foo, bar", result);
@@ -641,8 +601,7 @@ public class CoreOperationsTest {
             groups[1] = "tac";
             ctx.put("groups", groups);
             OperationChain chain = new OperationChain("testChain");
-            chain.add(RunOperationOnList.ID).set("list", "groups").set("id",
-                    "runOnList").set("isolate", "false");
+            chain.add(RunOperationOnList.ID).set("list", "groups").set("id", "runOnList").set("isolate", "false");
             service.run(ctx, chain);
             String result = (String) ctx.get("result");
             assertEquals("tic, tac", result);
@@ -658,8 +617,8 @@ public class CoreOperationsTest {
 
         chain = new OperationChain("testChain");
         // test that the global transaction is not marked for rollback
-        chain.add(RunInNewTransaction.ID).set("id", "testExitChain").set(
-                "isolate", "false").set("rollbackGlobalOnError", "false");
+        chain.add(RunInNewTransaction.ID).set("id", "testExitChain").set("isolate", "false").set(
+                "rollbackGlobalOnError", "false");
         try {
             service.run(ctx, chain);
         } finally {
@@ -667,8 +626,8 @@ public class CoreOperationsTest {
         }
 
         // test that the global transaction is marked for rollback
-        chain.add(RunInNewTransaction.ID).set("id", "testExitChain").set(
-                "isolate", "false").set("rollbackGlobalOnError", "true");
+        chain.add(RunInNewTransaction.ID).set("id", "testExitChain").set("isolate", "false").set(
+                "rollbackGlobalOnError", "true");
         try {
             service.run(ctx, chain);
         } catch (Exception e) {
@@ -699,12 +658,9 @@ public class CoreOperationsTest {
         // run the chain
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set(
-                "value", null);
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:format").set(
-                "value", "expr:empty");
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:language").set(
-                "value", "expr:null");
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value", null);
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:format").set("value", "expr:empty");
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:language").set("value", "expr:null");
         DocumentModel out = (DocumentModel) service.run(ctx, chain);
 
         // check values after

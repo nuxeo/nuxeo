@@ -27,8 +27,7 @@ import org.nuxeo.ecm.automation.TypeAdapter;
 public class IntegerToLong implements TypeAdapter {
 
     @Override
-    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
-            throws TypeAdaptException {
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         Integer content = (Integer) objectToAdapt;
         return Long.valueOf(content);
     }

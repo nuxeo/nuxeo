@@ -25,12 +25,10 @@ import org.nuxeo.ecm.automation.core.util.Properties;
 public class JsonNodeToProperties implements TypeAdapter {
 
     @Override
-    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
-            throws TypeAdaptException {
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
 
         JsonNode json = (JsonNode) objectToAdapt;
         Map<String, String> map = new HashMap<String, String>();
-
 
         Iterator<Entry<String, JsonNode>> it = json.getFields();
         while (it.hasNext()) {
@@ -41,13 +39,12 @@ public class JsonNodeToProperties implements TypeAdapter {
                 int size = value.size();
                 if (size == 0) {
                     map.put(key, null);
-                }
-                else if (size == 1) {
+                } else if (size == 1) {
                     map.put(key, value.get(0).getValueAsText());
                 } else {
-                    StringBuilder buf = new StringBuilder(size*32);
+                    StringBuilder buf = new StringBuilder(size * 32);
                     buf.append(value.get(0).getValueAsText());
-                    for (int i=1; i<size; i++) {
+                    for (int i = 1; i < size; i++) {
                         buf.append(',').append(value.get(i).getValueAsText());
                     }
                     map.put(key, buf.toString());

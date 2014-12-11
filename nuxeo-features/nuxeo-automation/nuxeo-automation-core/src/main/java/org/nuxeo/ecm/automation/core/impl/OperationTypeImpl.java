@@ -66,8 +66,7 @@ public class OperationTypeImpl implements OperationType {
     protected Class<?> type;
 
     /**
-     * Injectable parameters. a map between the parameter name and the Field
-     * object
+     * Injectable parameters. a map between the parameter name and the Field object
      */
     protected Map<String, Field> params;
 
@@ -89,20 +88,19 @@ public class OperationTypeImpl implements OperationType {
         this(service, type, null);
     }
 
-    public OperationTypeImpl(AutomationService service, Class<?> type,
-            String contributingComponent) {
+    public OperationTypeImpl(AutomationService service, Class<?> type, String contributingComponent) {
         this(service, type, contributingComponent, null);
     }
 
     /**
      * @since 5.9.5
      */
-    public OperationTypeImpl(AutomationService service, Class<?> type,
-            String contributingComponent, List<WidgetDefinition> widgetDefinitionList) {
+    public OperationTypeImpl(AutomationService service, Class<?> type, String contributingComponent,
+            List<WidgetDefinition> widgetDefinitionList) {
         Operation anno = type.getAnnotation(Operation.class);
         if (anno == null) {
-            throw new IllegalArgumentException("Invalid operation class: "
-                    + type + ". No @Operation annotation found on class.");
+            throw new IllegalArgumentException("Invalid operation class: " + type
+                    + ". No @Operation annotation found on class.");
         }
         this.service = service;
         this.type = type;
@@ -189,8 +187,7 @@ public class OperationTypeImpl implements OperationType {
     }
 
     @Override
-    public Object newInstance(OperationContext ctx, Map<String, Object> args)
-            throws Exception {
+    public Object newInstance(OperationContext ctx, Map<String, Object> args) throws Exception {
         Object obj = type.newInstance();
         inject(ctx, args, obj);
         return obj;
@@ -199,8 +196,8 @@ public class OperationTypeImpl implements OperationType {
     /**
      * @since 5.9.2
      */
-    protected Object resolveObject(final OperationContext ctx,
-            final String key, Map<String, Object> args) throws Exception {
+    protected Object resolveObject(final OperationContext ctx, final String key, Map<String, Object> args)
+            throws Exception {
         Object obj = args.get(key);
         if (obj instanceof Expression) {
             obj = ((Expression) obj).eval(ctx);
@@ -215,8 +212,7 @@ public class OperationTypeImpl implements OperationType {
         return obj;
     }
 
-    public void inject(OperationContext ctx, Map<String, Object> args,
-            Object target) throws Exception {
+    public void inject(OperationContext ctx, Map<String, Object> args, Object target) throws Exception {
         for (Map.Entry<String, Field> entry : params.entrySet()) {
             Object obj = resolveObject(ctx, entry.getKey(), args);
             if (obj == null) {
@@ -234,11 +230,8 @@ public class OperationTypeImpl implements OperationType {
             }
             if (obj == null) {
                 if (entry.getValue().getAnnotation(Param.class).required()) {
-                    throw new OperationException(
-                            "Failed to inject parameter '"
-                                    + entry.getKey()
-                                    + "'. Seems it is missing from the context. Operation: "
-                                    + getId());
+                    throw new OperationException("Failed to inject parameter '" + entry.getKey()
+                            + "'. Seems it is missing from the context. Operation: " + getId());
                 } // else do nothing
             } else {
                 Field field = entry.getValue();
@@ -321,8 +314,7 @@ public class OperationTypeImpl implements OperationType {
         ArrayList<String> result = new ArrayList<String>(methods.size() * 2);
         Collection<String> collectedSigs = new HashSet<String>();
         for (InvokableMethod m : methods) {
-            String in = getParamDocumentationType(m.getInputType(),
-                    m.isIterable());
+            String in = getParamDocumentationType(m.getInputType(), m.isIterable());
             String out = getParamDocumentationType(m.getOutputType());
             String sigKey = in + ":" + out;
             if (!collectedSigs.contains(sigKey)) {
@@ -333,8 +325,8 @@ public class OperationTypeImpl implements OperationType {
         }
         doc.signature = result.toArray(new String[result.size()]);
         // widgets descriptor
-        if (this.widgetDefinitionList != null) {
-            doc.widgetDefinitions = this.widgetDefinitionList.toArray(new WidgetDefinition[widgetDefinitionList.size()]);
+        if (widgetDefinitionList != null) {
+            doc.widgetDefinitions = widgetDefinitionList.toArray(new WidgetDefinition[widgetDefinitionList.size()]);
         }
         return doc;
     }
@@ -350,11 +342,9 @@ public class OperationTypeImpl implements OperationType {
 
     protected String getParamDocumentationType(Class<?> type, boolean isIterable) {
         String t;
-        if (DocumentModel.class.isAssignableFrom(type)
-                || DocumentRef.class.isAssignableFrom(type)) {
+        if (DocumentModel.class.isAssignableFrom(type) || DocumentRef.class.isAssignableFrom(type)) {
             t = isIterable ? Constants.T_DOCUMENTS : Constants.T_DOCUMENT;
-        } else if (DocumentModelList.class.isAssignableFrom(type)
-                || DocumentRefList.class.isAssignableFrom(type)) {
+        } else if (DocumentModelList.class.isAssignableFrom(type) || DocumentRefList.class.isAssignableFrom(type)) {
             t = Constants.T_DOCUMENTS;
         } else if (BlobList.class.isAssignableFrom(type)) {
             t = Constants.T_BLOBS;
@@ -372,13 +362,13 @@ public class OperationTypeImpl implements OperationType {
 
     @Override
     public String toString() {
-        return "OperationTypeImpl [id=" + id + ", type=" + type + ", params="
-                + params + "]";
+        return "OperationTypeImpl [id=" + id + ", type=" + type + ", params=" + params + "]";
     }
 
     /**
      * @since 5.7.2
      */
+    @Override
     public List<InvokableMethod> getMethods() {
         return methods;
     }

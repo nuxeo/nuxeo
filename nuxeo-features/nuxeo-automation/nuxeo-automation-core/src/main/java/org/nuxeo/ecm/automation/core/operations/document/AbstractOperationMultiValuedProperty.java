@@ -24,27 +24,22 @@ import org.nuxeo.ecm.core.schema.types.Type;
 public class AbstractOperationMultiValuedProperty {
 
     /**
-     * Check if the given field type store a list of values and if the given
-     * value is compatible with the given type.
-     * We assume the Type store a list of scalar values, not complex types.
+     * Check if the given field type store a list of values and if the given value is compatible with the given type. We
+     * assume the Type store a list of scalar values, not complex types.
      */
-    protected void checkFieldType(Type type, Object value)
-            throws OperationException {
+    protected void checkFieldType(Type type, Object value) throws OperationException {
         if (!type.isListType()) {
-            throw new OperationException(
-                    "Only multivalued String Types can be set using this operation");
+            throw new OperationException("Only multivalued String Types can be set using this operation");
         }
 
         ListType listType = (ListType) type;
         Type itemType = listType.getFieldType();
         if (itemType.isComplexType()) {
-            throw new UnsupportedOperationException(
-                    "Manage only lists of scalar items");
+            throw new UnsupportedOperationException("Manage only lists of scalar items");
         }
 
         if (!itemType.newInstance().getClass().equals(value.getClass())) {
-            throw new UnsupportedOperationException(String.format(
-                    "Given type \"%s\" value is not a %s type", value,
+            throw new UnsupportedOperationException(String.format("Given type \"%s\" value is not a %s type", value,
                     itemType.getName()));
         }
     }

@@ -27,18 +27,16 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 /**
  * @since 5.6
  */
-public class OperationTypeRegistry extends
-        ContributionFragmentRegistry<OperationType> {
+public class OperationTypeRegistry extends ContributionFragmentRegistry<OperationType> {
 
     /**
-     * Modifiable operation registry. Modifying the registry is using a lock
-     * and it's thread safe. Modifications are removing the cache.
+     * Modifiable operation registry. Modifying the registry is using a lock and it's thread safe. Modifications are
+     * removing the cache.
      */
     protected final Map<String, OperationType> operations = new HashMap<String, OperationType>();
 
     /**
-     * Read only cache for operation lookup. Thread safe. Not using
-     * synchronization if cache already created.
+     * Read only cache for operation lookup. Thread safe. Not using synchronization if cache already created.
      */
     protected volatile Map<String, OperationType> lookup;
 
@@ -47,19 +45,16 @@ public class OperationTypeRegistry extends
         return contrib.getId();
     }
 
-    public synchronized void addContribution(OperationType op, boolean replace)
-            throws OperationException {
+    public synchronized void addContribution(OperationType op, boolean replace) throws OperationException {
         if (!replace && operations.containsKey(op.getId())) {
-            throw new OperationException("An operation is already bound to: "
-                    + op.getId()
+            throw new OperationException("An operation is already bound to: " + op.getId()
                     + ". Use 'replace=true' to replace an existing operation");
         }
         super.addContribution(op);
     }
 
     @Override
-    public void contributionUpdated(String id, OperationType contrib,
-            OperationType newOrigContrib) {
+    public void contributionUpdated(String id, OperationType contrib, OperationType newOrigContrib) {
         operations.put(id, contrib);
         lookup = null;
     }

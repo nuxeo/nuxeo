@@ -31,14 +31,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * @deprecated since 6.0. Use instead {@link RunDocumentChain} with ID
- * 'Context.RunDocumentOperation'.
- *
- * Operation to run an operation chain in a separate transaction.
- * The existing transaction is committed before running the new transaction.
- *
+ * @deprecated since 6.0. Use instead {@link RunDocumentChain} with ID 'Context.RunDocumentOperation'. Operation to run
+ *             an operation chain in a separate transaction. The existing transaction is committed before running the
+ *             new transaction.
  * @since 5.6
  */
+@Deprecated
 @Operation(id = RunInNewTransaction.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run Document Chain in new Tx", description = "Run an operation chain in a separate tx. The 'parameters' injected are accessible in the subcontext ChainParameters. For instance, @{ChainParameters['parameterKey']}.", deprecatedSince = "6.0")
 public class RunInNewTransaction {
 
@@ -79,8 +77,7 @@ public class RunInNewTransaction {
         // commit the current transaction
         TransactionHelper.commitOrRollbackTransaction();
 
-        Map<String, Object> vars = isolate ? new HashMap<String, Object>(
-                ctx.getVars()) : ctx.getVars();
+        Map<String, Object> vars = isolate ? new HashMap<String, Object>(ctx.getVars()) : ctx.getVars();
 
         int to = timeout == null ? 0 : timeout.intValue();
 
@@ -116,9 +113,7 @@ public class RunInNewTransaction {
                 } else {
                     Object value = vars.get(varName);
                     if (value != null && value instanceof DocumentModel) {
-                        ctx.getVars().put(
-                                varName,
-                                session.getDocument(((DocumentModel) value).getRef()));
+                        ctx.getVars().put(varName, session.getDocument(((DocumentModel) value).getRef()));
                     } else {
                         ctx.getVars().put(varName, value);
                     }

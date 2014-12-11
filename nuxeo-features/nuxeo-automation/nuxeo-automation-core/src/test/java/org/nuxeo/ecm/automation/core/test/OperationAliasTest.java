@@ -59,9 +59,8 @@ public class OperationAliasTest {
     AutomationService service;
 
     /**
-     * Call an operation which has a parameter with an alias. Don't give the
-     * name of the parameter but its alias and check it is resolved thanks its
-     * alias.
+     * Call an operation which has a parameter with an alias. Don't give the name of the parameter but its alias and
+     * check it is resolved thanks its alias.
      *
      * @since 5.9.2
      */

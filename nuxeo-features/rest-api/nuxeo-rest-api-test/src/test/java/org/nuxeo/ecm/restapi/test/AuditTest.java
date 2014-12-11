@@ -66,17 +66,14 @@ public class AuditTest extends BaseTest {
     public void shouldRetrieveAllLogEntries() throws Exception {
         DocumentModel doc = RestServerInit.getFile(1, session);
 
-        ClientResponse response = getResponse(BaseTest.RequestType.GET, "id/"
-                + doc.getId() + "/@" + AuditAdapter.NAME);
+        ClientResponse response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId() + "/@" + AuditAdapter.NAME);
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         List<JsonNode> nodes = getLogEntries(node);
         assertEquals(2, nodes.size());
-        assertEquals("documentModified",
-                nodes.get(0).get("eventId").getValueAsText());
-        assertEquals("documentCreated",
-                nodes.get(1).get("eventId").getValueAsText());
+        assertEquals("documentModified", nodes.get(0).get("eventId").getValueAsText());
+        assertEquals("documentCreated", nodes.get(1).get("eventId").getValueAsText());
     }
 
     @Test
@@ -85,19 +82,17 @@ public class AuditTest extends BaseTest {
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("eventId", "documentModified");
-        ClientResponse response = getResponse(BaseTest.RequestType.GET, "id/"
-                + doc.getId() + "/@" + AuditAdapter.NAME, queryParams);
+        ClientResponse response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId() + "/@" + AuditAdapter.NAME,
+                queryParams);
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         List<JsonNode> nodes = getLogEntries(node);
         assertEquals(1, nodes.size());
-        assertEquals("documentModified",
-                nodes.get(0).get("eventId").getValueAsText());
+        assertEquals("documentModified", nodes.get(0).get("eventId").getValueAsText());
 
         queryParams.putSingle("principalName", "bender");
-        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId()
-                + "/@" + AuditAdapter.NAME, queryParams);
+        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
         nodes = getLogEntries(node);
@@ -110,8 +105,8 @@ public class AuditTest extends BaseTest {
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("principalName", "Administrator");
-        ClientResponse response = getResponse(BaseTest.RequestType.GET, "id/"
-                + doc.getId() + "/@" + AuditAdapter.NAME, queryParams);
+        ClientResponse response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId() + "/@" + AuditAdapter.NAME,
+                queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         List<JsonNode> nodes = getLogEntries(node);
@@ -119,8 +114,7 @@ public class AuditTest extends BaseTest {
 
         queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("principalName", "bender");
-        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId()
-                + "/@" + AuditAdapter.NAME, queryParams);
+        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
         nodes = getLogEntries(node);
@@ -155,8 +149,8 @@ public class AuditTest extends BaseTest {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("category", "One");
         queryParams.add("category", "Two");
-        ClientResponse response = getResponse(BaseTest.RequestType.GET, "id/"
-                + doc.getId() + "/@" + AuditAdapter.NAME, queryParams);
+        ClientResponse response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId() + "/@" + AuditAdapter.NAME,
+                queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         List<JsonNode> nodes = getLogEntries(node);
@@ -164,8 +158,7 @@ public class AuditTest extends BaseTest {
 
         queryParams = new MultivaluedMapImpl();
         queryParams.add("category", "Two");
-        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId()
-                + "/@" + AuditAdapter.NAME, queryParams);
+        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
         nodes = getLogEntries(node);
@@ -205,10 +198,9 @@ public class AuditTest extends BaseTest {
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("category", "One");
-        queryParams.add("startEventDate",
-                ISODateTimeFormat.date().print(firstDate.minusDays(1)));
-        ClientResponse response = getResponse(BaseTest.RequestType.GET, "id/"
-                + doc.getId() + "/@" + AuditAdapter.NAME, queryParams);
+        queryParams.add("startEventDate", ISODateTimeFormat.date().print(firstDate.minusDays(1)));
+        ClientResponse response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId() + "/@" + AuditAdapter.NAME,
+                queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         List<JsonNode> nodes = getLogEntries(node);
@@ -216,12 +208,9 @@ public class AuditTest extends BaseTest {
 
         queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("category", "One");
-        queryParams.add("startEventDate",
-                ISODateTimeFormat.date().print(firstDate.minusDays(1)));
-        queryParams.add("endEventDate",
-                ISODateTimeFormat.date().print(secondDate.minusDays(1)));
-        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId()
-                + "/@" + AuditAdapter.NAME, queryParams);
+        queryParams.add("startEventDate", ISODateTimeFormat.date().print(firstDate.minusDays(1)));
+        queryParams.add("endEventDate", ISODateTimeFormat.date().print(secondDate.minusDays(1)));
+        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
         nodes = getLogEntries(node);
@@ -229,12 +218,9 @@ public class AuditTest extends BaseTest {
 
         queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("category", "One");
-        queryParams.add("startEventDate",
-                ISODateTimeFormat.date().print(firstDate.plusDays(1)));
-        queryParams.add("endEventDate",
-                ISODateTimeFormat.date().print(secondDate.plusDays(1)));
-        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId()
-                + "/@" + AuditAdapter.NAME, queryParams);
+        queryParams.add("startEventDate", ISODateTimeFormat.date().print(firstDate.plusDays(1)));
+        queryParams.add("endEventDate", ISODateTimeFormat.date().print(secondDate.plusDays(1)));
+        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
         nodes = getLogEntries(node);
@@ -285,8 +271,8 @@ public class AuditTest extends BaseTest {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("category", "One");
         queryParams.add("principalName", "leela");
-        ClientResponse response = getResponse(BaseTest.RequestType.GET, "id/"
-                + doc.getId() + "/@" + AuditAdapter.NAME, queryParams);
+        ClientResponse response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId() + "/@" + AuditAdapter.NAME,
+                queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         List<JsonNode> nodes = getLogEntries(node);
@@ -296,8 +282,7 @@ public class AuditTest extends BaseTest {
         queryParams.putSingle("category", "One");
         queryParams.add("principalName", "leela");
         queryParams.add("eventId", "thirdEvent");
-        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId()
-                + "/@" + AuditAdapter.NAME, queryParams);
+        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
         nodes = getLogEntries(node);
@@ -307,12 +292,9 @@ public class AuditTest extends BaseTest {
         queryParams.putSingle("category", "One");
         queryParams.add("principalName", "leela");
         queryParams.add("eventId", "thirdEvent");
-        queryParams.add("startEventDate",
-                ISODateTimeFormat.date().print(firstDate.plusDays(1)));
-        queryParams.add("endEventDate",
-                ISODateTimeFormat.date().print(secondDate.minus(1)));
-        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId()
-                + "/@" + AuditAdapter.NAME, queryParams);
+        queryParams.add("startEventDate", ISODateTimeFormat.date().print(firstDate.plusDays(1)));
+        queryParams.add("endEventDate", ISODateTimeFormat.date().print(secondDate.minus(1)));
+        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
         nodes = getLogEntries(node);
@@ -361,8 +343,8 @@ public class AuditTest extends BaseTest {
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("category", "One");
-        ClientResponse response = getResponse(BaseTest.RequestType.GET, "id/"
-                + doc.getId() + "/@" + AuditAdapter.NAME, queryParams);
+        ClientResponse response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId() + "/@" + AuditAdapter.NAME,
+                queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         List<JsonNode> nodes = getLogEntries(node);
@@ -372,8 +354,7 @@ public class AuditTest extends BaseTest {
         queryParams.putSingle("category", "One");
         queryParams.putSingle("currentPageIndex", "0");
         queryParams.putSingle("pageSize", "2");
-        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId()
-                + "/@" + AuditAdapter.NAME, queryParams);
+        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
         assertTrue(node.get("isPaginable").getBooleanValue());
@@ -383,15 +364,13 @@ public class AuditTest extends BaseTest {
         nodes = getLogEntries(node);
         assertEquals(2, nodes.size());
         assertEquals("sixthEvent", nodes.get(0).get("eventId").getValueAsText());
-        assertEquals("fifthEvent",
-                nodes.get(1).get("eventId").getValueAsText());
+        assertEquals("fifthEvent", nodes.get(1).get("eventId").getValueAsText());
 
         queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("category", "One");
         queryParams.putSingle("currentPageIndex", "1");
         queryParams.putSingle("pageSize", "3");
-        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId()
-                + "/@" + AuditAdapter.NAME, queryParams);
+        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
         assertTrue(node.get("isPaginable").getBooleanValue());
@@ -400,8 +379,7 @@ public class AuditTest extends BaseTest {
         assertEquals(2, node.get("numberOfPages").getIntValue());
         nodes = getLogEntries(node);
         assertEquals(3, nodes.size());
-        assertEquals("thirdEvent",
-                nodes.get(0).get("eventId").getValueAsText());
+        assertEquals("thirdEvent", nodes.get(0).get("eventId").getValueAsText());
         assertEquals("secondEvent", nodes.get(1).get("eventId").getValueAsText());
         assertEquals("firstEvent", nodes.get(2).get("eventId").getValueAsText());
 
@@ -409,8 +387,7 @@ public class AuditTest extends BaseTest {
         queryParams.putSingle("category", "One");
         queryParams.putSingle("currentPageIndex", "2");
         queryParams.putSingle("pageSize", "3");
-        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId()
-                + "/@" + AuditAdapter.NAME, queryParams);
+        response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
         nodes = getLogEntries(node);

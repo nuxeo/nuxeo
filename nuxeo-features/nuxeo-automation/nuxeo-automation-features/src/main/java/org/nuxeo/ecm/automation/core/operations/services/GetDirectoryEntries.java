@@ -123,8 +123,7 @@ public class GetDirectoryEntries {
         if (key == null) {
             return "";
         }
-        return I18NUtils.getMessageString("messages", key, new Object[0],
-                getLocale());
+        return I18NUtils.getMessageString("messages", key, new Object[0], getLocale());
     }
 
 }

@@ -28,8 +28,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @WebAdapter(name = SearchAdapter.NAME, type = "SearchService")
@@ -38,15 +36,14 @@ public class SearchAdapter extends DocumentModelListPaginableAdapter {
 
     public static final String NAME = "search";
 
-    public static final  String pageProviderName = "REST_API_SEARCH_ADAPTER";
+    public static final String pageProviderName = "REST_API_SEARCH_ADAPTER";
 
     private String extractQueryFromRequest(final HttpServletRequest request) {
         String query = request.getParameter("query");
         if (query == null) {
             String fullText = request.getParameter("fullText");
             if (fullText == null) {
-                throw new IllegalParameterException(
-                        "Expecting a query or a fullText parameter");
+                throw new IllegalParameterException("Expecting a query or a fullText parameter");
             }
             String orderBy = request.getParameter("orderBy");
             String orderClause = "";
@@ -61,10 +58,8 @@ public class SearchAdapter extends DocumentModelListPaginableAdapter {
             } else {
                 path = doc.getPath().removeLastSegments(1).toString();
             }
-            query = "SELECT * FROM Document WHERE (ecm:fulltext = \""
-                    + fullText
-                    + "\") AND (ecm:isCheckedInVersion = 0) AND (ecm:path STARTSWITH \""
-                    + path + "\")" + orderClause;
+            query = "SELECT * FROM Document WHERE (ecm:fulltext = \"" + fullText
+                    + "\") AND (ecm:isCheckedInVersion = 0) AND (ecm:path STARTSWITH \"" + path + "\")" + orderClause;
         }
         return query;
     }
@@ -77,12 +72,10 @@ public class SearchAdapter extends DocumentModelListPaginableAdapter {
         PageProviderDefinition ppdefinition = ppService.getPageProviderDefinition(pageProviderName);
         ppdefinition.setPattern(query);
 
-        if (maxResults != null && !maxResults.isEmpty()
-                && !maxResults.equals("-1")) {
+        if (maxResults != null && !maxResults.isEmpty() && !maxResults.equals("-1")) {
             // set the maxResults to avoid slowing down queries
             ppdefinition.getProperties().put("maxResults", maxResults);
         }
         return ppdefinition;
     }
 }
-

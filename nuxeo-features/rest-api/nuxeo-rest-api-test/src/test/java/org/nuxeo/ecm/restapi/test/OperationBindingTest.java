@@ -26,10 +26,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.trace.Trace;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
@@ -42,7 +40,6 @@ import org.nuxeo.ecm.restapi.server.jaxrs.adapters.OperationAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.blob.BlobAdapter;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -89,9 +86,8 @@ public class OperationBindingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i call the REST binding on the document resource
-        ClientResponse response = getResponse(RequestType.POSTREQUEST, "id/"
-                + note.getId() + "/@" + OperationAdapter.NAME + "/testOp",
-                PARAMS);
+        ClientResponse response = getResponse(RequestType.POSTREQUEST, "id/" + note.getId() + "/@"
+                + OperationAdapter.NAME + "/testOp", PARAMS);
 
         // Then the operation is called on the document
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -99,8 +95,7 @@ public class OperationBindingTest extends BaseTest {
         Trace trace = factory.getTrace("testOp");
         assertEquals(1, trace.getCalls().size());
 
-        Map parameters = (Map) trace.getCalls().get(0).getVariables().get(
-                Constants.VAR_RUNTIME_CHAIN);
+        Map parameters = (Map) trace.getCalls().get(0).getVariables().get(Constants.VAR_RUNTIME_CHAIN);
 
         assertEquals("1", parameters.get("one"));
         assertEquals(2, parameters.get("two"));
@@ -113,9 +108,8 @@ public class OperationBindingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i call the REST binding on the document resource
-        ClientResponse response = getResponse(RequestType.POSTREQUEST, "id/"
-                + note.getId() + "/@" + OperationAdapter.NAME + "/testChain",
-                "{}");
+        ClientResponse response = getResponse(RequestType.POSTREQUEST, "id/" + note.getId() + "/@"
+                + OperationAdapter.NAME + "/testChain", "{}");
 
         // Then the operation is called twice on the document
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -143,8 +137,8 @@ public class OperationBindingTest extends BaseTest {
 
         // When i call the REST binding on the children resource
 
-        getResponse(RequestType.POSTREQUEST, "id/" + folder.getId()
-                + "/@children/@" + OperationAdapter.NAME + "/testOp", PARAMS);
+        getResponse(RequestType.POSTREQUEST, "id/" + folder.getId() + "/@children/@" + OperationAdapter.NAME
+                + "/testOp", PARAMS);
 
         // Then the operation is called on all children documents
         Trace trace = factory.getTrace("testOp");
@@ -160,9 +154,8 @@ public class OperationBindingTest extends BaseTest {
         DocumentModel file = RestServerInit.getFile(1, session);
 
         // When i call the REST binding on the blob resource
-        getResponse(RequestType.POSTREQUEST, "id/" + file.getId() + "/@"
-                + BlobAdapter.NAME + "/file:content/@" + OperationAdapter.NAME
-                + "/testOp", PARAMS);
+        getResponse(RequestType.POSTREQUEST, "id/" + file.getId() + "/@" + BlobAdapter.NAME + "/file:content/@"
+                + OperationAdapter.NAME + "/testOp", PARAMS);
 
         // Then the operation is called on a document blob
         Trace trace = factory.getTrace("testOp");
@@ -170,12 +163,10 @@ public class OperationBindingTest extends BaseTest {
     }
 
     @Test
-    public void automationResourceIsAlsoAvailableBehindAPIRoot()
-            throws Exception {
+    public void automationResourceIsAlsoAvailableBehindAPIRoot() throws Exception {
         ClientConfig config = new DefaultClientConfig();
         Client client = Client.create(config);
-        client.addFilter(new HTTPBasicAuthFilter("Administrator",
-                "Administrator"));
+        client.addFilter(new HTTPBasicAuthFilter("Administrator", "Administrator"));
         WebResource wr = client.resource("http://localhost:18090/api/v1/automation/doc");
 
         Builder builder = wr.accept(MediaType.TEXT_HTML);
@@ -188,8 +179,7 @@ public class OperationBindingTest extends BaseTest {
      * @since 7.1
      */
     @Test
-    public void itShouldReturnCustomHttpStatusWhenSuccess()
-            throws Exception {
+    public void itShouldReturnCustomHttpStatusWhenSuccess() throws Exception {
         String param = "{\"params\":{\"isFailing\":\"false\"}}";
         ClientResponse response = getResponse(RequestType.POSTREQUEST,
                 "@" + OperationAdapter.NAME + "/Test.HttpStatus", param);
@@ -200,8 +190,7 @@ public class OperationBindingTest extends BaseTest {
      * @since 7.1
      */
     @Test
-    public void itShouldReturnCustomHttpStatusWhenFailure()
-            throws Exception {
+    public void itShouldReturnCustomHttpStatusWhenFailure() throws Exception {
         String param = "{\"params\":{\"isFailing\":\"true\"}}";
         ClientResponse response = getResponse(RequestType.POSTREQUEST,
                 "@" + OperationAdapter.NAME + "/Test.HttpStatus", param);

@@ -32,13 +32,10 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @WebObject(type = "users")
-@Produces({ MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_JSON + "+nxentity" })
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
 public class UserRootObject extends AbstractUMRootObject<NuxeoPrincipal> {
 
     public static final String PAGE_PROVIDER_NAME = "nuxeo_principals_listing";
@@ -54,33 +51,28 @@ public class UserRootObject extends AbstractUMRootObject<NuxeoPrincipal> {
     }
 
     @Override
-    protected void checkPrecondition(NuxeoPrincipal principal)
-            throws ClientException {
+    protected void checkPrecondition(NuxeoPrincipal principal) throws ClientException {
         checkCurrentUserCanCreateArtifact(principal);
         checkPrincipalDoesNotAlreadyExists(principal, um);
         checkPrincipalHasAName(principal);
     }
 
     @Override
-    protected NuxeoPrincipal createArtifact(NuxeoPrincipal principal)
-            throws ClientException {
+    protected NuxeoPrincipal createArtifact(NuxeoPrincipal principal) throws ClientException {
         um.createUser(principal.getModel());
         return um.getPrincipal(principal.getName());
     }
 
-    private void checkPrincipalDoesNotAlreadyExists(NuxeoPrincipal principal,
-            UserManager um) throws ClientException {
+    private void checkPrincipalDoesNotAlreadyExists(NuxeoPrincipal principal, UserManager um) throws ClientException {
         NuxeoPrincipal user = um.getPrincipal(principal.getName());
         if (user != null) {
-            throw new WebException("User already exists",
-                    Response.Status.PRECONDITION_FAILED.getStatusCode());
+            throw new WebException("User already exists", Response.Status.PRECONDITION_FAILED.getStatusCode());
         }
     }
 
     private void checkPrincipalHasAName(NuxeoPrincipal principal) {
         if (principal.getName() == null) {
-            throw new WebException("User MUST have a name",
-                    Response.Status.PRECONDITION_FAILED.getStatusCode());
+            throw new WebException("User MUST have a name", Response.Status.PRECONDITION_FAILED.getStatusCode());
         }
     }
 

@@ -54,16 +54,14 @@ public class TestDataModelProperties {
         doc.setPropertyValue("dc:title", "Doc1");
         doc.setPropertyValue("dc:description", "desc1");
         doc.setPropertyValue("dc:source", "source1");
-        doc.setPropertyValue("dc:subjects", new String[] { "subject1",
-                "subject2" });
+        doc.setPropertyValue("dc:subjects", new String[] { "subject1", "subject2" });
         doc = session.createDocument(doc);
         session.save();
     }
 
     @Test
     public void shouldWorkWithDocumentModel() throws ClientException {
-        DataModelProperties properties = new DataModelProperties(
-                doc.getDataModel("dublincore"));
+        DataModelProperties properties = new DataModelProperties(doc.getDataModel("dublincore"));
         Map<String, Serializable> map = properties.getMap();
         assertFalse(map.isEmpty());
 
@@ -82,8 +80,7 @@ public class TestDataModelProperties {
         SimpleDocumentModel documentModel = new SimpleDocumentModel();
         documentModel.setPropertyValue("dc:title", "Doc2");
         documentModel.setPropertyValue("dc:description", "desc2");
-        documentModel.setPropertyValue("dc:subjects", new String[] {
-                "subject1", "subject2" });
+        documentModel.setPropertyValue("dc:subjects", new String[] { "subject1", "subject2" });
 
         DataModelProperties properties = new DataModelProperties();
         for (String schema : documentModel.getSchemas()) {

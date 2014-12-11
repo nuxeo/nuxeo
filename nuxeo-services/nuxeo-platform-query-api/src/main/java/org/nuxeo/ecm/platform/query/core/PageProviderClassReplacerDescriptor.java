@@ -30,8 +30,7 @@ import org.nuxeo.ecm.platform.query.api.PageProviderClassReplacerDefinition;
  * @since 6.0
  */
 @XObject(value = "replacer")
-public class PageProviderClassReplacerDescriptor implements
-        PageProviderClassReplacerDefinition {
+public class PageProviderClassReplacerDescriptor implements PageProviderClassReplacerDefinition {
     private static final long serialVersionUID = 1L;
 
     @XNode("@withClass")

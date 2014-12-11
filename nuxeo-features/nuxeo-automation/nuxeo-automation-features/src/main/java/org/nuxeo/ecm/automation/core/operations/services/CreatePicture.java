@@ -63,21 +63,21 @@ public class CreatePicture {
     protected static final Log log = LogFactory.getLog(CreatePicture.class);
 
     protected ArrayList<Map<String, Object>> computePictureTemplates() {
-        if (pictureTemplates==null || pictureTemplates.size()==0) {
+        if (pictureTemplates == null || pictureTemplates.size() == 0) {
             return null;
         }
-        ArrayList<Map<String, Object>> templates = new ArrayList<Map<String,Object>>();
+        ArrayList<Map<String, Object>> templates = new ArrayList<Map<String, Object>>();
 
         try {
             ObjectMapper mapper = new ObjectMapper();
 
-            //for (String templateDef : pictureTemplates) {
-            for(String name : pictureTemplates.keySet()) {
+            // for (String templateDef : pictureTemplates) {
+            for (String name : pictureTemplates.keySet()) {
                 String templateDef = pictureTemplates.get(name);
                 JsonNode node = mapper.readTree(templateDef);
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("tag", name);
-                Iterator<Entry<String, JsonNode>> it =  node.getFields();
+                Iterator<Entry<String, JsonNode>> it = node.getFields();
                 while (it.hasNext()) {
                     Entry<String, JsonNode> entry = it.next();
                     if (entry.getValue().isInt() || entry.getValue().isLong()) {
@@ -105,8 +105,7 @@ public class CreatePicture {
 
         ArrayList<Map<String, Object>> templates = computePictureTemplates();
 
-        DocumentModel newDoc = session.createDocumentModel(
-                doc.getPathAsString(), name, "Picture");
+        DocumentModel newDoc = session.createDocumentModel(doc.getPathAsString(), name, "Picture");
         if (content != null) {
             DocumentHelper.setProperties(session, newDoc, content);
         }
@@ -120,8 +119,7 @@ public class CreatePicture {
                 log.warn("Unable to read Blob from properties");
             } else {
                 PictureResourceAdapter adapter = picture.getAdapter(PictureResourceAdapter.class);
-                adapter.fillPictureViews(blob, blob.getFilename(),
-                        picture.getTitle(), templates);
+                adapter.fillPictureViews(blob, blob.getFilename(), picture.getTitle(), templates);
                 picture = session.saveDocument(picture);
             }
         }

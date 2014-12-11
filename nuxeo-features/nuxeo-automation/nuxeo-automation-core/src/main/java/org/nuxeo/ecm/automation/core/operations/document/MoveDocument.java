@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = MoveDocument.ID, category = Constants.CAT_DOCUMENT, label = "Move", description = "Move the input document into the target folder.")
@@ -39,7 +38,7 @@ public class MoveDocument {
     @Param(name = "name", required = false)
     protected String name;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         String n = name;
         if (name == null || name.length() == 0) {
@@ -48,7 +47,7 @@ public class MoveDocument {
         return session.move(doc.getRef(), target, n);
     }
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentRef ref) throws Exception {
         String n = name;
         if (name == null || name.length() == 0) {

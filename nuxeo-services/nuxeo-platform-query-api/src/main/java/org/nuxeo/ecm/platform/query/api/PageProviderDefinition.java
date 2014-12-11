@@ -24,8 +24,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.SortInfo;
 
 /**
- * Page provider descriptor interface handling all attributes common to a
- * {@link PageProvider} generation.
+ * Page provider descriptor interface handling all attributes common to a {@link PageProvider} generation.
  *
  * @author Anahide Tchertchian
  * @since 5.4
@@ -61,8 +60,7 @@ public interface PageProviderDefinition extends Serializable {
     WhereClauseDefinition getWhereClause();
 
     /**
-     * Returns the search document type used for wher clause, aggregates and
-     * named parameters.
+     * Returns the search document type used for wher clause, aggregates and named parameters.
      *
      * @since 6.0
      */

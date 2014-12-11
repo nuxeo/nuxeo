@@ -28,16 +28,14 @@ import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor;
 public class OperationContribution {
 
     /**
-     * The operation class that must be annotated using {@link Operation}
-     * annotation.
+     * The operation class that must be annotated using {@link Operation} annotation.
      */
     @XNode("@class")
     public Class<?> type;
 
     /**
-     * Put it to true to override an existing contribution having the same ID.
-     * By default overriding is not permitted and an exception is thrown when
-     * this flag is on false.
+     * Put it to true to override an existing contribution having the same ID. By default overriding is not permitted
+     * and an exception is thrown when this flag is on false.
      */
     @XNode("@replace")
     public boolean replace;

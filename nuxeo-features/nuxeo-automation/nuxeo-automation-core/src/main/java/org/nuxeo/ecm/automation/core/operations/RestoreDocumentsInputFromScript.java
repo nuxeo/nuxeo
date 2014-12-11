@@ -26,8 +26,7 @@ import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- * Run a script and return the result documents object of the script the output
- * of the operation
+ * Run a script and return the result documents object of the script the output of the operation
  *
  * @since 5.6
  */

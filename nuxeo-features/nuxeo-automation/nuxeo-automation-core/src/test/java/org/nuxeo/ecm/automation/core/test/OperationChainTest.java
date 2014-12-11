@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
-
 import java.util.Calendar;
 
 import org.junit.runner.RunWith;
@@ -79,8 +78,7 @@ public class OperationChainTest {
         session.removeChildren(session.getRootDocument().getRef());
     }
 
-    protected void assertContextOk(OperationContext ctx, String chain,
-            String message, String title) {
+    protected void assertContextOk(OperationContext ctx, String chain, String message, String title) {
         assertEquals(chain, ctx.get("chain"));
         assertEquals(message, ctx.get("message"));
         assertEquals(title, ctx.get("title"));
@@ -100,10 +98,8 @@ public class OperationChainTest {
      * message : &quot;Hello 1!,Hello 2!,Hello 3!&quot;
      * title : &quot;Source,Source,Source&quot;
      * </pre>
-     *
      * <p>
-     * This is testing a chain having multiple choices and one choice having a
-     * higher priority.
+     * This is testing a chain having multiple choices and one choice having a higher priority.
      */
     @Test
     public void testChain1() throws Exception {
@@ -118,8 +114,7 @@ public class OperationChainTest {
 
         service.run(ctx, chain);
 
-        assertContextOk(ctx, "O1:doc:doc,O2:doc:ref,O1:ref:doc",
-                "Hello 1!,Hello 2!,Hello 3!", "Source,Source,Source");
+        assertContextOk(ctx, "O1:doc:doc,O2:doc:ref,O1:ref:doc", "Hello 1!,Hello 2!,Hello 3!", "Source,Source,Source");
     }
 
     /**
@@ -134,8 +129,7 @@ public class OperationChainTest {
 
         service.run(ctx, "mychain");
 
-        assertContextOk(ctx, "O1:doc:doc,O2:doc:ref,O1:ref:doc",
-                "Hello 1!,Hello 2!,Hello 3!", "Source,Source,Source");
+        assertContextOk(ctx, "O1:doc:doc,O2:doc:ref,O1:ref:doc", "Hello 1!,Hello 2!,Hello 3!", "Source,Source,Source");
     }
 
     /**
@@ -160,11 +154,9 @@ public class OperationChainTest {
      * message : &quot;Hello 1!,Hello 2!,Hello 3!&quot;
      * title : &quot;Source,Source,Source&quot;
      * </pre>
-     *
      * <p>
-     * This test is using the same chain as in the previous test but changes the
-     * input to DocumentRef. This is also testing matching on derived classes
-     * (since the IdRef used is a subclass of DocumentRef)
+     * This test is using the same chain as in the previous test but changes the input to DocumentRef. This is also
+     * testing matching on derived classes (since the IdRef used is a subclass of DocumentRef)
      */
     @Test
     public void testChain2() throws Exception {
@@ -178,8 +170,7 @@ public class OperationChainTest {
 
         service.run(ctx, chain);
 
-        assertContextOk(ctx, "O1:ref:doc,O2:doc:ref,O1:ref:doc",
-                "Hello 1!,Hello 2!,Hello 3!", "Source,Source,Source");
+        assertContextOk(ctx, "O1:ref:doc,O2:doc:ref,O1:ref:doc", "Hello 1!,Hello 2!,Hello 3!", "Source,Source,Source");
     }
 
     /**
@@ -193,12 +184,10 @@ public class OperationChainTest {
      * message : &quot;Hello 1!,Hello 2!,Hello 3!&quot;
      * title : &quot;Source,Source,Source&quot;
      * </pre>
-     *
      * <p>
-     * This is testing a chain having multiple choices. You can see that the
-     * second operation in chain (O3) provides 2 ways of processing a 'doc'. But
-     * the 'O3:doc:doc' way will be selected since the other way (e.g.
-     * O3:doc:ref) cannot generate a complete chain path.
+     * This is testing a chain having multiple choices. You can see that the second operation in chain (O3) provides 2
+     * ways of processing a 'doc'. But the 'O3:doc:doc' way will be selected since the other way (e.g. O3:doc:ref)
+     * cannot generate a complete chain path.
      */
     @Test
     public void testChain3() throws Exception {
@@ -212,8 +201,7 @@ public class OperationChainTest {
 
         service.run(ctx, chain);
 
-        assertContextOk(ctx, "O1:doc:doc,O3:doc:doc,O3:doc:doc",
-                "Hello 1!,Hello 2!,Hello 3!", "Source,Source,Source");
+        assertContextOk(ctx, "O1:doc:doc,O3:doc:doc,O3:doc:doc", "Hello 1!,Hello 2!,Hello 3!", "Source,Source,Source");
     }
 
     /**
@@ -234,14 +222,13 @@ public class OperationChainTest {
 
         service.run(ctx, chain);
 
-        assertContextOk(ctx, "O1:doc:doc,O3:doc:doc,ctrl:void:void,O3:doc:doc",
-                "Hello 1!,Hello 2!,Control!,Hello 3!",
+        assertContextOk(ctx, "O1:doc:doc,O3:doc:doc,ctrl:void:void,O3:doc:doc", "Hello 1!,Hello 2!,Control!,Hello 3!",
                 "Source,Source,Source,Source");
     }
 
     /**
-     * This is testing the parameter expressions. If you set an operation
-     * parameter that point to 'var:principal' it will return
+     * This is testing the parameter expressions. If you set an operation parameter that point to 'var:principal' it
+     * will return
      *
      * @throws Exception
      */
@@ -252,8 +239,7 @@ public class OperationChainTest {
         SimplePrincipal principal = new SimplePrincipal("Hello from Context!");
         ctx.put("messageHolder", principal);
         OperationChain chain = new OperationChain("testChain");
-        chain.add("o1").set("message",
-                new MvelExpression("Context[\"messageHolder\"].name"));
+        chain.add("o1").set("message", new MvelExpression("Context[\"messageHolder\"].name"));
 
         service.run(ctx, chain);
 
@@ -272,10 +258,7 @@ public class OperationChainTest {
         SimplePrincipal principal = new SimplePrincipal("Context");
         ctx.put("messageHolder", principal);
         OperationChain chain = new OperationChain("testChain");
-        chain.add("o1").set(
-                "message",
-                new MvelTemplate(
-                        "Hello from @{Context[\"messageHolder\"].name}!"));
+        chain.add("o1").set("message", new MvelTemplate("Hello from @{Context[\"messageHolder\"].name}!"));
 
         service.run(ctx, chain);
 
@@ -283,9 +266,8 @@ public class OperationChainTest {
     }
 
     /**
-     * This is testing an invalid chain. The last operation in the chain accepts
-     * as input only Principal which is never produced by the previous
-     * operations in the chain.
+     * This is testing an invalid chain. The last operation in the chain accepts as input only Principal which is never
+     * produced by the previous operations in the chain.
      *
      * @throws Exception
      */
@@ -310,8 +292,7 @@ public class OperationChainTest {
     }
 
     /**
-     * When using a null context input an exception must be thrown if the first
-     * operation doesn't accept void input.
+     * When using a null context input an exception must be thrown if the first operation doesn't accept void input.
      */
     @Test
     public void testInvalidInput() throws Exception {
@@ -355,8 +336,7 @@ public class OperationChainTest {
 
         service.run(ctx, chain);
 
-        assertContextOk(ctx, "V1:void:doc,V1:doc:doc,V2:void:doc",
-                "Hello 1!,Hello 2!,Hello 3!", ",/,/");
+        assertContextOk(ctx, "V1:void:doc,V1:doc:doc,V2:void:doc", "Hello 1!,Hello 2!,Hello 3!", ",/,/");
     }
 
     /**
@@ -385,8 +365,7 @@ public class OperationChainTest {
 
         service.run(ctx, chain);
 
-        assertContextOk(ctx, "A1:void:docref,A1:doc:doc", "Hello 1!,Hello 2!",
-                "/,/");
+        assertContextOk(ctx, "A1:void:docref,A1:doc:doc", "Hello 1!,Hello 2!", "/,/");
     }
 
     /**
@@ -419,9 +398,8 @@ public class OperationChainTest {
     }
 
     /**
-     * This is testing optional parameters. Operation2 has an optional 'message'
-     * parameter. If this is not specified in the operation parameter map the
-     * default value will be used which is 'default message'.
+     * This is testing optional parameters. Operation2 has an optional 'message' parameter. If this is not specified in
+     * the operation parameter map the default value will be used which is 'default message'.
      *
      * @throws Exception
      */
@@ -439,9 +417,8 @@ public class OperationChainTest {
     }
 
     /**
-     * This is testing required parameters. Operation1 has a required 'message'
-     * parameter. If this is not specified in the operation parameter map an
-     * exception must be thrown.
+     * This is testing required parameters. Operation1 has a required 'message' parameter. If this is not specified in
+     * the operation parameter map an exception must be thrown.
      *
      * @throws Exception
      */
@@ -462,9 +439,8 @@ public class OperationChainTest {
     }
 
     /**
-     * This is testing adapters when injecting parameters. Operation 4 is taking
-     * a DocumentModel parameter. We will inject a DocumentRef to test DocRef to
-     * DocModel adapter.
+     * This is testing adapters when injecting parameters. Operation 4 is taking a DocumentModel parameter. We will
+     * inject a DocumentRef to test DocRef to DocModel adapter.
      *
      * @throws Exception
      */
@@ -483,9 +459,8 @@ public class OperationChainTest {
     }
 
     /**
-     * Set a context variable from the title of the input document and use it in
-     * the next operation (by returning it) This is also testing boolean
-     * injection.
+     * Set a context variable from the title of the input document and use it in the next operation (by returning it)
+     * This is also testing boolean injection.
      *
      * @throws Exception
      */
@@ -495,8 +470,7 @@ public class OperationChainTest {
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
-        chain.add(SetVar.ID).set("name", "myvar").set("value",
-                Scripting.newExpression("Document['dc:title']"));
+        chain.add(SetVar.ID).set("name", "myvar").set("value", Scripting.newExpression("Document['dc:title']"));
         chain.add("GetVar").set("name", "myvar").set("flag", true);
 
         Object out = service.run(ctx, chain);
@@ -519,8 +493,7 @@ public class OperationChainTest {
 
     @Test
     public void testCopyDates() throws Exception {
-        DocumentModel doc = session.createDocumentModel(src.getPathAsString(),
-                "testDoc", "Folder");
+        DocumentModel doc = session.createDocumentModel(src.getPathAsString(), "testDoc", "Folder");
         doc.setPropertyValue("dc:title", "TestDoc");
         doc = session.createDocument(doc);
         session.save();

@@ -40,8 +40,7 @@ public class TestPageProvider {
         checkStandardPageProvider(new MockPageProvider(5, 13, false), false);
     }
 
-    protected void checkStandardPageProvider(
-            PageProvider<MockPagedListItem> provider, boolean knowsResultCount) {
+    protected void checkStandardPageProvider(PageProvider<MockPagedListItem> provider, boolean knowsResultCount) {
 
         checkFirstPage(provider, knowsResultCount);
         provider.nextPage();
@@ -142,15 +141,13 @@ public class TestPageProvider {
 
     }
 
-    protected void checkFirstPage(PageProvider<MockPagedListItem> provider,
-            boolean knowsResultCount) {
+    protected void checkFirstPage(PageProvider<MockPagedListItem> provider, boolean knowsResultCount) {
         assertEquals(5, provider.getPageSize());
         if (knowsResultCount) {
             assertEquals(13, provider.getResultsCount());
             assertEquals(3, provider.getNumberOfPages());
         } else {
-            assertEquals(PageProvider.UNKNOWN_SIZE_AFTER_QUERY,
-                    provider.getResultsCount());
+            assertEquals(PageProvider.UNKNOWN_SIZE_AFTER_QUERY, provider.getResultsCount());
             assertEquals(0, provider.getNumberOfPages());
         }
         List<MockPagedListItem> currentItems = provider.getCurrentPage();
@@ -169,15 +166,13 @@ public class TestPageProvider {
         assertTrue(provider.isNextPageAvailable());
     }
 
-    protected void checkSecondPage(PageProvider<MockPagedListItem> provider,
-            boolean knowsResultCount) {
+    protected void checkSecondPage(PageProvider<MockPagedListItem> provider, boolean knowsResultCount) {
         assertEquals(5, provider.getPageSize());
         if (knowsResultCount) {
             assertEquals(13, provider.getResultsCount());
             assertEquals(3, provider.getNumberOfPages());
         } else {
-            assertEquals(PageProvider.UNKNOWN_SIZE_AFTER_QUERY,
-                    provider.getResultsCount());
+            assertEquals(PageProvider.UNKNOWN_SIZE_AFTER_QUERY, provider.getResultsCount());
             assertEquals(0, provider.getNumberOfPages());
         }
         List<MockPagedListItem> currentItems = provider.getCurrentPage();
@@ -196,15 +191,13 @@ public class TestPageProvider {
         assertTrue(provider.isNextPageAvailable());
     }
 
-    protected void checkThirdPage(PageProvider<MockPagedListItem> provider,
-            boolean knowsResultCount) {
+    protected void checkThirdPage(PageProvider<MockPagedListItem> provider, boolean knowsResultCount) {
         assertEquals(5, provider.getPageSize());
         if (knowsResultCount) {
             assertEquals(13, provider.getResultsCount());
             assertEquals(3, provider.getNumberOfPages());
         } else {
-            assertEquals(PageProvider.UNKNOWN_SIZE_AFTER_QUERY,
-                    provider.getResultsCount());
+            assertEquals(PageProvider.UNKNOWN_SIZE_AFTER_QUERY, provider.getResultsCount());
             assertEquals(0, provider.getNumberOfPages());
         }
         List<MockPagedListItem> currentItems = provider.getCurrentPage();
@@ -235,25 +228,22 @@ public class TestPageProvider {
 
     @Test
     public void testPageProviderWithPageSizeSameThanResultSize() {
-        checkPageProviderWithPageSizeSameThanResultSize(new MockPageProvider(5,
-                10, true), true);
+        checkPageProviderWithPageSizeSameThanResultSize(new MockPageProvider(5, 10, true), true);
     }
 
     @Test
     public void testPageProviderWithPageSizeSameThanResultSizeNoResultsCount() {
-        checkPageProviderWithPageSizeSameThanResultSize(new MockPageProvider(5,
-                10, false), false);
+        checkPageProviderWithPageSizeSameThanResultSize(new MockPageProvider(5, 10, false), false);
     }
 
-    protected void checkPageProviderWithPageSizeSameThanResultSize(
-            PageProvider<MockPagedListItem> provider, boolean knowsResultCount) {
+    protected void checkPageProviderWithPageSizeSameThanResultSize(PageProvider<MockPagedListItem> provider,
+            boolean knowsResultCount) {
         assertEquals(5, provider.getPageSize());
         if (knowsResultCount) {
             assertEquals(10, provider.getResultsCount());
             assertEquals(2, provider.getNumberOfPages());
         } else {
-            assertEquals(PageProvider.UNKNOWN_SIZE_AFTER_QUERY,
-                    provider.getResultsCount());
+            assertEquals(PageProvider.UNKNOWN_SIZE_AFTER_QUERY, provider.getResultsCount());
             assertEquals(0, provider.getNumberOfPages());
         }
         assertEquals(0, provider.getCurrentPageIndex());
@@ -286,24 +276,20 @@ public class TestPageProvider {
 
     @Test
     public void testPageProviderWithoutPagination() {
-        checkPageProviderWithoutPagination(new MockPageProvider(0, 13, true),
-                true);
+        checkPageProviderWithoutPagination(new MockPageProvider(0, 13, true), true);
     }
 
     @Test
     public void testPageProviderWithoutPaginationNoResultsCount() {
-        checkPageProviderWithoutPagination(new MockPageProvider(0, 13, false),
-                false);
+        checkPageProviderWithoutPagination(new MockPageProvider(0, 13, false), false);
     }
 
-    public void checkPageProviderWithoutPagination(
-            PageProvider<MockPagedListItem> provider, boolean knowsResultCount) {
+    public void checkPageProviderWithoutPagination(PageProvider<MockPagedListItem> provider, boolean knowsResultCount) {
         assertEquals(0, provider.getPageSize());
         if (knowsResultCount) {
             assertEquals(13, provider.getResultsCount());
         } else {
-            assertEquals(PageProvider.UNKNOWN_SIZE_AFTER_QUERY,
-                    provider.getResultsCount());
+            assertEquals(PageProvider.UNKNOWN_SIZE_AFTER_QUERY, provider.getResultsCount());
         }
         assertEquals(1, provider.getNumberOfPages());
         assertEquals(0, provider.getCurrentPageIndex());
@@ -331,26 +317,18 @@ public class TestPageProvider {
     public void testMinMaxPageSize() {
         // only set page size => should fallback on default max page size
         assertEquals(20, getMinMaxPageSize(Long.valueOf(20), null));
-        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
-                getMinMaxPageSize(Long.valueOf(2000), null));
-        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
-                getMinMaxPageSize(Long.valueOf(3000), null));
-        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
-                getMinMaxPageSize(null, null));
-        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
-                getMinMaxPageSize(Long.valueOf(0), null));
-        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
-                getMinMaxPageSize(Long.valueOf(-1), null));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE, getMinMaxPageSize(Long.valueOf(2000), null));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE, getMinMaxPageSize(Long.valueOf(3000), null));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE, getMinMaxPageSize(null, null));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE, getMinMaxPageSize(Long.valueOf(0), null));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE, getMinMaxPageSize(Long.valueOf(-1), null));
         // set max page size to 200
         assertEquals(20, getMinMaxPageSize(Long.valueOf(20), Long.valueOf(200)));
-        assertEquals(200,
-                getMinMaxPageSize(Long.valueOf(200), Long.valueOf(200)));
-        assertEquals(200,
-                getMinMaxPageSize(Long.valueOf(500), Long.valueOf(200)));
+        assertEquals(200, getMinMaxPageSize(Long.valueOf(200), Long.valueOf(200)));
+        assertEquals(200, getMinMaxPageSize(Long.valueOf(500), Long.valueOf(200)));
         assertEquals(200, getMinMaxPageSize(null, Long.valueOf(200)));
         assertEquals(200, getMinMaxPageSize(Long.valueOf(0), Long.valueOf(200)));
-        assertEquals(200,
-                getMinMaxPageSize(Long.valueOf(-1), Long.valueOf(200)));
+        assertEquals(200, getMinMaxPageSize(Long.valueOf(-1), Long.valueOf(200)));
         // set max page size to 0 (unlimited)
         assertEquals(20, getMinMaxPageSize(Long.valueOf(20), Long.valueOf(0)));
         assertEquals(200, getMinMaxPageSize(Long.valueOf(200), Long.valueOf(0)));
@@ -361,16 +339,11 @@ public class TestPageProvider {
         // extreme case that should never happen (set max page size to negative
         // number)
         assertEquals(20, getMinMaxPageSize(Long.valueOf(20), Long.valueOf(-1)));
-        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
-                getMinMaxPageSize(Long.valueOf(2000), Long.valueOf(-1)));
-        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
-                getMinMaxPageSize(Long.valueOf(1000), Long.valueOf(-1)));
-        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
-                getMinMaxPageSize(null, Long.valueOf(-1)));
-        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
-                getMinMaxPageSize(Long.valueOf(0), Long.valueOf(-1)));
-        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
-                getMinMaxPageSize(Long.valueOf(-1), Long.valueOf(-1)));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE, getMinMaxPageSize(Long.valueOf(2000), Long.valueOf(-1)));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE, getMinMaxPageSize(Long.valueOf(1000), Long.valueOf(-1)));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE, getMinMaxPageSize(null, Long.valueOf(-1)));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE, getMinMaxPageSize(Long.valueOf(0), Long.valueOf(-1)));
+        assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE, getMinMaxPageSize(Long.valueOf(-1), Long.valueOf(-1)));
     }
 
     protected long getMinMaxPageSize(Long pageSize, Long maxPageSize) {
@@ -400,8 +373,7 @@ public class TestPageProvider {
         assertTrue(listener.hasPageChanged);
     }
 
-    public static class DummyPageProviderChangedListener implements
-            PageProviderChangedListener {
+    public static class DummyPageProviderChangedListener implements PageProviderChangedListener {
 
         public boolean hasPageChanged = false;
 

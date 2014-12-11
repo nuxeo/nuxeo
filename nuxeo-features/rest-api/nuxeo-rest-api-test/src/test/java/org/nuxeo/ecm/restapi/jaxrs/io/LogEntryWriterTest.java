@@ -42,8 +42,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 /**
- *
- *
  * @since 5.8
  */
 
@@ -60,8 +58,7 @@ public class LogEntryWriterTest {
 
     @Before
     public void doBefore() throws Exception {
-        DocumentModel doc = session.createDocumentModel("/", "folder1",
-                "Folder");
+        DocumentModel doc = session.createDocumentModel("/", "folder1", "Folder");
         session.createDocument(doc);
 
         for (int i = 0; i < 3; i++) {

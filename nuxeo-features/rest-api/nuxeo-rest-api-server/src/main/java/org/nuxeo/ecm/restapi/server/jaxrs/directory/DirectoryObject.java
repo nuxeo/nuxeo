@@ -48,8 +48,6 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @WebObject(type = "directoryObject")
@@ -61,16 +59,13 @@ public class DirectoryObject extends DefaultObject {
     @Override
     protected void initialize(Object... args) {
         if (args.length < 1) {
-            throw new IllegalArgumentException(
-                    "Directory Object takes one parameter");
+            throw new IllegalArgumentException("Directory Object takes one parameter");
         }
         try {
             String dirName = (String) args[0];
-            directory = Framework.getLocalService(DirectoryService.class).getDirectory(
-                    dirName);
+            directory = Framework.getLocalService(DirectoryService.class).getDirectory(dirName);
             if (directory == null) {
-                throw new WebResourceNotFoundException("Directory " + dirName
-                        + " was not found");
+                throw new WebResourceNotFoundException("Directory " + dirName + " was not found");
             }
         } catch (DirectoryException e) {
             throw WebException.wrap(e);
@@ -79,46 +74,39 @@ public class DirectoryObject extends DefaultObject {
 
     @GET
     public List<DirectoryEntry> getDirectoryEntries() {
-        return withDirectorySession(directory,
-                new DirectorySessionRunner<List<DirectoryEntry>>() {
+        return withDirectorySession(directory, new DirectorySessionRunner<List<DirectoryEntry>>() {
 
-                    @Override
-                    List<DirectoryEntry> run(Session session)
-                            throws ClientException {
-                        DocumentModelList entries = session.getEntries();
-                        List<DirectoryEntry> dirEntries = new ArrayList<>();
-                        for (DocumentModel doc : entries) {
-                            dirEntries.add(new DirectoryEntry(
-                                    directory.getName(), doc));
-                        }
-                        return dirEntries;
-                    }
-                });
+            @Override
+            List<DirectoryEntry> run(Session session) throws ClientException {
+                DocumentModelList entries = session.getEntries();
+                List<DirectoryEntry> dirEntries = new ArrayList<>();
+                for (DocumentModel doc : entries) {
+                    dirEntries.add(new DirectoryEntry(directory.getName(), doc));
+                }
+                return dirEntries;
+            }
+        });
 
     }
 
     @POST
     public Response addEntry(final DirectoryEntry entry) {
         checkEditGuards();
-        DirectoryEntry result = withDirectorySession(directory,
-                new DirectorySessionRunner<DirectoryEntry>() {
+        DirectoryEntry result = withDirectorySession(directory, new DirectorySessionRunner<DirectoryEntry>() {
 
-                    @Override
-                    DirectoryEntry run(Session session) throws ClientException {
-                        DocumentModel docEntry = session.createEntry(entry.getDocumentModel());
-                        return new DirectoryEntry(directory.getName(), docEntry);
-                    }
-                });
+            @Override
+            DirectoryEntry run(Session session) throws ClientException {
+                DocumentModel docEntry = session.createEntry(entry.getDocumentModel());
+                return new DirectoryEntry(directory.getName(), docEntry);
+            }
+        });
 
         return Response.ok(result).status(Status.CREATED).build();
     }
 
-
-
     void checkEditGuards() {
         NuxeoPrincipal currentUser = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
-        if (!(currentUser.isAdministrator()
-                || currentUser.isMemberOf("powerusers"))) {
+        if (!(currentUser.isAdministrator() || currentUser.isMemberOf("powerusers"))) {
             throw new WebSecurityException("Not allowed to edit directory");
         }
 
@@ -135,23 +123,19 @@ public class DirectoryObject extends DefaultObject {
     }
 
     @Path("{entryId}")
-    public Object getEntry(@PathParam("entryId")
-    final String entryId) {
+    public Object getEntry(@PathParam("entryId") final String entryId) {
 
-        return withDirectorySession(directory,
-                new DirectorySessionRunner<Object>() {
+        return withDirectorySession(directory, new DirectorySessionRunner<Object>() {
 
-                    @Override
-                    Object run(Session session) throws ClientException {
-                        DocumentModel entry = session.getEntry(entryId);
-                        if (entry == null) {
-                            throw new WebResourceNotFoundException(
-                                    "Entry not found");
-                        }
-                        return newObject("directoryEntry", new DirectoryEntry(
-                                directory.getName(), entry));
-                    }
-                });
+            @Override
+            Object run(Session session) throws ClientException {
+                DocumentModel entry = session.getEntry(entryId);
+                if (entry == null) {
+                    throw new WebResourceNotFoundException("Entry not found");
+                }
+                return newObject("directoryEntry", new DirectoryEntry(directory.getName(), entry));
+            }
+        });
 
     }
 
