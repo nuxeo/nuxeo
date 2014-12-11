@@ -24,8 +24,7 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
  */
 public class NuxeoRelationship extends NuxeoObject implements Relationship {
 
-    public NuxeoRelationship(NuxeoSession session, NuxeoObjectData data,
-            ObjectType type) {
+    public NuxeoRelationship(NuxeoSession session, NuxeoObjectData data, ObjectType type) {
         super(session, data, type);
     }
 
@@ -38,15 +37,13 @@ public class NuxeoRelationship extends NuxeoObject implements Relationship {
     @Override
     public CmisObject getSource() {
         String id = getPropertyValue(PropertyIds.SOURCE_ID);
-        return id == null ? null
-                : session.getObject(session.createObjectId(id));
+        return id == null ? null : session.getObject(session.createObjectId(id));
     }
 
     @Override
     public CmisObject getSource(OperationContext context) {
         String id = getPropertyValue(PropertyIds.SOURCE_ID);
-        return id == null ? null : session.getObject(
-                session.createObjectId(id), context);
+        return id == null ? null : session.getObject(session.createObjectId(id), context);
     }
 
     @Override
@@ -58,15 +55,13 @@ public class NuxeoRelationship extends NuxeoObject implements Relationship {
     @Override
     public CmisObject getTarget() {
         String id = getPropertyValue(PropertyIds.TARGET_ID);
-        return id == null ? null
-                : session.getObject(session.createObjectId(id));
+        return id == null ? null : session.getObject(session.createObjectId(id));
     }
 
     @Override
     public CmisObject getTarget(OperationContext context) {
         String id = getPropertyValue(PropertyIds.TARGET_ID);
-        return id == null ? null : session.getObject(
-                session.createObjectId(id), context);
+        return id == null ? null : session.getObject(session.createObjectId(id), context);
     }
 
 }

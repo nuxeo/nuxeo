@@ -48,8 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Subclass NuxeoCmisBrowserBindingServlet to inject a virtual-hosted base URL
- * if needed.
+ * Subclass NuxeoCmisBrowserBindingServlet to inject a virtual-hosted base URL if needed.
  */
 public class NuxeoCmisBrowserBindingServlet extends CmisBrowserBindingServlet {
 
@@ -60,12 +59,11 @@ public class NuxeoCmisBrowserBindingServlet extends CmisBrowserBindingServlet {
     public static final NuxeoBrowserServiceCall CALL = new NuxeoBrowserServiceCall();
 
     @Override
-    protected void service(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+            IOException {
         String baseUrl = VirtualHostHelper.getBaseURL(request);
         if (baseUrl != null) {
-            baseUrl = StringUtils.stripEnd(baseUrl, "/")
-                    + request.getServletPath() + "/"
+            baseUrl = StringUtils.stripEnd(baseUrl, "/") + request.getServletPath() + "/"
                     + AbstractBrowserServiceCall.REPOSITORY_PLACEHOLDER + "/";
             request.setAttribute(Dispatcher.BASE_URL_ATTRIBUTE, baseUrl);
         }
@@ -77,7 +75,6 @@ public class NuxeoCmisBrowserBindingServlet extends CmisBrowserBindingServlet {
      *
      * @param ex the exception
      * @return the error info
-     *
      * @since 7.1
      */
     protected ErrorInfo extractError(Exception ex) {
@@ -85,12 +82,10 @@ public class NuxeoCmisBrowserBindingServlet extends CmisBrowserBindingServlet {
     }
 
     @Override
-    public void printError(CallContext context, Exception ex,
-            HttpServletRequest request, HttpServletResponse response) {
+    public void printError(CallContext context, Exception ex, HttpServletRequest request, HttpServletResponse response) {
         ErrorInfo errorInfo = extractError(ex);
         if (response.isCommitted()) {
-            LOG.warn("Failed to send error message to client. "
-                    + "Response is already committed.", ex);
+            LOG.warn("Failed to send error message to client. " + "Response is already committed.", ex);
             return;
         }
 
@@ -131,18 +126,15 @@ public class NuxeoCmisBrowserBindingServlet extends CmisBrowserBindingServlet {
             response.setContentLength(0);
 
             if (context != null) {
-                CALL.setCookie(request, response, context.getRepositoryId(),
-                        token, CALL.createCookieValue(errorInfo.statusCode,
-                                null, errorInfo.exceptionName, ex.getMessage()));
+                CALL.setCookie(request, response, context.getRepositoryId(), token,
+                        CALL.createCookieValue(errorInfo.statusCode, null, errorInfo.exceptionName, ex.getMessage()));
             }
         }
     }
 
     // this class exists in order to call AbstractBrowserServiceCall methods
-    public static class NuxeoBrowserServiceCall extends
-            AbstractBrowserServiceCall {
-        public void serve(CallContext context, CmisService service,
-                String repositoryId, HttpServletRequest request,
+    public static class NuxeoBrowserServiceCall extends AbstractBrowserServiceCall {
+        public void serve(CallContext context, CmisService service, String repositoryId, HttpServletRequest request,
                 HttpServletResponse response) throws Exception {
             // no implementation
         }

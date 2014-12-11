@@ -38,8 +38,7 @@ import org.apache.chemistry.opencmis.server.support.TypeManager;
 /**
  * Manages a type system for a repository.
  * <p>
- * Types can be added, the inheritance can be managed and type can be retrieved
- * for a given type id.
+ * Types can be added, the inheritance can be managed and type can be retrieved for a given type id.
  * <p>
  * Structures are not copied when returned.
  */
@@ -78,8 +77,7 @@ public class TypeManagerImpl implements TypeManager {
         return null;
     }
 
-    public TypeDefinitionList getTypeChildren(String typeId,
-            Boolean includePropertyDefinitions, BigInteger maxItems,
+    public TypeDefinitionList getTypeChildren(String typeId, Boolean includePropertyDefinitions, BigInteger maxItems,
             BigInteger skipCount) {
         TypeDefinitionContainer typec;
         if (typeId == null) {
@@ -88,8 +86,7 @@ public class TypeManagerImpl implements TypeManager {
         } else {
             typec = typesMap.get(typeId);
             if (typec == null) {
-                throw new CmisInvalidArgumentException("No such type: "
-                        + typeId);
+                throw new CmisInvalidArgumentException("No such type: " + typeId);
             }
         }
         List<TypeDefinitionContainer> types;
@@ -115,13 +112,11 @@ public class TypeManagerImpl implements TypeManager {
             }
             list.add(type);
         }
-        list = ListUtils.batchList(list, maxItems, skipCount,
-                DEFAULT_MAX_TYPE_CHILDREN);
+        list = ListUtils.batchList(list, maxItems, skipCount, DEFAULT_MAX_TYPE_CHILDREN);
         return new TypeDefinitionListImpl(list);
     }
 
-    public List<TypeDefinitionContainer> getTypeDescendants(String typeId,
-            int depth, Boolean includePropertyDefinitions) {
+    public List<TypeDefinitionContainer> getTypeDescendants(String typeId, int depth, Boolean includePropertyDefinitions) {
         List<TypeDefinitionContainer> types;
         boolean includeProps = Boolean.TRUE.equals(includePropertyDefinitions);
         if (typeId == null) {
@@ -139,12 +134,10 @@ public class TypeManagerImpl implements TypeManager {
         } else {
             TypeDefinitionContainer typec = typesMap.get(typeId);
             if (typec == null) {
-                throw new CmisInvalidArgumentException("No such type: "
-                        + typeId);
+                throw new CmisInvalidArgumentException("No such type: " + typeId);
             }
             if (depth == 0 || depth < -1) {
-                throw new CmisInvalidArgumentException("Invalid depth: "
-                        + depth);
+                throw new CmisInvalidArgumentException("Invalid depth: " + depth);
             }
             if (depth == -1) {
                 types = typec.getChildren();
@@ -178,10 +171,8 @@ public class TypeManagerImpl implements TypeManager {
         List<TypeDefinitionContainer> rootTypes = new ArrayList<TypeDefinitionContainer>();
         for (TypeDefinitionContainer type : typesMap.values()) {
             String id = type.getTypeDefinition().getId();
-            if (BaseTypeId.CMIS_DOCUMENT.value().equals(id)
-                    || BaseTypeId.CMIS_FOLDER.value().equals(id)
-                    || BaseTypeId.CMIS_RELATIONSHIP.value().equals(id)
-                    || BaseTypeId.CMIS_POLICY.value().equals(id)) {
+            if (BaseTypeId.CMIS_DOCUMENT.value().equals(id) || BaseTypeId.CMIS_FOLDER.value().equals(id)
+                    || BaseTypeId.CMIS_RELATIONSHIP.value().equals(id) || BaseTypeId.CMIS_POLICY.value().equals(id)) {
                 rootTypes.add(type);
             }
         }
@@ -189,40 +180,35 @@ public class TypeManagerImpl implements TypeManager {
     }
 
     /**
-     * Add a type to the type system. Add type to children of parent types.
-     * If specified, add all properties from inherited types.,
+     * Add a type to the type system. Add type to children of parent types. If specified, add all properties from
+     * inherited types.,
      *
      * @param type new type to add
      * @param addInheritedProperties
      */
     @Override
-    public void addTypeDefinition(TypeDefinition type,
-            boolean addInheritedProperties) {
+    public void addTypeDefinition(TypeDefinition type, boolean addInheritedProperties) {
         String id = type.getId();
         if (typesMap.containsKey(id)) {
             throw new RuntimeException("Type already exists: " + id);
         }
 
-        TypeDefinitionContainer typeContainer = new TypeDefinitionContainerImpl(
-                type);
+        TypeDefinitionContainer typeContainer = new TypeDefinitionContainerImpl(type);
         // add type to type map
         typesMap.put(id, typeContainer);
 
         String parentId = type.getParentTypeId();
         if (parentId != null) {
             if (!typesMap.containsKey(parentId)) {
-                throw new RuntimeException("Cannot add type " + id
-                        + ", parent does not exist: " + parentId);
+                throw new RuntimeException("Cannot add type " + id + ", parent does not exist: " + parentId);
             }
             TypeDefinitionContainer parentTypeContainer = typesMap.get(parentId);
             // add new type to children of parent types
             parentTypeContainer.getChildren().add(typeContainer);
             if (addInheritedProperties) {
                 // recursively add inherited properties
-                Map<String, PropertyDefinition<?>> propDefs =
-                        typeContainer.getTypeDefinition().getPropertyDefinitions();
-                addInheritedProperties(propDefs,
-                        parentTypeContainer.getTypeDefinition());
+                Map<String, PropertyDefinition<?>> propDefs = typeContainer.getTypeDefinition().getPropertyDefinitions();
+                addInheritedProperties(propDefs, parentTypeContainer.getTypeDefinition());
             }
         }
 
@@ -232,8 +218,7 @@ public class TypeManagerImpl implements TypeManager {
             String propId = pd.getId();
             String old = propQueryNameToId.put(propQueryName, propId);
             if (old != null && !old.equals(propId)) {
-                throw new RuntimeException("Cannot add type " + id
-                        + ", query name " + propQueryName
+                throw new RuntimeException("Cannot add type " + id + ", query name " + propQueryName
                         + " already used for property id " + old);
             }
         }
@@ -244,8 +229,7 @@ public class TypeManagerImpl implements TypeManager {
     }
 
     @Override
-    public String getPropertyIdForQueryName(TypeDefinition typeDefinition,
-            String propQueryName) {
+    public String getPropertyIdForQueryName(TypeDefinition typeDefinition, String propQueryName) {
         for (PropertyDefinition<?> pd : typeDefinition.getPropertyDefinitions().values()) {
             if (pd.getQueryName().equals(propQueryName)) {
                 return pd.getId();
@@ -258,21 +242,17 @@ public class TypeManagerImpl implements TypeManager {
         return propQueryNameToId.get(propQueryName);
     }
 
-    protected void addInheritedProperties(
-            Map<String, PropertyDefinition<?>> propDefs, TypeDefinition type) {
+    protected void addInheritedProperties(Map<String, PropertyDefinition<?>> propDefs, TypeDefinition type) {
         if (type.getPropertyDefinitions() != null) {
-            addInheritedPropertyDefinitions(propDefs,
-                    type.getPropertyDefinitions());
+            addInheritedPropertyDefinitions(propDefs, type.getPropertyDefinitions());
         }
         TypeDefinitionContainer parentTypeContainer = typesMap.get(type.getParentTypeId());
         if (parentTypeContainer != null) {
-            addInheritedProperties(propDefs,
-                    parentTypeContainer.getTypeDefinition());
+            addInheritedProperties(propDefs, parentTypeContainer.getTypeDefinition());
         }
     }
 
-    protected void addInheritedPropertyDefinitions(
-            Map<String, PropertyDefinition<?>> propDefs,
+    protected void addInheritedPropertyDefinitions(Map<String, PropertyDefinition<?>> propDefs,
             Map<String, PropertyDefinition<?>> superPropDefs) {
         for (PropertyDefinition<?> superPropDef : superPropDefs.values()) {
             PropertyDefinition<?> clone = WSConverter.convert(WSConverter.convert(superPropDef));
@@ -284,22 +264,17 @@ public class TypeManagerImpl implements TypeManager {
     /**
      * Returns a clone of a types tree.
      * <p>
-     * Removes properties on the clone if requested, cuts the children of the
-     * clone if the depth is exceeded.
+     * Removes properties on the clone if requested, cuts the children of the clone if the depth is exceeded.
      */
-    protected static List<TypeDefinitionContainer> cloneTypes(
-            List<TypeDefinitionContainer> types, int depth,
+    protected static List<TypeDefinitionContainer> cloneTypes(List<TypeDefinitionContainer> types, int depth,
             boolean includePropertyDefinitions) {
-        List<TypeDefinitionContainer> res = new ArrayList<TypeDefinitionContainer>(
-                types.size());
+        List<TypeDefinitionContainer> res = new ArrayList<TypeDefinitionContainer>(types.size());
         TypeDefinitionFactory tdFactory = TypeDefinitionFactory.newInstance();
         for (TypeDefinitionContainer tc : types) {
-            MutableTypeDefinition td = tdFactory.copy(tc.getTypeDefinition(),
-                    includePropertyDefinitions);
+            MutableTypeDefinition td = tdFactory.copy(tc.getTypeDefinition(), includePropertyDefinitions);
             TypeDefinitionContainerImpl clone = new TypeDefinitionContainerImpl(td);
             if (depth != 0) {
-                clone.setChildren(cloneTypes(tc.getChildren(), depth - 1,
-                        includePropertyDefinitions));
+                clone.setChildren(cloneTypes(tc.getChildren(), depth - 1, includePropertyDefinitions));
             }
             res.add(clone);
         }

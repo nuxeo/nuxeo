@@ -49,43 +49,37 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
  */
 public class NuxeoFolder extends NuxeoFileableObject implements Folder {
 
-    public NuxeoFolder(NuxeoSession session, NuxeoObjectData data,
-            ObjectType type) {
+    public NuxeoFolder(NuxeoSession session, NuxeoObjectData data, ObjectType type) {
         super(session, data, type);
     }
 
     @Override
-    public Document createDocument(Map<String, ?> properties,
-            ContentStream contentStream, VersioningState versioningState) {
-        return createDocument(properties, contentStream, versioningState, null,
-                null, null, session.getDefaultContext());
+    public Document createDocument(Map<String, ?> properties, ContentStream contentStream,
+            VersioningState versioningState) {
+        return createDocument(properties, contentStream, versioningState, null, null, null, session.getDefaultContext());
     }
 
     @Override
-    public Document createDocument(Map<String, ?> properties,
-            ContentStream contentStream, VersioningState versioningState,
-            List<Policy> policies, List<Ace> addAces, List<Ace> removeAces,
+    public Document createDocument(Map<String, ?> properties, ContentStream contentStream,
+            VersioningState versioningState, List<Policy> policies, List<Ace> addAces, List<Ace> removeAces,
             OperationContext context) {
-        String id = service.createDocument(getRepositoryId(),
-                session.convertProperties(properties), getId(), contentStream,
-                versioningState, objectFactory.convertPolicies(policies),
-                objectFactory.convertAces(addAces),
-                objectFactory.convertAces(removeAces), null);
+        String id = service.createDocument(getRepositoryId(), session.convertProperties(properties), getId(),
+                contentStream, versioningState, objectFactory.convertPolicies(policies),
+                objectFactory.convertAces(addAces), objectFactory.convertAces(removeAces), null);
         // must now refetch doc
         return (Document) session.getObject(new ObjectIdImpl(id), context);
     }
 
     @Override
-    public NuxeoDocument createDocumentFromSource(ObjectId source,
-            Map<String, ?> properties, VersioningState versioningState) {
-        return createDocumentFromSource(source, properties, versioningState,
-                null, null, null, session.getDefaultContext());
+    public NuxeoDocument createDocumentFromSource(ObjectId source, Map<String, ?> properties,
+            VersioningState versioningState) {
+        return createDocumentFromSource(source, properties, versioningState, null, null, null,
+                session.getDefaultContext());
     }
 
     @Override
-    public NuxeoDocument createDocumentFromSource(ObjectId source,
-            Map<String, ?> properties, VersioningState versioningState,
-            List<Policy> policies, List<Ace> addACEs, List<Ace> removeACEs,
+    public NuxeoDocument createDocumentFromSource(ObjectId source, Map<String, ?> properties,
+            VersioningState versioningState, List<Policy> policies, List<Ace> addACEs, List<Ace> removeACEs,
             OperationContext context) {
         if (source == null || source.getId() == null) {
             throw new CmisInvalidArgumentException("Invalid source: " + source);
@@ -93,60 +87,50 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
         if (context == null) {
             context = session.getDefaultContext();
         }
-        NuxeoObjectData newData = nuxeoCmisService.copy(source.getId(), getId(),
-                properties, type, versioningState, policies, addACEs,
-                removeACEs, context);
-        return (NuxeoDocument) session.getObjectFactory().convertObject(
-                newData, context);
+        NuxeoObjectData newData = nuxeoCmisService.copy(source.getId(), getId(), properties, type, versioningState,
+                policies, addACEs, removeACEs, context);
+        return (NuxeoDocument) session.getObjectFactory().convertObject(newData, context);
     }
 
     @Override
     public Folder createFolder(Map<String, ?> properties) {
-        return createFolder(properties, null, null, null,
-                session.getDefaultContext());
+        return createFolder(properties, null, null, null, session.getDefaultContext());
     }
 
     @Override
-    public Folder createFolder(Map<String, ?> properties,
-            List<Policy> policies, List<Ace> addAces, List<Ace> removeAces,
-            OperationContext context) {
+    public Folder createFolder(Map<String, ?> properties, List<Policy> policies, List<Ace> addAces,
+            List<Ace> removeAces, OperationContext context) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     @Override
     public Policy createPolicy(Map<String, ?> properties) {
-        return createPolicy(properties, null, null, null,
-                session.getDefaultContext());
+        return createPolicy(properties, null, null, null, session.getDefaultContext());
     }
 
     @Override
-    public Policy createPolicy(Map<String, ?> properties,
-            List<Policy> policies, List<Ace> addAces, List<Ace> removeAces,
-            OperationContext context) {
+    public Policy createPolicy(Map<String, ?> properties, List<Policy> policies, List<Ace> addAces,
+            List<Ace> removeAces, OperationContext context) {
         throw new CmisNotSupportedException();
     }
 
     @Override
     public Item createItem(Map<String, ?> properties) {
-        return createItem(properties, null, null, null,
-                session.getDefaultContext());
+        return createItem(properties, null, null, null, session.getDefaultContext());
     }
 
     @Override
-    public Item createItem(Map<String, ?> properties, List<Policy> policies,
-            List<Ace> addAces, List<Ace> removeAces, OperationContext context) {
+    public Item createItem(Map<String, ?> properties, List<Policy> policies, List<Ace> addAces, List<Ace> removeAces,
+            OperationContext context) {
         throw new CmisNotSupportedException();
     }
 
     @Override
-    public List<String> deleteTree(boolean allVersions, UnfileObject unfile,
-            boolean continueOnFailure) {
-        FailedToDeleteData failed = service.deleteTree(getRepositoryId(),
-                getId(), Boolean.valueOf(allVersions), unfile,
-                Boolean.valueOf(continueOnFailure), null);
-        if (failed == null || failed.getIds() == null
-                || failed.getIds().isEmpty()) {
+    public List<String> deleteTree(boolean allVersions, UnfileObject unfile, boolean continueOnFailure) {
+        FailedToDeleteData failed = service.deleteTree(getRepositoryId(), getId(), Boolean.valueOf(allVersions),
+                unfile, Boolean.valueOf(continueOnFailure), null);
+        if (failed == null || failed.getIds() == null || failed.getIds().isEmpty()) {
             return null;
         }
         return failed.getIds();
@@ -176,15 +160,13 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
 
     @Override
     public ItemIterable<CmisObject> getChildren(final OperationContext context) {
-        AbstractPageFetcher<CmisObject> pageFetcher = new AbstractPageFetcher<CmisObject>(
-                context.getMaxItemsPerPage()) {
+        AbstractPageFetcher<CmisObject> pageFetcher = new AbstractPageFetcher<CmisObject>(context.getMaxItemsPerPage()) {
             @Override
             protected Page<CmisObject> fetchPage(long skipCount) {
                 List<CmisObject> items = new ArrayList<CmisObject>();
                 DocumentModelList children;
                 try {
-                    children = nuxeoCmisService.getCoreSession().getChildren(
-                            data.doc.getRef());
+                    children = nuxeoCmisService.getCoreSession().getChildren(data.doc.getRef());
                 } catch (ClientException e) {
                     throw new CmisRuntimeException(e.toString(), e);
                 }
@@ -203,13 +185,11 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
                     if (items.size() > maxNumItems) {
                         continue;
                     }
-                    NuxeoObjectData data = new NuxeoObjectData(service, child,
-                            context);
+                    NuxeoObjectData data = new NuxeoObjectData(service, child, context);
                     CmisObject ob = objectFactory.convertObject(data, context);
                     items.add(ob);
                 }
-                return new Page<CmisObject>(items, totalItems,
-                        totalItems > skipCount + items.size());
+                return new Page<CmisObject>(items, totalItems, totalItems > skipCount + items.size());
             }
         };
         return new CollectionIterable<CmisObject>(pageFetcher);
@@ -222,8 +202,7 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
     }
 
     @Override
-    public List<Tree<FileableCmisObject>> getDescendants(int depth,
-            OperationContext context) {
+    public List<Tree<FileableCmisObject>> getDescendants(int depth, OperationContext context) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -244,8 +223,7 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
     public String getParentId() {
         try {
             CoreSession coreSession = data.doc.getCoreSession();
-            DocumentModel parent = coreSession.getParentDocument(new IdRef(
-                    getId()));
+            DocumentModel parent = coreSession.getParentDocument(new IdRef(getId()));
             if (parent == null || nuxeoCmisService.isFilteredOut(parent)) {
                 return null;
             }
@@ -262,8 +240,7 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
     }
 
     @Override
-    public List<Tree<FileableCmisObject>> getFolderTree(int depth,
-            OperationContext context) {
+    public List<Tree<FileableCmisObject>> getFolderTree(int depth, OperationContext context) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

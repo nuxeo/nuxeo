@@ -215,23 +215,20 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     protected String createDocument(String name, String folderId, String typeId) {
-        return objService.createDocument(repositoryId,
-                createBaseDocumentProperties(name, typeId), folderId, null,
+        return objService.createDocument(repositoryId, createBaseDocumentProperties(name, typeId), folderId, null,
                 null, null, null, null, null);
     }
 
     protected String createFolder(String name, String folderId, String typeId) {
-        return objService.createFolder(repositoryId,
-                createBaseDocumentProperties(name, typeId), folderId, null,
-                null, null, null);
+        return objService.createFolder(repositoryId, createBaseDocumentProperties(name, typeId), folderId, null, null,
+                null, null);
     }
 
     protected Properties createBaseDocumentProperties(String name, String typeId) {
         BindingsObjectFactory factory = binding.getObjectFactory();
         List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
         props.add(factory.createPropertyStringData(PropertyIds.NAME, name));
-        props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID,
-                typeId));
+        props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID, typeId));
         return factory.createPropertiesData(props);
     }
 
@@ -242,19 +239,16 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     protected ObjectData getObject(String id) {
-        return objService.getObject(repositoryId, id, null, Boolean.FALSE,
-                IncludeRelationships.BOTH, null, Boolean.FALSE, Boolean.FALSE,
-                null);
+        return objService.getObject(repositoryId, id, null, Boolean.FALSE, IncludeRelationships.BOTH, null,
+                Boolean.FALSE, Boolean.FALSE, null);
     }
 
     protected ObjectData getObjectByPath(String path) {
-        return objService.getObjectByPath(repositoryId, path, null, null, null,
-                null, null, null, null);
+        return objService.getObjectByPath(repositoryId, path, null, null, null, null, null, null, null);
     }
 
     protected ObjectList query(String statement) {
-        return discService.query(repositoryId, statement, Boolean.TRUE, null,
-                null, null, null, null, null);
+        return discService.query(repositoryId, statement, Boolean.TRUE, null, null, null, null, null, null);
     }
 
     protected static Object getValue(ObjectData data, String key) {
@@ -304,8 +298,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("Nuxeo Repository " + repositoryId, info.getDescription());
         assertEquals("Nuxeo", info.getVendorName());
         assertEquals("Nuxeo OpenCMIS Connector", info.getProductName());
-        String version = Framework.getProperty(
-                NuxeoRepository.NUXEO_VERSION_PROP, "5.5 dev");
+        String version = Framework.getProperty(NuxeoRepository.NUXEO_VERSION_PROP, "5.5 dev");
         assertEquals(version, info.getProductVersion());
         assertEquals(rootFolderId, info.getRootFolderId());
         assertEquals("Guest", info.getPrincipalIdAnonymous());
@@ -313,21 +306,16 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // TODO assertEquals("...", info.getThinClientUri());
         assertNotNull(info.getLatestChangeLogToken());
         assertEquals(Boolean.FALSE, info.getChangesIncomplete());
-        assertEquals(
-                Arrays.asList(BaseTypeId.CMIS_DOCUMENT, BaseTypeId.CMIS_FOLDER),
-                info.getChangesOnType());
+        assertEquals(Arrays.asList(BaseTypeId.CMIS_DOCUMENT, BaseTypeId.CMIS_FOLDER), info.getChangesOnType());
         assertEquals(SecurityConstants.EVERYONE, info.getPrincipalIdAnyone());
 
         // capabilities
 
         RepositoryCapabilities caps = info.getCapabilities();
         assertEquals(CapabilityAcl.MANAGE, caps.getAclCapability());
-        assertEquals(CapabilityChanges.OBJECTIDSONLY,
-                caps.getChangesCapability());
-        assertEquals(CapabilityContentStreamUpdates.PWCONLY,
-                caps.getContentStreamUpdatesCapability());
-        assertEquals(supportsJoins() ? CapabilityJoin.INNERANDOUTER
-                : CapabilityJoin.NONE, caps.getJoinCapability());
+        assertEquals(CapabilityChanges.OBJECTIDSONLY, caps.getChangesCapability());
+        assertEquals(CapabilityContentStreamUpdates.PWCONLY, caps.getContentStreamUpdatesCapability());
+        assertEquals(supportsJoins() ? CapabilityJoin.INNERANDOUTER : CapabilityJoin.NONE, caps.getJoinCapability());
         assertEquals(CapabilityQuery.BOTHCOMBINED, caps.getQueryCapability());
         assertEquals(CapabilityRenditions.READ, caps.getRenditionsCapability());
 
@@ -335,8 +323,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         AclCapabilities aclCaps = info.getAclCapabilities();
         assertEquals(AclPropagation.PROPAGATE, aclCaps.getAclPropagation());
-        assertEquals(SupportedPermissions.REPOSITORY,
-                aclCaps.getSupportedPermissions());
+        assertEquals(SupportedPermissions.REPOSITORY, aclCaps.getSupportedPermissions());
 
         Map<String, String> permDefs = new HashMap<>();
         for (PermissionDefinition pd : aclCaps.getPermissions()) {
@@ -404,41 +391,30 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertNull(type.getParentTypeId());
         assertEquals("cmis:folder", type.getLocalName());
         assertTrue(type.getPropertyDefinitions().containsKey("dc:title"));
-        assertTrue(type.getPropertyDefinitions().containsKey(
-                "nuxeo:lifecycleState"));
-        assertTrue(type.getPropertyDefinitions().containsKey(
-                "nuxeo:secondaryObjectTypeIds"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:lifecycleState"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:secondaryObjectTypeIds"));
         assertFalse(type.getPropertyDefinitions().containsKey("nuxeo:isVersion"));
-        assertFalse(type.getPropertyDefinitions().containsKey(
-                "nuxeo:contentStreamDigest"));
+        assertFalse(type.getPropertyDefinitions().containsKey("nuxeo:contentStreamDigest"));
 
         type = repoService.getTypeDefinition(repositoryId, "Folder", null);
         assertEquals(Boolean.TRUE, type.isCreatable());
         assertEquals("cmis:folder", type.getParentTypeId());
         assertEquals("Folder", type.getLocalName());
-        assertTrue(type.getPropertyDefinitions().containsKey(
-                "nuxeo:lifecycleState"));
-        assertTrue(type.getPropertyDefinitions().containsKey(
-                "nuxeo:secondaryObjectTypeIds"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:lifecycleState"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:secondaryObjectTypeIds"));
         assertFalse(type.getPropertyDefinitions().containsKey("nuxeo:isVersion"));
-        assertFalse(type.getPropertyDefinitions().containsKey(
-                "nuxeo:contentStreamDigest"));
+        assertFalse(type.getPropertyDefinitions().containsKey("nuxeo:contentStreamDigest"));
 
-        type = repoService.getTypeDefinition(repositoryId, "cmis:document",
-                null);
+        type = repoService.getTypeDefinition(repositoryId, "cmis:document", null);
         assertEquals(Boolean.TRUE, type.isCreatable());
         assertNull(type.getParentTypeId());
         assertEquals("cmis:document", type.getLocalName());
         assertTrue(type.getPropertyDefinitions().containsKey("dc:title"));
-        assertTrue(type.getPropertyDefinitions().containsKey(
-                "cmis:contentStreamFileName"));
-        assertTrue(type.getPropertyDefinitions().containsKey(
-                "nuxeo:lifecycleState"));
-        assertTrue(type.getPropertyDefinitions().containsKey(
-                "nuxeo:secondaryObjectTypeIds"));
+        assertTrue(type.getPropertyDefinitions().containsKey("cmis:contentStreamFileName"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:lifecycleState"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:secondaryObjectTypeIds"));
         assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:isVersion"));
-        assertTrue(type.getPropertyDefinitions().containsKey(
-                "nuxeo:contentStreamDigest"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:contentStreamDigest"));
 
         try {
             // nosuchtype, Document is mapped to cmis:document
@@ -453,13 +429,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("cmis:document", type.getParentTypeId());
         assertEquals("Note", type.getLocalName());
         assertTrue(type.getPropertyDefinitions().containsKey("note"));
-        assertTrue(type.getPropertyDefinitions().containsKey(
-                "nuxeo:lifecycleState"));
-        assertTrue(type.getPropertyDefinitions().containsKey(
-                "nuxeo:secondaryObjectTypeIds"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:lifecycleState"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:secondaryObjectTypeIds"));
         assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:isVersion"));
-        assertTrue(type.getPropertyDefinitions().containsKey(
-                "nuxeo:contentStreamDigest"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:contentStreamDigest"));
 
         type = repoService.getTypeDefinition(repositoryId, "MyForum", null);
         assertEquals(BaseTypeId.CMIS_FOLDER, type.getBaseTypeId());
@@ -480,8 +453,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testGetTypeChildren() {
-        TypeDefinitionList types = repoService.getTypeChildren(repositoryId,
-                "cmis:folder", Boolean.FALSE, null, null, null);
+        TypeDefinitionList types = repoService.getTypeChildren(repositoryId, "cmis:folder", Boolean.FALSE, null, null,
+                null);
         for (TypeDefinition type : types.getList()) {
             Map<String, PropertyDefinition<?>> pd = type.getPropertyDefinitions();
             assertNotNull(pd);
@@ -496,17 +469,15 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertTrue(ids.contains("Section"));
 
         // batching
-        types = repoService.getTypeChildren(repositoryId, "cmis:folder",
-                Boolean.FALSE, BigInteger.valueOf(4), BigInteger.valueOf(2),
-                null);
+        types = repoService.getTypeChildren(repositoryId, "cmis:folder", Boolean.FALSE, BigInteger.valueOf(4),
+                BigInteger.valueOf(2), null);
         List<String> ids2 = getTypeIds(types);
         assertEquals(4, ids2.size());
         assertFalse(ids2.contains(ids.get(0)));
         assertFalse(ids2.contains(ids.get(1)));
         // batching beyond max size
-        types = repoService.getTypeChildren(repositoryId, "cmis:folder",
-                Boolean.FALSE, BigInteger.valueOf(12), BigInteger.valueOf(5),
-                null);
+        types = repoService.getTypeChildren(repositoryId, "cmis:folder", Boolean.FALSE, BigInteger.valueOf(12),
+                BigInteger.valueOf(5), null);
         List<String> ids3 = getTypeIds(types);
         assertEquals(ids.size() - 5, ids3.size());
         assertFalse(ids3.contains(ids.get(0)));
@@ -516,8 +487,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertFalse(ids3.contains(ids.get(4)));
 
         // check property definition inclusion
-        types = repoService.getTypeChildren(repositoryId,
-                BaseTypeId.CMIS_FOLDER.value(), Boolean.TRUE, null, null, null);
+        types = repoService.getTypeChildren(repositoryId, BaseTypeId.CMIS_FOLDER.value(), Boolean.TRUE, null, null,
+                null);
         for (TypeDefinition type : types.getList()) {
             Map<String, PropertyDefinition<?>> pd = type.getPropertyDefinitions();
             assertNotNull(pd);
@@ -528,8 +499,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertTrue(ids.contains("MyForum"));
         assertTrue(ids.contains("MyForum2"));
 
-        types = repoService.getTypeChildren(repositoryId,
-                BaseTypeId.CMIS_DOCUMENT.value(), Boolean.TRUE, null, null,
+        types = repoService.getTypeChildren(repositoryId, BaseTypeId.CMIS_DOCUMENT.value(), Boolean.TRUE, null, null,
                 null);
         for (TypeDefinition type : types.getList()) {
             Map<String, PropertyDefinition<?>> pd = type.getPropertyDefinitions();
@@ -544,8 +514,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // nonexistent type
         try {
-            repoService.getTypeChildren(repositoryId, "nosuchtype",
-                    Boolean.TRUE, null, null, null);
+            repoService.getTypeChildren(repositoryId, "nosuchtype", Boolean.TRUE, null, null, null);
             fail();
         } catch (CmisInvalidArgumentException e) {
             // ok
@@ -554,8 +523,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testGetTypeDescendants() {
-        List<TypeDefinitionContainer> desc = repoService.getTypeDescendants(
-                repositoryId, "cmis:folder", null, Boolean.FALSE, null);
+        List<TypeDefinitionContainer> desc = repoService.getTypeDescendants(repositoryId, "cmis:folder", null,
+                Boolean.FALSE, null);
         assertTrue(desc.size() > 2);
         TypeDefinition t = null;
         for (TypeDefinitionContainer tc : desc) {
@@ -568,8 +537,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // nonexistent type
         try {
-            repoService.getTypeDescendants(repositoryId, "nosuchtype", null,
-                    Boolean.FALSE, null);
+            repoService.getTypeDescendants(repositoryId, "nosuchtype", null, Boolean.FALSE, null);
             fail();
         } catch (CmisInvalidArgumentException e) {
             // ok
@@ -580,18 +548,16 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     public void testRoot() {
         ObjectData root = getObject(rootFolderId);
         assertNotNull(root.getId());
-        assertEquals(NUXEO_ROOT_TYPE,
-                getString(root, PropertyIds.OBJECT_TYPE_ID));
+        assertEquals(NUXEO_ROOT_TYPE, getString(root, PropertyIds.OBJECT_TYPE_ID));
         assertEquals(NUXEO_ROOT_NAME, getString(root, PropertyIds.NAME));
         assertEquals("/", getString(root, PropertyIds.PATH));
 
         // root parent
         assertNull(getString(root, PropertyIds.PARENT_ID));
-        ObjectData parent = navService.getFolderParent(repositoryId,
-                rootFolderId, null, null);
+        ObjectData parent = navService.getFolderParent(repositoryId, rootFolderId, null, null);
         assertNull(parent);
-        List<ObjectParentData> parents = navService.getObjectParents(
-                repositoryId, rootFolderId, null, null, null, null, null, null);
+        List<ObjectParentData> parents = navService.getObjectParents(repositoryId, rootFolderId, null, null, null,
+                null, null, null);
         assertEquals(0, parents.size());
     }
 
@@ -625,18 +591,15 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         data = getObject(id);
         assertEquals(id, data.getId());
         assertEquals("newdoc", getString(data, PropertyIds.NAME));
-        assertEquals(Boolean.TRUE,
-                getValue(data, PropertyIds.IS_LATEST_MAJOR_VERSION));
+        assertEquals(Boolean.TRUE, getValue(data, PropertyIds.IS_LATEST_MAJOR_VERSION));
         assertEquals(Boolean.FALSE, getValue(data, PropertyIds.IS_IMMUTABLE));
         assertEquals("File", getString(data, PropertyIds.OBJECT_TYPE_ID));
         assertEquals(Boolean.FALSE, // ...
                 getValue(data, NuxeoTypeHelper.NX_ISVERSION));
-        assertEquals("project",
-                getValue(data, NuxeoTypeHelper.NX_LIFECYCLE_STATE));
+        assertEquals("project", getValue(data, NuxeoTypeHelper.NX_LIFECYCLE_STATE));
         assertEquals(rootFolderId, getValue(data, NuxeoTypeHelper.NX_PARENT_ID));
         @SuppressWarnings("unchecked")
-        List<String> facets = (List<String>) getValues(data,
-                NuxeoTypeHelper.NX_FACETS);
+        List<String> facets = (List<String>) getValues(data, NuxeoTypeHelper.NX_FACETS);
         assertEquals(set( //
                 "Commentable", //
                 "Downloadable", //
@@ -646,8 +609,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ), new HashSet<String>(facets));
         assertEquals(null, getString(data, NuxeoTypeHelper.NX_DIGEST));
         @SuppressWarnings("unchecked")
-        List<String> hashes = (List<String>) getValues(data,
-                PropertyIds.CONTENT_STREAM_HASH);
+        List<String> hashes = (List<String>) getValues(data, PropertyIds.CONTENT_STREAM_HASH);
         assertEquals(0, hashes.size());
 
         // creation of a cmis:document (helps simple clients)
@@ -668,10 +630,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(id, data.getId());
         assertEquals("newfold", getString(data, PropertyIds.NAME));
         assertEquals("Folder", getString(data, PropertyIds.OBJECT_TYPE_ID));
-        assertEquals("project",
-                getValue(data, NuxeoTypeHelper.NX_LIFECYCLE_STATE));
-        assertEquals(Arrays.asList("Folderish"),
-                getValues(data, NuxeoTypeHelper.NX_FACETS));
+        assertEquals("project", getValue(data, NuxeoTypeHelper.NX_LIFECYCLE_STATE));
+        assertEquals(Arrays.asList("Folderish"), getValues(data, NuxeoTypeHelper.NX_FACETS));
 
         // creation of a cmis:folder (helps simple clients)
 
@@ -686,25 +646,18 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     protected String createDocumentMyDocType() {
         BindingsObjectFactory factory = binding.getObjectFactory();
         List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
-        props.add(factory.createPropertyStringData(PropertyIds.NAME,
-                COMPLEX_TITLE));
-        props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID,
-                "MyDocType"));
+        props.add(factory.createPropertyStringData(PropertyIds.NAME, COMPLEX_TITLE));
+        props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID, "MyDocType"));
         props.add(factory.createPropertyStringData("my:string", "abc"));
         props.add(factory.createPropertyBooleanData("my:boolean", Boolean.TRUE));
-        props.add(factory.createPropertyIntegerData("my:integer",
-                BigInteger.valueOf(123)));
-        props.add(factory.createPropertyIntegerData("my:long",
-                BigInteger.valueOf(123)));
-        props.add(factory.createPropertyDecimalData("my:double",
-                BigDecimal.valueOf(123.456)));
-        GregorianCalendar expectedDate = Helper.getCalendar(2010, 9, 30, 16, 4,
-                55);
+        props.add(factory.createPropertyIntegerData("my:integer", BigInteger.valueOf(123)));
+        props.add(factory.createPropertyIntegerData("my:long", BigInteger.valueOf(123)));
+        props.add(factory.createPropertyDecimalData("my:double", BigDecimal.valueOf(123.456)));
+        GregorianCalendar expectedDate = Helper.getCalendar(2010, 9, 30, 16, 4, 55);
         props.add(factory.createPropertyDateTimeData("my:date", expectedDate));
         Properties properties = factory.createPropertiesData(props);
-        String id = objService.createDocument(repositoryId, properties,
-                rootFolderId, null, VersioningState.CHECKEDOUT, null, null,
-                null, null);
+        String id = objService.createDocument(repositoryId, properties, rootFolderId, null, VersioningState.CHECKEDOUT,
+                null, null, null, null);
         assertNotNull(id);
         return id;
     }
@@ -722,21 +675,17 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(BigInteger.valueOf(123), getValue(data, "my:long"));
         assertEquals(BigDecimal.valueOf(123.456), getValue(data, "my:double"));
         GregorianCalendar date = (GregorianCalendar) getValue(data, "my:date");
-        GregorianCalendar expectedDate = Helper.getCalendar(2010, 9, 30, 16, 4,
-                55);
-        if (!CalendarHelper.toString(expectedDate).equals(
-                CalendarHelper.toString(date))) {
+        GregorianCalendar expectedDate = Helper.getCalendar(2010, 9, 30, 16, 4, 55);
+        if (!CalendarHelper.toString(expectedDate).equals(CalendarHelper.toString(date))) {
             // there may be a timezone difference if the database
             // doesn't store timezones -> try with local timezone
             TimeZone tz = TimeZone.getDefault();
-            GregorianCalendar localDate = Helper.getCalendar(2010, 9, 30, 16,
-                    4, 55, tz);
-            assertEquals(CalendarHelper.toString(localDate),
-                    CalendarHelper.toString(date));
+            GregorianCalendar localDate = Helper.getCalendar(2010, 9, 30, 16, 4, 55, tz);
+            assertEquals(CalendarHelper.toString(localDate), CalendarHelper.toString(date));
         }
         // check path segment created from name/title
-        List<ObjectParentData> parents = navService.getObjectParents(
-                repositoryId, id, null, null, null, null, Boolean.TRUE, null);
+        List<ObjectParentData> parents = navService.getObjectParents(repositoryId, id, null, null, null, null,
+                Boolean.TRUE, null);
         assertEquals(1, parents.size());
         String pathSegment = parents.get(0).getRelativePathSegment();
         assertEquals(COMPLEX_TITLE.replace("/", "-"), pathSegment);
@@ -745,23 +694,18 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     @Test
     public void testCreateDocumentWithContentStream() throws Exception {
         // null filename passed on purpose, size ignored by Nuxeo
-        ContentStream cs = new ContentStreamImpl(null, "text/plain",
-                Helper.FILE1_CONTENT);
-        String id = objService.createDocument(repositoryId,
-                createBaseDocumentProperties("doc1.txt", "File"), rootFolderId,
-                cs, VersioningState.NONE, null, null, null, null);
+        ContentStream cs = new ContentStreamImpl(null, "text/plain", Helper.FILE1_CONTENT);
+        String id = objService.createDocument(repositoryId, createBaseDocumentProperties("doc1.txt", "File"),
+                rootFolderId, cs, VersioningState.NONE, null, null, null, null);
         assertNotNull(id);
         ObjectData data = getObject(id);
         assertEquals(id, data.getId());
         assertEquals("doc1.txt", getString(data, PropertyIds.NAME));
-        assertEquals("bde9eb59c76cb432a0f8d02057a19923",
-                getString(data, NuxeoTypeHelper.NX_DIGEST));
+        assertEquals("bde9eb59c76cb432a0f8d02057a19923", getString(data, NuxeoTypeHelper.NX_DIGEST));
         @SuppressWarnings("unchecked")
-        List<String> hashes = (List<String>) getValues(data,
-                PropertyIds.CONTENT_STREAM_HASH);
+        List<String> hashes = (List<String>) getValues(data, PropertyIds.CONTENT_STREAM_HASH);
         assertEquals("{md5}bde9eb59c76cb432a0f8d02057a19923", hashes.get(0));
-        cs = objService.getContentStream(repositoryId, id, null, null, null,
-                null);
+        cs = objService.getContentStream(repositoryId, id, null, null, null, null);
         assertNotNull(cs);
         assertEquals("text/plain", cs.getMimeType());
         assertEquals("doc1.txt", cs.getFileName());
@@ -774,14 +718,12 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         BindingsObjectFactory factory = binding.getObjectFactory();
         List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
         props.add(factory.createPropertyStringData(PropertyIds.NAME, "doc.txt"));
-        props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID,
-                "cmis:document"));
+        props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID, "cmis:document"));
         props.add(factory.createPropertyStringData("dc:description", "my doc"));
         Properties properties = factory.createPropertiesData(props);
 
-        String id = objService.createDocument(repositoryId, properties,
-                rootFolderId, null, VersioningState.CHECKEDOUT, null, null,
-                null, null);
+        String id = objService.createDocument(repositoryId, properties, rootFolderId, null, VersioningState.CHECKEDOUT,
+                null, null, null, null);
         ObjectData data = getObject(id);
         // check that the filename was enough to detect that we need a more
         // specific type than File
@@ -797,8 +739,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         Properties props = createProperties("dc:title", "new title");
         Holder<String> objectIdHolder = new Holder<String>(ob.getId());
-        objService.updateProperties(repositoryId, objectIdHolder, null, props,
-                null);
+        objService.updateProperties(repositoryId, objectIdHolder, null, props, null);
         assertEquals(ob.getId(), objectIdHolder.getValue());
 
         ob = getObject(ob.getId());
@@ -812,8 +753,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         p = objService.getProperties(repositoryId, ob.getId(), null, null);
         assertNotNull(p);
-        assertEquals("testfile1_Title",
-                p.getProperties().get("dc:title").getFirstValue());
+        assertEquals("testfile1_Title", p.getProperties().get("dc:title").getFirstValue());
 
         // null value from nuxeo property
         PropertyData<?> v;
@@ -827,27 +767,22 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(Collections.emptyList(), v.getValues());
 
         // with filter
-        p = objService.getProperties(repositoryId, ob.getId(), "cmis:name",
-                null);
+        p = objService.getProperties(repositoryId, ob.getId(), "cmis:name", null);
         assertNull(p.getProperties().get("dc:title"));
-        assertEquals("testfile1_Title",
-                p.getProperties().get("cmis:name").getFirstValue());
+        assertEquals("testfile1_Title", p.getProperties().get("cmis:name").getFirstValue());
     }
 
     @Test
     public void testContentStream() throws Exception {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         assertEquals("testfile1_Title", getString(ob, PropertyIds.NAME));
-        assertEquals("bde9eb59c76cb432a0f8d02057a19923",
-                getString(ob, NuxeoTypeHelper.NX_DIGEST));
+        assertEquals("bde9eb59c76cb432a0f8d02057a19923", getString(ob, NuxeoTypeHelper.NX_DIGEST));
         @SuppressWarnings("unchecked")
-        List<String> hashes = (List<String>) getValues(ob,
-                PropertyIds.CONTENT_STREAM_HASH);
+        List<String> hashes = (List<String>) getValues(ob, PropertyIds.CONTENT_STREAM_HASH);
         assertEquals("{md5}bde9eb59c76cb432a0f8d02057a19923", hashes.get(0));
 
         // get stream
-        ContentStream cs = objService.getContentStream(repositoryId,
-                ob.getId(), null, null, null, null);
+        ContentStream cs = objService.getContentStream(repositoryId, ob.getId(), null, null, null, null);
         assertNotNull(cs);
         assertEquals("text/plain", cs.getMimeType());
         assertEquals("testfile.txt", cs.getFileName());
@@ -856,16 +791,13 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // set stream
 
-        cs = new ContentStreamImpl("foo.txt", "text/plain; charset=UTF-8",
-                STREAM_CONTENT);
+        cs = new ContentStreamImpl("foo.txt", "text/plain; charset=UTF-8", STREAM_CONTENT);
         Holder<String> objectIdHolder = new Holder<String>(ob.getId());
-        objService.setContentStream(repositoryId, objectIdHolder, Boolean.TRUE,
-                null, cs, null);
+        objService.setContentStream(repositoryId, objectIdHolder, Boolean.TRUE, null, cs, null);
         assertEquals(ob.getId(), objectIdHolder.getValue());
 
         // refetch
-        cs = objService.getContentStream(repositoryId, ob.getId(), null, null,
-                null, null);
+        cs = objService.getContentStream(repositoryId, ob.getId(), null, null, null, null);
         assertNotNull(cs);
         assertEquals("text/plain; charset=UTF-8", cs.getMimeType());
         assertEquals("foo.txt", cs.getFileName());
@@ -877,8 +809,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // refetch
         try {
-            cs = objService.getContentStream(repositoryId, ob.getId(), null,
-                    null, null, null);
+            cs = objService.getContentStream(repositoryId, ob.getId(), null, null, null, null);
             fail("Should have no content stream");
         } catch (CmisConstraintException e) {
             // ok
@@ -891,33 +822,27 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         String orderBy;
 
         orderBy = "cmis:name";
-        res = navService.getChildren(repositoryId, rootFolderId, null, orderBy,
-                null, null, null, null, null, null, null);
-        assertEquals("testfolder1_Title",
-                getValue(res.getObjects().get(0).getObject(), "cmis:name"));
-        assertEquals("testfolder2_Title",
-                getValue(res.getObjects().get(1).getObject(), "cmis:name"));
+        res = navService.getChildren(repositoryId, rootFolderId, null, orderBy, null, null, null, null, null, null,
+                null);
+        assertEquals("testfolder1_Title", getValue(res.getObjects().get(0).getObject(), "cmis:name"));
+        assertEquals("testfolder2_Title", getValue(res.getObjects().get(1).getObject(), "cmis:name"));
 
         orderBy = "cmis:name DESC";
-        res = navService.getChildren(repositoryId, rootFolderId, null, orderBy,
-                null, null, null, null, null, null, null);
-        assertEquals("testfolder2_Title",
-                getValue(res.getObjects().get(0).getObject(), "cmis:name"));
-        assertEquals("testfolder1_Title",
-                getValue(res.getObjects().get(1).getObject(), "cmis:name"));
+        res = navService.getChildren(repositoryId, rootFolderId, null, orderBy, null, null, null, null, null, null,
+                null);
+        assertEquals("testfolder2_Title", getValue(res.getObjects().get(0).getObject(), "cmis:name"));
+        assertEquals("testfolder1_Title", getValue(res.getObjects().get(1).getObject(), "cmis:name"));
     }
 
     // flatten and order children
-    protected static List<String> flatTree(List<ObjectInFolderContainer> tree)
-            throws Exception {
+    protected static List<String> flatTree(List<ObjectInFolderContainer> tree) throws Exception {
         if (tree == null) {
             return null;
         }
         List<String> r = new LinkedList<String>();
         for (Iterator<ObjectInFolderContainer> it = tree.iterator(); it.hasNext();) {
             ObjectInFolderContainer child = it.next();
-            String name = getString(child.getObject().getObject(),
-                    PropertyIds.NAME);
+            String name = getString(child.getObject().getObject(), PropertyIds.NAME);
             String elem = name;
             List<String> sub = flatTree(child.getChildren());
             if (sub != null) {
@@ -929,8 +854,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         return r.isEmpty() ? null : r;
     }
 
-    protected static String flat(List<ObjectInFolderContainer> tree)
-            throws Exception {
+    protected static String flat(List<ObjectInFolderContainer> tree) throws Exception {
         return StringUtils.join(flatTree(tree), ", ");
     }
 
@@ -939,20 +863,20 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         List<ObjectInFolderContainer> tree;
 
         try {
-            navService.getDescendants(repositoryId, rootFolderId,
-                    BigInteger.valueOf(0), null, null, null, null, null, null);
+            navService.getDescendants(repositoryId, rootFolderId, BigInteger.valueOf(0), null, null, null, null, null,
+                    null);
             fail("Depth 0 should be forbidden");
         } catch (CmisInvalidArgumentException e) {
             // ok
         }
 
-        tree = navService.getDescendants(repositoryId, rootFolderId,
-                BigInteger.valueOf(1), null, null, null, null, null, null);
+        tree = navService.getDescendants(repositoryId, rootFolderId, BigInteger.valueOf(1), null, null, null, null,
+                null, null);
         assertEquals("testfolder1_Title, " //
                 + "testfolder2_Title", flat(tree));
 
-        tree = navService.getDescendants(repositoryId, rootFolderId,
-                BigInteger.valueOf(2), null, null, null, null, null, null);
+        tree = navService.getDescendants(repositoryId, rootFolderId, BigInteger.valueOf(2), null, null, null, null,
+                null, null);
         assertEquals("testfolder1_Title[" //
                 + /* */"testfile1_Title, " //
                 + /* */"testfile2_Title, " //
@@ -962,8 +886,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 + /* */"testfolder4_Title]", //
                 flat(tree));
 
-        tree = navService.getDescendants(repositoryId, rootFolderId,
-                BigInteger.valueOf(3), null, null, null, null, null, null);
+        tree = navService.getDescendants(repositoryId, rootFolderId, BigInteger.valueOf(3), null, null, null, null,
+                null, null);
         assertEquals("testfolder1_Title[" //
                 + /* */"testfile1_Title, " //
                 + /* */"testfile2_Title, " //
@@ -973,8 +897,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 + /* */"testfolder4_Title]", //
                 flat(tree));
 
-        tree = navService.getDescendants(repositoryId, rootFolderId,
-                BigInteger.valueOf(4), null, null, null, null, null, null);
+        tree = navService.getDescendants(repositoryId, rootFolderId, BigInteger.valueOf(4), null, null, null, null,
+                null, null);
         assertEquals("testfolder1_Title[" //
                 + /* */"testfile1_Title, " //
                 + /* */"testfile2_Title, " //
@@ -984,10 +908,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 + /* */"testfolder4_Title]", //
                 flat(tree));
 
-        tree = navService.getDescendants(repositoryId, rootFolderId,
-                BigInteger.valueOf(-1), null, null, null, null, null, null);
-        assertEquals("testfolder1_Title[testfile1_Title, "
-                + /* */"testfile2_Title, " //
+        tree = navService.getDescendants(repositoryId, rootFolderId, BigInteger.valueOf(-1), null, null, null, null,
+                null, null);
+        assertEquals("testfolder1_Title[testfile1_Title, " + /* */"testfile2_Title, " //
                 + /* */"testfile3_Title], " //
                 + "testfolder2_Title[" //
                 + /* */"testfolder3_Title[testfile4_Title], " //
@@ -997,24 +920,21 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectData ob = getObjectByPath("/testfolder2");
         String folder2Id = ob.getId();
 
-        tree = navService.getDescendants(repositoryId, folder2Id,
-                BigInteger.valueOf(1), null, null, null, null, null, null);
+        tree = navService.getDescendants(repositoryId, folder2Id, BigInteger.valueOf(1), null, null, null, null, null,
+                null);
         assertEquals("testfolder3_Title, testfolder4_Title", flat(tree));
 
-        tree = navService.getDescendants(repositoryId, folder2Id,
-                BigInteger.valueOf(2), null, null, null, null, null, null);
-        assertEquals("testfolder3_Title[testfile4_Title], testfolder4_Title",
-                flat(tree));
+        tree = navService.getDescendants(repositoryId, folder2Id, BigInteger.valueOf(2), null, null, null, null, null,
+                null);
+        assertEquals("testfolder3_Title[testfile4_Title], testfolder4_Title", flat(tree));
 
-        tree = navService.getDescendants(repositoryId, folder2Id,
-                BigInteger.valueOf(3), null, null, null, null, null, null);
-        assertEquals("testfolder3_Title[testfile4_Title], testfolder4_Title",
-                flat(tree));
+        tree = navService.getDescendants(repositoryId, folder2Id, BigInteger.valueOf(3), null, null, null, null, null,
+                null);
+        assertEquals("testfolder3_Title[testfile4_Title], testfolder4_Title", flat(tree));
 
-        tree = navService.getDescendants(repositoryId, folder2Id,
-                BigInteger.valueOf(-1), null, null, null, null, null, null);
-        assertEquals("testfolder3_Title[testfile4_Title], testfolder4_Title",
-                flat(tree));
+        tree = navService.getDescendants(repositoryId, folder2Id, BigInteger.valueOf(-1), null, null, null, null, null,
+                null);
+        assertEquals("testfolder3_Title[testfile4_Title], testfolder4_Title", flat(tree));
     }
 
     @Test
@@ -1022,44 +942,44 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         List<ObjectInFolderContainer> tree;
 
         try {
-            navService.getFolderTree(repositoryId, rootFolderId,
-                    BigInteger.valueOf(0), null, null, null, null, null, null);
+            navService.getFolderTree(repositoryId, rootFolderId, BigInteger.valueOf(0), null, null, null, null, null,
+                    null);
             fail("Depth 0 should be forbidden");
         } catch (CmisInvalidArgumentException e) {
             // ok
         }
 
-        tree = navService.getFolderTree(repositoryId, rootFolderId,
-                BigInteger.valueOf(1), null, null, null, null, null, null);
+        tree = navService.getFolderTree(repositoryId, rootFolderId, BigInteger.valueOf(1), null, null, null, null,
+                null, null);
         assertEquals("testfolder1_Title, " //
                 + "testfolder2_Title", flat(tree));
 
-        tree = navService.getFolderTree(repositoryId, rootFolderId,
-                BigInteger.valueOf(2), null, null, null, null, null, null);
+        tree = navService.getFolderTree(repositoryId, rootFolderId, BigInteger.valueOf(2), null, null, null, null,
+                null, null);
         assertEquals("testfolder1_Title, " //
                 + "testfolder2_Title[" //
                 + /* */"testfolder3_Title, " //
                 + /* */"testfolder4_Title]", //
                 flat(tree));
 
-        tree = navService.getFolderTree(repositoryId, rootFolderId,
-                BigInteger.valueOf(3), null, null, null, null, null, null);
+        tree = navService.getFolderTree(repositoryId, rootFolderId, BigInteger.valueOf(3), null, null, null, null,
+                null, null);
         assertEquals("testfolder1_Title, " //
                 + "testfolder2_Title[" //
                 + /* */"testfolder3_Title, " //
                 + /* */"testfolder4_Title]", //
                 flat(tree));
 
-        tree = navService.getFolderTree(repositoryId, rootFolderId,
-                BigInteger.valueOf(4), null, null, null, null, null, null);
+        tree = navService.getFolderTree(repositoryId, rootFolderId, BigInteger.valueOf(4), null, null, null, null,
+                null, null);
         assertEquals("testfolder1_Title, " //
                 + "testfolder2_Title[" //
                 + /* */"testfolder3_Title, " //
                 + /* */"testfolder4_Title]", //
                 flat(tree));
 
-        tree = navService.getFolderTree(repositoryId, rootFolderId,
-                BigInteger.valueOf(-1), null, null, null, null, null, null);
+        tree = navService.getFolderTree(repositoryId, rootFolderId, BigInteger.valueOf(-1), null, null, null, null,
+                null, null);
         assertEquals("testfolder1_Title, " //
                 + "testfolder2_Title[" //
                 + /* */"testfolder3_Title, " //
@@ -1069,20 +989,20 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectData ob = getObjectByPath("/testfolder2");
         String folder2Id = ob.getId();
 
-        tree = navService.getFolderTree(repositoryId, folder2Id,
-                BigInteger.valueOf(1), null, null, null, null, null, null);
+        tree = navService.getFolderTree(repositoryId, folder2Id, BigInteger.valueOf(1), null, null, null, null, null,
+                null);
         assertEquals("testfolder3_Title, testfolder4_Title", flat(tree));
 
-        tree = navService.getFolderTree(repositoryId, folder2Id,
-                BigInteger.valueOf(2), null, null, null, null, null, null);
+        tree = navService.getFolderTree(repositoryId, folder2Id, BigInteger.valueOf(2), null, null, null, null, null,
+                null);
         assertEquals("testfolder3_Title, testfolder4_Title", flat(tree));
 
-        tree = navService.getFolderTree(repositoryId, folder2Id,
-                BigInteger.valueOf(3), null, null, null, null, null, null);
+        tree = navService.getFolderTree(repositoryId, folder2Id, BigInteger.valueOf(3), null, null, null, null, null,
+                null);
         assertEquals("testfolder3_Title, testfolder4_Title", flat(tree));
 
-        tree = navService.getFolderTree(repositoryId, folder2Id,
-                BigInteger.valueOf(-1), null, null, null, null, null, null);
+        tree = navService.getFolderTree(repositoryId, folder2Id, BigInteger.valueOf(-1), null, null, null, null, null,
+                null);
         assertEquals("testfolder3_Title, testfolder4_Title", flat(tree));
     }
 
@@ -1092,8 +1012,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         String key = "dc:title";
         String value = "new title";
         Properties props = createProperties(key, value);
-        String id = objService.createDocumentFromSource(repositoryId,
-                ob.getId(), props, rootFolderId, null, null, null, null, null);
+        String id = objService.createDocumentFromSource(repositoryId, ob.getId(), props, rootFolderId, null, null,
+                null, null, null);
         assertNotNull(id);
         assertNotSame(id, ob.getId());
         // fetch
@@ -1115,8 +1035,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         ob = getObjectByPath("/testfolder2");
         try {
-            objService.deleteObject(repositoryId, ob.getId(), Boolean.TRUE,
-                    null);
+            objService.deleteObject(repositoryId, ob.getId(), Boolean.TRUE, null);
             fail("Should not be able to delete non-empty folder");
         } catch (CmisConstraintException e) {
             // ok to fail, still has children
@@ -1125,8 +1044,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertNotNull(ob);
 
         try {
-            objService.deleteObject(repositoryId, "nosuchid", Boolean.TRUE,
-                    null);
+            objService.deleteObject(repositoryId, "nosuchid", Boolean.TRUE, null);
             fail("Should not be able to delete nonexistent object");
         } catch (CmisObjectNotFoundException e) {
             // ok
@@ -1136,8 +1054,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     @Test
     public void testRemoveObjectFromFolder1() throws Exception {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
-        filingService.removeObjectFromFolder(repositoryId, ob.getId(), null,
-                null);
+        filingService.removeObjectFromFolder(repositoryId, ob.getId(), null, null);
         try {
             ob = getObjectByPath("/testfolder1/testfile1");
             fail("Document should be deleted");
@@ -1150,8 +1067,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     public void testRemoveObjectFromFolder2() throws Exception {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         ObjectData folder = getObjectByPath("/testfolder1");
-        filingService.removeObjectFromFolder(repositoryId, ob.getId(),
-                folder.getId(), null);
+        filingService.removeObjectFromFolder(repositoryId, ob.getId(), folder.getId(), null);
         try {
             ob = getObjectByPath("/testfolder1/testfile1");
             fail("Document should be deleted");
@@ -1232,8 +1148,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // checked in doc
 
         Holder<String> idHolder = new Holder<String>(ob.getId());
-        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null,
-                "comment", null, null, null, null);
+        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "comment", null, null, null, null);
 
         aa = objService.getAllowableActions(repositoryId, ob.getId(), null);
         assertNotNull(aa);
@@ -1260,8 +1175,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectData fold = getObjectByPath("/testfolder1");
         ObjectData ob = getObjectByPath("/testfolder2/testfolder3/testfile4");
         Holder<String> objectIdHolder = new Holder<String>(ob.getId());
-        objService.moveObject(repositoryId, objectIdHolder, fold.getId(), null,
-                null);
+        objService.moveObject(repositoryId, objectIdHolder, fold.getId(), null, null);
         assertEquals(ob.getId(), objectIdHolder.getValue());
         try {
             getObjectByPath("/testfolder2/testfolder3/testfile4");
@@ -1302,8 +1216,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(4, res.getNumItems().intValue());
         statement = "SELECT * FROM cmis:folder";
         res = query(statement);
-        assertEquals(returnsRootInFolderQueries() ? 5 : 4,
-                res.getNumItems().intValue());
+        assertEquals(returnsRootInFolderQueries() ? 5 : 4, res.getNumItems().intValue());
 
         statement = "SELECT cmis:objectId, dc:description" //
                 + " FROM File" //
@@ -1338,8 +1251,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     protected void checkQueriedValue(String type, String term) {
-        String statement = String.format(
-                "SELECT cmis:objectId FROM %s WHERE %s", type, term);
+        String statement = String.format("SELECT cmis:objectId FROM %s WHERE %s", type, term);
         ObjectList res = query(statement);
         int num = res.getNumItems().intValue();
         if (num == 0) {
@@ -1388,8 +1300,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // TODO fix timezone issues (PostgreSQL)
         // checkQueriedValue("MyDocType",
         // "my:date = TIMESTAMP '2010-09-30T16:04:55-02:00'");
-        checkQueriedValue("MyDocType",
-                "my:date <> TIMESTAMP '1999-09-09T01:01:01Z'");
+        checkQueriedValue("MyDocType", "my:date <> TIMESTAMP '1999-09-09T01:01:01Z'");
         try {
             statement = "SELECT cmis:objectId FROM MyDocType WHERE my:date <> TIMESTAMP 'foobar'";
             query(statement);
@@ -1423,8 +1334,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // ----- Folder -----
 
         checkWhereTerm("Folder", PropertyIds.PARENT_ID, NOT_NULL);
-        checkWhereTerm("Folder", NuxeoTypeHelper.NX_LIFECYCLE_STATE,
-                "'project'");
+        checkWhereTerm("Folder", NuxeoTypeHelper.NX_LIFECYCLE_STATE, "'project'");
 
         // checkWhereTerm("Folder", PropertyIds.PATH, NOT_NULL);
         // checkWhereTerm("Folder", PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS,
@@ -1457,10 +1367,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkReturnedValue(prop, expected, "File", "testfile1_Title");
     }
 
-    protected void checkReturnedValue(String prop, Object expected,
-            String type, String name) {
-        String statement = String.format(
-                "SELECT %s FROM %s WHERE cmis:name = '%s'", prop, type, name);
+    protected void checkReturnedValue(String prop, Object expected, String type, String name) {
+        String statement = String.format("SELECT %s FROM %s WHERE cmis:name = '%s'", prop, type, name);
         ObjectList res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         ObjectData data = res.getObjects().get(0);
@@ -1468,8 +1376,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     protected void checkValue(String prop, Object expected, ObjectData data) {
-        Object value = expected instanceof List ? getValues(data, prop)
-                : getValue(data, prop);
+        Object value = expected instanceof List ? getValues(data, prop) : getValue(data, prop);
         if (expected == NOT_NULL) {
             assertNotNull(value);
         } else {
@@ -1484,8 +1391,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkReturnedValue("dc:lastContributor", "john");
         // multi-valued
         checkReturnedValue("dc:subjects", Arrays.asList("foo", "gee/moo"));
-        checkReturnedValue("dc:contributors", Arrays.asList("pete", "bob"),
-                "File", "testfile2_Title");
+        checkReturnedValue("dc:contributors", Arrays.asList("pete", "bob"), "File", "testfile2_Title");
     }
 
     @Test
@@ -1507,16 +1413,11 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // ----- Folder -----
 
-        checkReturnedValue(PropertyIds.PARENT_ID, rootFolderId, "Folder",
-                "testfolder1_Title");
-        checkReturnedValue(PropertyIds.PATH, "/testfolder1", "Folder",
-                "testfolder1_Title");
-        checkReturnedValue(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS, null,
-                "Folder", "testfolder1_Title");
-        checkReturnedValue(NuxeoTypeHelper.NX_FACETS, NOT_NULL, "Folder",
-                "testfolder1_Title");
-        checkReturnedValue(NuxeoTypeHelper.NX_LIFECYCLE_STATE, "project",
-                "Folder", "testfolder1_Title");
+        checkReturnedValue(PropertyIds.PARENT_ID, rootFolderId, "Folder", "testfolder1_Title");
+        checkReturnedValue(PropertyIds.PATH, "/testfolder1", "Folder", "testfolder1_Title");
+        checkReturnedValue(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS, null, "Folder", "testfolder1_Title");
+        checkReturnedValue(NuxeoTypeHelper.NX_FACETS, NOT_NULL, "Folder", "testfolder1_Title");
+        checkReturnedValue(NuxeoTypeHelper.NX_LIFECYCLE_STATE, "project", "Folder", "testfolder1_Title");
 
         // ----- Document -----
 
@@ -1526,8 +1427,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkReturnedValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE);
         checkReturnedValue(PropertyIds.VERSION_LABEL, null);
         checkReturnedValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL);
-        checkReturnedValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT,
-                Boolean.TRUE);
+        checkReturnedValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE);
         checkReturnedValue(PropertyIds.IS_PRIVATE_WORKING_COPY, Boolean.TRUE);
         checkReturnedValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE);
         checkReturnedValue(NuxeoTypeHelper.NX_ISCHECKEDIN, Boolean.FALSE);
@@ -1538,9 +1438,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, NOT_NULL);
         checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME);
         checkReturnedValue(PropertyIds.CHECKIN_COMMENT, null);
-        checkReturnedValue(
-                PropertyIds.CONTENT_STREAM_LENGTH,
-                new ContentStreamImpl(null, "text/plain", Helper.FILE1_CONTENT).getBigLength());
+        checkReturnedValue(PropertyIds.CONTENT_STREAM_LENGTH, new ContentStreamImpl(null, "text/plain",
+                Helper.FILE1_CONTENT).getBigLength());
         checkReturnedValue(PropertyIds.CONTENT_STREAM_MIME_TYPE, "text/plain");
         checkReturnedValue(PropertyIds.CONTENT_STREAM_FILE_NAME, "testfile.txt");
         checkReturnedValue(PropertyIds.CONTENT_STREAM_ID, null);
@@ -1578,44 +1477,33 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(initiallyQueryableFilesCount, res.getNumItems().intValue());
 
         // delete another file:
-        nuxeotc.session.followTransition(new PathRef("/testfolder1/testfile1"),
-                "delete");
+        nuxeotc.session.followTransition(new PathRef("/testfolder1/testfile1"), "delete");
         nuxeotc.session.save();
 
         // by default 'deleted' files are filtered out
         statement = "SELECT cmis:name FROM File";
         res = query(statement);
-        assertEquals(initiallyQueryableFilesCount - 1,
-                res.getNumItems().intValue());
+        assertEquals(initiallyQueryableFilesCount - 1, res.getNumItems().intValue());
 
         // but it is nevertheless possible to perform explicit queries on the
         // lifecycle state
-        statement = "SELECT cmis:name FROM File"
-                + " WHERE nuxeo:lifecycleState = 'project'";
+        statement = "SELECT cmis:name FROM File" + " WHERE nuxeo:lifecycleState = 'project'";
         res = query(statement);
-        assertEquals(initiallyQueryableFilesCount - 1,
-                res.getNumItems().intValue());
+        assertEquals(initiallyQueryableFilesCount - 1, res.getNumItems().intValue());
 
-        statement = "SELECT cmis:name FROM File"
-                + " WHERE nuxeo:lifecycleState = 'deleted'"
-                + " ORDER BY cmis:name";
+        statement = "SELECT cmis:name FROM File" + " WHERE nuxeo:lifecycleState = 'deleted'" + " ORDER BY cmis:name";
         res = query(statement);
         assertEquals(2, res.getNumItems().intValue());
-        assertEquals(
-                "testfile1_Title",
-                res.getObjects().get(0).getProperties().getProperties().get(
-                        PropertyIds.NAME).getFirstValue());
+        assertEquals("testfile1_Title",
+                res.getObjects().get(0).getProperties().getProperties().get(PropertyIds.NAME).getFirstValue());
         // file5 was deleted in the setup function of the test case
-        assertEquals(
-                "title5",
-                res.getObjects().get(1).getProperties().getProperties().get(
-                        PropertyIds.NAME).getFirstValue());
+        assertEquals("title5",
+                res.getObjects().get(1).getProperties().getProperties().get(PropertyIds.NAME).getFirstValue());
 
         statement = "SELECT cmis:name FROM File"
                 + " WHERE nuxeo:lifecycleState IN ('project', 'deleted', 'somethingelse')";
         res = query(statement);
-        assertEquals(initiallyQueryableFilesCount + 1,
-                res.getNumItems().intValue());
+        assertEquals(initiallyQueryableFilesCount + 1, res.getNumItems().intValue());
     }
 
     @Test
@@ -1628,18 +1516,14 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         res = query(statement);
         objects = res.getObjects();
         assertEquals(3, res.getNumItems().intValue());
-        assertEquals("testfile1",
-                getValue(objects.get(0), NuxeoTypeHelper.NX_PATH_SEGMENT));
-        assertEquals("testfile2",
-                getValue(objects.get(1), NuxeoTypeHelper.NX_PATH_SEGMENT));
-        assertEquals("testfile4",
-                getValue(objects.get(2), NuxeoTypeHelper.NX_PATH_SEGMENT));
+        assertEquals("testfile1", getValue(objects.get(0), NuxeoTypeHelper.NX_PATH_SEGMENT));
+        assertEquals("testfile2", getValue(objects.get(1), NuxeoTypeHelper.NX_PATH_SEGMENT));
+        assertEquals("testfile4", getValue(objects.get(2), NuxeoTypeHelper.NX_PATH_SEGMENT));
 
         statement = "SELECT cmis:name FROM File WHERE nuxeo:pathSegment = 'testfile1'";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("testfile1_Title",
-                getValue(res.getObjects().get(0), "cmis:name"));
+        assertEquals("testfile1_Title", getValue(res.getObjects().get(0), "cmis:name"));
     }
 
     @Test
@@ -1649,14 +1533,11 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         List<ObjectData> objects;
 
         CoreSession session = nuxeotc.session;
-        DocumentModel ofolder = session.createDocumentModel("/", "ordered",
-                "OrderedFolder");
+        DocumentModel ofolder = session.createDocumentModel("/", "ordered", "OrderedFolder");
         session.createDocument(ofolder);
-        DocumentModel odoc1 = session.createDocumentModel("/ordered", "odoc1",
-                "File");
+        DocumentModel odoc1 = session.createDocumentModel("/ordered", "odoc1", "File");
         session.createDocument(odoc1);
-        DocumentModel odoc2 = session.createDocumentModel("/ordered", "odoc2",
-                "File");
+        DocumentModel odoc2 = session.createDocumentModel("/ordered", "odoc2", "File");
         session.createDocument(odoc2);
         session.save();
 
@@ -1664,10 +1545,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         res = query(statement);
         objects = res.getObjects();
         assertEquals(2, res.getNumItems().intValue());
-        assertEquals(BigInteger.valueOf(0),
-                getValue(objects.get(0), NuxeoTypeHelper.NX_POS));
-        assertEquals(BigInteger.valueOf(1),
-                getValue(objects.get(1), NuxeoTypeHelper.NX_POS));
+        assertEquals(BigInteger.valueOf(0), getValue(objects.get(0), NuxeoTypeHelper.NX_POS));
+        assertEquals(BigInteger.valueOf(1), getValue(objects.get(1), NuxeoTypeHelper.NX_POS));
     }
 
     @Test
@@ -1684,8 +1563,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();
         Holder<String> idHolder = new Holder<String>(id);
-        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null,
-                "this is the comment", null, null, null, null);
+        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "this is the comment", null, null, null,
+                null);
 
         // by default CMISQL queries will return both live documents and
         // archived versions
@@ -1694,13 +1573,11 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // it is however possible to fetch only the archived versions using the
         // nuxeo:isVersion system property
-        statement = "SELECT cmis:name, nuxeo:isVersion FROM File"
-                + " WHERE nuxeo:isVersion = true ORDER BY cmis:name";
+        statement = "SELECT cmis:name, nuxeo:isVersion FROM File" + " WHERE nuxeo:isVersion = true ORDER BY cmis:name";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         checkValue(PropertyIds.NAME, "testfile1_Title", res.getObjects().get(0));
-        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.TRUE,
-                res.getObjects().get(0));
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.TRUE, res.getObjects().get(0));
 
         // this should be equivalent to
         statement = "SELECT cmis:name, nuxeo:isVersion FROM File"
@@ -1708,18 +1585,15 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         checkValue(PropertyIds.NAME, "testfile1_Title", res.getObjects().get(0));
-        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.TRUE,
-                res.getObjects().get(0));
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.TRUE, res.getObjects().get(0));
 
         // conversely one can select only live documents by negating this
         // predicate
-        statement = "SELECT cmis:name, nuxeo:isVersion FROM File"
-                + " WHERE nuxeo:isVersion = false ORDER BY cmis:name";
+        statement = "SELECT cmis:name, nuxeo:isVersion FROM File" + " WHERE nuxeo:isVersion = false ORDER BY cmis:name";
         res = query(statement);
         assertEquals(initialFileCount, res.getNumItems().intValue());
         checkValue(PropertyIds.NAME, "testfile1_Title", res.getObjects().get(0));
-        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE,
-                res.getObjects().get(0));
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, res.getObjects().get(0));
 
         // this should be equivalent to
         statement = "SELECT cmis:name, nuxeo:isVersion  FROM File"
@@ -1727,8 +1601,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         res = query(statement);
         assertEquals(initialFileCount, res.getNumItems().intValue());
         checkValue(PropertyIds.NAME, "testfile1_Title", res.getObjects().get(0));
-        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE,
-                res.getObjects().get(0));
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, res.getObjects().get(0));
     }
 
     @Test
@@ -1747,8 +1620,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();
         Holder<String> idHolder = new Holder<String>(id);
-        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null,
-                "this is the comment", null, null, null, null);
+        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "this is the comment", null, null, null,
+                null);
 
         // by default CMISQL queries will return both live documents and
         // archived versions
@@ -1789,8 +1662,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // the latest major version is still the archived version, not the
         // checkouted document
-        statement = "SELECT * FROM File WHERE cmis:isLatestVersion = true"
-                + " AND cmis:name = 'testfile1_Title'";
+        statement = "SELECT * FROM File WHERE cmis:isLatestVersion = true" + " AND cmis:name = 'testfile1_Title'";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         first = res.getObjects().get(0);
@@ -1800,15 +1672,12 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // is also possible to query for versions that are not the latests, in
         // this case we only get the checkouted document
-        statement = "SELECT * FROM File"
-                + " WHERE cmis:isLatestVersion = false"
-                + " AND cmis:name = 'testfile1_Title'";
+        statement = "SELECT * FROM File" + " WHERE cmis:isLatestVersion = false" + " AND cmis:name = 'testfile1_Title'";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         first = res.getObjects().get(0);
         checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE, first);
-        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE,
-                res.getObjects().get(0));
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, res.getObjects().get(0));
         checkValue("dc:description", "new description", first);
     }
 
@@ -1854,22 +1723,19 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         String statement;
         ObjectList res;
 
-        statement = "SELECT cmis:objectId FROM cmis:document"
-                + " WHERE dc:subjects IS NULL";
+        statement = "SELECT cmis:objectId FROM cmis:document" + " WHERE dc:subjects IS NULL";
         res = query(statement);
         assertEquals(3, res.getNumItems().intValue());
 
         // with qualifier
-        statement = "SELECT A.cmis:objectId FROM cmis:document A"
-                + " WHERE A.dc:subjects IS NULL";
+        statement = "SELECT A.cmis:objectId FROM cmis:document A" + " WHERE A.dc:subjects IS NULL";
         res = query(statement);
         assertEquals(3, res.getNumItems().intValue());
     }
 
     @Test
     public void testQueryIsNotNullMuti() throws Exception {
-        String statement = "SELECT cmis:objectId FROM cmis:document"
-                + " WHERE dc:subjects IS NOT NULL";
+        String statement = "SELECT cmis:objectId FROM cmis:document" + " WHERE dc:subjects IS NOT NULL";
         ObjectList res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
     }
@@ -1881,12 +1747,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectList res;
 
         // add some instance facets on 2 documents
-        DocumentModel doc1 = nuxeotc.session.getDocument(new PathRef(
-                "/testfolder1/testfile1"));
+        DocumentModel doc1 = nuxeotc.session.getDocument(new PathRef("/testfolder1/testfile1"));
         assertTrue(doc1.addFacet("CustomFacetWithoutSchema"));
         nuxeotc.session.saveDocument(doc1);
-        DocumentModel doc2 = nuxeotc.session.getDocument(new PathRef(
-                "/testfolder1/testfile2"));
+        DocumentModel doc2 = nuxeotc.session.getDocument(new PathRef("/testfolder1/testfile2"));
         assertTrue(doc2.addFacet("CustomFacetWithMySchema2"));
         doc2.setPropertyValue("my2:long", 12);
         nuxeotc.session.saveDocument(doc2);
@@ -1902,9 +1766,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE 'CustomFacetWithoutSchema' = ANY nuxeo:secondaryObjectTypeIds";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        checkValue(NuxeoTypeHelper.NX_FACETS, Arrays.asList("Commentable",
-                "CustomFacetWithoutSchema", "Downloadable", "HasRelatedText",
-                "Publishable", "Versionable"), res.getObjects().get(0));
+        checkValue(NuxeoTypeHelper.NX_FACETS, Arrays.asList("Commentable", "CustomFacetWithoutSchema", "Downloadable",
+                "HasRelatedText", "Publishable", "Versionable"), res.getObjects().get(0));
         statement = "SELECT * FROM File WHERE 'CustomFacetWithMySchema2' = ANY nuxeo:secondaryObjectTypeIds";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
@@ -1917,9 +1780,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE ANY nuxeo:secondaryObjectTypeIds IN ('CustomFacetWithMySchema2')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        checkValue(NuxeoTypeHelper.NX_FACETS, Arrays.asList("Commentable",
-                "CustomFacetWithMySchema2", "Downloadable", "HasRelatedText",
-                "Publishable", "Versionable"), res.getObjects().get(0));
+        checkValue(NuxeoTypeHelper.NX_FACETS, Arrays.asList("Commentable", "CustomFacetWithMySchema2", "Downloadable",
+                "HasRelatedText", "Publishable", "Versionable"), res.getObjects().get(0));
         statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE ANY nuxeo:secondaryObjectTypeIds IN ('CustomFacetWithoutSchema', 'CustomFacetWithMySchema2')";
         res = query(statement);
         assertEquals(2, res.getNumItems().intValue());
@@ -1938,8 +1800,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         checkValue(NuxeoTypeHelper.NX_FACETS,
-                Arrays.asList("Commentable", "Downloadable", "HasRelatedText",
-                        "Publishable", "Versionable"), res.getObjects().get(0));
+                Arrays.asList("Commentable", "Downloadable", "HasRelatedText", "Publishable", "Versionable"),
+                res.getObjects().get(0));
         statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE ANY nuxeo:secondaryObjectTypeIds NOT IN ('Versionable', 'CustomFacetWithoutSchema')";
         res = query(statement);
         assertEquals(0, res.getNumItems().intValue());
@@ -1954,12 +1816,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectList res;
 
         // add some instance facets on 2 documents
-        DocumentModel doc1 = nuxeotc.session.getDocument(new PathRef(
-                "/testfolder1/testfile1"));
+        DocumentModel doc1 = nuxeotc.session.getDocument(new PathRef("/testfolder1/testfile1"));
         assertTrue(doc1.addFacet("CustomFacetWithoutSchema"));
         nuxeotc.session.saveDocument(doc1);
-        DocumentModel doc2 = nuxeotc.session.getDocument(new PathRef(
-                "/testfolder1/testfile2"));
+        DocumentModel doc2 = nuxeotc.session.getDocument(new PathRef("/testfolder1/testfile2"));
         assertTrue(doc2.addFacet("CustomFacetWithMySchema2"));
         doc2.setPropertyValue("my2:long", 12);
         nuxeotc.session.saveDocument(doc2);
@@ -2004,10 +1864,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         String statement = String.format(statementPattern, f1.getId());
         ObjectList res = query(statement);
         assertEquals(2, res.getNumItems().intValue());
-        assertEquals("testfile1_Title",
-                getString(res.getObjects().get(0), PropertyIds.NAME));
-        assertEquals("testfile2_Title",
-                getString(res.getObjects().get(1), PropertyIds.NAME));
+        assertEquals("testfile1_Title", getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("testfile2_Title", getString(res.getObjects().get(1), PropertyIds.NAME));
 
         // missing/illegal ID
         statement = String.format(statementPattern, "nosuchid");
@@ -2027,8 +1885,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         statement = String.format(statementPattern, f2.getId());
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("testfile4_Title",
-                getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("testfile4_Title", getString(res.getObjects().get(0), PropertyIds.NAME));
 
         // missing/illegal ID
         statement = String.format(statementPattern, "nosuchid");
@@ -2048,51 +1905,43 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         statement = String.format(statementPattern, f2.getId());
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("testfile4_Title",
-                getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("testfile4_Title", getString(res.getObjects().get(0), PropertyIds.NAME));
 
         statementPattern = "SELECT cmis:name FROM File f" // alias
                 + " WHERE IN_TREE(f, '%s')"; // qual is alias
         statement = String.format(statementPattern, f2.getId());
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("testfile4_Title",
-                getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("testfile4_Title", getString(res.getObjects().get(0), PropertyIds.NAME));
 
         statementPattern = "SELECT cmis:name FROM File f" // alias
                 + " WHERE IN_TREE(File, '%s')"; // qual is type
         statement = String.format(statementPattern, f2.getId());
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("testfile4_Title",
-                getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("testfile4_Title", getString(res.getObjects().get(0), PropertyIds.NAME));
 
         statementPattern = "SELECT cmis:name FROM File f" // alias
                 + " WHERE IN_TREE('%s')"; // no qual
         statement = String.format(statementPattern, f2.getId());
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("testfile4_Title",
-                getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("testfile4_Title", getString(res.getObjects().get(0), PropertyIds.NAME));
 
         try {
-            statement = "SELECT cmis:name FROM File"
-                    + " WHERE IN_TREE(g, 'abc')"; // invalid qual
+            statement = "SELECT cmis:name FROM File" + " WHERE IN_TREE(g, 'abc')"; // invalid qual
             query(statement);
             fail("should fail");
         } catch (CmisRuntimeException e) {
-            assertTrue(e.getMessage().contains(
-                    "g is neither a type query name nor an alias"));
+            assertTrue(e.getMessage().contains("g is neither a type query name nor an alias"));
         }
 
         try {
-            statement = "SELECT cmis:name FROM File f"
-                    + " WHERE IN_TREE(g, 'abc')"; // invalid qual
+            statement = "SELECT cmis:name FROM File f" + " WHERE IN_TREE(g, 'abc')"; // invalid qual
             query(statement);
             fail("should fail");
         } catch (CmisRuntimeException e) {
-            assertTrue(e.getMessage().contains(
-                    "g is neither a type query name nor an alias"));
+            assertTrue(e.getMessage().contains("g is neither a type query name nor an alias"));
         }
     }
 
@@ -2153,16 +2002,12 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("testfile1_Title", getString(ob, "dc:title"));
 
         BindingsObjectFactory factory = binding.getObjectFactory();
-        PropertyData<?> propTitle = factory.createPropertyStringData(
-                "dc:title", "new title1");
-        PropertyData<?> propDescription = factory.createPropertyStringData(
-                "dc:description", "new description1");
-        Properties properties = factory.createPropertiesData(Arrays.asList(
-                propTitle, propDescription));
+        PropertyData<?> propTitle = factory.createPropertyStringData("dc:title", "new title1");
+        PropertyData<?> propDescription = factory.createPropertyStringData("dc:description", "new description1");
+        Properties properties = factory.createPropertiesData(Arrays.asList(propTitle, propDescription));
 
         Holder<String> objectIdHolder = new Holder<String>(ob.getId());
-        objService.updateProperties(repositoryId, objectIdHolder, null,
-                properties, null);
+        objService.updateProperties(repositoryId, objectIdHolder, null, properties, null);
 
         sleepForFulltext();
 
@@ -2172,30 +2017,24 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         statement = "SELECT cmis:name FROM File WHERE CONTAINS('title1')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("new title1",
-                getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
 
-        statement = "SELECT cmis:name FROM File"
-                + " WHERE CONTAINS('description1')";
+        statement = "SELECT cmis:name FROM File" + " WHERE CONTAINS('description1')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("new title1",
-                getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
 
         if (supportsMultipleFulltextIndexes()) {
             // specific query for title index (the description token do not
             // match)
-            statement = "SELECT cmis:name FROM File"
-                    + " WHERE CONTAINS('nx:title:description1')";
+            statement = "SELECT cmis:name FROM File" + " WHERE CONTAINS('nx:title:description1')";
             res = query(statement);
             assertEquals(0, res.getNumItems().intValue());
 
-            statement = "SELECT cmis:name FROM File"
-                    + " WHERE CONTAINS('nx:title:title1')";
+            statement = "SELECT cmis:name FROM File" + " WHERE CONTAINS('nx:title:title1')";
             res = query(statement);
             assertEquals(1, res.getNumItems().intValue());
-            assertEquals("new title1",
-                    getString(res.getObjects().get(0), PropertyIds.NAME));
+            assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
         }
 
         // query for invalid index name
@@ -2215,16 +2054,12 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("testfile1_Title", getString(ob, "dc:title"));
 
         BindingsObjectFactory factory = binding.getObjectFactory();
-        PropertyData<?> propTitle = factory.createPropertyStringData(
-                "dc:title", "new title1");
-        PropertyData<?> propDescription = factory.createPropertyStringData(
-                "dc:description", "new description1");
-        Properties properties = factory.createPropertiesData(Arrays.asList(
-                propTitle, propDescription));
+        PropertyData<?> propTitle = factory.createPropertyStringData("dc:title", "new title1");
+        PropertyData<?> propDescription = factory.createPropertyStringData("dc:description", "new description1");
+        Properties properties = factory.createPropertiesData(Arrays.asList(propTitle, propDescription));
 
         Holder<String> objectIdHolder = new Holder<String>(ob.getId());
-        objService.updateProperties(repositoryId, objectIdHolder, null,
-                properties, null);
+        objService.updateProperties(repositoryId, objectIdHolder, null, properties, null);
 
         sleepForFulltext();
 
@@ -2234,20 +2069,17 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         statement = "SELECT cmis:name FROM File WHERE CONTAINS('title1 description1')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("new title1",
-                getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
 
         statement = "SELECT cmis:name FROM File WHERE CONTAINS('title1 AND description1')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("new title1",
-                getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
 
         statement = "SELECT cmis:name FROM File WHERE CONTAINS('title1 OR blorgzap')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("new title1",
-                getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
     }
 
     @Test
@@ -2454,22 +2286,19 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
             query("SELECT foo bar baz");
             fail();
         } catch (CmisRuntimeException e) {
-            assertTrue(e.getMessage().contains(
-                    "line 1:15 missing FROM at 'baz'"));
+            assertTrue(e.getMessage().contains("line 1:15 missing FROM at 'baz'"));
         }
         try {
             query("SELECT foo FROM bar");
             fail();
         } catch (CmisRuntimeException e) {
-            assertTrue(e.getMessage().contains(
-                    "bar is neither a type query name nor an alias"));
+            assertTrue(e.getMessage().contains("bar is neither a type query name nor an alias"));
         }
         try {
             query("SELECT foo FROM cmis:folder");
             fail();
         } catch (CmisRuntimeException e) {
-            assertTrue(e.getMessage().contains(
-                    "foo is not a property query name in any of the types"));
+            assertTrue(e.getMessage().contains("foo is not a property query name in any of the types"));
         }
     }
 
@@ -2478,62 +2307,53 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         int NUM = 20;
         for (int i = 0; i < NUM; i++) {
             String name = String.format("somedoc%03d", Integer.valueOf(i));
-            objService.createDocument(repositoryId,
-                    createBaseDocumentProperties(name, "cmis:document"),
-                    rootFolderId, null, VersioningState.CHECKEDOUT, null, null,
-                    null, null);
+            objService.createDocument(repositoryId, createBaseDocumentProperties(name, "cmis:document"), rootFolderId,
+                    null, VersioningState.CHECKEDOUT, null, null, null, null);
         }
         ObjectList res;
         List<ObjectData> objects;
         String statement = "SELECT cmis:name FROM cmis:document"
                 + " WHERE cmis:name LIKE 'somedoc%' ORDER BY cmis:name";
-        res = discService.query(repositoryId, statement, Boolean.TRUE, null,
-                null, null, null, null, null);
+        res = discService.query(repositoryId, statement, Boolean.TRUE, null, null, null, null, null, null);
         assertEquals(NUM, res.getNumItems().intValue());
         objects = res.getObjects();
         assertEquals(NUM, objects.size());
         assertEquals("somedoc000", getString(objects.get(0), PropertyIds.NAME));
-        assertEquals("somedoc019",
-                getString(objects.get(objects.size() - 1), PropertyIds.NAME));
+        assertEquals("somedoc019", getString(objects.get(objects.size() - 1), PropertyIds.NAME));
         // batch
-        res = discService.query(repositoryId, statement, Boolean.TRUE, null,
-                null, null, BigInteger.valueOf(10), BigInteger.valueOf(5), null);
+        res = discService.query(repositoryId, statement, Boolean.TRUE, null, null, null, BigInteger.valueOf(10),
+                BigInteger.valueOf(5), null);
         assertEquals(NUM, res.getNumItems().intValue());
         objects = res.getObjects();
         assertEquals(10, objects.size());
         assertEquals("somedoc005", getString(objects.get(0), PropertyIds.NAME));
-        assertEquals("somedoc014",
-                getString(objects.get(objects.size() - 1), PropertyIds.NAME));
+        assertEquals("somedoc014", getString(objects.get(objects.size() - 1), PropertyIds.NAME));
     }
 
     @Test
     public void testQueryPWC() throws Exception {
-        ObjectList list = navService.getCheckedOutDocs(repositoryId, null,
-                null, null, null, null, null, null, null, null);
+        ObjectList list = navService.getCheckedOutDocs(repositoryId, null, null, null, null, null, null, null, null,
+                null);
         assertEquals(4, list.getNumItems().intValue());
 
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();
         Holder<String> idHolder = new Holder<String>(id);
-        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null,
-                "comment", null, null, null, null);
+        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "comment", null, null, null, null);
 
-        list = navService.getCheckedOutDocs(repositoryId, null, null, null,
-                null, null, null, null, null, null);
+        list = navService.getCheckedOutDocs(repositoryId, null, null, null, null, null, null, null, null, null);
         assertEquals(3, list.getNumItems().intValue());
 
         verService.checkOut(repositoryId, idHolder, null, null);
 
         // re-checkout (ecm:isCheckedIn now false instead of null earlier)
-        list = navService.getCheckedOutDocs(repositoryId, null, null, null,
-                null, null, null, null, null, null);
+        list = navService.getCheckedOutDocs(repositoryId, null, null, null, null, null, null, null, null, null);
         assertEquals(4, list.getNumItems().intValue());
 
         // with folder and filter and order
         ObjectData f1 = getObjectByPath("/testfolder1");
-        list = navService.getCheckedOutDocs(repositoryId, f1.getId(),
-                "cmis:name", "cmis:name DESC", null, null, null, null, null,
-                null);
+        list = navService.getCheckedOutDocs(repositoryId, f1.getId(), "cmis:name", "cmis:name DESC", null, null, null,
+                null, null, null);
         assertEquals(3, list.getNumItems().intValue());
         List<ObjectData> objects = list.getObjects();
         assertEquals("testfile3_Title", getValue(objects.get(0), "cmis:name"));
@@ -2548,27 +2368,21 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // two versions
         Holder<String> idHolder = new Holder<String>(id);
-        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null,
-                "comment", null, null, null, null);
+        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "comment", null, null, null, null);
         verService.checkOut(repositoryId, idHolder, null, null);
-        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null,
-                "comment", null, null, null, null);
+        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "comment", null, null, null, null);
 
         ObjectList res;
-        String statement = "SELECT cmis:objectId FROM cmis:document"
-                + " WHERE cmis:name = 'testfile1_Title'";
+        String statement = "SELECT cmis:objectId FROM cmis:document" + " WHERE cmis:name = 'testfile1_Title'";
 
         // search all versions
-        res = discService.query(repositoryId, statement, Boolean.TRUE, null,
-                null, null, null, null, null);
+        res = discService.query(repositoryId, statement, Boolean.TRUE, null, null, null, null, null, null);
         assertEquals(3, res.getNumItems().intValue());
 
         // do not search all versions (only latest)
-        res = discService.query(repositoryId, statement, Boolean.FALSE, null,
-                null, null, null, null, null);
+        res = discService.query(repositoryId, statement, Boolean.FALSE, null, null, null, null, null, null);
         assertEquals(1, res.getNumItems().intValue());
-        res = discService.query(repositoryId, statement, null, null, null,
-                null, null, null, null);
+        res = discService.query(repositoryId, statement, null, null, null, null, null, null, null);
         assertEquals(1, res.getNumItems().intValue());
     }
 
@@ -2577,22 +2391,18 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectList res;
         Boolean searchAllVersions;
 
-        String statement = "SELECT cmis:objectId FROM cmis:folder"
-                + " WHERE cmis:name = 'testfolder2_Title'";
+        String statement = "SELECT cmis:objectId FROM cmis:folder" + " WHERE cmis:name = 'testfolder2_Title'";
 
         searchAllVersions = Boolean.TRUE;
-        res = discService.query(repositoryId, statement, searchAllVersions,
-                null, null, null, null, null, null);
+        res = discService.query(repositoryId, statement, searchAllVersions, null, null, null, null, null, null);
         assertEquals(1, res.getNumItems().intValue());
 
         searchAllVersions = Boolean.FALSE;
-        res = discService.query(repositoryId, statement, searchAllVersions,
-                null, null, null, null, null, null);
+        res = discService.query(repositoryId, statement, searchAllVersions, null, null, null, null, null, null);
         assertEquals(1, res.getNumItems().intValue());
 
         searchAllVersions = null;
-        res = discService.query(repositoryId, statement, searchAllVersions,
-                null, null, null, null, null, null);
+        res = discService.query(repositoryId, statement, searchAllVersions, null, null, null, null, null, null);
         assertEquals(1, res.getNumItems().intValue());
     }
 
@@ -2622,8 +2432,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // check in major -> version 1.0
 
         Holder<String> idHolder = new Holder<String>(id);
-        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null,
-                "comment", null, null, null, null);
+        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "comment", null, null, null, null);
 
         String vid = idHolder.getValue();
         ObjectData ver = getObject(vid);
@@ -2633,8 +2442,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.TRUE, ver);
         checkValue(PropertyIds.VERSION_LABEL, "1.0", ver);
         checkValue(PropertyIds.VERSION_SERIES_ID, series, ver);
-        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE,
-                ver);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE, ver);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ver);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ver);
         checkValue(PropertyIds.CHECKIN_COMMENT, "comment", ver);
@@ -2688,8 +2496,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // check in minor -> version 1.1
 
         idHolder.setValue(coid);
-        verService.checkIn(repositoryId, idHolder, Boolean.FALSE, null, null,
-                "comment2", null, null, null, null);
+        verService.checkIn(repositoryId, idHolder, Boolean.FALSE, null, null, "comment2", null, null, null, null);
 
         String v2id = idHolder.getValue();
         ObjectData ver2 = getObject(v2id);
@@ -2699,8 +2506,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE, ver2);
         checkValue(PropertyIds.VERSION_LABEL, "1.1", ver2);
         checkValue(PropertyIds.VERSION_SERIES_ID, series, ver2);
-        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE,
-                ver2);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE, ver2);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ver2);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ver2);
         checkValue(PropertyIds.CHECKIN_COMMENT, "comment2", ver2);
@@ -2719,8 +2525,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         waitForAsyncCompletion();
         verService.cancelCheckOut(repositoryId, coid, null);
-        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE,
-                ver2);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE, ver2);
         ci = getObject(id);
         checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ci);
 
@@ -2734,8 +2539,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         idHolder.setValue(id);
         verService.checkOut(repositoryId, idHolder, null, null);
         // atompub passes just object id, soap just version series id
-        List<ObjectData> vers = verService.getAllVersions(repositoryId, id,
-                null, null, null, null);
+        List<ObjectData> vers = verService.getAllVersions(repositoryId, id, null, null, null, null);
         assertEquals(3, vers.size());
         assertEquals(id, vers.get(0).getId());
         assertEquals(ver2.getId(), vers.get(1).getId());
@@ -2744,27 +2548,24 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // get latest version
 
         Boolean major = Boolean.FALSE;
-        ObjectData l = verService.getObjectOfLatestVersion(repositoryId, id,
-                null, major, null, null, null, null, null, null, null);
+        ObjectData l = verService.getObjectOfLatestVersion(repositoryId, id, null, major, null, null, null, null, null,
+                null, null);
         assertEquals(ver2.getId(), l.getId());
         // also works on a version object
-        l = verService.getObjectOfLatestVersion(repositoryId, ver.getId(),
-                null, major, null, null, null, null, null, null, null);
+        l = verService.getObjectOfLatestVersion(repositoryId, ver.getId(), null, major, null, null, null, null, null,
+                null, null);
         assertEquals(ver2.getId(), l.getId());
         // latest major version
         major = Boolean.TRUE;
-        l = verService.getObjectOfLatestVersion(repositoryId, id, null, major,
-                null, null, null, null, null, null, null);
+        l = verService.getObjectOfLatestVersion(repositoryId, id, null, major, null, null, null, null, null, null, null);
         assertEquals(ver.getId(), l.getId());
-        l = verService.getObjectOfLatestVersion(repositoryId, ver2.getId(),
-                null, major, null, null, null, null, null, null, null);
+        l = verService.getObjectOfLatestVersion(repositoryId, ver2.getId(), null, major, null, null, null, null, null,
+                null, null);
         assertEquals(ver.getId(), l.getId());
 
         major = Boolean.FALSE;
-        Properties p = verService.getPropertiesOfLatestVersion(repositoryId,
-                id, null, major, null, null);
-        assertEquals(ver2.getId(),
-                p.getProperties().get(PropertyIds.OBJECT_ID).getFirstValue());
+        Properties p = verService.getPropertiesOfLatestVersion(repositoryId, id, null, major, null, null);
+        assertEquals(ver2.getId(), p.getProperties().get(PropertyIds.OBJECT_ID).getFirstValue());
     }
 
     @Test
@@ -2790,12 +2591,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         Properties props = createProperties("dc:title", "newtitle");
         byte[] bytes = "foo-bar".getBytes("UTF-8");
         ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-        ContentStream cs = new ContentStreamImpl("test.pdf",
-                BigInteger.valueOf(bytes.length), "application/pdf", in);
+        ContentStream cs = new ContentStreamImpl("test.pdf", BigInteger.valueOf(bytes.length), "application/pdf", in);
 
         Holder<String> idHolder = new Holder<String>(id);
-        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, props, cs,
-                "comment", null, null, null, null);
+        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, props, cs, "comment", null, null, null, null);
 
         String vid = idHolder.getValue();
         ObjectData ver = getObject(vid);
@@ -2806,8 +2605,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // check changes applied
         checkValue("dc:title", "newtitle", ver);
-        ContentStream cs2 = objService.getContentStream(repositoryId,
-                ver.getId(), null, null, null, null);
+        ContentStream cs2 = objService.getContentStream(repositoryId, ver.getId(), null, null, null, null);
         assertEquals("application/pdf", cs2.getMimeType());
         assertEquals(bytes.length, cs2.getLength());
         assertEquals("test.pdf", cs2.getFileName());
@@ -2821,10 +2619,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // creation as major version (default, per spec)
 
-        String id = objService.createDocument(repositoryId,
-                createBaseDocumentProperties("newdoc2", "cmis:document"),
-                rootFolderId, null, VersioningState.MAJOR, null, null, null,
-                null);
+        String id = objService.createDocument(repositoryId, createBaseDocumentProperties("newdoc2", "cmis:document"),
+                rootFolderId, null, VersioningState.MAJOR, null, null, null, null);
         ObjectData ob = getObject(id);
 
         checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ob);
@@ -2840,9 +2636,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // copy from checked in source as checked out
 
-        id = objService.createDocumentFromSource(repositoryId, id, null,
-                rootFolderId, VersioningState.CHECKEDOUT, null, null, null,
-                null);
+        id = objService.createDocumentFromSource(repositoryId, id, null, rootFolderId, VersioningState.CHECKEDOUT,
+                null, null, null, null);
         ob = getObject(id);
         checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE, ob);
         checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE, ob);
@@ -2857,10 +2652,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // creation as minor version
 
-        id = objService.createDocument(repositoryId,
-                createBaseDocumentProperties("newdoc2", "cmis:document"),
-                rootFolderId, null, VersioningState.MINOR, null, null, null,
-                null);
+        id = objService.createDocument(repositoryId, createBaseDocumentProperties("newdoc2", "cmis:document"),
+                rootFolderId, null, VersioningState.MINOR, null, null, null, null);
         ob = getObject(id);
 
         checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ob);
@@ -2876,10 +2669,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // creation checked out
 
-        id = objService.createDocument(repositoryId,
-                createBaseDocumentProperties("newdoc3", "cmis:document"),
-                rootFolderId, null, VersioningState.CHECKEDOUT, null, null,
-                null, null);
+        id = objService.createDocument(repositoryId, createBaseDocumentProperties("newdoc3", "cmis:document"),
+                rootFolderId, null, VersioningState.CHECKEDOUT, null, null, null, null);
         ob = getObject(id);
 
         checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE, ob);
@@ -2895,8 +2686,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // copy from checked out source as checked in
 
-        id = objService.createDocumentFromSource(repositoryId, id, null,
-                rootFolderId, VersioningState.MAJOR, null, null, null, null);
+        id = objService.createDocumentFromSource(repositoryId, id, null, rootFolderId, VersioningState.MAJOR, null,
+                null, null, null);
         ob = getObject(id);
         checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ob);
         checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.TRUE, ob);
@@ -2927,8 +2718,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         if (addHidden) {
             // add a doc whose type is not known to CMIS
             CoreSession session = nuxeotc.session;
-            DocumentModel doc = session.createDocumentModel("/", "hidden",
-                    "HiddenFolder");
+            DocumentModel doc = session.createDocumentModel("/", "hidden", "HiddenFolder");
             Helper.sleepForAuditGranularity();
             session.createDocument(doc);
             session.save();
@@ -2948,20 +2738,14 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         objects = allObjects.subList(allObjects.size() - n, allObjects.size());
         checkChange(objects.get(0), "/testfolder1", //
                 ChangeType.CREATED, "Folder");
-        checkChange(objects.get(1), "/testfolder1/testfile1",
-                ChangeType.CREATED, "File");
-        checkChange(objects.get(2), "/testfolder1/testfile2",
-                ChangeType.CREATED, "File");
-        checkChange(objects.get(3), "/testfolder1/testfile3",
-                ChangeType.CREATED, "Note");
+        checkChange(objects.get(1), "/testfolder1/testfile1", ChangeType.CREATED, "File");
+        checkChange(objects.get(2), "/testfolder1/testfile2", ChangeType.CREATED, "File");
+        checkChange(objects.get(3), "/testfolder1/testfile3", ChangeType.CREATED, "Note");
         checkChange(objects.get(4), "/testfolder2", //
                 ChangeType.CREATED, "Folder");
-        checkChange(objects.get(5), "/testfolder2/testfolder3",
-                ChangeType.CREATED, "Folder");
-        checkChange(objects.get(6), "/testfolder2/testfolder4",
-                ChangeType.CREATED, "Folder");
-        checkChange(objects.get(7), "/testfolder2/testfolder3/testfile4",
-                ChangeType.CREATED, "File");
+        checkChange(objects.get(5), "/testfolder2/testfolder3", ChangeType.CREATED, "Folder");
+        checkChange(objects.get(6), "/testfolder2/testfolder4", ChangeType.CREATED, "Folder");
+        checkChange(objects.get(7), "/testfolder2/testfolder3/testfile4", ChangeType.CREATED, "File");
         checkChange(objects.get(8), file5id, ChangeType.CREATED, "File");
         checkChange(objects.get(9), file5id, ChangeType.UPDATED, "File");
 
@@ -2978,8 +2762,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         changeLogTokenHolder.setValue(clt2); // just the last
         ObjectList changes;
-        changes = discService.getContentChanges(repositoryId,
-                changeLogTokenHolder, Boolean.TRUE, null, null, null,
+        changes = discService.getContentChanges(repositoryId, changeLogTokenHolder, Boolean.TRUE, null, null, null,
                 BigInteger.valueOf(100), null);
         objects = changes.getObjects();
         assertEquals(1, objects.size());
@@ -2993,8 +2776,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // add docs whose type is not known to CMIS
         CoreSession session = nuxeotc.session;
         for (int i = 0; i < 15; i++) {
-            DocumentModel doc = session.createDocumentModel("/", "hidden" + i,
-                    "HiddenFolder");
+            DocumentModel doc = session.createDocumentModel("/", "hidden" + i, "HiddenFolder");
             Helper.sleepForAuditGranularity();
             doc = session.createDocument(doc);
             session.save();
@@ -3014,39 +2796,30 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         int n = 11; // last n events
         assertTrue(allObjects.size() >= n);
-        List<ObjectData> objects = allObjects.subList(allObjects.size() - n,
-                allObjects.size());
+        List<ObjectData> objects = allObjects.subList(allObjects.size() - n, allObjects.size());
         checkChange(objects.get(0), "/testfolder1", //
                 ChangeType.CREATED, "Folder");
-        checkChange(objects.get(1), "/testfolder1/testfile1",
-                ChangeType.CREATED, "File");
-        checkChange(objects.get(2), "/testfolder1/testfile2",
-                ChangeType.CREATED, "File");
-        checkChange(objects.get(3), "/testfolder1/testfile3",
-                ChangeType.CREATED, "Note");
+        checkChange(objects.get(1), "/testfolder1/testfile1", ChangeType.CREATED, "File");
+        checkChange(objects.get(2), "/testfolder1/testfile2", ChangeType.CREATED, "File");
+        checkChange(objects.get(3), "/testfolder1/testfile3", ChangeType.CREATED, "Note");
         checkChange(objects.get(4), "/testfolder2", //
                 ChangeType.CREATED, "Folder");
-        checkChange(objects.get(5), "/testfolder2/testfolder3",
-                ChangeType.CREATED, "Folder");
-        checkChange(objects.get(6), "/testfolder2/testfolder4",
-                ChangeType.CREATED, "Folder");
-        checkChange(objects.get(7), "/testfolder2/testfolder3/testfile4",
-                ChangeType.CREATED, "File");
+        checkChange(objects.get(5), "/testfolder2/testfolder3", ChangeType.CREATED, "Folder");
+        checkChange(objects.get(6), "/testfolder2/testfolder4", ChangeType.CREATED, "Folder");
+        checkChange(objects.get(7), "/testfolder2/testfolder3/testfile4", ChangeType.CREATED, "File");
         checkChange(objects.get(8), file5id, ChangeType.CREATED, "File");
         checkChange(objects.get(9), file5id, ChangeType.UPDATED, "File");
         checkChange(objects.get(10), doc.getId(), ChangeType.CREATED, "File");
     }
 
-    protected List<ObjectData> readAllContentChanges(
-            Holder<String> changeLogTokenHolder) {
+    protected List<ObjectData> readAllContentChanges(Holder<String> changeLogTokenHolder) {
         List<ObjectData> allObjects = new ArrayList<ObjectData>();
         changeLogTokenHolder.setValue(null); // start at beginning
         boolean skipFirst = false;
         ObjectList changes;
         do {
             int maxItems = 5;
-            changes = discService.getContentChanges(repositoryId,
-                    changeLogTokenHolder, Boolean.TRUE, null, null, null,
+            changes = discService.getContentChanges(repositoryId, changeLogTokenHolder, Boolean.TRUE, null, null, null,
                     BigInteger.valueOf(maxItems), null);
             List<ObjectData> objects = changes.getObjects();
             if (skipFirst) {
@@ -3063,18 +2836,15 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         Thread.sleep(5 * 1000); // wait for audit log to catch up
     }
 
-    protected void checkChange(ObjectData data, String id,
-            ChangeType changeType, String type) throws Exception {
+    protected void checkChange(ObjectData data, String id, ChangeType changeType, String type) throws Exception {
         Map<String, PropertyData<?>> properties;
         ChangeEventInfo cei;
         cei = data.getChangeEventInfo();
         properties = data.getProperties().getProperties();
-        String expectedId = id.startsWith("/") ? getObjectByPath(id).getId()
-                : id;
+        String expectedId = id.startsWith("/") ? getObjectByPath(id).getId() : id;
         assertEquals(expectedId, data.getId());
         assertEquals(changeType, cei.getChangeType());
-        assertEquals(type,
-                properties.get(PropertyIds.OBJECT_TYPE_ID).getFirstValue());
+        assertEquals(type, properties.get(PropertyIds.OBJECT_TYPE_ID).getFirstValue());
     }
 
     @Test
@@ -3090,13 +2860,11 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         BindingsObjectFactory factory = binding.getObjectFactory();
         List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
         props.add(factory.createPropertyIdData(PropertyIds.NAME, "rel"));
-        props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID,
-                "Relation"));
+        props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID, "Relation"));
         props.add(factory.createPropertyIdData(PropertyIds.SOURCE_ID, id1));
         props.add(factory.createPropertyIdData(PropertyIds.TARGET_ID, id2));
         Properties properties = factory.createPropertiesData(props);
-        String relid = objService.createRelationship(repositoryId, properties,
-                null, null, null, null);
+        String relid = objService.createRelationship(repositoryId, properties, null, null, null, null);
 
         // must be superuser...
         // ObjectData rel = getObject(relid);
@@ -3117,8 +2885,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // object from query have relationship info
         statement = "SELECT cmis:objectId FROM File WHERE cmis:name = 'testfile1_Title'";
-        res = discService.query(repositoryId, statement, Boolean.TRUE, null,
-                IncludeRelationships.BOTH, null, null, null, null);
+        res = discService.query(repositoryId, statement, Boolean.TRUE, null, IncludeRelationships.BOTH, null, null,
+                null, null);
         assertEquals(1, res.getNumItems().intValue());
         od1 = res.getObjects().get(0);
         rels1 = od1.getRelationships();
@@ -3141,8 +2909,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         closeBinding();
         initBinding("john");
 
-        statement = "SELECT A.cmis:objectId, B.cmis:objectId"
-                + " FROM cmis:document A"
+        statement = "SELECT A.cmis:objectId, B.cmis:objectId" + " FROM cmis:document A"
                 + " JOIN cmis:relationship R ON R.cmis:sourceId = A.cmis:objectId"
                 + " JOIN cmis:document B ON R.cmis:targetId = B.cmis:objectId";
         res = query(statement);
@@ -3154,16 +2921,14 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         initBinding("bob");
 
         // no security check on relationship itself
-        statement = "SELECT A.cmis:objectId, B.cmis:objectId"
-                + " FROM cmis:document A"
+        statement = "SELECT A.cmis:objectId, B.cmis:objectId" + " FROM cmis:document A"
                 + " JOIN cmis:relationship R ON R.cmis:sourceId = A.cmis:objectId"
                 + " JOIN cmis:document B ON R.cmis:targetId = B.cmis:objectId";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
 
         // with LEFT JOIN on relation
-        statement = "SELECT A.cmis:objectId, B.cmis:objectId"
-                + " FROM cmis:document A"
+        statement = "SELECT A.cmis:objectId, B.cmis:objectId" + " FROM cmis:document A"
                 + " LEFT JOIN cmis:relationship R ON R.cmis:sourceId = A.cmis:objectId"
                 + " LEFT JOIN cmis:document B ON R.cmis:targetId = B.cmis:objectId";
         res = query(statement);
@@ -3173,8 +2938,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     @Test
     public void testQueryWithSecurityPolicy() throws Exception {
         CoreSession session = nuxeotc.session;
-        DocumentModel doc = session.getDocument(new PathRef(
-                "/testfolder1/testfile1"));
+        DocumentModel doc = session.getDocument(new PathRef("/testfolder1/testfile1"));
         doc.setPropertyValue("dc:title", "SECRET should not be listed");
         session.saveDocument(doc);
         session.save();
@@ -3189,8 +2953,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         if (!supportsNXQLQueryTransformers()) {
             // deploy a security policy with a non-trivial query transformer
             // that has no CMISQL equivalent
-            nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
-                    "OSGI-INF/security-policy-contrib.xml");
+            nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/security-policy-contrib.xml");
             // check that queries now fail
             try {
                 query("SELECT cmis:objectId FROM File");
@@ -3201,15 +2964,13 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
             }
 
             // without it it works again
-            nuxeotc.undeployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
-                    "OSGI-INF/security-policy-contrib.xml");
+            nuxeotc.undeployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/security-policy-contrib.xml");
             res = query("SELECT cmis:objectId FROM File");
             assertEquals(3, res.getNumItems().intValue());
         }
 
         // deploy a security policy with a transformer
-        nuxeotc.deployContrib(
-                "org.nuxeo.ecm.core.opencmis.tests.tests",
+        nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
                 supportsNXQLQueryTransformers() ? "OSGI-INF/security-policy-contrib3.xml"
                         : "OSGI-INF/security-policy-contrib2.xml");
         res = query("SELECT cmis:objectId FROM File");
@@ -3222,8 +2983,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     protected static Map<String, Set<String>> getActualAcl(Acl acl) {
         Map<String, Set<String>> actual = new HashMap<>();
         for (Ace ace : acl.getAces()) {
-            actual.put(ace.getPrincipalId() + (ace.isDirect() ? "" : "*"),
-                    new HashSet<String>(ace.getPermissions()));
+            actual.put(ace.getPrincipalId() + (ace.isDirect() ? "" : "*"), new HashSet<String>(ace.getPermissions()));
         }
         return actual;
     }
@@ -3287,10 +3047,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
             // block on testfile4
             acp = new ACPImpl();
             acl = new ACLImpl();
-            acl.add(new ACE(SecurityConstants.ADMINISTRATOR,
-                    SecurityConstants.READ, true));
-            acl.add(new ACE(SecurityConstants.EVERYONE,
-                    SecurityConstants.EVERYTHING, false));
+            acl.add(new ACE(SecurityConstants.ADMINISTRATOR, SecurityConstants.READ, true));
+            acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
             acp.addACL(acl);
             coreSession.setACP(new IdRef(file4Id), acp, true);
 
@@ -3315,9 +3073,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // direct Object API
 
-        ObjectData ob = objService.getObjectByPath(repositoryId,
-                "/testfolder1/testfile1", null, null, null, null, null,
-                Boolean.TRUE, null); // includeAcl
+        ObjectData ob = objService.getObjectByPath(repositoryId, "/testfolder1/testfile1", null, null, null, null,
+                null, Boolean.TRUE, null); // includeAcl
         acl = ob.getAcl();
         assertEquals(Boolean.TRUE, acl.isExact());
         actual = getActualAcl(acl);
@@ -3346,8 +3103,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         Ace ace = new AccessControlEntryImpl(p, Arrays.asList(READ));
         Acl addAces = new AccessControlListImpl(Arrays.asList(ace));
         Acl removeAces = null;
-        Acl acl = aclService.applyAcl(repositoryId, file1Id, addAces,
-                removeAces, AclPropagation.REPOSITORYDETERMINED, null);
+        Acl acl = aclService.applyAcl(repositoryId, file1Id, addAces, removeAces, AclPropagation.REPOSITORYDETERMINED,
+                null);
 
         assertEquals(Boolean.TRUE, acl.isExact());
         Map<String, Set<String>> actual = getActualAcl(acl);
@@ -3364,8 +3121,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ace = new AccessControlEntryImpl(p, Arrays.asList(READ));
         addAces = null;
         removeAces = new AccessControlListImpl(Arrays.asList(ace));
-        acl = aclService.applyAcl(repositoryId, file1Id, addAces, removeAces,
-                AclPropagation.REPOSITORYDETERMINED, null);
+        acl = aclService.applyAcl(repositoryId, file1Id, addAces, removeAces, AclPropagation.REPOSITORYDETERMINED, null);
 
         assertEquals(Boolean.TRUE, acl.isExact());
         actual = getActualAcl(acl);
@@ -3388,8 +3144,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
             fail("should throw RecoverableClientException");
         } catch (CmisRuntimeException e) {
             Throwable cause = e.getCause();
-            assertTrue(String.valueOf(cause),
-                    cause instanceof RecoverableClientException);
+            assertTrue(String.valueOf(cause), cause instanceof RecoverableClientException);
         }
     }
 

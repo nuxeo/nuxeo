@@ -27,8 +27,7 @@ public class NuxeoCmisServiceFactoryDescriptor {
     public Class<? extends NuxeoCmisServiceFactory> factoryClass;
 
     public Class<? extends NuxeoCmisServiceFactory> getFactoryClass() {
-        return factoryClass == null ? NuxeoCmisServiceFactory.class
-                : factoryClass;
+        return factoryClass == null ? NuxeoCmisServiceFactory.class : factoryClass;
     }
 
     @XNodeMap(value = "parameter", key = "@name", type = HashMap.class, componentType = String.class)
@@ -38,8 +37,7 @@ public class NuxeoCmisServiceFactoryDescriptor {
     }
 
     /** Copy constructor. */
-    public NuxeoCmisServiceFactoryDescriptor(
-            NuxeoCmisServiceFactoryDescriptor other) {
+    public NuxeoCmisServiceFactoryDescriptor(NuxeoCmisServiceFactoryDescriptor other) {
         factoryClass = other.factoryClass;
         factoryParameters = new HashMap<>(other.factoryParameters);
     }

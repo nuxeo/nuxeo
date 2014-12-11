@@ -38,8 +38,7 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
  */
 public class NuxeoDocument extends NuxeoFileableObject implements Document {
 
-    public NuxeoDocument(NuxeoSession session, NuxeoObjectData data,
-            ObjectType type) {
+    public NuxeoDocument(NuxeoSession session, NuxeoObjectData data, ObjectType type) {
         super(session, data, type);
     }
 
@@ -49,23 +48,18 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
     }
 
     @Override
-    public ObjectId checkIn(boolean major, Map<String, ?> properties,
-            ContentStream contentStream, String checkinComment) {
-        return checkIn(major, properties, contentStream, checkinComment, null,
-                null, null);
+    public ObjectId checkIn(boolean major, Map<String, ?> properties, ContentStream contentStream, String checkinComment) {
+        return checkIn(major, properties, contentStream, checkinComment, null, null, null);
     }
 
     @Override
-    public ObjectId checkIn(boolean major, Map<String, ?> properties,
-            ContentStream contentStream, String checkinComment,
-            List<Policy> policies, List<Ace> addAces, List<Ace> removeAces) {
+    public ObjectId checkIn(boolean major, Map<String, ?> properties, ContentStream contentStream,
+            String checkinComment, List<Policy> policies, List<Ace> addAces, List<Ace> removeAces) {
         Holder<String> idHolder = new Holder<>(getId());
         service.checkIn(getRepositoryId(), idHolder, Boolean.valueOf(major),
-                objectFactory.convertProperties(properties, type, null,
-                        UPDATABILITY_READWRITE),
-                objectFactory.convertContentStream(contentStream),
-                checkinComment, objectFactory.convertPolicies(policies),
-                objectFactory.convertAces(addAces),
+                objectFactory.convertProperties(properties, type, null, UPDATABILITY_READWRITE),
+                objectFactory.convertContentStream(contentStream), checkinComment,
+                objectFactory.convertPolicies(policies), objectFactory.convertAces(addAces),
                 objectFactory.convertAces(removeAces), null);
         return session.createObjectId(idHolder.getValue());
     }
@@ -79,25 +73,21 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
 
     @Override
     public NuxeoDocument copy(ObjectId target) {
-        return copy(target, null, null, null, null, null,
-                session.getDefaultContext());
+        return copy(target, null, null, null, null, null, session.getDefaultContext());
     }
 
     @Override
-    public NuxeoDocument copy(ObjectId target, Map<String, ?> properties,
-            VersioningState versioningState, List<Policy> policies,
-            List<Ace> addACEs, List<Ace> removeACEs, OperationContext context) {
+    public NuxeoDocument copy(ObjectId target, Map<String, ?> properties, VersioningState versioningState,
+            List<Policy> policies, List<Ace> addACEs, List<Ace> removeACEs, OperationContext context) {
         if (target == null || target.getId() == null) {
             throw new CmisInvalidArgumentException("Invalid target: " + target);
         }
         if (context == null) {
             context = session.getDefaultContext();
         }
-        NuxeoObjectData newData = nuxeoCmisService.copy(getId(), target.getId(),
-                properties, type, versioningState, policies, addACEs,
-                removeACEs, context);
-        return (NuxeoDocument) session.getObjectFactory().convertObject(
-                newData, context);
+        NuxeoObjectData newData = nuxeoCmisService.copy(getId(), target.getId(), properties, type, versioningState,
+                policies, addACEs, removeACEs, context);
+        return (NuxeoDocument) session.getObjectFactory().convertObject(newData, context);
     }
 
     @Override
@@ -118,8 +108,7 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
         String changeToken = getPropertyValue(PropertyIds.CHANGE_TOKEN);
         Holder<String> changeTokenHolder = new Holder<String>(changeToken);
 
-        service.deleteContentStream(getRepositoryId(), objectIdHolder,
-                changeTokenHolder, null);
+        service.deleteContentStream(getRepositoryId(), objectIdHolder, changeTokenHolder, null);
 
         String objectId = objectIdHolder.getValue(); // never null
         return session.createObjectId(objectId);
@@ -158,11 +147,9 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
     }
 
     @Override
-    public ContentStream getContentStream(String streamId, BigInteger offset,
-            BigInteger length) {
+    public ContentStream getContentStream(String streamId, BigInteger offset, BigInteger length) {
         try {
-            return service.getContentStream(getRepositoryId(), getId(),
-                    streamId, offset, length, null);
+            return service.getContentStream(getRepositoryId(), getId(), streamId, offset, length, null);
         } catch (CmisConstraintException e) {
             return null;
         }
@@ -196,8 +183,7 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
     }
 
     @Override
-    public Document getObjectOfLatestVersion(boolean major,
-            OperationContext context) {
+    public Document getObjectOfLatestVersion(boolean major, OperationContext context) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -253,37 +239,32 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
     }
 
     @Override
-    public Document setContentStream(ContentStream contentStream,
-            boolean overwrite) {
+    public Document setContentStream(ContentStream contentStream, boolean overwrite) {
         ObjectId objectId = setContentStream(contentStream, overwrite, true);
         return (Document) session.getObject(objectId);
     }
 
     @Override
-    public ObjectId setContentStream(ContentStream contentStream,
-            boolean overwrite, boolean refresh) {
+    public ObjectId setContentStream(ContentStream contentStream, boolean overwrite, boolean refresh) {
         Holder<String> objectIdHolder = new Holder<String>(getId());
         String changeToken = getPropertyValue(PropertyIds.CHANGE_TOKEN);
         Holder<String> changeTokenHolder = new Holder<String>(changeToken);
 
-        service.setContentStream(getRepositoryId(), objectIdHolder,
-                Boolean.valueOf(overwrite), changeTokenHolder, contentStream,
-                null);
+        service.setContentStream(getRepositoryId(), objectIdHolder, Boolean.valueOf(overwrite), changeTokenHolder,
+                contentStream, null);
 
         String objectId = objectIdHolder.getValue(); // never null
         return session.createObjectId(objectId);
     }
 
     @Override
-    public Document appendContentStream(ContentStream contentStream,
-            boolean isLastChunk) {
+    public Document appendContentStream(ContentStream contentStream, boolean isLastChunk) {
         ObjectId objectId = appendContentStream(contentStream, isLastChunk, true);
         return (Document) session.getObject(objectId);
     }
 
     @Override
-    public ObjectId appendContentStream(ContentStream contentStream,
-            boolean isLastChunk, boolean refresh) {
+    public ObjectId appendContentStream(ContentStream contentStream, boolean isLastChunk, boolean refresh) {
         throw new CmisNotSupportedException();
     }
 

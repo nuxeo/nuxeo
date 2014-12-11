@@ -44,15 +44,10 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.opencmis.impl.client.protocol.http.HttpURLInstaller;
 
 /**
- *
- * The following application figure out a typical interaction between a
- * portal, a CAS server and a Nuxeo repository.
- *
- * The use case is fully documented in the documentation center
- * http://doc.nuxeo.com/display/NXDOC/CAS2+Authentication.
+ * The following application figure out a typical interaction between a portal, a CAS server and a Nuxeo repository. The
+ * use case is fully documented in the documentation center http://doc.nuxeo.com/display/NXDOC/CAS2+Authentication.
  *
  * @author Stephane Lacoin (aka matic)
- *
  */
 public class CasPortal {
 
@@ -73,7 +68,8 @@ public class CasPortal {
     }
 
     protected String casServiceValidateLocation(String ticket) {
-        return String.format("%s/serviceValidate?ticket=%s&service=%s/validate&pgtUrl=%s/accept", CAS_LOCATION, ticket, TICKET_LOCATION, TICKET_LOCATION);
+        return String.format("%s/serviceValidate?ticket=%s&service=%s/validate&pgtUrl=%s/accept", CAS_LOCATION, ticket,
+                TICKET_LOCATION, TICKET_LOCATION);
     }
 
     protected String casProxyLocation(String ticket, String targetServiceLocation) {
@@ -88,7 +84,8 @@ public class CasPortal {
         }
     }
 
-    protected Pattern proxyGrantingTicketPattern = Pattern.compile(".*<cas:proxyGrantingTicket>(.*)</cas:proxyGrantingTicket>.*", Pattern.CASE_INSENSITIVE|Pattern.DOTALL);
+    protected Pattern proxyGrantingTicketPattern = Pattern.compile(
+            ".*<cas:proxyGrantingTicket>(.*)</cas:proxyGrantingTicket>.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     protected String extractText(Pattern pattern, String content) {
         Matcher matcher = pattern.matcher(content);
@@ -102,7 +99,8 @@ public class CasPortal {
         return extractText(proxyGrantingTicketPattern, content);
     }
 
-    @Test public void testExtractProxyGrantingTicket() {
+    @Test
+    public void testExtractProxyGrantingTicket() {
         String ticket = extractProxyGrantingTicket("<cas:proxyGrantingTicket>test</cas:proxyGrantingTicket>");
         assertThat(ticket, is("test"));
     }
@@ -118,13 +116,15 @@ public class CasPortal {
         return id;
     }
 
-    protected Pattern proxyTicketPattern = Pattern.compile(".*<cas:proxyTicket>(.*)</cas:proxyTicket>.*", Pattern.DOTALL);
+    protected Pattern proxyTicketPattern = Pattern.compile(".*<cas:proxyTicket>(.*)</cas:proxyTicket>.*",
+            Pattern.DOTALL);
 
     protected String extractProxyTicket(String content) {
         return extractText(proxyTicketPattern, content);
     }
 
-    @Test public void testExtractProxyTicket() {
+    @Test
+    public void testExtractProxyTicket() {
         String ticket = extractProxyTicket("...\n<cas:proxyTicket>test</cas:proxyTicket>\n...");
         assertThat(ticket, is("test"));
     }
@@ -203,7 +203,7 @@ public class CasPortal {
             Folder folder = repository.getRootFolder();
 
             PrintWriter writer = resp.getWriter();
-            for (Property<?> prop:folder.getProperties()) {
+            for (Property<?> prop : folder.getProperties()) {
                 writer.append(String.format("%s=%s\n", prop.getDisplayName(), prop.getValue()));
             }
 

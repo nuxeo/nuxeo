@@ -81,8 +81,7 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Nuxeo implementation of a CMIS {@link ObjectData}, backed by a
- * {@link DocumentModel}.
+ * Nuxeo implementation of a CMIS {@link ObjectData}, backed by a {@link DocumentModel}.
  */
 public class NuxeoObjectData implements ObjectData {
 
@@ -127,11 +126,9 @@ public class NuxeoObjectData implements ObjectData {
 
     private NuxeoCmisService nuxeoCmisService;
 
-    public NuxeoObjectData(CmisService service, DocumentModel doc,
-            String filter, Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
-            Boolean includePolicyIds, Boolean includeAcl,
-            ExtensionsData extension) {
+    public NuxeoObjectData(CmisService service, DocumentModel doc, String filter, Boolean includeAllowableActions,
+            IncludeRelationships includeRelationships, String renditionFilter, Boolean includePolicyIds,
+            Boolean includeAcl, ExtensionsData extension) {
         this.service = service;
         this.doc = doc;
         propertyIds = getPropertyIdsFromFilter(filter);
@@ -149,14 +146,10 @@ public class NuxeoObjectData implements ObjectData {
         this(service, doc, null, null, null, null, null, null, null);
     }
 
-    public NuxeoObjectData(CmisService service, DocumentModel doc,
-            OperationContext context) {
-        this(service, doc, context.getFilterString(),
-                Boolean.valueOf(context.isIncludeAllowableActions()),
-                context.getIncludeRelationships(),
-                context.getRenditionFilterString(),
-                Boolean.valueOf(context.isIncludePolicies()),
-                Boolean.valueOf(context.isIncludeAcls()), null);
+    public NuxeoObjectData(CmisService service, DocumentModel doc, OperationContext context) {
+        this(service, doc, context.getFilterString(), Boolean.valueOf(context.isIncludeAllowableActions()),
+                context.getIncludeRelationships(), context.getRenditionFilterString(),
+                Boolean.valueOf(context.isIncludePolicies()), Boolean.valueOf(context.isIncludeAcls()), null);
     }
 
     private static final String STAR = "*";
@@ -200,14 +193,11 @@ public class NuxeoObjectData implements ObjectData {
         Properties properties = propertiesCache.get(key);
         if (properties == null) {
             Map<String, PropertyDefinition<?>> propertyDefinitions = type.getPropertyDefinitions();
-            int len = propertyIds == STAR_FILTER ? propertyDefinitions.size()
-                    : propertyIds.size();
+            int len = propertyIds == STAR_FILTER ? propertyDefinitions.size() : propertyIds.size();
             List<PropertyData<?>> props = new ArrayList<PropertyData<?>>(len);
             for (PropertyDefinition<?> pd : propertyDefinitions.values()) {
-                if (propertyIds == STAR_FILTER
-                        || propertyIds.contains(pd.getId())) {
-                    props.add((PropertyData<?>) NuxeoPropertyData.construct(
-                            this, pd, callContext));
+                if (propertyIds == STAR_FILTER || propertyIds.contains(pd.getId())) {
+                    props.add((PropertyData<?>) NuxeoPropertyData.construct(this, pd, callContext));
                 }
             }
             properties = objectFactory.createPropertiesData(props);
@@ -230,8 +220,7 @@ public class NuxeoObjectData implements ObjectData {
 
     public NuxeoPropertyDataBase<?> getProperty(String id) {
         // make use of cache
-        return (NuxeoPropertyDataBase<?>) getProperties(STAR_FILTER).getProperties().get(
-                id);
+        return (NuxeoPropertyDataBase<?>) getProperties(STAR_FILTER).getProperties().get(id);
     }
 
     @Override
@@ -242,17 +231,14 @@ public class NuxeoObjectData implements ObjectData {
         return getAllowableActions(doc, creation);
     }
 
-    public static AllowableActions getAllowableActions(DocumentModel doc,
-            boolean creation) {
+    public static AllowableActions getAllowableActions(DocumentModel doc, boolean creation) {
         BaseTypeId baseType = NuxeoTypeHelper.getBaseTypeId(doc);
         boolean isDocument = baseType == BaseTypeId.CMIS_DOCUMENT;
         boolean isFolder = baseType == BaseTypeId.CMIS_FOLDER;
         boolean isRoot = "/".equals(doc.getPathAsString());
         boolean canWrite;
         try {
-            canWrite = creation
-                    || doc.getCoreSession().hasPermission(doc.getRef(),
-                            SecurityConstants.WRITE);
+            canWrite = creation || doc.getCoreSession().hasPermission(doc.getRef(), SecurityConstants.WRITE);
         } catch (ClientException e) {
             canWrite = false;
         }
@@ -330,13 +316,11 @@ public class NuxeoObjectData implements ObjectData {
     }
 
     public static boolean needsRenditions(String renditionFilter) {
-        return !StringUtils.isBlank(renditionFilter)
-                && !RENDITION_NONE.equals(renditionFilter);
+        return !StringUtils.isBlank(renditionFilter) && !RENDITION_NONE.equals(renditionFilter);
     }
 
-    public static List<RenditionData> getRenditions(DocumentModel doc,
-            String renditionFilter, BigInteger maxItems, BigInteger skipCount,
-            CallContext callContext) {
+    public static List<RenditionData> getRenditions(DocumentModel doc, String renditionFilter, BigInteger maxItems,
+            BigInteger skipCount, CallContext callContext) {
         try {
             List<RenditionData> list = new ArrayList<RenditionData>();
             list.addAll(getIconRendition(doc, callContext));
@@ -384,8 +368,8 @@ public class NuxeoObjectData implements ObjectData {
         }
     }
 
-    protected static List<RenditionData> getIconRendition(DocumentModel doc,
-            CallContext callContext) throws ClientException, IOException {
+    protected static List<RenditionData> getIconRendition(DocumentModel doc, CallContext callContext)
+            throws ClientException, IOException {
         String iconPath;
         try {
             iconPath = (String) doc.getPropertyValue(NuxeoTypeHelper.NX_ICON);
@@ -400,8 +384,7 @@ public class NuxeoObjectData implements ObjectData {
         ren.setStreamId(REND_STREAM_ICON);
         ren.setKind(REND_KIND_CMIS_THUMBNAIL);
         int slash = iconPath.lastIndexOf('/');
-        String filename = slash == -1 ? iconPath
-                : iconPath.substring(slash + 1);
+        String filename = slash == -1 ? iconPath : iconPath.substring(slash + 1);
         ren.setTitle(filename);
         SimpleImageInfo info = new SimpleImageInfo(is);
         ren.setBigLength(BigInteger.valueOf(info.getLength()));
@@ -411,8 +394,7 @@ public class NuxeoObjectData implements ObjectData {
         return Collections.<RenditionData> singletonList(ren);
     }
 
-    public static InputStream getIconStream(String iconPath, CallContext context)
-            throws ClientException {
+    public static InputStream getIconStream(String iconPath, CallContext context) throws ClientException {
         if (iconPath == null || iconPath.length() == 0) {
             return null;
         }
@@ -426,9 +408,8 @@ public class NuxeoObjectData implements ObjectData {
         return servletContext.getResourceAsStream(iconPath);
     }
 
-    protected static List<RenditionData> getRenditionServiceRenditions(
-            DocumentModel doc, CallContext callContext) throws ClientException,
-            IOException {
+    protected static List<RenditionData> getRenditionServiceRenditions(DocumentModel doc, CallContext callContext)
+            throws ClientException, IOException {
         RenditionService renditionService = Framework.getLocalService(RenditionService.class);
         List<RenditionDefinition> defs = renditionService.getAvailableRenditionDefinitions(doc);
         List<RenditionData> list = new ArrayList<RenditionData>(defs.size());
@@ -451,15 +432,13 @@ public class NuxeoObjectData implements ObjectData {
         return getRelationships(getId(), includeRelationships, nuxeoCmisService);
     }
 
-    public static List<ObjectData> getRelationships(String id,
-            IncludeRelationships includeRelationships, NuxeoCmisService service) {
-        if (includeRelationships == null
-                || includeRelationships == IncludeRelationships.NONE) {
+    public static List<ObjectData> getRelationships(String id, IncludeRelationships includeRelationships,
+            NuxeoCmisService service) {
+        if (includeRelationships == null || includeRelationships == IncludeRelationships.NONE) {
             return null;
         }
-        String statement = "SELECT " + PropertyIds.OBJECT_ID + ", "
-                + PropertyIds.BASE_TYPE_ID + ", " + PropertyIds.SOURCE_ID
-                + ", " + PropertyIds.TARGET_ID + " FROM "
+        String statement = "SELECT " + PropertyIds.OBJECT_ID + ", " + PropertyIds.BASE_TYPE_ID + ", "
+                + PropertyIds.SOURCE_ID + ", " + PropertyIds.TARGET_ID + " FROM "
                 + BaseTypeId.CMIS_RELATIONSHIP.value() + " WHERE ";
         String qid = "'" + id.replace("'", "''") + "'";
         if (includeRelationships != IncludeRelationships.TARGET) {
@@ -502,8 +481,7 @@ public class NuxeoObjectData implements ObjectData {
         }
     }
 
-    protected static Acl getAcl(ACP acp, boolean onlyBasicPermissions,
-            NuxeoCmisService service) {
+    protected static Acl getAcl(ACP acp, boolean onlyBasicPermissions, NuxeoCmisService service) {
         if (acp == null) {
             acp = new ACPImpl();
         }
@@ -518,8 +496,7 @@ public class NuxeoObjectData implements ObjectData {
                 String username = ace.getUsername();
                 String permission = ace.getPermission();
                 if (denied) {
-                    if (SecurityConstants.EVERYONE.equals(username)
-                            && SecurityConstants.EVERYTHING.equals(permission)) {
+                    if (SecurityConstants.EVERYONE.equals(username) && SecurityConstants.EVERYTHING.equals(permission)) {
                         permission = NuxeoCmisService.PERMISSION_NOTHING;
                     } else {
                         // we cannot represent this blocking
@@ -529,8 +506,7 @@ public class NuxeoObjectData implements ObjectData {
                 }
                 Set<String> permissions = permissionMap.get(username);
                 if (permissions == null) {
-                    permissionMap.put(username,
-                            permissions = new LinkedHashSet<String>());
+                    permissionMap.put(username, permissions = new LinkedHashSet<String>());
                 }
                 // derive CMIS permission from Nuxeo permissions
                 boolean isBasic = false;

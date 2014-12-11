@@ -46,14 +46,12 @@ public class TestNuxeoSessionLocal extends NuxeoSessionTestCase {
         NuxeoCmisServiceFactoryManager manager = Framework.getService(NuxeoCmisServiceFactoryManager.class);
         NuxeoCmisServiceFactory serviceFactory = manager.getNuxeoCmisServiceFactory();
         ThresholdOutputStreamFactory streamFactory = ThresholdOutputStreamFactory.newInstance(
-                new File(System.getProperty("java.io.tmpdir")),
-                THRESHOLD, MAX_SIZE, false);
+                new File(System.getProperty("java.io.tmpdir")), THRESHOLD, MAX_SIZE, false);
         HttpServletRequest request = null;
         HttpServletResponse response = null;
-        CallContextImpl context = new CallContextImpl(
-                CallContext.BINDING_LOCAL, CmisVersion.CMIS_1_1, getRepositoryId(),
-                FakeServletContext.getServletContext(), request, response,
-                serviceFactory, streamFactory);
+        CallContextImpl context = new CallContextImpl(CallContext.BINDING_LOCAL, CmisVersion.CMIS_1_1,
+                getRepositoryId(), FakeServletContext.getServletContext(), request, response, serviceFactory,
+                streamFactory);
         context.put(CallContext.USERNAME, username);
         context.put(CallContext.PASSWORD, PASSWORD);
         CmisService service = serviceFactory.getService(context);

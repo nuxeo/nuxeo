@@ -37,8 +37,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
 
 /**
- * Test service wrapper that adds "Last-Modified" header to GetChildren
- * NavigationService response.
+ * Test service wrapper that adds "Last-Modified" header to GetChildren NavigationService response.
  *
  * @since 6.0
  */
@@ -49,11 +48,9 @@ public class LastModifiedServiceWrapper extends AbstractCmisServiceWrapper {
     }
 
     @Override
-    public ObjectInFolderList getChildren(String repositoryId, String folderId,
-            String filter, String orderBy, Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
-            Boolean includePathSegment, BigInteger maxItems,
-            BigInteger skipCount, ExtensionsData extension) {
+    public ObjectInFolderList getChildren(String repositoryId, String folderId, String filter, String orderBy,
+            Boolean includeAllowableActions, IncludeRelationships includeRelationships, String renditionFilter,
+            Boolean includePathSegment, BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
         GregorianCalendar lastModified;
         try {
             DocumentModel doc = getDocumentModel(folderId);
@@ -62,10 +59,9 @@ public class LastModifiedServiceWrapper extends AbstractCmisServiceWrapper {
             throw new CmisRuntimeException(e.toString(), e);
         }
 
-        ObjectInFolderList children = getWrappedService().getChildren(
-                repositoryId, folderId, filter, orderBy,
-                includeAllowableActions, includeRelationships, renditionFilter,
-                includePathSegment, maxItems, skipCount, extension);
+        ObjectInFolderList children = getWrappedService().getChildren(repositoryId, folderId, filter, orderBy,
+                includeAllowableActions, includeRelationships, renditionFilter, includePathSegment, maxItems,
+                skipCount, extension);
 
         String lastModifiedResHeader = DateTimeHelper.formatHttpDateTime(lastModified);
         setResponseHeader("Last-Modified", lastModifiedResHeader);
@@ -87,8 +83,7 @@ public class LastModifiedServiceWrapper extends AbstractCmisServiceWrapper {
     }
 
     private void setResponseHeader(String headerName, String headerValue) {
-        HttpServletResponse response = (HttpServletResponse) getCallContext().get(
-                CallContext.HTTP_SERVLET_RESPONSE);
+        HttpServletResponse response = (HttpServletResponse) getCallContext().get(CallContext.HTTP_SERVLET_RESPONSE);
         response.setHeader(headerName, headerValue);
     }
 

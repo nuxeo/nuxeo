@@ -36,20 +36,17 @@ public class NuxeoCmisServiceFactoryManager extends DefaultComponent {
             SimpleContributionRegistry<NuxeoCmisServiceFactoryDescriptor> {
 
         @Override
-        public String getContributionId(
-                NuxeoCmisServiceFactoryDescriptor contrib) {
+        public String getContributionId(NuxeoCmisServiceFactoryDescriptor contrib) {
             return XP_FACTORY;
         }
 
         @Override
-        public NuxeoCmisServiceFactoryDescriptor clone(
-                NuxeoCmisServiceFactoryDescriptor orig) {
+        public NuxeoCmisServiceFactoryDescriptor clone(NuxeoCmisServiceFactoryDescriptor orig) {
             return new NuxeoCmisServiceFactoryDescriptor(orig);
         }
 
         @Override
-        public void merge(NuxeoCmisServiceFactoryDescriptor src,
-                NuxeoCmisServiceFactoryDescriptor dst) {
+        public void merge(NuxeoCmisServiceFactoryDescriptor src, NuxeoCmisServiceFactoryDescriptor dst) {
             dst.merge(src);
         }
 
@@ -78,8 +75,7 @@ public class NuxeoCmisServiceFactoryManager extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contrib, String xpoint,
-            ComponentInstance contributor) {
+    public void registerContribution(Object contrib, String xpoint, ComponentInstance contributor) {
         if (XP_FACTORY.equals(xpoint)) {
             addContribution((NuxeoCmisServiceFactoryDescriptor) contrib);
         } else {
@@ -88,8 +84,7 @@ public class NuxeoCmisServiceFactoryManager extends DefaultComponent {
     }
 
     @Override
-    public void unregisterContribution(Object contrib, String xpoint,
-            ComponentInstance contributor) throws Exception {
+    public void unregisterContribution(Object contrib, String xpoint, ComponentInstance contributor) throws Exception {
         if (XP_FACTORY.equals(xpoint)) {
             removeContribution((NuxeoCmisServiceFactoryDescriptor) contrib);
         } else {
@@ -101,14 +96,12 @@ public class NuxeoCmisServiceFactoryManager extends DefaultComponent {
         registry.addContribution(descriptor);
     }
 
-    protected void removeContribution(
-            NuxeoCmisServiceFactoryDescriptor descriptor) {
+    protected void removeContribution(NuxeoCmisServiceFactoryDescriptor descriptor) {
         registry.removeContribution(descriptor);
     }
 
     /**
-     * Gets the {@link NuxeoCmisServiceFactory} based on contributed
-     * {@link NuxeoCmisServiceFactoryDescriptor}s.
+     * Gets the {@link NuxeoCmisServiceFactory} based on contributed {@link NuxeoCmisServiceFactoryDescriptor}s.
      */
     public NuxeoCmisServiceFactory getNuxeoCmisServiceFactory() {
         NuxeoCmisServiceFactoryDescriptor descriptor = registry.getNuxeoCmisServiceFactoryDescriptor();
@@ -123,9 +116,7 @@ public class NuxeoCmisServiceFactoryManager extends DefaultComponent {
         try {
             nuxeoCmisServiceFactory = factoryClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(
-                    "Cannot instantiate nuxeoCmisServiceFactory: "
-                            + factoryClass.getName(), e);
+            throw new RuntimeException("Cannot instantiate nuxeoCmisServiceFactory: " + factoryClass.getName(), e);
         }
 
         nuxeoCmisServiceFactory.init(factoryParameters);

@@ -27,8 +27,10 @@ import org.nuxeo.ecm.core.opencmis.impl.client.protocol.http.NullAuthenticationP
 
 public class AbstractClientSupport {
 
-    protected final Map<String,String> params = new HashMap<String,String>();
+    protected final Map<String, String> params = new HashMap<String, String>();
+
     protected Session session;
+
     protected String location;
 
     protected AbstractClientSupport(String location) {
@@ -41,7 +43,8 @@ public class AbstractClientSupport {
         params.put(SessionParameter.ATOMPUB_URL, location); // URL
 
         // Do not set authentication header
-        params.put(SessionParameter.AUTHENTICATION_PROVIDER_CLASS, NullAuthenticationProvider.class.getName());                                                                                     // to                                                                                     // server.
+        params.put(SessionParameter.AUTHENTICATION_PROVIDER_CLASS, NullAuthenticationProvider.class.getName()); // to //
+                                                                                                                // server.
 
         // parameter.put(SessionParameter.REPOSITORY_ID, "myRepository"); //
         // Only necessary if there is more than one repository.

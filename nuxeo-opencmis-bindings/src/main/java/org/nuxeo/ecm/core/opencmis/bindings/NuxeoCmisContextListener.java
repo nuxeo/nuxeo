@@ -22,14 +22,10 @@ import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Servlet context listener that sets up the CMIS service factory in the servlet
- * context as expected by
- * {@link org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet}
- * or
- * {@link org.apache.chemistry.opencmis.server.impl.browser.CmisBrowserBindingServlet}
- * or
- * {@link org.apache.chemistry.opencmis.server.impl.webservices.AbstractService}
- * .
+ * Servlet context listener that sets up the CMIS service factory in the servlet context as expected by
+ * {@link org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet} or
+ * {@link org.apache.chemistry.opencmis.server.impl.browser.CmisBrowserBindingServlet} or
+ * {@link org.apache.chemistry.opencmis.server.impl.webservices.AbstractService} .
  *
  * @see CmisRepositoryContextListener
  */
@@ -57,18 +53,15 @@ public class NuxeoCmisContextListener implements ServletContextListener {
     }
 
     protected void activate(final ServletContextEvent sce) {
-        NuxeoCmisServiceFactoryManager manager = Framework
-            .getService(NuxeoCmisServiceFactoryManager.class);
+        NuxeoCmisServiceFactoryManager manager = Framework.getService(NuxeoCmisServiceFactoryManager.class);
         CmisServiceFactory factory = manager.getNuxeoCmisServiceFactory();
-        sce.getServletContext().setAttribute(
-                CmisRepositoryContextListener.SERVICES_FACTORY, factory);
+        sce.getServletContext().setAttribute(CmisRepositoryContextListener.SERVICES_FACTORY, factory);
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        CmisServiceFactory factory = (CmisServiceFactory) sce
-            .getServletContext().getAttribute(
-                    CmisRepositoryContextListener.SERVICES_FACTORY);
+        CmisServiceFactory factory = (CmisServiceFactory) sce.getServletContext().getAttribute(
+                CmisRepositoryContextListener.SERVICES_FACTORY);
         if (factory != null) {
             factory.destroy();
         }

@@ -74,10 +74,8 @@ public class NuxeoBindingTestCase {
         nuxeotc.openSession();
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put(SessionParameter.BINDING_SPI_CLASS,
-                SessionParameter.LOCAL_FACTORY);
-        params.put(SessionParameter.LOCAL_FACTORY,
-                NuxeoCmisServiceFactory.class.getName());
+        params.put(SessionParameter.BINDING_SPI_CLASS, SessionParameter.LOCAL_FACTORY);
+        params.put(SessionParameter.LOCAL_FACTORY, NuxeoCmisServiceFactory.class.getName());
 
         initBinding();
     }
@@ -107,16 +105,14 @@ public class NuxeoBindingTestCase {
         nuxeotc.deployBundle("org.nuxeo.ecm.core.persistence");
         nuxeotc.deployBundle("org.nuxeo.ecm.platform.audit.api");
         nuxeotc.deployBundle("org.nuxeo.ecm.platform.audit");
-        nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
-                "OSGI-INF/audit-persistence-config.xml");
+        nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/audit-persistence-config.xml");
         // these deployments needed for NuxeoAuthenticationFilter.loginAs
         nuxeotc.deployBundle("org.nuxeo.ecm.directory.types.contrib");
         nuxeotc.deployBundle("org.nuxeo.ecm.platform.login");
         nuxeotc.deployBundle("org.nuxeo.ecm.platform.web.common");
 
         // types
-        nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
-                "OSGI-INF/types-contrib.xml");
+        nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/types-contrib.xml");
     }
 
     public void initBinding() throws Exception {
@@ -125,22 +121,18 @@ public class NuxeoBindingTestCase {
 
     public void initBinding(String username) throws Exception {
         repositoryId = nuxeotc.database.repositoryName;
-        NuxeoRepository repository = Framework.getService(
-                NuxeoRepositories.class).getRepository(repositoryId);
+        NuxeoRepository repository = Framework.getService(NuxeoRepositories.class).getRepository(repositoryId);
         repository.setSupportsJoins(supportsJoins());
         rootFolderId = repository.getRootFolderId();
 
         NuxeoCmisServiceFactoryManager manager = Framework.getService(NuxeoCmisServiceFactoryManager.class);
         NuxeoCmisServiceFactory serviceFactory = manager.getNuxeoCmisServiceFactory();
         ThresholdOutputStreamFactory streamFactory = ThresholdOutputStreamFactory.newInstance(
-                new File(System.getProperty("java.io.tmpdir")),
-                THRESHOLD, MAX_SIZE, false);
+                new File(System.getProperty("java.io.tmpdir")), THRESHOLD, MAX_SIZE, false);
         HttpServletRequest request = null;
         HttpServletResponse response = null;
-        CallContextImpl context = new CallContextImpl(
-                CallContext.BINDING_LOCAL, CmisVersion.CMIS_1_1, repositoryId,
-                FakeServletContext.getServletContext(), request, response,
-                serviceFactory, streamFactory);
+        CallContextImpl context = new CallContextImpl(CallContext.BINDING_LOCAL, CmisVersion.CMIS_1_1, repositoryId,
+                FakeServletContext.getServletContext(), request, response, serviceFactory, streamFactory);
         context.put(CallContext.USERNAME, username);
         context.put(CallContext.PASSWORD, PASSWORD);
         CmisService service = serviceFactory.getService(context);

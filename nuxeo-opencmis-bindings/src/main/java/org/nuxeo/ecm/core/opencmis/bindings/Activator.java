@@ -25,20 +25,15 @@ import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
 
 /**
- * This bundle activator ensures that the init sequence happens in the right
- * order.
+ * This bundle activator ensures that the init sequence happens in the right order.
  */
 public class Activator implements BundleActivator, FrameworkListener {
 
     private static final Log log = LogFactory.getLog(Activator.class);
 
     /*
-     * Called when our bundle is started. All we do is ask for an event when the
-     * entire Framework is ready.
-     *
-     * @see
-     * org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext
-     * )
+     * Called when our bundle is started. All we do is ask for an event when the entire Framework is ready.
+     * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext )
      */
     @Override
     public void start(BundleContext context) throws Exception {
@@ -51,9 +46,8 @@ public class Activator implements BundleActivator, FrameworkListener {
     }
 
     /*
-     * This is the point where the initialization actually occurs. This is
-     * called by the framework when it's finished initializing and we echo that
-     * message to the object that we have delayed.
+     * This is the point where the initialization actually occurs. This is called by the framework when it's finished
+     * initializing and we echo that message to the object that we have delayed.
      */
     @Override
     public void frameworkEvent(FrameworkEvent event) {

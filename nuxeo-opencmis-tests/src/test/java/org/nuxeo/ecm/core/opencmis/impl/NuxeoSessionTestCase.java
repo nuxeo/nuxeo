@@ -161,8 +161,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.audit.api");
         deployBundle("org.nuxeo.ecm.platform.audit");
-        deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
-                "OSGI-INF/audit-persistence-config.xml");
+        deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/audit-persistence-config.xml");
         // NuxeoCmisServiceFactoryManager registration
         deployBundle("org.nuxeo.ecm.core.opencmis.bindings");
         // QueryMaker registration
@@ -179,8 +178,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
         setUpData();
 
-        RepositoryInfo rid = session.getBinding().getRepositoryService().getRepositoryInfo(
-                getRepositoryId(), null);
+        RepositoryInfo rid = session.getBinding().getRepositoryService().getRepositoryInfo(getRepositoryId(), null);
         assertNotNull(rid);
         rootFolderId = rid.getRootFolderId();
         assertNotNull(rootFolderId);
@@ -240,8 +238,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertNotNull(root.getType());
         assertEquals(NUXEO_ROOT_TYPE, root.getType().getId());
         assertEquals(rootFolderId, root.getPropertyValue(PropertyIds.OBJECT_ID));
-        assertEquals(NUXEO_ROOT_TYPE,
-                root.getPropertyValue(PropertyIds.OBJECT_TYPE_ID));
+        assertEquals(NUXEO_ROOT_TYPE, root.getPropertyValue(PropertyIds.OBJECT_TYPE_ID));
         assertEquals(NUXEO_ROOT_NAME, root.getName());
         List<Property<?>> props = root.getProperties();
         assertNotNull(props);
@@ -267,12 +264,10 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     public void testPath() throws Exception {
         Folder folder = (Folder) session.getObjectByPath("/testfolder1");
         assertEquals("/testfolder1", folder.getPath());
-        assertEquals(Collections.singletonList("/testfolder1"),
-                folder.getPaths());
+        assertEquals(Collections.singletonList("/testfolder1"), folder.getPaths());
 
         Document doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
-        assertEquals(Collections.singletonList("/testfolder1/testfile1"),
-                doc.getPaths());
+        assertEquals(Collections.singletonList("/testfolder1/testfile1"), doc.getPaths());
     }
 
     @Test
@@ -302,8 +297,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         properties.put(PropertyIds.OBJECT_TYPE_ID, "Note");
         properties.put(PropertyIds.NAME, "mynote");
         properties.put("note", "bla bla");
-        Document doc = root.createDocument(properties, contentStream,
-                versioningState, policies, addAces, removeAces, context);
+        Document doc = root.createDocument(properties, contentStream, versioningState, policies, addAces, removeAces,
+                context);
         assertNotNull(doc.getId());
         assertEquals("mynote", doc.getName());
         assertEquals("mynote", doc.getPropertyValue("dc:title"));
@@ -326,8 +321,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     @Test
     public void testCreateDocumentWithContentStream() throws Exception {
         Folder root = session.getRootFolder();
-        ContentStream cs = new ContentStreamImpl("myfile", "text/plain",
-                Helper.FILE1_CONTENT);
+        ContentStream cs = new ContentStreamImpl("myfile", "text/plain", Helper.FILE1_CONTENT);
         OperationContext context = NuxeoSession.DEFAULT_CONTEXT;
         VersioningState versioningState = null;
         List<Policy> policies = null;
@@ -336,8 +330,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(PropertyIds.OBJECT_TYPE_ID, "File");
         properties.put(PropertyIds.NAME, "myfile");
-        Document doc = root.createDocument(properties, cs, versioningState,
-                policies, addAces, removeAces, context);
+        Document doc = root.createDocument(properties, cs, versioningState, policies, addAces, removeAces, context);
         cs = doc.getContentStream();
         assertNotNull(cs);
         assertEquals("text/plain", cs.getMimeType());
@@ -359,10 +352,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(PropertyIds.OBJECT_TYPE_ID, "File");
         properties.put(PropertyIds.NAME, "myfile");
-        Document doc = root.createDocument(properties, null, versioningState,
-                policies, addAces, removeAces, context);
-        ContentStream cs = new ContentStreamImpl("myfile", "text/plain",
-                Helper.FILE1_CONTENT);
+        Document doc = root.createDocument(properties, null, versioningState, policies, addAces, removeAces, context);
+        ContentStream cs = new ContentStreamImpl("myfile", "text/plain", Helper.FILE1_CONTENT);
         doc.setContentStream(cs, true);
         cs = doc.getContentStream();
         assertNotNull(cs);
@@ -392,10 +383,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         properties.put(PropertyIds.TARGET_ID, id2);
         ObjectId relid = session.createRelationship(properties);
 
-        ItemIterable<Relationship> rels = session.getRelationships(
-                session.createObjectId(id1), false,
-                RelationshipDirection.SOURCE, null,
-                session.createOperationContext());
+        ItemIterable<Relationship> rels = session.getRelationships(session.createObjectId(id1), false,
+                RelationshipDirection.SOURCE, null, session.createOperationContext());
         assertEquals(1, rels.getTotalNumItems());
         for (Relationship r : rels) {
             assertEquals(relid.getId(), r.getId());
@@ -419,8 +408,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
         doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
         assertEquals("new title", doc.getPropertyValue("dc:title"));
-        assertEquals(Arrays.asList("a", "b", "c"),
-                doc.getPropertyValue("dc:subjects"));
+        assertEquals(Arrays.asList("a", "b", "c"), doc.getPropertyValue("dc:subjects"));
 
         // TODO test transient object API
         map.clear();
@@ -445,8 +433,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
             String eTag = file.getPropertyValue("nuxeo:contentStreamDigest");
             GregorianCalendar lastModifiedCalendar = file.getPropertyValue("dc:modified");
             String lastModified = DateUtil.formatDate(lastModifiedCalendar.getTime());
-            String encoding = Base64.encodeBytes(
-                    new String(USERNAME + ":" + PASSWORD).getBytes());
+            String encoding = Base64.encodeBytes(new String(USERNAME + ":" + PASSWORD).getBytes());
             DefaultHttpClient client = new DefaultHttpClient();
             HttpGet request = new HttpGet(uri);
             HttpResponse response = null;
@@ -454,13 +441,11 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
             try {
                 request.setHeader("If-None-Match", eTag);
                 response = client.execute(request);
-                assertEquals(HttpServletResponse.SC_NOT_MODIFIED,
-                        response.getStatusLine().getStatusCode());
+                assertEquals(HttpServletResponse.SC_NOT_MODIFIED, response.getStatusLine().getStatusCode());
                 request.removeHeaders("If-None-Match");
                 request.setHeader("If-Modified-Since", lastModified);
                 response = client.execute(request);
-                assertEquals(HttpServletResponse.SC_NOT_MODIFIED,
-                        response.getStatusLine().getStatusCode());
+                assertEquals(HttpServletResponse.SC_NOT_MODIFIED, response.getStatusLine().getStatusCode());
             } finally {
                 client.getConnectionManager().shutdown();
             }
@@ -481,9 +466,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         // TODO convenience constructors for ContentStreamImpl
         byte[] streamBytes = STREAM_CONTENT.getBytes("UTF-8");
         ByteArrayInputStream stream = new ByteArrayInputStream(streamBytes);
-        cs = new ContentStreamImpl("foo.txt",
-                BigInteger.valueOf(streamBytes.length),
-                "text/plain; charset=UTF-8", stream);
+        cs = new ContentStreamImpl("foo.txt", BigInteger.valueOf(streamBytes.length), "text/plain; charset=UTF-8",
+                stream);
         file.setContentStream(cs, true);
 
         // refetch stream
@@ -731,8 +715,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         Document doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
         assertEquals("testfile1_Title", doc.getPropertyValue("dc:title"));
         Document copy = doc.copy(session.createObjectId(rootFolderId),
-                Collections.singletonMap("dc:title", "new title"), null, null,
-                null, null, session.getDefaultContext());
+                Collections.singletonMap("dc:title", "new title"), null, null, null, null, session.getDefaultContext());
         assertNotSame(doc.getId(), copy.getId());
         assertEquals("new title", copy.getPropertyValue("dc:title"));
 
@@ -794,8 +777,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.TRUE, ver);
         checkValue(PropertyIds.VERSION_LABEL, "1.0", ver);
         checkValue(PropertyIds.VERSION_SERIES_ID, series, ver);
-        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE,
-                ver);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE, ver);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ver);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ver);
         checkValue(PropertyIds.CHECKIN_COMMENT, "comment", ver);
@@ -890,7 +872,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         ob = session.getObjectByPath("/testfolder1/testfile1");
         assertFalse("new title".equals(ob.getPropertyValue("dc:title")));
 
-        //test deleteObject
+        // test deleteObject
         ob = session.getObjectByPath("/testfolder1/testfile2");
 
         map = new HashMap<String, Object>();
@@ -905,7 +887,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
             ob = session.getObjectByPath("/testfolder1/testfile2");
             fail("Document should be deleted");
         } catch (CmisObjectNotFoundException e) {
-           // ok
+            // ok
         }
 
     }
@@ -919,8 +901,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         props.put("dc:title", "newtitle");
         byte[] bytes = "foo-bar".getBytes("UTF-8");
         ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-        ContentStream cs = session.getObjectFactory().createContentStream(
-                "test.pdf", bytes.length, "application/pdf", in);
+        ContentStream cs = session.getObjectFactory().createContentStream("test.pdf", bytes.length, "application/pdf",
+                in);
 
         ObjectId vid = ((Document) ob).checkIn(true, props, cs, "comment");
 
@@ -944,8 +926,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
     @Test
     public void testUserWorkspace() throws ClientException {
-        String wsPath = Helper.createUserWorkspace(getCoreSession(),
-                (isAtomPub || isBrowser) ? USERNAME : "Administrator");
+        String wsPath = Helper.createUserWorkspace(getCoreSession(), (isAtomPub || isBrowser) ? USERNAME
+                : "Administrator");
         Folder ws = (Folder) session.getObjectByPath(wsPath);
         assertNotNull(ws);
     }
@@ -961,13 +943,11 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         tearDownCmisSession();
         Thread.sleep(1000); // otherwise sometimes fails to set up again
         // deploy the LastModifiedServiceWrapper
-        deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
-                "OSGI-INF/test-servicefactorymanager-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/test-servicefactorymanager-contrib.xml");
         setUpCmisSession();
         setUpData();
 
-        GregorianCalendar lastModifiedCalendar = Helper.getCalendar(2007, 4,
-                11, 12, 0, 0); // in GMT-02
+        GregorianCalendar lastModifiedCalendar = Helper.getCalendar(2007, 4, 11, 12, 0, 0); // in GMT-02
         Folder folder = (Folder) session.getObjectByPath("/testfolder1");
         Map<String, Serializable> properties = new HashMap<>();
         properties.put("dc:description", "my description");
@@ -975,8 +955,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         folder.updateProperties(properties, true);
         // TODO XXX fix timezone issues with H2 / SQL Server
         if (!(database instanceof DatabaseH2 || database instanceof DatabaseSQLServer)) {
-            assertEquals(
-                    lastModifiedCalendar.getTimeInMillis(),
+            assertEquals(lastModifiedCalendar.getTimeInMillis(),
                     ((GregorianCalendar) folder.getPropertyValue("dc:modified")).getTimeInMillis());
         }
 
@@ -986,20 +965,17 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         uri += isAtomPub ? "children?id=" : "root?objectId=";
         uri += folder.getId();
         String lastModified = DateUtil.formatDate(lastModifiedCalendar.getTime());
-        String encoding = Base64.encodeBytes(new String(USERNAME + ":"
-                + PASSWORD).getBytes());
+        String encoding = Base64.encodeBytes(new String(USERNAME + ":" + PASSWORD).getBytes());
         DefaultHttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet(uri);
         HttpResponse response = null;
         request.setHeader("Authorization", "Basic " + encoding);
         try {
             response = client.execute(request);
-            assertEquals(HttpServletResponse.SC_OK,
-                    response.getStatusLine().getStatusCode());
+            assertEquals(HttpServletResponse.SC_OK, response.getStatusLine().getStatusCode());
             // TODO XXX fix timezone issues with H2 / SQL Server
             if (!(database instanceof DatabaseH2 || database instanceof DatabaseSQLServer)) {
-                assertEquals(lastModified,
-                        response.getLastHeader("Last-Modified").getValue());
+                assertEquals(lastModified, response.getLastHeader("Last-Modified").getValue());
             }
         } finally {
             client.getConnectionManager().shutdown();
@@ -1031,8 +1007,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     protected static Map<String, Set<String>> getActualAcl(Acl acl) {
         Map<String, Set<String>> actual = new HashMap<>();
         for (Ace ace : acl.getAces()) {
-            actual.put(ace.getPrincipalId() + (ace.isDirect() ? "" : "*"),
-                    new HashSet<String>(ace.getPermissions()));
+            actual.put(ace.getPrincipalId() + (ace.isDirect() ? "" : "*"), new HashSet<String>(ace.getPermissions()));
         }
         return actual;
     }
@@ -1072,10 +1047,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         CoreSession coreSession = getCoreSession();
 
         String folder1Id = coreSession.getDocument(new PathRef("/testfolder1")).getId();
-        String file1Id = coreSession.getDocument(
-                new PathRef("/testfolder1/testfile1")).getId();
-        String file4Id = coreSession.getDocument(
-                new PathRef("/testfolder2/testfolder3/testfile4")).getId();
+        String file1Id = coreSession.getDocument(new PathRef("/testfolder1/testfile1")).getId();
+        String file4Id = coreSession.getDocument(new PathRef("/testfolder2/testfolder3/testfile4")).getId();
 
         // set more complex ACLs
 
@@ -1102,10 +1075,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
             // block on testfile4
             acp = new ACPImpl();
             acl = new ACLImpl();
-            acl.add(new ACE(SecurityConstants.ADMINISTRATOR,
-                    SecurityConstants.READ, true));
-            acl.add(new ACE(SecurityConstants.EVERYONE,
-                    SecurityConstants.EVERYTHING, false));
+            acl.add(new ACE(SecurityConstants.ADMINISTRATOR, SecurityConstants.READ, true));
+            acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
             acp.addACL(acl);
             coreSession.setACP(new IdRef(file4Id), acp, true);
 
@@ -1165,8 +1136,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         Ace ace = new AccessControlEntryImpl(p, Arrays.asList(READ));
         List<Ace> addAces = Arrays.asList(ace);
         List<Ace> removeAces = null;
-        Acl acl = session.applyAcl(session.createObjectId(file1Id), addAces,
-                removeAces, null);
+        Acl acl = session.applyAcl(session.createObjectId(file1Id), addAces, removeAces, null);
 
         if (!(isAtomPub || isBrowser)) { // OpenCMIS 0.12 bug
             assertEquals(Boolean.TRUE, acl.isExact());
@@ -1185,8 +1155,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         ace = new AccessControlEntryImpl(p, Arrays.asList(READ));
         addAces = null;
         removeAces = Arrays.asList(ace);
-        acl = session.applyAcl(session.createObjectId(file1Id), addAces,
-                removeAces, null);
+        acl = session.applyAcl(session.createObjectId(file1Id), addAces, removeAces, null);
 
         if (!(isAtomPub || isBrowser)) { // OpenCMIS 0.12 bug
             assertEquals(Boolean.TRUE, acl.isExact());
@@ -1208,8 +1177,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         tearDownCmisSession();
         Thread.sleep(1000); // otherwise sometimes fails to set up again
         // deploy the LastModifiedServiceWrapper
-        deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
-                "OSGI-INF/recoverable-exc-listener-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/recoverable-exc-listener-contrib.xml");
         setUpCmisSession();
         setUpData();
 
@@ -1217,8 +1185,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         properties.put(PropertyIds.OBJECT_TYPE_ID, "File");
         properties.put(PropertyIds.NAME, "throw_foo");
         try {
-            session.getRootFolder().createDocument(properties, null, null,
-                    null, null, null, NuxeoSession.DEFAULT_CONTEXT);
+            session.getRootFolder().createDocument(properties, null, null, null, null, null,
+                    NuxeoSession.DEFAULT_CONTEXT);
             fail("should throw RecoverableClientException");
         } catch (CmisInvalidArgumentException e) {
             // ok, this is what we get for a 400
@@ -1230,8 +1198,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
                 // assertEquals(400, status);
             } else {
                 Throwable cause = e.getCause();
-                assertTrue(String.valueOf(cause),
-                        cause instanceof RecoverableClientException);
+                assertTrue(String.valueOf(cause), cause instanceof RecoverableClientException);
             }
         }
     }

@@ -186,24 +186,17 @@ public class NuxeoRepository {
         // convert the transitive closure for Folder and Document subtypes
         Set<String> done = new HashSet<String>();
         TypeManagerImpl typeManager = new TypeManagerImpl();
-        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(
-                BaseTypeId.CMIS_DOCUMENT, schemaManager));
-        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(
-                BaseTypeId.CMIS_FOLDER, schemaManager));
-        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(
-                BaseTypeId.CMIS_RELATIONSHIP, schemaManager));
-        addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_DOCUMENT,
-                typesChildren, done, schemaManager);
-        addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_FOLDER,
-                typesChildren, done, schemaManager);
-        addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_RELATION,
-                typesChildren, done, schemaManager);
+        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(BaseTypeId.CMIS_DOCUMENT, schemaManager));
+        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(BaseTypeId.CMIS_FOLDER, schemaManager));
+        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(BaseTypeId.CMIS_RELATIONSHIP, schemaManager));
+        addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_DOCUMENT, typesChildren, done, schemaManager);
+        addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_FOLDER, typesChildren, done, schemaManager);
+        addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_RELATION, typesChildren, done, schemaManager);
         return typeManager;
     }
 
-    protected static void addTypesRecursively(TypeManagerImpl typeManager,
-            String name, Map<String, List<String>> typesChildren,
-            Set<String> done, SchemaManager schemaManager) {
+    protected static void addTypesRecursively(TypeManagerImpl typeManager, String name,
+            Map<String, List<String>> typesChildren, Set<String> done, SchemaManager schemaManager) {
         if (done.contains(name)) {
             return;
         }
@@ -216,15 +209,13 @@ public class NuxeoRepository {
                 // if parent was ignored, reparent under cmis:document
                 parentTypeId = BaseTypeId.CMIS_DOCUMENT.value();
             } else {
-                if (parentType.getTypeDefinition().getBaseTypeId() != BaseTypeId.CMIS_FOLDER
-                        && dt.isFolder()) {
+                if (parentType.getTypeDefinition().getBaseTypeId() != BaseTypeId.CMIS_FOLDER && dt.isFolder()) {
                     // reparent Folderish but child of Document under
                     // cmis:folder
                     parentTypeId = BaseTypeId.CMIS_FOLDER.value();
                 }
             }
-            typeManager.addTypeDefinition(NuxeoTypeHelper.construct(dt,
-                    parentTypeId));
+            typeManager.addTypeDefinition(NuxeoTypeHelper.construct(dt, parentTypeId));
         }
         // recurse in children
         List<String> children = typesChildren.get(name);
@@ -232,8 +223,7 @@ public class NuxeoRepository {
             return;
         }
         for (String sub : children) {
-            addTypesRecursively(typeManager, sub, typesChildren, done,
-                    schemaManager);
+            addTypesRecursively(typeManager, sub, typesChildren, done, schemaManager);
         }
     }
 
@@ -241,8 +231,7 @@ public class NuxeoRepository {
         return rootFolderId;
     }
 
-    public RepositoryInfo getRepositoryInfo(String latestChangeLogToken,
-            CallContext callContext) {
+    public RepositoryInfo getRepositoryInfo(String latestChangeLogToken, CallContext callContext) {
         RepositoryInfoImpl repositoryInfo = new RepositoryInfoImpl();
         repositoryInfo.setId(repositoryId);
         repositoryInfo.setName("Nuxeo Repository " + repositoryId);
@@ -252,8 +241,7 @@ public class NuxeoRepository {
         repositoryInfo.setPrincipalAnyone(SecurityConstants.EVERYONE);
         repositoryInfo.setThinClientUri(getBaseURL(callContext));
         repositoryInfo.setChangesIncomplete(Boolean.FALSE);
-        repositoryInfo.setChangesOnType(Arrays.asList(BaseTypeId.CMIS_DOCUMENT,
-                BaseTypeId.CMIS_FOLDER));
+        repositoryInfo.setChangesOnType(Arrays.asList(BaseTypeId.CMIS_DOCUMENT, BaseTypeId.CMIS_FOLDER));
         repositoryInfo.setLatestChangeLogToken(latestChangeLogToken);
         repositoryInfo.setVendorName("Nuxeo");
         repositoryInfo.setProductName("Nuxeo OpenCMIS Connector");
@@ -269,8 +257,7 @@ public class NuxeoRepository {
         caps.setCapabilityAcl(CapabilityAcl.MANAGE);
         caps.setCapabilityChanges(CapabilityChanges.OBJECTIDSONLY);
         caps.setCapabilityContentStreamUpdates(CapabilityContentStreamUpdates.PWCONLY);
-        caps.setCapabilityJoin(supportsJoins ? CapabilityJoin.INNERANDOUTER
-                : CapabilityJoin.NONE);
+        caps.setCapabilityJoin(supportsJoins ? CapabilityJoin.INNERANDOUTER : CapabilityJoin.NONE);
         caps.setCapabilityQuery(CapabilityQuery.BOTHCOMBINED);
         caps.setCapabilityRendition(CapabilityRenditions.READ);
         caps.setIsPwcSearchable(Boolean.TRUE);
@@ -338,8 +325,7 @@ public class NuxeoRepository {
     }
 
     @SuppressWarnings("unchecked")
-    protected static void addPermissionDefinitions(
-            List<PermissionDefinition> permDefs) {
+    protected static void addPermissionDefinitions(List<PermissionDefinition> permDefs) {
         addPermissionDefinition(permDefs, READ, "Read"); // = Nuxeo Read
         addPermissionDefinition(permDefs, WRITE, "Write"); // = Nuxeo ReadWrite
         addPermissionDefinition(permDefs, ALL, "All"); // = Nuxeo Everything
@@ -352,8 +338,7 @@ public class NuxeoRepository {
         done.add(NUXEO_READ_REMOVE);
 
         /*
-         * Add Nuxeo-specific permissions registered through the
-         * permissionsVisibility extension point.
+         * Add Nuxeo-specific permissions registered through the permissionsVisibility extension point.
          */
 
         DefaultPermissionProvider permissionProvider = (DefaultPermissionProvider) Framework.getService(PermissionProvider.class);
@@ -364,8 +349,7 @@ public class NuxeoRepository {
             f = DefaultPermissionProvider.class.getDeclaredField("mergedPermissionsVisibility");
             f.setAccessible(true);
             map = (Map<String, PermissionVisibilityDescriptor>) f.get(permissionProvider);
-        } catch (NoSuchFieldException | SecurityException
-                | IllegalAccessException e) {
+        } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
         // iterate for all types regisited, not just the default ""
@@ -379,8 +363,7 @@ public class NuxeoRepository {
         }
     }
 
-    protected static void addPermissionDefinition(
-            List<PermissionDefinition> permDefs, String permission,
+    protected static void addPermissionDefinition(List<PermissionDefinition> permDefs, String permission,
             String description) {
         PermissionDefinitionDataImpl pd = new PermissionDefinitionDataImpl();
         pd.setId(permission);
@@ -388,9 +371,7 @@ public class NuxeoRepository {
         permDefs.add(pd);
     }
 
-    protected static void addPermissionMapping(
-            Map<String, PermissionMapping> permMap, String key,
-            String permission) {
+    protected static void addPermissionMapping(Map<String, PermissionMapping> permMap, String key, String permission) {
         PermissionMappingDataImpl pm = new PermissionMappingDataImpl();
         pm.setKey(key);
         pm.setPermissions(Collections.singletonList(permission));
@@ -408,17 +389,13 @@ public class NuxeoRepository {
     }
 
     // Structures are not copied when returned
-    public TypeDefinitionList getTypeChildren(String typeId,
-            Boolean includePropertyDefinitions, BigInteger maxItems,
+    public TypeDefinitionList getTypeChildren(String typeId, Boolean includePropertyDefinitions, BigInteger maxItems,
             BigInteger skipCount) {
-        return getTypeManager().getTypeChildren(typeId,
-                includePropertyDefinitions, maxItems, skipCount);
+        return getTypeManager().getTypeChildren(typeId, includePropertyDefinitions, maxItems, skipCount);
     }
 
-    public List<TypeDefinitionContainer> getTypeDescendants(String typeId,
-            int depth, Boolean includePropertyDefinitions) {
-        return getTypeManager().getTypeDescendants(typeId, depth,
-                includePropertyDefinitions);
+    public List<TypeDefinitionContainer> getTypeDescendants(String typeId, int depth, Boolean includePropertyDefinitions) {
+        return getTypeManager().getTypeDescendants(typeId, depth, includePropertyDefinitions);
     }
 
     /** Returns the server base URL (including context). */
@@ -428,8 +405,7 @@ public class NuxeoRepository {
             String baseURL = getServerURL(request);
             String contextPath = request.getContextPath();
             if (contextPath == null) {
-                contextPath = Framework.getProperty(NUXEO_CONTEXT_PATH_PROP,
-                        NUXEO_CONTEXT_PATH_DEFAULT);
+                contextPath = Framework.getProperty(NUXEO_CONTEXT_PATH_PROP, NUXEO_CONTEXT_PATH_DEFAULT);
             }
             // add context path
             return baseURL + contextPath + '/';
@@ -439,8 +415,7 @@ public class NuxeoRepository {
     }
 
     /**
-     * Returns the server URL according to virtual hosting headers (without
-     * trailing slash).
+     * Returns the server URL according to virtual hosting headers (without trailing slash).
      */
     private static String getServerURL(HttpServletRequest request) {
         String url = null;
@@ -475,15 +450,13 @@ public class NuxeoRepository {
     }
 
     /** Builds an URL (without trailing slash). */
-    private static String buildURL(String scheme, String serverName,
-            int serverPort) {
+    private static String buildURL(String scheme, String serverName, int serverPort) {
         StringBuilder sb = new StringBuilder();
         sb.append(scheme);
         sb.append("://");
         sb.append(serverName);
         if (serverPort != 0) {
-            if ("http".equals(scheme) && serverPort != 80
-                    || "https".equals(scheme) && serverPort != 443) {
+            if ("http".equals(scheme) && serverPort != 80 || "https".equals(scheme) && serverPort != 443) {
                 sb.append(':');
                 sb.append(serverPort);
             }

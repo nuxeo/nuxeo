@@ -32,11 +32,8 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Factory for a wrapped {@link NuxeoCmisService}.
  * <p>
- * Called for each method dispatch by
- * {@link org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet}
- * or
- * {@link org.apache.chemistry.opencmis.server.impl.atompub.CmisBrowserBindingServlet}
- * or
+ * Called for each method dispatch by {@link org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet} or
+ * {@link org.apache.chemistry.opencmis.server.impl.atompub.CmisBrowserBindingServlet} or
  * {@link org.apache.chemistry.opencmis.server.impl.webservices.AbstractService}.
  */
 public class NuxeoCmisServiceFactory extends AbstractServiceFactory {
@@ -89,54 +86,40 @@ public class NuxeoCmisServiceFactory extends AbstractServiceFactory {
         wrapperManager = new CmisServiceWrapperManager();
         wrapperManager.addWrappersFromServiceFactoryParameters(parameters);
         // wrap the service to provide default parameter checks
-        wrapperManager.addOuterWrapper(NuxeoCmisServiceWrapper.class,
-                defaultTypesMaxItems, defaultTypesDepth, defaultMaxItems,
-                defaultDepth);
+        wrapperManager.addOuterWrapper(NuxeoCmisServiceWrapper.class, defaultTypesMaxItems, defaultTypesDepth,
+                defaultMaxItems, defaultDepth);
     }
 
     protected void initParameters(Map<String, String> parameters) {
         String tempDirectoryStr = parameters.get(PROP_TEMP_DIRECTORY);
-        tempDirectory = StringUtils.isBlank(tempDirectoryStr) ? super.getTempDirectory()
-                : new File(tempDirectoryStr.trim());
+        tempDirectory = StringUtils.isBlank(tempDirectoryStr) ? super.getTempDirectory() : new File(
+                tempDirectoryStr.trim());
         String encryptTempStr = parameters.get(PROP_ENCRYPT_TEMP_FILES);
         encryptTempFiles = StringUtils.isBlank(encryptTempStr) ? super.encryptTempFiles()
                 : Boolean.parseBoolean(encryptTempStr.trim());
-        memoryThreshold = getLongParameter(parameters, PROP_MEMORY_THERESHOLD,
-                super.getMemoryThreshold());
-        maxContentSize = getLongParameter(parameters, PROP_MAX_CONTENT_SIZE,
-                super.getMaxContentSize());
-        defaultTypesMaxItems = getBigIntegerParameter(parameters,
-                PROP_DEFAULT_TYPES_MAX_ITEMS, DEFAULT_TYPES_MAX_ITEMS);
-        defaultTypesDepth = getBigIntegerParameter(parameters,
-                PROP_DEFAULT_TYPES_DEPTH, DEFAULT_TYPES_DEPTH);
-        defaultMaxItems = getBigIntegerParameter(parameters,
-                PROP_DEFAULT_MAX_ITEMS, DEFAULT_MAX_ITEMS);
-        defaultDepth = getBigIntegerParameter(parameters, PROP_DEFAULT_DEPTH,
-                DEFAULT_DEPTH);
+        memoryThreshold = getLongParameter(parameters, PROP_MEMORY_THERESHOLD, super.getMemoryThreshold());
+        maxContentSize = getLongParameter(parameters, PROP_MAX_CONTENT_SIZE, super.getMaxContentSize());
+        defaultTypesMaxItems = getBigIntegerParameter(parameters, PROP_DEFAULT_TYPES_MAX_ITEMS, DEFAULT_TYPES_MAX_ITEMS);
+        defaultTypesDepth = getBigIntegerParameter(parameters, PROP_DEFAULT_TYPES_DEPTH, DEFAULT_TYPES_DEPTH);
+        defaultMaxItems = getBigIntegerParameter(parameters, PROP_DEFAULT_MAX_ITEMS, DEFAULT_MAX_ITEMS);
+        defaultDepth = getBigIntegerParameter(parameters, PROP_DEFAULT_DEPTH, DEFAULT_DEPTH);
     }
 
-    protected static long getLongParameter(Map<String, String> parameters,
-            String key, long def) {
+    protected static long getLongParameter(Map<String, String> parameters, String key, long def) {
         String value = parameters.get(key);
         try {
             return StringUtils.isBlank(value) ? def : Long.parseLong(value);
         } catch (NumberFormatException e) {
-            throw new CmisRuntimeException(
-                    "Could not parse configuration values for " + key + ": "
-                            + e.getMessage(), e);
+            throw new CmisRuntimeException("Could not parse configuration values for " + key + ": " + e.getMessage(), e);
         }
     }
 
-    protected static BigInteger getBigIntegerParameter(
-            Map<String, String> parameters, String key, int def) {
+    protected static BigInteger getBigIntegerParameter(Map<String, String> parameters, String key, int def) {
         String value = parameters.get(key);
         try {
-            return StringUtils.isBlank(value) ? BigInteger.valueOf(def)
-                    : new BigInteger(value);
+            return StringUtils.isBlank(value) ? BigInteger.valueOf(def) : new BigInteger(value);
         } catch (NumberFormatException e) {
-            throw new CmisRuntimeException(
-                    "Could not parse configuration values for " + key + ": "
-                            + e.getMessage(), e);
+            throw new CmisRuntimeException("Could not parse configuration values for " + key + ": " + e.getMessage(), e);
         }
     }
 
@@ -146,11 +129,9 @@ public class NuxeoCmisServiceFactory extends AbstractServiceFactory {
         if (StringUtils.isBlank(repositoryId)) {
             repositoryId = null;
         } else {
-            NuxeoRepository repository = Framework.getService(
-                    NuxeoRepositories.class).getRepository(repositoryId);
+            NuxeoRepository repository = Framework.getService(NuxeoRepositories.class).getRepository(repositoryId);
             if (repository == null) {
-                throw new CmisInvalidArgumentException("No such repository: "
-                        + repositoryId);
+                throw new CmisInvalidArgumentException("No such repository: " + repositoryId);
             }
         }
         NuxeoCmisService nuxeoCmisService = new NuxeoCmisService(repositoryId);

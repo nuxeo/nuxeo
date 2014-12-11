@@ -22,21 +22,17 @@ import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.server.shared.CallContextHandler;
 
 /**
- * Call Context Handler for Nuxeo authentication that extracts the relevant user
- * name.
+ * Call Context Handler for Nuxeo authentication that extracts the relevant user name.
  * <p>
- * Configured as a "callContextHandler" servlet parameter in the AtomPub and
- * JSON servlets.
+ * Configured as a "callContextHandler" servlet parameter in the AtomPub and JSON servlets.
  * <p>
- * Authentication happened earlier in the chain through Nuxeo's authentication
- * filter, and a JAAS context has already been set up. For SOAP, authentication
- * happened through {@link NuxeoCmisAuthHandler} instead of the standard Nuxeo
+ * Authentication happened earlier in the chain through Nuxeo's authentication filter, and a JAAS context has already
+ * been set up. For SOAP, authentication happened through {@link NuxeoCmisAuthHandler} instead of the standard Nuxeo
  * filter.
  * <p>
  * There is no password available, as authentication is opaque and may use SSO.
  */
-public class NuxeoAuthCallContextHandler implements CallContextHandler,
-        Serializable {
+public class NuxeoAuthCallContextHandler implements CallContextHandler, Serializable {
 
     private static final long serialVersionUID = 1L;
 

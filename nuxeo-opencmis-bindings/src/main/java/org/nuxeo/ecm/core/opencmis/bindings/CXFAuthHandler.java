@@ -36,8 +36,7 @@ import org.apache.chemistry.opencmis.server.impl.webservices.AbstractUsernameTok
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.7.3
  */
-public class CXFAuthHandler extends AbstractUsernameTokenAuthHandler implements
-        SOAPHandler<SOAPMessageContext> {
+public class CXFAuthHandler extends AbstractUsernameTokenAuthHandler implements SOAPHandler<SOAPMessageContext> {
 
     public Set<QName> getHeaders() {
         return HEADERS;
@@ -59,8 +58,7 @@ public class CXFAuthHandler extends AbstractUsernameTokenAuthHandler implements
 
         Map<String, String> callContextMap = null;
 
-        Object[] secHeaders = context.getHeaders(WSSE_SECURITY, WSSE_CONTEXT,
-                true);
+        Object[] secHeaders = context.getHeaders(WSSE_SECURITY, WSSE_CONTEXT, true);
         if (secHeaders != null && secHeaders.length > 0) {
             for (Object header : secHeaders) {
                 if (!(header instanceof JAXBElement)) {
@@ -84,8 +82,7 @@ public class CXFAuthHandler extends AbstractUsernameTokenAuthHandler implements
         }
 
         context.put(AbstractService.CALL_CONTEXT_MAP, callContextMap);
-        context.setScope(AbstractService.CALL_CONTEXT_MAP,
-                MessageContext.Scope.APPLICATION);
+        context.setScope(AbstractService.CALL_CONTEXT_MAP, MessageContext.Scope.APPLICATION);
 
         return true;
     }

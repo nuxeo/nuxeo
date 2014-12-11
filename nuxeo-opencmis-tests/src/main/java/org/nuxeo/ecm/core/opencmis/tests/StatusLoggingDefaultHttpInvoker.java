@@ -57,34 +57,29 @@ public class StatusLoggingDefaultHttpInvoker implements HttpInvoker {
         return invoke(url, "GET", null, null, null, session, null, null);
     }
 
-    public Response invokeGET(UrlBuilder url, BindingSession session,
-            BigInteger offset, BigInteger length) {
+    public Response invokeGET(UrlBuilder url, BindingSession session, BigInteger offset, BigInteger length) {
         return invoke(url, "GET", null, null, null, session, offset, length);
     }
 
-    public Response invokePOST(UrlBuilder url, String contentType,
-            Output writer, BindingSession session) {
-        return invoke(url, "POST", contentType, null, writer, session, null,
-                null);
+    public Response invokePOST(UrlBuilder url, String contentType, Output writer, BindingSession session) {
+        return invoke(url, "POST", contentType, null, writer, session, null, null);
     }
 
-    public Response invokePUT(UrlBuilder url, String contentType,
-            Map<String, String> headers, Output writer, BindingSession session) {
-        return invoke(url, "PUT", contentType, headers, writer, session, null,
-                null);
+    public Response invokePUT(UrlBuilder url, String contentType, Map<String, String> headers, Output writer,
+            BindingSession session) {
+        return invoke(url, "PUT", contentType, headers, writer, session, null, null);
     }
 
     public Response invokeDELETE(UrlBuilder url, BindingSession session) {
         return invoke(url, "DELETE", null, null, null, session, null, null);
     }
 
-    protected Response invoke(UrlBuilder url, String method,
-            String contentType, Map<String, String> headers, Output writer,
-            BindingSession session, BigInteger offset, BigInteger length) {
+    protected Response invoke(UrlBuilder url, String method, String contentType, Map<String, String> headers,
+            Output writer, BindingSession session, BigInteger offset, BigInteger length) {
         Response response;
         try {
-            response = (Response) invokeMethod.invoke(invoker, url, method,
-                    contentType, headers, writer, session, offset, length);
+            response = (Response) invokeMethod.invoke(invoker, url, method, contentType, headers, writer, session,
+                    offset, length);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }

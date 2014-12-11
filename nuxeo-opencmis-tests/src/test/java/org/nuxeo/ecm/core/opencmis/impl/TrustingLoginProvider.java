@@ -20,14 +20,12 @@ import org.nuxeo.ecm.core.opencmis.bindings.LoginProvider;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Login provider that does not check the password and just logs in the provided
- * user.
+ * Login provider that does not check the password and just logs in the provided user.
  */
 public class TrustingLoginProvider implements LoginProvider {
 
     @Override
-    public LoginContext login(String username, String password)
-            throws LoginException {
+    public LoginContext login(String username, String password) throws LoginException {
         LoginContext loginContext = Framework.loginAsUser(username);
         Object[] principals = loginContext.getSubject().getPrincipals().toArray();
         if (principals.length > 0) {

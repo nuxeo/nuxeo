@@ -44,7 +44,7 @@ public class HttpURLInstaller {
         client.getParams().setAuthenticationPreemptive(true);
     }
 
-    public void installSelf()  {
+    public void installSelf() {
         shf = new HttpURLStreamHandlerFactory(clientProvider);
         try {
             URLStreamHandlerFactoryInstaller.installURLStreamHandlerFactory(shf);

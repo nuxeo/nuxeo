@@ -23,8 +23,7 @@ import static org.junit.Assert.assertEquals;
 
 public class TestSimpleImageInfo {
 
-    public void check(String name, long length, String mimeType)
-            throws Exception {
+    public void check(String name, long length, String mimeType) throws Exception {
         InputStream is = getClass().getClassLoader().getResourceAsStream(name);
         SimpleImageInfo info = new SimpleImageInfo(is);
         assertEquals(800, info.getWidth());

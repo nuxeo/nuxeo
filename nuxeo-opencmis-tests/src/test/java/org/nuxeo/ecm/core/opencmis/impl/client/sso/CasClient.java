@@ -22,14 +22,10 @@ import org.nuxeo.ecm.core.opencmis.impl.client.protocol.http.HttpURLInstaller;
 import org.nuxeo.ecm.core.opencmis.impl.client.protocol.http.NullAuthenticationProvider;
 
 /**
- * CMIS client authenticated using CAS. Fetch documents using the atomPUB
- * protocol.
- *
- * The authentication outside the scope of chemistry. We've managed to direct
- * chemistry for using the authenticated http client.
+ * CMIS client authenticated using CAS. Fetch documents using the atomPUB protocol. The authentication outside the scope
+ * of chemistry. We've managed to direct chemistry for using the authenticated http client.
  *
  * @author matic
- *
  */
 public class CasClient extends AbstractClientSupport {
 

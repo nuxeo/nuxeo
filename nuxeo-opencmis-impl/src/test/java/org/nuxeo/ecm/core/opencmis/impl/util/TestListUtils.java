@@ -48,33 +48,27 @@ public class TestListUtils {
         assertEquals(Arrays.asList("1", "2", "3", "4", "5", "6"), l.getList());
         assertEquals(6, l.numItems);
         assertFalse(l.hasMoreItems);
-        l = getBatchedList(list, BigInteger.valueOf(4), BigInteger.valueOf(1),
-                10);
+        l = getBatchedList(list, BigInteger.valueOf(4), BigInteger.valueOf(1), 10);
         assertEquals(Arrays.asList("2", "3", "4", "5"), l.getList());
         assertEquals(6, l.numItems);
         assertTrue(l.hasMoreItems);
-        l = getBatchedList(list, BigInteger.valueOf(4), BigInteger.valueOf(2),
-                10);
+        l = getBatchedList(list, BigInteger.valueOf(4), BigInteger.valueOf(2), 10);
         assertEquals(Arrays.asList("3", "4", "5", "6"), l.getList());
         assertEquals(6, l.numItems);
         assertFalse(l.hasMoreItems);
-        l = getBatchedList(list, BigInteger.valueOf(4), BigInteger.valueOf(3),
-                10);
+        l = getBatchedList(list, BigInteger.valueOf(4), BigInteger.valueOf(3), 10);
         assertEquals(Arrays.asList("4", "5", "6"), l.getList());
         assertEquals(6, l.numItems);
         assertFalse(l.hasMoreItems);
-        l = getBatchedList(list, BigInteger.valueOf(4), BigInteger.valueOf(5),
-                10);
+        l = getBatchedList(list, BigInteger.valueOf(4), BigInteger.valueOf(5), 10);
         assertEquals(Arrays.asList("6"), l.getList());
         assertEquals(6, l.numItems);
         assertFalse(l.hasMoreItems);
-        l = getBatchedList(list, BigInteger.valueOf(4), BigInteger.valueOf(6),
-                10);
+        l = getBatchedList(list, BigInteger.valueOf(4), BigInteger.valueOf(6), 10);
         assertEquals(Arrays.asList(), l.getList());
         assertEquals(6, l.numItems);
         assertFalse(l.hasMoreItems);
-        l = getBatchedList(list, BigInteger.valueOf(1), BigInteger.valueOf(42),
-                10);
+        l = getBatchedList(list, BigInteger.valueOf(1), BigInteger.valueOf(42), 10);
         assertEquals(Arrays.asList(), l.getList());
         assertEquals(6, l.numItems);
         assertFalse(l.hasMoreItems);

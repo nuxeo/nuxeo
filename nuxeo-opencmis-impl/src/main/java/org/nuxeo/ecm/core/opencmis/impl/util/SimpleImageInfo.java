@@ -29,9 +29,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * A Java class to determine image width, height, length and MIME types for a
- * number of image file formats without loading the whole image data.
- *
+ * A Java class to determine image width, height, length and MIME types for a number of image file formats without
+ * loading the whole image data.
  */
 public class SimpleImageInfo {
 
@@ -114,8 +113,7 @@ public class SimpleImageInfo {
             mimeType = "image/bmp";
         } else {
             int c4 = read();
-            if ((c1 == 'M' && c2 == 'M' && c3 == 0 && c4 == 42)
-                    || (c1 == 'I' && c2 == 'I' && c3 == 42 && c4 == 0)) { // TIFF
+            if ((c1 == 'M' && c2 == 'M' && c3 == 0 && c4 == 42) || (c1 == 'I' && c2 == 'I' && c3 == 42 && c4 == 0)) { // TIFF
                 boolean bigEndian = c1 == 'M';
                 int ifd = 0;
                 int entries;

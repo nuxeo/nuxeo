@@ -25,17 +25,14 @@ import javax.servlet.ServletContextListener;
 import org.osgi.framework.FrameworkEvent;
 
 /**
- * This class is just a wrapper to hold the initialization of Nuxeo CMIS until
- * we have received the "go ahead" from the Runtime and that everything is fully
- * initialized.
- *
+ * This class is just a wrapper to hold the initialization of Nuxeo CMIS until we have received the "go ahead" from the
+ * Runtime and that everything is fully initialized.
  */
 public class ContextListenerDelayer implements ServletContextListener {
 
     /*
-     * this is the true object but because of differences in initialization
-     * sequence we have to delay this until nuxeo is fully up and all the user's
-     * configuration files have been loaded into extension points
+     * this is the true object but because of differences in initialization sequence we have to delay this until nuxeo
+     * is fully up and all the user's configuration files have been loaded into extension points
      */
 
     protected NuxeoCmisContextListener delayed = new NuxeoCmisContextListener();
@@ -46,16 +43,14 @@ public class ContextListenerDelayer implements ServletContextListener {
     protected ServletContextEvent delayedEvent;
 
     /*
-     * We don't call the constructor directly -- the servlet container does so
-     * we have to hold a list of all the objects of this type created. this
-     * number should be 1, be we track "all of them" just in case.
+     * We don't call the constructor directly -- the servlet container does so we have to hold a list of all the objects
+     * of this type created. this number should be 1, be we track "all of them" just in case.
      */
     private static ArrayList<ContextListenerDelayer> created = new ArrayList<ContextListenerDelayer>();
 
     /*
-     * We have to keep track of whether or not activate has been called already
-     * because in some packagings (jetty) the framework ready method is called
-     * BEFORE the war container instantiates the objects. Sigh.
+     * We have to keep track of whether or not activate has been called already because in some packagings (jetty) the
+     * framework ready method is called BEFORE the war container instantiates the objects. Sigh.
      */
     protected static boolean hasBeenActivated = false;
 
@@ -88,8 +83,7 @@ public class ContextListenerDelayer implements ServletContextListener {
     }
 
     /*
-     * Do the work that should have happened at contextInitialized() now if the
-     * Framework is fully up.
+     * Do the work that should have happened at contextInitialized() now if the Framework is fully up.
      */
     public void frameworkEvent(FrameworkEvent event) {
         if (delayedEvent == null) {
@@ -103,8 +97,7 @@ public class ContextListenerDelayer implements ServletContextListener {
     }
 
     /*
-     * Walk the list of objects of this type we have created echoing the
-     * framework event. Note: This method is static!
+     * Walk the list of objects of this type we have created echoing the framework event. Note: This method is static!
      */
 
     public static void activate(FrameworkEvent event) {

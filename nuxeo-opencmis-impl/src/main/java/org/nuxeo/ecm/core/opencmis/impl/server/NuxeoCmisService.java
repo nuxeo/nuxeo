@@ -157,8 +157,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * Nuxeo implementation of the CMIS Services, on top of a {@link CoreSession}.
  */
-public class NuxeoCmisService extends AbstractCmisService implements
-        CallContextAwareCmisService, ProgressControlCmisService {
+public class NuxeoCmisService extends AbstractCmisService implements CallContextAwareCmisService,
+        ProgressControlCmisService {
 
     public static final int DEFAULT_TYPE_LEVELS = 2;
 
@@ -240,8 +240,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
         repository = getNuxeoRepository(repositoryName);
         documentFilter = getDocumentFilter();
         SecurityService securityService = Framework.getService(SecurityService.class);
-        readPermissions = new HashSet<>(
-                Arrays.asList(securityService.getPermissionsToCheck(SecurityConstants.READ)));
+        readPermissions = new HashSet<>(Arrays.asList(securityService.getPermissionsToCheck(SecurityConstants.READ)));
         writePermissions = new HashSet<>(
                 Arrays.asList(securityService.getPermissionsToCheck(SecurityConstants.READ_WRITE)));
     }
@@ -268,15 +267,12 @@ public class NuxeoCmisService extends AbstractCmisService implements
         if (!TransactionHelper.setTransactionRollbackOnlyIfTimedOut()) {
             return Progress.CONTINUE;
         }
-        HttpServletResponse response = (HttpServletResponse) getCallContext().get(
-                CallContext.HTTP_SERVLET_RESPONSE);
+        HttpServletResponse response = (HttpServletResponse) getCallContext().get(CallContext.HTTP_SERVLET_RESPONSE);
         if (response != null) {
             try {
-                response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
-                        "Transaction timeout");
+                response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Transaction timeout");
             } catch (IOException e) {
-                throw new CmisRuntimeException("Failed to set timeout status",
-                        e);
+                throw new CmisRuntimeException("Failed to set timeout status", e);
             }
         }
         return Progress.STOP;
@@ -286,12 +282,10 @@ public class NuxeoCmisService extends AbstractCmisService implements
         if (repositoryName == null) {
             return null;
         }
-        return Framework.getService(NuxeoRepositories.class).getRepository(
-                repositoryName);
+        return Framework.getService(NuxeoRepositories.class).getRepository(repositoryName);
     }
 
-    protected static CoreSession openCoreSession(String repositoryName,
-            String username) {
+    protected static CoreSession openCoreSession(String repositoryName, String username) {
         if (repositoryName == null) {
             return null;
         }
@@ -326,24 +320,20 @@ public class NuxeoCmisService extends AbstractCmisService implements
         if (coreSessionOwned) {
             // for non-local binding, the principal is found
             // in the login stack
-            String username = callContext.getBinding().equals(
-                    CallContext.BINDING_LOCAL) ? callContext.getUsername() : null;
-            coreSession = repository == null ? null : openCoreSession(
-                    repository.getId(), username);
+            String username = callContext.getBinding().equals(CallContext.BINDING_LOCAL) ? callContext.getUsername()
+                    : null;
+            coreSession = repository == null ? null : openCoreSession(repository.getId(), username);
         }
     }
 
     /** Gets the filter that hides HiddenInNavigation and deleted objects. */
     protected Filter getDocumentFilter() {
-        Filter facetFilter = new FacetFilter(FacetNames.HIDDEN_IN_NAVIGATION,
-                false);
-        Filter lcFilter = new LifeCycleFilter(LifeCycleConstants.DELETED_STATE,
-                false);
+        Filter facetFilter = new FacetFilter(FacetNames.HIDDEN_IN_NAVIGATION, false);
+        Filter lcFilter = new LifeCycleFilter(LifeCycleConstants.DELETED_STATE, false);
         return new CompoundFilter(facetFilter, lcFilter);
     }
 
-    protected String getIdFromDocumentRef(DocumentRef ref)
-            throws ClientException {
+    protected String getIdFromDocumentRef(DocumentRef ref) throws ClientException {
         if (ref instanceof IdRef) {
             return ((IdRef) ref).value;
         } else {
@@ -359,8 +349,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
     /* This is the only method that does not have a repositoryId / coreSession. */
     @Override
     public List<RepositoryInfo> getRepositoryInfos(ExtensionsData extension) {
-        List<NuxeoRepository> repos = Framework.getService(
-                NuxeoRepositories.class).getRepositories();
+        List<NuxeoRepository> repos = Framework.getService(NuxeoRepositories.class).getRepositories();
         List<RepositoryInfo> infos = new ArrayList<RepositoryInfo>(repos.size());
         for (NuxeoRepository repo : repos) {
             String latestChangeLogToken = getLatestChangeLogToken(repo.getId());
@@ -370,8 +359,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public RepositoryInfo getRepositoryInfo(String repositoryId,
-            ExtensionsData extension) {
+    public RepositoryInfo getRepositoryInfo(String repositoryId, ExtensionsData extension) {
         String latestChangeLogToken;
         if (cachedChangeLogToken != null) {
             latestChangeLogToken = cachedChangeLogToken;
@@ -384,8 +372,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public TypeDefinition getTypeDefinition(String repositoryId, String typeId,
-            ExtensionsData extension) {
+    public TypeDefinition getTypeDefinition(String repositoryId, String typeId, ExtensionsData extension) {
         TypeDefinition type = repository.getTypeDefinition(typeId);
         if (type == null) {
             throw new CmisInvalidArgumentException("No such type: " + typeId);
@@ -397,27 +384,22 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public TypeDefinitionList getTypeChildren(String repositoryId,
-            String typeId, Boolean includePropertyDefinitions,
+    public TypeDefinitionList getTypeChildren(String repositoryId, String typeId, Boolean includePropertyDefinitions,
             BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
-        TypeDefinitionList types = repository.getTypeChildren(typeId,
-                includePropertyDefinitions, maxItems, skipCount);
+        TypeDefinitionList types = repository.getTypeChildren(typeId, includePropertyDefinitions, maxItems, skipCount);
         // TODO copy only when local binding
         // clone
         return WSConverter.convert(WSConverter.convert(types));
     }
 
     @Override
-    public List<TypeDefinitionContainer> getTypeDescendants(
-            String repositoryId, String typeId, BigInteger depth,
+    public List<TypeDefinitionContainer> getTypeDescendants(String repositoryId, String typeId, BigInteger depth,
             Boolean includePropertyDefinitions, ExtensionsData extension) {
         int d = depth == null ? DEFAULT_TYPE_LEVELS : depth.intValue();
-        List<TypeDefinitionContainer> types = repository.getTypeDescendants(
-                typeId, d, includePropertyDefinitions);
+        List<TypeDefinitionContainer> types = repository.getTypeDescendants(typeId, d, includePropertyDefinitions);
         // clone
         // TODO copy only when local binding
-        List<CmisTypeContainer> tmp = new ArrayList<CmisTypeContainer>(
-                types.size());
+        List<CmisTypeContainer> tmp = new ArrayList<CmisTypeContainer>(types.size());
         WSConverter.convertTypeContainerList(types, tmp);
         return WSConverter.convertTypeContainerList(tmp);
     }
@@ -439,30 +421,25 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public NuxeoObjectData getObject(String repositoryId, String objectId,
-            String filter, Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
-            Boolean includePolicyIds, Boolean includeAcl,
-            ExtensionsData extension) {
+    public NuxeoObjectData getObject(String repositoryId, String objectId, String filter,
+            Boolean includeAllowableActions, IncludeRelationships includeRelationships, String renditionFilter,
+            Boolean includePolicyIds, Boolean includeAcl, ExtensionsData extension) {
         DocumentModel doc = getDocumentModel(objectId);
-        NuxeoObjectData data = new NuxeoObjectData(this, doc, filter,
-                includeAllowableActions, includeRelationships, renditionFilter,
-                includePolicyIds, includeAcl, extension);
+        NuxeoObjectData data = new NuxeoObjectData(this, doc, filter, includeAllowableActions, includeRelationships,
+                renditionFilter, includePolicyIds, includeAcl, extension);
         collectObjectInfo(repositoryId, objectId);
         return data;
     }
 
     /**
-     * Checks if the doc should be ignored because it is "invisible" (deleted,
-     * hidden in navigation).
+     * Checks if the doc should be ignored because it is "invisible" (deleted, hidden in navigation).
      */
     public boolean isFilteredOut(DocumentModel doc) {
         return !documentFilter.accept(doc);
     }
 
     /** Creates bare unsaved document model. */
-    protected DocumentModel createDocumentModel(ObjectId folder,
-            TypeDefinition type) {
+    protected DocumentModel createDocumentModel(ObjectId folder, TypeDefinition type) {
         DocumentModel doc;
         String typeId = type.getId();
         String nuxeoTypeId = type.getLocalName();
@@ -497,12 +474,10 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     /** Creates and save document model. */
-    protected DocumentModel createDocumentModel(ObjectId folder,
-            ContentStream contentStream, String name) {
+    protected DocumentModel createDocumentModel(ObjectId folder, ContentStream contentStream, String name) {
         FileManager fileManager = Framework.getLocalService(FileManager.class);
         MimetypeRegistryService mtr = (MimetypeRegistryService) Framework.getLocalService(MimetypeRegistry.class);
-        if (fileManager == null || mtr == null || name == null
-                || folder == null) {
+        if (fileManager == null || mtr == null || name == null || folder == null) {
             return null;
         }
 
@@ -532,17 +507,15 @@ public class NuxeoCmisService extends AbstractCmisService implements
         }
 
         try {
-            return fileManager.createDocumentFromBlob(coreSession, blob, path,
-                    false, name);
+            return fileManager.createDocumentFromBlob(coreSession, blob, path, false, name);
         } catch (Exception e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
     }
 
     // create and save session
-    protected NuxeoObjectData createObject(String repositoryId,
-            Properties properties, ObjectId folder, BaseTypeId baseType,
-            ContentStream contentStream) {
+    protected NuxeoObjectData createObject(String repositoryId, Properties properties, ObjectId folder,
+            BaseTypeId baseType, ContentStream contentStream) {
         String typeId;
         Map<String, PropertyData<?>> p;
         PropertyData<?> d;
@@ -595,14 +568,10 @@ public class NuxeoCmisService extends AbstractCmisService implements
         }
 
         // content stream filename default
-        if (contentStream != null
-                && StringUtils.isBlank(contentStream.getFileName())
-                && name != null) {
+        if (contentStream != null && StringUtils.isBlank(contentStream.getFileName()) && name != null) {
             // infer filename from name property
-            contentStream = new ContentStreamImpl(name,
-                    contentStream.getBigLength(),
-                    contentStream.getMimeType().trim(),
-                    contentStream.getStream());
+            contentStream = new ContentStreamImpl(name, contentStream.getBigLength(),
+                    contentStream.getMimeType().trim(), contentStream.getStream());
         }
 
         DocumentModel doc = null;
@@ -631,8 +600,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
                 PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
                 String pathSegment = pss.generatePathSegment(doc);
                 Path path = doc.getPath();
-                doc.setPathInfo(path == null ? null
-                        : path.removeLastSegments(1).toString(), pathSegment);
+                doc.setPathInfo(path == null ? null : path.removeLastSegments(1).toString(), pathSegment);
                 doc = coreSession.createDocument(doc);
             } else {
                 doc = coreSession.saveDocument(doc);
@@ -646,8 +614,8 @@ public class NuxeoCmisService extends AbstractCmisService implements
         return data;
     }
 
-    protected <T> void updateProperties(NuxeoObjectData object,
-            String changeToken, Properties properties, boolean creation) {
+    protected <T> void updateProperties(NuxeoObjectData object, String changeToken, Properties properties,
+            boolean creation) {
         TypeDefinition type = object.getTypeDefinition();
         // TODO changeToken
         Map<String, PropertyData<?>> p;
@@ -661,9 +629,8 @@ public class NuxeoCmisService extends AbstractCmisService implements
         }
     }
 
-    protected <T> void updateProperties(NuxeoObjectData object,
-            String changeToken, Map<String, ?> properties, TypeDefinition type,
-            boolean creation) {
+    protected <T> void updateProperties(NuxeoObjectData object, String changeToken, Map<String, ?> properties,
+            TypeDefinition type, boolean creation) {
         // TODO changeToken
         if (properties == null) {
             return;
@@ -672,8 +639,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
             String key = en.getKey();
             Object value = en.getValue();
             @SuppressWarnings("unchecked")
-            PropertyDefinition<T> pd = (PropertyDefinition<T>) type.getPropertyDefinitions().get(
-                    key);
+            PropertyDefinition<T> pd = (PropertyDefinition<T>) type.getPropertyDefinitions().get(key);
             if (pd == null) {
                 throw new CmisRuntimeException("Unknown property: " + key);
             }
@@ -681,11 +647,10 @@ public class NuxeoCmisService extends AbstractCmisService implements
         }
     }
 
-    protected <T> void setObjectProperty(NuxeoObjectData object, String key,
-            PropertyData<T> d, TypeDefinition type, boolean creation) {
+    protected <T> void setObjectProperty(NuxeoObjectData object, String key, PropertyData<T> d, TypeDefinition type,
+            boolean creation) {
         @SuppressWarnings("unchecked")
-        PropertyDefinition<T> pd = (PropertyDefinition<T>) type.getPropertyDefinitions().get(
-                key);
+        PropertyDefinition<T> pd = (PropertyDefinition<T>) type.getPropertyDefinitions().get(key);
         if (pd == null) {
             throw new CmisRuntimeException("Unknown property: " + key);
         }
@@ -700,27 +665,23 @@ public class NuxeoCmisService extends AbstractCmisService implements
         setObjectProperty(object, key, value, pd, creation);
     }
 
-    protected <T> void setObjectProperty(NuxeoObjectData object, String key,
-            Object value, PropertyDefinition<T> pd, boolean creation) {
+    protected <T> void setObjectProperty(NuxeoObjectData object, String key, Object value, PropertyDefinition<T> pd,
+            boolean creation) {
         Updatability updatability = pd.getUpdatability();
-        if (updatability == Updatability.READONLY
-                || (updatability == Updatability.ONCREATE && !creation)) {
+        if (updatability == Updatability.READONLY || (updatability == Updatability.ONCREATE && !creation)) {
             // log.error("Read-only property, ignored: " + key);
             return;
         }
-        if (PropertyIds.OBJECT_TYPE_ID.equals(key)
-                || PropertyIds.LAST_MODIFICATION_DATE.equals(key)) {
+        if (PropertyIds.OBJECT_TYPE_ID.equals(key) || PropertyIds.LAST_MODIFICATION_DATE.equals(key)) {
             return;
         }
         // TODO avoid constructing property object just to set value
-        NuxeoPropertyDataBase<T> np = (NuxeoPropertyDataBase<T>) NuxeoPropertyData.construct(
-                object, pd, callContext);
+        NuxeoPropertyDataBase<T> np = (NuxeoPropertyDataBase<T>) NuxeoPropertyData.construct(object, pd, callContext);
         np.setValue(value);
     }
 
     /** Sets initial versioning state and returns its id. */
-    protected String setInitialVersioningState(NuxeoObjectData object,
-            VersioningState versioningState) {
+    protected String setInitialVersioningState(NuxeoObjectData object, VersioningState versioningState) {
         try {
             if (versioningState == null) {
                 // default is MAJOR, per spec
@@ -757,59 +718,49 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public String create(String repositoryId, Properties properties,
-            String folderId, ContentStream contentStream,
-            VersioningState versioningState, List<String> policies,
-            ExtensionsData extension) {
+    public String create(String repositoryId, Properties properties, String folderId, ContentStream contentStream,
+            VersioningState versioningState, List<String> policies, ExtensionsData extension) {
         // TODO policies
-        NuxeoObjectData object = createObject(repositoryId, properties,
-                new ObjectIdImpl(folderId), null, contentStream);
+        NuxeoObjectData object = createObject(repositoryId, properties, new ObjectIdImpl(folderId), null, contentStream);
         return setInitialVersioningState(object, versioningState);
     }
 
     @Override
-    public String createDocument(String repositoryId, Properties properties,
-            String folderId, ContentStream contentStream,
-            VersioningState versioningState, List<String> policies,
-            Acl addAces, Acl removeAces, ExtensionsData extension) {
-        // TODO policies, addAces, removeAces
-        NuxeoObjectData object = createObject(repositoryId, properties,
-                new ObjectIdImpl(folderId), BaseTypeId.CMIS_DOCUMENT,
-                contentStream);
-        return setInitialVersioningState(object, versioningState);
-    }
-
-    @Override
-    public String createFolder(String repositoryId, Properties properties,
-            String folderId, List<String> policies, Acl addAces,
+    public String createDocument(String repositoryId, Properties properties, String folderId,
+            ContentStream contentStream, VersioningState versioningState, List<String> policies, Acl addAces,
             Acl removeAces, ExtensionsData extension) {
         // TODO policies, addAces, removeAces
-        NuxeoObjectData object = createObject(repositoryId, properties,
-                new ObjectIdImpl(folderId), BaseTypeId.CMIS_FOLDER, null);
+        NuxeoObjectData object = createObject(repositoryId, properties, new ObjectIdImpl(folderId),
+                BaseTypeId.CMIS_DOCUMENT, contentStream);
+        return setInitialVersioningState(object, versioningState);
+    }
+
+    @Override
+    public String createFolder(String repositoryId, Properties properties, String folderId, List<String> policies,
+            Acl addAces, Acl removeAces, ExtensionsData extension) {
+        // TODO policies, addAces, removeAces
+        NuxeoObjectData object = createObject(repositoryId, properties, new ObjectIdImpl(folderId),
+                BaseTypeId.CMIS_FOLDER, null);
         return object.getId();
     }
 
     @Override
-    public String createPolicy(String repositoryId, Properties properties,
-            String folderId, List<String> policies, Acl addAces,
-            Acl removeAces, ExtensionsData extension) {
+    public String createPolicy(String repositoryId, Properties properties, String folderId, List<String> policies,
+            Acl addAces, Acl removeAces, ExtensionsData extension) {
         throw new CmisNotSupportedException();
     }
 
     @Override
-    public String createRelationship(String repositoryId,
-            Properties properties, List<String> policies, Acl addAces,
+    public String createRelationship(String repositoryId, Properties properties, List<String> policies, Acl addAces,
             Acl removeAces, ExtensionsData extension) {
-        NuxeoObjectData object = createObject(repositoryId, properties, null,
-                BaseTypeId.CMIS_RELATIONSHIP, null);
+        NuxeoObjectData object = createObject(repositoryId, properties, null, BaseTypeId.CMIS_RELATIONSHIP, null);
         return object.getId();
     }
 
     @Override
-    public String createDocumentFromSource(String repositoryId,
-            String sourceId, Properties properties, String folderId,
-            VersioningState versioningState, List<String> policies,
-            Acl addAces, Acl removeAces, ExtensionsData extension) {
+    public String createDocumentFromSource(String repositoryId, String sourceId, Properties properties,
+            String folderId, VersioningState versioningState, List<String> policies, Acl addAces, Acl removeAces,
+            ExtensionsData extension) {
         if (folderId == null) {
             // no unfileable objects for now
             throw new CmisInvalidArgumentException("Invalid null folder ID");
@@ -817,11 +768,9 @@ public class NuxeoCmisService extends AbstractCmisService implements
         DocumentModel doc = getDocumentModel(sourceId);
         DocumentModel folder = getDocumentModel(folderId);
         try {
-            DocumentModel copyDoc = coreSession.copy(doc.getRef(),
-                    folder.getRef(), null);
+            DocumentModel copyDoc = coreSession.copy(doc.getRef(), folder.getRef(), null);
             NuxeoObjectData copy = new NuxeoObjectData(this, copyDoc);
-            if (properties != null && properties.getPropertyList() != null
-                    && !properties.getPropertyList().isEmpty()) {
+            if (properties != null && properties.getPropertyList() != null && !properties.getPropertyList().isEmpty()) {
                 updateProperties(copy, null, properties, false);
                 copy.doc = coreSession.saveDocument(copyDoc);
             }
@@ -832,15 +781,13 @@ public class NuxeoCmisService extends AbstractCmisService implements
         }
     }
 
-    public NuxeoObjectData copy(String sourceId, String targetId,
-            Map<String, ?> properties, TypeDefinition type,
-            VersioningState versioningState, List<Policy> policies,
-            List<Ace> addACEs, List<Ace> removeACEs, OperationContext context) {
+    public NuxeoObjectData copy(String sourceId, String targetId, Map<String, ?> properties, TypeDefinition type,
+            VersioningState versioningState, List<Policy> policies, List<Ace> addACEs, List<Ace> removeACEs,
+            OperationContext context) {
         DocumentModel doc = getDocumentModel(sourceId);
         DocumentModel folder = getDocumentModel(targetId);
         try {
-            DocumentModel copyDoc = coreSession.copy(doc.getRef(),
-                    folder.getRef(), null);
+            DocumentModel copyDoc = coreSession.copy(doc.getRef(), folder.getRef(), null);
             NuxeoObjectData copy = new NuxeoObjectData(this, copyDoc, context);
             if (properties != null && !properties.isEmpty()) {
                 updateProperties(copy, null, properties, type, false);
@@ -862,17 +809,14 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public void deleteContentStream(String repositoryId,
-            Holder<String> objectIdHolder, Holder<String> changeTokenHolder,
-            ExtensionsData extension) {
-        setContentStream(repositoryId, objectIdHolder, Boolean.TRUE,
-                changeTokenHolder, null, extension);
+    public void deleteContentStream(String repositoryId, Holder<String> objectIdHolder,
+            Holder<String> changeTokenHolder, ExtensionsData extension) {
+        setContentStream(repositoryId, objectIdHolder, Boolean.TRUE, changeTokenHolder, null, extension);
     }
 
     @Override
-    public FailedToDeleteData deleteTree(String repositoryId, String folderId,
-            Boolean allVersions, UnfileObject unfileObjects,
-            Boolean continueOnFailure, ExtensionsData extension) {
+    public FailedToDeleteData deleteTree(String repositoryId, String folderId, Boolean allVersions,
+            UnfileObject unfileObjects, Boolean continueOnFailure, ExtensionsData extension) {
         if (unfileObjects == UnfileObject.UNFILE) {
             throw new CmisConstraintException("Unfiling not supported");
         }
@@ -882,8 +826,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
         try {
             DocumentModel doc = getDocumentModel(folderId);
             if (!doc.isFolder()) {
-                throw new CmisInvalidArgumentException("Not a folder: "
-                        + folderId);
+                throw new CmisInvalidArgumentException("Not a folder: " + folderId);
             }
             coreSession.removeDocument(new IdRef(folderId));
             save();
@@ -896,16 +839,14 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public AllowableActions getAllowableActions(String repositoryId,
-            String objectId, ExtensionsData extension) {
+    public AllowableActions getAllowableActions(String repositoryId, String objectId, ExtensionsData extension) {
         DocumentModel doc = getDocumentModel(objectId);
         return NuxeoObjectData.getAllowableActions(doc, false);
     }
 
     @Override
-    public ContentStream getContentStream(String repositoryId, String objectId,
-            String streamId, BigInteger offset, BigInteger length,
-            ExtensionsData extension) {
+    public ContentStream getContentStream(String repositoryId, String objectId, String streamId, BigInteger offset,
+            BigInteger length, ExtensionsData extension) {
         // TODO offset, length
         if (streamId == null) {
             DocumentModel doc = getDocumentModel(objectId);
@@ -921,8 +862,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
             }
             if (streamId.startsWith(REND_STREAM_RENDITION_PREFIX)) {
                 String renditionName = streamId.substring(REND_STREAM_RENDITION_PREFIX.length());
-                ContentStream cs = getRenditionServiceStream(objectId,
-                        renditionName);
+                ContentStream cs = getRenditionServiceStream(objectId, renditionName);
                 if (cs != null) {
                     return cs;
                 }
@@ -933,8 +873,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
         throw new CmisInvalidArgumentException("Invalid stream id: " + streamId);
     }
 
-    protected ContentStream getIconRenditionStream(String objectId)
-            throws ClientException {
+    protected ContentStream getIconRenditionStream(String objectId) throws ClientException {
         DocumentModel doc = getDocumentModel(objectId);
         String iconPath;
         try {
@@ -944,13 +883,11 @@ public class NuxeoCmisService extends AbstractCmisService implements
         }
         InputStream is = NuxeoObjectData.getIconStream(iconPath, callContext);
         if (is == null) {
-            throw new CmisConstraintException("No icon content stream: "
-                    + objectId);
+            throw new CmisConstraintException("No icon content stream: " + objectId);
         }
 
         int slash = iconPath.lastIndexOf('/');
-        String filename = slash == -1 ? iconPath
-                : iconPath.substring(slash + 1);
+        String filename = slash == -1 ? iconPath : iconPath.substring(slash + 1);
 
         SimpleImageInfo info;
         try {
@@ -960,12 +897,10 @@ public class NuxeoCmisService extends AbstractCmisService implements
         }
         // refetch now-consumed stream
         is = NuxeoObjectData.getIconStream(iconPath, callContext);
-        return new ContentStreamImpl(filename,
-                BigInteger.valueOf(info.getLength()), info.getMimeType(), is);
+        return new ContentStreamImpl(filename, BigInteger.valueOf(info.getLength()), info.getMimeType(), is);
     }
 
-    protected ContentStream getRenditionServiceStream(String objectId,
-            String renditionName) throws ClientException {
+    protected ContentStream getRenditionServiceStream(String objectId, String renditionName) throws ClientException {
         RenditionService renditionService = Framework.getLocalService(RenditionService.class);
         DocumentModel doc = getDocumentModel(objectId);
         Rendition rendition = renditionService.getRendition(doc, renditionName);
@@ -993,9 +928,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
             }
         }
         String filename = filenameWithExt(doc.getTitle(), ext);
-        return new ContentStreamImpl(filename,
-                BigInteger.valueOf(blob.getLength()), blob.getMimeType(),
-                stream);
+        return new ContentStreamImpl(filename, BigInteger.valueOf(blob.getLength()), blob.getMimeType(), stream);
     }
 
     // min size of extension we remove
@@ -1008,8 +941,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
     public static String filenameWithExt(String filename, String ext) {
         int len = filename.length();
         int p = filename.lastIndexOf('.');
-        if (p != -1 && p <= len - EXT_SIZE_MIN - 1
-                && p >= len - EXT_SIZE_MAX - 1) {
+        if (p != -1 && p <= len - EXT_SIZE_MIN - 1 && p >= len - EXT_SIZE_MAX - 1) {
             String curExt = filename.substring(p + 1);
             if (curExt.indexOf(' ') == -1) {
                 // remove existing extension
@@ -1020,23 +952,19 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public List<RenditionData> getRenditions(String repositoryId,
-            String objectId, String renditionFilter, BigInteger maxItems,
-            BigInteger skipCount, ExtensionsData extension) {
+    public List<RenditionData> getRenditions(String repositoryId, String objectId, String renditionFilter,
+            BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
         if (!NuxeoObjectData.needsRenditions(renditionFilter)) {
             return Collections.emptyList();
         }
         DocumentModel doc = getDocumentModel(objectId);
-        return NuxeoObjectData.getRenditions(doc, renditionFilter, maxItems,
-                skipCount, callContext);
+        return NuxeoObjectData.getRenditions(doc, renditionFilter, maxItems, skipCount, callContext);
     }
 
     @Override
-    public ObjectData getObjectByPath(String repositoryId, String path,
-            String filter, Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
-            Boolean includePolicyIds, Boolean includeAcl,
-            ExtensionsData extension) {
+    public ObjectData getObjectByPath(String repositoryId, String path, String filter, Boolean includeAllowableActions,
+            IncludeRelationships includeRelationships, String renditionFilter, Boolean includePolicyIds,
+            Boolean includeAcl, ExtensionsData extension) {
         DocumentModel doc;
         try {
             DocumentRef pathRef = new PathRef(path);
@@ -1053,9 +981,8 @@ public class NuxeoCmisService extends AbstractCmisService implements
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
-        ObjectData data = new NuxeoObjectData(this, doc, filter,
-                includeAllowableActions, includeRelationships, renditionFilter,
-                includePolicyIds, includeAcl, extension);
+        ObjectData data = new NuxeoObjectData(this, doc, filter, includeAllowableActions, includeRelationships,
+                renditionFilter, includePolicyIds, includeAcl, extension);
         collectObjectInfo(repositoryId, data.getId());
         return data;
     }
@@ -1065,14 +992,11 @@ public class NuxeoCmisService extends AbstractCmisService implements
      * <p>
      * Filtered out docs are ignored.
      */
-    protected DocumentModel getObjectByPathOfNames(String path)
-            throws ClientException, CmisObjectNotFoundException {
+    protected DocumentModel getObjectByPathOfNames(String path) throws ClientException, CmisObjectNotFoundException {
         DocumentModel doc = coreSession.getRootDocument();
         for (String name : new Path(path).segments()) {
-            String query = String.format("SELECT * FROM Document WHERE "
-                    + NXQL.ECM_PARENTID + " = %s AND "
-                    + NuxeoTypeHelper.NX_DC_TITLE + " = %s AND "
-                    + NXQL.ECM_ISPROXY + " = 0",
+            String query = String.format("SELECT * FROM Document WHERE " + NXQL.ECM_PARENTID + " = %s AND "
+                    + NuxeoTypeHelper.NX_DC_TITLE + " = %s AND " + NXQL.ECM_ISPROXY + " = 0",
                     escapeStringForNXQL(doc.getId()), escapeStringForNXQL(name));
             DocumentModelList docs = coreSession.query(query);
             if (docs.isEmpty()) {
@@ -1086,9 +1010,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
                 if (doc == null) {
                     doc = d;
                 } else {
-                    log.warn(String.format(
-                            "Path '%s' returns several documents for '%s'",
-                            path, name));
+                    log.warn(String.format("Path '%s' returns several documents for '%s'", path, name));
                     break;
                 }
             }
@@ -1106,11 +1028,9 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public Properties getProperties(String repositoryId, String objectId,
-            String filter, ExtensionsData extension) {
+    public Properties getProperties(String repositoryId, String objectId, String filter, ExtensionsData extension) {
         DocumentModel doc = getDocumentModel(objectId);
-        NuxeoObjectData data = new NuxeoObjectData(this, doc, filter, null,
-                null, null, null, null, null);
+        NuxeoObjectData data = new NuxeoObjectData(this, doc, filter, null, null, null, null, null, null);
         return data.getProperties();
     }
 
@@ -1126,9 +1046,8 @@ public class NuxeoCmisService extends AbstractCmisService implements
             return info;
         }
         DocumentModel doc = getDocumentModel(objectId);
-        NuxeoObjectData data = new NuxeoObjectData(this, doc, null,
-                Boolean.TRUE, IncludeRelationships.BOTH, "*", Boolean.TRUE,
-                Boolean.TRUE, null);
+        NuxeoObjectData data = new NuxeoObjectData(this, doc, null, Boolean.TRUE, IncludeRelationships.BOTH, "*",
+                Boolean.TRUE, Boolean.TRUE, null);
         return getObjectInfo(repositoryId, data);
     }
 
@@ -1175,12 +1094,10 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public void moveObject(String repositoryId, Holder<String> objectIdHolder,
-            String targetFolderId, String sourceFolderId,
-            ExtensionsData extension) {
+    public void moveObject(String repositoryId, Holder<String> objectIdHolder, String targetFolderId,
+            String sourceFolderId, ExtensionsData extension) {
         String objectId;
-        if (objectIdHolder == null
-                || (objectId = objectIdHolder.getValue()) == null) {
+        if (objectIdHolder == null || (objectId = objectIdHolder.getValue()) == null) {
             throw new CmisInvalidArgumentException("Missing object ID");
         }
         if (repository.getRootFolderId().equals(objectId)) {
@@ -1201,14 +1118,12 @@ public class NuxeoCmisService extends AbstractCmisService implements
             } else {
                 // check it's the actual parent
                 if (!parent.getId().equals(sourceFolderId)) {
-                    throw new CmisInvalidArgumentException("Object " + objectId
-                            + " is not filed in " + sourceFolderId);
+                    throw new CmisInvalidArgumentException("Object " + objectId + " is not filed in " + sourceFolderId);
                 }
             }
             DocumentModel target = getDocumentModel(targetFolderId);
             if (!target.isFolder()) {
-                throw new CmisInvalidArgumentException(
-                        "Target is not a folder: " + targetFolderId);
+                throw new CmisInvalidArgumentException("Target is not a folder: " + targetFolderId);
             }
             coreSession.move(docRef, new IdRef(targetFolderId), null);
             save();
@@ -1218,21 +1133,17 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public void setContentStream(String repositoryId,
-            Holder<String> objectIdHolder, Boolean overwriteFlag,
-            Holder<String> changeTokenHolder, ContentStream contentStream,
-            ExtensionsData extension) {
+    public void setContentStream(String repositoryId, Holder<String> objectIdHolder, Boolean overwriteFlag,
+            Holder<String> changeTokenHolder, ContentStream contentStream, ExtensionsData extension) {
         String objectId;
-        if (objectIdHolder == null
-                || (objectId = objectIdHolder.getValue()) == null) {
+        if (objectIdHolder == null || (objectId = objectIdHolder.getValue()) == null) {
             throw new CmisInvalidArgumentException("Missing object ID");
         }
 
         DocumentModel doc = getDocumentModel(objectId);
         // TODO test doc checkout state
         try {
-            NuxeoPropertyData.setContentStream(doc, contentStream,
-                    !Boolean.FALSE.equals(overwriteFlag));
+            NuxeoPropertyData.setContentStream(doc, contentStream, !Boolean.FALSE.equals(overwriteFlag));
             coreSession.saveDocument(doc);
             save();
         } catch (CmisBaseException e) {
@@ -1243,8 +1154,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public void updateProperties(String repositoryId,
-            Holder<String> objectIdHolder, Holder<String> changeTokenHolder,
+    public void updateProperties(String repositoryId, Holder<String> objectIdHolder, Holder<String> changeTokenHolder,
             Properties properties, ExtensionsData extension) {
         try {
             updateProperties(objectIdHolder, changeTokenHolder, properties);
@@ -1255,39 +1165,33 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     /* does not save the session */
-    protected void updateProperties(Holder<String> objectIdHolder,
-            Holder<String> changeTokenHolder, Properties properties)
-            throws ClientException {
+    protected void updateProperties(Holder<String> objectIdHolder, Holder<String> changeTokenHolder,
+            Properties properties) throws ClientException {
         String objectId;
-        if (objectIdHolder == null
-                || (objectId = objectIdHolder.getValue()) == null) {
+        if (objectIdHolder == null || (objectId = objectIdHolder.getValue()) == null) {
             throw new CmisInvalidArgumentException("Missing object ID");
         }
         DocumentModel doc = getDocumentModel(objectId);
         NuxeoObjectData object = new NuxeoObjectData(this, doc);
-        String changeToken = changeTokenHolder == null ? null
-                : changeTokenHolder.getValue();
+        String changeToken = changeTokenHolder == null ? null : changeTokenHolder.getValue();
         updateProperties(object, changeToken, properties, false);
         coreSession.saveDocument(doc);
     }
 
     @Override
-    public List<BulkUpdateObjectIdAndChangeToken> bulkUpdateProperties(
-            String repositoryId,
-            List<BulkUpdateObjectIdAndChangeToken> objectIdAndChangeToken,
-            Properties properties, List<String> addSecondaryTypeIds,
-            List<String> removeSecondaryTypeIds, ExtensionsData extension) {
+    public List<BulkUpdateObjectIdAndChangeToken> bulkUpdateProperties(String repositoryId,
+            List<BulkUpdateObjectIdAndChangeToken> objectIdAndChangeToken, Properties properties,
+            List<String> addSecondaryTypeIds, List<String> removeSecondaryTypeIds, ExtensionsData extension) {
         List<BulkUpdateObjectIdAndChangeToken> list = new ArrayList<BulkUpdateObjectIdAndChangeToken>(
                 objectIdAndChangeToken.size());
         try {
             for (BulkUpdateObjectIdAndChangeToken idt : objectIdAndChangeToken) {
                 String id = idt.getId();
                 Holder<String> objectIdHolder = new Holder<String>(id);
-                Holder<String> changeTokenHolder = new Holder<String>(
-                        idt.getChangeToken());
+                Holder<String> changeTokenHolder = new Holder<String>(idt.getChangeToken());
                 updateProperties(objectIdHolder, changeTokenHolder, properties);
-                list.add(new BulkUpdateObjectIdAndChangeTokenImpl(id,
-                        objectIdHolder.getValue(), changeTokenHolder.getValue()));
+                list.add(new BulkUpdateObjectIdAndChangeTokenImpl(id, objectIdHolder.getValue(),
+                        changeTokenHolder.getValue()));
             }
             save();
         } catch (ClientException e) {
@@ -1297,28 +1201,24 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public Acl applyAcl(String repositoryId, String objectId, Acl addAces,
-            Acl removeAces, AclPropagation aclPropagation,
-            ExtensionsData extension) {
+    public Acl applyAcl(String repositoryId, String objectId, Acl addAces, Acl removeAces,
+            AclPropagation aclPropagation, ExtensionsData extension) {
         return applyAcl(objectId, addAces, removeAces, false, aclPropagation);
     }
 
     @Override
-    public Acl applyAcl(String repositoryId, String objectId, Acl aces,
-            AclPropagation aclPropagation) {
+    public Acl applyAcl(String repositoryId, String objectId, Acl aces, AclPropagation aclPropagation) {
         return applyAcl(objectId, aces, null, true, aclPropagation);
     }
 
-    protected Acl applyAcl(String objectId, Acl addAces, Acl removeAces,
-            boolean clearFirst, AclPropagation aclPropagation) {
+    protected Acl applyAcl(String objectId, Acl addAces, Acl removeAces, boolean clearFirst,
+            AclPropagation aclPropagation) {
         DocumentModel doc = getDocumentModel(objectId); // does filtering
         if (aclPropagation == null) {
             aclPropagation = AclPropagation.REPOSITORYDETERMINED;
         }
-        if (aclPropagation == AclPropagation.OBJECTONLY
-                && doc.getDocumentType().isFolder()) {
-            throw new CmisInvalidArgumentException(
-                    "Cannot use ACLPropagation=objectonly on Folder");
+        if (aclPropagation == AclPropagation.OBJECTONLY && doc.getDocumentType().isFolder()) {
+            throw new CmisInvalidArgumentException("Cannot use ACLPropagation=objectonly on Folder");
         }
         DocumentRef docRef = new IdRef(objectId);
 
@@ -1341,8 +1241,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
                     String perm = permissionToNuxeo(permission);
                     if (PERMISSION_NOTHING.equals(perm)) {
                         // block everything
-                        acl.add(new ACE(SecurityConstants.EVERYONE,
-                                SecurityConstants.EVERYTHING, false));
+                        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
                     } else {
                         acl.add(new ACE(principalId, perm, true));
                     }
@@ -1356,8 +1255,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
                 String username = ace.getUsername();
                 String perm = ace.getPermission();
                 if (ace.isDenied()) {
-                    if (SecurityConstants.EVERYONE.equals(username)
-                            && SecurityConstants.EVERYTHING.equals(perm)) {
+                    if (SecurityConstants.EVERYONE.equals(username) && SecurityConstants.EVERYTHING.equals(perm)) {
                         perm = PERMISSION_NOTHING;
                     } else {
                         continue;
@@ -1411,8 +1309,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public Acl getAcl(String repositoryId, String objectId,
-            Boolean onlyBasicPermissions, ExtensionsData extension) {
+    public Acl getAcl(String repositoryId, String objectId, Boolean onlyBasicPermissions, ExtensionsData extension) {
         boolean basic = !Boolean.FALSE.equals(onlyBasicPermissions);
         try {
             getDocumentModel(objectId); // does filtering
@@ -1424,13 +1321,11 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public ObjectList getContentChanges(String repositoryId,
-            Holder<String> changeLogTokenHolder, Boolean includeProperties,
-            String filter, Boolean includePolicyIds, Boolean includeAcl,
+    public ObjectList getContentChanges(String repositoryId, Holder<String> changeLogTokenHolder,
+            Boolean includeProperties, String filter, Boolean includePolicyIds, Boolean includeAcl,
             BigInteger maxItems, ExtensionsData extension) {
         if (changeLogTokenHolder == null) {
-            throw new CmisInvalidArgumentException(
-                    "Missing change log token holder");
+            throw new CmisInvalidArgumentException("Missing change log token holder");
         }
         String changeLogToken = changeLogTokenHolder.getValue();
         long minDate;
@@ -1440,8 +1335,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
             try {
                 minDate = Long.parseLong(changeLogToken);
             } catch (NumberFormatException e) {
-                throw new CmisInvalidArgumentException(
-                        "Invalid change log token");
+                throw new CmisInvalidArgumentException("Invalid change log token");
             }
         }
         try {
@@ -1504,8 +1398,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
      *
      * @return null if not enough elements found with the current page size
      */
-    protected List<ObjectData> readAuditLog(String repositoryId, long minDate,
-            int max, int pageSize) {
+    protected List<ObjectData> readAuditLog(String repositoryId, long minDate, int max, int pageSize) {
         AuditReader reader = Framework.getLocalService(AuditReader.class);
         if (reader == null) {
             throw new CmisRuntimeException("Cannot find audit service");
@@ -1572,10 +1465,8 @@ public class NuxeoCmisService extends AbstractCmisService implements
         od.setChangeEventInfo(cei);
         // properties: id, doc type
         PropertiesImpl properties = new PropertiesImpl();
-        properties.addProperty(new PropertyIdImpl(PropertyIds.OBJECT_ID,
-                logEntry.getDocUUID()));
-        properties.addProperty(new PropertyIdImpl(PropertyIds.OBJECT_TYPE_ID,
-                docType));
+        properties.addProperty(new PropertyIdImpl(PropertyIds.OBJECT_ID, logEntry.getDocUUID()));
+        properties.addProperty(new PropertyIdImpl(PropertyIds.OBJECT_TYPE_ID, docType));
         od.setProperties(properties);
         return od;
     }
@@ -1608,9 +1499,8 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public ObjectList query(String repositoryId, String statement,
-            Boolean searchAllVersions, Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
+    public ObjectList query(String repositoryId, String statement, Boolean searchAllVersions,
+            Boolean includeAllowableActions, IncludeRelationships includeRelationships, String renditionFilter,
             BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
         long skip = skipCount == null ? 0 : skipCount.longValue();
         if (skip < 0) {
@@ -1626,8 +1516,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
         try {
             Map<String, PropertyDefinition<?>> typeInfo = new HashMap<String, PropertyDefinition<?>>();
             // searchAllVersions defaults to false, spec 2.2.6.1.1
-            res = queryAndFetch(statement,
-                    Boolean.TRUE.equals(searchAllVersions), typeInfo);
+            res = queryAndFetch(statement, Boolean.TRUE.equals(searchAllVersions), typeInfo);
 
             // convert from Nuxeo to CMIS format
             list = new ArrayList<ObjectData>();
@@ -1643,24 +1532,22 @@ public class NuxeoCmisService extends AbstractCmisService implements
                     DocumentModel doc = null;
                     if (Boolean.TRUE.equals(includeAllowableActions)) {
                         doc = getDocumentModel(id);
-                        AllowableActions allowableActions = NuxeoObjectData.getAllowableActions(
-                                doc, false);
+                        AllowableActions allowableActions = NuxeoObjectData.getAllowableActions(doc, false);
                         od.setAllowableActions(allowableActions);
                     }
-                    if (includeRelationships != null
-                            && includeRelationships != IncludeRelationships.NONE) {
+                    if (includeRelationships != null && includeRelationships != IncludeRelationships.NONE) {
                         // TODO get relationships using a JOIN
                         // added to the original query
-                        List<ObjectData> relationships = NuxeoObjectData.getRelationships(
-                                id, includeRelationships, this);
+                        List<ObjectData> relationships = NuxeoObjectData.getRelationships(id, includeRelationships,
+                                this);
                         od.setRelationships(relationships);
                     }
                     if (NuxeoObjectData.needsRenditions(renditionFilter)) {
                         if (doc == null) {
                             doc = getDocumentModel(id);
                         }
-                        List<RenditionData> renditions = NuxeoObjectData.getRenditions(
-                                doc, renditionFilter, null, null, callContext);
+                        List<RenditionData> renditions = NuxeoObjectData.getRenditions(doc, renditionFilter, null,
+                                null, callContext);
                         od.setRenditions(renditions);
                     }
                 }
@@ -1686,34 +1573,30 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     /**
-     * Makes a CMISQL query to the repository and returns an
-     * {@link IterableQueryResult}, which MUST be closed in a {@code finally}
-     * block.
+     * Makes a CMISQL query to the repository and returns an {@link IterableQueryResult}, which MUST be closed in a
+     * {@code finally} block.
      *
      * @param query the CMISQL query
-     * @param searchAllVersions whether to search all versions ({@code true}) or
-     *            only the latest version ({@code false}), for versionable types
-     * @param typeInfo a map filled with type information for each returned
-     *            property, or {@code null} if no such info is needed
-     * @return an {@link IterableQueryResult}, which MUST be closed in a
-     *         {@code finally} block
+     * @param searchAllVersions whether to search all versions ({@code true}) or only the latest version ({@code false}
+     *            ), for versionable types
+     * @param typeInfo a map filled with type information for each returned property, or {@code null} if no such info is
+     *            needed
+     * @return an {@link IterableQueryResult}, which MUST be closed in a {@code finally} block
      * @throws CmisRuntimeException if the query cannot be parsed or is invalid
      * @since 6.0
      */
-    public IterableQueryResult queryAndFetch(String query,
-            boolean searchAllVersions,
+    public IterableQueryResult queryAndFetch(String query, boolean searchAllVersions,
             Map<String, PropertyDefinition<?>> typeInfo) {
         if (repository.supportsJoins()) {
             // straight to CoreSession as CMISQL, relies on proper QueryMaker
-            return coreSession.queryAndFetch(query, CMISQLQueryMaker.TYPE,
-                    this, typeInfo, Boolean.valueOf(searchAllVersions));
+            return coreSession.queryAndFetch(query, CMISQLQueryMaker.TYPE, this, typeInfo,
+                    Boolean.valueOf(searchAllVersions));
         } else {
             // convert to NXQL for evaluation
             CMISQLtoNXQL converter = new CMISQLtoNXQL();
             String nxql;
             try {
-                nxql = converter.getNXQL(query, this, typeInfo,
-                        searchAllVersions);
+                nxql = converter.getNXQL(query, this, typeInfo, searchAllVersions);
             } catch (QueryParseException e) {
                 throw new CmisRuntimeException(e.toString(), e);
             }
@@ -1721,8 +1604,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
             try {
                 it = coreSession.queryAndFetch(nxql, NXQL.NXQL);
             } catch (ClientException e) {
-                throw new CmisRuntimeException("Invalid query: CMISQL: "
-                        + query + ": " + e.toString(), e);
+                throw new CmisRuntimeException("Invalid query: CMISQL: " + query + ": " + e.toString(), e);
             }
             // wrap result
             return converter.getIterableQueryResult(it, this);
@@ -1730,25 +1612,21 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     /**
-     * Makes a CMISQL query to the repository and returns an
-     * {@link IterableQueryResult}, which MUST be closed in a {@code finally}
-     * block.
+     * Makes a CMISQL query to the repository and returns an {@link IterableQueryResult}, which MUST be closed in a
+     * {@code finally} block.
      *
      * @param query the CMISQL query
-     * @param searchAllVersions whether to search all versions ({@code true}) or
-     *            only the latest version ({@code false}), for versionable types
-     * @return an {@link IterableQueryResult}, which MUST be closed in a
-     *         {@code finally} block
+     * @param searchAllVersions whether to search all versions ({@code true}) or only the latest version ({@code false}
+     *            ), for versionable types
+     * @return an {@link IterableQueryResult}, which MUST be closed in a {@code finally} block
      * @throws CmisRuntimeException if the query cannot be parsed or is invalid
      * @since 6.0
      */
-    public IterableQueryResult queryAndFetch(String query,
-            boolean searchAllVersions) {
+    public IterableQueryResult queryAndFetch(String query, boolean searchAllVersions) {
         return queryAndFetch(query, searchAllVersions, null);
     }
 
-    protected ObjectDataImpl makeObjectData(Map<String, Serializable> map,
-            Map<String, PropertyDefinition<?>> typeInfo) {
+    protected ObjectDataImpl makeObjectData(Map<String, Serializable> map, Map<String, PropertyDefinition<?>> typeInfo) {
         ObjectDataImpl od = new ObjectDataImpl();
         PropertiesImpl properties = new PropertiesImpl();
         for (Entry<String, Serializable> en : map.entrySet()) {
@@ -1757,8 +1635,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
             if (pd == null) {
                 throw new NullPointerException("Cannot get " + queryName);
             }
-            AbstractPropertyData<?> p = (AbstractPropertyData<?>) objectFactory.createPropertyData(
-                    pd, en.getValue());
+            AbstractPropertyData<?> p = (AbstractPropertyData<?>) objectFactory.createPropertyData(pd, en.getValue());
             p.setLocalName(pd.getLocalName());
             p.setDisplayName(pd.getDisplayName());
             // queryName and pd.getQueryName() may be different
@@ -1771,23 +1648,20 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public void addObjectToFolder(String repositoryId, String objectId,
-            String folderId, Boolean allVersions, ExtensionsData extension) {
+    public void addObjectToFolder(String repositoryId, String objectId, String folderId, Boolean allVersions,
+            ExtensionsData extension) {
         throw new CmisNotSupportedException();
     }
 
     @Override
-    public void removeObjectFromFolder(String repositoryId, String objectId,
-            String folderId, ExtensionsData extension) {
+    public void removeObjectFromFolder(String repositoryId, String objectId, String folderId, ExtensionsData extension) {
         if (folderId != null) {
             // check it's the actual parent
             try {
                 DocumentModel folder = getDocumentModel(folderId);
-                DocumentModel parent = coreSession.getParentDocument(new IdRef(
-                        objectId));
+                DocumentModel parent = coreSession.getParentDocument(new IdRef(objectId));
                 if (!parent.getId().equals(folder.getId())) {
-                    throw new CmisInvalidArgumentException("Object " + objectId
-                            + " is not filed in  " + folderId);
+                    throw new CmisInvalidArgumentException("Object " + objectId + " is not filed in  " + folderId);
                 }
             } catch (ClientException e) {
                 throw new CmisRuntimeException(e.toString(), e);
@@ -1797,25 +1671,20 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public ObjectInFolderList getChildren(String repositoryId, String folderId,
-            String filter, String orderBy, Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
-            Boolean includePathSegment, BigInteger maxItems,
-            BigInteger skipCount, ExtensionsData extension) {
+    public ObjectInFolderList getChildren(String repositoryId, String folderId, String filter, String orderBy,
+            Boolean includeAllowableActions, IncludeRelationships includeRelationships, String renditionFilter,
+            Boolean includePathSegment, BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
         if (folderId == null) {
             throw new CmisInvalidArgumentException("Null folderId");
         }
-        return getChildrenInternal(repositoryId, folderId, filter, orderBy,
-                includeAllowableActions, includeRelationships, renditionFilter,
-                includePathSegment, maxItems, skipCount, false);
+        return getChildrenInternal(repositoryId, folderId, filter, orderBy, includeAllowableActions,
+                includeRelationships, renditionFilter, includePathSegment, maxItems, skipCount, false);
     }
 
-    protected ObjectInFolderList getChildrenInternal(String repositoryId,
-            String folderId, String filter, String orderBy,
-            Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
-            Boolean includePathSegment, BigInteger maxItems,
-            BigInteger skipCount, boolean folderOnly) {
+    protected ObjectInFolderList getChildrenInternal(String repositoryId, String folderId, String filter,
+            String orderBy, Boolean includeAllowableActions, IncludeRelationships includeRelationships,
+            String renditionFilter, Boolean includePathSegment, BigInteger maxItems, BigInteger skipCount,
+            boolean folderOnly) {
         ObjectInFolderListImpl result = new ObjectInFolderListImpl();
         List<ObjectInFolderData> list = new ArrayList<ObjectInFolderData>();
         DocumentModel folder = getDocumentModel(folderId);
@@ -1835,9 +1704,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
                 NXQL.ECM_ISPROXY);
         if (!StringUtils.isBlank(orderBy)) {
             CMISQLtoNXQL converter = new CMISQLtoNXQL();
-            query += " ORDER BY "
-                    + converter.convertOrderBy(orderBy,
-                            repository.getTypeManager());
+            query += " ORDER BY " + converter.convertOrderBy(orderBy, repository.getTypeManager());
         }
 
         long limit = maxItems == null ? 0 : maxItems.longValue();
@@ -1857,9 +1724,8 @@ public class NuxeoCmisService extends AbstractCmisService implements
         }
 
         for (DocumentModel child : children) {
-            NuxeoObjectData data = new NuxeoObjectData(this, child, filter,
-                    includeAllowableActions, includeRelationships,
-                    renditionFilter, Boolean.FALSE, Boolean.FALSE, null);
+            NuxeoObjectData data = new NuxeoObjectData(this, child, filter, includeAllowableActions,
+                    includeRelationships, renditionFilter, Boolean.FALSE, Boolean.FALSE, null);
             ObjectInFolderDataImpl oifd = new ObjectInFolderDataImpl();
             oifd.setObject(data);
             if (Boolean.TRUE.equals(includePathSegment)) {
@@ -1883,11 +1749,9 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public List<ObjectInFolderContainer> getDescendants(String repositoryId,
-            String folderId, BigInteger depth, String filter,
-            Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
-            Boolean includePathSegment, ExtensionsData extension) {
+    public List<ObjectInFolderContainer> getDescendants(String repositoryId, String folderId, BigInteger depth,
+            String filter, Boolean includeAllowableActions, IncludeRelationships includeRelationships,
+            String renditionFilter, Boolean includePathSegment, ExtensionsData extension) {
         if (folderId == null) {
             throw new CmisInvalidArgumentException("Null folderId");
         }
@@ -1895,17 +1759,14 @@ public class NuxeoCmisService extends AbstractCmisService implements
         if (levels == 0) {
             throw new CmisInvalidArgumentException("Invalid depth: 0");
         }
-        return getDescendantsInternal(repositoryId, folderId, filter,
-                includeAllowableActions, includeRelationships, renditionFilter,
-                includePathSegment, 0, levels, false);
+        return getDescendantsInternal(repositoryId, folderId, filter, includeAllowableActions, includeRelationships,
+                renditionFilter, includePathSegment, 0, levels, false);
     }
 
     @Override
-    public List<ObjectInFolderContainer> getFolderTree(String repositoryId,
-            String folderId, BigInteger depth, String filter,
-            Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
-            Boolean includePathSegment, ExtensionsData extension) {
+    public List<ObjectInFolderContainer> getFolderTree(String repositoryId, String folderId, BigInteger depth,
+            String filter, Boolean includeAllowableActions, IncludeRelationships includeRelationships,
+            String renditionFilter, Boolean includePathSegment, ExtensionsData extension) {
         if (folderId == null) {
             throw new CmisInvalidArgumentException("Null folderId");
         }
@@ -1913,38 +1774,30 @@ public class NuxeoCmisService extends AbstractCmisService implements
         if (levels == 0) {
             throw new CmisInvalidArgumentException("Invalid depth: 0");
         }
-        return getDescendantsInternal(repositoryId, folderId, filter,
-                includeAllowableActions, includeRelationships, renditionFilter,
-                includePathSegment, 0, levels, true);
+        return getDescendantsInternal(repositoryId, folderId, filter, includeAllowableActions, includeRelationships,
+                renditionFilter, includePathSegment, 0, levels, true);
     }
 
-    protected List<ObjectInFolderContainer> getDescendantsInternal(
-            String repositoryId, String folderId, String filter,
-            Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
-            Boolean includePathSegments, int level, int maxLevels,
-            boolean folderOnly) {
+    protected List<ObjectInFolderContainer> getDescendantsInternal(String repositoryId, String folderId, String filter,
+            Boolean includeAllowableActions, IncludeRelationships includeRelationships, String renditionFilter,
+            Boolean includePathSegments, int level, int maxLevels, boolean folderOnly) {
         if (maxLevels != -1 && level >= maxLevels) {
             return null;
         }
-        ObjectInFolderList children = getChildrenInternal(repositoryId,
-                folderId, filter, null, includeAllowableActions,
-                includeRelationships, renditionFilter, includePathSegments,
-                null, null, folderOnly);
+        ObjectInFolderList children = getChildrenInternal(repositoryId, folderId, filter, null,
+                includeAllowableActions, includeRelationships, renditionFilter, includePathSegments, null, null,
+                folderOnly);
         if (children == null) {
             return Collections.emptyList();
         }
-        List<ObjectInFolderContainer> res = new ArrayList<ObjectInFolderContainer>(
-                children.getObjects().size());
+        List<ObjectInFolderContainer> res = new ArrayList<ObjectInFolderContainer>(children.getObjects().size());
         for (ObjectInFolderData child : children.getObjects()) {
             ObjectInFolderContainerImpl oifc = new ObjectInFolderContainerImpl();
             oifc.setObject(child);
             // recurse
-            List<ObjectInFolderContainer> subChildren = getDescendantsInternal(
-                    repositoryId, child.getObject().getId(), filter,
-                    includeAllowableActions, includeRelationships,
-                    renditionFilter, includePathSegments, level + 1, maxLevels,
-                    folderOnly);
+            List<ObjectInFolderContainer> subChildren = getDescendantsInternal(repositoryId, child.getObject().getId(),
+                    filter, includeAllowableActions, includeRelationships, renditionFilter, includePathSegments,
+                    level + 1, maxLevels, folderOnly);
             if (subChildren != null) {
                 oifc.setChildren(subChildren);
             }
@@ -1954,27 +1807,22 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public ObjectData getFolderParent(String repositoryId, String folderId,
-            String filter, ExtensionsData extension) {
-        List<ObjectParentData> parents = getObjectParentsInternal(repositoryId,
-                folderId, filter, null, null, null, Boolean.TRUE, true);
+    public ObjectData getFolderParent(String repositoryId, String folderId, String filter, ExtensionsData extension) {
+        List<ObjectParentData> parents = getObjectParentsInternal(repositoryId, folderId, filter, null, null, null,
+                Boolean.TRUE, true);
         return parents.isEmpty() ? null : parents.get(0).getObject();
     }
 
     @Override
-    public List<ObjectParentData> getObjectParents(String repositoryId,
-            String objectId, String filter, Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
+    public List<ObjectParentData> getObjectParents(String repositoryId, String objectId, String filter,
+            Boolean includeAllowableActions, IncludeRelationships includeRelationships, String renditionFilter,
             Boolean includeRelativePathSegment, ExtensionsData extension) {
-        return getObjectParentsInternal(repositoryId, objectId, filter,
-                includeAllowableActions, includeRelationships, renditionFilter,
-                includeRelativePathSegment, false);
+        return getObjectParentsInternal(repositoryId, objectId, filter, includeAllowableActions, includeRelationships,
+                renditionFilter, includeRelativePathSegment, false);
     }
 
-    protected List<ObjectParentData> getObjectParentsInternal(
-            String repositoryId, String objectId, String filter,
-            Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
+    protected List<ObjectParentData> getObjectParentsInternal(String repositoryId, String objectId, String filter,
+            Boolean includeAllowableActions, IncludeRelationships includeRelationships, String renditionFilter,
             Boolean includeRelativePathSegment, boolean folderOnly) {
         String pathSegment;
         String parentId;
@@ -1988,8 +1836,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
                 throw new CmisObjectNotFoundException(objectId);
             }
             if (folderOnly && !doc.isFolder()) {
-                throw new CmisInvalidArgumentException("Not a folder: "
-                        + objectId);
+                throw new CmisInvalidArgumentException("Not a folder: " + objectId);
             }
             pathSegment = doc.getName();
             if (pathSegment == null) { // root
@@ -2011,9 +1858,8 @@ public class NuxeoCmisService extends AbstractCmisService implements
             throw new CmisRuntimeException(e.toString(), e);
         }
 
-        ObjectData od = getObject(repositoryId, parentId, filter,
-                includeAllowableActions, includeRelationships, renditionFilter,
-                Boolean.FALSE, Boolean.FALSE, null);
+        ObjectData od = getObject(repositoryId, parentId, filter, includeAllowableActions, includeRelationships,
+                renditionFilter, Boolean.FALSE, Boolean.FALSE, null);
         ObjectParentDataImpl opd = new ObjectParentDataImpl(od);
         if (!Boolean.FALSE.equals(includeRelativePathSegment)) {
             opd.setRelativePathSegment(pathSegment);
@@ -2022,42 +1868,35 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public void applyPolicy(String repositoryId, String policyId,
-            String objectId, ExtensionsData extension) {
+    public void applyPolicy(String repositoryId, String policyId, String objectId, ExtensionsData extension) {
         throw new CmisNotSupportedException();
     }
 
     @Override
-    public List<ObjectData> getAppliedPolicies(String repositoryId,
-            String objectId, String filter, ExtensionsData extension) {
+    public List<ObjectData> getAppliedPolicies(String repositoryId, String objectId, String filter,
+            ExtensionsData extension) {
         return Collections.emptyList();
     }
 
     @Override
-    public void removePolicy(String repositoryId, String policyId,
-            String objectId, ExtensionsData extension) {
+    public void removePolicy(String repositoryId, String policyId, String objectId, ExtensionsData extension) {
         throw new CmisNotSupportedException();
     }
 
     @Override
-    public ObjectList getObjectRelationships(String repositoryId,
-            String objectId, Boolean includeSubRelationshipTypes,
-            RelationshipDirection relationshipDirection, String typeId,
-            String filter, Boolean includeAllowableActions,
+    public ObjectList getObjectRelationships(String repositoryId, String objectId, Boolean includeSubRelationshipTypes,
+            RelationshipDirection relationshipDirection, String typeId, String filter, Boolean includeAllowableActions,
             BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
         IncludeRelationships includeRelationships;
-        if (relationshipDirection == null
-                || relationshipDirection == RelationshipDirection.SOURCE) {
+        if (relationshipDirection == null || relationshipDirection == RelationshipDirection.SOURCE) {
             includeRelationships = IncludeRelationships.SOURCE;
         } else if (relationshipDirection == RelationshipDirection.TARGET) {
             includeRelationships = IncludeRelationships.TARGET;
         } else { // RelationshipDirection.EITHER
             includeRelationships = IncludeRelationships.BOTH;
         }
-        List<ObjectData> rels = NuxeoObjectData.getRelationships(objectId,
-                includeRelationships, this);
-        BatchedList<ObjectData> batch = ListUtils.getBatchedList(rels,
-                maxItems, skipCount, DEFAULT_MAX_RELATIONSHIPS);
+        List<ObjectData> rels = NuxeoObjectData.getRelationships(objectId, includeRelationships, this);
+        BatchedList<ObjectData> batch = ListUtils.getBatchedList(rels, maxItems, skipCount, DEFAULT_MAX_RELATIONSHIPS);
         ObjectListImpl res = new ObjectListImpl();
         res.setObjects(batch.getList());
         res.setNumItems(batch.getNumItems());
@@ -2069,22 +1908,18 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public void checkIn(String repositoryId, Holder<String> objectIdHolder,
-            Boolean major, Properties properties, ContentStream contentStream,
-            String checkinComment, List<String> policies, Acl addAces,
-            Acl removeAces, ExtensionsData extension) {
+    public void checkIn(String repositoryId, Holder<String> objectIdHolder, Boolean major, Properties properties,
+            ContentStream contentStream, String checkinComment, List<String> policies, Acl addAces, Acl removeAces,
+            ExtensionsData extension) {
         String objectId;
-        if (objectIdHolder == null
-                || (objectId = objectIdHolder.getValue()) == null) {
+        if (objectIdHolder == null || (objectId = objectIdHolder.getValue()) == null) {
             throw new CmisInvalidArgumentException("Missing object ID");
         }
-        VersioningOption option = Boolean.TRUE.equals(major) ? VersioningOption.MAJOR
-                : VersioningOption.MINOR;
+        VersioningOption option = Boolean.TRUE.equals(major) ? VersioningOption.MAJOR : VersioningOption.MINOR;
 
         DocumentModel doc = getDocumentModel(objectId);
         if (doc.isVersion() || doc.isProxy()) {
-            throw new CmisInvalidArgumentException("Cannot check in non-PWC: "
-                    + doc);
+            throw new CmisInvalidArgumentException("Cannot check in non-PWC: " + doc);
         }
 
         NuxeoObjectData object = new NuxeoObjectData(this, doc);
@@ -2107,15 +1942,12 @@ public class NuxeoCmisService extends AbstractCmisService implements
         }
     }
 
-    public String checkIn(String objectId, boolean major,
-            Map<String, ?> properties, ObjectType type,
+    public String checkIn(String objectId, boolean major, Map<String, ?> properties, ObjectType type,
             ContentStream contentStream, String checkinComment) {
-        VersioningOption option = major ? VersioningOption.MAJOR
-                : VersioningOption.MINOR;
+        VersioningOption option = major ? VersioningOption.MAJOR : VersioningOption.MINOR;
         DocumentModel doc = getDocumentModel(objectId);
         if (doc.isVersion() || doc.isProxy()) {
-            throw new CmisInvalidArgumentException("Cannot check in non-PWC: "
-                    + doc);
+            throw new CmisInvalidArgumentException("Cannot check in non-PWC: " + doc);
         }
         NuxeoObjectData object = new NuxeoObjectData(this, doc);
         updateProperties(object, null, properties, type, false);
@@ -2138,11 +1970,10 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public void checkOut(String repositoryId, Holder<String> objectIdHolder,
-            ExtensionsData extension, Holder<Boolean> contentCopiedHolder) {
+    public void checkOut(String repositoryId, Holder<String> objectIdHolder, ExtensionsData extension,
+            Holder<Boolean> contentCopiedHolder) {
         String objectId;
-        if (objectIdHolder == null
-                || (objectId = objectIdHolder.getValue()) == null) {
+        if (objectIdHolder == null || (objectId = objectIdHolder.getValue()) == null) {
             throw new CmisInvalidArgumentException("Missing object ID");
         }
         String pwcId = checkOut(objectId);
@@ -2156,8 +1987,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
         DocumentModel doc = getDocumentModel(objectId);
         try {
             if (doc.isProxy()) {
-                throw new CmisInvalidArgumentException(
-                        "Cannot check out non-version: " + objectId);
+                throw new CmisInvalidArgumentException("Cannot check out non-version: " + objectId);
             }
             // find pwc
             DocumentModel pwc;
@@ -2172,12 +2002,10 @@ public class NuxeoCmisService extends AbstractCmisService implements
                 pwc = doc;
             }
             if (pwc.isCheckedOut()) {
-                throw new CmisConstraintException("Already checked out: "
-                        + objectId);
+                throw new CmisConstraintException("Already checked out: " + objectId);
             }
             if (pwc.isLocked()) {
-                throw new CmisConstraintException(
-                        "Cannot check out since currently locked: " + objectId);
+                throw new CmisConstraintException("Cannot check out since currently locked: " + objectId);
             }
             pwc.setLock();
             pwc.checkOut();
@@ -2185,18 +2013,15 @@ public class NuxeoCmisService extends AbstractCmisService implements
             return pwc.getId();
         } catch (ClientException e) {
             String message = e.getMessage();
-            if (message != null
-                    && message.startsWith("Document already locked")) {
-                throw new CmisConstraintException(
-                        "Cannot check out since currently locked: " + objectId);
+            if (message != null && message.startsWith("Document already locked")) {
+                throw new CmisConstraintException("Cannot check out since currently locked: " + objectId);
             }
             throw new CmisRuntimeException(e.toString(), e);
         }
     }
 
     @Override
-    public void cancelCheckOut(String repositoryId, String objectId,
-            ExtensionsData extension) {
+    public void cancelCheckOut(String repositoryId, String objectId, ExtensionsData extension) {
         cancelCheckOut(objectId);
     }
 
@@ -2204,8 +2029,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
         DocumentModel doc = getDocumentModel(objectId);
         try {
             if (doc.isVersion() || doc.isProxy() || !doc.isCheckedOut()) {
-                throw new CmisInvalidArgumentException(
-                        "Cannot cancel check out of non-PWC: " + doc);
+                throw new CmisInvalidArgumentException("Cannot cancel check out of non-PWC: " + doc);
             }
             DocumentRef docRef = doc.getRef();
             // find last version
@@ -2225,15 +2049,13 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public ObjectList getCheckedOutDocs(String repositoryId, String folderId,
-            String filter, String orderBy, Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
+    public ObjectList getCheckedOutDocs(String repositoryId, String folderId, String filter, String orderBy,
+            Boolean includeAllowableActions, IncludeRelationships includeRelationships, String renditionFilter,
             BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
         // columns from filter
         List<String> props;
         if (StringUtils.isBlank(filter)) {
-            props = Arrays.asList(PropertyIds.OBJECT_ID,
-                    PropertyIds.OBJECT_TYPE_ID, PropertyIds.BASE_TYPE_ID);
+            props = Arrays.asList(PropertyIds.OBJECT_ID, PropertyIds.OBJECT_TYPE_ID, PropertyIds.BASE_TYPE_ID);
         } else {
             props = NuxeoObjectData.getPropertyIdsFromFilter(filter);
             // same as query names
@@ -2253,18 +2075,15 @@ public class NuxeoCmisService extends AbstractCmisService implements
         } else {
             order = " ORDER BY " + orderBy;
         }
-        String statement = "SELECT " + StringUtils.join(props, ", ") + " FROM "
-                + BaseTypeId.CMIS_DOCUMENT.value() + " WHERE "
-                + StringUtils.join(clauses, " AND ") + order;
+        String statement = "SELECT " + StringUtils.join(props, ", ") + " FROM " + BaseTypeId.CMIS_DOCUMENT.value()
+                + " WHERE " + StringUtils.join(clauses, " AND ") + order;
         Boolean searchAllVersions = Boolean.TRUE;
-        return query(repositoryId, statement, searchAllVersions,
-                includeAllowableActions, includeRelationships, renditionFilter,
-                maxItems, skipCount, extension);
+        return query(repositoryId, statement, searchAllVersions, includeAllowableActions, includeRelationships,
+                renditionFilter, maxItems, skipCount, extension);
     }
 
     @Override
-    public List<ObjectData> getAllVersions(String repositoryId,
-            String objectId, String versionSeriesId, String filter,
+    public List<ObjectData> getAllVersions(String repositoryId, String objectId, String versionSeriesId, String filter,
             Boolean includeAllowableActions, ExtensionsData extension) {
         DocumentModel doc;
         if (objectId != null) {
@@ -2276,26 +2095,22 @@ public class NuxeoCmisService extends AbstractCmisService implements
             // TODO deal with removal of live doc
             doc = getDocumentModel(versionSeriesId);
         } else {
-            throw new CmisInvalidArgumentException(
-                    "Missing object ID or version series ID");
+            throw new CmisInvalidArgumentException("Missing object ID or version series ID");
         }
         try {
             List<DocumentRef> versions = coreSession.getVersionsRefs(doc.getRef());
             List<ObjectData> list = new ArrayList<ObjectData>(versions.size());
             for (DocumentRef verRef : versions) {
                 String verId = getIdFromDocumentRef(verRef);
-                ObjectData od = getObject(repositoryId, verId, filter,
-                        includeAllowableActions, IncludeRelationships.NONE,
-                        null, Boolean.FALSE, Boolean.FALSE, null);
+                ObjectData od = getObject(repositoryId, verId, filter, includeAllowableActions,
+                        IncludeRelationships.NONE, null, Boolean.FALSE, Boolean.FALSE, null);
                 list.add(od);
             }
             // PWC last
-            DocumentModel pwc = doc.isVersion() ? coreSession.getWorkingCopy(doc.getRef())
-                    : doc;
+            DocumentModel pwc = doc.isVersion() ? coreSession.getWorkingCopy(doc.getRef()) : doc;
             if (pwc != null && pwc.isCheckedOut()) {
-                NuxeoObjectData od = new NuxeoObjectData(this, pwc, filter,
-                        includeAllowableActions, IncludeRelationships.NONE,
-                        null, Boolean.FALSE, Boolean.FALSE, extension);
+                NuxeoObjectData od = new NuxeoObjectData(this, pwc, filter, includeAllowableActions,
+                        IncludeRelationships.NONE, null, Boolean.FALSE, Boolean.FALSE, extension);
                 list.add(od);
             }
             // CoreSession returns them in creation order,
@@ -2308,12 +2123,9 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public NuxeoObjectData getObjectOfLatestVersion(String repositoryId,
-            String objectId, String versionSeriesId, Boolean major,
-            String filter, Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
-            Boolean includePolicyIds, Boolean includeAcl,
-            ExtensionsData extension) {
+    public NuxeoObjectData getObjectOfLatestVersion(String repositoryId, String objectId, String versionSeriesId,
+            Boolean major, String filter, Boolean includeAllowableActions, IncludeRelationships includeRelationships,
+            String renditionFilter, Boolean includePolicyIds, Boolean includeAcl, ExtensionsData extension) {
         DocumentModel doc;
         if (objectId != null) {
             // atompub passes object id
@@ -2324,8 +2136,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
             // TODO deal with removal of live doc
             doc = getDocumentModel(versionSeriesId);
         } else {
-            throw new CmisInvalidArgumentException(
-                    "Missing object ID or version series ID");
+            throw new CmisInvalidArgumentException("Missing object ID or version series ID");
         }
         try {
             if (Boolean.TRUE.equals(major)) {
@@ -2334,18 +2145,15 @@ public class NuxeoCmisService extends AbstractCmisService implements
                 Collections.reverse(versions);
                 for (DocumentModel ver : versions) {
                     if (ver.isMajorVersion()) {
-                        return getObject(repositoryId, ver.getId(), filter,
-                                includeAllowableActions, includeRelationships,
-                                renditionFilter, includePolicyIds, includeAcl,
-                                null);
+                        return getObject(repositoryId, ver.getId(), filter, includeAllowableActions,
+                                includeRelationships, renditionFilter, includePolicyIds, includeAcl, null);
                     }
                 }
                 return null;
             } else {
                 DocumentRef verRef = coreSession.getLastDocumentVersionRef(doc.getRef());
                 String verId = getIdFromDocumentRef(verRef);
-                return getObject(repositoryId, verId, filter,
-                        includeAllowableActions, includeRelationships,
+                return getObject(repositoryId, verId, filter, includeAllowableActions, includeRelationships,
                         renditionFilter, includePolicyIds, includeAcl, null);
             }
         } catch (ClientException e) {
@@ -2354,28 +2162,22 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public Properties getPropertiesOfLatestVersion(String repositoryId,
-            String objectId, String versionSeriesId, Boolean major,
-            String filter, ExtensionsData extension) {
-        NuxeoObjectData od = getObjectOfLatestVersion(repositoryId, objectId,
-                versionSeriesId, major, filter, Boolean.FALSE,
-                IncludeRelationships.NONE, null, Boolean.FALSE, Boolean.FALSE,
-                null);
+    public Properties getPropertiesOfLatestVersion(String repositoryId, String objectId, String versionSeriesId,
+            Boolean major, String filter, ExtensionsData extension) {
+        NuxeoObjectData od = getObjectOfLatestVersion(repositoryId, objectId, versionSeriesId, major, filter,
+                Boolean.FALSE, IncludeRelationships.NONE, null, Boolean.FALSE, Boolean.FALSE, null);
         return od == null ? null : od.getProperties();
     }
 
     @Override
-    public void deleteObject(String repositoryId, String objectId,
-            Boolean allVersions, ExtensionsData extension) {
+    public void deleteObject(String repositoryId, String objectId, Boolean allVersions, ExtensionsData extension) {
         try {
             DocumentModel doc = getDocumentModel(objectId);
             if (doc.isFolder()) {
                 // check that there are no children left
-                DocumentModelList docs = coreSession.getChildren(new IdRef(
-                        objectId), null, documentFilter, null);
+                DocumentModelList docs = coreSession.getChildren(new IdRef(objectId), null, documentFilter, null);
                 if (docs.size() > 0) {
-                    throw new CmisConstraintException(
-                            "Cannot delete non-empty folder: " + objectId);
+                    throw new CmisConstraintException("Cannot delete non-empty folder: " + objectId);
                 }
             }
             coreSession.removeDocument(doc.getRef());
@@ -2386,8 +2188,8 @@ public class NuxeoCmisService extends AbstractCmisService implements
     }
 
     @Override
-    public void deleteObjectOrCancelCheckOut(String repositoryId,
-            String objectId, Boolean allVersions, ExtensionsData extension) {
+    public void deleteObjectOrCancelCheckOut(String repositoryId, String objectId, Boolean allVersions,
+            ExtensionsData extension) {
         try {
             DocumentModel doc = getDocumentModel(objectId);
             DocumentRef docRef = doc.getRef();
