@@ -30,7 +30,10 @@ import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterDescriptor
 
 /**
  * Simple stateless document search suggester that propose to use the user input for searching a specific field.
+ * 
+ * @deprecated since 6.0. This suggester is not used anymore with the new search tab.
  */
+@Deprecated
 public class DocumentSearchByPropertySuggester implements Suggester {
 
     protected String searchField = "fsd:ecm_fulltext";

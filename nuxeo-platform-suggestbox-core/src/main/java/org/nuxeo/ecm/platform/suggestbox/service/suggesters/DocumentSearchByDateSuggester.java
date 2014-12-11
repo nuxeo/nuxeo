@@ -35,7 +35,10 @@ import org.nuxeo.ecm.platform.suggestbox.utils.DateMatcher;
 /**
  * Simple stateless suggester that parses the input and suggest to search document by date if the input can be
  * interpreted as a date in the user locale.
+ * 
+ * @deprecated since 6.0. This suggester is not used anymore with the new search tab.
  */
+@Deprecated
 public class DocumentSearchByDateSuggester implements Suggester {
 
     static final String type = CommonSuggestionTypes.SEARCH_DOCUMENTS;

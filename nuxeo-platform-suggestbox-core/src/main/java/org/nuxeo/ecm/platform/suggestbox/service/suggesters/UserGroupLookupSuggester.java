@@ -86,14 +86,6 @@ public class UserGroupLookupSuggester implements Suggester {
                 }
                 suggestions.add(new UserSuggestion(userDoc.getId(), userLabel, userIconURL));
 
-                // suggest to search documents related to the user profile
-                /*
-                 * TODO Reactivate when the new search tab will be done for (String searchField : searchFields) { String
-                 * i18nLabel = i18n.translate(searchLabelPrefix + searchField.replaceAll(":", "_"), userLabel);
-                 * Suggestion suggestion = new SearchDocumentsSuggestion( suggesterId, i18nLabel,
-                 * searchIconURL).withSearchCriterion( searchField, userDoc.getId()); searchSuggestions.add(suggestion);
-                 * }
-                 */
                 count++;
                 if (count >= userSuggestionsLimit) {
                     break;
