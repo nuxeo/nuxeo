@@ -18,6 +18,7 @@
 package org.nuxeo.elasticsearch.commands;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import org.codehaus.jackson.JsonToken;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.Event;
@@ -92,19 +94,44 @@ public class IndexingCommand implements Serializable {
     public IndexingCommand(DocumentModel targetDocument, String command, boolean sync, boolean recurse) {
         // we don't want sync and recursive command
         assert (!(sync && recurse) || DELETE.equals(command));
-        this.id = PREFIX + UUID.randomUUID().toString();
-        this.name = command;
+        id = PREFIX + UUID.randomUUID().toString();
+        name = command;
         this.sync = sync;
         this.recurse = recurse;
-        this.uid = targetDocument != null ? targetDocument.getId() : UNKOWN_DOCUMENT_ID;
-        if (targetDocument != null) {
-            repository = targetDocument.getRepositoryName();
+        if (targetDocument == null) {
+            uid = UNKOWN_DOCUMENT_ID;
+            repository = getDefaultRepository();
+            this.targetDocument = null;
         } else {
-            RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
-            repository = mgr.getDefaultRepository().getName();
+            DocumentModel doc = getValidTargetDocument(targetDocument);
+            this.targetDocument = doc;
+            repository = doc.getRepositoryName();
+            uid = doc.getId();
         }
-        this.targetDocument = targetDocument;
         markUpdated();
+        assert uid != null : "Invalid IndexingCommand with a null doc id";
+    }
+
+    private DocumentModel getValidTargetDocument(DocumentModel target) {
+        if (target.getId() != null) {
+            return target;
+        }
+        // transient document try to get it from its path
+        DocumentRef documentRef = target.getRef();
+        log.warn("Processing indexing command on a document with a null id: " + documentRef
+                + " activate trace level for more info.");
+        if (log.isTraceEnabled()) {
+            Throwable throwable = new Throwable();
+            StringWriter stack = new StringWriter();
+            throwable.printStackTrace(new PrintWriter(stack));
+            log.trace("You should use a document returned by session.createDocument, stack " + stack.toString());
+        }
+        return target.getCoreSession().getDocument(documentRef);
+    }
+
+    private String getDefaultRepository() {
+        RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
+        return mgr.getDefaultRepository().getName();
     }
 
     public IndexingCommand(DocumentModel targetDocument, boolean sync, boolean recurse) {

@@ -469,17 +469,54 @@ public class TestAutomaticIndexing {
         startTransaction();
     }
 
-
     @Test
-    public void shouldHandleWeirdIndexingCase() throws Exception {
+    public void shouldHandleUpdateOnTransientDoc() throws Exception {
         startTransaction();
-        DocumentModel doc = session.createDocumentModel("/", "file", "File");
-        // here we don't call doc = session.saveDocument so the doc.id is null
-        Assert.assertNull(doc.getId());
-        session.save();
+        DocumentModel tmpDoc = session.createDocumentModel("/", "file", "File");
+        tmpDoc.setPropertyValue("dc:title", "TestMe");
+        DocumentModel doc = session.createDocument(tmpDoc); // Send an ES_INSERT cmd
+        session.saveDocument(doc); // Send an ES_UPDATE merged with ES_INSERT
+
+        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
         waitForIndexing();
         startTransaction();
+        assertNumberOfCommandProcessed(1);
+
+        // here we manipulate the transient doc with a null docid
+        Assert.assertNull(tmpDoc.getId());
+        tmpDoc.setPropertyValue("dc:title", "NewTitle");
+        session.saveDocument(tmpDoc);
+
+        startCountingCommandProcessed();
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
+        startTransaction();
+        assertNumberOfCommandProcessed(1);
+
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document Where dc:title='NewTitle'"));
+
+        Assert.assertEquals(1, docs.totalSize());
     }
 
+   @Test
+    public void shouldHandleUpdateOnTransientDocBis() throws Exception {
+        startTransaction();
+        DocumentModel tmpDoc = session.createDocumentModel("/", "file", "File");
+        tmpDoc.setPropertyValue("dc:title", "TestMe");
+        DocumentModel doc = session.createDocument(tmpDoc); // Send an ES_INSERT cmd
+        session.saveDocument(doc); // Send an ES_UPDATE merged with ES_INSERT
+
+        tmpDoc.setPropertyValue("dc:title", "NewTitle"); // ES_UPDATE with transient, merged
+        session.saveDocument(tmpDoc);
+
+        startCountingCommandProcessed();
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
+        startTransaction();
+        assertNumberOfCommandProcessed(1);
+
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document Where dc:title='NewTitle'"));
+        Assert.assertEquals(1, docs.totalSize());
+    }
 }
