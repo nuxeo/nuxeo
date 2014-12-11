@@ -318,6 +318,7 @@ public class ContentViewDescriptor {
         return pageProviderProperties;
     }
 
+    @Override
     public ContentViewDescriptor clone() {
         ContentViewDescriptor clone = new ContentViewDescriptor();
         clone.name = getName();

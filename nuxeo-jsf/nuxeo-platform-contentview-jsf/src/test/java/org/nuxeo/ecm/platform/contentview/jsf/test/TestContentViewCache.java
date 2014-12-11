@@ -55,6 +55,7 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
 
     DocumentModel container2;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -89,6 +90,7 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         createTestDocuments(container2);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
@@ -115,7 +117,7 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
     public void testContentViewCache() throws Exception {
         ContentViewCache cache = new ContentViewCache();
 
-        this.currentDocument = container1;
+        currentDocument = container1;
         facesContext.mapVariable("currentDocument", currentDocument);
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
@@ -149,12 +151,12 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         assertEquals(5, pp.getResultsCount());
         assertEquals("document_listing_2", contentView.getCurrentResultLayout().getName());
 
-        this.currentDocument = container2;
+        currentDocument = container2;
         facesContext.mapVariable("currentDocument", currentDocument);
         contentView = cache.get("CURRENT_DOCUMENT_CHILDREN");
         assertNull(contentView);
 
-        this.currentDocument = container1;
+        currentDocument = container1;
         facesContext.mapVariable("currentDocument", currentDocument);
         contentView = cache.get("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);

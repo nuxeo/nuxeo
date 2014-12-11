@@ -71,6 +71,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
     private String dummyParam = UUID.randomUUID().toString();
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -110,6 +111,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         createTestDocuments();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession(session);
@@ -344,7 +346,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         // page 1/3
         List<DocumentModel> docs = pp.getCurrentPage();
-        assertEquals(AbstractPageProvider.UNKNOWN_SIZE_AFTER_QUERY, pp.getResultsCount());
+        assertEquals(PageProvider.UNKNOWN_SIZE_AFTER_QUERY, pp.getResultsCount());
 
         assertFalse(pp.isPreviousPageAvailable());
         assertFalse(pp.isLastPageAvailable());
@@ -394,7 +396,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         // page 1/2
         docs = pp.getCurrentPage();
-        assertEquals(AbstractPageProvider.UNKNOWN_SIZE_AFTER_QUERY, pp.getResultsCount());
+        assertEquals(PageProvider.UNKNOWN_SIZE_AFTER_QUERY, pp.getResultsCount());
 
         assertFalse(pp.isPreviousPageAvailable());
         assertFalse(pp.isLastPageAvailable());

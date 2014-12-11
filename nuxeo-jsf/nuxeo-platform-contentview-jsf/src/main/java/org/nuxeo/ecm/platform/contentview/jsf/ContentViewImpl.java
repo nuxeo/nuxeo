@@ -170,42 +170,52 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         this.translateEmptySentence = translateEmptySentence;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public boolean getTranslateTitle() {
         return translateTitle;
     }
 
+    @Override
     public String getIconPath() {
         return iconPath;
     }
 
+    @Override
     public String getSelectionListName() {
         return selectionList;
     }
 
+    @Override
     public String getPagination() {
         return pagination;
     }
 
+    @Override
     public List<String> getActionsCategories() {
         return actionCategories;
     }
 
+    @Override
     public ContentViewLayout getSearchLayout() {
         return searchLayout;
     }
 
+    @Override
     public List<ContentViewLayout> getResultLayouts() {
         return resultLayouts;
     }
 
+    @Override
     public ContentViewLayout getCurrentResultLayout() {
         // resolve binding if it is set
         if (!currentResultLayoutSet && !StringUtils.isBlank(resultLayoutBinding)) {
@@ -227,6 +237,7 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         return currentResultLayout;
     }
 
+    @Override
     public void setCurrentResultLayout(final ContentViewLayout layout) {
         setCurrentResultLayout(layout, true);
     }
@@ -266,6 +277,7 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         }
     }
 
+    @Override
     public void setCurrentResultLayout(String resultLayoutName) {
         if (resultLayoutName != null) {
             for (ContentViewLayout layout : resultLayouts) {
@@ -288,6 +300,7 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
      * if page provider was not built again (e.g if parameters did not change) to avoid erasing sort infos already held
      * by it.
      */
+    @Override
     public PageProvider<?> getPageProvider(DocumentModel searchDocument, List<SortInfo> sortInfos, Long pageSize,
             Long currentPage, Object... params) throws ClientException {
         // resolve search doc so that it can be used in EL expressions defined
@@ -297,7 +310,7 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         if (searchDocument != null) {
             setSearchDoc = true;
             finalSearchDocument = searchDocument;
-        } else if (this.searchDocumentModel == null) {
+        } else if (searchDocumentModel == null) {
             setSearchDoc = true;
             if (pageProvider != null) {
                 // try to retrieve it on current page provider
@@ -309,7 +322,7 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
                 setSearchDoc = false;
             }
         } else {
-            finalSearchDocument = this.searchDocumentModel;
+            finalSearchDocument = searchDocumentModel;
         }
         if (setSearchDoc) {
             // set it on content view so that it can be used when resolving EL
@@ -372,28 +385,34 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         return pageProvider;
     }
 
+    @Override
     public PageProvider<?> getPageProviderWithParams(Object... params) throws ClientException {
         return getPageProvider(null, null, null, null, params);
     }
 
+    @Override
     public PageProvider<?> getPageProvider() throws ClientException {
         return getPageProviderWithParams((Object[]) null);
     }
 
+    @Override
     public PageProvider<?> getCurrentPageProvider() {
         return pageProvider;
     }
 
+    @Override
     public void resetPageProvider() {
         pageProvider = null;
     }
 
+    @Override
     public void refreshPageProvider() {
         if (pageProvider != null) {
             pageProvider.refresh();
         }
     }
 
+    @Override
     public void refreshAndRewindPageProvider() {
         if (pageProvider != null) {
             pageProvider.refresh();
@@ -401,6 +420,7 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         }
     }
 
+    @Override
     public String getCacheKey() {
         FacesContext context = FacesContext.getCurrentInstance();
         Object value = ComponentTagUtils.resolveElExpression(context, cacheKey);
@@ -411,10 +431,12 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         return (String) value;
     }
 
+    @Override
     public Integer getCacheSize() {
         return cacheSize;
     }
 
+    @Override
     public Object[] getQueryParameters() {
         if (queryParameters == null) {
             return null;
@@ -432,18 +454,22 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         }
     }
 
+    @Override
     public List<String> getRefreshEventNames() {
         return refreshEventNames;
     }
 
+    @Override
     public List<String> getResetEventNames() {
         return resetEventNames;
     }
 
+    @Override
     public boolean getUseGlobalPageSize() {
         return useGlobalPageSize;
     }
 
+    @Override
     public Long getCurrentPageSize() {
         // take actual value on page provider first in case it's reached its
         // max page size
@@ -463,10 +489,11 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
 
     @Override
     public void setCurrentPageSize(Long pageSize) {
-        this.currentPageSize = pageSize;
+        currentPageSize = pageSize;
         raiseEvent(CONTENT_VIEW_PAGE_SIZE_CHANGED_EVENT);
     }
 
+    @Override
     public DocumentModel getSearchDocumentModel() {
         if (searchDocumentModel == null) {
             if (searchDocumentModelBinding != null) {
@@ -492,6 +519,7 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         return searchDocumentModel;
     }
 
+    @Override
     public void setSearchDocumentModel(DocumentModel searchDocumentModel) {
         this.searchDocumentModel = searchDocumentModel;
         if (pageProvider != null) {
@@ -499,6 +527,7 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         }
     }
 
+    @Override
     public void resetSearchDocumentModel() {
         searchDocumentModel = null;
         if (pageProvider != null) {
@@ -506,10 +535,12 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         }
     }
 
+    @Override
     public String getSearchDocumentModelType() {
         return searchDocumentModelType;
     }
 
+    @Override
     public List<String> getFlags() {
         return flags;
     }
@@ -700,10 +731,12 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         return showTitle;
     }
 
+    @Override
     public String getEmptySentence() {
         return emptySentence;
     }
 
+    @Override
     public boolean getTranslateEmptySentence() {
         return translateEmptySentence;
     }

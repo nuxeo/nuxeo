@@ -43,6 +43,7 @@ public abstract class SelectDirectoryAggregateWidgetTypeHandler extends Abstract
         return res;
     }
 
+    @Override
     protected Map<String, Serializable> getOptionProperties(FaceletContext ctx, Widget widget,
             WidgetSelectOption selectOption) {
         Map<String, Serializable> props = super.getOptionProperties(ctx, widget, selectOption);

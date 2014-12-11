@@ -94,18 +94,22 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
         this.showCSVExport = showCSVExport;
     }
 
+    @Override
     public String getIconPath() {
         return iconPath;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public boolean getTranslateTitle() {
         return translateTitle;
     }
@@ -125,18 +129,22 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
         return showSyndicationLinks;
     }
 
+    @Override
     public boolean getShowSlideshow() {
         return showSlideshow;
     }
 
+    @Override
     public boolean getShowEditColumns() {
         return showEditColumns;
     }
 
+    @Override
     public boolean getShowEditRows() {
         return showEditRows;
     }
 
+    @Override
     public boolean getShowSpreadsheet() {
         return showSpreadsheet;
     }
@@ -158,6 +166,7 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
                 iconPath, new Boolean(showCSVExport));
     }
 
+    @Override
     public ContentViewLayoutImpl clone() {
         ContentViewLayoutImpl clone = new ContentViewLayoutImpl();
         clone.name = getName();

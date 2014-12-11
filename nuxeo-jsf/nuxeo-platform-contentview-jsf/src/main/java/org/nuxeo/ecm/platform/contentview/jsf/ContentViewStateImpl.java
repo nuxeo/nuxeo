@@ -48,74 +48,92 @@ public class ContentViewStateImpl implements ContentViewState {
 
     protected List<String> resultColumns;
 
+    @Override
     public String getContentViewName() {
         return contentViewName;
     }
 
+    @Override
     public void setContentViewName(String contentViewName) {
         this.contentViewName = contentViewName;
     }
 
+    @Override
     public Long getPageSize() {
         return pageSize;
     }
 
+    @Override
     public void setPageSize(Long pageSize) {
         this.pageSize = pageSize;
     }
 
+    @Override
     public Long getCurrentPage() {
         return currentPage;
     }
 
+    @Override
     public void setCurrentPage(Long currentPage) {
         this.currentPage = currentPage;
     }
 
+    @Override
     public Object[] getQueryParameters() {
         return parameters;
     }
 
+    @Override
     public void setQueryParameters(Object[] parameters) {
         this.parameters = parameters;
     }
 
+    @Override
     public DocumentModel getSearchDocumentModel() {
         return searchDocument;
     }
 
+    @Override
     public void setSearchDocumentModel(DocumentModel searchDocument) {
         this.searchDocument = searchDocument;
     }
 
+    @Override
     public List<SortInfo> getSortInfos() {
         return sortInfos;
     }
 
+    @Override
     public void setSortInfos(List<SortInfo> sortInfos) {
         this.sortInfos = sortInfos;
     }
 
+    @Override
     public ContentViewLayout getResultLayout() {
         return resultLayout;
     }
 
+    @Override
     public void setResultLayout(ContentViewLayout resultLayout) {
         this.resultLayout = resultLayout;
     }
 
+    @Override
     public List<String> getResultColumns() {
         return resultColumns;
     }
 
+    @Override
     public void setResultColumns(List<String> resultColumns) {
         this.resultColumns = resultColumns;
     }
 
+    @Override
     public String getPageProviderName() {
         return pageProviderName;
     }
 
+    @Override
     public void setPageProviderName(String pageProviderName) {
         this.pageProviderName = pageProviderName;
     }

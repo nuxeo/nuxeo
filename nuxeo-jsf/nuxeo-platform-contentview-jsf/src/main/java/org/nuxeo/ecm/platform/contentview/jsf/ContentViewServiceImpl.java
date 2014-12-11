@@ -162,6 +162,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         return getContentViewHeader(desc);
     }
 
+    @Override
     public Set<String> getContentViewNames() {
         return Collections.unmodifiableSet(contentViewReg.getContentViewNames());
     }
@@ -175,6 +176,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         return Collections.unmodifiableSet(res);
     }
 
+    @Override
     public Set<String> getContentViewNames(String flag) {
         Set<String> res = new HashSet<String>();
         Set<String> items = contentViewReg.getContentViewsByFlag(flag);
@@ -197,6 +199,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         return Collections.unmodifiableSet(res);
     }
 
+    @Override
     public PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
             DocumentModel searchDocument, Object... parameters) throws ClientException {
         ContentViewDescriptor contentViewDesc = contentViewReg.getContentView(name);

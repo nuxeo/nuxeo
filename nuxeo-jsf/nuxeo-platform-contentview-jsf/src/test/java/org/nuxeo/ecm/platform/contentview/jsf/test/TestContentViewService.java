@@ -50,6 +50,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
 
     protected ContentViewService service;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
