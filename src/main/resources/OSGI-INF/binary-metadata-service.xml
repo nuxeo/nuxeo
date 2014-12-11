@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.binary.metadata.api.service">
+  <implementation
+          class="org.nuxeo.binary.metadata.api.service.BinaryMetadataServiceImpl"/>
+  <service>
+    <provide interface="org.nuxeo.binary.metadata.api.service.BinaryMetadataService"/>
+  </service>
+</component>
