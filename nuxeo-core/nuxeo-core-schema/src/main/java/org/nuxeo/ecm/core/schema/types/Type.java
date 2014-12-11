@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
+import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
 
 /**
  * A Type object is used to describe some ECM content.
@@ -105,6 +106,15 @@ public interface Type extends Serializable {
      * @return true if the given type is derived from this type, false otherwise
      */
     boolean isSuperTypeOf(Type type);
+
+    /**
+     * Tests whether this type is a simple type whose value references an external entity (see
+     * {@link ExternalReferenceResolver} ).
+     *
+     * @return true if this type is a reference, false otherwise
+	 * @since 7.1
+     */
+    boolean isReference();
 
     /**
      * Tests whether this type is a simple type.

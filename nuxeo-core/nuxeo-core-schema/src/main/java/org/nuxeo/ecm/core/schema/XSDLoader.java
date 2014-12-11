@@ -30,8 +30,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -56,12 +58,17 @@ import org.nuxeo.ecm.core.schema.types.constraints.LengthConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.NotNullConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.NumericIntervalConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.PatternConstraint;
+import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceConstraint;
+import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
+import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceService;
+import org.nuxeo.runtime.api.Framework;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import com.sun.xml.xsom.ForeignAttributes;
 import com.sun.xml.xsom.XSAttributeDecl;
 import com.sun.xml.xsom.XSAttributeUse;
 import com.sun.xml.xsom.XSComplexType;
@@ -84,11 +91,15 @@ import com.sun.xml.xsom.parser.XSOMParser;
  */
 public class XSDLoader {
 
+    private static final String ATTR_CORE_EXTERNAL_REFERENCES = "ref";
+
     private static final Log log = LogFactory.getLog(XSDLoader.class);
 
     private static final String ANONYMOUS_TYPE_SUFFIX = "#anonymousType";
 
-    private static final String SCHEMAS_VALIDATION_XSD = "http://www.nuxeo.org/ecm/schemas/core/validation/";
+    private static final String NAMESPACE_CORE_VALIDATION = "http://www.nuxeo.org/ecm/schemas/core/validation/";
+
+    private static final String NAMESPACE_CORE_EXTERNAL_REFERENCES = "http://www.nuxeo.org/ecm/schemas/core/external-references/";
 
     private static final String NS_XSD = "http://www.w3.org/2001/XMLSchema";
 
@@ -99,6 +110,15 @@ public class XSDLoader {
     protected boolean collectReferencedXSD = false;
 
     protected SchemaBindingDescriptor sd;
+
+    private ExternalReferenceService referenceService;
+
+    protected ExternalReferenceService getReferenceService() {
+        if (referenceService == null) {
+            referenceService = Framework.getService(ExternalReferenceService.class);
+        }
+        return referenceService;
+    }
 
     public XSDLoader(SchemaManagerImpl schemaManager) {
         this.schemaManager = schemaManager;
@@ -561,6 +581,33 @@ public class XSDLoader {
                 }
             }
 
+            String refName = restrictionType.getForeignAttribute(NAMESPACE_CORE_EXTERNAL_REFERENCES,
+                    ATTR_CORE_EXTERNAL_REFERENCES);
+            Map<String, String> refParameters = new HashMap<String, String>();
+            for (ForeignAttributes attr : restrictionType.getForeignAttributes()) {
+                for (int index = 0; index < attr.getLength(); index++) {
+                    String attrNS = attr.getURI(index);
+                    String attrName = attr.getLocalName(index);
+                    String attrValue = attr.getValue(index);
+                    if (NAMESPACE_CORE_EXTERNAL_REFERENCES.equals(attrNS)) {
+                        if (!ATTR_CORE_EXTERNAL_REFERENCES.equals(attrName)) {
+                            refParameters.put(attrName, attrValue);
+                        }
+                    }
+                }
+            }
+            if (refName != null) {
+                ExternalReferenceResolver<?> resolver = getReferenceService().getResolver(refName, refParameters);
+                if (resolver != null) {
+                    simpleType.setResolver(resolver);
+                    constraints.add(new ExternalReferenceConstraint(resolver));
+                } else {
+                    log.warn("type " + type.getName()
+                            + " targets ExternalReference namespace but has no matching resolver registered "
+                            + "(please contribute to component : org.nuxeo.ecm.core.schema.ExternalReferenceService)");
+                }
+            }
+
             simpleType.addConstraints(constraints);
         }
 
@@ -854,7 +901,7 @@ public class XSDLoader {
      */
     protected static boolean isNillable(XSElementDecl element) {
         boolean computedNillable;
-        String value = element.getForeignAttribute(SCHEMAS_VALIDATION_XSD, "nillable");
+        String value = element.getForeignAttribute(NAMESPACE_CORE_VALIDATION, "nillable");
         if (!element.isNillable() && value != null && !Boolean.valueOf(value)) {
             computedNillable = false;
         } else {

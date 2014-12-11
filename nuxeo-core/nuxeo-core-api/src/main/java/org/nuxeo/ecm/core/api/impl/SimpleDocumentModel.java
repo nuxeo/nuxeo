@@ -287,6 +287,16 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
+    public <T> void setPropertyReferencedEntity(String xpath, T entity) {
+        getProperty(xpath).setReferencedEntity(entity);
+    }
+
+    @Override
+    public <T> T getPropertyReferencedEntity(String xpath) {
+        return getProperty(xpath).getReferencedEntity();
+    }
+
+    @Override
     public DocumentType getDocumentType() {
         throw new UnsupportedOperationException();
     }

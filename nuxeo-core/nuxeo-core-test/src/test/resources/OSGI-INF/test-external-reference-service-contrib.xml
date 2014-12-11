@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.tests.repo.core-types">
+
+  <extension target="org.nuxeo.ecm.core.schema.ExternalReferenceService" point="resolvers">
+    <resolver type="colorReference" class="org.nuxeo.ecm.core.schema.types.reference.DummyPrimaryColorReferenceResolver" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="externalReferenceSample" src="schemas/externalReferenceSample.xsd" prefix="ers" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="ExternalReferencer" extends="Document">
+      <schema name="externalReferenceSample" />
+    </doctype>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.api.DocumentValidationService" point="activations">
+    <validation context="createDocument" activated="false" />
+    <validation context="saveDocument" activated="false" />
+    <validation context="importDocument" activated="false" />
+  </extension>
+
+</component>

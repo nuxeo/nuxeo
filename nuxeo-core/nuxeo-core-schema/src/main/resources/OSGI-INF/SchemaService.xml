@@ -7,6 +7,8 @@
     Allows registrering new types defined using XSD schemas
     @author Bogdan Stefanescu (bs@nuxeo.com)
   </documentation>
+  
+  <require>org.nuxeo.ecm.core.schema.ExternalReferenceService</require>
 
   <service>
     <provide

@@ -73,7 +73,9 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.JavaTypes;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -1442,6 +1444,35 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     public void setPropertyValue(String xpath, Serializable value) throws PropertyException, ClientException {
         getProperty(xpath).setValue(value);
         clearPrefetchXPath(xpath);
+    }
+
+    @Override
+    public <T> void setPropertyReferencedEntity(String xpath, T entity) {
+        ExternalReferenceResolver<T> resolver = getResolver(xpath);
+        if (resolver != null) {
+            Serializable reference = resolver.getReference(entity);
+            setPropertyValue(xpath, reference);
+        }
+    }
+
+    @Override
+    public <T> T getPropertyReferencedEntity(String xpath) {
+        ExternalReferenceResolver<T> resolver = getResolver(xpath);
+        if (resolver != null) {
+            return resolver.fetch(getPropertyValue(xpath));
+        } else {
+            return null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T> ExternalReferenceResolver<T> getResolver(String xpath) {
+        Property property = getProperty(xpath);
+        if (!property.isReference()) {
+            return null;
+        }
+        SimpleType type = (SimpleType) property.getType();
+        return (ExternalReferenceResolver<T>) type.getResolver();
     }
 
     private void clearPrefetch(String schemaName) {

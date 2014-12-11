@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://nuxeo.com/schemas/externalReferenceSample"
+  xmlns:nxs="http://nuxeo.com/schemas/externalReferenceSample" xmlns:ext="http://www.nuxeo.org/ecm/schemas/core/external-references/">
+
+  <xs:element name="color" type="nxs:colorType">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ext:ref="colorReference" ext:param1="value1" nxs:toto="notReadParam" />
+    </xs:simpleType>
+  </xs:element>
+
+</xs:schema>

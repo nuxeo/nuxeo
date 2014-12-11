@@ -15,7 +15,12 @@ package org.nuxeo.ecm.core.schema.types.constraints;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.constraints.ConstraintViolation.PathNode;
 
 /**
  * A constraint object defines a constraint on a custom type. Method {@link #getDescription()} allows anyone to
@@ -36,6 +41,17 @@ public interface Constraint extends Serializable {
      * @return true if the object was successfully validated, false otherwise
      */
     boolean validate(Object object);
+
+    /**
+     * Provides an error message to display when some invalid value does not match existing entity.
+     *
+     * @param invalidValue The invalid value that don't match any entity.
+     * @param errorLocation The place where this error append.
+     * @param locale The language in which the message should be generated.
+     * @return A message in the specified language or
+     * @since 7.1
+     */
+    String getErrorMessage(Schema schema, List<PathNode> errorLocation, Object invalidValue, Locale locale);
 
     /**
      * Provides a description of a constraint. For example, a constraint which control String format could return

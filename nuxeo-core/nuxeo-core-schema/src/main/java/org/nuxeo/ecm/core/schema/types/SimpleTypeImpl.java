@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
+import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
 
 /**
  * Implementation of a simple type that is not primitive (and therefore has constraints).
@@ -28,6 +29,8 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
     private static final long serialVersionUID = 1L;
 
     protected Set<Constraint> constraints;
+
+    private ExternalReferenceResolver<?> resolver;
 
     private PrimitiveType primitiveType;
 
@@ -92,6 +95,20 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
     @Override
     public boolean isSimpleType() {
         return true;
+    }
+
+    @Override
+    public boolean isReference() {
+        return resolver == null;
+    }
+
+    public void setResolver(ExternalReferenceResolver<?> resolver) {
+        this.resolver = resolver;
+    }
+
+    @Override
+    public ExternalReferenceResolver<?> getResolver() {
+        return resolver;
     }
 
     @Override

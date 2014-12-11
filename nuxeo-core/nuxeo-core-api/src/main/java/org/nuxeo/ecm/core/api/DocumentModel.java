@@ -847,6 +847,27 @@ public interface DocumentModel extends Serializable {
     void setPropertyValue(String xpath, Serializable value) throws PropertyException, ClientException;
 
     /**
+     * Sets the entity referenced by a property given a xpath.
+     * <p>
+     * The value will be a reference to the entity.
+     * </p>
+     *
+     * @param xpath The property path
+     * @param entity The entity referenced by this property.
+     * @since 7.1
+     */
+    <T> void setPropertyReferencedEntity(String xpath, T entity);
+
+    /**
+     * Gets the entity referenced by a property value given a xpath.
+     *
+     * @param xpath The property xpath
+     * @return The entity
+     * @since 7.1
+     */
+    <T> T getPropertyReferencedEntity(String xpath);
+
+    /**
      * Clears any prefetched or cached document data.
      * <p>
      * This will force the document to lazily update its data when required.

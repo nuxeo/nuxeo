@@ -15,6 +15,7 @@ package org.nuxeo.ecm.core.schema.types;
 
 import org.nuxeo.ecm.core.schema.SchemaNames;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
+import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
 
 /**
  * Primitive type (basic types like long, string, boolean, etc.).
@@ -29,6 +30,11 @@ public abstract class PrimitiveType extends AbstractType implements SimpleType {
 
     @Override
     public abstract boolean validate(Object object);
+
+    @Override
+    public ExternalReferenceResolver<?> getResolver() {
+        return null;
+    }
 
     @Override
     public Type getSuperType() {

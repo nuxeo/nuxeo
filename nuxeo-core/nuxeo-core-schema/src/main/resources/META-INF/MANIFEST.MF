@@ -11,7 +11,8 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 5.4.2.qualifier
 Bundle-ManifestVersion: 2
-Nuxeo-Component: OSGI-INF/SchemaService.xml
+Nuxeo-Component: OSGI-INF/ExternalReferenceService.xml,
+  OSGI-INF/SchemaService.xml
 Import-Package: com.sun.xml.xsom,
  com.sun.xml.xsom.impl,
  com.sun.xml.xsom.parser,

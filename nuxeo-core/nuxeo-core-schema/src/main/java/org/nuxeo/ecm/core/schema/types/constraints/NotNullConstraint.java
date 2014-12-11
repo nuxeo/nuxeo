@@ -30,7 +30,7 @@ import java.util.Map;
  * @since 7.1
  * @author <a href="mailto:nc@nuxeo.com">Nicolas Chapurlat</a>
  */
-public class NotNullConstraint implements Constraint {
+public class NotNullConstraint extends AbstractConstraint {
 
     private static final long serialVersionUID = 1L;
 

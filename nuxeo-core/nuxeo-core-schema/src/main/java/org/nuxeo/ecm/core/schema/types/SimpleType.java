@@ -13,6 +13,8 @@
  */
 package org.nuxeo.ecm.core.schema.types;
 
+import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
+
 /**
  * Simple Type.
  * <p>
@@ -28,5 +30,14 @@ public interface SimpleType extends Type {
     boolean isPrimitive();
 
     PrimitiveType getPrimitiveType();
+
+    /**
+     * If this SimpleType is a reference type (see {@link #isReference()}, provides a {@link ExternalReferenceResolver}
+     * to get entity referenced a value of this type.
+     * 
+     * @return
+     * @since 7.1
+     */
+    ExternalReferenceResolver<?> getResolver();
 
 }

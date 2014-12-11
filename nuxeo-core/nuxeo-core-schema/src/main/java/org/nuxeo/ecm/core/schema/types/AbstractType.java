@@ -99,6 +99,11 @@ public abstract class AbstractType implements Type {
     }
 
     @Override
+    public boolean isReference() {
+        return false;
+    }
+
+    @Override
     public boolean isComplexType() {
         return false;
     }
