@@ -95,8 +95,7 @@ public class JSFDashboardActions implements Serializable {
                     selectedDomain = domains.get(0);
                 }
             }
-        } else if (domains != null && !domains.isEmpty()
-                && !domains.contains(selectedDomain)) {
+        } else if (domains != null && !domains.isEmpty() && !domains.contains(selectedDomain)) {
             // reset old domain: it's not available anymore
             selectedDomain = domains.get(0);
         }
@@ -111,8 +110,7 @@ public class JSFDashboardActions implements Serializable {
         return null;
     }
 
-    public void setSelectedDomainId(String selectedDomainId)
-            throws ClientException {
+    public void setSelectedDomainId(String selectedDomainId) throws ClientException {
         selectedDomain = documentManager.getDocument(new IdRef(selectedDomainId));
     }
 
@@ -129,25 +127,16 @@ public class JSFDashboardActions implements Serializable {
     }
 
     /**
-     * Refreshes and resets content views that have declared the event
-     * "workflowEvent" as a refresh or reset event, on every kind of
-     * workflow/task event.
+     * Refreshes and resets content views that have declared the event "workflowEvent" as a refresh or reset event, on
+     * every kind of workflow/task event.
      */
-    @Observer(value = {
-            TaskEventNames.WORKFLOW_ENDED,
-            TaskEventNames.WORKFLOW_NEW_STARTED,
-            TaskEventNames.WORKFLOW_TASK_STOP,
-            TaskEventNames.WORKFLOW_TASK_REJECTED,
-            TaskEventNames.WORKFLOW_USER_ASSIGNMENT_CHANGED,
-            TaskEventNames.WORKFLOW_TASK_COMPLETED,
-            TaskEventNames.WORKFLOW_TASK_REMOVED,
-            TaskEventNames.WORK_ITEMS_LIST_LOADED,
-            TaskEventNames.WORKFLOW_TASKS_COMPUTED,
-            TaskEventNames.WORKFLOW_ABANDONED,
-            TaskEventNames.WORKFLOW_CANCELED,
-            EventNames.DOCUMENT_PUBLICATION_REJECTED,
-            EventNames.DOCUMENT_PUBLICATION_APPROVED,
-            EventNames.DOCUMENT_PUBLISHED }, create = false)
+    @Observer(value = { TaskEventNames.WORKFLOW_ENDED, TaskEventNames.WORKFLOW_NEW_STARTED,
+            TaskEventNames.WORKFLOW_TASK_STOP, TaskEventNames.WORKFLOW_TASK_REJECTED,
+            TaskEventNames.WORKFLOW_USER_ASSIGNMENT_CHANGED, TaskEventNames.WORKFLOW_TASK_COMPLETED,
+            TaskEventNames.WORKFLOW_TASK_REMOVED, TaskEventNames.WORK_ITEMS_LIST_LOADED,
+            TaskEventNames.WORKFLOW_TASKS_COMPUTED, TaskEventNames.WORKFLOW_ABANDONED,
+            TaskEventNames.WORKFLOW_CANCELED, EventNames.DOCUMENT_PUBLICATION_REJECTED,
+            EventNames.DOCUMENT_PUBLICATION_APPROVED, EventNames.DOCUMENT_PUBLISHED }, create = false)
     public void onWorkflowEvent() {
         contentViewActions.refreshOnSeamEvent(CONTENT_VIEW_OBSERVER_WORKFLOW_EVENT);
         contentViewActions.resetPageProviderOnSeamEvent(CONTENT_VIEW_OBSERVER_WORKFLOW_EVENT);
@@ -156,7 +145,7 @@ public class JSFDashboardActions implements Serializable {
     @Factory(value = "isMSIE6or7", scope = ScopeType.SESSION)
     public boolean isMSIE6or7() {
         FacesContext context = FacesContext.getCurrentInstance();
-        if (context!=null) {
+        if (context != null) {
             HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
             String ua = request.getHeader("User-Agent");
             return UserAgentMatcher.isMSIE6or7(ua);
