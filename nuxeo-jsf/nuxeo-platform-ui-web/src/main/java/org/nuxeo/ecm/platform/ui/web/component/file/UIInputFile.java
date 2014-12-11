@@ -559,46 +559,38 @@ public class UIInputFile extends UIInput implements NamingContainer {
 
     public Blob getCurrentBlob() {
         Blob blob = null;
-        try {
-            InputFileInfo submittedFileInfo = getFileInfoSubmittedValue();
-            if (submittedFileInfo != null) {
-                InputFileChoice choice = submittedFileInfo.getConvertedChoice();
-                if (InputFileChoice.keep == choice || InputFileChoice.tempKeep == choice) {
-                    // rebuild other info from current value
-                    InputFileInfo fileInfo = getFileInfoValue();
-                    blob = fileInfo.getConvertedBlob();
-                } else {
-                    blob = submittedFileInfo.getConvertedBlob();
-                }
-            } else {
+        InputFileInfo submittedFileInfo = getFileInfoSubmittedValue();
+        if (submittedFileInfo != null) {
+            InputFileChoice choice = submittedFileInfo.getConvertedChoice();
+            if (InputFileChoice.keep == choice || InputFileChoice.tempKeep == choice) {
+                // rebuild other info from current value
                 InputFileInfo fileInfo = getFileInfoValue();
                 blob = fileInfo.getConvertedBlob();
+            } else {
+                blob = submittedFileInfo.getConvertedBlob();
             }
-        } catch (ConverterException e) {
-            log.error(e);
+        } else {
+            InputFileInfo fileInfo = getFileInfoValue();
+            blob = fileInfo.getConvertedBlob();
         }
         return blob;
     }
 
     public String getCurrentFilename() {
         String filename = null;
-        try {
-            InputFileInfo submittedFileInfo = getFileInfoSubmittedValue();
-            if (submittedFileInfo != null) {
-                InputFileChoice choice = submittedFileInfo.getConvertedChoice();
-                if (InputFileChoice.keep == choice || InputFileChoice.tempKeep == choice) {
-                    // rebuild it in case it's supposed to be kept
-                    InputFileInfo fileInfo = getFileInfoValue();
-                    filename = fileInfo.getConvertedFilename();
-                } else {
-                    filename = submittedFileInfo.getConvertedFilename();
-                }
-            } else {
+        InputFileInfo submittedFileInfo = getFileInfoSubmittedValue();
+        if (submittedFileInfo != null) {
+            InputFileChoice choice = submittedFileInfo.getConvertedChoice();
+            if (InputFileChoice.keep == choice || InputFileChoice.tempKeep == choice) {
+                // rebuild it in case it's supposed to be kept
                 InputFileInfo fileInfo = getFileInfoValue();
                 filename = fileInfo.getConvertedFilename();
+            } else {
+                filename = submittedFileInfo.getConvertedFilename();
             }
-        } catch (ConverterException e) {
-            log.error(e);
+        } else {
+            InputFileInfo fileInfo = getFileInfoValue();
+            filename = fileInfo.getConvertedFilename();
         }
         return filename;
     }
@@ -609,8 +601,18 @@ public class UIInputFile extends UIInput implements NamingContainer {
         notifyPreviousErrors(context);
 
         ResponseWriter writer = context.getResponseWriter();
-        Blob blob = getCurrentBlob();
-        String filename = getCurrentFilename();
+        Blob blob = null;
+        try {
+            blob = getCurrentBlob();
+        } catch (ConverterException e) {
+            // can happen -> ignore, don't break rendering
+        }
+        String filename = null;
+        try {
+            filename = getCurrentFilename();
+        } catch (ConverterException e) {
+            // can happen -> ignore, don't break rendering
+        }
         InputFileInfo fileInfo = getFileInfoSubmittedValue();
         if (fileInfo == null) {
             fileInfo = getFileInfoValue();
