@@ -117,7 +117,7 @@ public class OperationTypeImpl implements OperationType {
         if (id.length() == 0) {
             id = type.getName();
         }
-        this.aliases = anno.aliases();
+        aliases = anno.aliases();
         params = new HashMap<String, Field>();
         methods = new ArrayList<InvokableMethod>();
         injectableFields = new ArrayList<Field>();
@@ -351,8 +351,8 @@ public class OperationTypeImpl implements OperationType {
         }
         doc.signature = result.toArray(new String[result.size()]);
         // widgets descriptor
-        if (this.widgetDefinitionList != null) {
-            doc.widgetDefinitions = this.widgetDefinitionList.toArray(new WidgetDefinition[widgetDefinitionList.size()]);
+        if (widgetDefinitionList != null) {
+            doc.widgetDefinitions = widgetDefinitionList.toArray(new WidgetDefinition[widgetDefinitionList.size()]);
         }
         return doc;
     }
@@ -394,6 +394,7 @@ public class OperationTypeImpl implements OperationType {
     /**
      * @since 5.7.2
      */
+    @Override
     public List<InvokableMethod> getMethods() {
         return methods;
     }

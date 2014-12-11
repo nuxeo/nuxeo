@@ -105,19 +105,19 @@ public class ChainTypeImpl implements OperationType {
 
     public ChainTypeImpl(AutomationService service, OperationChain chain) {
         this.service = service;
-        this.operations = chain.getOperations().toArray(new OperationParameters[chain.getOperations().size()]);
-        this.id = chain.getId();
-        this.aliases = chain.getAliases();
-        this.chainParameters = chain.getChainParameters();
+        operations = chain.getOperations().toArray(new OperationParameters[chain.getOperations().size()]);
+        id = chain.getId();
+        aliases = chain.getAliases();
+        chainParameters = chain.getChainParameters();
         this.chain = chain;
     }
 
     public ChainTypeImpl(AutomationService service, OperationChain chain, OperationChainContribution contribution) {
         this.service = service;
-        this.operations = chain.getOperations().toArray(new OperationParameters[chain.getOperations().size()]);
-        this.id = chain.getId();
-        this.aliases = chain.getAliases();
-        this.chainParameters = chain.getChainParameters();
+        operations = chain.getOperations().toArray(new OperationParameters[chain.getOperations().size()]);
+        id = chain.getId();
+        aliases = chain.getAliases();
+        chainParameters = chain.getChainParameters();
         this.contribution = contribution;
         this.chain = chain;
     }
@@ -321,6 +321,7 @@ public class ChainTypeImpl implements OperationType {
     /**
      * @since 5.7.2
      */
+    @Override
     public List<InvokableMethod> getMethods() {
         return Arrays.asList(methods);
     }

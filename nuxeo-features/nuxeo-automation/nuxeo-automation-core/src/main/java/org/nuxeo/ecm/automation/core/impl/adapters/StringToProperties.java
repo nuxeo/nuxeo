@@ -23,6 +23,7 @@ import org.nuxeo.ecm.automation.core.util.Properties;
  */
 public class StringToProperties implements TypeAdapter {
 
+    @Override
     public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         String content = (String) objectToAdapt;
         try {

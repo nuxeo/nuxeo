@@ -84,6 +84,7 @@ public class ResultSetPageProviderOperation {
     /**
      * @deprecated since 6.0 use instead {@link org.nuxeo.ecm.automation .core.operations.services.query.ResultSetQuery}
      */
+    @Deprecated
     @Param(name = "query", required = false)
     protected String query;
 
@@ -210,7 +211,7 @@ public class ResultSetPageProviderOperation {
             public QueryAndFetchProviderDescriptor() {
                 super();
                 try {
-                    this.klass = (Class<PageProvider<?>>) Class.forName(CoreQueryAndFetchPageProvider.class.getName());
+                    klass = (Class<PageProvider<?>>) Class.forName(CoreQueryAndFetchPageProvider.class.getName());
                 } catch (ClassNotFoundException e) {
                     log.error(e, e);
                 }

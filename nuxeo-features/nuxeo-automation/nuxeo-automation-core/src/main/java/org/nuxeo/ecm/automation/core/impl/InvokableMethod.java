@@ -64,7 +64,7 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
         // }
         this.op = op;
         this.method = method;
-        this.priority = anno.priority();
+        priority = anno.priority();
         if (priority > 0) {
             priority += USER_PRIORITY;
         }

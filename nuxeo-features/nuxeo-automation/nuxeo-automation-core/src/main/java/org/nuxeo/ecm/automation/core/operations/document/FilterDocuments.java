@@ -112,21 +112,21 @@ public class FilterDocuments {
                     facet = v;
                 }
             }
-            v = FilterDocuments.this.lifeCycle;
+            v = lifeCycle;
             if (v != null) {
                 v = v.trim();
                 if (v.length() > 0) {
                     lc = v;
                 }
             }
-            v = FilterDocuments.this.pathStartsWith;
+            v = pathStartsWith;
             if (v != null) {
                 v = v.trim();
                 if (v.length() > 0) {
                     path = v;
                 }
             }
-            v = FilterDocuments.this.condition;
+            v = condition;
             if (v != null) {
                 v = v.trim();
                 if (v.length() > 0) {
@@ -139,6 +139,7 @@ public class FilterDocuments {
             }
         }
 
+        @Override
         public boolean accept(DocumentModel doc) {
             if (types != null) {
                 if (!types.contains(doc.getType())) {

@@ -35,6 +35,7 @@ public class CoreQueryPageProviderDescriptor extends BasePageProviderDescriptor 
         return new CoreQueryPageProviderDescriptor();
     }
 
+    @Override
     public CoreQueryPageProviderDescriptor clone() {
         return (CoreQueryPageProviderDescriptor) super.cloneDescriptor();
     }

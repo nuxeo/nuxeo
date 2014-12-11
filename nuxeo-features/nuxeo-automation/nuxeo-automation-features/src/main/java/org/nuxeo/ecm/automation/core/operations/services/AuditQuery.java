@@ -89,6 +89,7 @@ public class AuditQuery {
         PersistenceProviderFactory pf = Framework.getService(PersistenceProviderFactory.class);
         PersistenceProvider provider = pf.newProvider("nxaudit-logs");
         return provider.run(false, new RunCallback<List<LogEntry>>() {
+            @Override
             @SuppressWarnings("unchecked")
             public List<LogEntry> runWith(EntityManager em) {
                 Query q = em.createQuery(query);

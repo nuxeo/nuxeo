@@ -41,8 +41,8 @@ public class BucketRangeDate implements Bucket {
         // fromDate.
         range = new BucketRange(key, from != null ? from.getMillis() : null, to != null ? to.getMillis() : null,
                 docCount);
-        this.fromDate = from;
-        this.toDate = to;
+        fromDate = from;
+        toDate = to;
     }
 
     @Override

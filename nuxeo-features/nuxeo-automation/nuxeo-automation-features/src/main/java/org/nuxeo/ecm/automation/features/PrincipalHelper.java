@@ -193,6 +193,7 @@ public class PrincipalHelper {
             this.userEmailFieldName = userEmailFieldName;
         }
 
+        @Override
         public void collect(NuxeoPrincipal principal) throws ClientException {
             if (principal == null) {
                 return;
@@ -204,10 +205,12 @@ public class PrincipalHelper {
             }
         }
 
+        @Override
         public void collect(NuxeoGroup group) throws ClientException {
             // do nothing
         }
 
+        @Override
         public HashSet<String> getResult() {
             return result;
         }
@@ -217,6 +220,7 @@ public class PrincipalHelper {
 
         protected HashSet<NuxeoPrincipal> result = new HashSet<NuxeoPrincipal>();
 
+        @Override
         public void collect(NuxeoPrincipal principal) throws ClientException {
             if (principal == null) {
                 return;
@@ -224,10 +228,12 @@ public class PrincipalHelper {
             result.add(principal);
         }
 
+        @Override
         public void collect(NuxeoGroup group) throws ClientException {
             // do nothing
         }
 
+        @Override
         public HashSet<NuxeoPrincipal> getResult() {
             return result;
         }
@@ -243,6 +249,7 @@ public class PrincipalHelper {
             this.prefixIds = prefixIds;
         }
 
+        @Override
         public void collect(NuxeoPrincipal principal) throws ClientException {
             if (principal != null) {
                 String name = principal.getName();
@@ -256,6 +263,7 @@ public class PrincipalHelper {
             }
         }
 
+        @Override
         public void collect(NuxeoGroup group) throws ClientException {
             if (group != null) {
                 String name = group.getName();
@@ -269,6 +277,7 @@ public class PrincipalHelper {
             }
         }
 
+        @Override
         public HashSet<String> getResult() {
             return result;
         }

@@ -34,6 +34,11 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
  */
 public class DataModelProperties extends Properties {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     protected boolean onlyDirtyProperties = false;
 
     protected Map<String, Serializable> properties = new HashMap<>();

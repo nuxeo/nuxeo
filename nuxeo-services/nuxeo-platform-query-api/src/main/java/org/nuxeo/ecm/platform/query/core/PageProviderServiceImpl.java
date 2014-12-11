@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -61,6 +59,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
     // @since 6.0
     protected PageProviderClassReplacerRegistry replacersReg = new PageProviderClassReplacerRegistry();
 
+    @Override
     public PageProviderDefinition getPageProviderDefinition(String name) {
         PageProviderDefinition def = providerReg.getPageProvider(name);
         if (def != null) {
@@ -69,6 +68,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
         return def;
     }
 
+    @Override
     public PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
             Object... parameters) throws ClientException {

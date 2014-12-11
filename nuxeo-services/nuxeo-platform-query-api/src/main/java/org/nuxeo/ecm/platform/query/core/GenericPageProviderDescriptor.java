@@ -45,6 +45,7 @@ public class GenericPageProviderDescriptor extends BasePageProviderDescriptor im
         return new GenericPageProviderDescriptor();
     }
 
+    @Override
     public GenericPageProviderDescriptor clone() {
         GenericPageProviderDescriptor clone = (GenericPageProviderDescriptor) super.cloneDescriptor();
         clone.klass = getPageProviderClass();

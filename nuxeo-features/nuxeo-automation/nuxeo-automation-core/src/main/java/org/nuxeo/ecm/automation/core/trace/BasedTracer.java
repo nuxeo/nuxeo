@@ -19,15 +19,11 @@
 package org.nuxeo.ecm.automation.core.trace;
 
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Stack;
 
 import org.nuxeo.ecm.automation.OperationCallback;
-import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
-import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
-import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 
 /**
  * Automation Abstract tracer recording all automation execution traces.

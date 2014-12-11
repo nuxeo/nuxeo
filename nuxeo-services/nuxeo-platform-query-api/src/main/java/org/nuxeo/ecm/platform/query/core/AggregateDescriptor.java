@@ -142,6 +142,7 @@ public class AggregateDescriptor implements AggregateDefinition {
         return field;
     }
 
+    @Override
     public String getType() {
         return type;
     }
@@ -150,7 +151,7 @@ public class AggregateDescriptor implements AggregateDefinition {
     @SuppressWarnings("unchecked")
     public void setDateRanges(List<AggregateRangeDateDefinition> ranges) {
         aggregateDateRanges = (List<AggregateRangeDateDescriptor>) (List<?>) ranges;
-        this.aggregateDateRangeDefinitionOrderMap = null;
+        aggregateDateRangeDefinitionOrderMap = null;
     }
 
     @Override
@@ -172,7 +173,7 @@ public class AggregateDescriptor implements AggregateDefinition {
     @SuppressWarnings("unchecked")
     public void setRanges(List<AggregateRangeDefinition> ranges) {
         aggregateRanges = (List<AggregateRangeDescriptor>) (List<?>) ranges;
-        this.aggregateRangeDefinitionOrderMap = null;
+        aggregateRangeDefinitionOrderMap = null;
     }
 
     @Override

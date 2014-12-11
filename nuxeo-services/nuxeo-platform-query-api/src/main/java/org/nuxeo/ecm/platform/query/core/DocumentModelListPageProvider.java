@@ -39,7 +39,7 @@ public class DocumentModelListPageProvider extends AbstractPageProvider<Document
     protected final DocumentModelList docs;
 
     public DocumentModelListPageProvider() {
-        this.docs = new DocumentModelListImpl();
+        docs = new DocumentModelListImpl();
     }
 
     public DocumentModelListPageProvider(DocumentModelList docs) {

@@ -22,6 +22,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  */
 public class DocRefToDocModel implements TypeAdapter {
 
+    @Override
     public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         DocumentRef ref = (DocumentRef) objectToAdapt;
         try {

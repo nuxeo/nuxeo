@@ -45,7 +45,7 @@ public class OperationException extends Exception {
     }
 
     public OperationException setNoRollback() {
-        this.rollback = false;
+        rollback = false;
         return this;
     }
 }

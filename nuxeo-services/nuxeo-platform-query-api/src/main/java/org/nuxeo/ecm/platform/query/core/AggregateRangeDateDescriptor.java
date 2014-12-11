@@ -36,8 +36,8 @@ public class AggregateRangeDateDescriptor extends AggregateRangeDescriptor imple
 
     public AggregateRangeDateDescriptor(String key, String from, String to) {
         this.key = key;
-        this.fromDate = from;
-        this.toDate = to;
+        fromDate = from;
+        toDate = to;
     }
 
     @XNode("@fromDate")
@@ -63,13 +63,13 @@ public class AggregateRangeDateDescriptor extends AggregateRangeDescriptor imple
 
     @Override
     public void setFrom(String from) {
-        this.fromDate = from;
+        fromDate = from;
         this.from = null;
     }
 
     @Override
     public void setTo(String to) {
-        this.toDate = to;
+        toDate = to;
         this.to = null;
     }
 

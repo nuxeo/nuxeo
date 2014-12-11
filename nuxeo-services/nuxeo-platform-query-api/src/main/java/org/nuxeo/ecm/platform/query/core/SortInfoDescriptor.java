@@ -49,6 +49,7 @@ public class SortInfoDescriptor {
     /**
      * @since 5.6
      */
+    @Override
     public SortInfoDescriptor clone() {
         SortInfoDescriptor clone = new SortInfoDescriptor();
         clone.column = column;

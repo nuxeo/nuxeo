@@ -41,6 +41,7 @@ public class FileCleanupHandler implements CleanupHandler {
         this.files.addAll(files);
     }
 
+    @Override
     public void cleanup() {
         for (File file : files) {
             file.delete();

@@ -37,6 +37,7 @@ public class TestPageProviderClassReplacer extends SQLRepositoryTestCase {
 
     protected PageProviderService pps;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -45,6 +46,7 @@ public class TestPageProviderClassReplacer extends SQLRepositoryTestCase {
         assertNotNull(pps);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();

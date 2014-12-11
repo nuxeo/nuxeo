@@ -20,11 +20,8 @@ package org.nuxeo.ecm.automation;
 
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -116,7 +113,7 @@ public class OperationContext implements Map<String, Object> {
     }
 
     public void setCoreSession(CoreSession session) {
-        this.loginStack.setSession(session);
+        loginStack.setSession(session);
     }
 
     public void setCommit(boolean commit) {
@@ -363,7 +360,7 @@ public class OperationContext implements Map<String, Object> {
      * @since 5.7.3
      */
     public OperationCallback getChainCallback() {
-        return this.chainCallback.operationCallback;
+        return chainCallback.operationCallback;
     }
 
     /**
@@ -379,10 +376,10 @@ public class OperationContext implements Map<String, Object> {
      * @return a subcontext
      */
     public OperationContext getSubContext(Boolean isolate, Object input) {
-        Map<String, Object> vars = isolate ? new HashMap<String, Object>(this.getVars()) : this.getVars();
-        OperationContext subctx = new OperationContext(this.getCoreSession(), vars);
+        Map<String, Object> vars = isolate ? new HashMap<String, Object>(getVars()) : getVars();
+        OperationContext subctx = new OperationContext(getCoreSession(), vars);
         subctx.setInput(input);
-        subctx.addChainCallback(this.getChainCallback());
+        subctx.addChainCallback(getChainCallback());
         return subctx;
     }
 }

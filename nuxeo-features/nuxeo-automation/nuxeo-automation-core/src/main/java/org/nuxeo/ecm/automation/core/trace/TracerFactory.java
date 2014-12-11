@@ -59,10 +59,10 @@ public class TracerFactory implements TracerFactoryMBean {
     protected Trace lastError;
 
     public TracerFactory() {
-        this.tracesCache = CacheBuilder.newBuilder().concurrencyLevel(CACHE_CONCURRENCY_LEVEL).maximumSize(
+        tracesCache = CacheBuilder.newBuilder().concurrencyLevel(CACHE_CONCURRENCY_LEVEL).maximumSize(
                 CACHE_MAXIMUM_SIZE).expireAfterWrite(CACHE_TIMEOUT, TimeUnit.HOURS).build();
-        this.recording = Framework.isBooleanPropertyTrue(AUTOMATION_TRACE_PROPERTY);
-        this.printableTraces = Framework.getProperty(AUTOMATION_TRACE_PRINTABLE_PROPERTY, "*");
+        recording = Framework.isBooleanPropertyTrue(AUTOMATION_TRACE_PROPERTY);
+        printableTraces = Framework.getProperty(AUTOMATION_TRACE_PRINTABLE_PROPERTY, "*");
     }
 
     protected static class ChainTraces {

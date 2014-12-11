@@ -17,7 +17,6 @@ import java.util.Properties;
 
 import javax.mail.Address;
 import javax.mail.Authenticator;
-import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
@@ -143,7 +142,7 @@ public class Mailer {
      */
     public void setCredentials(final String user, final String pass) {
         config.setProperty("mail.smtp.auth", "true");
-        this.auth = new Authenticator() {
+        auth = new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(user, pass);
@@ -215,7 +214,7 @@ public class Mailer {
         // the "from" address may be set in code, or set in the
         // config file under "mail.from" ; here, the latter style is used
         message.setFrom(new InternetAddress(from));
-        message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+        message.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to));
         message.setSubject(subject);
         message.setText(body);
         Transport.send(message);
@@ -236,17 +235,17 @@ public class Mailer {
         }
 
         public Message addTo(String to) throws MessagingException {
-            addRecipient(RecipientType.TO, new InternetAddress(to));
+            addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to));
             return this;
         }
 
         public Message addCc(String cc) throws MessagingException {
-            addRecipient(RecipientType.CC, new InternetAddress(cc));
+            addRecipient(javax.mail.Message.RecipientType.CC, new InternetAddress(cc));
             return this;
         }
 
         public Message addBcc(String bcc) throws MessagingException {
-            addRecipient(RecipientType.BCC, new InternetAddress(bcc));
+            addRecipient(javax.mail.Message.RecipientType.BCC, new InternetAddress(bcc));
             return this;
         }
 

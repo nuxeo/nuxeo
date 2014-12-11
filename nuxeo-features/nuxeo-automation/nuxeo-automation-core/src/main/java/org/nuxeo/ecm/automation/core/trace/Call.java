@@ -56,10 +56,10 @@ public class Call {
     public Call(OperationType chain, OperationContext context, OperationType type, InvokableMethod method,
             Map<String, Object> parms) {
         this.type = type;
-        this.variables = (context != null) ? new HashMap<>(context) : null;
+        variables = (context != null) ? new HashMap<>(context) : null;
         this.method = method;
-        this.input = (context != null) ? context.getInput() : null;
-        this.parameters = new HashMap<>();
+        input = (context != null) ? context.getInput() : null;
+        parameters = new HashMap<>();
         if (parms != null) {
             for (String paramId : parms.keySet()) {
                 Object paramValue = parms.get(paramId);
@@ -67,17 +67,17 @@ public class Call {
                     try {
                         ExpressionParameter expressionParameter = new ExpressionParameter(paramId,
                                 ((Expression) paramValue).eval(context));
-                        this.parameters.put(paramId, expressionParameter);
+                        parameters.put(paramId, expressionParameter);
                     } catch (RuntimeException e) {
                         log.warn("Cannot evaluate mvel expression for parameter: " + paramId, e);
                     }
                 } else {
-                    this.parameters.put(paramId, paramValue);
+                    parameters.put(paramId, paramValue);
                 }
             }
         }
-        this.chainId = (chain != null) ? chain.getId() : "Not bound to a chain";
-        this.aliases = (chain != null) ? Arrays.toString(chain.getAliases()) : null;
+        chainId = (chain != null) ? chain.getId() : "Not bound to a chain";
+        aliases = (chain != null) ? Arrays.toString(chain.getAliases()) : null;
     }
 
     /**

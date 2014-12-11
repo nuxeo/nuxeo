@@ -50,12 +50,14 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
 
     private static final String FOO = "foo";
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();

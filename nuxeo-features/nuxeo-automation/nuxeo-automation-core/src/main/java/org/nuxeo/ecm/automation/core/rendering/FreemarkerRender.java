@@ -37,6 +37,7 @@ public class FreemarkerRender extends FreemarkerEngine implements Renderer {
 
     public FreemarkerRender() {
         setResourceLocator(new ResourceLocator() {
+            @Override
             public URL getResourceURL(String key) {
                 try {
                     if (key.startsWith(Renderer.TEMPLATE_PREFIX)) {
@@ -50,6 +51,7 @@ public class FreemarkerRender extends FreemarkerEngine implements Renderer {
                 }
             }
 
+            @Override
             public File getResourceFile(String key) {
                 return null;
             }
@@ -63,6 +65,7 @@ public class FreemarkerRender extends FreemarkerEngine implements Renderer {
         env.process();
     }
 
+    @Override
     public String render(String uriOrContent, Map<String, Object> root) throws RenderingException, TemplateException,
             IOException {
         if (root.get("Document") != null) {

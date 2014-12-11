@@ -22,6 +22,7 @@ import org.nuxeo.ecm.automation.core.util.StringList;
  */
 public class StringToList implements TypeAdapter {
 
+    @Override
     public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         String content = (String) objectToAdapt;
         String[] ar = StringUtils.split(content, ',', true);

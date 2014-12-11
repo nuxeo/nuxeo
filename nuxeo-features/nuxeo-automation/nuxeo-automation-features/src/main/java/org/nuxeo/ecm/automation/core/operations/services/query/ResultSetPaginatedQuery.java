@@ -160,7 +160,7 @@ public class ResultSetPaginatedQuery {
         public QueryAndFetchProviderDescriptor() {
             super();
             try {
-                this.klass = (Class<PageProvider<?>>) Class.forName(CoreQueryAndFetchPageProvider.class.getName());
+                klass = (Class<PageProvider<?>>) Class.forName(CoreQueryAndFetchPageProvider.class.getName());
             } catch (ClassNotFoundException e) {
 
             }

@@ -26,7 +26,7 @@ public class DateWrapper {
     protected final Calendar date;
 
     public DateWrapper() {
-        this.date = Calendar.getInstance();
+        date = Calendar.getInstance();
         timestamp = date.getTimeInMillis();
     }
 
@@ -61,7 +61,7 @@ public class DateWrapper {
      * @since 5.7
      */
     protected DateWrapper dateWrapper(int unit, int value) {
-        Calendar calendar = (Calendar) this.date.clone();
+        Calendar calendar = (Calendar) date.clone();
         calendar.add(unit, value);
         return new DateWrapper(calendar);
     }

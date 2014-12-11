@@ -21,6 +21,7 @@ import org.nuxeo.ecm.automation.TypeAdapter;
  */
 public class StringToLong implements TypeAdapter {
 
+    @Override
     public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         String content = (String) objectToAdapt;
         return Long.valueOf(content);

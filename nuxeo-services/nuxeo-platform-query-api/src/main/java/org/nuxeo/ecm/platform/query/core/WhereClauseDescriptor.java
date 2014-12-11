@@ -68,41 +68,50 @@ public class WhereClauseDescriptor implements WhereClauseDefinition {
     /**
      * @deprecated since 6.0: use {@link BasePageProviderDescriptor#getSearchDocumentType()}
      */
+    @Override
     @Deprecated
     public String getDocType() {
         return docType;
     }
 
+    @Override
     @XNode("fixedPart")
     public void setFixedPath(String fixedPart) {
         // remove new lines and following spaces
         this.fixedPart = fixedPart.replaceAll("\r?\n\\s*", " ");
     }
 
+    @Override
     public boolean getQuoteFixedPartParameters() {
         return quoteFixedPartParameters;
     }
 
+    @Override
     public boolean getEscapeFixedPartParameters() {
         return escapeFixedPartParameters;
     }
 
+    @Override
     public PredicateDefinition[] getPredicates() {
         return predicates;
     }
 
+    @Override
     public void setPredicates(PredicateDefinition[] predicates) {
         this.predicates = predicates;
     }
 
+    @Override
     public String getFixedPart() {
         return fixedPart;
     }
 
+    @Override
     public void setFixedPart(String fixedPart) {
         this.fixedPart = fixedPart;
     }
 
+    @Override
     public Class<? extends Escaper> getEscaperClass() {
         return escaperClass;
     }
@@ -115,6 +124,7 @@ public class WhereClauseDescriptor implements WhereClauseDefinition {
     /**
      * @since 5.6
      */
+    @Override
     public WhereClauseDescriptor clone() {
         WhereClauseDescriptor clone = new WhereClauseDescriptor();
         clone.docType = getDocType();

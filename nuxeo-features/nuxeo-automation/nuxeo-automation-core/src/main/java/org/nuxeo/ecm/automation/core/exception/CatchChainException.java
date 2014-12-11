@@ -30,10 +30,10 @@ public class CatchChainException {
     protected final Boolean rollBack;
 
     public CatchChainException() {
-        this.chainId = "";
-        this.priority = 0;
-        this.rollBack = true;
-        this.filterId = "";
+        chainId = "";
+        priority = 0;
+        rollBack = true;
+        filterId = "";
     }
 
     public CatchChainException(String chainId, Integer priority, Boolean rollBack, String filterId) {

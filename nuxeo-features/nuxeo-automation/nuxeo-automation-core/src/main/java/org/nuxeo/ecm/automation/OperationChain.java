@@ -50,7 +50,7 @@ public class OperationChain implements Serializable {
 
     public OperationChain(String id) {
         this.id = id;
-        this.operations = new ArrayList<OperationParameters>();
+        operations = new ArrayList<OperationParameters>();
         chainParameters = new HashMap<String, Object>();
     }
 

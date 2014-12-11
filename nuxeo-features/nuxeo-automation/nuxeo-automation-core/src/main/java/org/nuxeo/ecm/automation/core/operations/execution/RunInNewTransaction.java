@@ -36,6 +36,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *             new transaction.
  * @since 5.6
  */
+@Deprecated
 @Operation(id = RunInNewTransaction.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run Document Chain in new Tx", description = "Run an operation chain in a separate tx. The 'parameters' injected are accessible in the subcontext ChainParameters. For instance, @{ChainParameters['parameterKey']}.", deprecatedSince = "6.0")
 public class RunInNewTransaction {
 

@@ -30,5 +30,6 @@ public interface AggregateRangeDateDefinition extends AggregateRangeDefinition {
 
     void setTo(String to);
 
+    @Override
     AggregateRangeDateDefinition clone();
 }

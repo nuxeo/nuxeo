@@ -25,6 +25,7 @@ public class OperationEventListener implements EventListener {
 
     protected EventHandlerRegistry registry;
 
+    @Override
     public void handleEvent(Event event) throws ClientException {
         if (registry == null) {
             registry = Framework.getLocalService(EventHandlerRegistry.class);

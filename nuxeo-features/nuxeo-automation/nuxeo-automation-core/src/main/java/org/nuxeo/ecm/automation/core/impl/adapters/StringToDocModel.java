@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.api.PathRef;
  */
 public class StringToDocModel implements TypeAdapter {
 
+    @Override
     public DocumentModel getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         try {
             String value = (String) objectToAdapt;

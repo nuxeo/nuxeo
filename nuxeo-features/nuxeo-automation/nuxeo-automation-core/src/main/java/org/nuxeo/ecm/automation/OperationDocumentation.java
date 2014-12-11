@@ -20,7 +20,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -83,7 +82,7 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
 
     public OperationDocumentation(String id) {
         this.id = id;
-        this.url = id;
+        url = id;
     }
 
     @XObject("param")
@@ -153,6 +152,7 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
             return name + " [" + type + "] " + (isRequired ? "required" : "optional");
         }
 
+        @Override
         public int compareTo(Param o) {
             if (order != 0 && o.order != 0) {
                 if (order < o.order) {
@@ -171,6 +171,7 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
         }
     }
 
+    @Override
     public int compareTo(OperationDocumentation o) {
         String s1 = label == null ? id : label;
         String s2 = o.label == null ? o.id : o.label;

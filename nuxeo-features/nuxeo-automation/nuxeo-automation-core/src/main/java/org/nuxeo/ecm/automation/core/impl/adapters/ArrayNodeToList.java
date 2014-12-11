@@ -29,6 +29,7 @@ public class ArrayNodeToList implements TypeAdapter {
 
     ObjectMapper mapper = new ObjectMapper();
 
+    @Override
     public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         return mapper.convertValue(objectToAdapt, List.class);
     }
