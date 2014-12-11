@@ -273,7 +273,7 @@ public class CoreProviderTest {
     }
 
     /**
-     * @since 6.0
+     * @since 7.1
      */
     @Test
     public void testPageProviderWithNamedParametersInvalid() throws Exception {
@@ -381,7 +381,7 @@ public class CoreProviderTest {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("providerName", "namedParamProviderComplex");
         Map<String, String> namedParameters = new HashMap<>();
-        namedParameters.put("np:title", "WS1");
+        namedParameters.put("parameter1", "WS1");
         namedParameters.put("np:isCheckedIn", Boolean.FALSE.toString());
         namedParameters.put("np:dateMin", "2007-01-30 01:02:03+04:00");
         namedParameters.put("np:dateMax", "2007-03-23 01:02:03+04:00");
@@ -390,9 +390,29 @@ public class CoreProviderTest {
         PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
                 DocumentPageProviderOperation.ID, params);
 
-        // test page size
         assertEquals(2, result.getPageSize());
         assertEquals(1, result.getNumberOfPages());
         assertEquals(1, result.size());
+
+        // remove filter on dates
+        namedParameters.remove("np:dateMin");
+        namedParameters.remove("np:dateMax");
+        namedProperties = new Properties(namedParameters);
+        params.put("namedParameters", namedProperties);
+        result = (PaginableDocumentModelListImpl) service.run(ctx, DocumentPageProviderOperation.ID, params);
+
+        assertEquals(2, result.getPageSize());
+        assertEquals(1, result.getNumberOfPages());
+        assertEquals(1, result.size());
+
+        // remove filter on title
+        namedParameters.remove("parameter1");
+        namedProperties = new Properties(namedParameters);
+        params.put("namedParameters", namedProperties);
+        result = (PaginableDocumentModelListImpl) service.run(ctx, DocumentPageProviderOperation.ID, params);
+
+        assertEquals(2, result.getPageSize());
+        assertEquals(2, result.getNumberOfPages());
+        assertEquals(2, result.size());
     }
 }
