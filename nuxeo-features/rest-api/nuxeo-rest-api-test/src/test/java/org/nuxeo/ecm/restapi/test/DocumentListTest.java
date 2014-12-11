@@ -196,7 +196,7 @@ public class DocumentListTest extends BaseTest {
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(
-                "Failed to execute query: Lexical Error: Illegal character <:> at offset 38 in query: SELECT * FROM Document where dc:title=:foo",
+                "Failed to execute query: org.nuxeo.ecm.core.query.QueryParseException: Lexical Error: Illegal character <:> at offset 38 in query: SELECT * FROM Document where dc:title=:foo",
                 getErrorMessage(node));
     }
 
@@ -226,7 +226,7 @@ public class DocumentListTest extends BaseTest {
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(
-                "Failed to execute query: Lexical Error: Illegal character <:> at offset 38 in query: SELECT * FROM Document where dc:title=:foo",
+                "Failed to execute query: org.nuxeo.ecm.core.query.QueryParseException: Lexical Error: Illegal character <:> at offset 38 in query: SELECT * FROM Document where dc:title=:foo",
                 getErrorMessage(node));
     }
 
