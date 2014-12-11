@@ -13,7 +13,7 @@
  *
  * Contributors:
  *     Tiry
- * 
+ *
  */
 package org.nuxeo.elasticsearch;
 
@@ -21,7 +21,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
