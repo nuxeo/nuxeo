@@ -3,8 +3,7 @@
 
   <require>org.nuxeo.drive.actions</require>
 
-  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
-    point="actions">
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
 
     <action id="driveSynchronizeCurrentDocument">
       <filter-id>not_user_workspace</filter-id>
@@ -20,8 +19,7 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
-    point="filters">
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
 
     <filter id="not_user_workspace">
       <rule grant="false">

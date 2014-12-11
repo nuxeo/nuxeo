@@ -1,22 +1,18 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.drive.adapters" version="1.0">
 
-  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
-    point="adapters">
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService" point="adapters">
 
-    <adapter class="org.nuxeo.drive.adapter.FileSystemItem"
-      factory="org.nuxeo.drive.adapter.impl.FileSystemItemAdapterFactory" />
+    <adapter class="org.nuxeo.drive.adapter.FileSystemItem" factory="org.nuxeo.drive.adapter.impl.FileSystemItemAdapterFactory" />
 
   </extension>
 
-  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
-    point="fileSystemItemFactory">
+  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService" point="fileSystemItemFactory">
 
-    <fileSystemItemFactory name="defaultSyncRootFolderItemFactory"
-      order="10" facet="DriveSynchronized"
+    <fileSystemItemFactory name="defaultSyncRootFolderItemFactory" order="10" facet="DriveSynchronized"
       class="org.nuxeo.drive.service.impl.DefaultSyncRootFolderItemFactory" />
-    <fileSystemItemFactory name="defaultFileSystemItemFactory"
-      order="50" class="org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory">
+    <fileSystemItemFactory name="defaultFileSystemItemFactory" order="50"
+      class="org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory">
       <parameters>
         <parameter name="versioningDelay">3600</parameter>
         <parameter name="versioningOption">MINOR</parameter>
@@ -25,11 +21,9 @@
 
   </extension>
 
-  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
-    point="topLevelFolderItemFactory">
+  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService" point="topLevelFolderItemFactory">
 
-    <topLevelFolderItemFactory
-      class="org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory">
+    <topLevelFolderItemFactory class="org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory">
       <parameters>
         <parameter name="folderName">Nuxeo Drive</parameter>
       </parameters>
@@ -37,8 +31,7 @@
 
   </extension>
 
-  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
-    point="activeFileSystemItemFactories">
+  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService" point="activeFileSystemItemFactories">
 
     <activeTopLevelFolderItemFactory>org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory
     </activeTopLevelFolderItemFactory>

@@ -1,15 +1,12 @@
 <?xml version="1.0"?>
 <component name="test-other-repository-config">
 
-  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
-    point="repositories">
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager" point="repositories">
     <repository name="other" label="Other Repository" />
   </extension>
 
-  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
-    point="repository">
-    <repository name="other"
-      factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService" point="repository">
+    <repository name="other" factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository>
         <indexing>
           <fulltext disabled="true" />

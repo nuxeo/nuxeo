@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.drive.layouts">
 
-  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-    point="layouts">
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="layouts">
 
     <layout name="synchronizationRoots">
       <templates>
@@ -22,8 +21,7 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-    point="widgets">
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="widgets">
 
     <widget name="syncRootTitle" type="listing_title_link">
       <labels>
