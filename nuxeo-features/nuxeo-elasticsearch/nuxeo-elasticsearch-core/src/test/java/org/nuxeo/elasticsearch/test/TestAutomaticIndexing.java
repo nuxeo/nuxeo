@@ -469,4 +469,17 @@ public class TestAutomaticIndexing {
         startTransaction();
     }
 
+
+    @Test
+    public void shouldHandleWeirdIndexingCase() throws Exception {
+        startTransaction();
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        // here we don't call doc = session.saveDocument so the doc.id is null
+        Assert.assertNull(doc.getId());
+        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
+        startTransaction();
+    }
+
 }

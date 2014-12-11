@@ -13,7 +13,7 @@
  *
  * Contributors:
  *     Tiry
- * 
+ *
  */
 package org.nuxeo.elasticsearch;
 
@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
