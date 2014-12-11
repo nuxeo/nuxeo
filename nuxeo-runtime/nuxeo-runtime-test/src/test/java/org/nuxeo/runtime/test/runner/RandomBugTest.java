@@ -77,7 +77,7 @@ public class RandomBugTest {
     public static class BeforeWithIgnoredTest {
 
         @Rule
-        public static final IgnoreInner ignoreInner = new IgnoreInner();
+        public final IgnoreInner ignoreInner = new IgnoreInner();
 
         @Before
         public void setup() {
@@ -105,7 +105,7 @@ public class RandomBugTest {
     public static class AfterWithIgnoredTest {
 
         @Rule
-        public static final IgnoreInner ignoreInner = new IgnoreInner();
+        public final IgnoreInner ignoreInner = new IgnoreInner();
 
         @Test
         @RandomBug.Repeat(issue = FAILURE_MESSAGE)
@@ -132,7 +132,7 @@ public class RandomBugTest {
     public static class RandomlyFailingTest {
 
         @Rule
-        public static final IgnoreInner ignoreInner = new IgnoreInner();
+        public final IgnoreInner ignoreInner = new IgnoreInner();
 
         @Test
         @RandomBug.Repeat(issue = "testSucceedThenFail")
