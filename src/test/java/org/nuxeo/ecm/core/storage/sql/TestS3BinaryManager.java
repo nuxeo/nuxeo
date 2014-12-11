@@ -55,8 +55,8 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
  * This test must be run with at least the following system properties set:
  * <ul>
  * <li>nuxeo.s3storage.bucket</li>
- * <li>nuxeo.s3storage.awsid</li>
- * <li>nuxeo.s3storage.awssecret</li>
+ * <li>nuxeo.s3storage.awsid or AWS_ACCESS_KEY_ID</li>
+ * <li>nuxeo.s3storage.awssecret or AWS_SECRET_ACCESS_KEY</li>
  * </ul>
  * <p>
  * ***** NOTE THAT THE TESTS WILL REMOVE ALL FILES IN THE BUCKET!!! *****
@@ -82,15 +82,8 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        Properties properties = Framework.getProperties();
         // NOTE THAT THE TESTS WILL REMOVE ALL FILES IN THE BUCKET!!!
-        // ********** NEVER COMMIT THE SECRET KEYS !!! **********
-        properties.setProperty(S3BinaryManager.BUCKET_NAME_KEY, "CHANGETHIS");
-        properties.setProperty(S3BinaryManager.AWS_ID_KEY, "CHANGETHIS");
-        properties.setProperty(S3BinaryManager.AWS_SECRET_KEY, "CHANGETHIS");
-        // ********** NEVER COMMIT THE SECRET KEYS !!! **********
-
-        DISABLED = "CHANGETHIS".equals(Framework.getProperty(S3BinaryManager.BUCKET_NAME_KEY));
+        DISABLED = Framework.getProperty(S3BinaryManager.BUCKET_NAME_KEY) == null;
         if (!DISABLED) {
             binaryManager = new S3BinaryManager();
             binaryManager.initialize(new BinaryManagerDescriptor());
