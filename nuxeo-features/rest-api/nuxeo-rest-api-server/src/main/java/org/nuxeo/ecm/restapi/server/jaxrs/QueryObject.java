@@ -33,6 +33,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
@@ -58,6 +60,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 @WebObject(type = "query")
 public class QueryObject extends AbstractResource<ResourceTypeImpl> {
+
+    private static final Log log = LogFactory.getLog(QueryObject.class);
 
     public static final String PATH = "query";
 
