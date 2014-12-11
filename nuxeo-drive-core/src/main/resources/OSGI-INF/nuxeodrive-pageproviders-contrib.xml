@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.drive.pageproviders" version="1.0">
 
-  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
-    point="providers">
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="providers">
 
     <coreQueryPageProvider name="FOLDER_ITEM_CHILDREN">
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ?
         AND ecm:isCheckedInVersion = 0
         AND ecm:isProxy = 0
-        AND ecm:currentLifeCycleState != 'deleted'
+        AND
+        ecm:currentLifeCycleState != 'deleted'
         AND ecm:mixinType != 'HiddenInNavigation'
       </pattern>
       <sort column="dc:created" ascending="true" />

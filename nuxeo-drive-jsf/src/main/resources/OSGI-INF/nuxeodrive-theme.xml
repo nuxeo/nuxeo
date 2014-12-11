@@ -5,8 +5,7 @@
 
   <extension point="applications" target="org.nuxeo.theme.services.ThemeService">
 
-    <application root="${org.nuxeo.ecm.contextPath}"
-      template-engine="jsf-facelets">
+    <application root="${org.nuxeo.ecm.contextPath}" template-engine="jsf-facelets">
 
       <!-- Cache control for theme resources (/nxthemes-lib/) -->
       <resource-caching>

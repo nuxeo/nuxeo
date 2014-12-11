@@ -3,8 +3,7 @@
 
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
 
-  <extension target="org.nuxeo.ecm.core.schema.TypeService"
-    point="doctype">
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
 
     <doctype name="Custom" extends="Document">
       <schema name="dublincore" />
@@ -23,8 +22,7 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
-    point="types">
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="types">
 
     <types>
       <type name="Custom">default</type>

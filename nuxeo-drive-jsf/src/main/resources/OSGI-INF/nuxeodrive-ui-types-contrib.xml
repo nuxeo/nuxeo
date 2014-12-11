@@ -3,8 +3,7 @@
 
   <require>org.nuxeo.ecm.platform.types</require>
 
-  <extension target="org.nuxeo.ecm.platform.types.TypeService"
-    point="types">
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 
     <type id="File">
       <layouts mode="drive">

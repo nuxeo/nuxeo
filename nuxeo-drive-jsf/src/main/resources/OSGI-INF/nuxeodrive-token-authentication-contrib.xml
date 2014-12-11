@@ -4,12 +4,9 @@
   <!-- Require default token authentication -->
   <require>org.nuxeo.ecm.login.token.authentication.contrib</require>
 
-  <extension
-    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-    point="authenticators">
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="authenticators">
 
-    <authenticationPlugin name="STATEFUL_TOKEN_AUTH"
-      enabled="true"
+    <authenticationPlugin name="STATEFUL_TOKEN_AUTH" enabled="true"
       class="org.nuxeo.ecm.platform.ui.web.auth.token.TokenAuthenticator">
       <loginModulePlugin>Trusting_LM</loginModulePlugin>
       <stateful>true</stateful>
@@ -17,9 +14,7 @@
 
   </extension>
 
-  <extension
-    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-    point="specificChains">
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="specificChains">
 
     <specificAuthenticationChain name="DriveMetadata">
       <urlPatterns>

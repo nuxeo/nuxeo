@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.drive.layouts">
 
-  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-    point="layouts">
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="layouts">
 
     <layout name="driveSynchronizationRoots">
       <templates>
@@ -35,8 +34,7 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-    point="widgets">
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="widgets">
 
     <widget name="syncRootTitle" type="listing_title_link">
       <labels>
@@ -132,8 +130,7 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
-    point="actions">
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
 
     <action id="driveMetadataTitleContainer" type="widget" order="100">
       <category>DRIVE_METADATA_VIEW_PANEL</category>
@@ -142,8 +139,7 @@
       </properties>
     </action>
 
-    <action id="driveMetadataLayoutContainer" type="widget"
-      order="200">
+    <action id="driveMetadataLayoutContainer" type="widget" order="200">
       <category>DRIVE_METADATA_VIEW_PANEL</category>
       <properties>
         <property name="widgetName">driveMetadataLayoutContainer</property>
@@ -157,14 +153,13 @@
       </properties>
     </action>
 
-    <action id="driveUpdateDocument" link="#{nuxeoDriveActions.updateCurrentDocument}"
-      order="10" label="command.save" type="link" icon="/icons/update.png">
+    <action id="driveUpdateDocument" link="#{nuxeoDriveActions.updateCurrentDocument}" order="10" label="command.save"
+      type="link" icon="/icons/update.png">
       <category>DRIVE_METADATA_VIEW_FORM_ACTION</category>
     </action>
 
-    <action id="diveMetadataAddToFavoritesAction" order="0"
-      label="label.addToFavorites" link="#{favoritesActions.addCurrentDocumentToFavorites()}"
-      icon="/icons/pin.png">
+    <action id="diveMetadataAddToFavoritesAction" order="0" label="label.addToFavorites"
+      link="#{favoritesActions.addCurrentDocumentToFavorites()}" icon="/icons/pin.png">
       <category>DRIVE_METADATA_VIEW_ACTION</category>
       <filter-id>canAddToFavorites</filter-id>
       <properties>
@@ -172,9 +167,8 @@
       </properties>
     </action>
 
-    <action id="diveMetadataRemoveFromFavoritesAction" order="0"
-      label="label.removeFromFavorites" link="#{favoritesActions.removeCurrentDocumentFromFavorites()}"
-      icon="/icons/pinned.png">
+    <action id="diveMetadataRemoveFromFavoritesAction" order="0" label="label.removeFromFavorites"
+      link="#{favoritesActions.removeCurrentDocumentFromFavorites()}" icon="/icons/pinned.png">
       <category>DRIVE_METADATA_VIEW_ACTION</category>
       <filter-id>canRemoveFromFavorites</filter-id>
       <properties>
@@ -182,9 +176,8 @@
       </properties>
     </action>
 
-    <action id="diveMetadataDocumentLock" link="#{lockActions.lockCurrentDocument}"
-      order="10" label="command.lock" type="link"
-      icon="/icons/contextual_menu/unlocked.png">
+    <action id="diveMetadataDocumentLock" link="#{lockActions.lockCurrentDocument}" order="10" label="command.lock"
+      type="link" icon="/icons/contextual_menu/unlocked.png">
       <category>DRIVE_METADATA_VIEW_ACTION</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_lock</filter-id>
@@ -193,9 +186,8 @@
       </properties>
     </action>
 
-    <action id="diveMetadataDocumentUnlock" link="#{lockActions.unlockCurrentDocument}"
-      order="10" label="command.unlock" type="link"
-      icon="/icons/contextual_menu/locked.png">
+    <action id="diveMetadataDocumentUnlock" link="#{lockActions.unlockCurrentDocument}" order="10" label="command.unlock"
+      type="link" icon="/icons/contextual_menu/locked.png">
       <category>DRIVE_METADATA_VIEW_ACTION</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_unlock</filter-id>
@@ -204,9 +196,8 @@
       </properties>
     </action>
 
-    <action id="diveMetadataermalinkAction" order="20"
-      label="label.permalink" type="fancybox" icon="/icons/contextual_menu/share.png"
-      accessKey="k">
+    <action id="diveMetadataermalinkAction" order="20" label="label.permalink" type="fancybox"
+      icon="/icons/contextual_menu/share.png" accessKey="k">
       <category>DRIVE_METADATA_VIEW_ACTION</category>
       <properties>
         <property name="include">/incl/permalink_box.xhtml</property>
@@ -215,8 +206,7 @@
     </action>
 
     <action id="diveMetadataubscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"
-      order="40" label="label.subscriptions.follow" type="link"
-      icon="/icons/contextual_menu/subscribe.png">
+      order="40" label="label.subscriptions.follow" type="link" icon="/icons/contextual_menu/subscribe.png">
       <category>DRIVE_METADATA_VIEW_ACTION</category>
       <filter-id>hasNoSubscriptions</filter-id>
       <filter-id>canSubscribe</filter-id>
@@ -225,10 +215,8 @@
       </properties>
     </action>
 
-    <action id="diveMetadataUnsubscribesAllDocNotifications"
-      link="#{subscriptionAction.updateAllSubscriptions}" order="40"
-      label="label.subscriptions.unfollow" type="link"
-      icon="/icons/contextual_menu/unsubscribe.png">
+    <action id="diveMetadataUnsubscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"
+      order="40" label="label.subscriptions.unfollow" type="link" icon="/icons/contextual_menu/unsubscribe.png">
       <category>DRIVE_METADATA_VIEW_ACTION</category>
       <filter-id>hasSubscriptions</filter-id>
       <filter-id>canSubscribe</filter-id>
