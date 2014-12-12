@@ -16,6 +16,7 @@
  */
 package org.nuxeo.apidoc.snapshot;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
@@ -99,6 +101,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
         return snaps;
     }
 
+    @Override
     public List<DistributionSnapshot> listPersistentSnapshots(CoreSession session) {
 
         List<DistributionSnapshot> distribs = readPersistentSnapshots(session);
@@ -145,27 +148,30 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     }
 
     @Override
-    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session) throws ClientException, OperationException {
+    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session) {
         return persistRuntimeSnapshot(session, null);
     }
 
     @Override
-    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name) throws ClientException,
-            OperationException {
+    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name) {
         return persistRuntimeSnapshot(session, name, null);
     }
 
     @Override
-    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, SnapshotFilter filter)
-            throws ClientException, OperationException {
+    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, SnapshotFilter filter) {
         DistributionSnapshot liveSnapshot = getRuntimeSnapshot();
-        DistributionSnapshot snap = persister.persist(liveSnapshot, session, name, filter);
+        DistributionSnapshot snap;
+        try {
+            snap = persister.persist(liveSnapshot, session, name, filter);
+        } catch (ClientException | OperationException e) {
+            throw new NuxeoException(e);
+        }
         addPersistentSnapshot(snap.getKey(), snap);
         return snap;
     }
 
     @Override
-    public List<String> getAvailableVersions(CoreSession session, NuxeoArtifact nxItem) throws OperationException {
+    public List<String> getAvailableVersions(CoreSession session, NuxeoArtifact nxItem) {
         List<String> versions = new ArrayList<String>();
 
         List<DistributionSnapshot> distribs = new ArrayList<DistributionSnapshot>();
@@ -220,16 +226,16 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     }
 
     @Override
-    public void exportSnapshot(CoreSession session, String key, OutputStream out) throws Exception {
+    public void exportSnapshot(CoreSession session, String key, OutputStream out) throws IOException {
 
         DistributionSnapshot snap = getSnapshot(key, session);
 
         if (snap == null) {
-            throw new Exception("Unable to find Snapshot " + key);
+            throw new NuxeoException("Unable to find Snapshot " + key);
         }
 
         if (snap.isLive()) {
-            throw new Exception("Can not export a live distribution snapshot : " + key);
+            throw new NuxeoException("Can not export a live distribution snapshot : " + key);
         }
 
         RepositoryDistributionSnapshot docSnap = (RepositoryDistributionSnapshot) snap;
@@ -246,7 +252,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     }
 
     @Override
-    public void importSnapshot(CoreSession session, InputStream is) throws Exception {
+    public void importSnapshot(CoreSession session, InputStream is) throws IOException {
         try {
             String importPath = persister.getDistributionRoot(session).getPathAsString();
             DocumentReader reader = new NuxeoArchiveReader(is);
@@ -258,14 +264,14 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
             pipe.run();
             reader.close();
             writer.close();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while importing snapshot", e);
         }
     }
 
     @Override
     public void validateImportedSnapshot(CoreSession session, String name, String version, String pathSegment,
-            String title) throws Exception {
+            String title) {
 
         DocumentModel container = persister.getDistributionRoot(session);
         DocumentRef tmpRef = new PathRef(container.getPathAsString(), IMPORT_TMP);
@@ -290,7 +296,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     }
 
     @Override
-    public DocumentModel importTmpSnapshot(CoreSession session, InputStream is) throws Exception {
+    public DocumentModel importTmpSnapshot(CoreSession session, InputStream is) throws IOException {
         try {
 
             DocumentModel container = persister.getDistributionRoot(session);
@@ -319,7 +325,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
             writer.close();
 
             return session.getChildren(tmp.getRef()).get(0);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while importing snapshot", e);
             return null;
         }

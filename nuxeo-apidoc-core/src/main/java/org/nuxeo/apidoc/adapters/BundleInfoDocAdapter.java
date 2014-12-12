@@ -93,8 +93,8 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
                     components.add(comp);
                 }
             }
-        } catch (Exception e) {
-            // TODO: handle exception
+        } catch (ClientException e) {
+            log.error(e, e);
         }
         return components;
     }

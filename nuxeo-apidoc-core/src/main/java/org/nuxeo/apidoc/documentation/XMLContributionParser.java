@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Visitor;
 import org.dom4j.VisitorSupport;
@@ -13,7 +14,7 @@ import org.dom4j.io.SAXReader;
 
 public class XMLContributionParser {
 
-    public static String prettyfy(String xml) throws Exception {
+    public static String prettyfy(String xml) throws DocumentException {
 
         StringBuffer writter = new StringBuffer();
 
@@ -32,7 +33,7 @@ public class XMLContributionParser {
         return writter.toString();
     }
 
-    public static List<ContributionItem> extractContributionItems(String xml) throws Exception {
+    public static List<ContributionItem> extractContributionItems(String xml) throws DocumentException {
 
         List<ContributionItem> items = new ArrayList<ContributionItem>();
 

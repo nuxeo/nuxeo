@@ -96,7 +96,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
                     result.add(ob);
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while executing query " + query, e);
         }
         return result;
@@ -117,7 +117,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
                     result.add(ob);
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while executing query " + query, e);
         }
         return result;
@@ -135,7 +135,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
                 log.error("multiple match for " + docType + " for id " + id);
                 return docs.get(0).getAdapter(adapter);
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while executing query " + query, e);
         }
         return null;
@@ -174,7 +174,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
                     grps.add(bg);
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while getting bundle groups", e);
         }
         return grps;
@@ -262,7 +262,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
                     ids.addAll(ci.getServiceNames());
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while getting service ids", e);
         }
         return ids;
@@ -272,7 +272,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public String getName() {
         try {
             return (String) doc.getPropertyValue(PROP_NAME);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while reading nxdistribution:name", e);
             return "!unknown!";
         }
@@ -282,7 +282,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public String getVersion() {
         try {
             return (String) doc.getPropertyValue(PROP_VERSION);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while reading nxdistribution:version", e);
             return "!unknown!";
         }
@@ -292,7 +292,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public String getKey() {
         try {
             return (String) doc.getPropertyValue(PROP_KEY);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while reading nxdistribution:key", e);
             return "!unknown!";
         }
@@ -325,7 +325,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
                 log.error("Multiple services found");
                 return null;
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Unable to fetch NXService", e);
         }
         return null;
@@ -357,8 +357,8 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public Date getCreationDate() {
         try {
             Calendar cal = (Calendar) getDoc().getPropertyValue("dc:created");
-            return cal.getTime();
-        } catch (Exception e) {
+            return cal == null ? null : cal.getTime();
+        } catch (ClientException e) {
             return null;
         }
     }
@@ -375,8 +375,8 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
                 + SeamComponentInfo.PROP_COMPONENT_NAME + " = " + NXQL.escapeString(name);
         try {
             DocumentModelList docs = getCoreSession().query(query);
-            return docs.get(0).getAdapter(SeamComponentInfo.class);
-        } catch (Exception e) {
+            return docs.isEmpty() ? null : docs.get(0).getAdapter(SeamComponentInfo.class);
+        } catch (ClientException e) {
             log.error("Unable to fetch Seam Component", e);
             return null;
         }
@@ -391,7 +391,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
             for (DocumentModel doc : docs) {
                 result.add(doc.getAdapter(SeamComponentInfo.class).getId());
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Unable to fetch NXService", e);
         }
         return result;
@@ -406,7 +406,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
             for (DocumentModel doc : docs) {
                 result.add(doc.getAdapter(SeamComponentInfo.class));
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Unable to fetch NXService", e);
         }
         return result;
@@ -426,8 +426,8 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
                 + " = " + NXQL.escapeString(id);
         try {
             DocumentModelList docs = getCoreSession().query(query);
-            return docs.size() == 0 ? null : docs.get(0).getAdapter(OperationInfo.class);
-        } catch (Exception e) {
+            return docs.isEmpty() ? null : docs.get(0).getAdapter(OperationInfo.class);
+        } catch (ClientException e) {
             log.error("Unable to fetch Seam Component", e);
             return null;
         }
@@ -442,7 +442,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
             for (DocumentModel doc : docs) {
                 result.add(doc.getAdapter(OperationInfo.class));
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Unable to query", e);
         }
         // TODO sort

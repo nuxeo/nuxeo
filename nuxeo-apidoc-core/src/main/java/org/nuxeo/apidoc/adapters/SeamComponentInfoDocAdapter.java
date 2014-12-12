@@ -22,6 +22,7 @@ import java.util.List;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -47,7 +48,7 @@ public class SeamComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter imp
     public List<String> getInterfaceNames() {
         try {
             return (List<String>) doc.getPropertyValue(PROP_INTERFACES);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while getting service names", e);
         }
         return null;
@@ -91,7 +92,7 @@ public class SeamComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter imp
     }
 
     public static SeamComponentInfo create(SeamComponentInfo sci, CoreSession session, String containerPath)
-            throws Exception {
+            throws ClientException {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 

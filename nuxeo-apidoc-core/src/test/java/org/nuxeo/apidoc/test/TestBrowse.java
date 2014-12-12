@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.apidoc.api.BundleGroup;
@@ -60,7 +61,7 @@ public class TestBrowse extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testBrowse() throws Exception {
+    public void testBrowse() {
 
         DistributionSnapshot runtimeSnapshot = getSnapshotManager().getRuntimeSnapshot();
 
@@ -118,7 +119,7 @@ public class TestBrowse extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testIntrospection() throws Exception {
+    public void testIntrospection() {
 
         String cid = "org.nuxeo.ecm.core.lifecycle.LifeCycleService";
         DistributionSnapshot runtimeSnapshot = getSnapshotManager().getRuntimeSnapshot();

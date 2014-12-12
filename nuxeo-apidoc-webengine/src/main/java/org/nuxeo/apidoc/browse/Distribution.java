@@ -18,12 +18,19 @@ package org.nuxeo.apidoc.browse;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.NamingException;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -43,7 +50,9 @@ import org.nuxeo.apidoc.snapshot.SnapshotFilter;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.apidoc.snapshot.SnapshotManagerComponent;
 import org.nuxeo.apidoc.snapshot.SnapshotResolverHelper;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.forms.FormData;
@@ -147,34 +156,30 @@ public class Distribution extends ModuleRoot {
 
     @Path("{distributionId}")
     public Resource viewDistribution(@PathParam("distributionId") String distributionId) {
-        try {
-            if (distributionId == null || "".equals(distributionId)) {
-                return this;
-            }
-            String orgDistributionId = distributionId;
-            Boolean embeddedMode = Boolean.FALSE;
-            if ("adm".equals(distributionId)) {
-                embeddedMode = Boolean.TRUE;
-            } else {
-                List<DistributionSnapshot> snaps = getSnapshotManager().listPersistentSnapshots((ctx.getCoreSession()));
-                snaps.add(getSnapshotManager().getRuntimeSnapshot());
-                distributionId = SnapshotResolverHelper.findBestMatch(snaps, distributionId);
-            }
-            if (distributionId == null || "".equals(distributionId)) {
-                distributionId = "current";
-            }
-
-            if (!orgDistributionId.equals(distributionId)) {
-                return ctx.newObject("redirectWO", orgDistributionId, distributionId);
-            }
-
-            ctx.setProperty("embeddedMode", embeddedMode);
-            ctx.setProperty("distribution", getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession()));
-            ctx.setProperty(DIST_ID, distributionId);
-            return ctx.newObject("apibrowser", distributionId, embeddedMode);
-        } catch (Exception e) {
-            throw new WebApplicationException(e);
+        if (distributionId == null || "".equals(distributionId)) {
+            return this;
         }
+        String orgDistributionId = distributionId;
+        Boolean embeddedMode = Boolean.FALSE;
+        if ("adm".equals(distributionId)) {
+            embeddedMode = Boolean.TRUE;
+        } else {
+            List<DistributionSnapshot> snaps = getSnapshotManager().listPersistentSnapshots((ctx.getCoreSession()));
+            snaps.add(getSnapshotManager().getRuntimeSnapshot());
+            distributionId = SnapshotResolverHelper.findBestMatch(snaps, distributionId);
+        }
+        if (distributionId == null || "".equals(distributionId)) {
+            distributionId = "current";
+        }
+
+        if (!orgDistributionId.equals(distributionId)) {
+            return ctx.newObject("redirectWO", orgDistributionId, distributionId);
+        }
+
+        ctx.setProperty("embeddedMode", embeddedMode);
+        ctx.setProperty("distribution", getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession()));
+        ctx.setProperty(DIST_ID, distributionId);
+        return ctx.newObject("apibrowser", distributionId, embeddedMode);
     }
 
     public List<DistributionSnapshotDesc> getAvailableDistributions() {
@@ -210,7 +215,8 @@ public class Distribution extends ModuleRoot {
     @POST
     @Path("save")
     @Produces("text/html")
-    public Object doSave() throws Exception {
+    public Object doSave() throws NamingException, NotSupportedException, SystemException, OperationException,
+            RollbackException, HeuristicMixedException, HeuristicRollbackException {
         if (!isEditor()) {
             return null;
         }
@@ -226,7 +232,7 @@ public class Distribution extends ModuleRoot {
         }
         try {
             getSnapshotManager().persistRuntimeSnapshot(getContext().getCoreSession(), distribLabel);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error during storage", e);
             if (tx != null) {
                 tx.rollback();
@@ -246,7 +252,8 @@ public class Distribution extends ModuleRoot {
     @POST
     @Path("saveExtended")
     @Produces("text/html")
-    public Object doSaveExtended() throws Exception {
+    public Object doSaveExtended() throws NamingException, NotSupportedException, SystemException, OperationException,
+            SecurityException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
         if (!isEditor()) {
             return null;
         }
@@ -281,7 +288,7 @@ public class Distribution extends ModuleRoot {
         }
         try {
             getSnapshotManager().persistRuntimeSnapshot(getContext().getCoreSession(), distribLabel, filter);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error during storage", e);
             if (tx != null) {
                 tx.rollback();
@@ -295,7 +302,7 @@ public class Distribution extends ModuleRoot {
         return getView("saved");
     }
 
-    public String getDocumentationInfo() throws Exception {
+    public String getDocumentationInfo() {
         DocumentationService ds = Framework.getService(DocumentationService.class);
         return ds.getDocumentationStats(getContext().getCoreSession());
     }
@@ -313,7 +320,7 @@ public class Distribution extends ModuleRoot {
 
     @GET
     @Path("downloadDoc")
-    public Response downloadDoc() throws Exception {
+    public Response downloadDoc() throws IOException {
         DocumentationService ds = Framework.getService(DocumentationService.class);
         File tmp = getExportTmpFile();
         tmp.createNewFile();
@@ -328,7 +335,7 @@ public class Distribution extends ModuleRoot {
 
     @GET
     @Path("download/{distributionId}")
-    public Response downloadDistrib(@PathParam("distributionId") String distribId) throws Exception {
+    public Response downloadDistrib(@PathParam("distributionId") String distribId) throws IOException {
         File tmp = getExportTmpFile();
         tmp.createNewFile();
         OutputStream out = new FileOutputStream(tmp);
@@ -343,7 +350,7 @@ public class Distribution extends ModuleRoot {
     @POST
     @Path("uploadDistrib")
     @Produces("text/html")
-    public Object uploadDistrib() throws Exception {
+    public Object uploadDistrib() throws IOException {
         if (!isEditor()) {
             return null;
         }
@@ -358,7 +365,7 @@ public class Distribution extends ModuleRoot {
     @POST
     @Path("uploadDistribTmp")
     @Produces("text/html")
-    public Object uploadDistribTmp() throws Exception {
+    public Object uploadDistribTmp() throws IOException {
         if (!isEditor()) {
             return null;
         }
@@ -378,7 +385,7 @@ public class Distribution extends ModuleRoot {
     @POST
     @Path("uploadDistribTmpValid")
     @Produces("text/html")
-    public Object uploadDistribTmpValid() throws Exception {
+    public Object uploadDistribTmpValid() {
         if (!isEditor()) {
             return null;
         }
@@ -397,7 +404,7 @@ public class Distribution extends ModuleRoot {
     @POST
     @Path("uploadDoc")
     @Produces("text/html")
-    public Object uploadDoc() throws Exception {
+    public Object uploadDoc() throws IOException {
         if (!isEditor()) {
             return null;
         }

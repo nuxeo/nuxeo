@@ -16,6 +16,7 @@
  */
 package org.nuxeo.apidoc.browse;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -36,7 +37,6 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.doc.SimpleDocumentationItem;
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -68,15 +68,15 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
                 Boolean.TRUE);
     }
 
-    public abstract NuxeoArtifact getNxArtifact() throws OperationException;
+    public abstract NuxeoArtifact getNxArtifact();
 
-    protected abstract Object doGet() throws Exception;
+    protected abstract Object doGet();
 
     protected String getDistributionId() {
         return (String) ctx.getProperty(Distribution.DIST_ID);
     }
 
-    public AssociatedDocuments getAssociatedDocuments() throws OperationException {
+    public AssociatedDocuments getAssociatedDocuments() {
         NuxeoArtifact nxItem = getNxArtifact();
         return nxItem.getAssociatedDocuments(ctx.getCoreSession());
     }
@@ -84,7 +84,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @POST
     @Produces("text/html")
     @Path("updateDocumentation")
-    public Object doUpdateDocumentation(DocumentationItem docItem) throws Exception {
+    public Object doUpdateDocumentation(DocumentationItem docItem) {
         if (!SecurityHelper.canEditDocumentation(getContext())) {
             throw new WebSecurityException("You are not allowed to do this operation");
         }
@@ -98,23 +98,11 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     protected String getDocUrl() {
         String path = getPath() + "/doc";
         // //TODO encode path segments if needed
-        // try {
-        // StringBuilder buf = new StringBuilder();
-        // org.nuxeo.common.utils.Path p = new
-        // org.nuxeo.common.utils.Path(path);
-        // for (int i=0,len=p.segmentCount(); i<len; i++) {
-        // buf.append("/").append(URLEncoder.encode(p.segment(i),
-        // "ISO-8859-1"));
-        // }
-        // path = buf.toString();
-        // } catch (Exception e) {
-        // throw WebException.wrap(e);
-        // }
         return path;
     }
 
     @Deprecated
-    protected String computeUrl(String suffix) throws Exception {
+    protected String computeUrl(String suffix) throws UnsupportedEncodingException {
         String targetUrl = ctx.getUrlPath();
         targetUrl = URLDecoder.decode(targetUrl, "ISO-8859-1");
         targetUrl = targetUrl.replace(ctx.getBasePath(), "");
@@ -126,7 +114,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @POST
     @Produces("text/html")
     @Path("createDocumentation")
-    public Object doCreateDocumentation(DocumentationItem docItem) throws Exception {
+    public Object doCreateDocumentation(DocumentationItem docItem) {
         if (!SecurityHelper.canEditDocumentation(getContext())) {
             throw new WebSecurityException("You are not allowed to do this operation");
         }
@@ -140,7 +128,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @POST
     @Produces("text/html")
     @Path("deleteDocumentation")
-    public Object doDeleteDocumentation(@FormParam("uuid") String uuid) throws Exception {
+    public Object doDeleteDocumentation(@FormParam("uuid") String uuid) {
         if (!SecurityHelper.canEditDocumentation(getContext())) {
             throw new WebSecurityException("You are not allowed to do this operation");
         }
@@ -151,7 +139,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    public Object doViewDefault() throws Exception {
+    public Object doViewDefault() {
         NuxeoArtifact nxItem = getNxArtifact();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
         return getView("default").arg("nxItem", nxItem).arg("docs", docs).arg("selectedTab", "defView");
@@ -160,7 +148,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path("doc")
-    public Object doViewDoc() throws Exception {
+    public Object doViewDoc() {
         NuxeoArtifact nxItem = getNxArtifact();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
         return getView("../documentation").arg("nxItem", nxItem).arg("docs", docs).arg("selectedTab", "docView");
@@ -169,7 +157,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path("aggregated")
-    public Object doViewAggregated() throws Exception {
+    public Object doViewAggregated() {
         NuxeoArtifact nxItem = getNxArtifact();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
         return getView("aggregated").arg("nxItem", nxItem).arg("docs", docs).arg("selectedTab", "aggView");
@@ -178,7 +166,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path("createForm")
-    public Object doAddDoc(@QueryParam("inline") Boolean inline, @QueryParam("type") String type) throws Exception {
+    public Object doAddDoc(@QueryParam("inline") Boolean inline, @QueryParam("type") String type) {
         NuxeoArtifact nxItem = getNxArtifact();
         List<String> versions = getSnapshotManager().getAvailableVersions(ctx.getCoreSession(), nxItem);
         DocumentationItem docItem = new SimpleDocumentationItem(nxItem);
@@ -193,7 +181,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path("editForm/{uuid}")
-    public Object doEditDoc(@PathParam("uuid") String uuid) throws Exception {
+    public Object doEditDoc(@PathParam("uuid") String uuid) {
         NuxeoArtifact nxItem = getNxArtifact();
         List<String> versions = getSnapshotManager().getAvailableVersions(ctx.getCoreSession(), nxItem);
         DocumentModel existingDoc = ctx.getCoreSession().getDocument(new IdRef(uuid));
@@ -205,7 +193,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @GET
     @Produces("text/plain")
     @Path("quickEdit/{editId}")
-    public Object quickEdit(@PathParam("editId") String editId) throws Exception {
+    public Object quickEdit(@PathParam("editId") String editId) {
 
         if (editId == null || editId.startsWith("placeholder_")) {
             return "";
@@ -220,7 +208,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @POST
     @Produces("text/plain")
     @Path("quickEdit/{editId}")
-    public Object quickEditSave(@PathParam("editId") String editId) throws Exception {
+    public Object quickEditSave(@PathParam("editId") String editId) {
 
         String title = getContext().getForm().getString("title");
         String content = getContext().getForm().getString("content");
@@ -253,7 +241,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         return "OK";
     }
 
-    public Map<String, String> getCategories() throws Exception {
+    public Map<String, String> getCategories() {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         return ds.getCategories();
     }

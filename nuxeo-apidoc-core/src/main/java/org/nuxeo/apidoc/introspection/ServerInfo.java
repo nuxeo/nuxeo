@@ -19,7 +19,9 @@ package org.nuxeo.apidoc.introspection;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -38,8 +40,10 @@ import java.util.zip.ZipFile;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.logging.Log;
@@ -47,6 +51,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
@@ -55,17 +60,18 @@ import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.osgi.framework.Bundle;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 /**
  * The entry point to the server runtime introspection To build a description of the current running server you need to
  * create a {@link ServerInfo} object using the method {@link #build(String, String)}.
  * <p>
  * Example
- * 
+ *
  * <pre>
  * ServerInfo info = ServerInfo.build();
  * </pre>
- * 
+ *
  * The server name and version will be fetched form the runtime properties: <code>org.nuxeo.ecm.product.name</code> and
  * <code>org.nuxeo.ecm.product.version</code> If you ant to use another name and version just call
  * {@link #build(String, String)} instead to build your server information.
@@ -77,7 +83,7 @@ import org.w3c.dom.Document;
  * {@link #fromXML(Reader)}.
  * <p>
  * Example:
- * 
+ *
  * <pre>
  * ServerInfo info = ServerInfo.build();
  * BundleInfo binfo =info.getBundle("org.nuxeo.runtime");
@@ -92,7 +98,7 @@ import org.w3c.dom.Document;
  *     System.out.println("Extension point: "+xpi.getName());
  *     System.out.println("Accepted contribution classes: "+Arrays.asList(xpi.getTypes()));
  *     // find contributed extensions to this extension point:
- * 
+ *
  *   }
  *   // find contribution provided by this component
  *   for (ExtensionInfo xi : cinfo.getExtensions()) {
@@ -244,7 +250,7 @@ public class ServerInfo {
                 EmbeddedDocExtractor.extractEmbeddedDoc(zFile, binfo);
                 zFile.close();
             }
-        } catch (Exception e) {
+        } catch (ClientException | IOException | ParserConfigurationException | SAXException | XPathException e) {
             log.error(e, e);
         }
         return binfo;
@@ -369,7 +375,7 @@ public class ServerInfo {
         return server;
     }
 
-    public void toXML(Writer writer) throws Exception {
+    public void toXML(Writer writer) throws IOException {
         XMLWriter xw = new XMLWriter(writer, 4);
         xw.start();
         xw.element("server").attr("name", name).attr("version", version).start();
@@ -390,7 +396,7 @@ public class ServerInfo {
         xw.close();
     }
 
-    public static ServerInfo fromXML(File file) throws Exception {
+    public static ServerInfo fromXML(File file) throws IOException {
         InputStreamReader reader = new FileReader(file);
         try {
             return fromXML(reader);
@@ -399,7 +405,7 @@ public class ServerInfo {
         }
     }
 
-    public static ServerInfo fromXML(Reader reader) throws Exception {
+    public static ServerInfo fromXML(Reader reader) {
         return null;
     }
 

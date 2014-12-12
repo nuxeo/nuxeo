@@ -84,11 +84,7 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
     protected CoreSession getCoreSession() {
         CoreSession session = null;
         if (doc != null) {
-            try {
-                session = doc.getCoreSession();
-            } catch (Throwable e) {
-                // TODO: handle exception
-            }
+            session = doc.getCoreSession();
         }
         if (session == null) {
             session = localCoreSession.get();
@@ -105,7 +101,7 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
                     return result;
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while getting Parent artifact", e);
             return null;
         }
@@ -126,7 +122,7 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
         try {
             T value = (T) doc.getPropertyValue(xPath);
             return value;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while getting property " + xPath, e);
             if (defaultValue == null) {
                 return null;
@@ -155,7 +151,7 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
                 path = "/" + item.getId() + path;
             }
             return path;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while computing Hierarchy path", e);
             return null;
         }

@@ -60,7 +60,7 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     public String[] getAliases() {
         try {
             return ((List<String>) doc.getPropertyValue(PROP_ALIASES)).toArray(new String[0]);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Unable to get signature field", e);
         }
         return null;
@@ -81,7 +81,7 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     public String[] getSignature() {
         try {
             return ((List<String>) doc.getPropertyValue(PROP_SIGNATURE)).toArray(new String[0]);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Unable to get signature field", e);
         }
         return null;
@@ -149,7 +149,7 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     /**
      * Creates an actual document from the {@link OperationInfo}.
      */
-    public static OperationInfo create(OperationInfo oi, CoreSession session, String containerPath) throws Exception {
+    public static OperationInfo create(OperationInfo oi, CoreSession session, String containerPath) throws ClientException {
         String name = computeDocumentName(oi.getId());
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exists = session.exists(new PathRef(targetPath));

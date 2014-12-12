@@ -32,7 +32,7 @@ public class ExtensionPointWO extends NuxeoArtifactWebObject {
     @GET
     @Produces("text/html")
     @Path("introspection")
-    public Object doGet() throws Exception {
+    public Object doGet() {
         ExtensionPointInfo epi = getTargetExtensionPointInfo();
         return getView("view").arg("extensionPoint", epi);
     }
@@ -50,7 +50,7 @@ public class ExtensionPointWO extends NuxeoArtifactWebObject {
     @GET
     @Produces("text/html")
     @Path("simple")
-    public Object simpleView() throws Exception {
+    public Object simpleView() {
         NuxeoArtifact nxItem = getNxArtifact();
         getTargetExtensionPointInfo().getExtensions();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());

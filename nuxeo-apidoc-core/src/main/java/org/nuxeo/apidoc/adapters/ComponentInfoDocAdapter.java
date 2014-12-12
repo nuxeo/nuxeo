@@ -32,6 +32,7 @@ import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -45,7 +46,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     }
 
     public static ComponentInfoDocAdapter create(ComponentInfo componentInfo, CoreSession session, String containerPath)
-            throws Exception {
+            throws ClientException, IOException {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
@@ -83,8 +84,8 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         try {
             DocumentModel parent = getCoreSession().getDocument(doc.getParentRef());
             return parent.getAdapter(BundleInfo.class);
-        } catch (Exception e) {
-            // TODO: handle exception
+        } catch (ClientException e) {
+            log.error(e, e);
         }
         return null;
     }
@@ -122,8 +123,8 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
                     xps.add(xp);
                 }
             }
-        } catch (Exception e) {
-            // TODO: handle exception
+        } catch (ClientException e) {
+            log.error(e, e);
         }
         return xps;
     }
@@ -140,8 +141,8 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
                     contribs.add(xp);
                 }
             }
-        } catch (Exception e) {
-            // TODO: handle exception
+        } catch (ClientException e) {
+            log.error(e, e);
         }
         return contribs;
     }
@@ -156,7 +157,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     public List<String> getServiceNames() {
         try {
             return (List<String>) doc.getPropertyValue(PROP_SERVICES);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while getting service names", e);
         }
         return null;
@@ -228,7 +229,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
                     result.add(si);
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Unable to fetch NXService", e);
         }
         return result;

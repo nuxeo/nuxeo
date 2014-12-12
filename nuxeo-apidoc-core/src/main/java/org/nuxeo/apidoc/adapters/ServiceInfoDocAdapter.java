@@ -20,6 +20,7 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -31,7 +32,7 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implement
     }
 
     public static ServiceInfoDocAdapter create(ServiceInfo si, CoreSession session, String containerPath)
-            throws Exception {
+            throws ClientException {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 

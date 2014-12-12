@@ -20,6 +20,9 @@ package org.nuxeo.apidoc.introspection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.dom4j.DocumentException;
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
@@ -30,6 +33,8 @@ import org.nuxeo.apidoc.documentation.XMLContributionParser;
 import org.nuxeo.runtime.model.ComponentName;
 
 public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInfo {
+
+    protected static final Log log = LogFactory.getLog(ExtensionInfoImpl.class);
 
     protected final String id;
 
@@ -119,8 +124,8 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInf
     public List<ContributionItem> getContributionItems() {
         try {
             return XMLContributionParser.extractContributionItems(getXml());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DocumentException e) {
+            log.error(e, e);
             return Collections.emptyList();
         }
     }

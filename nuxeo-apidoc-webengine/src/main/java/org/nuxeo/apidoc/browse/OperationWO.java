@@ -25,6 +25,7 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 @WebObject(type = "operation")
@@ -34,16 +35,16 @@ public class OperationWO extends NuxeoArtifactWebObject {
     @GET
     @Produces("text/html")
     @Path("introspection")
-    public Object doGet() throws Exception {
+    public Object doGet() {
         return getView("view").arg("operation", getTargetComponentInfo());
     }
 
-    public OperationInfo getTargetComponentInfo() throws OperationException {
+    public OperationInfo getTargetComponentInfo() {
         return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getOperation(nxArtifactId);
     }
 
     @Override
-    public NuxeoArtifact getNxArtifact() throws OperationException {
+    public NuxeoArtifact getNxArtifact() {
         return getTargetComponentInfo();
     }
 

@@ -16,6 +16,7 @@
  */
 package org.nuxeo.apidoc.snapshot;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -24,8 +25,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.apidoc.api.NuxeoArtifact;
-import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -49,23 +48,20 @@ public interface SnapshotManager {
 
     List<DistributionSnapshotDesc> getAvailableDistributions(CoreSession session);
 
-    List<String> getAvailableVersions(CoreSession session, NuxeoArtifact nxItem) throws OperationException;
+    List<String> getAvailableVersions(CoreSession session, NuxeoArtifact nxItem);
 
-    void exportSnapshot(CoreSession session, String key, OutputStream out) throws Exception;
+    void exportSnapshot(CoreSession session, String key, OutputStream out) throws IOException;
 
-    void importSnapshot(CoreSession session, InputStream is) throws Exception;
+    void importSnapshot(CoreSession session, InputStream is) throws IOException;
 
-    DistributionSnapshot persistRuntimeSnapshot(CoreSession session) throws ClientException, OperationException;
+    DistributionSnapshot persistRuntimeSnapshot(CoreSession session);
 
-    DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name) throws ClientException,
-            OperationException;
+    DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name);
 
-    DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, SnapshotFilter filter)
-            throws ClientException, OperationException;
+    DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, SnapshotFilter filter);
 
-    void validateImportedSnapshot(CoreSession session, String name, String version, String pathSegment, String title)
-            throws Exception;
+    void validateImportedSnapshot(CoreSession session, String name, String version, String pathSegment, String title);
 
-    DocumentModel importTmpSnapshot(CoreSession session, InputStream is) throws Exception;
+    DocumentModel importTmpSnapshot(CoreSession session, InputStream is) throws IOException;
 
 }

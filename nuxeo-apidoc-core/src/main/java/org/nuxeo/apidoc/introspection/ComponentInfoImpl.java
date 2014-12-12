@@ -19,6 +19,7 @@ package org.nuxeo.apidoc.introspection;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -192,7 +193,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
                 xml = FileUtils.read(jarArchive.getInputStream(entry));
             }
             return DocumentationHelper.secureXML(xml);
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Error while getting XML file", e);
             return "";
         }

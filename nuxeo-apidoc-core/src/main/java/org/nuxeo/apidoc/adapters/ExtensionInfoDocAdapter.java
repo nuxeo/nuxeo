@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import org.dom4j.DocumentException;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
@@ -30,6 +31,7 @@ import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.apidoc.documentation.XMLContributionParser;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -39,7 +41,7 @@ import org.nuxeo.runtime.model.ComponentName;
 public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ExtensionInfo {
 
     public static ExtensionInfoDocAdapter create(ExtensionInfo xi, CoreSession session, String containerPath)
-            throws Exception {
+            throws ClientException {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
@@ -146,8 +148,8 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     public List<ContributionItem> getContributionItems() {
         try {
             return XMLContributionParser.extractContributionItems(getXml());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DocumentException e) {
+            log.error(e, e);
             return Collections.emptyList();
         }
     }

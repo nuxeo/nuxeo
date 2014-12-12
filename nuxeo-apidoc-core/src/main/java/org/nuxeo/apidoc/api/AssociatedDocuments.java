@@ -23,12 +23,12 @@ import org.nuxeo.ecm.core.api.CoreSession;
 
 public interface AssociatedDocuments {
 
-    List<String> getCategoryKeys() throws Exception;
+    List<String> getCategoryKeys();
 
-    Map<String, String> getCategories() throws Exception;
+    Map<String, String> getCategories();
 
-    Map<String, List<DocumentationItem>> getDocumentationItems(CoreSession session) throws Exception;
+    Map<String, List<DocumentationItem>> getDocumentationItems(CoreSession session);
 
-    DocumentationItem getDescription(CoreSession session) throws Exception;
+    DocumentationItem getDescription(CoreSession session);
 
 }

@@ -28,6 +28,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.WebException;
 
@@ -43,12 +44,10 @@ public class ArchiveFileWriter implements MessageBodyWriter<ArchiveFile> {
             in = new FileInputStream(t);
             FileUtils.copy(in, entityStream);
             entityStream.flush();
-        } catch (Throwable e) {
+        } catch (IOException e) {
             throw WebException.wrap("Failed to render resource", e);
         } finally {
-            if (in != null) {
-                in.close();
-            }
+            IOUtils.closeQuietly(in);
             if (t != null) {
                 t.delete();
             }

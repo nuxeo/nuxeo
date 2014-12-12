@@ -16,6 +16,7 @@
  */
 package org.nuxeo.apidoc.documentation;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -143,7 +144,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
 
     @Override
     public Map<String, List<DocumentationItem>> listDocumentationItems(CoreSession session, String category,
-            String targetType) throws Exception {
+            String targetType) {
 
         String query = "SELECT * FROM " + DocumentationItem.TYPE_NAME + " WHERE " + QueryHelper.NOT_DELETED;
 
@@ -398,7 +399,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
         return existingDoc.getAdapter(DocumentationItem.class);
     }
 
-    protected List<DocumentModel> listCategories() throws Exception {
+    protected List<DocumentModel> listCategories() {
         DirectoryService dm = Framework.getService(DirectoryService.class);
         Session session = dm.open(DIRECTORY_NAME);
         try {
@@ -410,7 +411,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
     }
 
     @Override
-    public List<String> getCategoryKeys() throws Exception {
+    public List<String> getCategoryKeys() {
         List<String> categories = new ArrayList<String>();
         for (DocumentModel entry : listCategories()) {
             categories.add(entry.getId());
@@ -419,7 +420,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
     }
 
     @Override
-    public Map<String, String> getCategories() throws Exception {
+    public Map<String, String> getCategories() {
         Map<String, String> categories = new LinkedHashMap<String, String>();
         if (!Framework.isTestModeSet()) {
             for (DocumentModel entry : listCategories()) {
@@ -447,7 +448,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
             pipe.run();
             reader.close();
             writer.close();
-        } catch (Exception e) {
+        } catch (IOException | ClientException e) {
             log.error("Error while exporting documentation", e);
         }
     }
@@ -473,7 +474,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
             pipe.run();
             reader.close();
             writer.close();
-        } catch (Exception e) {
+        } catch (IOException | ClientException e) {
             log.error("Error while importing documentation", e);
         }
     }
@@ -486,15 +487,14 @@ public class DocumentationComponent extends DefaultComponent implements Document
             DocumentModelList docList = session.query(query);
             result = docList.size() + " documents";
 
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while exporting documentation", e);
         }
         return result;
     }
 
     @Override
-    public Map<String, DocumentationItem> getAvailableDescriptions(CoreSession session, String targetType)
-            throws Exception {
+    public Map<String, DocumentationItem> getAvailableDescriptions(CoreSession session, String targetType) {
 
         Map<String, List<DocumentationItem>> itemsByCat = listDocumentationItems(session,
                 DefaultDocumentationType.DESCRIPTION.getValue(), targetType);

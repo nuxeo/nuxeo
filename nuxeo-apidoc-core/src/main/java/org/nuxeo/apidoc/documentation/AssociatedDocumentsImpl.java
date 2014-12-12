@@ -52,7 +52,7 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
     }
 
     @Override
-    public Map<String, List<DocumentationItem>> getDocumentationItems(CoreSession session) throws Exception {
+    public Map<String, List<DocumentationItem>> getDocumentationItems(CoreSession session) {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         List<DocumentationItem> docItems = ds.findDocumentItems(session, item);
         Map<String, String> categories = getCategories();
@@ -90,19 +90,19 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
     }
 
     @Override
-    public Map<String, String> getCategories() throws Exception {
+    public Map<String, String> getCategories() {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         return ds.getCategories();
     }
 
     @Override
-    public List<String> getCategoryKeys() throws Exception {
+    public List<String> getCategoryKeys() {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         return ds.getCategoryKeys();
     }
 
     @Override
-    public DocumentationItem getDescription(CoreSession session) throws Exception {
+    public DocumentationItem getDescription(CoreSession session) {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         List<DocumentationItem> docItems = ds.findDocumentItems(session, item);
         for (DocumentationItem docItem : docItems) {

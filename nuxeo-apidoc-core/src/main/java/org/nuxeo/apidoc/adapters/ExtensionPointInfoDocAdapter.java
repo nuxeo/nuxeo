@@ -29,6 +29,7 @@ import org.nuxeo.apidoc.api.VirtualNodesConsts;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -37,7 +38,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ExtensionPointInfo {
 
     public static ExtensionPointInfoDocAdapter create(ExtensionPointInfo xpi, CoreSession session, String containerPath)
-            throws Exception {
+            throws ClientException {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
@@ -108,7 +109,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter im
                     result.add(contrib);
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while fetching contributions", e);
         }
         return result;
@@ -125,7 +126,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter im
             @SuppressWarnings("unchecked")
             List<String> descriptors = (List<String>) doc.getPropertyValue(PROP_DESCRIPTORS);
             return descriptors.toArray(new String[0]);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Unable to get descriptors field", e);
         }
         return null;

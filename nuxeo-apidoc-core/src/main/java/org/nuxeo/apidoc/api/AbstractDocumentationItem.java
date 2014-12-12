@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.documentation.DocumentationComponent;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -55,7 +56,7 @@ public abstract class AbstractDocumentationItem implements DocumentationItem {
             session = dm.open(DocumentationComponent.DIRECTORY_NAME);
             DocumentModel entry = session.getEntry(type);
             return (String) entry.getProperty("vocabulary", "label");
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while resolving typeLabel", e);
         } finally {
             if (session != null) {

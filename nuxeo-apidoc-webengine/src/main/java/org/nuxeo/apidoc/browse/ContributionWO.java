@@ -38,7 +38,7 @@ public class ContributionWO extends NuxeoArtifactWebObject {
     @GET
     @Produces("text/html")
     @Path("introspection")
-    public Object doGet() throws Exception {
+    public Object doGet() {
         ExtensionInfo ei = getTargetExtensionInfo();
         return getView("view").arg("contribution", ei);
     }
@@ -55,7 +55,7 @@ public class ContributionWO extends NuxeoArtifactWebObject {
     @POST
     @Produces("text/xml")
     @Path("override")
-    public Object generateOverride() throws Exception {
+    public Object generateOverride() {
 
         ExtensionInfo ei = getTargetExtensionInfo();
         String epid = ei.getExtensionPoint();

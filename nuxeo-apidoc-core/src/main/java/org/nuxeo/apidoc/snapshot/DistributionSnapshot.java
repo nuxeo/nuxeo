@@ -27,7 +27,6 @@ import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.JavaDocHelper;
-import org.nuxeo.ecm.automation.OperationException;
 
 public interface DistributionSnapshot extends DistributionSnapshotDesc {
 
@@ -87,9 +86,9 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
 
     boolean containsSeamComponents();
 
-    OperationInfo getOperation(String id) throws OperationException;
+    OperationInfo getOperation(String id);
 
-    List<OperationInfo> getOperations() throws OperationException;
+    List<OperationInfo> getOperations();
 
     JavaDocHelper getJavaDocHelper();
 }

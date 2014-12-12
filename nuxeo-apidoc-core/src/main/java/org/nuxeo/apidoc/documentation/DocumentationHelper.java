@@ -62,12 +62,7 @@ public class DocumentationHelper {
         if (doc == null) {
             return "";
         }
-        HtmlSanitizerService sanitizer;
-        try {
-            sanitizer = Framework.getService(HtmlSanitizerService.class);
-        } catch (Exception e) {
-            sanitizer = null;
-        }
+        HtmlSanitizerService sanitizer = Framework.getService(HtmlSanitizerService.class);
         if (sanitizer == null && !Framework.isTestModeSet()) {
             throw new RuntimeException("Cannot find HtmlSanitizerService");
         }

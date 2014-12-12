@@ -41,7 +41,7 @@ public class DocumentationWO extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    public Object viewAll() throws Exception {
+    public Object viewAll() {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         Map<String, List<DocumentationItem>> docs = ds.listDocumentationItems(getContext().getCoreSession(), null, null);
         return getView("index").arg("distId", ctx.getProperty("distId")).arg("docsByCat", docs);
@@ -50,7 +50,7 @@ public class DocumentationWO extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path("filter")
-    public Object filterAll() throws Exception {
+    public Object filterAll() {
         String fulltext = getContext().getForm().getFormProperty("fulltext");
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
 
@@ -80,7 +80,7 @@ public class DocumentationWO extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path("view/{docUUID}")
-    public Object viewDoc(@PathParam("docUUID") String docUUID) throws Exception {
+    public Object viewDoc(@PathParam("docUUID") String docUUID) {
         DocumentRef docRef = new IdRef(docUUID);
         DocumentModel docModel = getContext().getCoreSession().getDocument(docRef);
         DocumentationItem doc = docModel.getAdapter(DocumentationItem.class);

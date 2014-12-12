@@ -16,10 +16,12 @@
  */
 package org.nuxeo.apidoc.browse;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,10 +33,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
@@ -54,12 +56,14 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.apidoc.tree.TreeHelper;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
+import org.wikimodel.wem.WikiParserException;
 
 @WebObject(type = "apibrowser")
 public class ApiBrowser extends DefaultObject {
@@ -129,7 +133,7 @@ public class ApiBrowser extends DefaultObject {
                 ctx.getProperty(Distribution.DIST_ID));
     }
 
-    public Map<String, DocumentationItem> getDescriptions(String targetType) throws Exception {
+    public Map<String, DocumentationItem> getDescriptions(String targetType) {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         return ds.getAvailableDescriptions(getContext().getCoreSession(), targetType);
     }
@@ -146,7 +150,7 @@ public class ApiBrowser extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path("filterBundles")
-    public Object filterBundles() throws Exception {
+    public Object filterBundles() {
         String fulltext = getContext().getForm().getFormProperty("fulltext");
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
                 BundleInfo.TYPE_NAME, fulltext);
@@ -184,7 +188,7 @@ public class ApiBrowser extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path("filterComponents")
-    public Object filterComponents() throws Exception {
+    public Object filterComponents() {
         String fulltext = getContext().getForm().getFormProperty("fulltext");
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
                 ComponentInfo.TYPE_NAME, fulltext);
@@ -221,7 +225,7 @@ public class ApiBrowser extends DefaultObject {
                 ctx.getProperty(Distribution.DIST_ID));
     }
 
-    protected Map<String, String> getRenderedDescriptions(String type) throws Exception {
+    protected Map<String, String> getRenderedDescriptions(String type) {
 
         Map<String, DocumentationItem> descs = getDescriptions(type);
         Map<String, String> result = new HashMap<String, String>();
@@ -233,7 +237,11 @@ public class ApiBrowser extends DefaultObject {
                 Reader reader = new StringReader(content);
                 WikiSerializer engine = new WikiSerializer();
                 StringWriter writer = new StringWriter();
-                engine.serialize(reader, writer);
+                try {
+                    engine.serialize(reader, writer);
+                } catch (IOException | WikiParserException e) {
+                    throw new NuxeoException(e);
+                }
                 content = writer.getBuffer().toString();
             } else {
                 content = "<div class='doc'>" + content + "</div>";
@@ -246,7 +254,7 @@ public class ApiBrowser extends DefaultObject {
     @GET
     @Produces("text/plain")
     @Path("feedServices")
-    public String feedServices() throws Exception {
+    public String feedServices() throws JSONException {
         List<String> serviceIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession()).getServiceIds();
 
         Map<String, String> descs = getRenderedDescriptions("NXService");
@@ -275,7 +283,7 @@ public class ApiBrowser extends DefaultObject {
     @GET
     @Produces("text/plain")
     @Path("feedExtensionPoints")
-    public String feedExtensionPoints() throws Exception {
+    public String feedExtensionPoints() throws JSONException {
         List<String> epIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession()).getExtensionPointIds();
 
         Map<String, String> descs = getRenderedDescriptions("NXExtensionPoint");
@@ -305,7 +313,7 @@ public class ApiBrowser extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path("filterServices")
-    public Object filterServices() throws Exception {
+    public Object filterServices() {
         String fulltext = getContext().getForm().getFormProperty("fulltext");
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
                 ServiceInfo.TYPE_NAME, fulltext);
@@ -374,7 +382,7 @@ public class ApiBrowser extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path("filterExtensionPoints")
-    public Object filterExtensionPoints() throws Exception {
+    public Object filterExtensionPoints() {
         String fulltext = getContext().getForm().getFormProperty("fulltext");
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
                 ExtensionPointInfo.TYPE_NAME, fulltext);
@@ -403,7 +411,7 @@ public class ApiBrowser extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path("filterContributions")
-    public Object filterContributions() throws Exception {
+    public Object filterContributions() {
         String fulltext = getContext().getForm().getFormProperty("fulltext");
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
                 ExtensionPointInfo.TYPE_NAME, fulltext);
@@ -417,17 +425,13 @@ public class ApiBrowser extends DefaultObject {
 
     @Path("doc")
     public Resource viewDoc() {
-        try {
-            return ctx.newObject("documentation");
-        } catch (Exception e) {
-            throw new WebApplicationException(e);
-        }
+        return ctx.newObject("documentation");
     }
 
     @GET
     @Produces("text/html")
     @Path("service2Bundle/{serviceId}")
-    public Object service2Bundle(@PathParam("serviceId") String serviceId) throws Exception {
+    public Object service2Bundle(@PathParam("serviceId") String serviceId) {
 
         ServiceInfo si = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession()).getService(serviceId);
         if (si == null) {
@@ -442,13 +446,17 @@ public class ApiBrowser extends DefaultObject {
         target = target.append(distributionId);
         target = target.append("viewBundle");
         target = target.append(bid + "#Service." + serviceId);
-        return Response.seeOther(new URI(target.toString())).build();
+        try {
+            return Response.seeOther(new URI(target.toString())).build();
+        } catch (URISyntaxException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     @GET
     @Produces("text/html")
     @Path("extensionPoint2Component/{epId}")
-    public Object extensionPoint2Component(@PathParam("epId") String epId) throws Exception {
+    public Object extensionPoint2Component(@PathParam("epId") String epId) {
 
         ExtensionPointInfo epi = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession()).getExtensionPoint(
                 epId);
@@ -461,159 +469,124 @@ public class ApiBrowser extends DefaultObject {
         target = target.append(distributionId);
         target = target.append("viewComponent");
         target = target.append(cid + "#extensionPoint." + epId);
-        return Response.seeOther(new URI(target.toString())).build();
+        try {
+            return Response.seeOther(new URI(target.toString())).build();
+        } catch (URISyntaxException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     @Path("viewBundle/{bundleId}")
     public Resource viewBundle(@PathParam("bundleId") String bundleId) {
-        try {
-            NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("bundle", bundleId);
-            NuxeoArtifact nxItem = wo.getNxArtifact();
-            if (nxItem == null) {
-                throw new WebResourceNotFoundException(bundleId);
-            }
-            TreeHelper.updateTree(getContext(), nxItem.getHierarchyPath());
-            return wo;
-        } catch (OperationException e) {
-            throw new WebApplicationException(e);
+        NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("bundle", bundleId);
+        NuxeoArtifact nxItem = wo.getNxArtifact();
+        if (nxItem == null) {
+            throw new WebResourceNotFoundException(bundleId);
         }
+        TreeHelper.updateTree(getContext(), nxItem.getHierarchyPath());
+        return wo;
     }
 
     @Path("viewComponent/{componentId}")
     public Resource viewComponent(@PathParam("componentId") String componentId) {
-        try {
-            NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("component", componentId);
-            NuxeoArtifact nxItem = wo.getNxArtifact();
-            if (nxItem == null) {
-                throw new WebResourceNotFoundException(componentId);
-            }
-            TreeHelper.updateTree(getContext(), nxItem.getHierarchyPath());
-            return wo;
-        } catch (OperationException e) {
-            throw new WebApplicationException(e);
+        NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("component", componentId);
+        NuxeoArtifact nxItem = wo.getNxArtifact();
+        if (nxItem == null) {
+            throw new WebResourceNotFoundException(componentId);
         }
+        TreeHelper.updateTree(getContext(), nxItem.getHierarchyPath());
+        return wo;
     }
 
     @Path("viewSeamComponent/{componentId}")
     public Resource viewSeamComponent(@PathParam("componentId") String componentId) {
-        try {
-            NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("seamComponent", componentId);
-            return wo;
-        } catch (Exception e) {
-            throw new WebApplicationException(e);
-        }
+        return (NuxeoArtifactWebObject) ctx.newObject("seamComponent", componentId);
     }
 
     @Path("viewOperation/{opId}")
     public Resource viewOperation(@PathParam("opId") String opId) {
-        try {
-            NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("operation", opId);
-            return wo;
-        } catch (Exception e) {
-            throw new WebApplicationException(e);
-        }
+        return (NuxeoArtifactWebObject) ctx.newObject("operation", opId);
     }
 
     @Path("viewService/{serviceId}")
     public Resource viewService(@PathParam("serviceId") String serviceId) {
-        try {
-            NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("service", serviceId);
-            NuxeoArtifact nxItem = wo.getNxArtifact();
-            if (nxItem == null) {
-                throw new WebResourceNotFoundException(serviceId);
-            }
-            TreeHelper.updateTree(getContext(), nxItem.getHierarchyPath());
-            return wo;
-        } catch (OperationException e) {
-            throw new WebApplicationException(e);
+        NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("service", serviceId);
+        NuxeoArtifact nxItem = wo.getNxArtifact();
+        if (nxItem == null) {
+            throw new WebResourceNotFoundException(serviceId);
         }
+        TreeHelper.updateTree(getContext(), nxItem.getHierarchyPath());
+        return wo;
     }
 
     @Path("viewExtensionPoint/{epId}")
     public Resource viewExtensionPoint(@PathParam("epId") String epId) {
-        try {
-            NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("extensionPoint", epId);
-            NuxeoArtifact nxItem = wo.getNxArtifact();
-            if (nxItem == null) {
-                throw new WebResourceNotFoundException(epId);
-            }
-            TreeHelper.updateTree(getContext(), nxItem.getHierarchyPath());
-            return wo;
-        } catch (OperationException e) {
-            throw new WebApplicationException(e);
+        NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("extensionPoint", epId);
+        NuxeoArtifact nxItem = wo.getNxArtifact();
+        if (nxItem == null) {
+            throw new WebResourceNotFoundException(epId);
         }
+        TreeHelper.updateTree(getContext(), nxItem.getHierarchyPath());
+        return wo;
     }
 
     @Path("viewContribution/{cId}")
     public Resource viewContribution(@PathParam("cId") String cId) {
-        try {
-            NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("contribution", cId);
-            NuxeoArtifact nxItem = wo.getNxArtifact();
-            if (nxItem == null) {
-                throw new WebResourceNotFoundException(cId);
-            }
-            TreeHelper.updateTree(getContext(), nxItem.getHierarchyPath());
-            return wo;
-        } catch (OperationException e) {
-            throw new WebApplicationException(e);
+        NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("contribution", cId);
+        NuxeoArtifact nxItem = wo.getNxArtifact();
+        if (nxItem == null) {
+            throw new WebResourceNotFoundException(cId);
         }
+        TreeHelper.updateTree(getContext(), nxItem.getHierarchyPath());
+        return wo;
     }
 
     @Path("viewBundleGroup/{gId}")
     public Resource viewBundleGroup(@PathParam("gId") String gId) {
-        try {
-            NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("bundleGroup", gId);
-            NuxeoArtifact nxItem = wo.getNxArtifact();
-            if (nxItem == null) {
-                throw new WebResourceNotFoundException(gId);
-            }
-            TreeHelper.updateTree(getContext(), nxItem.getHierarchyPath());
-            return wo;
-        } catch (OperationException e) {
-            throw new WebApplicationException(e);
+        NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("bundleGroup", gId);
+        NuxeoArtifact nxItem = wo.getNxArtifact();
+        if (nxItem == null) {
+            throw new WebResourceNotFoundException(gId);
         }
+        TreeHelper.updateTree(getContext(), nxItem.getHierarchyPath());
+        return wo;
     }
 
     @Path("viewArtifact/{id}")
     public Object viewArtifact(@PathParam("id") String id) {
-        try {
+        DistributionSnapshot snap = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession());
 
-            DistributionSnapshot snap = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession());
-
-            BundleGroup bg = snap.getBundleGroup(id);
-            if (bg != null) {
-                return viewBundleGroup(id);
-            }
-
-            BundleInfo bi = snap.getBundle(id);
-            if (bi != null) {
-                return viewBundle(id);
-            }
-
-            ComponentInfo ci = snap.getComponent(id);
-            if (ci != null) {
-                return viewComponent(id);
-            }
-
-            ServiceInfo si = snap.getService(id);
-            if (si != null) {
-                return viewService(id);
-            }
-
-            ExtensionPointInfo epi = snap.getExtensionPoint(id);
-            if (epi != null) {
-                return viewExtensionPoint(id);
-            }
-
-            ExtensionInfo ei = snap.getContribution(id);
-            if (ei != null) {
-                return viewContribution(id);
-            }
-
-            return Response.status(404).build();
-        } catch (Exception e) {
-            throw new WebApplicationException(e);
+        BundleGroup bg = snap.getBundleGroup(id);
+        if (bg != null) {
+            return viewBundleGroup(id);
         }
+
+        BundleInfo bi = snap.getBundle(id);
+        if (bi != null) {
+            return viewBundle(id);
+        }
+
+        ComponentInfo ci = snap.getComponent(id);
+        if (ci != null) {
+            return viewComponent(id);
+        }
+
+        ServiceInfo si = snap.getService(id);
+        if (si != null) {
+            return viewService(id);
+        }
+
+        ExtensionPointInfo epi = snap.getExtensionPoint(id);
+        if (epi != null) {
+            return viewExtensionPoint(id);
+        }
+
+        ExtensionInfo ei = snap.getContribution(id);
+        if (ei != null) {
+            return viewContribution(id);
+        }
+
+        return Response.status(404).build();
     }
 
     public String getLabel(String id) {
@@ -623,18 +596,18 @@ public class ApiBrowser extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path("listSeamComponents")
-    public Object listSeamComponents() throws Exception {
+    public Object listSeamComponents() {
         return dolistSeamComponents("listSeamComponents", false);
     }
 
     @GET
     @Produces("text/html")
     @Path("listSeamComponentsSimple")
-    public Object listSeamComponentsSimple() throws Exception {
+    public Object listSeamComponentsSimple() {
         return dolistSeamComponents("listSeamComponentsSimple", true);
     }
 
-    protected Object dolistSeamComponents(String view, boolean hideNav) throws Exception {
+    protected Object dolistSeamComponents(String view, boolean hideNav) {
 
         getSnapshotManager().initSeamContext(getContext().getRequest());
 
@@ -647,7 +620,7 @@ public class ApiBrowser extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path("listOperations")
-    public Object listOperations() throws Exception {
+    public Object listOperations() {
         DistributionSnapshot snap = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession());
         List<OperationInfo> operations = snap.getOperations();
         return getView("listOperations").arg("operations", operations).arg(Distribution.DIST_ID,

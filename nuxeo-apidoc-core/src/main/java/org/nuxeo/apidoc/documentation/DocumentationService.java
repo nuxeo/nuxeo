@@ -41,9 +41,9 @@ public interface DocumentationService {
     List<DocumentationItem> findDocumentationItemVariants(CoreSession session, DocumentationItem item)
             throws ClientException;
 
-    Map<String, String> getCategories() throws Exception;
+    Map<String, String> getCategories();
 
-    List<String> getCategoryKeys() throws Exception;
+    List<String> getCategoryKeys();
 
     void exportDocumentation(CoreSession session, OutputStream out);
 
@@ -51,9 +51,8 @@ public interface DocumentationService {
 
     String getDocumentationStats(CoreSession session);
 
-    Map<String, List<DocumentationItem>> listDocumentationItems(CoreSession session, String category, String targetType)
-            throws Exception;
+    Map<String, List<DocumentationItem>> listDocumentationItems(CoreSession session, String category, String targetType);
 
-    Map<String, DocumentationItem> getAvailableDescriptions(CoreSession session, String targetType) throws Exception;
+    Map<String, DocumentationItem> getAvailableDescriptions(CoreSession session, String targetType);
 
 }

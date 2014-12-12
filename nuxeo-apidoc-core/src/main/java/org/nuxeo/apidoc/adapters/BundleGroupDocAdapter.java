@@ -73,7 +73,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
                     bundles.add(bi.getId());
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while getting subGroups", e);
         }
         return bundles;
@@ -100,7 +100,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
                     grps.add(grp);
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while getting subGroups", e);
         }
         return grps;

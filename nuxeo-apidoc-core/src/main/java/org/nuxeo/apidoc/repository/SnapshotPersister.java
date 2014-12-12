@@ -16,6 +16,7 @@
  */
 package org.nuxeo.apidoc.repository;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
@@ -201,7 +202,7 @@ public class SnapshotPersister {
             CoreSession session, String label, DocumentModel parent) throws ClientException {
         try {
             SeamComponentInfoDocAdapter.create(seamComponent, session, parent.getPathAsString());
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new ClientException("Errors while persisting Seam Component as document", e);
         }
     }
@@ -219,7 +220,7 @@ public class SnapshotPersister {
             DocumentModel parent) throws ClientException {
         try {
             OperationInfoDocAdapter.create(op, session, parent.getPathAsString());
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new ClientException("Errors while persisting Operation as document", e);
         }
     }
@@ -318,7 +319,7 @@ public class SnapshotPersister {
             ExtensionInfo ei, DocumentModel parent) throws ClientException {
         try {
             return ExtensionInfoDocAdapter.create(ei, session, parent.getPathAsString()).getDoc();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new ClientException("Unable to create Contribution Document", e);
         }
     }
@@ -327,7 +328,7 @@ public class SnapshotPersister {
             ServiceInfo si, DocumentModel parent) throws ClientException {
         try {
             return ServiceInfoDocAdapter.create(si, session, parent.getPathAsString()).getDoc();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new ClientException("Unable to create Contribution Document", e);
         }
     }
@@ -337,7 +338,7 @@ public class SnapshotPersister {
 
         try {
             return ExtensionPointInfoDocAdapter.create(epi, session, parent.getPathAsString()).getDoc();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new ClientException("Unable to create ExtensionPoint Document", e);
         }
     }
@@ -346,7 +347,7 @@ public class SnapshotPersister {
             ComponentInfo ci, DocumentModel parent) throws ClientException {
         try {
             return ComponentInfoDocAdapter.create(ci, session, parent.getPathAsString()).getDoc();
-        } catch (Exception e) {
+        } catch (ClientException | IOException e) {
             throw new ClientException("Unable to create Component Doc", e);
         }
     }

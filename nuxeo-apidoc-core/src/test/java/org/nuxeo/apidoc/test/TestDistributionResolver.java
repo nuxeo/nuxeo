@@ -224,7 +224,7 @@ public class TestDistributionResolver {
     }
 
     @Test
-    public void testResolver() throws Exception {
+    public void testResolver() {
         List<DistributionSnapshot> snaps = buildFakeSnaps();
         String res = testResolution(snaps, "dm-5.6");
         assertEquals("Nuxeo Platform-5.6-RC1", res);

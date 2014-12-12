@@ -24,12 +24,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 
 public interface ArtifactSearcher {
 
-    List<NuxeoArtifact> searchArtifact(CoreSession session, String fulltext) throws Exception;
+    List<NuxeoArtifact> searchArtifact(CoreSession session, String fulltext);
 
     List<DocumentationItem> searchDocumentation(CoreSession session, String distribId, String fulltext,
-            String targetType) throws Exception;
+            String targetType);
 
-    List<NuxeoArtifact> filterArtifact(CoreSession session, String distribId, String type, String fulltext)
-            throws Exception;
+    List<NuxeoArtifact> filterArtifact(CoreSession session, String distribId, String type, String fulltext);
 
 }

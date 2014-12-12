@@ -39,8 +39,10 @@ import org.nuxeo.apidoc.documentation.JavaDocHelper;
 import org.nuxeo.apidoc.seam.SeamRuntimeIntrospector;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 
 public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSnapshot {
@@ -420,18 +422,19 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         seamInitialized = true;
     }
 
-    public void initOperations() throws OperationException {
+    public void initOperations() {
         if (opsInitialized) {
             return;
         }
-        OperationType[] ops;
-        try {
-            ops = Framework.getService(AutomationService.class).getOperations();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        OperationType[] ops = Framework.getService(AutomationService.class).getOperations();
         for (OperationType op : ops) {
-            operations.add(new OperationInfoImpl(op.getDocumentation(), getVersion(), op.getType().getCanonicalName(),
+            OperationDocumentation documentation;
+            try {
+                documentation = op.getDocumentation();
+            } catch (OperationException e) {
+                throw new NuxeoException(e);
+            }
+            operations.add(new OperationInfoImpl(documentation, getVersion(), op.getType().getCanonicalName(),
                     op.getContributingComponent()));
         }
         opsInitialized = true;
@@ -467,7 +470,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     @Override
-    public OperationInfo getOperation(String id) throws OperationException {
+    public OperationInfo getOperation(String id) {
         if (id.startsWith(OperationInfo.ARTIFACT_PREFIX)) {
             id = id.substring(OperationInfo.ARTIFACT_PREFIX.length());
         }
@@ -480,7 +483,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     @Override
-    public List<OperationInfo> getOperations() throws OperationException {
+    public List<OperationInfo> getOperations() {
         initOperations();
         return operations;
     }
