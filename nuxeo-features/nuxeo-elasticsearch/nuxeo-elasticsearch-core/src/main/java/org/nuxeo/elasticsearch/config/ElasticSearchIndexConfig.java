@@ -17,11 +17,12 @@
 
 package org.nuxeo.elasticsearch.config;
 
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.BINARYTEXT_FIELD;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.BINARYTEXT_FIELD;
 
 /**
  * XMap descriptor for configuring an index

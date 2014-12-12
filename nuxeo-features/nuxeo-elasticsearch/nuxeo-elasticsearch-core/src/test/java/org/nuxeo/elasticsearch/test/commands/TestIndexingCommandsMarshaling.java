@@ -1,7 +1,6 @@
 package org.nuxeo.elasticsearch.test.commands;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;

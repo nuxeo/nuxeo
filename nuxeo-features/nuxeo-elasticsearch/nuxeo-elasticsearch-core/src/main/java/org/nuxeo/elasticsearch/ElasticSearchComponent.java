@@ -17,6 +17,8 @@
  */
 package org.nuxeo.elasticsearch;
 
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_ENABLED_PROPERTY;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,15 +54,12 @@ import org.nuxeo.elasticsearch.core.ElasticSearchIndexingImpl;
 import org.nuxeo.elasticsearch.core.ElasticsearchServiceImpl;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.work.BaseIndexingWorker;
-import org.nuxeo.elasticsearch.work.ChildrenIndexingWorker;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_ENABLED_PROPERTY;
 
 /**
  * Component used to configure and manage ElasticSearch integration

@@ -18,8 +18,8 @@
 package org.nuxeo.elasticsearch.test;
 
 import java.io.File;
-
 import java.security.InvalidParameterException;
+
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;

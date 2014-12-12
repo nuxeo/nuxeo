@@ -17,10 +17,7 @@
 
 package org.nuxeo.elasticsearch.work;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;

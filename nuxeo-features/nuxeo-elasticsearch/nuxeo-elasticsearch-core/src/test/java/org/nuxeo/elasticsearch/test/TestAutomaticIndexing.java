@@ -499,7 +499,7 @@ public class TestAutomaticIndexing {
         Assert.assertEquals(1, docs.totalSize());
     }
 
-   @Test
+    @Test
     public void shouldHandleUpdateOnTransientDocBis() throws Exception {
         startTransaction();
         DocumentModel tmpDoc = session.createDocumentModel("/", "file", "File");
