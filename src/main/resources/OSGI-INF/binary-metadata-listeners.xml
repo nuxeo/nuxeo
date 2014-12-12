@@ -1,0 +1,13 @@
+<component name="org.nuxeo.binary.metadata.listener.BinaryMetadataListener">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+             point="listener">
+
+    <listener name="binarymetadatalistener" async="false" postCommit="false"
+              class="org.nuxeo.binary.metadata.api.listener.BinaryMetadataListener" order="100">
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+  </extension>
+
+</component>
