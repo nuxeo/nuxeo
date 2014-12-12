@@ -26,6 +26,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_SECURITY_UPDATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BINARYTEXT_UPDATED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_TAG_UPDATED;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,6 +99,8 @@ public abstract class IndexingCommandsStacker {
         } else if (DOCUMENT_REMOVED.equals(eventId)) {
             cmds.add(IndexingCommand.DELETE, sync, doc.isFolder());
         } else if (BINARYTEXT_UPDATED.equals(eventId)) {
+            cmds.add(IndexingCommand.UPDATE, sync, false);
+        } else if (DOCUMENT_TAG_UPDATED.equals(eventId)) {
             cmds.add(IndexingCommand.UPDATE, sync, false);
         }
     }
