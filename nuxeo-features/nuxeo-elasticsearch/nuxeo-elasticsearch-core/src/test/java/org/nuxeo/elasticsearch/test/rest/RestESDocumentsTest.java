@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import com.google.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Assert;
@@ -34,8 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.core.operations.services
-        .DocumentPageProviderOperation;
+import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentListWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
@@ -59,6 +57,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+import com.google.inject.Inject;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
@@ -68,13 +67,17 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 5.9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, RestServerFeature.class, RepositoryElasticSearchFeature.class/*, RandomBug.Feature.class*/ })
+@Features({ TransactionalFeature.class, RestServerFeature.class, RepositoryElasticSearchFeature.class /*
+                                                                                                       * ,
+                                                                                                       * RandomBug.Feature
+                                                                                                       * .class
+                                                                                                       */})
 @Jetty(port = 18090)
 @Deploy("org.nuxeo.ecm.platform.contentview.jsf")
-@LocalDeploy({"org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml",
+@LocalDeploy({ "org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml",
         "org.nuxeo.ecm.platform.restapi.test:elasticsearch-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:contentviews-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:contentviews-coretype-test-contrib.xml"})
+        "org.nuxeo.elasticsearch.core:contentviews-coretype-test-contrib.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class RestESDocumentsTest extends BaseTest {
 
@@ -102,15 +105,12 @@ public class RestESDocumentsTest extends BaseTest {
         DocumentModel folder = RestServerInit.getFolder(1, session);
 
         // When I query for it children
-        ClientResponse response = getResponse(RequestType.GETES, "id/" + folder.getId()
-                + "/@" + ChildrenAdapter.NAME);
+        ClientResponse response = getResponse(RequestType.GETES, "id/" + folder.getId() + "/@" + ChildrenAdapter.NAME);
 
         // Then I get elasticsearch bulk output for the two document
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        assertEquals(
-                Integer.valueOf(session.getChildren(folder.getRef()).size()).toString(),
-                response.getHeaders().getFirst(
-                        JsonESDocumentListWriter.HEADER_RESULTS_COUNT));
+        assertEquals(Integer.valueOf(session.getChildren(folder.getRef()).size()).toString(),
+                response.getHeaders().getFirst(JsonESDocumentListWriter.HEADER_RESULTS_COUNT));
         // The first node is the an index action it looks like
         // {"index":{"_index":"nuxeo","_type":"doc","_id":"c0941844-7729-431f-9d07-57c6a6580716"}}
         String content = IOUtils.toString(response.getEntityInputStream());
@@ -126,8 +126,8 @@ public class RestESDocumentsTest extends BaseTest {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("esIndex", "myIndex");
         queryParams.putSingle("esType", "myType");
-        ClientResponse response = getResponse(RequestType.GETES, "id/" + folder.getId()
-                + "/@" + ChildrenAdapter.NAME, null, queryParams, null, null);
+        ClientResponse response = getResponse(RequestType.GETES, "id/" + folder.getId() + "/@" + ChildrenAdapter.NAME,
+                null, queryParams, null, null);
         // Then I get elasticsearch bulk output for the two document
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         // The first node is the an index action it looks like
@@ -142,16 +142,12 @@ public class RestESDocumentsTest extends BaseTest {
         DocumentModel folder = RestServerInit.getFolder(1, session);
 
         // When I search for "nuxeo" with appropriate header
-        ClientResponse response = getResponse(RequestType.GETES,
-                "path" + folder.getPathAsString() + "/@" + PageProviderAdapter.NAME
-                        + "/TEST_PP");
+        ClientResponse response = getResponse(RequestType.GETES, "path" + folder.getPathAsString() + "/@"
+                + PageProviderAdapter.NAME + "/TEST_PP");
 
         // Then I get elasticsearch bulk output for the two document
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        assertEquals(
-                "2",
-                response.getHeaders().getFirst(
-                        JsonESDocumentListWriter.HEADER_RESULTS_COUNT));
+        assertEquals("2", response.getHeaders().getFirst(JsonESDocumentListWriter.HEADER_RESULTS_COUNT));
         // The first node is the an index action it looks like
         // {"index":{"_index":"nuxeo","_type":"doc","_id":"c0941844-7729-431f-9d07-57c6a6580716"}}
         String content = IOUtils.toString(response.getEntityInputStream());
@@ -159,11 +155,9 @@ public class RestESDocumentsTest extends BaseTest {
     }
 
     @Test
-    public void iCanPerformESQLPageProviderOnRepository() throws IOException,
-            InterruptedException {
+    public void iCanPerformESQLPageProviderOnRepository() throws IOException, InterruptedException {
         // wait for async jobs
-        ElasticSearchAdmin esa = Framework
-                .getLocalService(ElasticSearchAdmin.class);
+        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
         Assert.assertEquals(0, esa.getPendingCommands());
@@ -171,8 +165,7 @@ public class RestESDocumentsTest extends BaseTest {
         esa.refresh();
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
         // Given a repository, when I perform a ESQL pageprovider on it
-        ClientResponse response = getResponse(RequestType.GET,
-                QueryObject.PATH + "/aggregates_2");
+        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/aggregates_2");
 
         // Then I get document listing as result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -196,9 +189,8 @@ public class RestESDocumentsTest extends BaseTest {
         Properties namedProperties = new Properties(namedParameters);
         params.put("namedParameters", namedProperties);
 
-        PaginableDocumentModelListImpl result =
-                (PaginableDocumentModelListImpl) automationService.run(ctx,
-                        DocumentPageProviderOperation.ID, params);
+        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) automationService.run(ctx,
+                DocumentPageProviderOperation.ID, params);
 
         // test page size
         assertEquals(20, result.getPageSize());

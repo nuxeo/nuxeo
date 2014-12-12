@@ -17,14 +17,14 @@
 package org.nuxeo.elasticsearch.listener;
 
 /**
- *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public class EventConstants {
 
     public static final String DISABLE_AUTO_INDEXING = "disableAutoIndexing";
+
     public static final String ES_SYNC_INDEXING_FLAG = "ESSyncIndexing";
+
     public static final String ES_INDEX_EVENT_SYNC = "ESIndexSyncTrigger";
 
     private EventConstants() {

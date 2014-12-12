@@ -26,6 +26,7 @@ import org.nuxeo.ecm.platform.query.api.Aggregate;
  */
 public class EsResult {
     private final DocumentModelList documents;
+
     private final List<Aggregate> aggregates;
 
     public EsResult(DocumentModelList documents, List<Aggregate> aggregates) {

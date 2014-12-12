@@ -46,6 +46,7 @@ public class TestCompareCoreWithES {
 
     @Inject
     protected ElasticSearchIndexing esi;
+
     private String proxyPath;
 
     @Before
@@ -71,13 +72,11 @@ public class TestCompareCoreWithES {
             doc = session.createDocument(doc);
         }
 
-        DocumentModel doc = session.createDocumentModel("/", "hidden",
-                "HiddenFolder");
+        DocumentModel doc = session.createDocumentModel("/", "hidden", "HiddenFolder");
         doc.setPropertyValue("dc:title", "HiddenFolder");
         doc = session.createDocument(doc);
 
-        DocumentModel folder = session.createDocumentModel("/", "folder",
-                "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder.setPropertyValue("dc:title", "Folder");
         folder = session.createDocument(folder);
 
@@ -88,8 +87,7 @@ public class TestCompareCoreWithES {
         session.followTransition(new PathRef("/file1"), "delete");
         session.followTransition(new PathRef("/note5"), "delete");
 
-        session.checkIn(new PathRef("/file2"), VersioningOption.MINOR,
-                "for testing");
+        session.checkIn(new PathRef("/file2"), VersioningOption.MINOR, "for testing");
 
         TransactionHelper.commitOrRollbackTransaction();
 
@@ -109,28 +107,25 @@ public class TestCompareCoreWithES {
         session.removeDocument(new PathRef(proxyPath));
     }
 
-
-
-    protected String getDigest(DocumentModelList docs) throws Exception  {
+    protected String getDigest(DocumentModelList docs) throws Exception {
         StringBuilder sb = new StringBuilder();
         for (DocumentModel doc : docs) {
             String nameOrTitle = doc.getName();
-             if (nameOrTitle==null || nameOrTitle.isEmpty()) {
-                 nameOrTitle = doc.getTitle();
-             }
+            if (nameOrTitle == null || nameOrTitle.isEmpty()) {
+                nameOrTitle = doc.getTitle();
+            }
             sb.append(nameOrTitle);
             sb.append(",");
         }
         return sb.toString();
     }
 
-    protected void assertSameDocumentLists(DocumentModelList expected,
-            DocumentModelList actual) throws Exception {
+    protected void assertSameDocumentLists(DocumentModelList expected, DocumentModelList actual) throws Exception {
         Assert.assertEquals(getDigest(expected), getDigest(actual));
     }
 
     protected void dump(DocumentModelList docs) {
-        for (DocumentModel doc :docs) {
+        for (DocumentModel doc : docs) {
             System.out.println(doc);
         }
     }
@@ -138,8 +133,7 @@ public class TestCompareCoreWithES {
     protected void compareESAndCore(String nxql) throws Exception {
 
         DocumentModelList coreResult = session.query(nxql);
-        DocumentModelList esResult = ess.query(new NxQueryBuilder(session)
-                .nxql(nxql).limit(20));
+        DocumentModelList esResult = ess.query(new NxQueryBuilder(session).nxql(nxql).limit(20));
         try {
             assertSameDocumentLists(coreResult, esResult);
         } catch (AssertionError e) {
@@ -154,47 +148,43 @@ public class TestCompareCoreWithES {
 
     protected void testQueries(String[] testQueries) throws Exception {
         for (String nxql : testQueries) {
-            //System.out.println("test " + nxql);
+            // System.out.println("test " + nxql);
             compareESAndCore(nxql);
         }
     }
 
     @Test
     public void testSimpleSearchWithSort() throws Exception {
-        testQueries(new String[] {
-                "select * from Document order by dc:title, dc:created",
+        testQueries(new String[] { "select * from Document order by dc:title, dc:created",
                 "select * from Document where ecm:currentLifeCycleState != 'deleted' order by dc:title",
                 "select * from File order by dc:title", });
     }
 
     @Test
     public void testSearchOnProxies() throws Exception {
-        testQueries(new String[] {
-                "select * from Document where ecm:isProxy=0 order by dc:title",
+        testQueries(new String[] { "select * from Document where ecm:isProxy=0 order by dc:title",
                 "select * from Document where ecm:isProxy=1 order by dc:title", });
     }
 
     @Test
     public void testSearchOnVersions() throws Exception {
-        testQueries(new String[] {
-                "select * from Document where ecm:isVersion = 0 order by dc:title",
+        testQueries(new String[] { "select * from Document where ecm:isVersion = 0 order by dc:title",
                 "select * from Document where ecm:isVersion = 1 order by dc:title",
                 "select * from Document where ecm:isCheckedInVersion = 0 order by dc:title",
                 "select * from Document where ecm:isCheckedInVersion = 1 order by dc:title",
-                // TODO: fix, ES results sounds correct
-                //"select * from Document where ecm:isCheckedIn = 0 order by dc:title",
-                //"select * from Document where ecm:isCheckedIn = 1 order by dc:title"
-                });
+        // TODO: fix, ES results sounds correct
+        // "select * from Document where ecm:isCheckedIn = 0 order by dc:title",
+        // "select * from Document where ecm:isCheckedIn = 1 order by dc:title"
+        });
     }
 
     @Test
     public void testSearchOnTypes() throws Exception {
-        testQueries(new String[] { "select * from File order by dc:title",
-                "select * from Folder order by dc:title",
+        testQueries(new String[] { "select * from File order by dc:title", "select * from Folder order by dc:title",
                 "select * from Note order by dc:title",
                 "select * from Note where ecm:primaryType IN ('Note', 'Folder') order by dc:title",
                 "select * from Document where ecm:mixinType = 'Folderish' order by dc:title",
-                "select * from Document where ecm:mixinType != 'Folderish' order by dc:title",});
+                "select * from Document where ecm:mixinType != 'Folderish' order by dc:title", });
     }
 
     @Test
@@ -204,8 +194,7 @@ public class TestCompareCoreWithES {
                 "SELECT * from Document WHERE dc:title LIKE 'File%' ORDER BY dc:title",
                 "SELECT * from Document WHERE dc:title LIKE '%ile%' ORDER BY dc:title",
                 "SELECT * from Document WHERE dc:title NOT LIKE '%ile%' ORDER BY dc:title",
-                "SELECT * from Document WHERE dc:title NOT LIKE '%i%e%' ORDER BY dc:title",
-        });
+                "SELECT * from Document WHERE dc:title NOT LIKE '%i%e%' ORDER BY dc:title", });
     }
 
 }

@@ -40,8 +40,7 @@ import org.nuxeo.ecm.platform.query.core.BucketRange;
  */
 public class RangeAggregate extends AggregateEsBase<BucketRange> {
 
-    public RangeAggregate(AggregateDefinition definition,
-            DocumentModel searchDocument) {
+    public RangeAggregate(AggregateDefinition definition, DocumentModel searchDocument) {
         super(definition, searchDocument);
     }
 
@@ -72,8 +71,7 @@ public class RangeAggregate extends AggregateEsBase<BucketRange> {
         OrFilterBuilder ret = FilterBuilders.orFilter();
         for (AggregateRangeDefinition range : getRanges()) {
             if (getSelection().contains(range.getKey())) {
-                RangeFilterBuilder rangeFilter = FilterBuilders
-                        .rangeFilter(getField());
+                RangeFilterBuilder rangeFilter = FilterBuilders.rangeFilter(getField());
                 if (range.getFrom() != null) {
                     rangeFilter.gte(range.getFrom());
                 }
@@ -88,28 +86,22 @@ public class RangeAggregate extends AggregateEsBase<BucketRange> {
 
     @JsonIgnore
     @Override
-    public void parseEsBuckets(
-            Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
+    public void parseEsBuckets(Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
         List<BucketRange> nxBuckets = new ArrayList<BucketRange>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
             Range.Bucket rangeBucket = (Range.Bucket) bucket;
-            nxBuckets
-                    .add(new BucketRange(bucket.getKey(),
-                            rangeBucket.getFrom(), rangeBucket.getTo(),
-                            rangeBucket.getDocCount()));
+            nxBuckets.add(new BucketRange(bucket.getKey(), rangeBucket.getFrom(), rangeBucket.getTo(),
+                    rangeBucket.getDocCount()));
         }
         Collections.sort(nxBuckets, new BucketRangeComparator());
         this.buckets = nxBuckets;
     }
 
-    protected class BucketRangeComparator implements
-            Comparator<BucketRange> {
+    protected class BucketRangeComparator implements Comparator<BucketRange> {
         @Override
         public int compare(BucketRange arg0, BucketRange arg1) {
-            return definition.getAggregateRangeDefinitionOrderMap().get(
-                    arg0.getKey()).compareTo(
-                    definition.getAggregateRangeDefinitionOrderMap().get(
-                            arg1.getKey()));
+            return definition.getAggregateRangeDefinitionOrderMap().get(arg0.getKey()).compareTo(
+                    definition.getAggregateRangeDefinitionOrderMap().get(arg1.getKey()));
         }
     }
 

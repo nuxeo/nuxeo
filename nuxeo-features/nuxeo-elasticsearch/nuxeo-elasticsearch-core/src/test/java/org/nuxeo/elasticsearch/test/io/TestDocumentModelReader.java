@@ -66,8 +66,7 @@ public class TestDocumentModelReader {
                 + "\"ecm:name\":\"file0\",\"dc:publisher\":null,\"uid:major_version\":\"0\",\"ecm:parentId\":\"35cef677-f721-47b8-ab6b-050dbe257d0d\","
                 + "\"ecm:isVersion\":false,\"uid:minor_version\":\"0\",\"dc:issued\":null,"
                 + "\"ecm:title\":\"File Title\",\"dc:modified\":null,\"dc:expired\":null,\"dc:coverage\":null,\"dc:language\":null}";
-        DocumentModel doc = DocumentModelReaders.fromJson(json)
-                .getDocumentModel();
+        DocumentModel doc = DocumentModelReaders.fromJson(json).getDocumentModel();
         Assert.assertNotNull(doc);
         Assert.assertEquals("56ca3935-c6c9-4cd4-ac23-d9df5ebf340a", doc.getId());
         Assert.assertEquals("project", doc.getCurrentLifeCycleState());
@@ -91,8 +90,7 @@ public class TestDocumentModelReader {
         Map<String, Object> source = new HashMap<String, Object>();
         source.put("ecm:uuid", "001");
         source.put("ecm:primaryType", "File");
-        DocumentModel doc = DocumentModelReaders.fromSource(source)
-                .getDocumentModel();
+        DocumentModel doc = DocumentModelReaders.fromSource(source).getDocumentModel();
         Assert.assertNotNull(doc);
         Assert.assertEquals(doc.getId(), "001");
         Assert.assertEquals("File", doc.getType());
@@ -102,8 +100,7 @@ public class TestDocumentModelReader {
     @Test
     public void IGetTheSameDocAsVcs() throws Exception {
         // I create a document
-        DocumentModel doc = session
-                .createDocumentModel("/", "somefile", "File");
+        DocumentModel doc = session.createDocumentModel("/", "somefile", "File");
         doc.setPropertyValue("dc:title", "Some file");
         session.createDocument(doc);
         session.save();
@@ -114,18 +111,15 @@ public class TestDocumentModelReader {
         esa.refresh();
 
         // search and retrieve from ES
-        ElasticSearchService ess = Framework
-                .getLocalService(ElasticSearchService.class);
-        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(
-                "SELECT * FROM File").fetchFromElasticsearch());
+        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM File").fetchFromElasticsearch());
         Assert.assertEquals(1, docs.totalSize());
         DocumentModel esDoc = docs.get(0);
         // esDoc.detach(false);
         Assert.assertNotNull(esDoc);
 
         // search from ES retrieve with VCS
-        docs = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM File")
-                .fetchFromDatabase());
+        docs = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM File").fetchFromDatabase());
         DocumentModel vcsDoc = docs.get(0);
 
         // compare both docs

@@ -59,8 +59,7 @@ public class TestMapping {
     }
 
     public void assertNumberOfCommandProcessed(int processed) throws Exception {
-        Assert.assertEquals(processed, esa.getTotalCommandProcessed()
-                - commandProcessed);
+        Assert.assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
     }
 
     /**
@@ -70,8 +69,7 @@ public class TestMapping {
         for (int i = 0; (i < 100) && esa.isIndexingInProgress(); i++) {
             Thread.sleep(100);
         }
-        Assert.assertFalse("Still indexing in progress",
-                esa.isIndexingInProgress());
+        Assert.assertFalse("Still indexing in progress", esa.isIndexingInProgress());
         esa.refresh();
     }
 
@@ -89,8 +87,7 @@ public class TestMapping {
     @Test
     public void testIlikeSearch() throws Exception {
         startTransaction();
-        DocumentModel doc = session
-                .createDocumentModel("/", "testDoc1", "File");
+        DocumentModel doc = session.createDocumentModel("/", "testDoc1", "File");
         doc.setPropertyValue("dc:title", "upper case");
         doc.setPropertyValue("dc:description", "UPPER CASE DESC");
         doc = session.createDocument(doc);
@@ -111,33 +108,21 @@ public class TestMapping {
         assertNumberOfCommandProcessed(3);
 
         startTransaction();
-        DocumentModelList ret = ess
-                .query(new NxQueryBuilder(session)
-                        .nxql("SELECT * FROM Document WHERE dc:description ILIKE '%Case%'"));
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description ILIKE '%Case%'"));
         Assert.assertEquals(3, ret.totalSize());
 
-        ret = ess
-                .query(new NxQueryBuilder(session)
-                        .nxql("SELECT * FROM Document WHERE dc:description ILIKE 'Upper%'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description ILIKE 'Upper%'"));
         Assert.assertEquals(1, ret.totalSize());
 
-        ret = ess
-                .query(new NxQueryBuilder(session)
-                        .nxql("SELECT * FROM Document WHERE dc:description ILIKE 'mixED case desc'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description ILIKE 'mixED case desc'"));
         Assert.assertEquals(1, ret.totalSize());
 
         // case sensitive for other operation
-        ret = ess
-                .query(new NxQueryBuilder(session)
-                        .nxql("SELECT * FROM Document WHERE dc:description LIKE '%Case%'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description LIKE '%Case%'"));
         Assert.assertEquals(0, ret.totalSize());
-        ret = ess
-                .query(new NxQueryBuilder(session)
-                        .nxql("SELECT * FROM Document WHERE dc:description LIKE 'Upper%'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description LIKE 'Upper%'"));
         Assert.assertEquals(0, ret.totalSize());
-        ret = ess
-                .query(new NxQueryBuilder(session)
-                        .nxql("SELECT * FROM Document WHERE dc:description LIKE 'UPPER%'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description LIKE 'UPPER%'"));
         Assert.assertEquals(1, ret.totalSize());
 
     }

@@ -60,20 +60,17 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
 
     Long intervalMillis;
 
-    public DateHistogramAggregate(AggregateDefinition definition,
-            DocumentModel searchDocument) {
+    public DateHistogramAggregate(AggregateDefinition definition, DocumentModel searchDocument) {
         super(definition, searchDocument);
     }
 
     @JsonIgnore
     @Override
     public DateHistogramBuilder getEsAggregate() {
-        DateHistogramBuilder ret = AggregationBuilders.dateHistogram(getId())
-                .field(getField());
+        DateHistogramBuilder ret = AggregationBuilders.dateHistogram(getId()).field(getField());
         Map<String, String> props = getProperties();
         if (props.containsKey(AGG_INTERVAL_PROP)) {
-            ret.interval(new DateHistogram.Interval(props
-                    .get(AGG_INTERVAL_PROP)));
+            ret.interval(new DateHistogram.Interval(props.get(AGG_INTERVAL_PROP)));
         }
         if (props.containsKey(AGG_MIN_DOC_COUNT_PROP)) {
             ret.minDocCount(Long.parseLong(props.get(AGG_MIN_DOC_COUNT_PROP)));
@@ -93,14 +90,11 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
                 ret.order(Histogram.Order.KEY_ASC);
                 break;
             default:
-                throw new IllegalArgumentException("Invalid order: "
-                        + props.get(AGG_ORDER_PROP));
+                throw new IllegalArgumentException("Invalid order: " + props.get(AGG_ORDER_PROP));
             }
         }
-        if (props.containsKey(AGG_EXTENDED_BOUND_MAX_PROP)
-                && props.containsKey(AGG_EXTENDED_BOUND_MIN_PROP)) {
-            ret.extendedBounds(props.get(AGG_EXTENDED_BOUND_MIN_PROP),
-                    props.get(AGG_EXTENDED_BOUND_MAX_PROP));
+        if (props.containsKey(AGG_EXTENDED_BOUND_MAX_PROP) && props.containsKey(AGG_EXTENDED_BOUND_MIN_PROP)) {
+            ret.extendedBounds(props.get(AGG_EXTENDED_BOUND_MIN_PROP), props.get(AGG_EXTENDED_BOUND_MAX_PROP));
         }
         if (props.containsKey(AGG_TIME_ZONE_PROP)) {
             ret.preZone(props.get(AGG_TIME_ZONE_PROP));
@@ -125,8 +119,7 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
         }
         OrFilterBuilder ret = FilterBuilders.orFilter();
         for (String sel : getSelection()) {
-            RangeFilterBuilder rangeFilter = FilterBuilders
-                    .rangeFilter(getField());
+            RangeFilterBuilder rangeFilter = FilterBuilders.rangeFilter(getField());
             long from = convertStringToDate(sel);
             long to = from + getIntervalInMillis();
             rangeFilter.gte(from).lt(to);
@@ -141,8 +134,7 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
         if (props.containsKey(AGG_FORMAT_PROP)) {
             fmt = DateTimeFormat.forPattern(props.get(AGG_FORMAT_PROP));
         } else {
-            throw new IllegalArgumentException(
-                    "format property must be defined for " + toString());
+            throw new IllegalArgumentException("format property must be defined for " + toString());
         }
         // TODO should take in account all the locale zone stuff ...
         return fmt.parseDateTime(date).getMillis();
@@ -150,16 +142,13 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
 
     @JsonIgnore
     @Override
-    public void parseEsBuckets(
-            Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
-        List<BucketRangeDate> nxBuckets = new ArrayList<BucketRangeDate>(
-                buckets.size());
+    public void parseEsBuckets(Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
+        List<BucketRangeDate> nxBuckets = new ArrayList<BucketRangeDate>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
             DateHistogram.Bucket dateHistoBucket = (DateHistogram.Bucket) bucket;
             DateTime from = getDateTime(dateHistoBucket.getKeyAsDate());
             DateTime to = addInterval(from);
-            nxBuckets.add(new BucketRangeDate(bucket.getKey(), from, to,
-                    dateHistoBucket.getDocCount()));
+            nxBuckets.add(new BucketRangeDate(bucket.getKey(), from, to, dateHistoBucket.getDocCount()));
         }
         this.buckets = nxBuckets;
     }
@@ -175,12 +164,10 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
             if (props.containsKey(AGG_INTERVAL_PROP)) {
                 interval = props.get(AGG_INTERVAL_PROP);
             } else {
-                throw new IllegalArgumentException(
-                        "interval property must be defined for " + toString());
+                throw new IllegalArgumentException("interval property must be defined for " + toString());
             }
             interval = convertToTimeValueString(interval);
-            intervalMillis = (long) TimeValue.parseTimeValue(interval, null)
-                    .getMillis();
+            intervalMillis = (long) TimeValue.parseTimeValue(interval, null).getMillis();
         }
         return intervalMillis;
     }

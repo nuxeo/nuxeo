@@ -17,17 +17,17 @@
 package org.nuxeo.elasticsearch.io;
 
 import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.common.bytes.BytesArray;
 import org.elasticsearch.search.lookup.SourceLookup;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.common.utils.Path;
-
 
 /**
  * Read a DocumentModel from an ES Json export.
@@ -35,19 +35,19 @@ import org.nuxeo.common.utils.Path;
  * @since 5.9.5
  */
 public class JsonDocumentModelReader {
-    private static final Log log = LogFactory
-            .getLog(JsonDocumentModelReader.class);
+    private static final Log log = LogFactory.getLog(JsonDocumentModelReader.class);
+
     private final Map<String, Object> source;
+
     private String sid;
 
     public JsonDocumentModelReader(String json) {
         byte[] bytes = json.getBytes();
-        source = SourceLookup.sourceAsMap(
-                new BytesArray(bytes, 0, bytes.length));
+        source = SourceLookup.sourceAsMap(new BytesArray(bytes, 0, bytes.length));
     }
 
     public JsonDocumentModelReader(Map<String, Object> source) {
-       this.source = source;
+        this.source = source;
     }
 
     public JsonDocumentModelReader session(CoreSession session) {
@@ -61,7 +61,7 @@ public class JsonDocumentModelReader {
     }
 
     public DocumentModel getDocumentModel() {
-        assert(source != null);
+        assert (source != null);
         String type = getType();
         String name = getPropertyAsString("ecm:name");
         String id = getPropertyAsString("ecm:uuid");
@@ -69,8 +69,8 @@ public class JsonDocumentModelReader {
         String parentId = getPropertyAsString("ecm:parentId");
         String repository = getPropertyAsString("ecm:repository");
 
-        DocumentModelImpl doc = new DocumentModelImpl(sid, getType(), id, new Path(path),
-                new IdRef(id), new IdRef(parentId), null, null, null, repository, false);
+        DocumentModelImpl doc = new DocumentModelImpl(sid, getType(), id, new Path(path), new IdRef(id), new IdRef(
+                parentId), null, null, null, repository, false);
         for (String prop : source.keySet()) {
             String schema = prop.split(":")[0];
             // schema = schema.replace("dc", "dublincore");
@@ -82,9 +82,9 @@ public class JsonDocumentModelReader {
             if (value.isEmpty() || "[]".equals(value)) {
                 continue;
             }
-            // System.out.println( String.format("schema: %s, key %s = %s", schema, key,   value));
+            // System.out.println( String.format("schema: %s, key %s = %s", schema, key, value));
             if ("ecm".equals(schema)) {
-                switch(key) {
+                switch (key) {
                 case "isProxy":
                     doc.setIsProxy(Boolean.valueOf(value));
                     break;
@@ -103,8 +103,7 @@ public class JsonDocumentModelReader {
                     doc.setPropertyValue(prop, value);
                     // doc.setProperty(schema, key, value);
                 } catch (ClientException e) {
-                    log.info(String.format("fetchDocFromEs can not set property %s to %s", key,
-                            value));
+                    log.info(String.format("fetchDocFromEs can not set property %s to %s", key, value));
                 }
             }
         }
@@ -118,6 +117,6 @@ public class JsonDocumentModelReader {
 
     private String getPropertyAsString(String name) {
         Object prop = source.get(name);
-        return (prop == null) ? "": prop.toString();
+        return (prop == null) ? "" : prop.toString();
     }
 }

@@ -27,7 +27,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -40,12 +39,16 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.1
  */
 public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work {
-    private static final Log log = LogFactory
-            .getLog(ScrollingIndexingWorker.class);
+    private static final Log log = LogFactory.getLog(ScrollingIndexingWorker.class);
+
     private static final long serialVersionUID = 1L;
+
     private static final String DEFAULT_BUCKET_SIZE = "500";
+
     protected final String nxql;
+
     protected WorkManager workManager;
+
     protected long documentCount = 0;
 
     public ScrollingIndexingWorker(String repositoryName, String nxql) {
@@ -56,15 +59,13 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
 
     @Override
     public String getTitle() {
-        return "Elasticsearch scrolling indexer: " + nxql + ", processed "
-                + documentCount;
+        return "Elasticsearch scrolling indexer: " + nxql + ", processed " + documentCount;
     }
 
     @Override
     protected void doWork() throws Exception {
         String jobName = getSchedulePath().getPath();
-        log.warn(String.format("Re-indexing job: %s started, NXQL: %s on repository: %s",
-                jobName, nxql, repositoryName));
+        log.warn(String.format("Re-indexing job: %s started, NXQL: %s on repository: %s", jobName, nxql, repositoryName));
         IterableQueryResult res = session.queryAndFetch(nxql, NXQL.NXQL);
         int bucketCount = 0;
         try {
@@ -86,15 +87,13 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
             }
         } finally {
             res.close();
-            log.warn(String
-                    .format("Re-indexing job: %s has submited %d documents in %d bucket workers",
-                            jobName, documentCount, bucketCount));
+            log.warn(String.format("Re-indexing job: %s has submited %d documents in %d bucket workers", jobName,
+                    documentCount, bucketCount));
         }
     }
 
     protected void scheduleBucketWorker(List<String> bucket, boolean isLast) {
-        BucketIndexingWorker subWorker = new BucketIndexingWorker(
-                repositoryName, bucket, isLast);
+        BucketIndexingWorker subWorker = new BucketIndexingWorker(repositoryName, bucket, isLast);
         getWorkManager().schedule(subWorker);
     }
 
@@ -106,8 +105,7 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
     }
 
     protected int getBucketSize() {
-        String value = Framework.getProperty(REINDEX_BUCKET_READ_PROPERTY,
-                DEFAULT_BUCKET_SIZE);
+        String value = Framework.getProperty(REINDEX_BUCKET_READ_PROPERTY, DEFAULT_BUCKET_SIZE);
         return Integer.parseInt(value);
     }
 

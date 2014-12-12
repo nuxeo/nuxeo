@@ -18,8 +18,8 @@
 package org.nuxeo.elasticsearch.test;
 
 import java.io.File;
-
 import java.security.InvalidParameterException;
+
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
@@ -36,9 +36,7 @@ import com.google.inject.Provider;
 import com.google.inject.Scopes;
 
 /**
- *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 @Features(RuntimeFeature.class)
 public class BareElasticSearchFeature extends SimpleFeature {
@@ -53,14 +51,11 @@ public class BareElasticSearchFeature extends SimpleFeature {
         File home = Framework.getRuntime().getHome();
         File esDirectory = new File(home, "elasticsearch");
         if (!esDirectory.exists() && !esDirectory.mkdir()) {
-            throw new InvalidParameterException("Can not create directory: "
-                    + esDirectory.getAbsolutePath());
+            throw new InvalidParameterException("Can not create directory: " + esDirectory.getAbsolutePath());
         }
-        Settings settings = ImmutableSettings.settingsBuilder().put(
-                "node.http.enabled", true).put("path.logs",
-                esDirectory.getPath() + "/logs").put("path.data",
-                esDirectory.getPath() + "/data").put("gateway.type", "none").put(
-                "index.store.type", "memory").put("index.number_of_shards", 1).put(
+        Settings settings = ImmutableSettings.settingsBuilder().put("node.http.enabled", true).put("path.logs",
+                esDirectory.getPath() + "/logs").put("path.data", esDirectory.getPath() + "/data").put("gateway.type",
+                "none").put("index.store.type", "memory").put("index.number_of_shards", 1).put(
                 "index.number_of_replicas", 1).build();
         node = NodeBuilder.nodeBuilder().local(true).settings(settings).node();
         client = node.client();

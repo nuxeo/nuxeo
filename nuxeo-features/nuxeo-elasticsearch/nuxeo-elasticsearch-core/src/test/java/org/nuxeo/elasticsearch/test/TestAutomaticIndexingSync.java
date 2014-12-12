@@ -25,7 +25,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test in synchronous mode
- *
  */
 
 @RunWith(FeaturesRunner.class)

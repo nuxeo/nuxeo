@@ -17,18 +17,17 @@
 
 package org.nuxeo.elasticsearch.config;
 
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XNodeList;
-import org.nuxeo.common.xmap.annotation.XObject;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.BINARYTEXT_FIELD;
 
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * XMap descriptor for configuring an index
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 @XObject(value = "elasticSearchIndex")
 public class ElasticSearchIndexConfig {
@@ -36,10 +35,10 @@ public class ElasticSearchIndexConfig {
     @XNode("@enabled")
     protected boolean isEnabled = true;
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         if (isEnabled()) {
-            return String.format("EsIndexConfig(%s, %s, %s)",
-                    getName(), getRepositoryName(), getType());
+            return String.format("EsIndexConfig(%s, %s, %s)", getName(), getRepositoryName(), getType());
         }
         return "EsIndexConfig disabled";
     }
@@ -59,124 +58,53 @@ public class ElasticSearchIndexConfig {
     @XNode("settings")
     protected String settings;
 
-    final public static String DEFAULT_SETTING = "{\n"
-            + "   \"analysis\" : {\n"
-            + "      \"filter\" : {\n"
-            + "         \"en_stem_filter\" : {\n"
-            + "            \"name\" : \"minimal_english\",\n"
-            + "            \"type\" : \"stemmer\"\n"
-            + "         },\n"
-            + "         \"en_stop_filter\" : {\n"
-            + "            \"stopwords\" : [\n"
-            + "               \"_english_\"\n"
-            + "            ],\n"
-            + "            \"type\" : \"stop\"\n"
-            + "         }\n"
-            + "      },\n"
-            + "      \"tokenizer\" : {\n"
-            + "         \"path_tokenizer\" : {\n"
-            + "            \"delimiter\" : \"/\",\n"
-            + "            \"type\" : \"path_hierarchy\"\n"
-            + "         }\n"
-            + "      },\n"
-            + "      \"analyzer\" : {\n"
-            + "         \"en_analyzer\" : {\n"
-            + "            \"alias\" : \"fulltext\",\n"
-            + "            \"filter\" : [\n"
-            + "               \"lowercase\",\n"
-            + "               \"en_stop_filter\",\n"
-            + "               \"en_stem_filter\",\n"
-            + "               \"asciifolding\"\n"
-            + "            ],\n"
-            + "            \"type\" : \"custom\",\n"
-            + "            \"tokenizer\" : \"standard\"\n"
-            + "         },\n"
-            + "         \"path_analyzer\" : {\n"
-            + "            \"type\" : \"custom\",\n"
-            + "            \"tokenizer\" : \"path_tokenizer\"\n"
-            + "         },\n"
-            + "         \"default\" : {\n"
-            + "            \"type\" : \"custom\",\n"
-            + "            \"tokenizer\" : \"keyword\"\n"
-            + "         }\n"
-            + "      }\n"
-            + "   }\n"
-            + "}";
+    final public static String DEFAULT_SETTING = "{\n" + "   \"analysis\" : {\n" + "      \"filter\" : {\n"
+            + "         \"en_stem_filter\" : {\n" + "            \"name\" : \"minimal_english\",\n"
+            + "            \"type\" : \"stemmer\"\n" + "         },\n" + "         \"en_stop_filter\" : {\n"
+            + "            \"stopwords\" : [\n" + "               \"_english_\"\n" + "            ],\n"
+            + "            \"type\" : \"stop\"\n" + "         }\n" + "      },\n" + "      \"tokenizer\" : {\n"
+            + "         \"path_tokenizer\" : {\n" + "            \"delimiter\" : \"/\",\n"
+            + "            \"type\" : \"path_hierarchy\"\n" + "         }\n" + "      },\n"
+            + "      \"analyzer\" : {\n" + "         \"en_analyzer\" : {\n" + "            \"alias\" : \"fulltext\",\n"
+            + "            \"filter\" : [\n" + "               \"lowercase\",\n"
+            + "               \"en_stop_filter\",\n" + "               \"en_stem_filter\",\n"
+            + "               \"asciifolding\"\n" + "            ],\n" + "            \"type\" : \"custom\",\n"
+            + "            \"tokenizer\" : \"standard\"\n" + "         },\n" + "         \"path_analyzer\" : {\n"
+            + "            \"type\" : \"custom\",\n" + "            \"tokenizer\" : \"path_tokenizer\"\n"
+            + "         },\n" + "         \"default\" : {\n" + "            \"type\" : \"custom\",\n"
+            + "            \"tokenizer\" : \"keyword\"\n" + "         }\n" + "      }\n" + "   }\n" + "}";
 
     @XNode("mapping")
     protected String mapping;
 
-    final public static String DEFAULT_MAPPING = "{\n"
-            + "   \"_all\" : {\n"
-            + "      \"analyzer\" : \"fulltext\"\n"
-            + "   },\n"
-            + "   \"properties\" : {\n"
-            + "      \"dc:title\" : {\n"
-            + "         \"type\" : \"multi_field\",\n"
-            + "         \"fields\" : {\n"
-            + "           \"dc:title\" : {\n"
-            + "             \"index\" : \"not_analyzed\",\n"
-            + "             \"type\" : \"string\"\n"
-            + "           },\n"
-            + "           \"fulltext\" : {\n"
-            + "             \"boost\": 2,\n"
-            + "             \"type\": \"string\",\n"
-            + "             \"analyzer\" : \"fulltext\"\n"
-            + "          }\n"
-            + "        }\n"
-            + "      },\n"
-            + "      \"dc:description\" : {\n"
-            + "         \"type\" : \"multi_field\",\n"
-            + "         \"fields\" : {\n"
-            + "           \"dc:description\" : {\n"
-            + "             \"index\" : \"no\",\n"
-            + "             \"type\" : \"string\"\n"
-            + "           },\n"
-            + "           \"fulltext\" : {\n"
-            + "             \"boost\": 1.5,\n"
-            + "             \"type\": \"string\",\n"
-            + "             \"analyzer\" : \"fulltext\"\n"
-            + "          }\n"
-            + "        }\n"
-            + "      },\n"
-            + "      \"ecm:binarytext*\" : {\n"
-            + "         \"type\" : \"string\",\n"
-            + "         \"analyzer\" : \"fulltext\"\n"
-            + "      },\n"
-            + "      \"ecm:path\" : {\n"
-            + "         \"type\" : \"multi_field\",\n"
-            + "         \"fields\" : {\n"
-            + "            \"children\" : {\n"
+    final public static String DEFAULT_MAPPING = "{\n" + "   \"_all\" : {\n" + "      \"analyzer\" : \"fulltext\"\n"
+            + "   },\n" + "   \"properties\" : {\n" + "      \"dc:title\" : {\n"
+            + "         \"type\" : \"multi_field\",\n" + "         \"fields\" : {\n" + "           \"dc:title\" : {\n"
+            + "             \"index\" : \"not_analyzed\",\n" + "             \"type\" : \"string\"\n"
+            + "           },\n" + "           \"fulltext\" : {\n" + "             \"boost\": 2,\n"
+            + "             \"type\": \"string\",\n" + "             \"analyzer\" : \"fulltext\"\n" + "          }\n"
+            + "        }\n" + "      },\n" + "      \"dc:description\" : {\n"
+            + "         \"type\" : \"multi_field\",\n" + "         \"fields\" : {\n"
+            + "           \"dc:description\" : {\n" + "             \"index\" : \"no\",\n"
+            + "             \"type\" : \"string\"\n" + "           },\n" + "           \"fulltext\" : {\n"
+            + "             \"boost\": 1.5,\n" + "             \"type\": \"string\",\n"
+            + "             \"analyzer\" : \"fulltext\"\n" + "          }\n" + "        }\n" + "      },\n"
+            + "      \"ecm:binarytext*\" : {\n" + "         \"type\" : \"string\",\n"
+            + "         \"analyzer\" : \"fulltext\"\n" + "      },\n" + "      \"ecm:path\" : {\n"
+            + "         \"type\" : \"multi_field\",\n" + "         \"fields\" : {\n" + "            \"children\" : {\n"
             + "               \"search_analyzer\" : \"keyword\",\n"
-            + "               \"index_analyzer\" : \"path_analyzer\",\n"
-            + "               \"type\" : \"string\"\n"
-            + "            },\n"
-            + "            \"ecm:path\" : {\n"
-            + "               \"index\" : \"not_analyzed\",\n"
-            + "               \"type\" : \"string\"\n"
-            + "            }\n"
-            + "         }\n"
-            + "      },\n"
-            + "      \"dc:created\": {\n"
-            + "         \"format\": \"dateOptionalTime\",\n"
-            + "        \"type\": \"date\"\n"
-            + "      },\n"
-            + "      \"dc:modified\": {\n"
-            + "         \"format\": \"dateOptionalTime\",\n"
-            + "        \"type\": \"date\"\n"
-            + "      },\n"
-            + "      \"ecm:pos*\" : {\n"
-            + "         \"type\" : \"integer\"\n"
-            + "      }\n"
-            + "   }\n"
-            + "}";
+            + "               \"index_analyzer\" : \"path_analyzer\",\n" + "               \"type\" : \"string\"\n"
+            + "            },\n" + "            \"ecm:path\" : {\n" + "               \"index\" : \"not_analyzed\",\n"
+            + "               \"type\" : \"string\"\n" + "            }\n" + "         }\n" + "      },\n"
+            + "      \"dc:created\": {\n" + "         \"format\": \"dateOptionalTime\",\n"
+            + "        \"type\": \"date\"\n" + "      },\n" + "      \"dc:modified\": {\n"
+            + "         \"format\": \"dateOptionalTime\",\n" + "        \"type\": \"date\"\n" + "      },\n"
+            + "      \"ecm:pos*\" : {\n" + "         \"type\" : \"integer\"\n" + "      }\n" + "   }\n" + "}";
 
-    @XNodeList(value = "fetchFromSource/exclude", type = String[].class,
-            componentType = String.class)
+    @XNodeList(value = "fetchFromSource/exclude", type = String[].class, componentType = String.class)
     protected String[] excludes;
 
-    @XNodeList(value = "fetchFromSource/include", type = String[].class,
-            componentType = String.class)
+    @XNodeList(value = "fetchFromSource/include", type = String[].class, componentType = String.class)
     protected String[] includes;
 
     public String[] getExcludes() {
@@ -202,11 +130,11 @@ public class ElasticSearchIndexConfig {
     }
 
     public String getSettings() {
-        return settings == null ? DEFAULT_SETTING: settings;
+        return settings == null ? DEFAULT_SETTING : settings;
     }
 
     public String getMapping() {
-        return mapping == null ? DEFAULT_MAPPING: mapping;
+        return mapping == null ? DEFAULT_MAPPING : mapping;
     }
 
     public boolean mustCreate() {

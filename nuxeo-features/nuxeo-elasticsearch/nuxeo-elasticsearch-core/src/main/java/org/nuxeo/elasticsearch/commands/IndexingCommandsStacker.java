@@ -18,6 +18,7 @@
 package org.nuxeo.elasticsearch.commands;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BINARYTEXT_UPDATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDOUT;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
@@ -25,7 +26,6 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_B
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_SECURITY_UPDATED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BINARYTEXT_UPDATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_TAG_UPDATED;
 
 import java.util.ArrayList;
@@ -44,12 +44,10 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Contains logic to stack ElasticSearch commands depending on Document events
- *
- * This class is mainly here to make testing easier
+ * Contains logic to stack ElasticSearch commands depending on Document events This class is mainly here to make testing
+ * easier
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public abstract class IndexingCommandsStacker {
 
@@ -109,13 +107,12 @@ public abstract class IndexingCommandsStacker {
         try {
             TransactionManager tm = TransactionHelper.lookupTransactionManager();
             if (tm != null) {
-                if (tm.getTransaction()!=null) {
+                if (tm.getTransaction() != null) {
                     tm.getTransaction().registerSynchronization(sync);
                     return true;
                 }
-                if (! Framework.isTestModeSet()) {
-                    log.error(
-                            "Unable to register synchronization : no active transaction");
+                if (!Framework.isTestModeSet()) {
+                    log.error("Unable to register synchronization : no active transaction");
                 }
                 return false;
             } else {
@@ -165,10 +162,8 @@ public abstract class IndexingCommandsStacker {
         }
     }
 
-    protected abstract void fireSyncIndexing(List<IndexingCommand> syncCommands)
-            throws ClientException;
+    protected abstract void fireSyncIndexing(List<IndexingCommand> syncCommands) throws ClientException;
 
-    protected abstract void fireAsyncIndexing(
-            List<IndexingCommand> asyncCommands) throws ClientException;
+    protected abstract void fireAsyncIndexing(List<IndexingCommand> asyncCommands) throws ClientException;
 
 }

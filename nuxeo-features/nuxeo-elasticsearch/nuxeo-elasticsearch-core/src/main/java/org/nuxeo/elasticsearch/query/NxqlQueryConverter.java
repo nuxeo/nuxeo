@@ -58,16 +58,16 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Helper class that holds the conversion logic.
- *
- * Conversion is based on the existing NXQL Parser, we are just using a visitor
- * to build the ES request.
- *
+ * Helper class that holds the conversion logic. Conversion is based on the existing NXQL Parser, we are just using a
+ * visitor to build the ES request.
  */
 final public class NxqlQueryConverter {
     private static final Log log = LogFactory.getLog(NxqlQueryConverter.class);
+
     private static final String SELECT_ALL = "SELECT * FROM Document";
+
     private static final String SELECT_ALL_WHERE = "SELECT * FROM Document WHERE ";
+
     private static final String SIMPLE_QUERY_PREFIX = "es: ";
 
     private NxqlQueryConverter() {
@@ -92,8 +92,7 @@ final public class NxqlQueryConverter {
             @Override
             public void visitFromClause(FromClause node) {
                 FromList elements = node.elements;
-                SchemaManager schemaManager = Framework
-                        .getLocalService(SchemaManager.class);
+                SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
 
                 for (int i = 0; i < elements.size(); i++) {
                     String type = elements.get(i);
@@ -102,8 +101,7 @@ final public class NxqlQueryConverter {
                         fromList.clear();
                         return;
                     }
-                    Set<String> types = schemaManager
-                            .getDocumentTypeNamesExtending(type);
+                    Set<String> types = schemaManager.getDocumentTypeNamesExtending(type);
                     if (types != null) {
                         fromList.addAll(types);
                     }
@@ -112,8 +110,7 @@ final public class NxqlQueryConverter {
 
             @Override
             public void visitMultiExpression(MultiExpression node) {
-                for (Iterator<Operand> it = node.values.iterator(); it
-                        .hasNext();) {
+                for (Iterator<Operand> it = node.values.iterator(); it.hasNext();) {
                     it.next().accept(this);
                     if (it.hasNext()) {
                         node.operator.accept(this);
@@ -129,8 +126,7 @@ final public class NxqlQueryConverter {
             @Override
             public void visitExpression(Expression node) {
                 Operator op = node.operator;
-                if (op == Operator.AND || op == Operator.OR
-                        || op == Operator.NOT) {
+                if (op == Operator.AND || op == Operator.OR || op == Operator.NOT) {
                     builders.add(new ExpressionBuilder(op.toString()));
                     super.visitExpression(node);
                     ExpressionBuilder expr = builders.removeLast();
@@ -138,10 +134,8 @@ final public class NxqlQueryConverter {
                         builders.getLast().merge(expr);
                     }
                 } else {
-                    Reference ref = node.lvalue instanceof Reference ? (Reference) node.lvalue
-                            : null;
-                    String name = ref != null ? ref.name : node.lvalue
-                            .toString();
+                    Reference ref = node.lvalue instanceof Reference ? (Reference) node.lvalue : null;
+                    String name = ref != null ? ref.name : node.lvalue.toString();
                     String value = null;
                     try {
                         value = ((Literal) node.rvalue).asString();
@@ -160,18 +154,14 @@ final public class NxqlQueryConverter {
                         }
                     }
                     // add expression to the last builder
-                    builders.getLast().add(
-                            makeQueryFromSimpleExpression(op.toString(), name,
-                                    value, values));
+                    builders.getLast().add(makeQueryFromSimpleExpression(op.toString(), name, value, values));
                 }
             }
         });
         QueryBuilder queryBuilder = ret.get();
         if (!fromList.isEmpty()) {
-            return QueryBuilders.filteredQuery(
-                    queryBuilder,
-                    makeQueryFromSimpleExpression("IN", NXQL.ECM_PRIMARYTYPE,
-                            null, fromList.toArray()).filter);
+            return QueryBuilders.filteredQuery(queryBuilder,
+                    makeQueryFromSimpleExpression("IN", NXQL.ECM_PRIMARYTYPE, null, fromList.toArray()).filter);
         }
         return queryBuilder;
     }
@@ -200,8 +190,7 @@ final public class NxqlQueryConverter {
         return query;
     }
 
-    public static QueryAndFilter makeQueryFromSimpleExpression(String op,
-            String name, Object value, Object[] values) {
+    public static QueryAndFilter makeQueryFromSimpleExpression(String op, String name, Object value, Object[] values) {
         QueryBuilder query = null;
         FilterBuilder filter = null;
         if (NXQL.ECM_ISVERSION_OLD.equals(name)) {
@@ -209,8 +198,7 @@ final public class NxqlQueryConverter {
         }
         name = getComplexFieldName(name);
         if (name.startsWith(NXQL.ECM_FULLTEXT)
-                && ("=".equals(op) || "!=".equals(op) || "<>".equals(op)
-                        || "LIKE".equals(op) || "NOT LIKE".equals(op))) {
+                && ("=".equals(op) || "!=".equals(op) || "<>".equals(op) || "LIKE".equals(op) || "NOT LIKE".equals(op))) {
             String field = name.replace(NXQL.ECM_FULLTEXT, "");
             if (field.startsWith(".")) {
                 field = field.substring(1) + ".fulltext";
@@ -228,22 +216,17 @@ final public class NxqlQueryConverter {
                 // TODO translate according to standard NXQL fulltext syntax
                 defaultOperator = SimpleQueryStringBuilder.Operator.AND;
             }
-            query = QueryBuilders.simpleQueryString(queryString)
-                    .field(field)
-                    .defaultOperator(defaultOperator)
-                    .analyzer("fulltext");
+            query = QueryBuilders.simpleQueryString(queryString).field(field).defaultOperator(defaultOperator).analyzer(
+                    "fulltext");
             if ("!=".equals(op) || "<>".equals(op) || "NOT LIKE".equals(op)) {
-                filter = FilterBuilders.notFilter(FilterBuilders
-                        .queryFilter(query));
+                filter = FilterBuilders.notFilter(FilterBuilders.queryFilter(query));
                 query = null;
             }
         } else if ("=".equals(op)) {
             filter = FilterBuilders.termFilter(name, value);
         } else if ("<>".equals(op) || "!=".equals(op)) {
-            filter = FilterBuilders.notFilter(FilterBuilders.termFilter(name,
-                    value));
-        } else if ("LIKE".equals(op) || "ILIKE".equals(op)
-                || "NOT LIKE".equals(op) || "NOT ILIKE".equals(op)) {
+            filter = FilterBuilders.notFilter(FilterBuilders.termFilter(name, value));
+        } else if ("LIKE".equals(op) || "ILIKE".equals(op) || "NOT LIKE".equals(op) || "NOT ILIKE".equals(op)) {
             // ILIKE will work only with a correct mapping
             String likeValue = ((String) value).replace("%", "*");
             String fieldName = name;
@@ -251,21 +234,17 @@ final public class NxqlQueryConverter {
                 likeValue = likeValue.toLowerCase();
                 fieldName = name + ".lowercase";
             }
-            if (StringUtils.countMatches(likeValue, "*") == 1
-                    && likeValue.endsWith("*")) {
-                query = QueryBuilders.matchPhrasePrefixQuery(fieldName,
-                        likeValue.replace("*", ""));
+            if (StringUtils.countMatches(likeValue, "*") == 1 && likeValue.endsWith("*")) {
+                query = QueryBuilders.matchPhrasePrefixQuery(fieldName, likeValue.replace("*", ""));
             } else {
                 query = QueryBuilders.wildcardQuery(fieldName, likeValue);
             }
             if (op.startsWith("NOT")) {
-                filter = FilterBuilders.notFilter(FilterBuilders
-                        .queryFilter(query));
+                filter = FilterBuilders.notFilter(FilterBuilders.queryFilter(query));
                 query = null;
             }
         } else if ("BETWEEN".equals(op) || "NOT BETWEEN".equals(op)) {
-            filter = FilterBuilders.rangeFilter(name).from(values[0])
-                    .to(values[1]);
+            filter = FilterBuilders.rangeFilter(name).from(values[0]).to(values[1]);
             if ("NOT BETWEEN".equals(op)) {
                 filter = FilterBuilders.notFilter(filter);
             }
@@ -311,8 +290,7 @@ final public class NxqlQueryConverter {
 
             @Override
             public void visitOrderByExpr(OrderByExpr node) {
-                sortInfos.add(new SortInfo(node.reference.name,
-                        !node.isDescending));
+                sortInfos.add(new SortInfo(node.reference.name, !node.isDescending));
             }
         });
         return sortInfos;
@@ -320,11 +298,11 @@ final public class NxqlQueryConverter {
 
     /**
      * Class to hold both a query and a filter
-     *
      */
     public static class QueryAndFilter {
 
         public final QueryBuilder query;
+
         public final FilterBuilder filter;
 
         public QueryAndFilter(QueryBuilder query, FilterBuilder filter) {
@@ -336,6 +314,7 @@ final public class NxqlQueryConverter {
     public static class ExpressionBuilder {
 
         public final String operator;
+
         public QueryBuilder query;
 
         public ExpressionBuilder(final String op) {
@@ -381,8 +360,7 @@ final public class NxqlQueryConverter {
         }
 
         public void merge(ExpressionBuilder expr) {
-            if ((expr.operator != null) && expr.operator.equals(operator)
-                    && (query == null)) {
+            if ((expr.operator != null) && expr.operator.equals(operator) && (query == null)) {
                 query = expr.query;
             } else {
                 add(new QueryAndFilter(expr.query, null));

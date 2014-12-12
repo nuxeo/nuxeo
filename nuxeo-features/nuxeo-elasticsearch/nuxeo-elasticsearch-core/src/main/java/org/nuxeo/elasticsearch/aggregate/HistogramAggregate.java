@@ -50,16 +50,14 @@ public class HistogramAggregate extends AggregateEsBase<BucketRange> {
 
     private Integer interval;
 
-    public HistogramAggregate(AggregateDefinition definition,
-            DocumentModel searchDocument) {
+    public HistogramAggregate(AggregateDefinition definition, DocumentModel searchDocument) {
         super(definition, searchDocument);
     }
 
     @JsonIgnore
     @Override
     public HistogramBuilder getEsAggregate() {
-        HistogramBuilder ret = AggregationBuilders.histogram(getId()).field(
-                getField());
+        HistogramBuilder ret = AggregationBuilders.histogram(getId()).field(getField());
         Map<String, String> props = getProperties();
         ret.interval(getInterval());
         if (props.containsKey(AGG_MIN_DOC_COUNT_PROP)) {
@@ -80,14 +78,11 @@ public class HistogramAggregate extends AggregateEsBase<BucketRange> {
                 ret.order(Histogram.Order.KEY_ASC);
                 break;
             default:
-                throw new IllegalArgumentException("Invalid order: "
-                        + props.get(AGG_ORDER_PROP));
+                throw new IllegalArgumentException("Invalid order: " + props.get(AGG_ORDER_PROP));
             }
         }
-        if (props.containsKey(AGG_EXTENDED_BOUND_MAX_PROP)
-                && props.containsKey(AGG_EXTENDED_BOUND_MIN_PROP)) {
-            ret.extendedBounds(
-                    Long.parseLong(props.get(AGG_EXTENDED_BOUND_MIN_PROP)),
+        if (props.containsKey(AGG_EXTENDED_BOUND_MAX_PROP) && props.containsKey(AGG_EXTENDED_BOUND_MIN_PROP)) {
+            ret.extendedBounds(Long.parseLong(props.get(AGG_EXTENDED_BOUND_MIN_PROP)),
                     Long.parseLong(props.get(AGG_EXTENDED_BOUND_MAX_PROP)));
         }
         return ret;
@@ -101,8 +96,7 @@ public class HistogramAggregate extends AggregateEsBase<BucketRange> {
         }
         OrFilterBuilder ret = FilterBuilders.orFilter();
         for (String sel : getSelection()) {
-            RangeFilterBuilder rangeFilter = FilterBuilders
-                    .rangeFilter(getField());
+            RangeFilterBuilder rangeFilter = FilterBuilders.rangeFilter(getField());
             long from = Long.parseLong(sel);
             long to = from + getInterval();
             rangeFilter.gte(from).lt(to);
@@ -113,14 +107,12 @@ public class HistogramAggregate extends AggregateEsBase<BucketRange> {
 
     @JsonIgnore
     @Override
-    public void parseEsBuckets(
-            Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
+    public void parseEsBuckets(Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
         List<BucketRange> nxBuckets = new ArrayList<BucketRange>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
             Histogram.Bucket histoBucket = (Histogram.Bucket) bucket;
-            nxBuckets.add(new BucketRange(bucket.getKey(), histoBucket
-                    .getKeyAsNumber(), histoBucket.getKeyAsNumber().intValue()
-                    + getInterval(), histoBucket.getDocCount()));
+            nxBuckets.add(new BucketRange(bucket.getKey(), histoBucket.getKeyAsNumber(),
+                    histoBucket.getKeyAsNumber().intValue() + getInterval(), histoBucket.getDocCount()));
         }
         this.buckets = nxBuckets;
     }
@@ -131,8 +123,7 @@ public class HistogramAggregate extends AggregateEsBase<BucketRange> {
             if (props.containsKey(AGG_INTERVAL_PROP)) {
                 interval = Integer.parseInt(props.get(AGG_INTERVAL_PROP));
             } else {
-                throw new IllegalArgumentException(
-                        "interval property must be defined for " + toString());
+                throw new IllegalArgumentException("interval property must be defined for " + toString());
             }
         }
         return interval;

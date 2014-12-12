@@ -29,10 +29,8 @@ import org.nuxeo.runtime.api.Framework;
  * Worker to index children recursively
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
-public class ChildrenIndexingWorker extends AbstractIndexingWorker implements
-        Work {
+public class ChildrenIndexingWorker extends AbstractIndexingWorker implements Work {
 
     private static final long serialVersionUID = 1L;
 
@@ -42,8 +40,7 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements
 
     @Override
     public String getTitle() {
-        String title = " ElasticSearch indexing children for doc "
-                + cmd.getDocId() + " in repository "
+        String title = " ElasticSearch indexing children for doc " + cmd.getDocId() + " in repository "
                 + cmd.getRepository();
         if (path != null) {
             title = title + " (" + path + ")";
@@ -52,8 +49,7 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements
     }
 
     @Override
-    protected void doIndexingWork(ElasticSearchIndexing esi, IndexingCommand cmd)
-            throws Exception {
+    protected void doIndexingWork(ElasticSearchIndexing esi, IndexingCommand cmd) throws Exception {
         DocumentModel doc = cmd.getTargetDocument();
         DocumentModelIterator iter = session.getChildrenIterator(doc.getRef());
         while (iter.hasNext()) {
@@ -67,8 +63,7 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements
                 esi.indexNow(childCommand);
             }
             if (child.isFolder()) {
-                ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(
-                        childCommand);
+                ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(childCommand);
                 WorkManager wm = Framework.getLocalService(WorkManager.class);
                 wm.schedule(subWorker);
             }
