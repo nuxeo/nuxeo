@@ -21,6 +21,7 @@
 
 package org.nuxeo.common.utils;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -62,8 +63,14 @@ public final class StringUtils {
 
     /**
      * Replaces accented characters from a non-null String by their ascii equivalent.
+     *
+     * @param normalize if true, normalize the string using NFC
+     * @since 7.1
      */
-    public static String toAscii(String s) {
+    public static String toAscii(String s, boolean normalize) {
+        if (normalize) {
+            s = Normalizer.normalize(s, Normalizer.Form.NFC);
+        }
         StringBuilder sb = new StringBuilder();
         int n = s.length();
         for (int i = 0; i < n; i++) {
@@ -76,6 +83,13 @@ public final class StringUtils {
             }
         }
         return sb.toString();
+    }
+
+    /**
+     * Replaces accented characters from a non-null String by their ascii equivalent.
+     */
+    public static String toAscii(String s) {
+        return toAscii(s, false);
     }
 
     /**

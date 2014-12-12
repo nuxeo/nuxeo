@@ -224,7 +224,7 @@ public class DocumentListZipExporter {
     protected String escapeEntryPath(String path) {
         String zipEntryEncoding = Framework.getProperty(ZIP_ENTRY_ENCODING_PROPERTY);
         if (zipEntryEncoding != null && zipEntryEncoding.equals(ZIP_ENTRY_ENCODING_OPTIONS.ascii.toString())) {
-            return StringUtils.toAscii(path);
+            return StringUtils.toAscii(path, true);
         }
         return path;
     }
