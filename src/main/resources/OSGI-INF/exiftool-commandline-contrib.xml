@@ -1,8 +1,8 @@
 <component name="org.nuxeo.binary.metadata.exiftool.commandline">
 
   <extension
-    target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
-    point="command">
+          target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+          point="command">
 
     <command name="exiftool-read" enabled="true">
       <commandLine>exiftool</commandLine>

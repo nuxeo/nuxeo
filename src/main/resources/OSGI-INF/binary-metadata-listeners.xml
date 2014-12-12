@@ -4,7 +4,8 @@
              point="listener">
 
     <listener name="binarymetadatalistener" async="false" postCommit="false"
-              class="org.nuxeo.binary.metadata.api.listener.BinaryMetadataListener" order="100">
+              class="org.nuxeo.binary.metadata.api.listener.BinaryMetadataListener"
+              order="100">
       <event>aboutToCreate</event>
       <event>beforeDocumentModification</event>
     </listener>
