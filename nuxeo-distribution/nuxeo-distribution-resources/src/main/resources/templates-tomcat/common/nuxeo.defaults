@@ -8,7 +8,7 @@ org.nuxeo.runtime.server.enabled=false
 facelets.REFRESH_PERIOD=-1
 org.nuxeo.ecm.platform.liveedit.autoversioning=none
 
-zip.entry.encoding=ascii
+zip.entry.encoding=
 
 # default|ldap|multi
 nuxeo.directory.type=default
