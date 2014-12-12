@@ -1,0 +1,24 @@
+<component name="org.nuxeo.binary.metadata.contrib.test">
+
+  <extension target="org.nuxeo.metadata.MetadataService"
+             point="metadataMappings">
+    <metadataMapping id="xmp" processor="exifTool" blobXPath="file:content">
+      <metadata name="tiff:ImageWidth" xpath="xmp:ImageWidth"/>
+      <metadata name="tiff:ImageLength" xpath="xmp:ImageLength"/>
+      <metadata name="xmp:CreatorTool" xpath="xmp:CreatorTool"/>
+    </metadataMapping>
+  </extension>
+
+  <extension target="org.nuxeo.binary.metadata.BinaryMetadataService"
+             point="rules">
+    <rule id="default" order="0" enabled="true" async="false">
+      <metadataMappings>
+        <metadataMapping-id>xmp</metadataMapping-id>
+      </metadataMappings>
+      <filters>
+        <filter-id>hasXMPFacet</filter-id>
+      </filters>
+    </rule>
+  </extension>
+
+</component>
