@@ -66,6 +66,7 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
     protected void doWork() throws Exception {
         String jobName = getSchedulePath().getPath();
         log.warn(String.format("Re-indexing job: %s started, NXQL: %s on repository: %s", jobName, nxql, repositoryName));
+        CoreSession session = initSession(repositoryName);
         IterableQueryResult res = session.queryAndFetch(nxql, NXQL.NXQL);
         int bucketCount = 0;
         try {
