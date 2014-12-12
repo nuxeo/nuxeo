@@ -19,13 +19,10 @@ package org.nuxeo.ecm.core.schema.types.reference;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.constraints.AbstractConstraint;
-import org.nuxeo.ecm.core.schema.types.constraints.ConstraintViolation.PathNode;
 
 /**
  * External references are document field with a simple type whose value refers to an external business entity. This
@@ -65,7 +62,7 @@ public final class ExternalReferenceConstraint extends AbstractConstraint {
     }
 
     @Override
-    public String getErrorMessage(Schema schema, List<PathNode> errorLocation, Object invalidValue, Locale locale) {
-        return resolver.getConstraintErrorMessage(schema, errorLocation, invalidValue, locale);
+    public String getErrorMessage(Object invalidValue, Locale locale) {
+        return resolver.getConstraintErrorMessage(invalidValue, locale);
     }
 }

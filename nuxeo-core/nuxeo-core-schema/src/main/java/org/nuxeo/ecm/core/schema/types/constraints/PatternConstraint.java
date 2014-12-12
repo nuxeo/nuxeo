@@ -18,9 +18,15 @@
 package org.nuxeo.ecm.core.schema.types.constraints;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 
 /**
  * This constraint ensures some object's String representation match a pattern.
@@ -72,6 +78,27 @@ public class PatternConstraint extends AbstractConstraint {
      */
     public String getPattern() {
         return pattern.pattern();
+    }
+
+    @Override
+    public String getErrorMessage(Object invalidValue, Locale locale) {
+        // test whether there's a custom translation for this field constraint specific translation
+        // the expected key is label.schema.constraint.violation.[ConstraintName]
+        // follow the AbstractConstraint behavior otherwise
+        List<String> pathTokens = new ArrayList<String>();
+        pathTokens.add(MESSAGES_KEY);
+        pathTokens.add(PatternConstraint.NAME);
+        String key = StringUtils.join(pathTokens, '.');
+        Object[] params = new Object[] { getPattern() };
+        Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
+        String message = I18NUtils.getMessageString(MESSAGES_BUNDLE, key, params, computedLocale);
+        if (message != null && !message.trim().isEmpty() && !key.equals(message)) {
+            // use a custom constraint message if there's one
+            return message;
+        } else {
+            // follow AbstractConstraint behavior otherwise
+            return super.getErrorMessage(invalidValue, computedLocale);
+        }
     }
 
     @Override

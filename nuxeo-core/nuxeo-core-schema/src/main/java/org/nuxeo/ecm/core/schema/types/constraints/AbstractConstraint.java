@@ -17,9 +17,6 @@
 
 package org.nuxeo.ecm.core.schema.types.constraints;
 
-import static org.apache.commons.lang.StringUtils.join;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -28,8 +25,6 @@ import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.i18n.I18NUtils;
-import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.types.constraints.ConstraintViolation.PathNode;
 
 /**
  * <p>
@@ -44,13 +39,9 @@ import org.nuxeo.ecm.core.schema.types.constraints.ConstraintViolation.PathNode;
  */
 public abstract class AbstractConstraint implements Constraint {
 
-    private static final String MESSAGES_BUNDLE = "messages";
-
-    private static final Locale MESSAGES_DEFAULT_LANG = Locale.ENGLISH;
-
-    private static final String MESSAGES_KEY = "label.schema.constraint.violation";
-
     private static final long serialVersionUID = 1L;
+
+    private static final String HARD_CODED_CONTRAINT_ERROR_MESSAGE = "The constraint '%s' failed for value %s";
 
     @Override
     public final String toString() {
@@ -58,69 +49,43 @@ public abstract class AbstractConstraint implements Constraint {
     }
 
     @Override
-    public String getErrorMessage(Schema schema, List<PathNode> errorLocation, Object invalidValue, Locale locale) {
-
-        String cDesc = getDescription().getName();
+    public String getErrorMessage(Object invalidValue, Locale locale) {
+        // test whether there's a constraint specific translation
+        // the expected key is label.schema.constraint.violation.[TheConstraintName]
+        // if there's none, replies to a generic message
+        // the expected key is label.schema.constraint.violation
+        // if there's none, replies to a hard coded message
         List<String> pathTokens = new ArrayList<String>();
-        for (PathNode node : errorLocation) {
-            String name = node.getField().getName().getLocalName();
-            pathTokens.add(name);
-        }
-        String fPath = StringUtils.join(pathTokens, '.');
-        String fName = "";
-        for (PathNode node : errorLocation) {
-            String fieldName = node.getField().getName().getLocalName();
-            if (node.isListItem()) {
-                fieldName += '[' + node.getIndex() + ']';
+        pathTokens.add(MESSAGES_KEY);
+        pathTokens.add(getDescription().getName());
+        String keyConstraint = StringUtils.join(pathTokens, '.');
+        String computedInvalidValue = "null";
+        if (invalidValue != null) {
+            String invalidValueString = invalidValue.toString();
+            if (invalidValueString.length() > 20) {
+                computedInvalidValue = invalidValueString.substring(0, 15) + "...";
+            } else {
+                computedInvalidValue = invalidValueString;
             }
-            pathTokens.add(fieldName + ' ');
         }
-        String sName = schema.getName();
+        Object[] params = new Object[] { computedInvalidValue };
+        Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
+        String message = I18NUtils.getMessageString(MESSAGES_BUNDLE, keyConstraint, params, computedLocale);
 
-        List<Object> paramsList = new ArrayList<Object>();
-        paramsList.add(invalidValue);
-        paramsList.add(sName);
-        paramsList.add(fName);
-        paramsList.add(cDesc);
-        for (Serializable val : getDescription().getParameters().values()) {
-            paramsList.add(val);
-        }
-        Object[] params = paramsList.toArray();
-
-        String key, message;
-
-        if (locale != null) {
-
-            // schema+field+constraint custom message
-            key = join(new String[] { MESSAGES_KEY, cDesc, sName, fPath }, '.');
-            message = I18NUtils.getMessageString(MESSAGES_BUNDLE, key, params, locale);
-            if (!key.equals(message)) {
+        if (message != null && !message.trim().isEmpty() && !keyConstraint.equals(message)) {
+            // use a constraint specific message if there's one
+            return message;
+        } else {
+            params = new Object[] { computedInvalidValue, toString() };
+            message = I18NUtils.getMessageString(MESSAGES_BUNDLE, MESSAGES_KEY, params, computedLocale);
+            if (message != null && !message.trim().isEmpty() && !keyConstraint.equals(message)) {
+                // use a generic message if there's one
                 return message;
+            } else {
+                // use a hard coded message
+                return String.format(HARD_CODED_CONTRAINT_ERROR_MESSAGE, toString(), computedInvalidValue);
             }
-
-            // constraint custom message
-            key = join(new String[] { MESSAGES_KEY, cDesc }, '.');
-            message = I18NUtils.getMessageString(MESSAGES_BUNDLE, key, params, locale);
-            if (!key.equals(message)) {
-                return message;
-            }
-
-            // generic message
-            message = I18NUtils.getMessageString(MESSAGES_BUNDLE, MESSAGES_KEY, params, locale);
-            if (!key.equals(message)) {
-                return message;
-            }
-
         }
-
-        // if already in the default language : return an hard coded message
-        // or if no languages specified
-        if (locale == null || MESSAGES_DEFAULT_LANG.equals(locale)) {
-            return String.format("The constraint '%s' failed on field '%s.%s' for value %s", cDesc, sName, fPath,
-                    invalidValue == null ? "null" : invalidValue.toString());
-        }
-
-        return getErrorMessage(schema, errorLocation, invalidValue, MESSAGES_DEFAULT_LANG);
     }
 
 }

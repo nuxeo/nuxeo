@@ -3,12 +3,9 @@ package org.nuxeo.ecm.core.schema.types.reference;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.types.constraints.ConstraintViolation.PathNode;
 import org.nuxeo.ecm.core.schema.types.reference.DummyPrimaryColorReferenceResolver.Color;
 
 public class DummyPrimaryColorReferenceResolver implements ExternalReferenceResolver<Color> {
@@ -80,8 +77,7 @@ public class DummyPrimaryColorReferenceResolver implements ExternalReferenceReso
     }
 
     @Override
-    public String getConstraintErrorMessage(Schema schema, List<PathNode> errorLocation, Object invalidValue,
-            Locale locale) {
+    public String getConstraintErrorMessage(Object invalidValue, Locale locale) {
         return invalidValue + " is not a correct value";
     }
 

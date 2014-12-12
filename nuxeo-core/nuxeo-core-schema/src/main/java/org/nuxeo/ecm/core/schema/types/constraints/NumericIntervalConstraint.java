@@ -19,8 +19,14 @@ package org.nuxeo.ecm.core.schema.types.constraints;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 
 /**
  * This constraint ensures a numeric is in an interval.
@@ -136,6 +142,44 @@ public class NumericIntervalConstraint extends AbstractConstraint {
 
     public boolean isIncludingMax() {
         return includingMax;
+    }
+
+    @Override
+    public String getErrorMessage(Object invalidValue, Locale locale) {
+        // test whether there's a custom translation for this field constraint specific translation
+        // the expected key is label.schema.constraint.violation.[ConstraintName].mininmaxin ou
+        // the expected key is label.schema.constraint.violation.[ConstraintName].minexmaxin ou
+        // the expected key is label.schema.constraint.violation.[ConstraintName].mininmaxex ou
+        // the expected key is label.schema.constraint.violation.[ConstraintName].minexmaxex ou
+        // the expected key is label.schema.constraint.violation.[ConstraintName].minin ou
+        // the expected key is label.schema.constraint.violation.[ConstraintName].minex ou
+        // the expected key is label.schema.constraint.violation.[ConstraintName].maxin ou
+        // the expected key is label.schema.constraint.violation.[ConstraintName].maxex
+        // follow the AbstractConstraint behavior otherwise
+        Object[] params;
+        String subKey = (min != null ? (includingMin ? "minin" : "minex") : "")
+                + (max != null ? (includingMax ? "maxin" : "maxex") : "");
+        if (min != null && max != null) {
+            params = new Object[] { min, max };
+        } else if (min != null) {
+            params = new Object[] { min };
+        } else {
+            params = new Object[] { max };
+        }
+        List<String> pathTokens = new ArrayList<String>();
+        pathTokens.add(MESSAGES_KEY);
+        pathTokens.add(NumericIntervalConstraint.NAME);
+        pathTokens.add(subKey);
+        String key = StringUtils.join(pathTokens, '.');
+        Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
+        String message = I18NUtils.getMessageString(MESSAGES_BUNDLE, key, params, computedLocale);
+        if (message != null && !message.trim().isEmpty() && !key.equals(message)) {
+            // use a custom constraint message if there's one
+            return message;
+        } else {
+            // follow AbstractConstraint behavior otherwise
+            return super.getErrorMessage(invalidValue, computedLocale);
+        }
     }
 
     @Override

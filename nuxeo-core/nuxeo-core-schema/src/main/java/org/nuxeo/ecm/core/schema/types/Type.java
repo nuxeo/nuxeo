@@ -13,9 +13,7 @@
 package org.nuxeo.ecm.core.schema.types;
 
 import java.io.Serializable;
-import java.util.Set;
 
-import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
 
 /**
@@ -112,7 +110,7 @@ public interface Type extends Serializable {
      * {@link ExternalReferenceResolver} ).
      *
      * @return true if this type is a reference, false otherwise
-	 * @since 7.1
+     * @since 7.1
      */
     boolean isReference();
 
@@ -198,11 +196,5 @@ public interface Type extends Serializable {
      * @throws TypeException if the value to convert is not compatible with the associated type
      */
     Object convert(Object value) throws TypeException;
-
-    /**
-     * @return this type's constraints
-     * @since 71
-     */
-    Set<Constraint> getConstraints();
 
 }

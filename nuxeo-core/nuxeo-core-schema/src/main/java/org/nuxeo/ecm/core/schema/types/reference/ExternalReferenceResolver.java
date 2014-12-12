@@ -18,12 +18,8 @@
 package org.nuxeo.ecm.core.schema.types.reference;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.types.constraints.ConstraintViolation.PathNode;
 
 /**
  * External references are document field with a simple type whose value refers to an external business entity. Objects
@@ -103,12 +99,10 @@ public interface ExternalReferenceResolver<T> {
      * Provides an error message to display when some invalid value does not match existing entity.
      *
      * @param invalidValue The invalid value that don't match any entity.
-     * @param schema The schema for which a fields constraint has failed.
-     * @param errorLocation The place where this error append.
      * @param locale The language in which the message should be generated.
      * @return A message in the specified language or
      * @since 7.1
      */
-    String getConstraintErrorMessage(Schema schema, List<PathNode> errorLocation, Object invalidValue, Locale locale);
+    String getConstraintErrorMessage(Object invalidValue, Locale locale);
 
 }

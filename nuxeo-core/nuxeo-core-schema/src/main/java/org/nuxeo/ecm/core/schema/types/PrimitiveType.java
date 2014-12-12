@@ -13,8 +13,12 @@
  */
 package org.nuxeo.ecm.core.schema.types;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.nuxeo.ecm.core.schema.SchemaNames;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
+import org.nuxeo.ecm.core.schema.types.constraints.TypeConstraint;
 import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
 
 /**
@@ -67,5 +71,12 @@ public abstract class PrimitiveType extends AbstractType implements SimpleType {
      * @since 7.1
      */
     public abstract boolean support(Class<? extends Constraint> constraint);
+
+    @Override
+    public Set<Constraint> getConstraints() {
+        Set<Constraint> constraints = new HashSet<Constraint>();
+        constraints.add(new TypeConstraint(this));
+        return constraints;
+    }
 
 }

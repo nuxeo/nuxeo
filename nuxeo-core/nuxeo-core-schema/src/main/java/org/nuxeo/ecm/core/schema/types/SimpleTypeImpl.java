@@ -71,11 +71,11 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
     @Override
     public Set<Constraint> getConstraints() {
         Set<Constraint> constraints = new HashSet<Constraint>();
-        constraints.addAll(this.constraints);
         if (getSuperType() instanceof SimpleType) {
             SimpleType superType = (SimpleType) getSuperType();
             constraints.addAll(superType.getConstraints());
         }
+        constraints.addAll(this.constraints);
         return Collections.unmodifiableSet(constraints);
     }
 

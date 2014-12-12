@@ -61,7 +61,7 @@ public class TestExternalReferenceService {
     @Test
     public void testResolverConstraintLoadingOnType() {
         Field field = metamodel.getField("ers:color");
-        Set<Constraint> constraints = field.getType().getConstraints();
+        Set<Constraint> constraints = ((SimpleType) field.getType()).getConstraints();
         ExternalReferenceConstraint constraint = ConstraintUtils.getConstraint(constraints,
                 ExternalReferenceConstraint.class);
         checkResolver(constraint.getResolver());

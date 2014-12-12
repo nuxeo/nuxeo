@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 
@@ -100,7 +102,36 @@ public class ConstraintViolation implements Serializable {
      * @since 7.1
      */
     public String getMessage(Locale locale) {
-        return constraint.getErrorMessage(schema, path, invalidValue, locale);
+        // test whether there's a specific translation for for this field and this constraint
+        // the expected key is label.schema.constraint.violation.[constraintName].[schemaName].[field].[subField]
+        List<String> pathTokens = new ArrayList<String>();
+        pathTokens.add(Constraint.MESSAGES_KEY);
+        pathTokens.add(constraint.getDescription().getName());
+        pathTokens.add(schema.getSchemaName());
+        for (PathNode node : path) {
+            String name = node.getField().getName().getLocalName();
+            pathTokens.add(name);
+        }
+        String key = StringUtils.join(pathTokens, '.');
+        String computedInvalidValue = "null";
+        if (invalidValue != null) {
+            String invalidValueString = invalidValue.toString();
+            if (invalidValueString.length() > 20) {
+                computedInvalidValue = invalidValueString.substring(0, 15) + "...";
+            } else {
+                computedInvalidValue = invalidValueString;
+            }
+        }
+        Object[] params = new Object[] { computedInvalidValue };
+        Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
+        String message = I18NUtils.getMessageString(Constraint.MESSAGES_BUNDLE, key, params, computedLocale);
+        if (message != null && !message.trim().isEmpty() && !key.equals(message)) {
+            // use the message if there's one
+            return message;
+        } else {
+            // use the constraint message
+            return constraint.getErrorMessage(invalidValue, locale);
+        }
     }
 
     @Override

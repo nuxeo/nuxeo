@@ -18,8 +18,14 @@
 package org.nuxeo.ecm.core.schema.types.constraints;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 
 /**
  * This constraints checks whether an object's String representation size is in some interval.
@@ -108,6 +114,41 @@ public class LengthConstraint extends AbstractConstraint {
      */
     public Long getMax() {
         return max;
+    }
+
+    @Override
+    public String getErrorMessage(Object invalidValue, Locale locale) {
+        // test whether there's a custom translation for this field constraint specific translation
+        // the expected key is label.schema.constraint.violation.[ConstraintName].minmax ou
+        // the expected key is label.schema.constraint.violation.[ConstraintName].min ou
+        // the expected key is label.schema.constraint.violation.[ConstraintName].max
+        // follow the AbstractConstraint behavior otherwise
+        Object[] params;
+        String subKey;
+        if (min != null && max != null) {
+            params = new Object[] { min, max };
+            subKey = "minmax";
+        } else if (min != null) {
+            params = new Object[] { min };
+            subKey = "min";
+        } else {
+            params = new Object[] { max };
+            subKey = "max";
+        }
+        List<String> pathTokens = new ArrayList<String>();
+        pathTokens.add(MESSAGES_KEY);
+        pathTokens.add(LengthConstraint.NAME);
+        pathTokens.add(subKey);
+        String key = StringUtils.join(pathTokens, '.');
+        Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
+        String message = I18NUtils.getMessageString(MESSAGES_BUNDLE, key, params, computedLocale);
+        if (message != null && !message.trim().isEmpty() && !key.equals(message)) {
+            // use a custom constraint message if there's one
+            return message;
+        } else {
+            // follow AbstractConstraint behavior otherwise
+            return super.getErrorMessage(invalidValue, computedLocale);
+        }
     }
 
     @Override

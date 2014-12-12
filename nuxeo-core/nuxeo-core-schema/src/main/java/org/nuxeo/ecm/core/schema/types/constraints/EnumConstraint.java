@@ -19,8 +19,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 
 /**
  * <p>
@@ -43,6 +47,13 @@ public class EnumConstraint extends AbstractConstraint {
      * Supports any objects, use their String representation.
      */
     public EnumConstraint(List<?> possibleValues) {
+        this.possibleValues = new HashSet<String>();
+        for (Object possibleValue : possibleValues) {
+            this.possibleValues.add(possibleValue.toString());
+        }
+    }
+
+    public EnumConstraint(Object... possibleValues) {
         this.possibleValues = new HashSet<String>();
         for (Object possibleValue : possibleValues) {
             this.possibleValues.add(possibleValue.toString());
@@ -74,6 +85,27 @@ public class EnumConstraint extends AbstractConstraint {
 
     public Set<String> getPossibleValues() {
         return Collections.unmodifiableSet(possibleValues);
+    }
+
+    @Override
+    public String getErrorMessage(Object invalidValue, Locale locale) {
+        // test whether there's a custom translation for this field constraint specific translation
+        // the expected key is label.schema.constraint.violation.[ConstraintName]
+        // follow the AbstractConstraint behavior otherwise
+        List<String> pathTokens = new ArrayList<String>();
+        pathTokens.add(MESSAGES_KEY);
+        pathTokens.add(EnumConstraint.NAME);
+        String key = StringUtils.join(pathTokens, '.');
+        Object[] params = new Object[] { StringUtils.join(getPossibleValues(), ", ") };
+        Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
+        String message = I18NUtils.getMessageString(MESSAGES_BUNDLE, key, params, computedLocale);
+        if (message != null && !message.trim().isEmpty() && !key.equals(message)) {
+            // use a custom constraint message if there's one
+            return message;
+        } else {
+            // follow AbstractConstraint behavior otherwise
+            return super.getErrorMessage(invalidValue, computedLocale);
+        }
     }
 
     @Override

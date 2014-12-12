@@ -18,13 +18,19 @@
 package org.nuxeo.ecm.core.schema.types.constraints;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 
 /**
  * This constraint ensures a date is in an interval.
@@ -159,6 +165,49 @@ public class DateIntervalConstraint extends AbstractConstraint {
 
     public boolean isIncludingMax() {
         return includingMax;
+    }
+
+    @Override
+    public String getErrorMessage(Object invalidValue, Locale locale) {
+        // test whether there's a custom translation for this field constraint specific translation
+        // the expected key is label.schema.constraint.violation.[ConstraintName].mininmaxin ou
+        // the expected key is label.schema.constraint.violation.[ConstraintName].minexmaxin ou
+        // the expected key is label.schema.constraint.violation.[ConstraintName].mininmaxex ou
+        // the expected key is label.schema.constraint.violation.[ConstraintName].minexmaxex ou
+        // the expected key is label.schema.constraint.violation.[ConstraintName].minin ou
+        // the expected key is label.schema.constraint.violation.[ConstraintName].minex ou
+        // the expected key is label.schema.constraint.violation.[ConstraintName].maxin ou
+        // the expected key is label.schema.constraint.violation.[ConstraintName].maxex
+        // follow the AbstractConstraint behavior otherwise
+        Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
+        Object[] params;
+        String subKey = (minTime != null ? (includingMin ? "minin" : "minex") : "")
+                + (maxTime != null ? (includingMax ? "maxin" : "maxex") : "");
+        DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM, computedLocale);
+        if (minTime != null && maxTime != null) {
+            String min = format.format(new Date(minTime));
+            String max = format.format(new Date(maxTime));
+            params = new Object[] { min, max };
+        } else if (minTime != null) {
+            String min = format.format(new Date(minTime));
+            params = new Object[] { min };
+        } else {
+            String max = format.format(new Date(maxTime));
+            params = new Object[] { max };
+        }
+        List<String> pathTokens = new ArrayList<String>();
+        pathTokens.add(MESSAGES_KEY);
+        pathTokens.add(DateIntervalConstraint.NAME);
+        pathTokens.add(subKey);
+        String key = StringUtils.join(pathTokens, '.');
+        String message = I18NUtils.getMessageString(MESSAGES_BUNDLE, key, params, computedLocale);
+        if (message != null && !message.trim().isEmpty() && !key.equals(message)) {
+            // use a custom constraint message if there's one
+            return message;
+        } else {
+            // follow AbstractConstraint behavior otherwise
+            return super.getErrorMessage(invalidValue, computedLocale);
+        }
     }
 
     @Override

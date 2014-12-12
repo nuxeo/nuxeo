@@ -19,10 +19,9 @@ package org.nuxeo.ecm.core.schema.types.constraints;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Map;
 
+import org.nuxeo.ecm.core.schema.types.PrimitiveType;
 import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.core.schema.types.TypeException;
 
 /**
  * This constraint ensures some object's is supported by some {@link Type}.
@@ -33,13 +32,9 @@ public class TypeConstraint extends AbstractConstraint {
 
     private static final long serialVersionUID = 1L;
 
-    private static final String NAME = "PrimitiveTypeConstraint";
+    protected final PrimitiveType type;
 
-    private static final String PNAME_TYPE = "Type";
-
-    protected final Type type;
-
-    public TypeConstraint(Type type) {
+    public TypeConstraint(PrimitiveType type) {
         this.type = type;
     }
 
@@ -48,11 +43,7 @@ public class TypeConstraint extends AbstractConstraint {
         if (object == null) {
             return true;
         }
-        try {
-            return type.validate(object);
-        } catch (TypeException e) {
-            return false;
-        }
+        return type.validate(object);
     }
 
     /**
@@ -67,9 +58,7 @@ public class TypeConstraint extends AbstractConstraint {
      */
     @Override
     public Description getDescription() {
-        Map<String, Serializable> params = new HashMap<String, Serializable>();
-        params.put(PNAME_TYPE, type.getClass().getName());
-        return new Description(TypeConstraint.NAME, params);
+        return new Description(type.getName(), new HashMap<String, Serializable>());
     }
 
     /**
