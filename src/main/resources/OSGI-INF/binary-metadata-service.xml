@@ -2,7 +2,24 @@
 <component name="org.nuxeo.binary.metadata.api.service">
   <implementation
           class="org.nuxeo.binary.metadata.api.service.BinaryMetadataServiceImpl"/>
+
   <service>
-    <provide interface="org.nuxeo.binary.metadata.api.service.BinaryMetadataService"/>
+    <provide
+            interface="org.nuxeo.binary.metadata.api.service.BinaryMetadataService"/>
   </service>
+
+  <extension-point name="processors">
+    <object class="org.nuxeo.binary.metadata.ProcessorDescriptor"/>
+  </extension-point>
+
+  <extension-point name="metadataMappings">
+    <object
+            class="org.nuxeo.binary.metadata.MetadataMappingDescriptor"/>
+  </extension-point>
+
+  <extension-point name="rules">
+    <object
+            class="org.nuxeo.binary.metadata.RuleDescriptor"/>
+  </extension-point>
+
 </component>

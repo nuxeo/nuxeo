@@ -1,0 +1,23 @@
+<component name="org.nuxeo.binary.metadata.exiftool.commandline">
+
+  <extension
+    target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+    point="command">
+
+    <command name="exiftool-read" enabled="true">
+      <commandLine>exiftool</commandLine>
+      <parameterString> -json #{inFilePath}</parameterString>
+      <installationDirective>You need to install exiftool
+      </installationDirective>
+    </command>
+
+    <command name="exiftool-write" enabled="true">
+      <commandLine>exiftool</commandLine>
+      <parameterString> #{tagList} #{inFilePath}</parameterString>
+      <installationDirective>You need to install exiftool
+      </installationDirective>
+    </command>
+
+  </extension>
+
+</component>
