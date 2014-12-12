@@ -119,9 +119,10 @@ public abstract class AbstractUserGroupCodec extends AbstractDocumentViewCodec {
     }
 
     protected String getDefaultRepositoryName() {
-        try {
+        if (Framework.isInitialized()) {
             return Framework.getService(RepositoryManager.class).getDefaultRepositoryName();
-        } catch (Exception e) {
+        } else {
+            // unit tests
             return null;
         }
     }

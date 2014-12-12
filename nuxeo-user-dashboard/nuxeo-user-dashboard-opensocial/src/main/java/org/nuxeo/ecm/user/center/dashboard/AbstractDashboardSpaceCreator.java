@@ -81,12 +81,4 @@ public abstract class AbstractDashboardSpaceCreator extends UnrestrictedSessionR
         WebContentHelper.createOpenSocialGadget(space, session, locale, "tasks", 0, 1, 2);
     }
 
-    protected UserManager getUserManager() throws ClientException {
-        try {
-            return Framework.getService(UserManager.class);
-        } catch (Exception e) {
-            throw new ClientException("Unable to retrieve UserManager service", e);
-        }
-    }
-
 }

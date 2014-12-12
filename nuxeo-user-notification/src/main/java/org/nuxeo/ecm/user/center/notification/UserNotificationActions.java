@@ -47,12 +47,7 @@ public class UserNotificationActions implements Serializable {
 
     @Factory(value = "userSubscriptions", scope = ScopeType.EVENT)
     public List<UserSubscription> getUserSubscriptions() throws ClientException {
-        PlacefulService service;
-        try {
-            service = NotificationServiceHelper.getPlacefulService();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        PlacefulService service = NotificationServiceHelper.getPlacefulService();
         String className = service.getAnnotationRegistry().get(NotificationService.SUBSCRIPTION_NAME);
         String shortClassName = className.substring(className.lastIndexOf('.') + 1);
 

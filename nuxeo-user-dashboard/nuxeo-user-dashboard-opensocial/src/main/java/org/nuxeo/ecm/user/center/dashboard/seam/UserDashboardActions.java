@@ -34,7 +34,7 @@ public class UserDashboardActions implements Serializable {
     protected transient CoreSession documentManager;
 
     public String removeUserDashboard() throws ClientException {
-        SpaceManager spaceManager = getSpaceManager();
+        SpaceManager spaceManager = Framework.getService(SpaceManager.class);
         Space userSpace = spaceManager.getSpace(USER_DASHBOARD_SPACE_PROVIDER, documentManager);
         if (userSpace != null) {
             DocumentRef spaceRef = new IdRef(userSpace.getId());
@@ -42,14 +42,6 @@ public class UserDashboardActions implements Serializable {
             documentManager.save();
         }
         return null;
-    }
-
-    protected SpaceManager getSpaceManager() throws ClientException {
-        try {
-            return Framework.getService(SpaceManager.class);
-        } catch (Exception e) {
-            throw new ClientException("Unable to retrieve SpaceManager service", e);
-        }
     }
 
     @Factory(value = "gadgetsBaseURL", scope = APPLICATION)

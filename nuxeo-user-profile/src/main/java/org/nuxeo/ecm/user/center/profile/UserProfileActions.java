@@ -48,7 +48,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam component to manage user profile editing
- * 
+ *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  * @since 5.5
  */
@@ -63,8 +63,6 @@ public class UserProfileActions implements Serializable {
     public static final String PROFILE_EDIT_MODE = "edit";
 
     public static final String PROFILE_EDIT_PASSWORD_MODE = "editPassword";
-
-    protected transient UserProfileService userProfileService;
 
     @In(create = true)
     protected transient UserManagementActions userManagementActions;
@@ -135,7 +133,7 @@ public class UserProfileActions implements Serializable {
         // been set to null meanwhile (by opening a new tab for instance).
         getCurrentUserModel();
         if (userProfileDocument == null) {
-            userProfileDocument = getUserProfileService().getUserProfileDocument(documentManager);
+            userProfileDocument = Framework.getService(UserProfileService.class).getUserProfileDocument(documentManager);
             String locale = (String) userProfileDocument.getPropertyValue(UserProfileConstants.USER_PROFILE_LOCALE);
             if (StringUtils.isEmpty(locale)) {
                 String currentLocale = localeSelector.getLocaleString();
@@ -148,12 +146,14 @@ public class UserProfileActions implements Serializable {
     }
 
     public DocumentModel getUserProfileDocument(String userName) throws ClientException {
-        return getUserProfileService().getUserProfileDocument(userName, documentManager);
+        UserProfileService userProfileService = Framework.getService(UserProfileService.class);
+        return userProfileService.getUserProfileDocument(userName, documentManager);
     }
 
     public DocumentModel getUserProfile() throws ClientException {
         if (currentUserProfile == null) {
-            currentUserProfile = getUserProfileService().getUserProfile(getCurrentUserModel(), documentManager);
+            UserProfileService userProfileService = Framework.getService(UserProfileService.class);
+            currentUserProfile = userProfileService.getUserProfile(getCurrentUserModel(), documentManager);
         }
         return currentUserProfile;
     }
@@ -164,20 +164,10 @@ public class UserProfileActions implements Serializable {
             return null;
         }
         if (userProfileDocument == null) {
-            userProfileDocument = getUserProfileService().getUserProfile(selectedUser, documentManager);
+            UserProfileService userProfileService = Framework.getService(UserProfileService.class);
+            userProfileDocument = userProfileService.getUserProfile(selectedUser, documentManager);
         }
         return userProfileDocument;
-    }
-
-    protected UserProfileService getUserProfileService() throws ClientException {
-        if (userProfileService == null) {
-            try {
-                userProfileService = Framework.getService(UserProfileService.class);
-            } catch (Exception e) {
-                throw new ClientException("Failed to get UserProfileService", e);
-            }
-        }
-        return userProfileService;
     }
 
     @Observer(value = { CURRENT_TAB_CHANGED_EVENT + "_" + MAIN_TABS_CATEGORY,

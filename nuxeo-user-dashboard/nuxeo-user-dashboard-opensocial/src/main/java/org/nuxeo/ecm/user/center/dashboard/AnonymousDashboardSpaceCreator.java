@@ -16,6 +16,8 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Create the anonymous dashboard {@code Space} in an Unrestricted Session.
@@ -67,7 +69,8 @@ public class AnonymousDashboardSpaceCreator extends AbstractDashboardSpaceCreato
     protected void addAnonymousACP(DocumentModel anonymousDashboardSpace) throws ClientException {
         ACP acp = anonymousDashboardSpace.getACP();
         ACL acl = acp.getOrCreateACL();
-        acl.add(new ACE(getUserManager().getAnonymousUserId(), SecurityConstants.READ, true));
+        UserManager userManager = Framework.getService(UserManager.class);
+        acl.add(new ACE(userManager.getAnonymousUserId(), SecurityConstants.READ, true));
         anonymousDashboardSpace.setACP(acp, true);
     }
 

@@ -54,7 +54,7 @@ public class UserLocaleProvider implements LocaleProvider {
         }
         try {
             return LocaleUtils.toLocale(locale);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             log.error("Locale parse exception:  \"" + locale + "\"", e);
         }
         return null;

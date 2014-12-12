@@ -83,13 +83,7 @@ public class ResizeAvatarPictureListener implements EventListener {
     }
 
     protected void resizeAvatar(DocumentModel doc, Blob avatarImage) throws ClientException, PropertyException {
-        ImagingService service;
-        try {
-            service = Framework.getService(ImagingService.class);
-        } catch (Exception e) {
-            throw new ClientException("Failed to get ImagingService", e);
-        }
-
+        ImagingService service = Framework.getService(ImagingService.class);
         ImageInfo info = service.getImageInfo(avatarImage);
         int width = info.getWidth();
         int height = info.getHeight();

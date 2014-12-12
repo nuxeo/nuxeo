@@ -96,12 +96,8 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
     }
 
     protected DocumentModel getUserPersonalWorkspace(CoreSession session) throws ClientException {
-        try {
-            UserWorkspaceService svc = Framework.getService(UserWorkspaceService.class);
-            return svc.getCurrentUserPersonalWorkspace(session, null);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        UserWorkspaceService svc = Framework.getService(UserWorkspaceService.class);
+        return svc.getCurrentUserPersonalWorkspace(session, null);
     }
 
     protected void i18nGadgets(Space space, CoreSession session, Map<String, String> parameters) throws ClientException {
@@ -152,7 +148,7 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
 
         @Override
         public void run() throws ClientException {
-            SpaceManager spaceManager = getSpaceManager();
+            SpaceManager spaceManager = Framework.getService(SpaceManager.class);
             Space defaultSpace = spaceManager.getSpace(DEFAULT_DASHBOARD_SPACE_PROVIDER, session, null, null,
                     parameters);
             if (defaultSpace != null) {
@@ -171,14 +167,6 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
                 session.saveDocument(newSpace);
                 session.save();
                 copiedSpaceRef = newSpace.getRef();
-            }
-        }
-
-        protected SpaceManager getSpaceManager() throws ClientException {
-            try {
-                return Framework.getService(SpaceManager.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
             }
         }
     }

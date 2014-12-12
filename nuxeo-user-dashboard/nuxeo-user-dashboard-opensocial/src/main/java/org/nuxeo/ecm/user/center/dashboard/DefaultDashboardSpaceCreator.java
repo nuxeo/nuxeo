@@ -16,6 +16,8 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Create the default dashboard {@code Space} in an Unrestricted Session.
@@ -67,7 +69,8 @@ public class DefaultDashboardSpaceCreator extends AbstractDashboardSpaceCreator 
     protected void addDefaultACP(DocumentModel defaultDashboardSpace) throws ClientException {
         ACP acp = defaultDashboardSpace.getACP();
         ACL acl = acp.getOrCreateACL();
-        for (String group : getUserManager().getAdministratorsGroups()) {
+        UserManager userManager = Framework.getService(UserManager.class);
+        for (String group : userManager.getAdministratorsGroups()) {
             acl.add(new ACE(group, SecurityConstants.EVERYTHING, true));
         }
         acl.add(new ACE(POWER_USERS_GROUP, SecurityConstants.EVERYTHING, true));
