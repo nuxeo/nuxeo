@@ -17,6 +17,9 @@
 
 package org.nuxeo.ecm.platform.importer.factories;
 
+import java.io.IOException;
+
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -34,13 +37,14 @@ public class FileManagerDocumentModelFactory extends AbstractDocumentModelFactor
 
     protected FileManager fileManager;
 
-    public DocumentModel createFolderishNode(CoreSession session, DocumentModel parent, SourceNode node)
-            throws Exception {
+    @Override
+    public DocumentModel createFolderishNode(CoreSession session, DocumentModel parent, SourceNode node) throws IOException {
         FileManager fileManager = getFileManager();
         return fileManager.createFolder(session, node.getName(), parent.getPathAsString());
     }
 
-    public DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws Exception {
+    @Override
+    public DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws IOException {
         FileManager fileManager = getFileManager();
         BlobHolder bh = node.getBlobHolder();
         DocumentModel doc = fileManager.createDocumentFromBlob(session, bh.getBlob(), parent.getPathAsString(), true,
@@ -49,7 +53,7 @@ public class FileManagerDocumentModelFactory extends AbstractDocumentModelFactor
         return doc;
     }
 
-    protected FileManager getFileManager() throws Exception {
+    protected FileManager getFileManager() {
         if (fileManager == null) {
             fileManager = Framework.getService(FileManager.class);
         }

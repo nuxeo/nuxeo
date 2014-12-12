@@ -22,10 +22,10 @@ package org.nuxeo.ecm.platform.importer.listener;
  */
 public interface ImporterListener {
 
-    void beforeImport() throws Exception;
+    void beforeImport();
 
-    void afterImport() throws Exception;
+    void afterImport();
 
-    void importError() throws Exception;
+    void importError();
 
 }

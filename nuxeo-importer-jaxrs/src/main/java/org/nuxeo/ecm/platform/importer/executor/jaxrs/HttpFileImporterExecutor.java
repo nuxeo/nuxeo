@@ -30,8 +30,7 @@ public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
             @QueryParam("inputPath") String inputPath, @QueryParam("targetPath") String targetPath,
             @QueryParam("skipRootContainerCreation") Boolean skipRootContainerCreation,
             @QueryParam("batchSize") Integer batchSize, @QueryParam("nbThreads") Integer nbThreads,
-            @QueryParam("interactive") Boolean interactive, @QueryParam("transactionTimeout") Integer transactionTimeout)
-            throws Exception {
+            @QueryParam("interactive") Boolean interactive, @QueryParam("transactionTimeout") Integer transactionTimeout) {
 
         if (inputPath == null || targetPath == null) {
             return "Can not import, missing " + (inputPath == null ? "inputPath" : "targetPath");
@@ -67,11 +66,11 @@ public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
     }
 
     @Override
-    public String run(ImporterRunner runner, Boolean interactive) throws Exception {
+    public String run(ImporterRunner runner, Boolean interactive) {
         return doRun(runner, interactive);
     }
 
-    protected DefaultImporterService getImporterService() throws Exception {
+    protected DefaultImporterService getImporterService() {
         if (importerService == null) {
             importerService = Framework.getService(DefaultImporterService.class);
         }

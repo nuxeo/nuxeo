@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.dom4j.Document;
 import org.dom4j.tree.DefaultElement;
+import org.jaxen.JaxenException;
 import org.jaxen.XPath;
 import org.jaxen.dom4j.Dom4jXPath;
 import org.nuxeo.ecm.platform.scanimporter.processor.DocumentTypeMapper;
@@ -16,6 +17,7 @@ import org.nuxeo.ecm.platform.scanimporter.processor.DocumentTypeMapper;
  */
 public class SampleMapper implements DocumentTypeMapper {
 
+    @Override
     public String getTargetDocumentType(Document xmlDoc, File file) {
         try {
             XPath xpath = new Dom4jXPath("//resource-definition");
@@ -26,7 +28,7 @@ public class SampleMapper implements DocumentTypeMapper {
             } else {
                 return "File";
             }
-        } catch (Exception e) {
+        } catch (JaxenException e) {
             return "File";
         }
     }

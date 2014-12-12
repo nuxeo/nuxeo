@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.importer.factories;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.importer.base.GenericThreadedImportTask;
@@ -34,10 +36,9 @@ public interface ImporterDocumentModelFactory {
 
     public boolean isTargetDocumentModelFolderish(SourceNode node);
 
-    public DocumentModel createFolderishNode(CoreSession session, DocumentModel parent, SourceNode node)
-            throws Exception;
+    public DocumentModel createFolderishNode(CoreSession session, DocumentModel parent, SourceNode node) throws IOException;
 
-    public DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws Exception;
+    public DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws IOException;
 
     /**
      * Defines the process to execute when a folderish node creation error occurs.
@@ -50,8 +51,7 @@ public interface ImporterDocumentModelFactory {
      * @return true if the global import task should continue after processing the error, false if it should be stopped
      *         immediately after processing the error.
      */
-    public boolean processFolderishNodeCreationError(CoreSession session, DocumentModel parent, SourceNode node)
-            throws Exception;
+    public boolean processFolderishNodeCreationError(CoreSession session, DocumentModel parent, SourceNode node);
 
     /**
      * Defines the process to execute when a leaf node creation error occurs.
@@ -63,7 +63,6 @@ public interface ImporterDocumentModelFactory {
      * @return true if the global import task should continue after processing the error, false if it should be stopped
      *         immediately after processing the error.
      */
-    public boolean processLeafNodeCreationError(CoreSession session, DocumentModel parent, SourceNode node)
-            throws Exception;
+    public boolean processLeafNodeCreationError(CoreSession session, DocumentModel parent, SourceNode node);
 
 }

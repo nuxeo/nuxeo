@@ -47,13 +47,13 @@ public class HunspellDictionaryHolder implements DictionaryHolder {
 
     public static final Log log = LogFactory.getLog(HunspellDictionaryHolder.class);
 
-    public HunspellDictionaryHolder(String dicName) throws Exception {
+    public HunspellDictionaryHolder(String dicName) {
         generator = new Random(System.currentTimeMillis());
         this.dicName = dicName;
     }
 
     @Override
-    public void init() throws Exception {
+    public void init() throws IOException {
         loadDic();
         wordCount = words.size();
     }
@@ -62,7 +62,7 @@ public class HunspellDictionaryHolder implements DictionaryHolder {
      * @deprecated since 6.0
      */
     @Deprecated
-    protected void loadDic(String dicName) throws Exception {
+    protected void loadDic(String dicName) throws IOException {
         this.dicName = dicName;
         loadDic();
     }

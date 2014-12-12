@@ -30,15 +30,18 @@ public class JobHistoryListener implements ImporterListener {
         jobHelper = new JobHistoryHelper(jobName);
     }
 
-    public void beforeImport() throws Exception {
+    @Override
+    public void beforeImport() {
         jobHelper.logJobStarted();
     }
 
-    public void afterImport() throws Exception {
+    @Override
+    public void afterImport() {
         jobHelper.logJobEnded();
     }
 
-    public void importError() throws Exception {
+    @Override
+    public void importError() {
         jobHelper.logJobFailed("Error during import");
     }
 

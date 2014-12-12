@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.scanimporter.processor;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,8 +61,7 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements Im
     }
 
     @Override
-    public DocumentModel createFolderishNode(CoreSession session, DocumentModel parent, SourceNode node)
-            throws Exception {
+    public DocumentModel createFolderishNode(CoreSession session, DocumentModel parent, SourceNode node) {
 
         String docType = getTargetContainerType();
         String name = getValidNameFromFileName(node.getName());
@@ -107,7 +107,7 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements Im
     }
 
     @Override
-    public DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws Exception {
+    public DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws IOException {
 
         String docType = "File";
         BlobHolder bh = node.getBlobHolder();
@@ -130,8 +130,7 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements Im
     }
 
     @Override
-    protected DocumentModel defaultCreateLeafNode(CoreSession session, DocumentModel parent, SourceNode node)
-            throws Exception {
+    protected DocumentModel defaultCreateLeafNode(CoreSession session, DocumentModel parent, SourceNode node) {
 
         BlobHolder bh = node.getBlobHolder();
 

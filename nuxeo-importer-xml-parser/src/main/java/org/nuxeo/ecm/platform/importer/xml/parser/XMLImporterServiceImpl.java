@@ -36,6 +36,7 @@ import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.InvalidXPathException;
 import org.dom4j.Node;
 import org.dom4j.Text;
 import org.dom4j.io.SAXReader;
@@ -50,6 +51,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -127,7 +129,7 @@ public class XMLImporterServiceImpl {
                     if (el.matches(conf.getTagName())) {
                         return conf;
                     }
-                } catch (Exception e) {
+                } catch (InvalidXPathException e) {
                     // NOP
                 }
             }
@@ -146,7 +148,7 @@ public class XMLImporterServiceImpl {
                     if (el.matches(conf.getTagName())) {
                         result.add(conf);
                     }
-                } catch (Exception e) {
+                } catch (InvalidXPathException e) {
                     // NOP
                 }
             }
@@ -178,7 +180,7 @@ public class XMLImporterServiceImpl {
         try {
             doc = new SAXReader().read(file);
             workingDirectory = file.getParentFile();
-        } catch (Exception e) {
+        } catch (DocumentException e) {
             File tmp = new File(System.getProperty("java.io.tmpdir"));
             directory = new File(tmp, file.getName() + System.currentTimeMillis());
             directory.mkdir();
@@ -459,7 +461,7 @@ public class XMLImporterServiceImpl {
 
         try {
             doc = session.createDocument(doc);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new RuntimeException(String.format(MSG_CREATION, path, name, el.getUniquePath(), conf.toString()), e);
         }
         pushInStack(doc);
@@ -488,16 +490,8 @@ public class XMLImporterServiceImpl {
                     ctx.setInput(doc);
                     try {
                         getAutomationService().run(ctx, chain);
-                    } catch (Exception e) {
-                        if (e instanceof RuntimeException) {
-                            throw (RuntimeException) e;
-                        } else {
-                            if (e instanceof InterruptedException) {
-                                // reset interrupted status
-                                Thread.currentThread().interrupt();
-                            }
-                            throw new RuntimeException(e);
-                        }
+                    } catch (OperationException e) {
+                        throw new NuxeoException(e);
                     }
                 }
             }

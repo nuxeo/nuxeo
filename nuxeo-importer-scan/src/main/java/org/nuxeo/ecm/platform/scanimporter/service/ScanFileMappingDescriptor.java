@@ -85,7 +85,7 @@ public class ScanFileMappingDescriptor implements Serializable {
         if (leafTypeMapper == null) {
             try {
                 leafTypeMapper = mapperClass.newInstance();
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 log.error("Unable to instanciate mapper class", e);
             }
         }

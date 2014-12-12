@@ -21,6 +21,10 @@ package org.nuxeo.ecm.platform.importer.base;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
@@ -77,7 +81,7 @@ public class TxHelper {
                 log.error("Transaction is already commited, try to begin anyway");
             }
             tx.begin();
-        } catch (Exception e) {
+        } catch (SystemException | NotSupportedException e) {
             log.error("Unable to start transaction", e);
         }
     }
@@ -90,7 +94,7 @@ public class TxHelper {
         InitialContext context = null;
         try {
             context = new InitialContext();
-        } catch (Exception e) {
+        } catch (NamingException e) {
             disabled = true;
             return null;
         }
@@ -119,7 +123,7 @@ public class TxHelper {
         InitialContext context = null;
         try {
             context = new InitialContext();
-        } catch (Exception e) {
+        } catch (NamingException e) {
             disabled = true;
             return null;
         }
@@ -174,7 +178,7 @@ public class TxHelper {
                 tx.setRollbackOnly();
             }
             commitOrRollbackTransaction();
-        } catch (Exception e) {
+        } catch (SystemException e) {
             log.error("Error while marking tx for rollback", e);
         } finally {
             tx = null;
@@ -189,14 +193,15 @@ public class TxHelper {
             if (isUTTransactionActive()) {
                 try {
                     tx.commit();
-                } catch (Exception e) {
+                } catch (SystemException | RollbackException | HeuristicMixedException
+                        | HeuristicRollbackException e) {
                     log.error("Error during commit", e);
                 }
             } else {
                 try {
                     log.debug("Rolling back transaction");
                     tx.rollback();
-                } catch (Exception e) {
+                } catch (SystemException e) {
                     // if the transaction was already rolledback due to
                     // transaction timeout, we must still call tx.rollback but
                     // this causes a spurious error message, so log at debug

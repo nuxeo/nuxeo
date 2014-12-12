@@ -17,6 +17,7 @@
  * $Id$
  */package org.nuxeo.ecm.platform.importer.xml.parser;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -48,7 +49,7 @@ public class AdvancedScannedFileFactory extends ScanedFileFactory implements Imp
     protected ImporterConfig config;
 
     @Override
-    public DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws Exception {
+    public DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws IOException {
 
         XMLImporterService importer = Framework.getLocalService(XMLImporterService.class);
         if (!(node instanceof FileSourceNode)) {

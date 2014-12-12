@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.importer.random;
 
+import java.io.IOException;
+
 /**
  * @author Thierry Delprat
  */
@@ -28,5 +30,5 @@ public interface DictionaryHolder {
 
     public String getRandomWord();
 
-    public void init() throws Exception;
+    public void init() throws IOException;
 }

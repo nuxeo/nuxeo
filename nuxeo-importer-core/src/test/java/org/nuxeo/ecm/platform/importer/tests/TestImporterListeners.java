@@ -90,7 +90,7 @@ class ImporterExecutorWithListeners extends DefaultImporterExecutor {
 
     @Override
     public String run(SourceNode source, String targetPath, Boolean skipRootContainerCreation, Integer batchSize,
-            Integer nbTheards, Boolean interactive) throws Exception {
+            Integer nbTheards, Boolean interactive) {
         importer = new GenericMultiThreadedImporter(source, targetPath, skipRootContainerCreation, batchSize,
                 nbTheards, getLogger());
         importer.setFactory(getFactory());
@@ -110,17 +110,17 @@ class DummyListener implements ImporterListener {
     public boolean importFinished = false;
 
     @Override
-    public void beforeImport() throws Exception {
+    public void beforeImport() {
         importStarted = true;
     }
 
     @Override
-    public void afterImport() throws Exception {
+    public void afterImport() {
         importFinished = true;
     }
 
     @Override
-    public void importError() throws Exception {
+    public void importError() {
     }
 
 }

@@ -19,9 +19,12 @@
 
 package org.nuxeo.ecm.platform.importer.random;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Random text generator to be used for load testing
@@ -62,7 +65,7 @@ public class RandomTextGenerator {
 
     protected Random generator;
 
-    public RandomTextGenerator(DictionaryHolder dictionary) throws Exception {
+    public RandomTextGenerator(DictionaryHolder dictionary) {
         dictionaryHolder = dictionary;
         generator = new Random(System.currentTimeMillis());
     }
@@ -102,9 +105,13 @@ public class RandomTextGenerator {
         return sb.toString();
     }
 
-    public void prefilCache() throws Exception {
+    public void prefilCache() {
 
-        dictionaryHolder.init();
+        try {
+            dictionaryHolder.init();
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
 
         for (int i = 0; i < PARAGRAPH_CACHE_SIZE; i++) {
             paragraphCache.put("P" + i, generateParagraph());

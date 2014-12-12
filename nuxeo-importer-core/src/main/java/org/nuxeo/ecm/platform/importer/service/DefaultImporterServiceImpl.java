@@ -64,13 +64,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         DefaultImporterExecutor executor = new DefaultImporterExecutor();
         executor.setFactory(getDocumentModelFactory());
         executor.setTransactionTimeout(transactionTimeout);
-        try {
-            executor.run(sourceNode, destinationPath, skipRootContainerCreation, batchSize, noImportingThreads, true);
-        } catch (Exception e) {
-            log.error("Import error:", e);
-            throw new ClientException(e);
-        }
-
+        executor.run(sourceNode, destinationPath, skipRootContainerCreation, batchSize, noImportingThreads, true);
     }
 
     @Override
@@ -90,23 +84,12 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(sourceNode,
                 destinationPath, executor.getLogger()).skipRootContainerCreation(skipRootContainerCreation).batchSize(
                 batchSize).nbThreads(noImportingThreads).build();
-        GenericMultiThreadedImporter runner;
-        try {
-            runner = new GenericMultiThreadedImporter(configuration);
-        } catch (Exception e1) {
-            log.error(e1);
-            throw new ClientException(e1);
-        }
+        GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(configuration);
         runner.setTransactionTimeout(transactionTimeout);
         ImporterFilter filter = new EventServiceConfiguratorFilter(false, false, false, true);
         runner.addFilter(filter);
         runner.setFactory(getDocumentModelFactory());
-        try {
-            return executor.run(runner, interactive);
-        } catch (Exception e) {
-            log.error("Import error:", e);
-            throw new ClientException(e);
-        }
+        return executor.run(runner, interactive);
     }
 
     @Override
@@ -143,8 +126,8 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         if (sourceNodeClass != null && FileSourceNode.class.isAssignableFrom(sourceNodeClass)) {
             try {
                 sourceNode = sourceNodeClass.getConstructor(String.class).newInstance(sourcePath);
-            } catch (Exception e) {
-                log.error(e);
+            } catch (ReflectiveOperationException e) {
+                log.error(e, e);
             }
         }
         return sourceNode;
@@ -157,8 +140,8 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
                 try {
                     setDocumentModelFactory(docModelFactoryClass.getConstructor(String.class, String.class).newInstance(
                             getFolderishDocType(), getLeafDocType()));
-                } catch (Exception e) {
-                    log.error(e);
+                } catch (ReflectiveOperationException e) {
+                    log.error(e, e);
                 }
             }
         }

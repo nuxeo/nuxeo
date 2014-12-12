@@ -2,6 +2,7 @@ package org.nuxeo.ecm.platform.importer.source;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -84,7 +85,7 @@ public class FileWithNonHeritedIndividalMetaDataSourceNode extends FileSourceNod
                 String name = (String) names.nextElement();
                 map.put(name, parseFromString(mdProperties.getProperty(name)));
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Unable to read property file " + propertyFile, e);
         }
         return map;

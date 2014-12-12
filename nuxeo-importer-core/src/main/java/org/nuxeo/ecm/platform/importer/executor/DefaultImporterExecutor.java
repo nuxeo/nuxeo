@@ -51,13 +51,13 @@ public class DefaultImporterExecutor extends AbstractImporterExecutor {
     }
 
     public String run(String inputPath, String targetPath, Boolean skipRootContainerCreation, Integer batchSize,
-            Integer nbTheards, Boolean interactive) throws Exception {
+            Integer nbTheards, Boolean interactive) {
         SourceNode source = new FileSourceNode(inputPath);
         return run(source, targetPath, skipRootContainerCreation, batchSize, nbTheards, interactive);
     }
 
     public String run(SourceNode source, String targetPath, Boolean skipRootContainerCreation, Integer batchSize,
-            Integer nbTheards, Boolean interactive) throws Exception {
+            Integer nbTheards, Boolean interactive) {
         importer = new GenericMultiThreadedImporter(source, targetPath, skipRootContainerCreation, batchSize,
                 nbTheards, getLogger());
         importer.setFactory(getFactory());
@@ -67,7 +67,7 @@ public class DefaultImporterExecutor extends AbstractImporterExecutor {
     }
 
     @Override
-    public String run(ImporterRunner runner, Boolean interactive) throws Exception {
+    public String run(ImporterRunner runner, Boolean interactive) {
         return doRun(runner, interactive);
     }
 

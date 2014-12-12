@@ -82,16 +82,16 @@ public class RandomTextSourceNode implements SourceNode {
         this.onlyText = onlyText;
     }
 
-    public static RandomTextSourceNode init(int maxSize) throws Exception {
+    public static RandomTextSourceNode init(int maxSize) {
         return init(maxSize, null, true);
     }
 
-    public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB, boolean onlyText) throws Exception {
+    public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB, boolean onlyText) {
         return init(maxSize, blobSizeInKB, onlyText, new HunspellDictionaryHolder("fr_FR.dic"));
     }
 
     public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB, boolean onlyText,
-            DictionaryHolder dictionaryHolder) throws Exception {
+            DictionaryHolder dictionaryHolder) {
         gen = new RandomTextGenerator(dictionaryHolder);
         gen.prefilCache();
         maxNode = maxSize;

@@ -1,5 +1,6 @@
 package org.nuxeo.ecm.platform.importer.executor.jaxrs;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.ws.rs.GET;
@@ -24,7 +25,7 @@ public abstract class AbstractJaxRSImporterExecutor extends AbstractImporterExec
 
     @GET
     @Produces("text/html; charset=UTF-8")
-    public String index() throws Exception {
+    public String index() throws IOException {
         try (InputStream stream = this.getClass().getResource("/static/importForm.html").openStream()) {
             return IOUtils.toString(stream, "UTF-8");
         }

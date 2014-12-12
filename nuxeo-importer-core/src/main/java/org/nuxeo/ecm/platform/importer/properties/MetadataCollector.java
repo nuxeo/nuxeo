@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.importer.properties;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -156,7 +157,7 @@ public class MetadataCollector {
         }
     }
 
-    public void addPropertyFile(File propertyFile) throws Exception {
+    public void addPropertyFile(File propertyFile) throws IOException {
 
         Properties mdProperties = new Properties();
         mdProperties.load(new FileInputStream(propertyFile));

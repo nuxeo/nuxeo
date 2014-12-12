@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.importer.source;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +73,7 @@ public class FileWithIndividualMetadasSourceNode extends FileSourceNode {
                     if (propKey != null) {
                         collector.addPropertyFile(child, propKey);
                     }
-                } catch (Exception e) {
+                } catch (IOException e) {
                     log.error("Error during properties parsing", e);
                 }
             } else {

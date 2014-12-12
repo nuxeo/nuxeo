@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.scanimporter.processor;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -91,7 +93,7 @@ public class ScanedFileSourceNode extends FileSourceNode {
                     } else {
                         log.error(child.getAbsolutePath() + " can not be parsed ");
                     }
-                } catch (Exception e) {
+                } catch (IOException e) {
                     log.error("Error during properties parsing", e);
                 }
             } else if (child.isDirectory()) {
@@ -124,7 +126,7 @@ public class ScanedFileSourceNode extends FileSourceNode {
                 if (blob != null && blob.getFilename() != null) {
                     return blob.getFilename();
                 }
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 String title = (String) bh.getProperties().get("dc:title");
                 if (title != null) {
                     return title;

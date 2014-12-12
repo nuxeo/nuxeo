@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.importer.base;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,10 +31,12 @@ import org.apache.commons.logging.LogFactory;
 import org.javasimon.SimonManager;
 import org.javasimon.Split;
 import org.javasimon.Stopwatch;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.filter.ImportingDocumentFilter;
@@ -104,7 +107,7 @@ public class GenericThreadedImportTask implements Runnable {
 
     public GenericThreadedImportTask(CoreSession session, SourceNode rootSource, DocumentModel rootDoc,
             boolean skipContainerCreation, ImporterLogger rsLogger, int batchSize,
-            ImporterDocumentModelFactory factory, ImporterThreadingPolicy threadPolicy) throws Exception {
+            ImporterDocumentModelFactory factory, ImporterThreadingPolicy threadPolicy) {
         this.rsLogger = rsLogger;
         this.session = session;
         this.batchSize = batchSize;
@@ -125,21 +128,20 @@ public class GenericThreadedImportTask implements Runnable {
 
     public GenericThreadedImportTask(CoreSession session, SourceNode rootSource, DocumentModel rootDoc,
             boolean skipContainerCreation, ImporterLogger rsLogger, int batchSize,
-            ImporterDocumentModelFactory factory, ImporterThreadingPolicy threadPolicy, String jobName)
-            throws Exception {
+            ImporterDocumentModelFactory factory, ImporterThreadingPolicy threadPolicy, String jobName) {
         this(session, rootSource, rootDoc, skipContainerCreation, rsLogger, batchSize, factory, threadPolicy);
         this.jobName = jobName;
     }
 
-    protected CoreSession getCoreSession() throws Exception {
+    protected CoreSession getCoreSession() {
         return session;
     }
 
-    protected void commit() throws Exception {
+    protected void commit() {
         commit(false);
     }
 
-    protected void commit(boolean force) throws Exception {
+    protected void commit(boolean force) {
         uploadedFiles++;
         if (uploadedFiles % 10 == 0) {
             GenericMultiThreadedImporter.addCreatedDoc(taskId, uploadedFiles);
@@ -156,7 +158,7 @@ public class GenericThreadedImportTask implements Runnable {
         }
     }
 
-    protected DocumentModel doCreateFolderishNode(DocumentModel parent, SourceNode node) throws Exception {
+    protected DocumentModel doCreateFolderishNode(DocumentModel parent, SourceNode node) {
         if (!shouldImportDocument(node)) {
             return null;
         }
@@ -165,7 +167,7 @@ public class GenericThreadedImportTask implements Runnable {
         DocumentModel folder = null;
         try {
             folder = getFactory().createFolderishNode(session, parent, node);
-        } catch (Exception e) {
+        } catch (IOException e) {
             String errorMsg = "Unable to create folderish document for " + node.getSourcePath() + ":" + e
                     + (e.getCause() != null ? e.getCause() : "");
             fslog(errorMsg, true);
@@ -174,7 +176,7 @@ public class GenericThreadedImportTask implements Runnable {
             // import task should continue
             boolean shouldImportTaskContinue = getFactory().processFolderishNodeCreationError(session, parent, node);
             if (!shouldImportTaskContinue) {
-                throw new Exception(e);
+                throw new NuxeoException(e);
             }
         } finally {
             split.stop();
@@ -190,7 +192,7 @@ public class GenericThreadedImportTask implements Runnable {
 
     }
 
-    protected DocumentModel doCreateLeafNode(DocumentModel parent, SourceNode node) throws Exception {
+    protected DocumentModel doCreateLeafNode(DocumentModel parent, SourceNode node) {
         if (!shouldImportDocument(node)) {
             return null;
         }
@@ -199,7 +201,7 @@ public class GenericThreadedImportTask implements Runnable {
         DocumentModel leaf = null;
         try {
             leaf = getFactory().createLeafNode(session, parent, node);
-        } catch (Exception e) {
+        } catch (IOException e) {
             String errMsg = "Unable to create leaf document for " + node.getSourcePath() + ":" + e
                     + (e.getCause() != null ? e.getCause() : "");
             fslog(errMsg, true);
@@ -208,7 +210,7 @@ public class GenericThreadedImportTask implements Runnable {
             // import task should continue
             boolean shouldImportTaskContinue = getFactory().processLeafNodeCreationError(session, parent, node);
             if (!shouldImportTaskContinue) {
-                throw new Exception(e);
+                throw new NuxeoException(e);
             }
         } finally {
             split.stop();
@@ -244,7 +246,7 @@ public class GenericThreadedImportTask implements Runnable {
     }
 
     protected GenericThreadedImportTask createNewTask(DocumentModel parent, SourceNode node, ImporterLogger log,
-            Integer batchSize) throws Exception {
+            Integer batchSize) {
         GenericThreadedImportTask newTask = new GenericThreadedImportTask(null, node, parent, skipContainerCreation,
                 log, batchSize, factory, threadPolicy);
         newTask.addListeners(listeners);
@@ -262,13 +264,7 @@ public class GenericThreadedImportTask implements Runnable {
                 batchSize, scheduledTasks);
 
         if (createTask) {
-            GenericThreadedImportTask newTask;
-            try {
-                newTask = createNewTask(parent, node, rsLogger, batchSize);
-            } catch (Exception e) {
-                log.error("Error while starting new thread", e);
-                return null;
-            }
+            GenericThreadedImportTask newTask = createNewTask(parent, node, rsLogger, batchSize);
             newTask.setBatchSize(getBatchSize());
             newTask.setSkipContainerCreation(true);
             newTask.setTransactionTimeout(transactionTimeout);
@@ -278,7 +274,7 @@ public class GenericThreadedImportTask implements Runnable {
         }
     }
 
-    protected void recursiveCreateDocumentFromNode(DocumentModel parent, SourceNode node) throws Exception {
+    protected void recursiveCreateDocumentFromNode(DocumentModel parent, SourceNode node) {
 
         if (getFactory().isTargetDocumentModelFolderish(node)) {
             DocumentModel folder;
@@ -364,12 +360,9 @@ public class GenericThreadedImportTask implements Runnable {
             session.save();
             GenericMultiThreadedImporter.addCreatedDoc(taskId, uploadedFiles);
             txHelper.commitOrRollbackTransaction();
-        } catch (Exception e) {
-            try {
-                notifyImportError();
-            } catch (Exception e1) {
-                log.error("Error during import", e1);
-            }
+        } catch (Exception e) { // deals with interrupt below
+            ExceptionUtils.checkInterrupt(e);
+            notifyImportError();
             log.error("Error during import", e);
         } finally {
             log.info("End of task");
@@ -439,7 +432,7 @@ public class GenericThreadedImportTask implements Runnable {
         this.transactionTimeout = transactionTimeout < 1 ? TX_TIMEOUT : transactionTimeout;
     }
 
-    protected void notifyImportError() throws Exception {
+    protected void notifyImportError() {
         for (ImporterListener listener : listeners) {
             listener.importError();
         }

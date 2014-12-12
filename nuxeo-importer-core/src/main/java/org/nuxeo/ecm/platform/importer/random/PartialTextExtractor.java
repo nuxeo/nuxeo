@@ -1,5 +1,6 @@
 package org.nuxeo.ecm.platform.importer.random;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ public class PartialTextExtractor implements Converter {
 
     public static final double TEXT_RATIO = 0.01;
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         try {
             Blob blob = blobHolder.getBlob();
@@ -24,11 +26,12 @@ public class PartialTextExtractor implements Converter {
             String txtData = data.substring(0, endIdx);
             return new SimpleBlobHolder(new StringBlob(txtData));
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ConversionException("error extracting partial text content", e);
         }
     }
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
     }
 

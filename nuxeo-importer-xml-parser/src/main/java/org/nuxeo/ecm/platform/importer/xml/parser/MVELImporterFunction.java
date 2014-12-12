@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.importer.xml.parser;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -57,7 +58,7 @@ public class MVELImporterFunction extends CoreFunctions {
         this.el = el;
     }
 
-    public Calendar parseDate(String source, String format) throws Exception {
+    public Calendar parseDate(String source, String format) throws ParseException {
         DateFormat df = new SimpleDateFormat(format);
         Date date = df.parse(source);
         Calendar result = Calendar.getInstance();
@@ -76,7 +77,7 @@ public class MVELImporterFunction extends CoreFunctions {
             DocumentModel child = null;
             try {
                 child = session.getChild(root.getRef(), part);
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 child = session.createDocumentModel(root.getPathAsString(), part, typeName);
                 child.setPropertyValue("dc:title", part);
                 child = session.createDocument(child);

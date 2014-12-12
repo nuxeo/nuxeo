@@ -20,6 +20,7 @@
 
 package org.nuxeo.ecm.platform.importer.factories;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -79,8 +80,7 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
      * org.nuxeo.ecm.platform.importer.base.SourceNode)
      */
     @Override
-    public DocumentModel createFolderishNode(CoreSession session, DocumentModel parent, SourceNode node)
-            throws Exception {
+    public DocumentModel createFolderishNode(CoreSession session, DocumentModel parent, SourceNode node) {
 
         String name = getValidNameFromFileName(node.getName());
 
@@ -112,12 +112,11 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
      * org.nuxeo.ecm.platform.importer.base.SourceNode)
      */
     @Override
-    public DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws Exception {
+    public DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws IOException {
         return defaultCreateLeafNode(session, parent, node);
     }
 
-    protected DocumentModel defaultCreateLeafNode(CoreSession session, DocumentModel parent, SourceNode node)
-            throws Exception {
+    protected DocumentModel defaultCreateLeafNode(CoreSession session, DocumentModel parent, SourceNode node) {
 
         BlobHolder bh = node.getBlobHolder();
         String leafTypeToUse = getDocTypeToUse(bh);

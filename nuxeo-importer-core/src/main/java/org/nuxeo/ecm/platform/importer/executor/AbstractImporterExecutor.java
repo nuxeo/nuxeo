@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.importer.executor;
 
 import org.apache.commons.logging.Log;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.importer.base.ImporterRunner;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
@@ -93,9 +94,9 @@ public abstract class AbstractImporterExecutor {
         }
     }
 
-    protected String doRun(ImporterRunner runner, Boolean interactive) throws Exception {
+    protected String doRun(ImporterRunner runner, Boolean interactive) {
         if (isRunning()) {
-            throw new Exception("Task is already running");
+            throw new NuxeoException("Task is already running");
         }
         if (interactive == null) {
             interactive = false;
@@ -155,7 +156,7 @@ public abstract class AbstractImporterExecutor {
      * @return
      * @throws Exception
      */
-    public String run(ImporterRunner runner, Boolean interactive) throws Exception {
+    public String run(ImporterRunner runner, Boolean interactive) {
         return doRun(runner, interactive);
     }
 }

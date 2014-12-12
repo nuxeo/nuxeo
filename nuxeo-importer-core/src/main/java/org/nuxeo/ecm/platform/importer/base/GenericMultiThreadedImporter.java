@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.importer.base;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,9 +34,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.javasimon.SimonManager;
 import org.javasimon.Stopwatch;
+import org.nuxeo.common.utils.ExceptionUtils;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
@@ -119,8 +123,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     }
 
     public GenericMultiThreadedImporter(SourceNode sourceNode, String importWritePath,
-            Boolean skipRootContainerCreation, Integer batchSize, Integer nbThreads, ImporterLogger log, int queueSize)
-            throws Exception {
+            Boolean skipRootContainerCreation, Integer batchSize, Integer nbThreads, ImporterLogger log, int queueSize) {
         importSource = sourceNode;
         this.importWritePath = importWritePath;
         this.log = log;
@@ -136,19 +139,17 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     }
 
     public GenericMultiThreadedImporter(SourceNode sourceNode, String importWritePath,
-            Boolean skipRootContainerCreation, Integer batchSize, Integer nbThreads, ImporterLogger log)
-            throws Exception {
+            Boolean skipRootContainerCreation, Integer batchSize, Integer nbThreads, ImporterLogger log) {
         this(sourceNode, importWritePath, skipRootContainerCreation, batchSize, nbThreads, log, DEFAULT_QUEUE_SIZE);
     }
 
     public GenericMultiThreadedImporter(SourceNode sourceNode, String importWritePath, Integer batchSize,
-            Integer nbThreads, ImporterLogger log) throws Exception {
+            Integer nbThreads, ImporterLogger log) {
         this(sourceNode, importWritePath, false, batchSize, nbThreads, log);
     }
 
     public GenericMultiThreadedImporter(SourceNode sourceNode, String importWritePath,
-            Boolean skipRootContainerCreation, Integer batchSize, Integer nbThreads, String jobName, ImporterLogger log)
-            throws Exception {
+            Boolean skipRootContainerCreation, Integer batchSize, Integer nbThreads, String jobName, ImporterLogger log) {
 
         this(sourceNode, importWritePath, skipRootContainerCreation, batchSize, nbThreads, log);
         this.jobName = jobName;
@@ -158,11 +159,11 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     }
 
     public GenericMultiThreadedImporter(SourceNode sourceNode, String importWritePath, Integer batchSize,
-            Integer nbThreads, String jobName, ImporterLogger log) throws Exception {
+            Integer nbThreads, String jobName, ImporterLogger log) {
         this(sourceNode, importWritePath, false, batchSize, nbThreads, jobName, log);
     }
 
-    public GenericMultiThreadedImporter(ImporterRunnerConfiguration configuration) throws Exception {
+    public GenericMultiThreadedImporter(ImporterRunnerConfiguration configuration) {
         this(configuration.sourceNode, configuration.importWritePath, configuration.skipRootContainerCreation,
                 configuration.batchSize, configuration.nbThreads, configuration.jobName, configuration.log);
     }
@@ -190,6 +191,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         this.importingDocumentFilters.addAll(importingDocumentFilters);
     }
 
+    @Override
     public void run() {
         Exception finalException = null;
         try {
@@ -206,7 +208,8 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
                         this.hashCode(), importSource.getName()));
             }
             doRun();
-        } catch (Exception e) {
+        } catch (Exception e) { // deals with interrupt below
+            ExceptionUtils.checkInterrupt(e);
             log.error("Task exec failed", e);
             finalException = e;
         } finally {
@@ -225,7 +228,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     }
 
     protected GenericThreadedImportTask initRootTask(SourceNode importSource, DocumentModel targetContainer,
-            boolean skipRootContainerCreation, ImporterLogger log, Integer batchSize, String jobName) throws Exception {
+            boolean skipRootContainerCreation, ImporterLogger log, Integer batchSize, String jobName) {
         if (rootImportTask == null) {
             setRootImportTask(new GenericThreadedImportTask(null, importSource, targetContainer,
                     skipRootContainerCreation, log, batchSize, getFactory(), getThreadPolicy(), jobName));
@@ -272,7 +275,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         }
     }
 
-    protected void doRun() throws Exception {
+    protected void doRun() throws IOException {
 
         targetContainer = getTargetContainer();
 
@@ -289,7 +292,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         notifyBeforeImport();
 
         importTP.execute(rootImportTask);
-        Thread.sleep(200);
+        sleep(200);
         int activeTasks = importTP.getActiveCount();
         int oldActiveTasks = 0;
         long lastLogProgressTime = System.currentTimeMillis();
@@ -298,7 +301,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         String[] headers = { "nbDocs", "average", "imediate" };
         PerfLogger perfLogger = new PerfLogger(headers);
         while (activeTasks > 0) {
-            Thread.sleep(500);
+            sleep(500);
             activeTasks = importTP.getActiveCount();
             boolean logProgress = false;
             if (oldActiveTasks != activeTasks) {
@@ -357,7 +360,17 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
 
     }
 
-    protected DocumentModel getTargetContainer() throws Exception {
+    protected static void sleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            // restore interrupt status
+            Thread.currentThread().interrupt();
+            throw new NuxeoException(e);
+        }
+    }
+
+    protected DocumentModel getTargetContainer() {
         if (targetContainer == null) {
             targetContainer = createTargetContainer();
         }
@@ -371,12 +384,12 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
      * @return
      * @throws Exception
      */
-    protected DocumentModel createTargetContainer() throws Exception {
+    protected DocumentModel createTargetContainer() {
         try {
             return session.getDocument(new PathRef(importWritePath));
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error(e.getMessage());
-            throw new Exception(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -419,13 +432,13 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         }
     }
 
-    protected void notifyBeforeImport() throws Exception {
+    protected void notifyBeforeImport() {
         for (ImporterListener listener : listeners) {
             listener.beforeImport();
         }
     }
 
-    protected void notifyAfterImport() throws Exception {
+    protected void notifyAfterImport() {
         for (ImporterListener listener : listeners) {
             listener.afterImport();
         }

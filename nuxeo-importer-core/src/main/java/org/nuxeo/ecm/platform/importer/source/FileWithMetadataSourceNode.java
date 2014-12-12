@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.importer.source;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +67,7 @@ public class FileWithMetadataSourceNode extends FileSourceNode {
             if (METADATA_FILENAME.equals(child.getName())) {
                 try {
                     collector.addPropertyFile(child);
-                } catch (Exception e) {
+                } catch (IOException e) {
                     log.error("Error during properties parsing", e);
                 }
                 break;

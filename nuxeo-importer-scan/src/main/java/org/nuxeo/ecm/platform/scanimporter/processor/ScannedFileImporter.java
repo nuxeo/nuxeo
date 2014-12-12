@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.scanimporter.processor;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -28,8 +27,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
-import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.log.BasicLogger;
 import org.nuxeo.ecm.platform.importer.service.DefaultImporterService;
@@ -96,7 +95,7 @@ public class ScannedFileImporter {
         processedDescriptors = new ArrayList<String>();
     }
 
-    public void doImport() throws Exception {
+    public void doImport() {
 
         ScannedFileMapperService sfms = Framework.getLocalService(ScannedFileMapperService.class);
 
@@ -110,7 +109,7 @@ public class ScannedFileImporter {
         doImport(folder, config);
     }
 
-    public void doImport(File folder, ImporterConfig config) throws Exception {
+    public void doImport(File folder, ImporterConfig config) {
 
         if (folder == null || !folder.exists()) {
             throw new ClientException("Unable to access source folder " + folder);
@@ -144,24 +143,23 @@ public class ScannedFileImporter {
     }
 
     /**
-     * @throws InvocationTargetException
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws InstantiationException
      * @since 5.7.3
      */
-    private ImporterDocumentModelFactory initDocumentModelFactory(ImporterConfig config) throws InstantiationException,
-            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    private ImporterDocumentModelFactory initDocumentModelFactory(ImporterConfig config) {
         Class<? extends ImporterDocumentModelFactory> factoryClass = Framework.getLocalService(
                 DefaultImporterService.class).getDocModelFactoryClass();
         // Class<? extends DefaultDocumentModelFactory> factoryClass = ScanedFileFactory.class;
         Constructor<? extends ImporterDocumentModelFactory> cst = null;
 
         try {
-            cst = factoryClass.getConstructor(ImporterConfig.class);
-            return cst.newInstance(config);
-        } catch (NoSuchMethodException e) {
-            return factoryClass.newInstance();
+            try {
+                cst = factoryClass.getConstructor(ImporterConfig.class);
+                return cst.newInstance(config);
+            } catch (NoSuchMethodException e) {
+                return factoryClass.newInstance();
+            }
+        } catch (ReflectiveOperationException e) {
+            throw new NuxeoException(e);
         }
     }
 
@@ -169,16 +167,17 @@ public class ScannedFileImporter {
      * @throws Exception
      * @since 5.7.3
      */
-    private SourceNode initSourceNode(File file) throws Exception {
+    private SourceNode initSourceNode(File file) {
         Class<? extends SourceNode> srcClass = Framework.getLocalService(DefaultImporterService.class).getSourceNodeClass();
         // Class<? extends SourceNode> srcClass = ScanedFileSourceNode.class;
         if (!FileSourceNode.class.isAssignableFrom(srcClass)) {
-            throw new Exception("Waiting source node extending FileSourceNode for Scan Importer");
+            throw new NuxeoException("Waiting source node extending FileSourceNode for Scan Importer");
         }
-
-        Constructor<? extends SourceNode> cst = srcClass.getConstructor(File.class);
-
-        return cst.newInstance(file);
+        try {
+            return srcClass.getConstructor(File.class).newInstance(file);
+        } catch (ReflectiveOperationException e) {
+            throw new NuxeoException(e);
+        }
     }
 
 }

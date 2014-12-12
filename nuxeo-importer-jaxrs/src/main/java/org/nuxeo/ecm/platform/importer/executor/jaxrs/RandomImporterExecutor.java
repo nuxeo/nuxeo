@@ -34,8 +34,7 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
             @QueryParam("interactive") Boolean interactive, @QueryParam("nbNodes") Integer nbNodes,
             @QueryParam("fileSizeKB") Integer fileSizeKB, @QueryParam("onlyText") Boolean onlyText,
             @QueryParam("blockSyncPostCommitProcessing") Boolean blockSyncPostCommitProcessing,
-            @QueryParam("blockAsyncProcessing") Boolean blockAsyncProcessing, @QueryParam("bulkMode") Boolean bulkMode)
-            throws Exception {
+            @QueryParam("blockAsyncProcessing") Boolean blockAsyncProcessing, @QueryParam("bulkMode") Boolean bulkMode) {
 
         if (onlyText == null) {
             onlyText = true;
@@ -63,7 +62,7 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
     }
 
     @Override
-    public String run(ImporterRunner runner, Boolean interactive) throws Exception {
+    public String run(ImporterRunner runner, Boolean interactive) {
         return doRun(runner, interactive);
     }
 

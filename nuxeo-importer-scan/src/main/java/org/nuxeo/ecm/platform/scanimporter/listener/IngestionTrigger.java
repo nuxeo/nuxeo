@@ -56,17 +56,11 @@ public class IngestionTrigger implements EventListener {
         ingestionInProgress = true;
         try {
             ScannedFileImporter importer = new ScannedFileImporter();
-            try {
-                if (event.getContext().getProperty("Testing") != null) {
-                    event.getContext().setProperty("Tested", true);
-                } else {
-                    importer.doImport();
-                }
-            } catch (Exception e) {
-                log.error("Error during import ", e);
-                throw new ClientException(e);
+            if (event.getContext().getProperty("Testing") != null) {
+                event.getContext().setProperty("Tested", true);
+            } else {
+                importer.doImport();
             }
-
         } finally {
             ingestionInProgress = false;
         }
