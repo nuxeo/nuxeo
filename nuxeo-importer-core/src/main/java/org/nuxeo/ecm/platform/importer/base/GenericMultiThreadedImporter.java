@@ -102,6 +102,8 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
 
     protected int queueSize = DEFAULT_QUEUE_SIZE;
 
+    protected String repositoryName;
+    
     public static ThreadPoolExecutor getExecutor() {
         return importTP;
     }
@@ -166,6 +168,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     public GenericMultiThreadedImporter(ImporterRunnerConfiguration configuration) {
         this(configuration.sourceNode, configuration.importWritePath, configuration.skipRootContainerCreation,
                 configuration.batchSize, configuration.nbThreads, configuration.jobName, configuration.log);
+        repositoryName = configuration.repositoryName;
     }
 
     public void addFilter(ImporterFilter filter) {
@@ -195,7 +198,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     public void run() {
         Exception finalException = null;
         try {
-            session = CoreInstance.openCoreSessionSystem(null);
+            session = CoreInstance.openCoreSessionSystem(repositoryName);
             for (ImporterFilter filter : filters) {
                 log.debug(String.format(
                         "Running filter with %s, on the importer with the hash code %s. The source node name is %s",
@@ -230,7 +233,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     protected GenericThreadedImportTask initRootTask(SourceNode importSource, DocumentModel targetContainer,
             boolean skipRootContainerCreation, ImporterLogger log, Integer batchSize, String jobName) {
         if (rootImportTask == null) {
-            setRootImportTask(new GenericThreadedImportTask(null, importSource, targetContainer,
+            setRootImportTask(new GenericThreadedImportTask(repositoryName, importSource, targetContainer,
                     skipRootContainerCreation, log, batchSize, getFactory(), getThreadPolicy(), jobName));
         } else {
             rootImportTask.setInputSource(importSource);
@@ -443,4 +446,19 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
             listener.afterImport();
         }
     }
+
+    /**
+     * @since 7.1
+     */
+    public String getRepositoryName() {
+        return repositoryName;
+    }
+
+    /**
+     * @since 7.1
+     */
+    public void setRepositoryName(String repositoryName) {
+        this.repositoryName = repositoryName;
+    }
+
 }

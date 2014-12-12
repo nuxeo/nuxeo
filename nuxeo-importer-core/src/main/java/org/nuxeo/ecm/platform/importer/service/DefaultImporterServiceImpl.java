@@ -48,6 +48,8 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     private ImporterLogger importerLogger;
 
     private int transactionTimeout = 0;
+    
+    private String repositoryName;
 
     @Override
     public void importDocuments(String destinationPath, String sourcePath, boolean skipRootContainerCreation,
@@ -61,7 +63,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
             log.error("Need to set a documentModelFactory to be used by this importer");
         }
 
-        DefaultImporterExecutor executor = new DefaultImporterExecutor();
+        DefaultImporterExecutor executor = new DefaultImporterExecutor(repositoryName);
         executor.setFactory(getDocumentModelFactory());
         executor.setTransactionTimeout(transactionTimeout);
         executor.run(sourceNode, destinationPath, skipRootContainerCreation, batchSize, noImportingThreads, true);
@@ -83,7 +85,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
 
         ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(sourceNode,
                 destinationPath, executor.getLogger()).skipRootContainerCreation(skipRootContainerCreation).batchSize(
-                batchSize).nbThreads(noImportingThreads).build();
+                batchSize).nbThreads(noImportingThreads).repository(repositoryName).build();
         GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(configuration);
         runner.setTransactionTimeout(transactionTimeout);
         ImporterFilter filter = new EventServiceConfiguratorFilter(false, false, false, true);
@@ -202,5 +204,13 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     public Class<? extends ImporterDocumentModelFactory> getDocModelFactoryClass() {
         return docModelFactoryClass;
     }
-
+    
+    /**
+     *@since 7.1 
+     * @param repositoryName
+     */
+    @Override
+    public void setRepository(String repositoryName) {
+        this.repositoryName=repositoryName;
+    }
 }

@@ -17,8 +17,10 @@
 
 package org.nuxeo.ecm.platform.importer.base;
 
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Hold the configuration of an ImporterRunner.
@@ -41,6 +43,8 @@ public class ImporterRunnerConfiguration {
         private int nbThreads = 5;
 
         private String jobName;
+        
+        private String repository=null;
 
         public Builder(SourceNode sourceNode, String importWritePath, ImporterLogger log) {
             this.sourceNode = sourceNode;
@@ -55,6 +59,11 @@ public class ImporterRunnerConfiguration {
             return this;
         }
 
+        public Builder repository(String repo) {
+            this.repository = repo;
+            return this;
+        }
+        
         public Builder batchSize(Integer batchSize) {
             if (batchSize != null) {
                 this.batchSize = batchSize;
@@ -77,7 +86,7 @@ public class ImporterRunnerConfiguration {
         }
 
         public ImporterRunnerConfiguration build() {
-            return new ImporterRunnerConfiguration(sourceNode, importWritePath, log, skipRootContainerCreation,
+            return new ImporterRunnerConfiguration(repository, sourceNode, importWritePath, log, skipRootContainerCreation,
                     batchSize, nbThreads, jobName);
         }
 
@@ -96,8 +105,10 @@ public class ImporterRunnerConfiguration {
     public final String jobName;
 
     public final ImporterLogger log;
+    
+    public final String repositoryName;
 
-    protected ImporterRunnerConfiguration(SourceNode sourceNode, String importWritePath, ImporterLogger log,
+    protected ImporterRunnerConfiguration(String repositoryName, SourceNode sourceNode, String importWritePath, ImporterLogger log,
             boolean skipRootContainerCreation, int batchSize, int nbThreads, String jobName) {
         this.sourceNode = sourceNode;
         this.importWritePath = importWritePath;
@@ -106,6 +117,11 @@ public class ImporterRunnerConfiguration {
         this.batchSize = batchSize;
         this.nbThreads = nbThreads;
         this.jobName = jobName;
+        if  (repositoryName!=null) {
+            this.repositoryName = repositoryName;
+        } else {
+            this.repositoryName = Framework.getService(RepositoryManager.class).getDefaultRepositoryName();
+        }
     }
 
 }

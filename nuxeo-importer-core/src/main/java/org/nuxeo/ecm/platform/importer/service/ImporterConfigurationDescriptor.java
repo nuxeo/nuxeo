@@ -34,6 +34,9 @@ public class ImporterConfigurationDescriptor {
     @XNode("documentModelFactory")
     protected DocumentModelFactory documentModelFactory;
 
+    @XNode("repository")
+    protected String repository;
+    
     @XObject("documentModelFactory")
     public static class DocumentModelFactory {
 
@@ -70,5 +73,9 @@ public class ImporterConfigurationDescriptor {
     public Class<? extends ImporterLogger> getImporterLog() {
         return importerLogClass;
     }
+
+    public String getRepository() {
+        return repository;
+    }    
 
 }

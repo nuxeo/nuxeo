@@ -37,10 +37,15 @@ public class DefaultImporterExecutor extends AbstractImporterExecutor {
 
     protected GenericMultiThreadedImporter importer = null;
 
+    protected String repositoryName;
+    
     public DefaultImporterExecutor() {
-
     }
-
+ 
+    public DefaultImporterExecutor(String repositoryName) {
+        this.repositoryName=repositoryName;
+    }
+    
     @Override
     protected Log getJavaLogger() {
         return log;

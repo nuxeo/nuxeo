@@ -92,6 +92,8 @@ public class GenericThreadedImportTask implements Runnable {
 
     protected List<ImportingDocumentFilter> importingDocumentFilters = new ArrayList<ImportingDocumentFilter>();
 
+    protected String repositoryName;
+    
     private static synchronized int getNextTaskId() {
         taskCounter += 1;
         return taskCounter;
@@ -99,13 +101,7 @@ public class GenericThreadedImportTask implements Runnable {
 
     protected ImporterLogger rsLogger = null;
 
-    protected GenericThreadedImportTask(CoreSession session) {
-        this.session = session;
-        uploadedFiles = 0;
-        taskId = "T" + getNextTaskId();
-    }
-
-    public GenericThreadedImportTask(CoreSession session, SourceNode rootSource, DocumentModel rootDoc,
+    protected GenericThreadedImportTask(CoreSession session, SourceNode rootSource, DocumentModel rootDoc,
             boolean skipContainerCreation, ImporterLogger rsLogger, int batchSize,
             ImporterDocumentModelFactory factory, ImporterThreadingPolicy threadPolicy) {
         this.rsLogger = rsLogger;
@@ -126,11 +122,12 @@ public class GenericThreadedImportTask implements Runnable {
 
     }
 
-    public GenericThreadedImportTask(CoreSession session, SourceNode rootSource, DocumentModel rootDoc,
+    public GenericThreadedImportTask(String repositoryName, SourceNode rootSource, DocumentModel rootDoc,
             boolean skipContainerCreation, ImporterLogger rsLogger, int batchSize,
             ImporterDocumentModelFactory factory, ImporterThreadingPolicy threadPolicy, String jobName) {
-        this(session, rootSource, rootDoc, skipContainerCreation, rsLogger, batchSize, factory, threadPolicy);
+        this(null, rootSource, rootDoc, skipContainerCreation, rsLogger, batchSize, factory, threadPolicy);
         this.jobName = jobName;
+        this.repositoryName = repositoryName;        
     }
 
     protected CoreSession getCoreSession() {

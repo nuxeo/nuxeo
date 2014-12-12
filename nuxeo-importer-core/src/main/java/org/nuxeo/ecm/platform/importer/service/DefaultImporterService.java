@@ -105,6 +105,12 @@ public interface DefaultImporterService {
     void setTransactionTimeout(int transactionTimeout);
 
     /**
+     * @since 7.1 
+     * @param repositoryName
+     */
+    void setRepository(String repositoryName);    
+        
+    /**
      * Added waiting the importer refactoring. Only used by Scan Importer.
      * 
      * @since 5.7.3
