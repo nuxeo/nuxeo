@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -92,7 +93,7 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
     }
 
     private List<IndexingCommand> getIndexingCommands(CoreSession session,
-            List<String> ids) {
+            List<String> ids) throws ClientException {
         List<IndexingCommand> ret = new ArrayList<>(ids.size());
         for (DocumentModel doc : fetchDocuments(session, ids)) {
             IndexingCommand cmd = new IndexingCommand(doc, false, false);
@@ -102,7 +103,7 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
     }
 
     private List<DocumentModel> fetchDocuments(CoreSession session,
-            List<String> ids) {
+            List<String> ids) throws ClientException {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM Document, Relation WHERE ecm:uuid IN (");
         for (int i = 0; i < ids.size(); i++) {

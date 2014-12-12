@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -119,8 +120,10 @@ public class ElasticSearchManager {
     }
 
     public void startReindexFrom() throws Exception {
-        try (CoreSession session = CoreInstance
-                .openCoreSessionSystem(repositoryName)) {
+        RepositoryManager rm = Framework
+                .getLocalService(RepositoryManager.class);
+        CoreSession session = rm.getRepository(repositoryName).open();
+        try {
             log.warn(String.format(
                     "Try to remove %s and its children from %s repository index", rootId,
                     repositoryName));
@@ -137,6 +140,8 @@ public class ElasticSearchManager {
                 IndexingCommand cmd = new IndexingCommand(doc, false, true);
                 esi.scheduleIndexing(cmd);
             }
+        } finally {
+            CoreInstance.getInstance().close(session);
         }
     }
 

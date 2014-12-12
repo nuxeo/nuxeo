@@ -21,6 +21,7 @@ import java.util.Arrays;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -138,6 +139,7 @@ public class TestReindex {
     }
 
     @Test
+    @Ignore("NXP-15826 in progress")
     public void shouldReindexDocument() throws Exception {
         buildDocs();
         startTransaction();
@@ -172,8 +174,8 @@ public class TestReindex {
 
         DocumentModel folder = session.createDocumentModel("/", "section",
                 "Folder");
-        session.createDocument(folder);
-        folder = session.saveDocument(folder);
+        folder = session.createDocument(folder);
+        session.saveDocument(folder);
         for (int i = 0; i < 10; i++) {
             DocumentModel doc = session.createDocumentModel("/", "testDoc" + i,
                     "File");

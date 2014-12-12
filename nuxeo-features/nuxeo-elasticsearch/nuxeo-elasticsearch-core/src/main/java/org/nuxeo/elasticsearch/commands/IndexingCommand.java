@@ -107,7 +107,12 @@ public class IndexingCommand implements Serializable {
             repository = getDefaultRepository();
             this.targetDocument = null;
         } else {
-            DocumentModel doc = getValidTargetDocument(targetDocument);
+            DocumentModel doc = null;
+            try {
+                doc = getValidTargetDocument(targetDocument);
+            } catch (ClientException e) {
+                throw new IllegalArgumentException("Invalid targetDocument: " + targetDocument, e);
+            }
             this.targetDocument = doc;
             repository = doc.getRepositoryName();
             uid = doc.getId();
@@ -116,7 +121,7 @@ public class IndexingCommand implements Serializable {
         assert uid != null : "Invalid IndexingCommand with a null doc id";
     }
 
-    private DocumentModel getValidTargetDocument(DocumentModel target) {
+    private DocumentModel getValidTargetDocument(DocumentModel target) throws ClientException {
         if (target.getId() != null) {
             return target;
         }
