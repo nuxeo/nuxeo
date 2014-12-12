@@ -556,4 +556,15 @@ public interface DocumentRoutingService {
      * @since 5.9.3
      */
     void invalidateRouteModelsCache();
+
+    /**
+     * Query for the routes 'done' or 'canceled' and delete them. The max no of the routes that will be deleted is
+     * specified by the 'limit' parameter. When the limit is '0' all the completed routes are deleted. The routes to be
+     * deleted are ordered ascending by their creation date.
+     *
+     * @return the number of cleaned up workflow instance
+     * @throws ClientException
+     * @since 7.1
+     */
+    int doCleanupDoneAndCanceledRouteInstances(String reprositoryName, int limit) throws ClientException;
 }

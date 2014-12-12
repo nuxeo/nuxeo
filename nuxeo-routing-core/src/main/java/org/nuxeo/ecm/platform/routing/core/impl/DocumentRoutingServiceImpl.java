@@ -86,6 +86,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -896,6 +897,60 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         return DocumentRoutingConstants.DOCUMENT_ROUTING_DELEGATION_ACL + '/' + task.getId();
     }
 
+    /**
+     * @since 7.1
+     */
+    private final class WfCleaner extends UnrestrictedSessionRunner {
+        private final int limit;
+
+        protected int i = 0;
+
+        private WfCleaner(String repositoryName, int limit) {
+            super(repositoryName);
+            this.limit = limit;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            List<String> routeIds = new ArrayList<String>();
+            String query = "SELECT ecm:uuid FROM DocumentRoute WHERE (ecm:currentLifeCycleState = 'done' "
+                    + "OR ecm:currentLifeCycleState = 'canceled') ORDER BY dc:created";
+            IterableQueryResult results = session.queryAndFetch(query, "NXQL");
+            try {
+                for (Map<String, Serializable> result : results) {
+                    routeIds.add(result.get("ecm:uuid").toString());
+                    i++;
+                    // stop when the limit is reached and close the resultSet
+                    if (i == limit) {
+                        break;
+                    }
+                }
+            } finally {
+                results.close();
+            }
+            IterableQueryResult tasks = null;
+            for (String routeDocId : routeIds) {
+                final String associatedTaskQuery = String.format(
+                        "SELECT ecm:uuid FROM Document WHERE ecm:mixinType = 'Task' AND nt:processId = '%s'",
+                        routeDocId);
+                try {
+                    tasks = session.queryAndFetch(associatedTaskQuery, "NXQL");
+                    for (Map<String, Serializable> task : tasks) {
+                        final String taskId = task.get("ecm:uuid").toString();
+                        session.removeDocument(new IdRef(taskId));
+                    }
+                } finally {
+                    tasks.close();
+                }
+                session.removeDocument(new IdRef(routeDocId));
+            }
+        }
+
+        public int getNumberOfCleanedUpWf() {
+            return i;
+        }
+    }
+
     class UnrestrictedQueryRunner extends UnrestrictedSessionRunner {
 
         String query;
@@ -1114,39 +1169,16 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public void cleanupDoneAndCanceledRouteInstances(String reprositoryName, final int limit) throws ClientException {
-        new UnrestrictedSessionRunner(reprositoryName) {
+    public void cleanupDoneAndCanceledRouteInstances(final String reprositoryName, final int limit) {
+        doCleanupDoneAndCanceledRouteInstances(reprositoryName, limit);
+    }
 
-            @Override
-            public void run() throws ClientException {
-                List<String> routeIds = new ArrayList<String>();
-                String query = "SELECT ecm:uuid FROM DocumentRoute WHERE (ecm:currentLifeCycleState = 'done' "
-                        + "OR ecm:currentLifeCycleState = 'canceled') ORDER BY dc:created";
-                IterableQueryResult results = session.queryAndFetch(query, "NXQL");
-                int i = 0;
-                for (Map<String, Serializable> result : results) {
-                    routeIds.add(result.get("ecm:uuid").toString());
-                    i++;
-                    // stop when the limit is reached and close the resultSet
-                    if (i == limit) {
-                        break;
-                    }
-                }
-                results.close();
-                for (String routeDocId : routeIds) {
-                    final String associatedTaskQuery = String.format(
-                            "SELECT ecm:uuid FROM Document WHERE ecm:mixinType = 'Task' AND nt:processId = '%s'",
-                            routeDocId);
-                    results = session.queryAndFetch(associatedTaskQuery, "NXQL");
-                    for (Map<String, Serializable> result : results) {
-                        final String taskId = result.get("ecm:uuid").toString();
-                        session.removeDocument(new IdRef(taskId));
-                    }
-                    results.close();
-                    session.removeDocument(new IdRef(routeDocId));
-                }
-            }
-        }.runUnrestricted();
+    @Override
+    public int doCleanupDoneAndCanceledRouteInstances(final String reprositoryName, final int limit)
+            throws ClientException {
+        WfCleaner unrestrictedSessionRunner = new WfCleaner(reprositoryName, limit);
+        unrestrictedSessionRunner.runUnrestricted();
+        return unrestrictedSessionRunner.getNumberOfCleanedUpWf();
     }
 
     @Override
