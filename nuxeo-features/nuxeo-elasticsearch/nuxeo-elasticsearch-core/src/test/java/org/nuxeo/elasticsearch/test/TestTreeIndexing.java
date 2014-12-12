@@ -226,7 +226,7 @@ public class TestTreeIndexing {
 
     }
 
-    protected CoreSession getRestrictedSession(String userName) throws Exception {
+    protected CoreSession getRestrictedSession(String userName) {
         RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("principal", new UserPrincipal(userName, null, false, false));

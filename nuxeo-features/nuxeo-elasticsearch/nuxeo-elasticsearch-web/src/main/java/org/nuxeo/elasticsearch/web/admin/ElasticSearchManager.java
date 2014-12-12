@@ -99,18 +99,18 @@ public class ElasticSearchManager {
         return health.toString();
     }
 
-    public void startReindexAll() throws Exception {
+    public void startReindexAll() {
         log.warn("Re-indexing the entire repository: " + repositoryName);
         esa.dropAndInitRepositoryIndex(repositoryName);
         esi.reindex(repositoryName, "SELECT ecm:uuid FROM Document");
     }
 
-    public void startReindexNxql() throws Exception {
+    public void startReindexNxql() {
         log.warn(String.format("Re-indexing from a NXQL query: %s on repository: %s", getNxql(), repositoryName));
         esi.reindex(repositoryName, getNxql());
     }
 
-    public void startReindexFrom() throws Exception {
+    public void startReindexFrom() {
         try (CoreSession session = CoreInstance.openCoreSessionSystem(repositoryName)) {
             log.warn(String.format("Try to remove %s and its children from %s repository index", rootId, repositoryName));
             String jsonCmd = String.format(JSON_DELETE_CMD, rootId, repositoryName);

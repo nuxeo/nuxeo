@@ -107,7 +107,7 @@ public class TestCompareCoreWithES {
         session.removeDocument(new PathRef(proxyPath));
     }
 
-    protected String getDigest(DocumentModelList docs) throws Exception {
+    protected String getDigest(DocumentModelList docs) {
         StringBuilder sb = new StringBuilder();
         for (DocumentModel doc : docs) {
             String nameOrTitle = doc.getName();

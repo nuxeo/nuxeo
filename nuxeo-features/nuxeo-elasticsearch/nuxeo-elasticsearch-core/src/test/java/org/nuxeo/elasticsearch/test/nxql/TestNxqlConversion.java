@@ -150,7 +150,7 @@ public class TestNxqlConversion {
         checkNXQL("select * from Document where dc:title STARTSWITH '" + specialChars + "'", 0);
     }
 
-    protected void checkNXQL(String nxql, int expectedNumberOfHis) throws Exception {
+    protected void checkNXQL(String nxql, int expectedNumberOfHis) {
         // System.out.println(NXQLQueryConverter.toESQueryString(nxql));
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(nxql).limit(0));
         Assert.assertEquals(expectedNumberOfHis, docs.totalSize());
