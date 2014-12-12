@@ -43,14 +43,11 @@ import org.nuxeo.elasticsearch.listener.EventConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- * Holds information about what type of indexing operation must be processed.
- * IndexingCommands are create "on the fly" via a Synchronous event listener and
- * at commit time the system will merge the commands and generate events for the
+ * Holds information about what type of indexing operation must be processed. IndexingCommands are create "on the fly"
+ * via a Synchronous event listener and at commit time the system will merge the commands and generate events for the
  * sync commands.
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public class IndexingCommand implements Serializable {
 
@@ -94,10 +91,9 @@ public class IndexingCommand implements Serializable {
         //
     }
 
-    public IndexingCommand(DocumentModel targetDocument, String command,
-            boolean sync, boolean recurse) {
+    public IndexingCommand(DocumentModel targetDocument, String command, boolean sync, boolean recurse) {
         // we don't want sync and recursive command
-       assert (!(sync && recurse) || DELETE.equals(command));
+        assert (!(sync && recurse) || DELETE.equals(command));
         id = PREFIX + UUID.randomUUID().toString();
         name = command;
         this.sync = sync;
@@ -143,8 +139,7 @@ public class IndexingCommand implements Serializable {
         return mgr.getDefaultRepository().getName();
     }
 
-    public IndexingCommand(DocumentModel targetDocument, boolean sync,
-            boolean recurse) {
+    public IndexingCommand(DocumentModel targetDocument, boolean sync, boolean recurse) {
         this(targetDocument, INSERT, sync, recurse);
     }
 
@@ -155,8 +150,7 @@ public class IndexingCommand implements Serializable {
         } else {
             // Doc was deleted : no way we can fetch it
             // re-attach ???
-            log.info("Can not refresh document because it was deleted: "
-                    + idref);
+            log.info("Can not refresh document because it was deleted: " + idref);
         }
         markUpdated();
     }
@@ -176,7 +170,7 @@ public class IndexingCommand implements Serializable {
     }
 
     public boolean canBeMerged(IndexingCommand other) {
-        if (! name.equals(other.name)) {
+        if (!name.equals(other.name)) {
             return false;
         }
         if (DELETE.equals(name)) {
@@ -184,7 +178,7 @@ public class IndexingCommand implements Serializable {
             return true;
         }
         // only if the result is not a sync and recurse command
-        return ! ((other.sync || sync ) && (other.recurse || recurse));
+        return !((other.sync || sync) && (other.recurse || recurse));
     }
 
     public boolean isSync() {
@@ -217,7 +211,7 @@ public class IndexingCommand implements Serializable {
         jsonGen.writeStartObject();
         jsonGen.writeStringField("id", id);
         jsonGen.writeStringField("name", name);
-            jsonGen.writeStringField("docId", getDocId());
+        jsonGen.writeStringField("docId", getDocId());
         if (targetDocument != null) {
             jsonGen.writeStringField("path", targetDocument.getPathAsString());
         }
@@ -227,8 +221,7 @@ public class IndexingCommand implements Serializable {
         jsonGen.writeEndObject();
     }
 
-    public static IndexingCommand fromJSON(CoreSession session, String json)
-            throws ClientException {
+    public static IndexingCommand fromJSON(CoreSession session, String json) throws ClientException {
         JsonFactory jsonFactory = new JsonFactory();
         try {
             JsonParser jp = jsonFactory.createJsonParser(json);
@@ -242,8 +235,7 @@ public class IndexingCommand implements Serializable {
         }
     }
 
-    public static IndexingCommand fromJSON(CoreSession session, JsonParser jp)
-            throws Exception {
+    public static IndexingCommand fromJSON(CoreSession session, JsonParser jp) throws Exception {
 
         IndexingCommand cmd = new IndexingCommand();
 
@@ -274,15 +266,13 @@ public class IndexingCommand implements Serializable {
         // resolve DocumentModel if possible
         if (cmd.uid != null) {
             if (!session.getRepositoryName().equals(cmd.repository)) {
-                log.error("Unable to restore doc from repository "
-                        + cmd.repository + " with a session on repository "
+                log.error("Unable to restore doc from repository " + cmd.repository + " with a session on repository "
                         + session.getRepositoryName());
             } else {
                 IdRef ref = new IdRef(cmd.uid);
                 if (!session.exists(ref)) {
                     if (!IndexingCommand.DELETE.equals(cmd.getName())) {
-                        log.warn("Unable to restieve document " + cmd.uid
-                                + " form indexing command " + cmd.name);
+                        log.warn("Unable to restieve document " + cmd.uid + " form indexing command " + cmd.name);
                     }
                 } else {
                     cmd.targetDocument = session.getDocument(ref);
@@ -338,14 +328,12 @@ public class IndexingCommand implements Serializable {
         if (getTargetDocument() != null) {
             CoreSession session = getTargetDocument().getCoreSession();
             if (session != null) {
-                EventContextImpl context = new EventContextImpl(session,
-                        session.getPrincipal());
-                indexingEvent = context
-                        .newEvent(EventConstants.ES_INDEX_EVENT_SYNC);
+                EventContextImpl context = new EventContextImpl(session, session.getPrincipal());
+                indexingEvent = context.newEvent(EventConstants.ES_INDEX_EVENT_SYNC);
             } else {
                 if (Framework.isInitialized()) {
-                    log.error(String.format("Unable to generate event, no session found for cmd:" +
-                            " %s, sessionid: %s", toString(), getTargetDocument().getSessionId()));
+                    log.error(String.format("Unable to generate event, no session found for cmd:"
+                            + " %s, sessionid: %s", toString(), getTargetDocument().getSessionId()));
                 }
             }
         }
@@ -369,9 +357,7 @@ public class IndexingCommand implements Serializable {
     }
 
     /**
-     * Try to make the command synchronous.
-     *
-     * Recurse command will stay in async for update.
+     * Try to make the command synchronous. Recurse command will stay in async for update.
      */
     public void makeSync() {
         if (!sync) {
@@ -386,6 +372,6 @@ public class IndexingCommand implements Serializable {
     }
 
     public void disconnect() {
-       targetDocument = null;
+        targetDocument = null;
     }
 }

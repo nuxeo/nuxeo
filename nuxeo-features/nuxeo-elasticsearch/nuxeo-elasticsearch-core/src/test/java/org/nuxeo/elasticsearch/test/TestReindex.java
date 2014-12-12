@@ -50,7 +50,6 @@ import com.google.inject.Inject;
  * Test "on the fly" indexing via the listener system
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 
 @RunWith(FeaturesRunner.class)
@@ -78,6 +77,7 @@ public class TestReindex {
     protected TagService tagService;
 
     private int commandProcessed;
+
     private boolean syncMode = false;
 
     public void startCountingCommandProcessed() {
@@ -87,8 +87,7 @@ public class TestReindex {
     }
 
     public void assertNumberOfCommandProcessed(int processed) throws Exception {
-        Assert.assertEquals(processed, esa.getTotalCommandProcessed()
-                - commandProcessed);
+        Assert.assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
     }
 
     public void _waitForIndexing() throws Exception {
@@ -108,8 +107,7 @@ public class TestReindex {
      */
     public void waitForIndexing() throws Exception {
         _waitForIndexing();
-        Assert.assertFalse("Still indexing in progress",
-                esa.isIndexingInProgress());
+        Assert.assertFalse("Still indexing in progress", esa.isIndexingInProgress());
         esa.refresh();
     }
 
@@ -145,11 +143,9 @@ public class TestReindex {
         startTransaction();
 
         String nxql = "SELECT * FROM Document, Relation order by ecm:uuid";
-        ElasticSearchService ess = Framework
-                .getLocalService(ElasticSearchService.class);
+        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         DocumentModelList coreDocs = session.query(nxql);
-        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(
-                nxql).limit(100));
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(nxql).limit(100));
 
         Assert.assertEquals(coreDocs.totalSize(), docs.totalSize());
         Assert.assertEquals(getDigest(coreDocs), getDigest(docs));
@@ -157,8 +153,7 @@ public class TestReindex {
         // Assert.assertEquals(getDigest(coreDocs), 42, docs.totalSize());
         esa.initIndexes(true);
         esa.refresh();
-        DocumentModelList docs2 = ess.query(new NxQueryBuilder(session)
-                .nxql("SELECT * FROM Document"));
+        DocumentModelList docs2 = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
         Assert.assertEquals(0, docs2.totalSize());
         esi.reindex(session.getRepositoryName(), "SELECT * FROM Document");
         esi.reindex(session.getRepositoryName(), "SELECT * FROM Relation");
@@ -172,13 +167,11 @@ public class TestReindex {
     private void buildDocs() throws Exception {
         startTransaction();
 
-        DocumentModel folder = session.createDocumentModel("/", "section",
-                "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "section", "Folder");
         folder = session.createDocument(folder);
         session.saveDocument(folder);
         for (int i = 0; i < 10; i++) {
-            DocumentModel doc = session.createDocumentModel("/", "testDoc" + i,
-                    "File");
+            DocumentModel doc = session.createDocumentModel("/", "testDoc" + i, "File");
             doc.setPropertyValue("dc:title", "TestMe" + i);
             BlobHolder holder = doc.getAdapter(BlobHolder.class);
             holder.setBlob(new StringBlob("You know for search" + i));
@@ -192,8 +185,7 @@ public class TestReindex {
         startTransaction();
 
         for (int i = 0; i < 5; i++) {
-            DocumentModel doc = session
-                    .getDocument(new PathRef("/testDoc" + i));
+            DocumentModel doc = session.getDocument(new PathRef("/testDoc" + i));
             doc.setPropertyValue("dc:description", "Description TestMe" + i);
             doc = session.saveDocument(doc);
             DocumentModel proxy = session.publishDocument(doc, folder);
@@ -212,8 +204,7 @@ public class TestReindex {
             if (nameOrTitle == null || nameOrTitle.isEmpty()) {
                 nameOrTitle = doc.getTitle();
             }
-            sb.append(doc.getType() + " " + doc.isProxy() + " " + doc.getId()
-                    + " ");
+            sb.append(doc.getType() + " " + doc.isProxy() + " " + doc.getId() + " ");
             sb.append(nameOrTitle);
             sb.append("\n");
         }

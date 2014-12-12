@@ -39,8 +39,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class VcsFetcher extends Fetcher {
 
-    public VcsFetcher(CoreSession session, SearchResponse response,
-            Map<String, String> repoNames) {
+    public VcsFetcher(CoreSession session, SearchResponse response, Map<String, String> repoNames) {
         super(session, response, repoNames);
     }
 
@@ -78,8 +77,8 @@ public class VcsFetcher extends Fetcher {
     }
 
     private CoreSession getSessionForRepo(String repo) {
-        CoreSession session;RepositoryManager rm = Framework
-                .getLocalService(RepositoryManager.class);
+        CoreSession session;
+        RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
         try {
             session = rm.getRepository(repo).open();
         } catch (Exception e) {
@@ -102,8 +101,7 @@ public class VcsFetcher extends Fetcher {
         return ret;
     }
 
-    private List<DocumentModel> fetchFromVcs(final List<String> ids,
-            CoreSession session) throws ClientException {
+    private List<DocumentModel> fetchFromVcs(final List<String> ids, CoreSession session) throws ClientException {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM Document, Relation WHERE ecm:uuid IN (");
         for (int i = 0; i < ids.size(); i++) {
@@ -125,8 +123,7 @@ public class VcsFetcher extends Fetcher {
         Collections.sort(docs, new Comparator<DocumentModel>() {
             @Override
             public int compare(DocumentModel a, DocumentModel b) {
-                return ids.indexOf(a.getRepositoryName() + a.getId())
-                        - ids.indexOf(b.getRepositoryName() + b.getId());
+                return ids.indexOf(a.getRepositoryName() + a.getId()) - ids.indexOf(b.getRepositoryName() + b.getId());
             }
         });
 

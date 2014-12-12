@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
@@ -37,20 +36,19 @@ import org.nuxeo.elasticsearch.query.NxqlQueryConverter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Elasticsearch Page provider that converts the NXQL query build by
- * CoreQueryDocumentPageProvider.
+ * Elasticsearch Page provider that converts the NXQL query build by CoreQueryDocumentPageProvider.
  *
  * @since 5.9.3
  */
-public class ElasticSearchNxqlPageProvider extends
-        CoreQueryDocumentPageProvider {
+public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider {
     public static final String CORE_SESSION_PROPERTY = "coreSession";
+
     public static final String SEARCH_ON_ALL_REPOSITORIES_PROPERTY = "searchAllRepositories";
 
-    protected static final Log log = LogFactory
-            .getLog(ElasticSearchNxqlPageProvider.class);
+    protected static final Log log = LogFactory.getLog(ElasticSearchNxqlPageProvider.class);
 
     private static final long serialVersionUID = 1L;
+
     protected List<DocumentModel> currentPageDocuments;
 
     @Override
@@ -60,28 +58,21 @@ public class ElasticSearchNxqlPageProvider extends
             return currentPageDocuments;
         }
         if (log.isDebugEnabled()) {
-            log.debug(String
-                    .format("Perform query for provider '%s': with pageSize=%d, offset=%d",
-                            getName(), getMinMaxPageSize(),
-                            getCurrentPageOffset()));
+            log.debug(String.format("Perform query for provider '%s': with pageSize=%d, offset=%d", getName(),
+                    getMinMaxPageSize(), getCurrentPageOffset()));
         }
         CoreSession coreSession = getCoreSession();
         if (query == null) {
             buildQuery(coreSession);
         }
         if (query == null) {
-            throw new ClientRuntimeException(
-                    String.format(
-                            "Cannot perform null query: check provider '%s'",
-                            getName()));
+            throw new ClientRuntimeException(String.format("Cannot perform null query: check provider '%s'", getName()));
         }
         // Build and execute the ES query
-        ElasticSearchService ess = Framework
-                .getLocalService(ElasticSearchService.class);
+        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         try {
-            NxQueryBuilder nxQuery = new NxQueryBuilder(getCoreSession())
-                    .nxql(query).offset((int) getCurrentPageOffset())
-                    .limit((int) getMinMaxPageSize());
+            NxQueryBuilder nxQuery = new NxQueryBuilder(getCoreSession()).nxql(query).offset(
+                    (int) getCurrentPageOffset()).limit((int) getMinMaxPageSize());
             if (searchOnAllRepositories()) {
                 nxQuery.searchOnAllRepositories();
             }
@@ -113,8 +104,7 @@ public class ElasticSearchNxqlPageProvider extends
 
     protected CoreSession getCoreSession() {
         Map<String, Serializable> props = getProperties();
-        CoreSession coreSession = (CoreSession) props
-                .get(CORE_SESSION_PROPERTY);
+        CoreSession coreSession = (CoreSession) props.get(CORE_SESSION_PROPERTY);
         if (coreSession == null) {
             throw new ClientRuntimeException("cannot find core session");
         }
@@ -122,8 +112,7 @@ public class ElasticSearchNxqlPageProvider extends
     }
 
     protected boolean searchOnAllRepositories() {
-        String value = (String) getProperties().get(
-                SEARCH_ON_ALL_REPOSITORIES_PROPERTY);
+        String value = (String) getProperties().get(SEARCH_ON_ALL_REPOSITORIES_PROPERTY);
         if (value == null) {
             return false;
         }

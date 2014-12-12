@@ -26,7 +26,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * XMap descriptor used to configure a local in JVM Elasticsearch instance
- *
  */
 @XObject(value = "elasticSearchLocal")
 public class ElasticSearchLocalConfig implements Serializable {
@@ -53,8 +52,7 @@ public class ElasticSearchLocalConfig implements Serializable {
 
     public String getDataPath() {
         if (dataPath == null) {
-            File dir = new File(Framework.getRuntime().getHome(),
-                    "data/elasticsearch");
+            File dir = new File(Framework.getRuntime().getHome(), "data/elasticsearch");
             dataPath = dir.getPath();
         }
         return dataPath;
@@ -114,10 +112,8 @@ public class ElasticSearchLocalConfig implements Serializable {
     @Override
     public String toString() {
         if (isEnabled()) {
-            return String
-                    .format("EsLocalConfig(%s, %s, %s, %s)", getClusterName(),
-                            getDataPath(), httpEnabled(),
-                            getIndexStorageType());
+            return String.format("EsLocalConfig(%s, %s, %s, %s)", getClusterName(), getDataPath(), httpEnabled(),
+                    getIndexStorageType());
         }
         return "EsLocalConfig disabled";
     }

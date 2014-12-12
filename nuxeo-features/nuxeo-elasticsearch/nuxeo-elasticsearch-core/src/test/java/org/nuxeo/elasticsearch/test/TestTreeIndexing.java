@@ -74,6 +74,7 @@ public class TestTreeIndexing {
     ElasticSearchAdmin esa;
 
     private int commandProcessed;
+
     private boolean syncMode = false;
 
     public void startCountingCommandProcessed() {
@@ -83,8 +84,7 @@ public class TestTreeIndexing {
     }
 
     public void assertNumberOfCommandProcessed(int processed) throws Exception {
-        Assert.assertEquals(processed, esa.getTotalCommandProcessed()
-                - commandProcessed);
+        Assert.assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
     }
 
     /**
@@ -94,8 +94,7 @@ public class TestTreeIndexing {
         for (int i = 0; (i < 100) && esa.isIndexingInProgress(); i++) {
             Thread.sleep(100);
         }
-        Assert.assertFalse("Strill indexing in progress",
-                esa.isIndexingInProgress());
+        Assert.assertFalse("Strill indexing in progress", esa.isIndexingInProgress());
         esa.refresh();
     }
 
@@ -123,8 +122,7 @@ public class TestTreeIndexing {
         String root = "/";
         for (int i = 0; i < 10; i++) {
             String name = "folder" + i;
-            DocumentModel doc = session.createDocumentModel(root, name,
-                    "Folder");
+            DocumentModel doc = session.createDocumentModel(root, name, "Folder");
             doc.setPropertyValue("dc:title", "Folder" + i);
             session.createDocument(doc);
             root = root + name + "/";
@@ -144,10 +142,8 @@ public class TestTreeIndexing {
 
         startTransaction();
         // check indexing at ES level
-        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
-                .setSize(60).execute().actionGet();
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
     }
 
@@ -156,15 +152,9 @@ public class TestTreeIndexing {
         buildAndIndexTree();
 
         // check sub tree search
-        SearchResponse searchResponse = esa
-                .getClient()
-                .prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setQuery(
-                        QueryBuilders.prefixQuery("ecm:path",
-                                "/folder0/folder1/folder2")).execute()
-                .actionGet();
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
+                QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1/folder2")).execute().actionGet();
         Assert.assertEquals(8, searchResponse.getHits().getTotalHits());
     }
 
@@ -182,10 +172,8 @@ public class TestTreeIndexing {
         assertNumberOfCommandProcessed(1);
 
         startTransaction();
-        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
-                .setSize(60).execute().actionGet();
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
     }
 
@@ -215,51 +203,29 @@ public class TestTreeIndexing {
 
         startTransaction();
 
-        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
-                .setSize(60).execute().actionGet();
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
 
         // check sub tree search
-        searchResponse = esa
-                .getClient()
-                .prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setQuery(
-                        QueryBuilders.prefixQuery("ecm:path",
-                                "/folder0/folder1/folder2")).execute()
-                .actionGet();
+        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
+                QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1/folder2")).execute().actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
 
-        searchResponse = esa
-                .getClient()
-                .prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setQuery(
-                        QueryBuilders.prefixQuery("ecm:path",
-                                "/folder0/folder1/folderA")).execute()
-                .actionGet();
+        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
+                QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1/folderA")).execute().actionGet();
         Assert.assertEquals(8, searchResponse.getHits().getTotalHits());
 
-        searchResponse = esa
-                .getClient()
-                .prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setQuery(
-                        QueryBuilders.prefixQuery("ecm:path",
-                                "/folder0/folder1")).execute().actionGet();
+        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1")).execute().actionGet();
         Assert.assertEquals(9, searchResponse.getHits().getTotalHits());
 
     }
 
-    protected CoreSession getRestrictedSession(String userName)
-            throws Exception {
-        RepositoryManager rm = Framework
-                .getLocalService(RepositoryManager.class);
+    protected CoreSession getRestrictedSession(String userName) throws Exception {
+        RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("principal", new UserPrincipal(userName, null, false, false));
         return rm.getDefaultRepository().open(ctx);
@@ -270,17 +236,14 @@ public class TestTreeIndexing {
 
         buildAndIndexTree();
 
-        DocumentModelList docs = ess.query(new NxQueryBuilder(session)
-                .nxql("select * from Document"));
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("select * from Document"));
         Assert.assertEquals(10, docs.totalSize());
 
         // check for user with no rights
 
         CoreSession restrictedSession = getRestrictedSession("toto");
         try {
-            docs = ess
-                    .query(new NxQueryBuilder(restrictedSession)
-                            .nxql("select * from Document"));
+            docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
             Assert.assertEquals(0, docs.totalSize());
 
             // add READ rights and check that user now has access
@@ -304,20 +267,16 @@ public class TestTreeIndexing {
             }
 
             startTransaction();
-            docs = ess
-                    .query(new NxQueryBuilder(restrictedSession)
-                            .nxql("select * from Document"));
+            docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
             Assert.assertEquals(8, docs.totalSize());
 
             // block rights and check that blocking is taken into account
 
-            ref = new PathRef(
-                    "/folder0/folder1/folder2/folder3/folder4/folder5");
+            ref = new PathRef("/folder0/folder1/folder2/folder3/folder4/folder5");
             acp = new ACPImpl();
             acl = ACPImpl.newACL(ACL.LOCAL_ACL);
 
-            acl.add(new ACE(SecurityConstants.EVERYONE,
-                    SecurityConstants.EVERYTHING, false));
+            acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
             acl.add(new ACE("Administrator", SecurityConstants.EVERYTHING, true));
             acp.addACL(acl);
 
@@ -336,9 +295,7 @@ public class TestTreeIndexing {
                 assertNumberOfCommandProcessed(5);
             }
 
-            docs = ess
-                    .query(new NxQueryBuilder(restrictedSession)
-                            .nxql("select * from Document"));
+            docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
             Assert.assertEquals(3, docs.totalSize());
         } finally {
             CoreInstance.getInstance().close(restrictedSession);
@@ -348,14 +305,12 @@ public class TestTreeIndexing {
     @Test
     public void shouldDenyAccessOnUnsupportedACL() throws Exception {
         buildAndIndexTree();
-        DocumentModelList docs = ess.query(new NxQueryBuilder(session)
-                .nxql("select * from Document"));
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("select * from Document"));
         Assert.assertEquals(10, docs.totalSize());
 
         // check for user with no rights
         CoreSession restrictedSession = getRestrictedSession("toto");
-        docs = ess.query(new NxQueryBuilder(restrictedSession)
-                .nxql("select * from Document"));
+        docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
         Assert.assertEquals(0, docs.totalSize());
 
         // add READ rights and check that user now has access
@@ -370,8 +325,7 @@ public class TestTreeIndexing {
         waitForIndexing();
 
         startTransaction();
-        docs = ess.query(new NxQueryBuilder(restrictedSession)
-                .nxql("select * from Document order by dc:title"));
+        docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document order by dc:title"));
         Assert.assertEquals(8, docs.totalSize());
 
         // Add an unsupported negative ACL
@@ -387,8 +341,7 @@ public class TestTreeIndexing {
         waitForIndexing();
 
         startTransaction();
-        docs = ess.query(new NxQueryBuilder(restrictedSession)
-                .nxql("select * from Document order by dc:title"));
+        docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document order by dc:title"));
         // can view folder2, folder3 and folder4
         Assert.assertEquals(3, docs.totalSize());
         CoreInstance.getInstance().close(restrictedSession);
@@ -410,10 +363,7 @@ public class TestTreeIndexing {
         assertNumberOfCommandProcessed(8);
 
         startTransaction();
-        DocumentModelList docs = ess
-                .query(new NxQueryBuilder(session)
-                        .nxql("select * from Document where ecm:currentLifeCycleState != 'deleted'")
-                );
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("select * from Document where ecm:currentLifeCycleState != 'deleted'"));
         // for (DocumentModel doc : docs) {
         // System.out.println(doc.getPathAsString());
         // }
@@ -432,8 +382,7 @@ public class TestTreeIndexing {
         waitForIndexing();
 
         startTransaction();
-        DocumentModelList docs = ess.query(new NxQueryBuilder(session)
-                .nxql("select * from Document"));
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("select * from Document"));
         Assert.assertEquals(18, docs.totalSize());
     }
 

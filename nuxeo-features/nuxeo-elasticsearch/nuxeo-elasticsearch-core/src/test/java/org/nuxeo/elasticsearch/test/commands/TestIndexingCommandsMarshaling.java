@@ -1,7 +1,6 @@
 package org.nuxeo.elasticsearch.test.commands;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -26,15 +25,13 @@ public class TestIndexingCommandsMarshaling {
     @Test
     public void shouldMarshalToJSONAndBack() throws Exception {
 
-        DocumentModel doc1 = session.createDocumentModel("/", "testDoc1",
-                "File");
+        DocumentModel doc1 = session.createDocumentModel("/", "testDoc1", "File");
         doc1.setPropertyValue("dc:title", "Test1");
         doc1 = session.createDocument(doc1);
 
         IndexingCommands cmds = new IndexingCommands(doc1);
         IndexingCommand cmd1 = cmds.add(IndexingCommand.INSERT, true, false);
-        IndexingCommand cmd2 = cmds.add(IndexingCommand.UPDATE_SECURITY, false,
-                false);
+        IndexingCommand cmd2 = cmds.add(IndexingCommand.UPDATE_SECURITY, false, false);
         Assert.assertNotNull(cmd1);
         // command 2 should be ignored
         Assert.assertNull(cmd2);
@@ -43,15 +40,13 @@ public class TestIndexingCommandsMarshaling {
 
         IndexingCommands cmds2 = IndexingCommands.fromJSON(session, json);
         Assert.assertEquals(1, cmds.getCommands().size());
-        Assert.assertEquals(cmd1.getId(),
-                cmds2.getCommands().get(0).getId());
+        Assert.assertEquals(cmd1.getId(), cmds2.getCommands().get(0).getId());
     }
 
     @Test
     public void shouldMarshalToJSONAndBackNoMerge() throws Exception {
 
-        DocumentModel doc1 = session.createDocumentModel("/", "testDoc1",
-                "File");
+        DocumentModel doc1 = session.createDocumentModel("/", "testDoc1", "File");
         doc1.setPropertyValue("dc:title", "Test1");
         doc1 = session.createDocument(doc1);
 
@@ -65,10 +60,8 @@ public class TestIndexingCommandsMarshaling {
 
         IndexingCommands cmds2 = IndexingCommands.fromJSON(session, json);
         Assert.assertEquals(2, cmds.getCommands().size());
-        Assert.assertEquals(cmd1.getId(),
-                cmds2.getCommands().get(0).getId());
-        Assert.assertEquals(cmd2.getId(),
-                cmds2.getCommands().get(1).getId());
+        Assert.assertEquals(cmd1.getId(), cmds2.getCommands().get(0).getId());
+        Assert.assertEquals(cmd2.getId(), cmds2.getCommands().get(1).getId());
     }
 
 }

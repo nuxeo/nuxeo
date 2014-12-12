@@ -16,14 +16,14 @@
  */
 
 package org.nuxeo.elasticsearch.work;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_BUCKET_WRITE_PROPERTY;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -34,21 +34,20 @@ import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
 
-import javax.print.attribute.standard.NumberOfDocuments;
-
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_BUCKET_WRITE_PROPERTY;
-
 /**
  * Worker to index a bucket of documents
  *
  * @since 7.1
  */
 public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
-    private static final Log log = LogFactory
-            .getLog(BucketIndexingWorker.class);
+    private static final Log log = LogFactory.getLog(BucketIndexingWorker.class);
+
     private static final long serialVersionUID = 1L;
+
     private static final String DEFAULT_BUCKET_SIZE = "50";
+
     private final boolean isLast;
+
     private final int documentCount;
 
     public BucketIndexingWorker(String repositoryName, List<String> docIds, boolean isLast) {
@@ -60,8 +59,7 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
 
     @Override
     public String getTitle() {
-        String title = " ElasticSearch bucket indexer size "
-                + documentCount;
+        String title = " ElasticSearch bucket indexer size " + documentCount;
         if (isLast) {
             title = title + " last worker";
         }
@@ -70,8 +68,7 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
 
     @Override
     protected void doWork() throws Exception {
-        ElasticSearchIndexing esi = Framework
-                .getLocalService(ElasticSearchIndexing.class);
+        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
         CoreSession session = initSession(repositoryName);
         int bucketSize = Math.min(documentCount, getBucketSize());
         List<String> ids = new ArrayList<>(bucketSize);
@@ -87,13 +84,11 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
             ids.clear();
         }
         if (isLast) {
-            log.warn(String.format("Re-indexing job: %s completed.",
-                    getSchedulePath().getParentPath()));
+            log.warn(String.format("Re-indexing job: %s completed.", getSchedulePath().getParentPath()));
         }
     }
 
-    private List<IndexingCommand> getIndexingCommands(CoreSession session,
-            List<String> ids) throws ClientException {
+    private List<IndexingCommand> getIndexingCommands(CoreSession session, List<String> ids) throws ClientException {
         List<IndexingCommand> ret = new ArrayList<>(ids.size());
         for (DocumentModel doc : fetchDocuments(session, ids)) {
             IndexingCommand cmd = new IndexingCommand(doc, false, false);
@@ -102,8 +97,7 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
         return ret;
     }
 
-    private List<DocumentModel> fetchDocuments(CoreSession session,
-            List<String> ids) throws ClientException {
+    private List<DocumentModel> fetchDocuments(CoreSession session, List<String> ids) throws ClientException {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM Document, Relation WHERE ecm:uuid IN (");
         for (int i = 0; i < ids.size(); i++) {
@@ -118,10 +112,8 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
         return session.query(sb.toString());
     }
 
-
     protected int getBucketSize() {
-        String value = Framework.getProperty(REINDEX_BUCKET_WRITE_PROPERTY,
-                DEFAULT_BUCKET_SIZE);
+        String value = Framework.getProperty(REINDEX_BUCKET_WRITE_PROPERTY, DEFAULT_BUCKET_SIZE);
         return Integer.parseInt(value);
     }
 

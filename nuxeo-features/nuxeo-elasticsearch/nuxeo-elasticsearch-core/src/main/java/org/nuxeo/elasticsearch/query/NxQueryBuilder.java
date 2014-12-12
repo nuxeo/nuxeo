@@ -52,28 +52,35 @@ import org.nuxeo.runtime.api.Framework;
 public class NxQueryBuilder {
 
     private static final int DEFAULT_LIMIT = 10;
+
     private int limit = DEFAULT_LIMIT;
+
     private static final String AGG_FILTER_SUFFIX = "_filter";
+
     private final CoreSession session;
+
     private final List<SortInfo> sortInfos = new ArrayList<SortInfo>();
+
     private final List<String> repositories = new ArrayList<String>();
+
     private int offset = 0;
+
     private String nxql;
+
     private org.elasticsearch.index.query.QueryBuilder esQueryBuilder;
+
     private boolean fetchFromElasticsearch = false;
+
     private boolean searchOnAllRepo = false;
 
     public NxQueryBuilder(CoreSession coreSession) {
         session = coreSession;
         repositories.add(coreSession.getRepositoryName());
-        fetchFromElasticsearch = Boolean.parseBoolean(Framework.getProperty(
-                FETCH_DOC_FROM_ES_PROPERTY, "false"));
+        fetchFromElasticsearch = Boolean.parseBoolean(Framework.getProperty(FETCH_DOC_FROM_ES_PROPERTY, "false"));
     }
 
     /**
-     * No more than that many documents will be returned.
-     *
-     * Default to {DEFAULT_LIMIT}, Use -1 to return all documents.
+     * No more than that many documents will be returned. Default to {DEFAULT_LIMIT}, Use -1 to return all documents.
      */
     public NxQueryBuilder limit(int limit) {
         if (limit < 0) {
@@ -84,11 +91,8 @@ public class NxQueryBuilder {
     }
 
     /**
-     * Says to skip that many documents before beginning to return documents.
-     *
-     * If both offset and limit appear, then offset documents are skipped before
-     * starting to count the limit documents that are returned.
-     *
+     * Says to skip that many documents before beginning to return documents. If both offset and limit appear, then
+     * offset documents are skipped before starting to count the limit documents that are returned.
      */
     public NxQueryBuilder offset(int offset) {
         this.offset = offset;
@@ -108,9 +112,7 @@ public class NxQueryBuilder {
     }
 
     /**
-     * Build the query from a NXQL string.
-     *
-     * You should either use nxql, either esQuery, not both.
+     * Build the query from a NXQL string. You should either use nxql, either esQuery, not both.
      */
     public NxQueryBuilder nxql(String nxql) {
         this.nxql = nxql;
@@ -119,9 +121,7 @@ public class NxQueryBuilder {
     }
 
     /**
-     * Build the query using the Elasticsearch QueryBuilder API.
-     *
-     * You should either use nxql, either esQuery, not both.
+     * Build the query using the Elasticsearch QueryBuilder API. You should either use nxql, either esQuery, not both.
      */
     public NxQueryBuilder esQuery(QueryBuilder queryBuilder) {
         this.esQueryBuilder = queryBuilder;
@@ -131,7 +131,6 @@ public class NxQueryBuilder {
 
     /**
      * Fetch the documents from the Elasticsearch _source field.
-     *
      */
     public NxQueryBuilder fetchFromElasticsearch() {
         this.fetchFromElasticsearch = true;
@@ -139,9 +138,7 @@ public class NxQueryBuilder {
     }
 
     /**
-     * Fetch the documents using VCS (database) engine.
-     *
-     * This is done by default
+     * Fetch the documents using VCS (database) engine. This is done by default
      */
     public NxQueryBuilder fetchFromDatabase() {
         this.fetchFromElasticsearch = false;
@@ -173,11 +170,8 @@ public class NxQueryBuilder {
     }
 
     /**
-     * Get the Elasticsearch queryBuilder.
-     *
-     * Note that it returns only the query part without order, limits nor
+     * Get the Elasticsearch queryBuilder. Note that it returns only the query part without order, limits nor
      * aggregates, use the udpateRequest to get the full request.
-     *
      */
     public QueryBuilder makeQuery() {
         if (esQueryBuilder == null) {
@@ -185,8 +179,7 @@ public class NxQueryBuilder {
                 esQueryBuilder = NxqlQueryConverter.toESQueryBuilder(nxql);
                 // handle the built-in order by clause
                 if (nxql.toLowerCase().contains("order by")) {
-                    List<SortInfo> builtInSortInfos = NxqlQueryConverter
-                            .getSortInfo(nxql);
+                    List<SortInfo> builtInSortInfos = NxqlQueryConverter.getSortInfo(nxql);
                     sortInfos.addAll(builtInSortInfos);
                 }
                 esQueryBuilder = addSecurityFilter(esQueryBuilder);
@@ -203,9 +196,8 @@ public class NxQueryBuilder {
         ret = new SortBuilder[sortInfos.size()];
         int i = 0;
         for (SortInfo sortInfo : sortInfos) {
-            ret[i++] = new FieldSortBuilder(sortInfo.getSortColumn())
-                    .order(sortInfo.getSortAscending() ? SortOrder.ASC
-                            : SortOrder.DESC);
+            ret[i++] = new FieldSortBuilder(sortInfo.getSortColumn()).order(sortInfo.getSortAscending() ? SortOrder.ASC
+                    : SortOrder.DESC);
         }
         return ret;
     }
@@ -225,23 +217,19 @@ public class NxQueryBuilder {
         AndFilterBuilder aclFilter;
         Principal principal = session.getPrincipal();
         if (principal == null
-                || (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal)
-                        .isAdministrator())) {
+                || (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAdministrator())) {
             return query;
         }
         String[] principals = SecurityService.getPrincipalsToCheck(principal);
         // we want an ACL that match principals but we discard
         // unsupported ACE that contains negative ACE
-        aclFilter = FilterBuilders.andFilter(FilterBuilders.inFilter(ACL_FIELD,
-                principals), FilterBuilders.notFilter(FilterBuilders.inFilter(
-                ACL_FIELD, UNSUPPORTED_ACL)));
+        aclFilter = FilterBuilders.andFilter(FilterBuilders.inFilter(ACL_FIELD, principals),
+                FilterBuilders.notFilter(FilterBuilders.inFilter(ACL_FIELD, UNSUPPORTED_ACL)));
         return QueryBuilders.filteredQuery(query, aclFilter);
     }
 
     /**
-     * Add a specific repository to search.
-     *
-     * Default search is done on the session repository only.
+     * Add a specific repository to search. Default search is done on the session repository only.
      *
      * @since 5.9.6
      */
@@ -261,8 +249,7 @@ public class NxQueryBuilder {
     }
 
     /**
-     * Return the list of repositories to search, or an empty list to search on
-     * all available repositories;
+     * Return the list of repositories to search, or an empty list to search on all available repositories;
      *
      * @since 5.9.6
      */
@@ -274,11 +261,9 @@ public class NxQueryBuilder {
     }
 
     /**
-     *
      * @since 5.9.6
      */
-    public Fetcher getFetcher(SearchResponse response,
-            Map<String, String> repoNames) {
+    public Fetcher getFetcher(SearchResponse response, Map<String, String> repoNames) {
         if (isFetchFromElasticsearch()) {
             return new EsFetcher(session, response, repoNames);
         }

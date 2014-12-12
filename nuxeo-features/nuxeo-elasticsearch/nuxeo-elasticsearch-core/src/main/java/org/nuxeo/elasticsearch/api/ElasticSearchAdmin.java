@@ -37,23 +37,16 @@ public interface ElasticSearchAdmin {
     Client getClient();
 
     /**
-     * Initialize Elasticsearch indexes.
+     * Initialize Elasticsearch indexes. Setup the index settings and mapping for each index that has been registered.
      *
-     * Setup the index settings and mapping for each index that has been
-     * registered.
-     *
-     * @param dropIfExists
-     *            if {true} remove an existing index
-     *
+     * @param dropIfExists if {true} remove an existing index
      * @since 5.9.3
      */
     void initIndexes(boolean dropIfExists);
 
     /**
-     * Reinitialize the index of a repository.
-     *
-     * This will drop the existing index, recreate it with its settings and mapping,
-     * the index will be empty.
+     * Reinitialize the index of a repository. This will drop the existing index, recreate it with its settings and
+     * mapping, the index will be empty.
      *
      * @since 7.1
      */
@@ -67,47 +60,40 @@ public interface ElasticSearchAdmin {
     List<String> getRepositoryNames();
 
     /**
-     * Returns true if there are indexing activities.
-     *
-     * This include currently running, scheduled and asynchronous recursive
-     * jobs.
+     * Returns true if there are indexing activities. This include currently running, scheduled and asynchronous
+     * recursive jobs.
      *
      * @since 5.9.5
      */
     boolean isIndexingInProgress();
 
     /**
-     * Refresh all document indexes, immediately after the operation occurs, so
-     * that the updated document appears in search results immediately.
-     *
-     * There is no fsync thus doesn't guarantee durability.
+     * Refresh all document indexes, immediately after the operation occurs, so that the updated document appears in
+     * search results immediately. There is no fsync thus doesn't guarantee durability.
      *
      * @since 5.9.3
      */
     void refresh();
 
     /**
-     * Refresh document index for the specific repository, immediately after the
-     * operation occurs, so that the updated document appears in search results
-     * immediately.
-     *
-     * There is no fsync thus doesn't guarantee durability.
+     * Refresh document index for the specific repository, immediately after the operation occurs, so that the updated
+     * document appears in search results immediately. There is no fsync thus doesn't guarantee durability.
      *
      * @since 5.9.4
      */
     void refreshRepositoryIndex(String repositoryName);
 
     /**
-     * Elasticsearch flush on all document indexes, triggers a lucene commit,
-     * empties the transaction log. Data is flushed to disk.
+     * Elasticsearch flush on all document indexes, triggers a lucene commit, empties the transaction log. Data is
+     * flushed to disk.
      *
      * @since 5.9.3
      */
     void flush();
 
     /**
-     * Elasticsearch flush on document index for a specific repository, triggers
-     * a lucene commit, empties the transaction log. Data is flushed to disk.
+     * Elasticsearch flush on document index for a specific repository, triggers a lucene commit, empties the
+     * transaction log. Data is flushed to disk.
      *
      * @since 5.9.4
      */
@@ -121,9 +107,8 @@ public interface ElasticSearchAdmin {
     int getPendingDocs();
 
     /**
-     * Returns the number of indexing command that are waiting to be processed.
-     *
-     * This include the recursive asynchronous activities.
+     * Returns the number of indexing command that are waiting to be processed. This include the recursive asynchronous
+     * activities.
      *
      * @since 5.9.3
      */
@@ -137,9 +122,7 @@ public interface ElasticSearchAdmin {
     int getRunningCommands();
 
     /**
-     * Returns the total number of command processed by Elasticsearch.
-     *
-     * Useful for test assertion.
+     * Returns the total number of command processed by Elasticsearch. Useful for test assertion.
      *
      * @since 5.9.4
      */

@@ -60,27 +60,36 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.9.6
  */
 public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
-    private static final Log log = LogFactory
-            .getLog(ElasticSearchAdminImpl.class);
+    private static final Log log = LogFactory.getLog(ElasticSearchAdminImpl.class);
+
     final AtomicInteger totalCommandProcessed = new AtomicInteger(0);
+
     final AtomicInteger totalCommandRunning = new AtomicInteger(0);
+
     private final Map<String, String> indexNames = new HashMap<String, String>();
+
     private final Map<String, String> repoNames = new HashMap<String, String>();
+
     private final Map<String, ElasticSearchIndexConfig> indexConfig;
+
     private Node localNode;
+
     private Client client;
+
     private boolean indexInitDone = false;
+
     private final ElasticSearchLocalConfig localConfig;
+
     private final ElasticSearchRemoteConfig remoteConfig;
+
     private String[] includeSourceFields;
+
     private String[] excludeSourceFields;
 
     /**
-     * Init the admin service, remote configuration if not null will take
-     * precedence over local embedded configuration.
+     * Init the admin service, remote configuration if not null will take precedence over local embedded configuration.
      */
-    public ElasticSearchAdminImpl(ElasticSearchLocalConfig localConfig,
-            ElasticSearchRemoteConfig remoteConfig,
+    public ElasticSearchAdminImpl(ElasticSearchLocalConfig localConfig, ElasticSearchRemoteConfig remoteConfig,
             Map<String, ElasticSearchIndexConfig> indexConfig) {
         this.remoteConfig = remoteConfig;
         this.localConfig = localConfig;
@@ -121,19 +130,15 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         log.info("ES embedded Node Initializing (local in JVM)");
         if (!Framework.isTestModeSet()) {
             log.warn("Elasticsearch embedded configuration is ONLY for testing"
-                    + " purpose. You need to create a dedicated Elasticsearch"
-                    + " cluster for production.");
+                    + " purpose. You need to create a dedicated Elasticsearch" + " cluster for production.");
         }
         if (conf == null) {
             conf = getDefaultLocalConfig();
         }
         Builder sBuilder = ImmutableSettings.settingsBuilder();
-        sBuilder.put("http.enabled", conf.httpEnabled())
-                .put("path.data", conf.getDataPath())
-                .put("index.number_of_shards", 1)
-                .put("index.number_of_replicas", 0)
-                .put("cluster.name", conf.getClusterName())
-                .put("node.name", conf.getNodeName());
+        sBuilder.put("http.enabled", conf.httpEnabled()).put("path.data", conf.getDataPath()).put(
+                "index.number_of_shards", 1).put("index.number_of_replicas", 0).put("cluster.name",
+                conf.getClusterName()).put("node.name", conf.getNodeName());
         if (conf.getIndexStorageType() != null) {
             sBuilder.put("index.store.type", conf.getIndexStorageType());
             if (conf.getIndexStorageType().equals("memory")) {
@@ -142,8 +147,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         }
         Settings settings = sBuilder.build();
         log.debug("Using settings: " + settings.toDelimitedString(','));
-        Node ret = NodeBuilder.nodeBuilder().local(true).settings(settings)
-                .node();
+        Node ret = NodeBuilder.nodeBuilder().local(true).settings(settings).node();
         assert ret != null : "Can not create an embedded ES Node";
         return ret;
     }
@@ -157,17 +161,11 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     private Client connectToRemote(ElasticSearchRemoteConfig config) {
         log.info("Connecting to remote ES cluster: " + config);
-        Builder builder = ImmutableSettings
-                .settingsBuilder()
-                .put("cluster.name", config.getClusterName())
-                .put("client.transport.nodes_sampler_interval",
-                        config.getSamplerInterval())
-                .put("index.number_of_shards", config.getNumberOfShards())
-                .put("index.number_of_replicas", config.getNumberOfReplicas())
-                .put("client.transport.ping_timeout", config.getPingTimeout())
-                .put("client.transport.ignore_cluster_name",
-                        config.isIgnoreClusterName())
-                .put("client.transport.sniff", config.isClusterSniff());
+        Builder builder = ImmutableSettings.settingsBuilder().put("cluster.name", config.getClusterName()).put(
+                "client.transport.nodes_sampler_interval", config.getSamplerInterval()).put("index.number_of_shards",
+                config.getNumberOfShards()).put("index.number_of_replicas", config.getNumberOfReplicas()).put(
+                "client.transport.ping_timeout", config.getPingTimeout()).put("client.transport.ignore_cluster_name",
+                config.isIgnoreClusterName()).put("client.transport.sniff", config.isClusterSniff());
         Settings settings = builder.build();
         if (log.isDebugEnabled()) {
             log.debug("Using settings: " + settings.toDelimitedString(','));
@@ -182,8 +180,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                 log.debug("Add transport address: " + item);
                 try {
                     InetAddress inet = InetAddress.getByName(address[0]);
-                    ret.addTransportAddress(new InetSocketTransportAddress(
-                            inet, Integer.parseInt(address[1])));
+                    ret.addTransportAddress(new InetSocketTransportAddress(inet, Integer.parseInt(address[1])));
                 } catch (UnknownHostException e) {
                     log.error("Unable to resolve host " + address[0], e);
                 }
@@ -198,13 +195,10 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             throw new IllegalStateException("No es client available");
         }
         try {
-            client.admin().cluster().prepareHealth().setWaitForYellowStatus()
-                    .execute().actionGet();
+            client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
             client.admin().indices().status(new IndicesStatusRequest()).get();
-        } catch (InterruptedException | ExecutionException
-                | NoNodeAvailableException e) {
-            String message = "Failed to connect to elasticsearch: "
-                    + e.getMessage();
+        } catch (InterruptedException | ExecutionException | NoNodeAvailableException e) {
+            String message = "Failed to connect to elasticsearch: " + e.getMessage();
             log.error(message, e);
             throw new RuntimeException(message, e);
         }
@@ -216,16 +210,14 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         ret.setIndexStorageType("memory");
         ret.setNodeName("nuxeoTestNode");
         // use something random so we don't join an existing cluster
-        ret.setClusterName("nuxeoTestCluster-"
-                + RandomStringUtils.randomAlphanumeric(6));
+        ret.setClusterName("nuxeoTestCluster-" + RandomStringUtils.randomAlphanumeric(6));
         return ret;
     }
 
     private void initializeIndexes() {
         for (ElasticSearchIndexConfig conf : indexConfig.values()) {
             if (DOC_TYPE.equals(conf.getType())) {
-                log.info("Associate index " + conf.getName()
-                        + " with repository: " + conf.getRepositoryName());
+                log.info("Associate index " + conf.getName() + " with repository: " + conf.getRepositoryName());
                 indexNames.put(conf.getRepositoryName(), conf.getName());
                 repoNames.put(conf.getName(), conf.getRepositoryName());
                 Set<String> set = new LinkedHashSet<String>();
@@ -254,12 +246,9 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     @Override
     public void refreshRepositoryIndex(String repositoryName) {
         if (log.isDebugEnabled()) {
-            log.debug("Refreshing index associated with repo: "
-                    + repositoryName);
+            log.debug("Refreshing index associated with repo: " + repositoryName);
         }
-        getClient().admin().indices()
-                .prepareRefresh(getRepositoryIndex(repositoryName)).execute()
-                .actionGet();
+        getClient().admin().indices().prepareRefresh(getRepositoryIndex(repositoryName)).execute().actionGet();
         if (log.isDebugEnabled()) {
             log.debug("Refreshing index done");
         }
@@ -271,8 +260,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     String getRepositoryIndex(String repositoryName) {
         String ret = indexNames.get(repositoryName);
         if (ret == null) {
-            throw new NoSuchElementException(
-                    "No index defined for repository: " + repositoryName);
+            throw new NoSuchElementException("No index defined for repository: " + repositoryName);
         }
         return ret;
     }
@@ -280,9 +268,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     @Override
     public void flushRepositoryIndex(String repositoryName) {
         log.info("Flushing index associated with repo: " + repositoryName);
-        getClient().admin().indices()
-                .prepareFlush(getRepositoryIndex(repositoryName)).execute()
-                .actionGet();
+        getClient().admin().indices().prepareFlush(getRepositoryIndex(repositoryName)).execute().actionGet();
         if (log.isDebugEnabled()) {
             log.debug("Flushing index done");
         }
@@ -331,36 +317,27 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     @Override
     public List<String> getRepositoryNames() {
-        return Collections.unmodifiableList(new ArrayList<String>(indexNames
-                .keySet()));
+        return Collections.unmodifiableList(new ArrayList<String>(indexNames.keySet()));
     }
 
     void initIndex(ElasticSearchIndexConfig conf, boolean dropIfExists) {
         if (!conf.mustCreate()) {
             return;
         }
-        log.info(String.format("Initialize index: %s, type: %s",
-                conf.getName(), conf.getType()));
+        log.info(String.format("Initialize index: %s, type: %s", conf.getName(), conf.getType()));
         boolean mappingExists = false;
-        boolean indexExists = getClient().admin().indices()
-                .prepareExists(conf.getName()).execute().actionGet().isExists();
+        boolean indexExists = getClient().admin().indices().prepareExists(conf.getName()).execute().actionGet().isExists();
         if (indexExists) {
             if (!dropIfExists) {
                 log.debug("Index " + conf.getName() + " already exists");
-                mappingExists = getClient().admin().indices()
-                        .prepareGetMappings(conf.getName()).execute()
-                        .actionGet().getMappings().get(conf.getName())
-                        .containsKey(DOC_TYPE);
+                mappingExists = getClient().admin().indices().prepareGetMappings(conf.getName()).execute().actionGet().getMappings().get(
+                        conf.getName()).containsKey(DOC_TYPE);
             } else {
                 if (!Framework.isTestModeSet()) {
-                    log.warn(String
-                            .format("Initializing index: %s, type: %s with "
-                                    + "dropIfExists flag, deleting an existing index",
-                                    conf.getName(), conf.getType()));
+                    log.warn(String.format("Initializing index: %s, type: %s with "
+                            + "dropIfExists flag, deleting an existing index", conf.getName(), conf.getType()));
                 }
-                getClient().admin().indices()
-                        .delete(new DeleteIndexRequest(conf.getName()))
-                        .actionGet();
+                getClient().admin().indices().delete(new DeleteIndexRequest(conf.getName())).actionGet();
                 indexExists = false;
             }
         }
@@ -369,18 +346,15 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             if (log.isDebugEnabled()) {
                 log.debug("Using settings: " + conf.getSettings());
             }
-            getClient().admin().indices().prepareCreate(conf.getName())
-                    .setSettings(conf.getSettings()).execute().actionGet();
+            getClient().admin().indices().prepareCreate(conf.getName()).setSettings(conf.getSettings()).execute().actionGet();
         }
         if (!mappingExists) {
-            log.info(String.format("Creating mapping type: %s on index: %s",
-                    conf.getType(), conf.getName()));
+            log.info(String.format("Creating mapping type: %s on index: %s", conf.getType(), conf.getName()));
             if (log.isDebugEnabled()) {
                 log.debug("Using mapping: " + conf.getMapping());
             }
-            getClient().admin().indices().preparePutMapping(conf.getName())
-                    .setType(conf.getType()).setSource(conf.getMapping())
-                    .execute().actionGet();
+            getClient().admin().indices().preparePutMapping(conf.getName()).setType(conf.getType()).setSource(
+                    conf.getMapping()).execute().actionGet();
 
         }
         // make sure the index is ready before returning

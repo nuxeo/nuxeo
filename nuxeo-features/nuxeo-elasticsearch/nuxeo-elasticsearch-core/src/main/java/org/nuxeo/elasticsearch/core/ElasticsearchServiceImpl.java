@@ -47,52 +47,47 @@ import com.codahale.metrics.Timer.Context;
  * @since 5.9.6
  */
 public class ElasticsearchServiceImpl implements ElasticSearchService {
-    private static final Log log = LogFactory
-            .getLog(ElasticsearchServiceImpl.class);
+    private static final Log log = LogFactory.getLog(ElasticsearchServiceImpl.class);
+
     // Metrics
-    protected final MetricRegistry registry = SharedMetricRegistries
-            .getOrCreate(MetricsService.class.getName());
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+
     protected final Timer searchTimer;
+
     protected final Timer fetchTimer;
+
     private final ElasticSearchAdminImpl esa;
 
     public ElasticsearchServiceImpl(ElasticSearchAdminImpl esa) {
         this.esa = esa;
-        searchTimer = registry.timer(MetricRegistry.name("nuxeo",
-                "elasticsearch", "service", "search"));
-        fetchTimer = registry.timer(MetricRegistry.name("nuxeo",
-                "elasticsearch", "service", "fetch"));
+        searchTimer = registry.timer(MetricRegistry.name("nuxeo", "elasticsearch", "service", "search"));
+        fetchTimer = registry.timer(MetricRegistry.name("nuxeo", "elasticsearch", "service", "fetch"));
     }
 
     @Deprecated
     @Override
-    public DocumentModelList query(CoreSession session, String nxql, int limit,
-            int offset, SortInfo... sortInfos) throws ClientException {
-        NxQueryBuilder query = new NxQueryBuilder(session).nxql(nxql)
-                .limit(limit).offset(offset).addSort(sortInfos);
-        return query(query);
-    }
-
-    @Deprecated
-    @Override
-    public DocumentModelList query(CoreSession session,
-            QueryBuilder queryBuilder, int limit, int offset,
-            SortInfo... sortInfos) throws ClientException {
-        NxQueryBuilder query = new NxQueryBuilder(session)
-                .esQuery(queryBuilder).limit(limit).offset(offset)
-                .addSort(sortInfos);
-        return query(query);
-    }
-
-    @Override
-    public DocumentModelList query(NxQueryBuilder queryBuilder)
+    public DocumentModelList query(CoreSession session, String nxql, int limit, int offset, SortInfo... sortInfos)
             throws ClientException {
+        NxQueryBuilder query = new NxQueryBuilder(session).nxql(nxql).limit(limit).offset(offset).addSort(sortInfos);
+        return query(query);
+    }
+
+    @Deprecated
+    @Override
+    public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
+            SortInfo... sortInfos) throws ClientException {
+        NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder).limit(limit).offset(offset).addSort(
+                sortInfos);
+        return query(query);
+    }
+
+    @Override
+    public DocumentModelList query(NxQueryBuilder queryBuilder) throws ClientException {
         SearchResponse response = search(queryBuilder);
         return getDocumentModels(queryBuilder, response);
     }
 
-    protected DocumentModelListImpl getDocumentModels(
-            NxQueryBuilder queryBuilder, SearchResponse response) {
+    protected DocumentModelListImpl getDocumentModels(NxQueryBuilder queryBuilder, SearchResponse response) {
         DocumentModelListImpl ret;
         long totalSize = response.getHits().getTotalHits();
         if (response.getHits().getHits().length == 0) {
@@ -101,8 +96,7 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
             return ret;
         }
         Context stopWatch = fetchTimer.time();
-        Fetcher fetcher = queryBuilder.getFetcher(response,
-                esa.getRepositoryMap());
+        Fetcher fetcher = queryBuilder.getFetcher(response, esa.getRepositoryMap());
         try {
             ret = fetcher.fetchDocuments();
         } finally {
@@ -126,16 +120,12 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
     }
 
     protected SearchRequestBuilder buildEsSearchRequest(NxQueryBuilder query) {
-        SearchRequestBuilder request = esa
-                .getClient()
-                .prepareSearch(
-                        esa.getSearchIndexes(query.getSearchRepositories()))
-                .setTypes(DOC_TYPE)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequestBuilder request = esa.getClient().prepareSearch(
+                esa.getSearchIndexes(query.getSearchRepositories())).setTypes(DOC_TYPE).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH);
         if (query.isFetchFromElasticsearch()) {
             // fetch the _source without the binaryfulltext field
-            request.setFetchSource(esa.getIncludeSourceFields(),
-                    esa.getExcludeSourceFields());
+            request.setFetchSource(esa.getIncludeSourceFields(), esa.getExcludeSourceFields());
         } else {
             request.addField(ElasticSearchConstants.ID_FIELD);
         }
@@ -149,19 +139,15 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
         }
     }
 
-    protected void logSearchRequest(SearchRequestBuilder request,
-            NxQueryBuilder query) {
+    protected void logSearchRequest(SearchRequestBuilder request, NxQueryBuilder query) {
         if (log.isDebugEnabled()) {
-            log.debug(String
-                    .format("Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
-                            getSearchIndexesAsString(query), DOC_TYPE,
-                            request.toString()));
+            log.debug(String.format("Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
+                    getSearchIndexesAsString(query), DOC_TYPE, request.toString()));
         }
     }
 
     protected String getSearchIndexesAsString(NxQueryBuilder query) {
-        return StringUtils.join(
-                esa.getSearchIndexes(query.getSearchRepositories()), ',');
+        return StringUtils.join(esa.getSearchIndexes(query.getSearchRepositories()), ',');
     }
 
 }

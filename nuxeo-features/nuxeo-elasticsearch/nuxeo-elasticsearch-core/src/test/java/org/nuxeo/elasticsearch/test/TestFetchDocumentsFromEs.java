@@ -45,8 +45,7 @@ public class TestFetchDocumentsFromEs {
         String root = "/";
         for (int i = 0; i < 10; i++) {
             String name = "folder" + i;
-            DocumentModel doc = session.createDocumentModel(root, name,
-                    "Folder");
+            DocumentModel doc = session.createDocumentModel(root, name, "Folder");
             doc.setPropertyValue("dc:title", "Folder" + i);
             session.createDocument(doc);
             root = root + name + "/";
@@ -82,10 +81,8 @@ public class TestFetchDocumentsFromEs {
         TransactionHelper.startTransaction();
 
         // check indexing
-        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
-                .setSize(60).execute().actionGet();
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
 
     }
@@ -93,14 +90,11 @@ public class TestFetchDocumentsFromEs {
     @Test
     public void shouldLoadDocumentFromEs() throws Exception {
         buildAndIndexTree();
-        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(
-                "select * from Document").limit(20).fetchFromElasticsearch());
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("select * from Document").limit(20).fetchFromElasticsearch());
         Assert.assertEquals(10, docs.totalSize());
         /*
-        for (DocumentModel doc : docs) {
-            System.out.println(doc);
-        }
-        */
+         * for (DocumentModel doc : docs) { System.out.println(doc); }
+         */
 
     }
 

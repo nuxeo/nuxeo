@@ -30,21 +30,18 @@ import org.nuxeo.elasticsearch.io.DocumentModelReaders;
  */
 public class EsFetcher extends Fetcher {
 
-    public EsFetcher(CoreSession session, SearchResponse response,
-            Map<String, String> repoNames) {
+    public EsFetcher(CoreSession session, SearchResponse response, Map<String, String> repoNames) {
         super(session, response, repoNames);
     }
 
     @Override
     public DocumentModelListImpl fetchDocuments() {
-        DocumentModelListImpl ret = new DocumentModelListImpl(getResponse()
-                .getHits().getHits().length);
+        DocumentModelListImpl ret = new DocumentModelListImpl(getResponse().getHits().getHits().length);
         DocumentModel doc;
         String sid = getSession().getSessionId();
         for (SearchHit hit : getResponse().getHits()) {
             // TODO: this does not work on multi repo
-            doc = DocumentModelReaders.fromSource(hit.getSource()).sid(sid)
-                    .getDocumentModel();
+            doc = DocumentModelReaders.fromSource(hit.getSource()).sid(sid).getDocumentModel();
             ret.add(doc);
         }
         return ret;

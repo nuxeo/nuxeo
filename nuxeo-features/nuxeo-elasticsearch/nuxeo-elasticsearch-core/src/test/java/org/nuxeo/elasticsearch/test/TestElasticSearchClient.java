@@ -41,7 +41,6 @@ import com.google.inject.Inject;
  * Check controller for Elasticsearch
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(BareElasticSearchFeature.class)
@@ -60,30 +59,25 @@ public class TestElasticSearchClient {
         Assert.assertNotNull(elasticSearchClient);
         Assert.assertFalse(elasticSearchNode.isClosed());
 
-        XContentBuilder builder = jsonBuilder().startObject().field("name",
-                "test1").field("type", "File").field("yo", "man").field(
-                "dc:title", "Yohou").field("dc:created", new Date()).endObject();
+        XContentBuilder builder = jsonBuilder().startObject().field("name", "test1").field("type", "File").field("yo",
+                "man").field("dc:title", "Yohou").field("dc:created", new Date()).endObject();
 
-        IndexResponse response = elasticSearchClient.prepareIndex("nxutest",
-                "doc", "1").setSource(builder).execute().actionGet();
+        IndexResponse response = elasticSearchClient.prepareIndex("nxutest", "doc", "1").setSource(builder).execute().actionGet();
 
         Assert.assertNotNull(response.getId());
 
         // do the refresh
         elasticSearchClient.admin().indices().prepareRefresh().execute().actionGet();
 
-        SearchResponse searchResponse = elasticSearchClient.prepareSearch(
-                "nxutest").setTypes("doc").setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.matchQuery("name", "test1")) // Query
+        SearchResponse searchResponse = elasticSearchClient.prepareSearch("nxutest").setTypes("doc").setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.matchQuery("name", "test1")) // Query
         .setFrom(0).setSize(60).execute().actionGet();
 
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
-        //System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
+        // System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
 
-        searchResponse = elasticSearchClient.prepareSearch("nxutest").setTypes(
-                "doc").setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.matchQuery("dc:title", "YoHou")) // Query
+        searchResponse = elasticSearchClient.prepareSearch("nxutest").setTypes("doc").setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.matchQuery("dc:title", "YoHou")) // Query
         .setFrom(0).setSize(60).execute().actionGet();
 
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());

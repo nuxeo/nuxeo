@@ -56,15 +56,12 @@ public class IndexingCommands {
         IndexingCommand cmd;
         if (sync && recurse) {
             // split into 2 commands one sync and an async recurse
-            cmd = new IndexingCommand(targetDocument, command,
-                    true, false);
+            cmd = new IndexingCommand(targetDocument, command, true, false);
             add(cmd);
-            cmd = new IndexingCommand(targetDocument, command,
-                    false, true);
+            cmd = new IndexingCommand(targetDocument, command, false, true);
 
         } else {
-            cmd = new IndexingCommand(targetDocument, command,
-                    sync, recurse);
+            cmd = new IndexingCommand(targetDocument, command, sync, recurse);
         }
         return add(cmd);
     }
@@ -139,8 +136,7 @@ public class IndexingCommands {
         return out.toString();
     }
 
-    public static IndexingCommands fromJSON(CoreSession session, String json)
-            throws ClientException {
+    public static IndexingCommands fromJSON(CoreSession session, String json) throws ClientException {
         try {
             JsonFactory jsonFactory = new JsonFactory();
             JsonParser jp = jsonFactory.createJsonParser(json);
@@ -154,8 +150,7 @@ public class IndexingCommands {
         }
     }
 
-    public static IndexingCommands fromJSON(CoreSession session, JsonParser jp)
-            throws Exception {
+    public static IndexingCommands fromJSON(CoreSession session, JsonParser jp) throws Exception {
         IndexingCommands cmds = new IndexingCommands();
         JsonToken token = jp.nextToken();
         if (token != JsonToken.START_ARRAY) {
@@ -177,4 +172,3 @@ public class IndexingCommands {
     }
 
 }
-

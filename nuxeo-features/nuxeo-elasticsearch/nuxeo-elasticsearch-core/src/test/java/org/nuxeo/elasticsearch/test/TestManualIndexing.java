@@ -43,7 +43,6 @@ import com.google.inject.Inject;
  * Test servcie declaration as well as basic indexing API
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
@@ -68,6 +67,7 @@ public class TestManualIndexing {
     ElasticSearchAdmin esa;
 
     private int commandProcessed;
+
     private boolean syncMode = false;
 
     public void startCountingCommandProcessed() {
@@ -77,8 +77,7 @@ public class TestManualIndexing {
     }
 
     public void assertNumberOfCommandProcessed(int processed) throws Exception {
-        Assert.assertEquals(processed, esa.getTotalCommandProcessed()
-                - commandProcessed);
+        Assert.assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
     }
 
     /**
@@ -88,15 +87,13 @@ public class TestManualIndexing {
         for (int i = 0; (i < 100) && esa.isIndexingInProgress(); i++) {
             Thread.sleep(100);
         }
-        Assert.assertFalse("Strill indexing in progress",
-                esa.isIndexingInProgress());
+        Assert.assertFalse("Strill indexing in progress", esa.isIndexingInProgress());
         esa.refresh();
     }
 
     @After
     public void cleanupIndexed() throws Exception {
-        ElasticSearchAdmin esa = Framework
-                .getLocalService(ElasticSearchAdmin.class);
+        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         esa.initIndexes(true);
     }
 
@@ -116,25 +113,21 @@ public class TestManualIndexing {
         assertNumberOfCommandProcessed(1);
 
         esa.refresh();
-        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
-                .setSize(60).execute().actionGet();
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         // System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
-        searchResponse = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setQuery(QueryBuilders.matchQuery("ecm:title", "TestMe"))
-                .setFrom(0).setSize(60).execute().actionGet();
+        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
+                60).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
     }
 
     @Test
     public void checkPostCommitIndexing() throws Exception {
         // create one doc that is going to be indexed in an async job
-        DocumentModel doc0 = session.createDocumentModel("/", "testNote",
-                "Note");
+        DocumentModel doc0 = session.createDocumentModel("/", "testNote", "Note");
         doc0.setPropertyValue("dc:title", "TesNote");
         doc0 = session.createDocument(doc0);
         session.save();
@@ -158,15 +151,12 @@ public class TestManualIndexing {
         assertNumberOfCommandProcessed(0);
 
         // only the first doc testNote should be in the index
-        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
-                .setSize(60).execute().actionGet();
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
-        searchResponse = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setQuery(QueryBuilders.matchQuery("ecm:title", "TestMe"))
-                .setFrom(0).setSize(60).execute().actionGet();
+        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
+                60).execute().actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
 
         // now commit and wait for post commit indexing
@@ -176,23 +166,19 @@ public class TestManualIndexing {
 
         // both document are present in the index
         TransactionHelper.startTransaction();
-        searchResponse = esa.getClient().prepareSearch(IDX_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
-                .setSize(60).execute().actionGet();
+        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(
+                0).setSize(60).execute().actionGet();
         // System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
-        searchResponse = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setQuery(QueryBuilders.matchQuery("ecm:title", "TestMe"))
-                .setFrom(0).setSize(60).execute().actionGet();
+        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
+                60).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
     }
 
     @Test
     public void checkManualAsyncIndexing() throws Exception {
-        DocumentModel doc0 = session.createDocumentModel("/", "testNote",
-                "Note");
+        DocumentModel doc0 = session.createDocumentModel("/", "testNote", "Note");
         doc0.setPropertyValue("dc:title", "TesNote");
         doc0 = session.createDocument(doc0);
         session.save();
@@ -215,16 +201,13 @@ public class TestManualIndexing {
         assertNumberOfCommandProcessed(0);
 
         // only one doc should be indexed for now
-        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
-                .setSize(60).execute().actionGet();
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
-        searchResponse = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setQuery(QueryBuilders.matchQuery("ecm:title", "TestMe"))
-                .setFrom(0).setSize(60).execute().actionGet();
+        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
+                60).execute().actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
 
         // now commit and wait for post commit indexing
@@ -234,16 +217,13 @@ public class TestManualIndexing {
 
         // both docs are here
         TransactionHelper.startTransaction();
-        searchResponse = esa.getClient().prepareSearch(IDX_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
-                .setSize(60).execute().actionGet();
+        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(
+                0).setSize(60).execute().actionGet();
         // System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
-        searchResponse = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setQuery(QueryBuilders.matchQuery("ecm:title", "TestMe"))
-                .setFrom(0).setSize(60).execute().actionGet();
+        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
+                60).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
     }
 

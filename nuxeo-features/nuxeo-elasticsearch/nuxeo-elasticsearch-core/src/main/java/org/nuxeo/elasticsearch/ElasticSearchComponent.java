@@ -50,7 +50,6 @@ import org.nuxeo.elasticsearch.core.ElasticSearchIndexingImpl;
 import org.nuxeo.elasticsearch.core.ElasticsearchServiceImpl;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.work.BaseIndexingWorker;
-import org.nuxeo.elasticsearch.work.ChildrenIndexingWorker;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -60,35 +59,42 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Component used to configure and manage ElasticSearch integration
- *
  */
-public class ElasticSearchComponent extends DefaultComponent implements
-        ElasticSearchAdmin, ElasticSearchIndexing, ElasticSearchService {
+public class ElasticSearchComponent extends DefaultComponent implements ElasticSearchAdmin, ElasticSearchIndexing,
+        ElasticSearchService {
 
     private static final String EP_REMOTE = "elasticSearchRemote";
+
     private static final String EP_LOCAL = "elasticSearchLocal";
+
     private static final String EP_INDEX = "elasticSearchIndex";
-    private static final Log log = LogFactory
-            .getLog(ElasticSearchComponent.class);
+
+    private static final Log log = LogFactory.getLog(ElasticSearchComponent.class);
+
     // temporary hack until we are able to list pending indexing jobs cluster
     // wide
-    private final Set<String> pendingWork = Collections
-            .synchronizedSet(new HashSet<String>());
-    private final Set<String> pendingCommands = Collections
-            .synchronizedSet(new HashSet<String>());
+    private final Set<String> pendingWork = Collections.synchronizedSet(new HashSet<String>());
+
+    private final Set<String> pendingCommands = Collections.synchronizedSet(new HashSet<String>());
+
     private final Map<String, ElasticSearchIndexConfig> indexConfig = new HashMap<String, ElasticSearchIndexConfig>();
+
     // indexing command that where received before the index initialization
     private final List<IndexingCommand> stackedCommands = new ArrayList<>();
+
     private ElasticSearchLocalConfig localConfig;
+
     private ElasticSearchRemoteConfig remoteConfig;
+
     private ElasticSearchAdminImpl esa;
+
     private ElasticSearchIndexingImpl esi;
+
     private ElasticsearchServiceImpl ess;
 
     // Nuxeo Component impl ======================================é=============
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         switch (extensionPoint) {
         case EP_LOCAL:
@@ -96,12 +102,10 @@ public class ElasticSearchComponent extends DefaultComponent implements
             if (localContrib.isEnabled()) {
                 localConfig = localContrib;
                 remoteConfig = null;
-                log.info("Registering local embedded configuration: "
-                        + localConfig + ", loaded from "
+                log.info("Registering local embedded configuration: " + localConfig + ", loaded from "
                         + contributor.getName());
             } else if (localConfig != null) {
-                log.info("Disabling previous local embedded configuration, deactivated by "
-                        + contributor.getName());
+                log.info("Disabling previous local embedded configuration, deactivated by " + contributor.getName());
                 localConfig = null;
             }
             break;
@@ -110,11 +114,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
             if (remoteContribution.isEnabled()) {
                 remoteConfig = remoteContribution;
                 localConfig = null;
-                log.info("Registering remote configuration: " + remoteConfig
-                        + ", loaded from " + contributor.getName());
+                log.info("Registering remote configuration: " + remoteConfig + ", loaded from " + contributor.getName());
             } else if (remoteConfig != null) {
-                log.info("Disabling previous remote configuration, deactivated by "
-                        + contributor.getName());
+                log.info("Disabling previous remote configuration, deactivated by " + contributor.getName());
                 remoteConfig = null;
             }
             break;
@@ -124,11 +126,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
             if (idx.isEnabled()) {
                 idx.merge(previous);
                 indexConfig.put(idx.getName(), idx);
-                log.info("Registering index configuration: " + idx
-                        + ", loaded from " + contributor.getName());
+                log.info("Registering index configuration: " + idx + ", loaded from " + contributor.getName());
             } else if (previous != null) {
-                log.info("Disabling index configuration: " + previous
-                        + ", deactivated by " + contributor.getName());
+                log.info("Disabling index configuration: " + previous + ", deactivated by " + contributor.getName());
                 indexConfig.remove(idx.getName());
             }
             break;
@@ -155,17 +155,14 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public int getApplicationStartedOrder() {
-        RepositoryService component = (RepositoryService) Framework
-                .getRuntime().getComponent(
-                        "org.nuxeo.ecm.core.repository.RepositoryService");
+        RepositoryService component = (RepositoryService) Framework.getRuntime().getComponent(
+                "org.nuxeo.ecm.core.repository.RepositoryService");
         return component.getApplicationStartedOrder() / 2;
     }
 
     void processStackedCommands() {
         if (!stackedCommands.isEmpty()) {
-            log.info(String.format(
-                    "Processing %d indexing commands stacked during startup",
-                    stackedCommands.size()));
+            log.info(String.format("Processing %d indexing commands stacked during startup", stackedCommands.size()));
             boolean txCreated = false;
             if (!TransactionHelper.isTransactionActive()) {
                 txCreated = TransactionHelper.startTransaction();
@@ -181,9 +178,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
                     }.runUnrestricted();
                 }
             } catch (Exception e) {
-                log.error(
-                        "Unable to flush pending indexing commands: "
-                                + e.getMessage(), e);
+                log.error("Unable to flush pending indexing commands: " + e.getMessage(), e);
             } finally {
                 if (txCreated) {
                     TransactionHelper.commitOrRollbackTransaction();
@@ -223,8 +218,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public int getPendingCommands() {
-        return pendingCommands.size()
-                + BaseIndexingWorker.getRunningWorkers();
+        return pendingCommands.size() + BaseIndexingWorker.getRunningWorkers();
     }
 
     @Override
@@ -273,8 +267,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
         if (isAlreadyScheduled(cmd)) {
             if (log.isDebugEnabled()) {
-                log.debug("Skip indexing for " + cmd.toString()
-                        + " since it is already scheduled");
+                log.debug("Skip indexing for " + cmd.toString() + " since it is already scheduled");
             }
             return;
         }
@@ -282,8 +275,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         pendingWork.add(getWorkKey(cmd));
         if (cmd.isSync()) {
             if (log.isDebugEnabled()) {
-                log.debug("Schedule Sync PostCommit indexing request "
-                        + cmd.toString());
+                log.debug("Schedule Sync PostCommit indexing request " + cmd.toString());
             }
             schedulePostCommitIndexing(cmd);
         } else {
@@ -300,8 +292,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     void schedulePostCommitIndexing(IndexingCommand cmd) throws ClientException {
         try {
-            EventProducer evtProducer = Framework
-                    .getLocalService(EventProducer.class);
+            EventProducer evtProducer = Framework.getLocalService(EventProducer.class);
             Event indexingEvent = cmd.asIndexingEvent();
             if (indexingEvent != null) {
                 evtProducer.fireEvent(indexingEvent);
@@ -313,8 +304,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public boolean isAlreadyScheduled(IndexingCommand cmd) {
-        return pendingCommands.contains(cmd.getId())
-                || pendingWork.contains(getWorkKey(cmd));
+        return pendingCommands.contains(cmd.getId()) || pendingWork.contains(getWorkKey(cmd));
     }
 
     @Override
@@ -346,22 +336,20 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     // ES Search ===============================================================
     @Override
-    public DocumentModelList query(NxQueryBuilder queryBuilder)
-            throws ClientException {
+    public DocumentModelList query(NxQueryBuilder queryBuilder) throws ClientException {
         return ess.query(queryBuilder);
     }
 
     @Deprecated
     @Override
-    public DocumentModelList query(CoreSession session, String nxql, int limit,
-            int offset, SortInfo... sortInfos) throws ClientException {
+    public DocumentModelList query(CoreSession session, String nxql, int limit, int offset, SortInfo... sortInfos)
+            throws ClientException {
         return ess.query(session, nxql, limit, offset, sortInfos);
     }
 
     @Deprecated
     @Override
-    public DocumentModelList query(CoreSession session,
-            QueryBuilder queryBuilder, int limit, int offset,
+    public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
             SortInfo... sortInfos) throws ClientException {
         return ess.query(session, queryBuilder, limit, offset, sortInfos);
     }
@@ -380,8 +368,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     String getWorkKey(IndexingCommand cmd) {
-        return cmd.getRepository() + ":" + cmd.getDocId() + ":"
-                + cmd.isRecurse();
+        return cmd.getRepository() + ":" + cmd.getDocId() + ":" + cmd.isRecurse();
     }
 
     int markCommandInProgress(IndexingCommand cmd) {

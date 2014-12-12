@@ -61,24 +61,22 @@ import com.codahale.metrics.Timer.Context;
  * @since 5.9.6
  */
 public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
-    private static final Log log = LogFactory
-            .getLog(ElasticSearchIndexingImpl.class);
+    private static final Log log = LogFactory.getLog(ElasticSearchIndexingImpl.class);
 
     private final ElasticSearchAdminImpl esa;
+
     private final Timer deleteTimer;
+
     private final Timer indexTimer;
+
     private final Timer bulkIndexTimer;
 
     public ElasticSearchIndexingImpl(ElasticSearchAdminImpl esa) {
         this.esa = esa;
-        MetricRegistry registry = SharedMetricRegistries
-                .getOrCreate(MetricsService.class.getName());
-        indexTimer = registry.timer(MetricRegistry.name("nuxeo",
-                "elasticsearch", "service", "index"));
-        deleteTimer = registry.timer(MetricRegistry.name("nuxeo",
-                "elasticsearch", "service", "delete"));
-        bulkIndexTimer = registry.timer(MetricRegistry.name("nuxeo",
-                "elasticsearch", "service", "bulkIndex"));
+        MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+        indexTimer = registry.timer(MetricRegistry.name("nuxeo", "elasticsearch", "service", "index"));
+        deleteTimer = registry.timer(MetricRegistry.name("nuxeo", "elasticsearch", "service", "delete"));
+        bulkIndexTimer = registry.timer(MetricRegistry.name("nuxeo", "elasticsearch", "service", "bulkIndex"));
     }
 
     @Override
@@ -132,18 +130,15 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
     }
 
-    void processBulkIndexCommands(List<IndexingCommand> cmds)
-            throws ClientException {
+    void processBulkIndexCommands(List<IndexingCommand> cmds) throws ClientException {
         BulkRequestBuilder bulkRequest = esa.getClient().prepareBulk();
         for (IndexingCommand cmd : cmds) {
             String id = cmd.getDocId();
-            if (IndexingCommand.UNKOWN_DOCUMENT_ID.equals(id)
-                    || (IndexingCommand.DELETE.equals(cmd.getName()))) {
+            if (IndexingCommand.UNKOWN_DOCUMENT_ID.equals(id) || (IndexingCommand.DELETE.equals(cmd.getName()))) {
                 continue;
             }
             if (log.isTraceEnabled()) {
-                log.trace("Sending bulk indexing request to Elasticsearch: "
-                        + cmd);
+                log.trace("Sending bulk indexing request to Elasticsearch: " + cmd);
             }
             if (cmd.getTargetDocument() == null) {
                 log.warn("Skipping cmd because targetDocument is null " + cmd);
@@ -158,10 +153,9 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
         if (bulkRequest.numberOfActions() > 0) {
             if (log.isDebugEnabled()) {
-                log.debug(String
-                        .format("Index %d docs in bulk request: curl -XPOST 'http://localhost:9200/_bulk' -d '%s'",
-                                bulkRequest.numberOfActions(), bulkRequest
-                                        .request().requests().toString()));
+                log.debug(String.format(
+                        "Index %d docs in bulk request: curl -XPOST 'http://localhost:9200/_bulk' -d '%s'",
+                        bulkRequest.numberOfActions(), bulkRequest.request().requests().toString()));
             }
             BulkResponse response = bulkRequest.execute().actionGet();
             if (response.hasFailures()) {
@@ -172,15 +166,13 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     @Override
     public void indexNow(IndexingCommand cmd) throws ClientException {
-        if (cmd.getTargetDocument() == null
-                && IndexingCommand.UNKOWN_DOCUMENT_ID.equals(cmd.getDocId())) {
+        if (cmd.getTargetDocument() == null && IndexingCommand.UNKOWN_DOCUMENT_ID.equals(cmd.getDocId())) {
             esa.totalCommandProcessed.addAndGet(1);
             return;
         }
         esa.totalCommandRunning.incrementAndGet();
         if (log.isTraceEnabled()) {
-            log.trace("Sending indexing request to Elasticsearch: "
-                    + cmd.toString());
+            log.trace("Sending indexing request to Elasticsearch: " + cmd.toString());
         }
         if (IndexingCommand.DELETE.equals(cmd.getName())) {
             Context stopWatch = deleteTimer.time();
@@ -205,8 +197,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     void processIndexCommand(IndexingCommand cmd) {
         String docId = cmd.getDocId();
-        if (IndexingCommand.UNKOWN_DOCUMENT_ID.equals(docId)
-                || cmd.getTargetDocument() == null) {
+        if (IndexingCommand.UNKOWN_DOCUMENT_ID.equals(docId) || cmd.getTargetDocument() == null) {
             log.warn("Skipping cmd because targetDocument is null " + cmd);
             return;
         }
@@ -218,10 +209,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             return;
         }
         if (log.isDebugEnabled()) {
-            log.debug(String
-                    .format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                            esa.getRepositoryIndex(cmd.getRepository()),
-                            DOC_TYPE, docId, request.request().toString()));
+            log.debug(String.format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
+                    esa.getRepositoryIndex(cmd.getRepository()), DOC_TYPE, docId, request.request().toString()));
         }
         request.execute().actionGet();
     }
@@ -236,12 +225,10 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     void processDeleteCommandNonRecursive(IndexingCommand cmd) {
         String indexName = esa.getRepositoryIndex(cmd.getRepository());
-        DeleteRequestBuilder request = esa.getClient().prepareDelete(indexName,
-                DOC_TYPE, cmd.getDocId());
+        DeleteRequestBuilder request = esa.getClient().prepareDelete(indexName, DOC_TYPE, cmd.getDocId());
         if (log.isDebugEnabled()) {
-            log.debug(String
-                    .format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s'",
-                            indexName, DOC_TYPE, cmd.getDocId()));
+            log.debug(String.format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s'", indexName,
+                    DOC_TYPE, cmd.getDocId()));
         }
         request.execute().actionGet();
     }
@@ -253,28 +240,24 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         String docPath = getPathOfDocFromEs(cmd.getRepository(), cmd.getDocId());
         if (docPath == null) {
             if (!Framework.isTestModeSet()) {
-                log.warn("Trying to delete a non existing doc: "
-                        + cmd.toString());
+                log.warn("Trying to delete a non existing doc: " + cmd.toString());
             }
             return;
         }
-        QueryBuilder query = QueryBuilders.constantScoreQuery(FilterBuilders
-                .termFilter(CHILDREN_FIELD, docPath));
-        DeleteByQueryRequestBuilder deleteRequest = esa.getClient()
-                .prepareDeleteByQuery(indexName).setTypes(DOC_TYPE)
-                .setQuery(query);
+        QueryBuilder query = QueryBuilders.constantScoreQuery(FilterBuilders.termFilter(CHILDREN_FIELD, docPath));
+        DeleteByQueryRequestBuilder deleteRequest = esa.getClient().prepareDeleteByQuery(indexName).setTypes(DOC_TYPE).setQuery(
+                query);
         if (log.isDebugEnabled()) {
-            log.debug(String
-                    .format("Delete byQuery request: curl -XDELETE 'http://localhost:9200/%s/%s/_query' -d '%s'",
-                            indexName, DOC_TYPE, query.toString()));
+            log.debug(String.format(
+                    "Delete byQuery request: curl -XDELETE 'http://localhost:9200/%s/%s/_query' -d '%s'", indexName,
+                    DOC_TYPE, query.toString()));
         }
         DeleteByQueryResponse responses = deleteRequest.execute().actionGet();
         for (IndexDeleteByQueryResponse response : responses) {
             // there is no way to trace how many docs are removed
             if (response.getFailedShards() > 0) {
-                log.error(String.format(
-                        "Delete byQuery fails on shard: %d out of %d",
-                        response.getFailedShards(), response.getTotalShards()));
+                log.error(String.format("Delete byQuery fails on shard: %d out of %d", response.getFailedShards(),
+                        response.getTotalShards()));
             }
         }
     }
@@ -284,12 +267,10 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
      */
     String getPathOfDocFromEs(String repository, String docId) {
         String indexName = esa.getRepositoryIndex(repository);
-        GetRequestBuilder getRequest = esa.getClient()
-                .prepareGet(indexName, DOC_TYPE, docId).setFields(PATH_FIELD);
+        GetRequestBuilder getRequest = esa.getClient().prepareGet(indexName, DOC_TYPE, docId).setFields(PATH_FIELD);
         if (log.isDebugEnabled()) {
-            log.debug(String
-                    .format("Get path of doc: curl -XGET 'http://localhost:9200/%s/%s/%s?fields=%s'",
-                            indexName, DOC_TYPE, docId, PATH_FIELD));
+            log.debug(String.format("Get path of doc: curl -XGET 'http://localhost:9200/%s/%s/%s?fields=%s'",
+                    indexName, DOC_TYPE, docId, PATH_FIELD));
         }
         GetResponse ret = getRequest.execute().actionGet();
         if (!ret.isExists()) {
@@ -299,24 +280,17 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         return ret.getField(PATH_FIELD).getValue().toString();
     }
 
-    IndexRequestBuilder buildEsIndexingRequest(IndexingCommand cmd)
-            throws ClientException {
+    IndexRequestBuilder buildEsIndexingRequest(IndexingCommand cmd) throws ClientException {
         DocumentModel doc = cmd.getTargetDocument();
         try {
             JsonFactory factory = new JsonFactory();
             XContentBuilder builder = jsonBuilder();
-            JsonGenerator jsonGen = factory.createJsonGenerator(builder
-                    .stream());
-            JsonESDocumentWriter.writeESDocument(jsonGen, doc,
-                    cmd.getSchemas(), null);
-            return esa
-                    .getClient()
-                    .prepareIndex(esa.getRepositoryIndex(cmd.getRepository()),
-                            DOC_TYPE, cmd.getDocId()).setSource(builder);
+            JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
+            JsonESDocumentWriter.writeESDocument(jsonGen, doc, cmd.getSchemas(), null);
+            return esa.getClient().prepareIndex(esa.getRepositoryIndex(cmd.getRepository()), DOC_TYPE, cmd.getDocId()).setSource(
+                    builder);
         } catch (Exception e) {
-            throw new ClientException(
-                    "Unable to create index request for Document "
-                            + cmd.getDocId(), e);
+            throw new ClientException("Unable to create index request for Document " + cmd.getDocId(), e);
         }
     }
 
