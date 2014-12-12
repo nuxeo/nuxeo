@@ -1,0 +1,18 @@
+<component name="org.nuxeo.binary.metadata.operation.BinaryMetadataOperation">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+             point="operations">
+
+    <operation
+            class="org.nuxeo.binary.metadata.api.operation.WriteMetadataToBinaryFromDocument"/>
+    <operation
+            class="org.nuxeo.binary.metadata.api.operation.WriteMetadataToBinaryFromContext"/>
+    <operation
+            class="org.nuxeo.binary.metadata.api.operation.WriteMetadataToDocumentFromBinary"/>
+    <operation
+            class="org.nuxeo.binary.metadata.api.operation.WriteMetadataToContextFromBinary"/>
+    <operation
+            class="org.nuxeo.binary.metadata.api.operation.ReadMetadataFromBinary"/>
+
+  </extension>
+</component>
