@@ -332,6 +332,9 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node3.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
         node3 = session.saveDocument(node3);
 
+        DocumentModelList cancelledTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
+        assertEquals(0, cancelledTasks.size());
+
         DocumentRoute route = instantiateAndRun(session);
 
         assertFalse(route.isDone());
@@ -346,13 +349,16 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         tasks = taskService.getTaskInstances(doc, (NuxeoPrincipal) null, session);
         assertEquals(0, tasks.size());
-        DocumentModelList cancelledTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
+        cancelledTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
         assertEquals(1, cancelledTasks.size());
         DocumentRef routeRef = route.getDocument().getRef();
 
         routing.cleanupDoneAndCanceledRouteInstances(session.getRepositoryName(), 0);
         session.save();
         assertFalse(session.exists(routeRef));
+        for (DocumentModel cancelledTask : cancelledTasks) {
+            assertFalse(session.exists(cancelledTask.getRef()));
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -936,6 +942,9 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
         node2 = session.saveDocument(node2);
 
+        DocumentModelList doneTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'ended'");
+        assertEquals(0, doneTasks.size());
+
         DocumentRoute route = instantiateAndRun(session);
 
         List<Task> tasks = taskService.getTaskInstances(doc, user1, session);
@@ -961,9 +970,14 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
             assertTrue(route.isDone());
             assertEquals("test", route.getDocument().getPropertyValue("fctroute1:globalVariable"));
+            doneTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'ended'");
+            assertEquals(1, doneTasks.size());
             routing.cleanupDoneAndCanceledRouteInstances(session.getRepositoryName(), 0);
             session.save();
             assertFalse(session.exists(routeRef));
+            for (DocumentModel doneTask : doneTasks) {
+                assertFalse(session.exists(doneTask.getRef()));
+            }
         }
     }
 

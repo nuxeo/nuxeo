@@ -1134,6 +1134,15 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 }
                 results.close();
                 for (String routeDocId : routeIds) {
+                    final String associatedTaskQuery = String.format(
+                            "SELECT ecm:uuid FROM Document WHERE ecm:mixinType = 'Task' AND nt:processId = '%s'",
+                            routeDocId);
+                    results = session.queryAndFetch(associatedTaskQuery, "NXQL");
+                    for (Map<String, Serializable> result : results) {
+                        final String taskId = result.get("ecm:uuid").toString();
+                        session.removeDocument(new IdRef(taskId));
+                    }
+                    results.close();
                     session.removeDocument(new IdRef(routeDocId));
                 }
             }
