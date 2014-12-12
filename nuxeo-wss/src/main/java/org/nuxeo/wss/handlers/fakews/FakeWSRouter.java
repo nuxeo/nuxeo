@@ -20,6 +20,7 @@ package org.nuxeo.wss.handlers.fakews;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.wss.CallRouter;
+import org.nuxeo.wss.WSSException;
 import org.nuxeo.wss.servlet.WSSResponse;
 import org.nuxeo.wss.servlet.config.FilterBindingConfig;
 
@@ -27,12 +28,11 @@ public class FakeWSRouter extends CallRouter {
 
     private static final Log log = LogFactory.getLog(FakeWSRouter.class);
 
-    public static void handleFakeWSRequest(FakeWSRequest wsRequest, WSSResponse wsResponse, FilterBindingConfig config)
-            throws Exception {
+    public static void handleFakeWSRequest(FakeWSRequest wsRequest, WSSResponse wsResponse, FilterBindingConfig config) throws WSSException {
         FakeWSHandler handler = getHandler(FakeWSHandler.class, config.getTargetService());
         if (handler == null) {
             log.error("Can not find handler for service " + config.getTargetService());
-            throw new Exception("No handler found for " + config.getTargetService());
+            throw new WSSException("No handler found for " + config.getTargetService());
         }
         log.debug("Handle Fake WS request with handler" + handler.getClass().getSimpleName());
         handler.handleRequest(wsRequest, wsResponse);

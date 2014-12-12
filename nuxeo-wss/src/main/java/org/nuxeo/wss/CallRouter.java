@@ -28,7 +28,7 @@ public class CallRouter {
 
     protected static Map<String, Object> handlers = new HashMap<String, Object>();
 
-    protected static <T> T getHandler(Class<T> handlerClass, String handlerName) throws Exception {
+    protected static <T> T getHandler(Class<T> handlerClass, String handlerName) throws WSSException {
 
         Object handler = handlers.get(handlerName);
 
@@ -39,8 +39,8 @@ public class CallRouter {
                 klass = Class.forName(pkg_prefix + "." + handlerName);
                 handler = klass.newInstance();
                 handlers.put(handlerName, handler);
-            } catch (Exception e) {
-                throw new Exception("Unable to find handler", e);
+            } catch (ReflectiveOperationException e) {
+                throw new WSSException("Unable to find handler", e);
 
             }
         }

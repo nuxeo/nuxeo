@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.webdav.resource;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -46,7 +48,7 @@ public class UnknownResource extends AbstractResource {
 
     protected Backend backend;
 
-    public UnknownResource(String path, HttpServletRequest request, Backend backend) throws Exception {
+    public UnknownResource(String path, HttpServletRequest request, Backend backend) {
         super(path, request);
         this.backend = backend;
     }
@@ -55,7 +57,7 @@ public class UnknownResource extends AbstractResource {
      * PUT over a non-existing resource: create a new file resource.
      */
     @PUT
-    public Response put() throws Exception {
+    public Response put() throws IOException, URISyntaxException {
 
         // Special case: ignore some Mac OS X files.
         // ._ files cannot easily be skipped as the Finder requires them on creation
@@ -81,7 +83,7 @@ public class UnknownResource extends AbstractResource {
      * MKCOL over a non-existing resource: create a new folder resource.
      */
     @MKCOL
-    public Response mkcol() throws Exception {
+    public Response mkcol() throws IOException, URISyntaxException {
         ensureParentExists();
 
         // We really need this?
@@ -129,7 +131,7 @@ public class UnknownResource extends AbstractResource {
 
     // Utility
 
-    private void ensureParentExists() throws Exception {
+    private void ensureParentExists() {
         if (!backend.exists(parentPath)) {
             throw new WebApplicationException(Response.Status.CONFLICT);
         }

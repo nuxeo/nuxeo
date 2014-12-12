@@ -66,6 +66,7 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.webdav.backend.Backend;
@@ -88,15 +89,14 @@ public class ExistingResource extends AbstractResource {
 
     protected Backend backend;
 
-    protected ExistingResource(String path, DocumentModel doc, HttpServletRequest request, Backend backend)
-            throws Exception {
+    protected ExistingResource(String path, DocumentModel doc, HttpServletRequest request, Backend backend) {
         super(path, request);
         this.doc = doc;
         this.backend = backend;
     }
 
     @DELETE
-    public Response delete() throws Exception {
+    public Response delete() {
         if (backend.isLocked(doc.getRef()) && !backend.canUnlock(doc.getRef())) {
             return Response.status(423).build();
         }
@@ -113,14 +113,12 @@ public class ExistingResource extends AbstractResource {
     }
 
     @COPY
-    public Response copy(@HeaderParam("Destination") String dest, @HeaderParam("Overwrite") String overwrite)
-            throws Exception {
+    public Response copy(@HeaderParam("Destination") String dest, @HeaderParam("Overwrite") String overwrite) {
         return copyOrMove("COPY", dest, overwrite);
     }
 
     @MOVE
-    public Response move(@HeaderParam("Destination") String dest, @HeaderParam("Overwrite") String overwrite)
-            throws Exception {
+    public Response move(@HeaderParam("Destination") String dest, @HeaderParam("Overwrite") String overwrite) {
         if (backend.isLocked(doc.getRef()) && !backend.canUnlock(doc.getRef())) {
             return Response.status(423).build();
         }
@@ -137,14 +135,18 @@ public class ExistingResource extends AbstractResource {
     }
 
     private Response copyOrMove(String method, @HeaderParam("Destination") String destination,
-            @HeaderParam("Overwrite") String overwrite) throws Exception {
+            @HeaderParam("Overwrite") String overwrite) {
 
         if (backend.isLocked(doc.getRef()) && !backend.canUnlock(doc.getRef())) {
             return Response.status(423).build();
         }
 
         destination = encode(destination.getBytes(), "ISO-8859-1");
-        destination = URIUtil.decode(destination);
+        try {
+            destination = URIUtil.decode(destination);
+        } catch (URIException e) {
+            throw new NuxeoException(e);
+        }
 
         Backend root = BackendHelper.getBackend("/", request);
         Set<String> names = new HashSet<String>(root.getVirtualFolderNames());
@@ -200,7 +202,7 @@ public class ExistingResource extends AbstractResource {
     // Properties
 
     @PROPPATCH
-    public Response proppatch(@Context UriInfo uriInfo) throws Exception {
+    public Response proppatch(@Context UriInfo uriInfo) {
         if (backend.isLocked(doc.getRef()) && !backend.canUnlock(doc.getRef())) {
             return Response.status(423).build();
         }
@@ -244,7 +246,7 @@ public class ExistingResource extends AbstractResource {
     }
 
     @LOCK
-    public Response lock(@Context UriInfo uriInfo) throws Exception {
+    public Response lock(@Context UriInfo uriInfo) {
         String token = null;
         Prop prop = null;
         if (backend.isLocked(doc.getRef())) {
@@ -271,7 +273,7 @@ public class ExistingResource extends AbstractResource {
     }
 
     @UNLOCK
-    public Response unlock() throws Exception {
+    public Response unlock() {
         if (backend.isLocked(doc.getRef())) {
             if (!backend.canUnlock(doc.getRef())) {
                 return Response.status(423).build();

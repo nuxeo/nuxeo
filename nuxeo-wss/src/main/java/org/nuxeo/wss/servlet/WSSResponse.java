@@ -19,6 +19,7 @@ package org.nuxeo.wss.servlet;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -47,7 +48,8 @@ public class WSSResponse extends WSSStaticResponse {
         super(httpResponse);
     }
 
-    protected void processRender() throws Exception {
+    @Override
+    protected void processRender() throws IOException {
         if (renderingTemplateName != null) {
 
             Writer writer = null;

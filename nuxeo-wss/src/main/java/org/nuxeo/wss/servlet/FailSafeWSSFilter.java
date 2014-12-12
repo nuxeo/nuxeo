@@ -44,7 +44,7 @@ public class FailSafeWSSFilter implements Filter {
             Class<?> filterklass = Class.forName("org.nuxeo.wss.servlet.WSSFilter");
             wssFilter = (Filter) filterklass.newInstance();
             wssFilter.init(filterConfig);
-        } catch (Throwable t) {
+        } catch (ReflectiveOperationException t) {
             log.warn("Can not initialize WSS Stack, check your installation : WSS feature won't be available", t);
         }
     }

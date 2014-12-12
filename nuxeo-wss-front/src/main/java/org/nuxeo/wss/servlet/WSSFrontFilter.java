@@ -16,9 +16,12 @@
  */
 package org.nuxeo.wss.servlet;
 
+import java.io.IOException;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,14 +35,14 @@ public class WSSFrontFilter extends BaseWSSFilter implements Filter {
 
     @Override
     protected void handleWSSCall(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
-            FilterBindingConfig config) throws Exception {
+            FilterBindingConfig config) {
         throw new UnsupportedOperationException(
                 "This filter is not intended to receive actual WSS calls, check your configuration");
     }
 
     @Override
     protected void doForward(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
-            FilterBindingConfig config) throws Exception {
+            FilterBindingConfig config) throws ServletException, IOException {
         // To forward to the backend filter, we need to change context
         // but on some App Server (ex: Tomcat 6) default config prohibit this
         ServletContext targetContext = ctx.getContext(getRootFilterTarget());

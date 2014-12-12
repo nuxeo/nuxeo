@@ -16,6 +16,7 @@
  */
 package org.nuxeo.wss.handlers.fakews;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.nuxeo.wss.WSSException;
@@ -42,7 +43,7 @@ public class FakeWebS implements FakeWSHandler {
             String pageUrl;
             try {
                 pageUrl = new FakeWSCmdParser(pageUrl_TAG).getParameter(request);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw new WSSException("Error parsing envelope", e);
             }
 

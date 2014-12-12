@@ -20,6 +20,7 @@ package org.nuxeo.wss.handlers.fprpc;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.wss.CallRouter;
+import org.nuxeo.wss.WSSException;
 import org.nuxeo.wss.fprpc.FPRPCRequest;
 import org.nuxeo.wss.fprpc.FPRPCResponse;
 import org.nuxeo.wss.servlet.config.FilterBindingConfig;
@@ -30,12 +31,11 @@ public class FPRPCRouter extends CallRouter {
 
     // public static final String PKG_PREFIX = "org.nuxeo.wss.handlers.fprpc";
 
-    public static void handleFPRCPRequest(FPRPCRequest fpRequest, FPRPCResponse fpResponse, FilterBindingConfig config)
-            throws Exception {
+    public static void handleFPRCPRequest(FPRPCRequest fpRequest, FPRPCResponse fpResponse, FilterBindingConfig config) throws WSSException {
         FPRPCHandler handler = getHandler(FPRPCHandler.class, config.getTargetService());
         if (handler == null) {
             log.error("Can not find handler for service " + config.getTargetService());
-            throw new Exception("No handler found for " + config.getTargetService());
+            throw new WSSException("No handler found for " + config.getTargetService());
         }
         log.debug("Handle FPRPC request with handler" + handler.getClass().getSimpleName());
         handler.handleRequest(fpRequest, fpResponse);

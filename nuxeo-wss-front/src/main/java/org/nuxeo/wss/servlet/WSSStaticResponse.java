@@ -16,6 +16,7 @@
  */
 package org.nuxeo.wss.servlet;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.servlet.ServletException;
@@ -38,13 +39,13 @@ public class WSSStaticResponse {
         this.httpResponse = httpResponse;
     }
 
-    public void processIfNeeded() throws Exception {
+    public void processIfNeeded() throws ServletException, IOException {
         if (!processed) {
             process();
         }
     }
 
-    public void process() throws Exception {
+    public void process() throws ServletException, IOException {
         if (processed) {
             throw new ServletException("process called twice on WSSResponse");
         }
@@ -57,7 +58,7 @@ public class WSSStaticResponse {
         this.additionnalStream = stream;
     }
 
-    protected void processHeaders() throws Exception {
+    protected void processHeaders() {
         getHttpResponse().setHeader(MSWSSConsts.TSSERVER_VERSION_HEADER, WSSConfig.instance().getTSServerVersion());
         getHttpResponse().setHeader("Set-Cookie", "WSS_KeepSessionAuthenticated=80; path=/");
         // getHttpResponse().setHeader("Server","Microsoft-IIS/6.0");
@@ -74,7 +75,7 @@ public class WSSStaticResponse {
         return "text/plain";
     }
 
-    protected void processRender() throws Exception {
+    protected void processRender() throws IOException {
     }
 
     public HttpServletResponse getHttpResponse() {

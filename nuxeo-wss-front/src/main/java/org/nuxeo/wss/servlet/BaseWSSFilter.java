@@ -87,7 +87,7 @@ public abstract class BaseWSSFilter implements Filter {
                     handleWebDavCall(httpRequest, httpResponse);
                     return;
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw new ServletException("error processing request", e);
             }
 
@@ -101,16 +101,12 @@ public abstract class BaseWSSFilter implements Filter {
             Object forwardedConfig = httpRequest.getAttribute(FILTER_FORWARD_PARAM);
 
             if (forwardedConfig != null) {
-                try {
-                    handleForwardedCall(httpRequest, httpResponse, (FilterBindingConfig) forwardedConfig);
-                } catch (Exception e) {
-                    throw new ServletException("Error processing WSS request", e);
-                }
+                handleForwardedCall(httpRequest, httpResponse, (FilterBindingConfig) forwardedConfig);
             } else {
                 FilterBindingConfig config = null;
                 try {
                     config = FilterBindingResolver.getBinding(httpRequest);
-                } catch (Exception e) {
+                } catch (IOException e) {
                     throw new ServletException("Error processing WSS request", e);
                 }
                 if (config != null) {
@@ -122,7 +118,7 @@ public abstract class BaseWSSFilter implements Filter {
                         } else {
                             handleWSSCall(httpRequest, httpResponse, config);
                         }
-                    } catch (Exception e) {
+                    } catch (IOException e) {
                         throw new ServletException("Error processing WSS request", e);
                     }
                     return;
@@ -157,7 +153,8 @@ public abstract class BaseWSSFilter implements Filter {
         }
     }
 
-    protected void handleWebDavCall(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws Exception {
+    protected void handleWebDavCall(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+            throws ServletException, IOException {
 
         // Wrap 'Destination' header parameter if need. Need for COPY and MOVE
         // WebDAV methods
@@ -217,7 +214,7 @@ public abstract class BaseWSSFilter implements Filter {
     }
 
     protected void handleForwardedCall(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
-            FilterBindingConfig forwardedConfig) throws Exception {
+            FilterBindingConfig forwardedConfig) throws ServletException {
         log.debug("handle call forwarded by root filter");
         handleWSSCall(httpRequest, httpResponse, forwardedConfig);
     }
@@ -229,10 +226,10 @@ public abstract class BaseWSSFilter implements Filter {
     protected abstract boolean isRootFilter();
 
     protected abstract void doForward(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
-            FilterBindingConfig config) throws Exception;
+            FilterBindingConfig config) throws ServletException, IOException;
 
     protected abstract void handleWSSCall(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
-            FilterBindingConfig config) throws Exception;
+            FilterBindingConfig config) throws ServletException;
 
     @Override
     public void destroy() {

@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webdav.resource;
 
 import static javax.ws.rs.core.Response.Status.OK;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +65,7 @@ public class FolderResource extends ExistingResource {
 
     private static final Log log = LogFactory.getLog(FolderResource.class);
 
-    public FolderResource(String path, DocumentModel doc, HttpServletRequest request, Backend backend) throws Exception {
+    public FolderResource(String path, DocumentModel doc, HttpServletRequest request, Backend backend) {
         super(path, doc, request, backend);
     }
 
@@ -95,7 +96,8 @@ public class FolderResource extends ExistingResource {
     }
 
     @PROPFIND
-    public Response propfind(@Context UriInfo uriInfo, @HeaderParam("depth") String depth) throws Exception {
+    public Response propfind(@Context UriInfo uriInfo, @HeaderParam("depth") String depth) throws IOException,
+            JAXBException {
 
         if (depth == null) {
             depth = "1";

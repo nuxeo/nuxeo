@@ -19,6 +19,7 @@ package org.nuxeo.wss.handlers.fakews;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.nuxeo.wss.servlet.WSSRequest;
@@ -68,7 +69,7 @@ public class FakeWSCmdParser extends DefaultHandler {
         }
     }
 
-    public String getParameter(WSSRequest request) throws Exception {
+    public String getParameter(WSSRequest request) throws IOException {
         InputStream in = null;
 
         BufferedReader httpReader = request.getHttpRequest().getReader();
@@ -86,12 +87,16 @@ public class FakeWSCmdParser extends DefaultHandler {
         }
 
         XMLReader reader;
-        reader = XMLReaderFactory.createXMLReader();
-        reader.setContentHandler(this);
-        reader.setFeature("http://xml.org/sax/features/namespaces", false);
-        reader.setFeature("http://xml.org/sax/features/validation", false);
-        reader.parse(new InputSource(in));
-        return paramValue;
+        try {
+            reader = XMLReaderFactory.createXMLReader();
+            reader.setContentHandler(this);
+            reader.setFeature("http://xml.org/sax/features/namespaces", false);
+            reader.setFeature("http://xml.org/sax/features/validation", false);
+            reader.parse(new InputSource(in));
+            return paramValue;
+        } catch (SAXException e) {
+            throw new IOException(e);
+        }
     }
 
 }

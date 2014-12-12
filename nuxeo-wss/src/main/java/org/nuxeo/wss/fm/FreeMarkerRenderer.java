@@ -17,6 +17,7 @@
 package org.nuxeo.wss.fm;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
@@ -31,6 +32,7 @@ import freemarker.cache.TemplateLoader;
 import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import freemarker.template.TemplateModelException;
 
 /**
@@ -104,10 +106,14 @@ public class FreeMarkerRenderer {
         fmConfig.setTemplateLoader(getLoader());
     }
 
-    public void render(String templateName, Map<String, Object> params, Writer writer) throws Exception {
+    public void render(String templateName, Map<String, Object> params, Writer writer) throws IOException {
         Template template = fmConfig.getTemplate(templateName);
-        Environment env = template.createProcessingEnvironment(params, writer);
-        env.process();
+        try {
+            Environment env = template.createProcessingEnvironment(params, writer);
+            env.process();
+        } catch (TemplateException e) {
+            throw new IOException(e);
+        }
     }
 
 }

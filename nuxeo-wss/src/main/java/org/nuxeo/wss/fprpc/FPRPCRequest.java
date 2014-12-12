@@ -35,6 +35,7 @@ import org.nuxeo.wss.WSSConfig;
 import org.nuxeo.wss.fprpc.exceptions.MalformedFPRPCRequest;
 import org.nuxeo.wss.servlet.WSSRequest;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 /**
@@ -212,7 +213,7 @@ public class FPRPCRequest extends WSSRequest {
             reader = CAMLHandler.getXMLReader();
             reader.parse(new InputSource(httpRequest.getInputStream()));
             calls = ((CAMLHandler) reader.getContentHandler()).getParsedCalls();
-        } catch (Exception e) {
+        } catch (SAXException | IOException e) {
             throw new MalformedFPRPCRequest("Unable to parse CAML Request");
         }
     }

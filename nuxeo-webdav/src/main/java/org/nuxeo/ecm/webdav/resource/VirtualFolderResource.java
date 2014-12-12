@@ -73,8 +73,7 @@ public class VirtualFolderResource extends AbstractResource {
 
     private LinkedList<String> rootFolderNames;
 
-    public VirtualFolderResource(String path, HttpServletRequest request, LinkedList<String> rootFolderNames)
-            throws Exception {
+    public VirtualFolderResource(String path, HttpServletRequest request, LinkedList<String> rootFolderNames) {
         super(path, request);
         this.rootFolderNames = rootFolderNames;
     }
@@ -102,7 +101,7 @@ public class VirtualFolderResource extends AbstractResource {
     }
 
     @PROPFIND
-    public Response propfind(@Context UriInfo uriInfo, @HeaderParam("depth") String depth) throws Exception {
+    public Response propfind(@Context UriInfo uriInfo, @HeaderParam("depth") String depth) {
 
         if (depth == null) {
             depth = "1";
@@ -160,22 +159,22 @@ public class VirtualFolderResource extends AbstractResource {
     }
 
     @DELETE
-    public Response delete() throws Exception {
+    public Response delete() {
         return Response.status(401).build();
     }
 
     @COPY
-    public Response copy() throws Exception {
+    public Response copy() {
         return Response.status(401).build();
     }
 
     @MOVE
-    public Response move() throws Exception {
+    public Response move() {
         return Response.status(401).build();
     }
 
     @PROPPATCH
-    public Response proppatch() throws Exception {
+    public Response proppatch() {
         return Response.status(401).build();
     }
 
@@ -190,7 +189,7 @@ public class VirtualFolderResource extends AbstractResource {
     }
 
     @LOCK
-    public Response lock(@Context UriInfo uriInfo) throws Exception {
+    public Response lock(@Context UriInfo uriInfo) {
         Prop prop = new Prop(new LockDiscovery(new ActiveLock(LockScope.EXCLUSIVE, LockType.WRITE, Depth.ZERO,
                 new Owner("Administrator"), new TimeOut(10000L), new LockToken(new HRef("urn:uuid:Administrator")),
                 new LockRoot(new HRef(uriInfo.getRequestUri())))));
@@ -199,7 +198,7 @@ public class VirtualFolderResource extends AbstractResource {
     }
 
     @UNLOCK
-    public Response unlock() throws Exception {
+    public Response unlock() {
         return Response.status(204).build();
     }
 

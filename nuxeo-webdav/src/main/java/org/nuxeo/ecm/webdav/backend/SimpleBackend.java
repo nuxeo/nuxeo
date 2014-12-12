@@ -20,6 +20,7 @@
  */
 package org.nuxeo.ecm.webdav.backend;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.Principal;
@@ -140,9 +141,7 @@ public class SimpleBackend extends AbstractCoreBackend {
             // this cannot be done before the update anymore
             // doc.putContextData(SOURCE_EDIT_KEYWORD, "webdav");
             doc = fileManager.createDocumentFromBlob(getSession(), content, parentPath, true, name); // overwrite=true
-        } catch (ClientException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ClientException("Error while updating document", e);
         }
         return doc;
@@ -298,12 +297,7 @@ public class SimpleBackend extends AbstractCoreBackend {
 
     @Override
     public void removeItem(String location) throws ClientException {
-        DocumentModel docToRemove = null;
-        try {
-            docToRemove = resolveLocation(location);
-        } catch (Exception e) {
-            throw new ClientException("Error while resolving document path", e);
-        }
+        DocumentModel docToRemove = resolveLocation(location);
         if (docToRemove == null) {
             throw new ClientException("Document path not found");
         }
@@ -312,18 +306,12 @@ public class SimpleBackend extends AbstractCoreBackend {
 
     @Override
     public void removeItem(DocumentRef ref) throws ClientException {
-        try {
-            DocumentModel doc = getSession().getDocument(ref);
-            if (doc != null) {
-                getTrashService().trashDocuments(Arrays.asList(doc));
-                getPathCache().remove(doc.getPathAsString());
-            } else {
-                log.warn("Can't move document " + ref.toString() + " to trash. Document did not found.");
-            }
-        } catch (ClientException ce) {
-            throw ce;
-        } catch (Exception e) {
-            throw new ClientException("Error while deleting doc " + ref, e);
+        DocumentModel doc = getSession().getDocument(ref);
+        if (doc != null) {
+            getTrashService().trashDocuments(Arrays.asList(doc));
+            getPathCache().remove(doc.getPathAsString());
+        } else {
+            log.warn("Can't move document " + ref.toString() + " to trash. Document did not found.");
         }
     }
 
@@ -405,16 +393,12 @@ public class SimpleBackend extends AbstractCoreBackend {
             targetType = "Workspace";
         }
         // name = cleanName(name);
-        try {
-            cleanTrashPath(parent, name);
-            DocumentModel folder = getSession().createDocumentModel(parent.getPathAsString(), name, targetType);
-            folder.setPropertyValue("dc:title", name);
-            folder = getSession().createDocument(folder);
-            getPathCache().put(parseLocation(parentPath) + "/" + name, folder);
-            return folder;
-        } catch (Exception e) {
-            throw new ClientException("Error child creating new folder", e);
-        }
+        cleanTrashPath(parent, name);
+        DocumentModel folder = getSession().createDocumentModel(parent.getPathAsString(), name, targetType);
+        folder.setPropertyValue("dc:title", name);
+        folder = getSession().createDocument(folder);
+        getPathCache().put(parseLocation(parentPath) + "/" + name, folder);
+        return folder;
     }
 
     @Override
@@ -444,7 +428,7 @@ public class SimpleBackend extends AbstractCoreBackend {
             }
             getPathCache().put(parseLocation(parentPath) + "/" + name, file);
             return file;
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ClientException("Error child creating new folder", e);
         }
     }
@@ -572,7 +556,7 @@ public class SimpleBackend extends AbstractCoreBackend {
         }
     }
 
-    protected TrashService getTrashService() throws Exception {
+    protected TrashService getTrashService() {
         if (trashService == null) {
             trashService = Framework.getService(TrashService.class);
         }

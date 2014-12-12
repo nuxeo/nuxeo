@@ -17,6 +17,7 @@
 
 package org.nuxeo.wss.servlet.config;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +82,7 @@ public class XmlConfigHandler extends DefaultHandler {
     private String getAttributeValue(Attributes attributes, String key) {
         try {
             return attributes.getValue(key);
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return "";
         }
     }
@@ -94,7 +95,7 @@ public class XmlConfigHandler extends DefaultHandler {
         XmlConfigHandler.configName = configName;
     }
 
-    public static void loadConfig() throws Exception {
+    public static void loadConfig() throws IOException {
         loadConfig(getConfigName());
     }
 
@@ -105,18 +106,22 @@ public class XmlConfigHandler extends DefaultHandler {
         return instance;
     }
 
-    public static void loadConfig(String configName) throws Exception {
+    public static void loadConfig(String configName) throws IOException {
         InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(configName);
 
         XMLReader reader;
-        reader = XMLReaderFactory.createXMLReader();
-        reader.setContentHandler(getInstance());
-        reader.setFeature("http://xml.org/sax/features/namespaces", false);
-        reader.setFeature("http://xml.org/sax/features/validation", false);
-        reader.parse(new InputSource(in));
+        try {
+            reader = XMLReaderFactory.createXMLReader();
+            reader.setContentHandler(getInstance());
+            reader.setFeature("http://xml.org/sax/features/namespaces", false);
+            reader.setFeature("http://xml.org/sax/features/validation", false);
+            reader.parse(new InputSource(in));
+        } catch (SAXException e) {
+            throw new IOException(e);
+        }
     }
 
-    public static List<FilterBindingConfig> getConfigEntries() throws Exception {
+    public static List<FilterBindingConfig> getConfigEntries() throws IOException {
         List<FilterBindingConfig> entries = getInstance().getParsedConfigEntries();
 
         if (entries == null) {

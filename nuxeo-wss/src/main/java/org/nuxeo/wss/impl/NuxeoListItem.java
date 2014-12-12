@@ -18,6 +18,7 @@
  */
 package org.nuxeo.wss.impl;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
@@ -33,6 +34,7 @@ import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.wss.WSSException;
 import org.nuxeo.wss.spi.AbstractWSSListItem;
@@ -148,7 +150,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
     public String getDescription() {
         try {
             return (String) doc.getPropertyValue("dc:description");
-        } catch (Exception e) {
+        } catch (PropertyException e) {
             log.error("Unable to get description", e);
             return "";
         }
@@ -203,7 +205,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
                 if (blob != null) {
                     return blob.getStream();
                 }
-            } catch (Exception e) {
+            } catch (ClientException | IOException e) {
                 log.error("Unable to get Stream", e);
             }
         }
@@ -273,7 +275,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
     public void setDescription(String description) {
         try {
             doc.setPropertyValue("dc:description", description);
-        } catch (Exception e) {
+        } catch (PropertyException e) {
             log.error("Error while setting description", e);
         }
     }
@@ -364,7 +366,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
     public String getAuthor() {
         try {
             return (String) doc.getPropertyValue("dc:creator");
-        } catch (Exception e) {
+        } catch (PropertyException e) {
             return "";
         }
     }

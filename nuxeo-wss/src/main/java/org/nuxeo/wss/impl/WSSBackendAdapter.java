@@ -76,7 +76,7 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
             } else {
                 throw new WSSException("Unable to find item " + location);
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new WSSException("Error while getting item", e);
         }
     }
@@ -242,7 +242,7 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
 
             return metadata;
 
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new WSSException("Error in getMetadata", e);
         }
     }
@@ -276,7 +276,7 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
         return new VirtualListItem(name, corePathPrefix, urlRoot);
     }
 
-    protected User getUserFromLogin(String userLogin, int idx) throws Exception {
+    protected User getUserFromLogin(String userLogin, int idx) {
 
         User user = null;
         UserManager um = Framework.getService(UserManager.class);

@@ -95,7 +95,7 @@ public class ResourcesHandler {
                 out.write(buffer, 0, read);
                 out.flush();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Error while serving resource", e);
             throw new ServletException(e);
         } finally {

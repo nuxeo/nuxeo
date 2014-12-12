@@ -26,7 +26,7 @@ import java.io.InputStreamReader;
 
 public class FakeRequestBuilder {
 
-    public static FakeRequest build(File file) throws Exception {
+    public static FakeRequest build(File file) throws IOException {
         InputStream in = new FileInputStream(file);
         return build(in);
     }

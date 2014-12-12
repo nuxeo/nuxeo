@@ -19,6 +19,9 @@ package org.nuxeo.wss.fm;
 import java.io.IOException;
 import java.io.Reader;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.TemplateLoader;
 
@@ -30,6 +33,8 @@ import freemarker.cache.TemplateLoader;
  * @author Thierry Delprat
  */
 public class PluggableTemplareLoader implements TemplateLoader {
+
+    private static final Log log = LogFactory.getLog(PluggableTemplareLoader.class);
 
     protected ClassTemplateLoader defaultLoader;
 
@@ -48,8 +53,8 @@ public class PluggableTemplareLoader implements TemplateLoader {
         if (additionnalLoader != null) {
             try {
                 template = additionnalLoader.findTemplateSource(name);
-            } catch (Exception e) {
-                //
+            } catch (IOException e) {
+                log.error(e, e);
             }
         }
         if (template == null) {

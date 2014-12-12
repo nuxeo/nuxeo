@@ -18,6 +18,7 @@ package org.nuxeo.wss.handlers.fakews;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URLDecoder;
@@ -68,7 +69,7 @@ public class FakeDWS implements FakeWSHandler {
             try {
                 documentUrl = new FakeWSCmdParser(document_TAG).getParameter(request);
                 documentUrl = URLDecoder.decode(documentUrl, "UTF-8");
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw new WSSException("Error parsing envelope", e);
             }
 
@@ -143,7 +144,7 @@ public class FakeDWS implements FakeWSHandler {
                     response.setRenderingTemplateName("GetDwsData.ftl");
                 }
 
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw new WSSException("Error while rendering sub template", e);
             }
         } else if ("http://schemas.microsoft.com/sharepoint/soap/dws/CreateFolder".equals(request.getAction())) {
@@ -153,7 +154,7 @@ public class FakeDWS implements FakeWSHandler {
             try {
                 documentUrl = new FakeWSCmdParser(url_TAG).getParameter(request);
                 documentUrl = URLDecoder.decode(documentUrl, "UTF-8");
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw new WSSException("Error parsing envelope", e);
             }
 
@@ -180,7 +181,7 @@ public class FakeDWS implements FakeWSHandler {
     }
 
     protected String renderSubTemplate(String renderingTemplateName, Map<String, Object> renderingContext)
-            throws Exception {
+            throws IOException {
         Writer writer;
         ByteArrayOutputStream bufferedOs;
         bufferedOs = new ByteArrayOutputStream();

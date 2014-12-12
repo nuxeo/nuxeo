@@ -17,10 +17,13 @@
 
 package org.nuxeo.wss.servlet;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.ArrayList;
 
 import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
@@ -30,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoSecuredRequestWrapper;
 import org.nuxeo.ecm.webengine.app.DefaultContext;
@@ -75,7 +79,7 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
 
     @Override
     protected void doForward(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
-            FilterBindingConfig config) throws Exception {
+            FilterBindingConfig config) throws ServletException, IOException {
         // To forward to the backend filter, we need to change context
         // but on some App Server (ex: Tomcat 6) default config prohibit this
         ServletContext targetContext = ctx.getContext(getRootFilterTarget());
@@ -99,7 +103,7 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
      */
     @Override
     protected void handleWSSCall(HttpServletRequest request, HttpServletResponse response, FilterBindingConfig config)
-            throws Exception {
+            throws ServletException {
         boolean tx = false;
         boolean ok = false;
         RequestContext requestContext = null;
@@ -112,7 +116,11 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
                 // if we didn't go through the NuxeoAuthenticationFilter
                 // use a dummy user
                 Principal principal = new UserPrincipal(WSS_USERNAME, new ArrayList<String>(), false, false);
-                loginContext = Framework.loginAs(principal.getName());
+                try {
+                    loginContext = Framework.loginAs(principal.getName());
+                } catch (LoginException e) {
+                    throw new NuxeoException(e);
+                }
                 request = new NuxeoSecuredRequestWrapper(request, principal);
             }
             // init WebEngine context needed to later get the session
@@ -121,7 +129,11 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
             request.setAttribute(WebContext.class.getName(), new DefaultContext(request));
             // we could use BufferingHttpServletResponse also here
             // do WSS call
-            doWSSCall(request, response, config);
+            try {
+                doWSSCall(request, response, config);
+            } catch (WSSException e) {
+                throw new ServletException(e);
+            }
             ok = true;
         } finally {
             try {
@@ -137,16 +149,24 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
                     requestContext.dispose();
                 }
                 if (loginContext != null) {
-                    loginContext.logout();
+                    try {
+                        loginContext.logout();
+                    } catch (LoginException e) {
+                        throw new NuxeoException(e);
+                    }
                 }
             }
         }
     }
 
     protected void doWSSCall(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
-            FilterBindingConfig config) throws Exception {
+            FilterBindingConfig config) throws WSSException, ServletException {
 
-        httpRequest.setCharacterEncoding("UTF-8");
+        try {
+            httpRequest.setCharacterEncoding("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new NuxeoException(e);
+        }
         httpResponse.setCharacterEncoding("UTF-8");
 
         WSSRequest request = new WSSRequest(httpRequest, config.getSiteName());
@@ -185,9 +205,8 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
             }
 
             backend.saveChanges();
-        } catch (Throwable t) {
-            log.error("Error during WSS call processing", t);
-            throw new WSSException("Error while processing WSS request", t);
+        } catch (IOException e) {
+            throw new WSSException("Error while processing WSS request", e);
         }
     }
 

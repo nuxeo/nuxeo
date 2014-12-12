@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -30,6 +33,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBException;
 
 import net.java.dev.webdav.jaxrs.methods.PROPFIND;
 
@@ -38,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.webdav.backend.Backend;
@@ -51,14 +56,14 @@ public class RootResource {
 
     private HttpServletRequest request;
 
-    public RootResource(@Context HttpServletRequest request) throws Exception {
+    public RootResource(@Context HttpServletRequest request) {
         log.debug(request.getMethod() + " " + request.getRequestURI());
         this.request = request;
     }
 
     @GET
     @Produces("text/html")
-    public Object getRoot() throws Exception {
+    public Object getRoot() {
         Object resource = findResource("");
         if (resource instanceof FolderResource) {
             return ((FolderResource) resource).get();
@@ -68,7 +73,7 @@ public class RootResource {
     }
 
     @OPTIONS
-    public Object getRootOptions() throws Exception {
+    public Object getRootOptions() {
         Object resource = findResource("");
         if (resource instanceof FolderResource) {
             return ((FolderResource) resource).options();
@@ -78,7 +83,8 @@ public class RootResource {
     }
 
     @PROPFIND
-    public Object getRootPropfind(@Context UriInfo uriInfo, @HeaderParam("depth") String depth) throws Exception {
+    public Object getRootPropfind(@Context UriInfo uriInfo, @HeaderParam("depth") String depth) throws IOException,
+            JAXBException {
         Object resource = findResource("");
         if (resource instanceof FolderResource) {
             return ((FolderResource) resource).propfind(uriInfo, depth);
@@ -88,8 +94,12 @@ public class RootResource {
     }
 
     @Path("{path:.+}")
-    public Object findResource(@PathParam("path") String path) throws Exception {
-        path = new String(path.getBytes(), "UTF-8");
+    public Object findResource(@PathParam("path") String path) {
+        try {
+            path = new String(path.getBytes(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new NuxeoException(e);
+        }
 
         Backend backend = BackendHelper.getBackend(path, request);
 
@@ -104,7 +114,7 @@ public class RootResource {
         DocumentModel doc = null;
         try {
             doc = backend.getDocument(path);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error during resolving path: " + path, e);
             throw new WebApplicationException(Response.Status.CONFLICT);
         }

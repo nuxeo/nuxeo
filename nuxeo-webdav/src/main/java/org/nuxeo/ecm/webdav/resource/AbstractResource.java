@@ -54,7 +54,7 @@ public class AbstractResource {
         return new Path(path).lastSegment();
     }
 
-    protected AbstractResource(String path, HttpServletRequest request) throws Exception {
+    protected AbstractResource(String path, HttpServletRequest request) {
         this.path = path;
         this.request = request;
         parentPath = getParentPath(path);
@@ -62,7 +62,7 @@ public class AbstractResource {
     }
 
     @OPTIONS
-    public Response options() throws Exception {
+    public Response options() {
         return Response.status(204).entity("").header("DAV", "1,2") // not 1,2 for now.
         .header("Allow",
                 "GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE, "

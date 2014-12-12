@@ -17,6 +17,7 @@
 
 package org.nuxeo.wss.servlet.config;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -32,7 +33,7 @@ public class FilterBindingResolver {
     protected static final Map<String, FilterBindingConfig> bindingCache = new LRUCachingMap<String, FilterBindingConfig>(
             50);
 
-    public static FilterBindingConfig getBinding(HttpServletRequest request) throws Exception {
+    public static FilterBindingConfig getBinding(HttpServletRequest request) throws IOException {
 
         String UA = request.getHeader("User-Agent");
         if (FPRPCConts.MSOFFICE_USERAGENT.equals(UA)) {
@@ -45,7 +46,7 @@ public class FilterBindingResolver {
         return getBinding(uri);
     }
 
-    public static FilterBindingConfig getBinding(String uri) throws Exception {
+    public static FilterBindingConfig getBinding(String uri) throws IOException {
         FilterBindingConfig binding;
         synchronized (bindingCache) {
             binding = bindingCache.get(uri);
@@ -59,7 +60,7 @@ public class FilterBindingResolver {
         return binding;
     }
 
-    protected static synchronized FilterBindingConfig computeBindingForRequest(String uri) throws Exception {
+    protected static synchronized FilterBindingConfig computeBindingForRequest(String uri) throws IOException {
         List<FilterBindingConfig> bindings = XmlConfigHandler.getConfigEntries();
         for (FilterBindingConfig binding : bindings) {
             Pattern pat = binding.getUrlPattern();

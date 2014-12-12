@@ -17,6 +17,8 @@
 
 package org.nuxeo.wss.handlers.get;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
@@ -30,7 +32,7 @@ public class SimpleGetHandler {
 
     private static final Log log = LogFactory.getLog(SimpleGetHandler.class);
 
-    public void handleRequest(WSSRequest request, WSSResponse response) throws Exception {
+    public void handleRequest(WSSRequest request, WSSResponse response) throws IOException {
 
         String uri = request.getHttpRequest().getRequestURI();
         String method = request.getHttpRequest().getMethod();

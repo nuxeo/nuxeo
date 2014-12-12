@@ -21,7 +21,9 @@ package org.nuxeo.ecm.webdav.resource;
 
 import static javax.ws.rs.core.Response.Status.OK;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,6 +52,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.webdav.backend.Backend;
@@ -63,12 +66,12 @@ public class FileResource extends ExistingResource {
 
     private static final Log log = LogFactory.getLog(FileResource.class);
 
-    public FileResource(String path, DocumentModel doc, HttpServletRequest request, Backend backend) throws Exception {
+    public FileResource(String path, DocumentModel doc, HttpServletRequest request, Backend backend) {
         super(path, doc, request, backend);
     }
 
     @GET
-    public Object get() throws Exception {
+    public Object get() {
         Blob content = null;
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh != null) {
@@ -81,12 +84,7 @@ public class FileResource extends ExistingResource {
         if (content == null) {
             return Response.ok("").build();
         } else {
-            String mimeType;
-            try {
-                mimeType = content.getMimeType();
-            } catch (Exception e) {
-                mimeType = "application/octet-stream";
-            }
+            String mimeType = content.getMimeType();
             if ("???".equals(mimeType)) {
                 mimeType = "application/octet-stream";
             }
@@ -95,7 +93,7 @@ public class FileResource extends ExistingResource {
     }
 
     @PUT
-    public Response put() throws Exception {
+    public Response put() {
         if (backend.isLocked(doc.getRef()) && !backend.canUnlock(doc.getRef())) {
             return Response.status(423).build();
         }
@@ -111,15 +109,19 @@ public class FileResource extends ExistingResource {
             content.setFilename(name);
 
             backend.updateDocument(doc, name, content);
-            return Response.created(new URI(URLEncoder.encode(path, "UTF8"))).build();
-        } catch (Exception e) {
+            try {
+                return Response.created(new URI(URLEncoder.encode(path, "UTF8"))).build();
+            } catch (URISyntaxException e) {
+                throw new NuxeoException(e);
+            }
+        } catch (ClientException | IOException e) {
             log.error("Error during PUT method execution", e);
             return Response.status(409).build();
         }
     }
 
     @PROPFIND
-    public Response propfind(@Context UriInfo uriInfo) throws Exception {
+    public Response propfind(@Context UriInfo uriInfo) throws IOException, JAXBException {
 
         Unmarshaller u = Util.getUnmarshaller();
 

@@ -170,21 +170,15 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend impleme
         }
     }
 
-    protected boolean initIfNeed() throws ClientException {
+    protected void initIfNeed() {
         if (backendMap == null || orderedBackendNames == null) {
             backendMap = new HashMap<String, Backend>();
             orderedBackendNames = new LinkedList<String>();
-            try {
-                init();
-                return true;
-            } catch (Exception e) {
-                log.error("Execute during virtual backend initialization. Backend name:" + getBackendDisplayName(), e);
-            }
+            init();
         }
-        return false;
     }
 
-    protected abstract void init() throws Exception;
+    protected abstract void init();
 
     @Override
     public boolean isLocked(DocumentRef ref) throws ClientException {
