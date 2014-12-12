@@ -99,7 +99,7 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
 
     @Override
     public boolean isReference() {
-        return resolver == null;
+        return resolver != null;
     }
 
     public void setResolver(ExternalReferenceResolver<?> resolver) {
