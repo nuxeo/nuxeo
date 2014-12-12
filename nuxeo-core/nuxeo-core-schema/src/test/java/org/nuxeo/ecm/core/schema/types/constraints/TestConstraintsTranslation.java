@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
@@ -34,8 +33,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceConstraint;
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
+import org.nuxeo.ecm.core.schema.types.reference.TestingColorDummyReferenceResolver;
 
 public class TestConstraintsTranslation {
 
@@ -211,59 +209,12 @@ public class TestConstraintsTranslation {
 
     @Test
     public void testExternalReferenceConstraintMessage() {
-        checkConstraintMessage(new ExternalReferenceConstraint(new ExternalReferenceResolver<Color>() {
-
-            @Override
-            public void configure(Map<String, String> parameters) throws IllegalArgumentException {
-            }
-
-            @Override
-            public String getName() {
-                return "ColorResolver";
-            }
-
-            @Override
-            public Map<String, Serializable> getParameters() {
-                return new HashMap<String, Serializable>();
-            }
-
-            @Override
-            public Class<?> getEntityTypes() {
-                return Color.class;
-            }
-
-            @Override
-            public boolean validate(Object value) throws IllegalStateException {
-                return fetch(value) != null;
-            }
-
-            @Override
-            public Color fetch(Object value) throws IllegalStateException {
-                if (value instanceof String) {
-                    String ref = (String) value;
-                    switch (ref) {
-                    case "red":
-                        return Color.RED;
-                    case "green":
-                        return Color.GREEN;
-                    case "blue":
-                        return Color.BLUE;
-                    }
-                }
-                return null;
-            }
-
-            @Override
-            public Serializable getReference(Color color) throws IllegalStateException, IllegalArgumentException {
-                return color != null ? color.name() : null;
-            }
-
-            @Override
-            public String getConstraintErrorMessage(Object invalidValue, Locale locale) {
-                return String.format("\"%s\" does not refer any color", invalidValue);
-            }
-
-        }));
+        TestingColorDummyReferenceResolver resolver = new TestingColorDummyReferenceResolver();
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put(TestingColorDummyReferenceResolver.COLOR_MODE,
+                TestingColorDummyReferenceResolver.MODE.PRIMARY.name());
+        resolver.configure(parameters);
+        checkConstraintMessage(new ExternalReferenceConstraint(resolver));
     }
 
     private void checkConstraintMessage(Constraint constraint) {

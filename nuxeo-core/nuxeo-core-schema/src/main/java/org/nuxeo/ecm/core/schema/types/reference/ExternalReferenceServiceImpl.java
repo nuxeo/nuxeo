@@ -69,10 +69,17 @@ public class ExternalReferenceServiceImpl extends DefaultComponent implements Ex
         try {
             resolver = resolverClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            log.warn("Unable to instanciate " + resolverClass.getCanonicalName());
+            log.error(String.format("Unable to instanciate %s - missing public constructor with no param",
+                    resolverClass.getCanonicalName()));
             return null;
         }
-        resolver.configure(parameters != null ? parameters : new HashMap<String, String>());
+        try {
+            resolver.configure(parameters != null ? parameters : new HashMap<String, String>());
+        } catch (IllegalArgumentException e) {
+            log.error(String.format("Unable to configure %s with parameters %s", resolverClass.getCanonicalName(),
+                    parameters.toString()));
+            return null;
+        }
         return resolver;
     }
 

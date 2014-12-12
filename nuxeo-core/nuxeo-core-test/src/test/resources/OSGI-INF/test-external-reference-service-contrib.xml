@@ -2,7 +2,7 @@
 <component name="org.nuxeo.ecm.core.storage.sql.tests.repo.core-types">
 
   <extension target="org.nuxeo.ecm.core.schema.ExternalReferenceService" point="resolvers">
-    <resolver type="colorReference" class="org.nuxeo.ecm.core.schema.types.reference.DummyPrimaryColorReferenceResolver" />
+    <resolver type="colorReference" class="org.nuxeo.ecm.core.schema.types.reference.TestingColorDummyReferenceResolver" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">

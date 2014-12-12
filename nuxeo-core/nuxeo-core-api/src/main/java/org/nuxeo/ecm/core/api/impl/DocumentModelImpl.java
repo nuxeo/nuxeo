@@ -1449,9 +1449,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     public <T> void setPropertyReferencedEntity(String xpath, T entity) {
         ExternalReferenceResolver<T> resolver = getResolver(xpath);
-        if (resolver != null) {
+        if (resolver != null && resolver.getEntityTypes().isInstance(entity)) {
             Serializable reference = resolver.getReference(entity);
             setPropertyValue(xpath, reference);
+        } else {
+            setPropertyValue(xpath, null);
         }
     }
 

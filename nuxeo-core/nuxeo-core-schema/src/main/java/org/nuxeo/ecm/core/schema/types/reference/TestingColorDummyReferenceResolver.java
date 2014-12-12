@@ -1,0 +1,120 @@
+package org.nuxeo.ecm.core.schema.types.reference;
+
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+import org.nuxeo.ecm.core.schema.types.reference.TestingColorDummyReferenceResolver.Color;
+
+public class TestingColorDummyReferenceResolver implements ExternalReferenceResolver<Color> {
+
+    public static enum MODE {
+        PRIMARY, SECONDARY;
+    }
+
+    public interface Color {
+        String name();
+    }
+
+    public static enum PrimaryColor implements Color {
+        RED, BLUE, YELLOW;
+    }
+
+    public static enum SecondaryColor implements Color {
+        VIOLET, ORANGE, GREEN;
+    }
+
+    public static final String COLOR_MODE = "mode";
+
+    public static final String NAME = "DummyColorReference";
+
+    private MODE mode;
+
+    private Map<String, Serializable> parameters;
+
+    @Override
+    public void configure(Map<String, String> parameters) throws IllegalArgumentException {
+        String modeParam = parameters.get(COLOR_MODE);
+        if (modeParam == null || modeParam.trim().isEmpty()) {
+            throw new IllegalArgumentException("missing mode param");
+        }
+        try {
+            mode = MODE.valueOf(modeParam);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("missing mode param", e);
+        }
+        this.parameters = new HashMap<String, Serializable>();
+        this.parameters.put(COLOR_MODE, mode.name());
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    public Map<String, Serializable> getParameters() {
+        return Collections.unmodifiableMap(parameters);
+    }
+
+    @Override
+    public Class<?> getEntityTypes() {
+        return Color.class;
+    }
+
+    @Override
+    public boolean validate(Object value) throws IllegalStateException {
+        return fetch(value) != null;
+    }
+
+    @Override
+    public Color fetch(Object value) throws IllegalStateException {
+        if (value instanceof String) {
+            String ref = (String) value;
+            switch (mode) {
+            case PRIMARY:
+                for (PrimaryColor color : PrimaryColor.values()) {
+                    if (color.name().equals(ref)) {
+                        return color;
+                    }
+                }
+                break;
+            case SECONDARY:
+                for (SecondaryColor color : SecondaryColor.values()) {
+                    if (color.name().equals(ref)) {
+                        return color;
+                    }
+                }
+                break;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Serializable getReference(Color color) throws IllegalStateException, IllegalArgumentException {
+        if (color != null) {
+            switch (mode) {
+            case PRIMARY:
+                if (color instanceof PrimaryColor) {
+                    return color.name();
+                }
+                break;
+            case SECONDARY:
+                if (color instanceof SecondaryColor) {
+                    return color.name();
+                }
+                break;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String getConstraintErrorMessage(Object invalidValue, Locale locale) {
+        return String.format("\"%s\" is not a correct %s color", invalidValue, mode.name().toLowerCase());
+    }
+
+}

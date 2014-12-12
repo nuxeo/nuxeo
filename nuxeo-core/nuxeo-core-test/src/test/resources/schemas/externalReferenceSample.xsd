@@ -1,11 +1,55 @@
 <?xml version="1.0"?>
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://nuxeo.com/schemas/externalReferenceSample"
-  xmlns:nxs="http://nuxeo.com/schemas/externalReferenceSample" xmlns:ext="http://www.nuxeo.org/ecm/schemas/core/external-references/">
+  xmlns:nxs="http://nuxeo.com/schemas/externalReferenceSample" xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/">
 
-  <xs:element name="color" type="nxs:colorType">
+  <xs:element name="primaryColor">
     <xs:simpleType>
-      <xs:restriction base="xs:string" ext:ref="colorReference" ext:param1="value1" nxs:toto="notReadParam" />
+      <xs:restriction base="xs:string" ref:resolver="colorReference" ref:mode="PRIMARY" nxs:toto="notReadParam" />
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="isReference1">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="colorReference" ref:mode="PRIMARY" nxs:toto="notReadParam" />
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="isReference2">
+    <xs:simpleType ref:resolver="colorReference">
+      <xs:restriction base="xs:string" ref:mode="PRIMARY" nxs:toto="notReadParam" />
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="isReference3">
+    <xs:simpleType ref:mode="PRIMARY" nxs:tata="notReadParam">
+      <xs:restriction base="xs:string" ref:resolver="colorReference" nxs:toto="notReadParam" />
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="isNotReference1" type="xs:string" />
+
+  <xs:element name="isNotReference2">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" />
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="isNotReference3">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:mode="PRIMARY" nxs:toto="notReadParam" />
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="isReferenceButParamMissingFailed1">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="colorReference" nxs:toto="notReadParam" />
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="isReferenceButWrongParamFailed1">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="colorReference" ref:mode="BRIGHT" nxs:toto="notReadParam" />
     </xs:simpleType>
   </xs:element>
 

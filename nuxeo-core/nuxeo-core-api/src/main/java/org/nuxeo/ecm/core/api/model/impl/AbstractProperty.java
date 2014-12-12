@@ -111,9 +111,11 @@ public abstract class AbstractProperty implements Property {
     @Override
     public <T> void setReferencedEntity(T entity) {
         ExternalReferenceResolver<T> resolver = getResolver();
-        if (resolver != null) {
+        if (resolver != null && resolver.getEntityTypes().isInstance(entity)) {
             Serializable reference = resolver.getReference(entity);
             setValue(reference);
+        } else {
+            setValue(null);
         }
     }
 
@@ -320,10 +322,18 @@ public abstract class AbstractProperty implements Property {
 
     @Override
     public <T> T getValue(Class<T> type) throws PropertyException {
-        if (isReference() && getResolver().getClass().equals(type)) {
-            return type.cast(getResolver().fetch(getValue()));
+        Serializable value = getValue();
+        if (isReference() && type.isAssignableFrom(getResolver().getEntityTypes())) {
+            if (value == null) {
+                return null;
+            }
+            Object entity = getResolver().fetch(value);
+            if (entity == null) {
+                return convertTo(value, type);
+            }
+            return type.cast(entity);
         }
-        return convertTo(getValue(), type);
+        return convertTo(value, type);
     }
 
     @Override

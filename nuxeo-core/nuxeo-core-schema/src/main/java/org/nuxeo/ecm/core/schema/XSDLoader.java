@@ -54,11 +54,11 @@ import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.constraints.ConstraintUtils;
 import org.nuxeo.ecm.core.schema.types.constraints.DateIntervalConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.EnumConstraint;
+import org.nuxeo.ecm.core.schema.types.constraints.ExternalReferenceConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.LengthConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.NotNullConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.NumericIntervalConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.PatternConstraint;
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceConstraint;
 import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
 import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceService;
 import org.nuxeo.runtime.api.Framework;
@@ -91,7 +91,7 @@ import com.sun.xml.xsom.parser.XSOMParser;
  */
 public class XSDLoader {
 
-    private static final String ATTR_CORE_EXTERNAL_REFERENCES = "ref";
+    private static final String ATTR_CORE_EXTERNAL_REFERENCES = "resolver";
 
     private static final Log log = LogFactory.getLog(XSDLoader.class);
 
