@@ -36,7 +36,7 @@ public interface SimpleType extends Type {
 
     /**
      * @return this type's constraints
-     * @since 71
+     * @since 7.1
      */
     Set<Constraint> getConstraints();
 
