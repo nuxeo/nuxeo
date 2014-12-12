@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.zip.ZipOutputStream;
 
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -40,6 +41,12 @@ import org.nuxeo.runtime.api.Framework;
 public class CreateZip {
 
     public static final String ID = "Blob.CreateZip";
+
+    public static final String ZIP_ENTRY_ENCODING_PROPERTY = "zip.entry.encoding";
+
+    public static enum ZIP_ENTRY_ENCODING_OPTIONS {
+        ascii
+    }
 
     @Context
     protected OperationContext ctx;
@@ -86,7 +93,7 @@ public class CreateZip {
         if (entry == null) {
             entry = "Unknown_" + System.identityHashCode(blob);
         }
-        return entry;
+        return escapeEntryPath(entry);
     }
 
     protected void zip(Blob blob, ZipOutputStream out) throws IOException {
@@ -115,6 +122,14 @@ public class CreateZip {
                 in.close();
             }
         }
+    }
+
+    protected String escapeEntryPath(String path) {
+        String zipEntryEncoding = Framework.getProperty(ZIP_ENTRY_ENCODING_PROPERTY);
+        if (zipEntryEncoding != null && zipEntryEncoding.equals(ZIP_ENTRY_ENCODING_OPTIONS.ascii.toString())) {
+            return StringUtils.toAscii(path, true);
+        }
+        return path;
     }
 
 }
