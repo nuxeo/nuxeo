@@ -18,6 +18,7 @@ package org.nuxeo.drive.adapter.impl;
 
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -147,7 +148,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
                                 name, docPath));
             }
             return (FolderItem) getFileSystemItemAdapterService().getFileSystemItem(folder, this);
-        } catch (Exception e) {
+        } catch (ClientException | IOException e) {
             throw new ClientException(String.format("Error while trying to create folder %s as a child of doc %s",
                     name, docPath), e);
         }
@@ -166,7 +167,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
                                 fileName, docPath));
             }
             return (FileItem) getFileSystemItemAdapterService().getFileSystemItem(file, this);
-        } catch (Exception e) {
+        } catch (ClientException | IOException e) {
             throw new ClientException(String.format("Error while trying to create file %s as a child of doc %s",
                     fileName, docPath), e);
         }

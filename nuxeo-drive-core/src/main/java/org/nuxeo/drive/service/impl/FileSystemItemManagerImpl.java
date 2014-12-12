@@ -22,8 +22,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.NamingException;
+import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
+import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 
 import org.apache.commons.logging.Log;
@@ -74,7 +77,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
                     throw new RuntimeException("FileSystemItemManagerImpl requires an active transaction.");
                 }
                 t.registerSynchronization(new SessionCloser(newSession, sessionKey));
-            } catch (Exception e) {
+            } catch (SystemException | NamingException | RollbackException e) {
                 throw new ClientRuntimeException(e);
             }
             session = newSession;

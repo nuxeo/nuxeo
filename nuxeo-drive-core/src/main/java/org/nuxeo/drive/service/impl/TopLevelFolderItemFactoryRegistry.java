@@ -58,7 +58,7 @@ public class TopLevelFolderItemFactoryRegistry extends
                         contrib.getName()));
             }
             factories.put(id, contrib.getFactory());
-        } catch (Exception e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new ClientRuntimeException("Cannot update topLevelFolderItemFactory contribution.", e);
         }
     }
