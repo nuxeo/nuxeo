@@ -26,6 +26,9 @@ import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
 
+
+import static org.nuxeo.elasticsearch.commands.IndexingCommand.Name;
+
 /**
  * Simple Indexing Worker
  *
@@ -48,11 +51,16 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
         return title;
     }
 
-    protected final List<String> recursableCommands = Arrays.asList(IndexingCommand.UPDATE, IndexingCommand.INSERT,
-            IndexingCommand.UPDATE_SECURITY);
-
     protected boolean needRecurse(IndexingCommand cmd) {
-        return cmd.isRecurse() && recursableCommands.contains(cmd.getName());
+        if (cmd.isRecurse()) {
+            switch (cmd.getName()) {
+                case INSERT:
+                case UPDATE:
+                case UPDATE_SECURITY:
+                    return true;
+            }
+        }
+        return false;
     }
 
     @Override

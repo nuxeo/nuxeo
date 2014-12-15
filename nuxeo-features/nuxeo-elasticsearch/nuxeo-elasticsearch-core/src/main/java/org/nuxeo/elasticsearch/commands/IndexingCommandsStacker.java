@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.elasticsearch.commands.IndexingCommand.Name;
 
 /**
  * Contains logic to stack ElasticSearch commands depending on Document events This class is mainly here to make testing
@@ -82,27 +83,27 @@ public abstract class IndexingCommandsStacker {
         }
         IndexingCommands cmds = getOrCreateCommands(doc);
         if (DOCUMENT_CREATED.equals(eventId)) {
-            cmds.add(IndexingCommand.INSERT, sync, false);
+            cmds.add(Name.INSERT, sync, false);
         } else if (BEFORE_DOC_UPDATE.equals(eventId)) {
-            cmds.add(IndexingCommand.UPDATE, sync, false);
+            cmds.add(Name.UPDATE, sync, false);
         } else if (DOCUMENT_CHECKEDOUT.equals(eventId)) {
-            cmds.add(IndexingCommand.UPDATE, sync, false);
+            cmds.add(Name.UPDATE, sync, false);
         } else if (DOCUMENT_CHECKEDIN.equals(eventId)) {
-            cmds.add(IndexingCommand.UPDATE, sync, false);
+            cmds.add(Name.UPDATE, sync, false);
         } else if (DOCUMENT_CREATED_BY_COPY.equals(eventId)) {
-            cmds.add(IndexingCommand.INSERT, sync, doc.isFolder());
+            cmds.add(Name.INSERT, sync, doc.isFolder());
         } else if (LifeCycleConstants.TRANSITION_EVENT.equals(eventId)) {
-            cmds.add(IndexingCommand.INSERT, sync, false);
+            cmds.add(Name.INSERT, sync, false);
         } else if (DOCUMENT_MOVED.equals(eventId)) {
-            cmds.add(IndexingCommand.UPDATE, sync, doc.isFolder());
+            cmds.add(Name.UPDATE, sync, doc.isFolder());
         } else if (DOCUMENT_SECURITY_UPDATED.equals(eventId)) {
-            cmds.add(IndexingCommand.UPDATE_SECURITY, sync, doc.isFolder());
+            cmds.add(Name.UPDATE_SECURITY, sync, doc.isFolder());
         } else if (DOCUMENT_REMOVED.equals(eventId)) {
-            cmds.add(IndexingCommand.DELETE, sync, doc.isFolder());
+            cmds.add(Name.DELETE, sync, doc.isFolder());
         } else if (BINARYTEXT_UPDATED.equals(eventId)) {
-            cmds.add(IndexingCommand.UPDATE, sync, false);
+            cmds.add(Name.UPDATE, sync, false);
         } else if (DOCUMENT_TAG_UPDATED.equals(eventId)) {
-            cmds.add(IndexingCommand.UPDATE, sync, false);
+            cmds.add(Name.UPDATE, sync, false);
         }
     }
 

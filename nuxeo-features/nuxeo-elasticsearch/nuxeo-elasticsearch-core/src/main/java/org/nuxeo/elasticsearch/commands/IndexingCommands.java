@@ -30,6 +30,7 @@ import org.codehaus.jackson.JsonToken;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.elasticsearch.commands.IndexingCommand.Name;
 
 /*
  * This class holds a list of indexing commands and manages de-duplication
@@ -38,7 +39,7 @@ public class IndexingCommands {
 
     protected final List<IndexingCommand> commands = new ArrayList<>();
 
-    protected final List<String> commandNames = new ArrayList<>();
+    protected final List<Name> commandNames = new ArrayList<>();
 
     protected DocumentModel targetDocument;
 
@@ -52,7 +53,7 @@ public class IndexingCommands {
         this.targetDocument = targetDocument;
     }
 
-    public IndexingCommand add(String command, boolean sync, boolean recurse) {
+    public IndexingCommand add(Name command, boolean sync, boolean recurse) {
         IndexingCommand cmd;
         if (sync && recurse) {
             // split into 2 commands one sync and an async recurse
@@ -66,9 +67,9 @@ public class IndexingCommands {
         return add(cmd);
     }
 
-    protected IndexingCommand find(String command) {
+    protected IndexingCommand find(Name command) {
         for (IndexingCommand cmd : commands) {
-            if (cmd.name.equals(command)) {
+            if (cmd.name == command) {
                 return cmd;
             }
         }
@@ -87,19 +88,19 @@ public class IndexingCommands {
                 existing.merge(command);
                 return null;
             }
-        } else if (commandNames.contains(IndexingCommand.INSERT)) {
-            if (command.name.equals(IndexingCommand.DELETE)) {
+        } else if (commandNames.contains(Name.INSERT)) {
+            if (command.name == Name.DELETE) {
                 // index and delete in the same tx
                 clear();
             } else if (command.isSync()) {
                 // switch to sync if possible
-                find(IndexingCommand.INSERT).makeSync();
+                find(Name.INSERT).makeSync();
             }
             // we already have an index command, don't care about the new command
             return null;
         }
 
-        if (command.name.equals(IndexingCommand.DELETE)) {
+        if (command.name == Name.DELETE) {
             // no need to keep event before delete.
             clear();
         }
@@ -118,7 +119,7 @@ public class IndexingCommands {
         return targetDocument;
     }
 
-    public boolean contains(String command) {
+    public boolean contains(Name command) {
         return commandNames.contains(command);
     }
 

@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
+import org.nuxeo.elasticsearch.commands.IndexingCommand.Name;
 import org.nuxeo.elasticsearch.work.ScrollingIndexingWorker;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -120,7 +121,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     void processBulkDeleteCommands(List<IndexingCommand> cmds) {
         // Can be optimized with a single delete by query
         for (IndexingCommand cmd : cmds) {
-            if (IndexingCommand.DELETE.equals(cmd.getName())) {
+            if (cmd.getName() == IndexingCommand.Name.DELETE) {
                 Context stopWatch = deleteTimer.time();
                 try {
                     processDeleteCommand(cmd);
@@ -135,7 +136,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         BulkRequestBuilder bulkRequest = esa.getClient().prepareBulk();
         for (IndexingCommand cmd : cmds) {
             String id = cmd.getDocId();
-            if (IndexingCommand.UNKOWN_DOCUMENT_ID.equals(id) || (IndexingCommand.DELETE.equals(cmd.getName()))) {
+            if (IndexingCommand.UNKOWN_DOCUMENT_ID.equals(id) || cmd.getName() == Name.DELETE) {
                 continue;
             }
             if (log.isTraceEnabled()) {
@@ -175,7 +176,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         if (log.isTraceEnabled()) {
             log.trace("Sending indexing request to Elasticsearch: " + cmd.toString());
         }
-        if (IndexingCommand.DELETE.equals(cmd.getName())) {
+        if (cmd.getName() == Name.DELETE) {
             Context stopWatch = deleteTimer.time();
             try {
                 processDeleteCommand(cmd);
