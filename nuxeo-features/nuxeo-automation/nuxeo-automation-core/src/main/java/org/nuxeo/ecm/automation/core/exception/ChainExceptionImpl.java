@@ -47,8 +47,7 @@ public class ChainExceptionImpl implements ChainException {
         return catchChainExceptions;
     }
 
-    public ChainExceptionImpl(String id, String onChainId,
-            ArrayList<CatchChainException> chainExceptionRuns) {
+    public ChainExceptionImpl(String id, String onChainId, ArrayList<CatchChainException> chainExceptionRuns) {
         this.id = id;
         this.onChainId = onChainId;
         this.catchChainExceptions.addAll(chainExceptionRuns);
@@ -57,9 +56,10 @@ public class ChainExceptionImpl implements ChainException {
     public ChainExceptionImpl(ChainExceptionDescriptor chainExceptionDescriptor) {
         this.id = chainExceptionDescriptor.getId();
         this.onChainId = chainExceptionDescriptor.getOnChainId();
-        for(ChainExceptionDescriptor.ChainExceptionRun chainExceptionRunDesc: chainExceptionDescriptor.getChainExceptionsRun()){
+        for (ChainExceptionDescriptor.ChainExceptionRun chainExceptionRunDesc : chainExceptionDescriptor.getChainExceptionsRun()) {
             CatchChainException chainExceptionRun = new CatchChainException(chainExceptionRunDesc.getChainId(),
-                    chainExceptionRunDesc.getPriority(),chainExceptionRunDesc.getRollBack(),chainExceptionRunDesc.getFilterId());
+                    chainExceptionRunDesc.getPriority(), chainExceptionRunDesc.getRollBack(),
+                    chainExceptionRunDesc.getFilterId());
             catchChainExceptions.add(chainExceptionRun);
         }
     }

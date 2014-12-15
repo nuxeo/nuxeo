@@ -28,7 +28,6 @@ import freemarker.template.Template;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FreemarkerRender extends FreemarkerEngine implements Renderer {
 
@@ -53,13 +52,10 @@ public class FreemarkerRender extends FreemarkerEngine implements Renderer {
         });
     }
 
-    public void renderContent(String content, Object ctx, Writer writer)
-            throws Exception {
+    public void renderContent(String content, Object ctx, Writer writer) throws Exception {
         StringReader reader = new StringReader(content);
-        Template tpl = new Template("@inline", reader, getConfiguration(),
-                "UTF-8");
-        Environment env = tpl.createProcessingEnvironment(ctx, writer,
-                getObjectWrapper());
+        Template tpl = new Template("@inline", reader, getConfiguration(), "UTF-8");
+        Environment env = tpl.createProcessingEnvironment(ctx, writer, getObjectWrapper());
         env.process();
     }
 

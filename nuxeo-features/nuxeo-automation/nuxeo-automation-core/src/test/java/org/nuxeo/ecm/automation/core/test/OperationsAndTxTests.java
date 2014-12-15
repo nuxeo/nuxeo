@@ -49,7 +49,7 @@ import com.google.inject.Inject;
 @Deploy("org.nuxeo.ecm.automation.core")
 @TransactionalConfig(autoStart = false)
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-operations.xml")
-@RepositoryConfig(cleanup = Granularity.METHOD, init=DefaultRepositoryInit.class)
+@RepositoryConfig(cleanup = Granularity.METHOD, init = DefaultRepositoryInit.class)
 public class OperationsAndTxTests {
 
     @Inject
@@ -75,9 +75,8 @@ public class OperationsAndTxTests {
                 groups[2] = "toc";
                 ctx.put("groups", groups);
                 OperationChain chain = new OperationChain("testChain");
-                chain.add(RunOperationOnListInNewTransaction.ID)
-                        .set("list", "groups").set("id", "runOnListItemWithTx")
-                        .set("isolate", "false");
+                chain.add(RunOperationOnListInNewTransaction.ID).set("list", "groups").set("id", "runOnListItemWithTx").set(
+                        "isolate", "false");
                 service.run(ctx, chain);
                 List<String> result = (List<String>) ctx.get("result");
                 List<String> txids = (List<String>) ctx.get("txids");

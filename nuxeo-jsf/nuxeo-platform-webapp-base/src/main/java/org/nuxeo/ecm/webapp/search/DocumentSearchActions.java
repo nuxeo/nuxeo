@@ -34,11 +34,9 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
 /**
- * Handles search parameters needed for simple and advanced and administrator
- * searches.
+ * Handles search parameters needed for simple and advanced and administrator searches.
  * <p>
- * Search parameters are referenced in the content views used on search form
- * and result pages.
+ * Search parameters are referenced in the content views used on search form and result pages.
  *
  * @author Anahide Tchertchian
  * @since 5.4
@@ -68,13 +66,10 @@ public class DocumentSearchActions implements Serializable {
         this.simpleSearchKeywords = simpleSearchKeywords;
     }
 
-    public void validateSimpleSearchKeywords(FacesContext context,
-            UIComponent component, Object value) {
-        if (!(value instanceof String)
-                || StringUtils.isEmpty(((String) value).trim())) {
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                            context, "feedback.search.noKeywords"), null);
+    public void validateSimpleSearchKeywords(FacesContext context, UIComponent component, Object value) {
+        if (!(value instanceof String) || StringUtils.isEmpty(((String) value).trim())) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                    "feedback.search.noKeywords"), null);
             // also add global message
             context.addMessage(null, message);
             throw new ValidatorException(message);
@@ -83,9 +78,8 @@ public class DocumentSearchActions implements Serializable {
         for (String keyword : keywords) {
             if (keyword.startsWith("*")) {
                 // Can't begin search with * character
-                FacesMessage message = new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                                context, "feedback.search.star"), null);
+                FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                        "feedback.search.star"), null);
                 // also add global message
                 context.addMessage(null, message);
                 throw new ValidatorException(message);

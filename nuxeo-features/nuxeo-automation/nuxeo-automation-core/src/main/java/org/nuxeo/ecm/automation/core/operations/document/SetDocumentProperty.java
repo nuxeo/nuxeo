@@ -46,17 +46,15 @@ public class SetDocumentProperty {
     @Param(name = "save", required = false, values = "true")
     protected boolean save = true;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         Property p = doc.getProperty(xpath);
         Type type = p.getField().getType();
         if (!type.isSimpleType()) {
-            throw new OperationException(
-                    "Only scalar types can be set using update operation");
+            throw new OperationException("Only scalar types can be set using update operation");
         }
         if (value.getClass() == String.class) {
-            p.setValue(((SimpleType) type).getPrimitiveType().decode(
-                    (String) value));
+            p.setValue(((SimpleType) type).getPrimitiveType().decode((String) value));
         } else {
             p.setValue(value);
         }

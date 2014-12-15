@@ -30,9 +30,8 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * Manages the tree for reduced utilization, like for popup. Performs additional
- * work when a node is selected such as saving the selection and redirecting
- * towards the required page.
+ * Manages the tree for reduced utilization, like for popup. Performs additional work when a node is selected such as
+ * saving the selection and redirecting towards the required page.
  * <p>
  * The scope is PAGE to reinitialize the tree for new utilization.
  *

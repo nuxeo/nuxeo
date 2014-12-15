@@ -25,22 +25,17 @@ import org.nuxeo.ecm.core.api.PathRef;
  */
 public class StringToDocRef implements TypeAdapter {
 
-    public DocumentRef getAdaptedValue(OperationContext ctx,
-            Object objectToAdapt) throws TypeAdaptException {
+    public DocumentRef getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         try {
             String value = (String) objectToAdapt;
             if (value.startsWith(".")) {
-                Object obj = Scripting.newExpression(
-                        "Document.resolvePathAsRef(\"" + value + "\")").eval(
-                        ctx);
+                Object obj = Scripting.newExpression("Document.resolvePathAsRef(\"" + value + "\")").eval(ctx);
                 if (obj instanceof DocumentModel) {
                     return ((DocumentModel) obj).getRef();
                 } else if (obj instanceof DocumentRef) {
                     return (DocumentRef) obj;
                 }
-                throw new TypeAdaptException(String.format(
-                        "Cannot adapt value '%s' to a DocumentRef instance",
-                        value));
+                throw new TypeAdaptException(String.format("Cannot adapt value '%s' to a DocumentRef instance", value));
             }
             return createRef(value);
         } catch (TypeAdaptException e) {

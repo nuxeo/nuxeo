@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
- *
  * Initialize a {@code Properties} object from one or more {@link DataModel}s.
  * <p>
  * This object can then be passed to any operation accepting {@link Properties}.
@@ -42,15 +41,13 @@ public class DataModelProperties extends Properties {
     public DataModelProperties() {
     }
 
-    public DataModelProperties(DataModel dm, boolean onlyDirtyProperties)
-            throws PropertyException {
+    public DataModelProperties(DataModel dm, boolean onlyDirtyProperties) throws PropertyException {
         this.onlyDirtyProperties = onlyDirtyProperties;
         addDataModel(dm);
 
     }
 
-    public DataModelProperties(List<DataModel> dms, boolean onlyDirtyProperties)
-            throws PropertyException {
+    public DataModelProperties(List<DataModel> dms, boolean onlyDirtyProperties) throws PropertyException {
         this.onlyDirtyProperties = onlyDirtyProperties;
         for (DataModel dm : dms) {
             addDataModel(dm);
@@ -68,8 +65,7 @@ public class DataModelProperties extends Properties {
     public void addDataModel(DataModel dm) throws PropertyException {
         for (Map.Entry<String, Object> entry : dm.getMap().entrySet()) {
             String key = entry.getKey();
-            if ((onlyDirtyProperties && dm.isDirty(key))
-                    || !onlyDirtyProperties) {
+            if ((onlyDirtyProperties && dm.isDirty(key)) || !onlyDirtyProperties) {
                 if (!key.contains(":")) {
                     key = dm.getSchema() + ":" + key;
                 }

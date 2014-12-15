@@ -58,8 +58,7 @@ public class LocalConfigurationActions implements Serializable {
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
 
-    public void toggleConfigurationForCurrentDocument(String configurationFacet)
-            throws ClientException {
+    public void toggleConfigurationForCurrentDocument(String configurationFacet) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument.hasFacet(configurationFacet)) {
             currentDocument.removeFacet(configurationFacet);
@@ -70,19 +69,16 @@ public class LocalConfigurationActions implements Serializable {
         navigationContext.invalidateCurrentDocument();
         documentManager.save();
 
-        Events.instance().raiseEvent(EventNames.LOCAL_CONFIGURATION_CHANGED,
-                navigationContext.getCurrentDocument());
+        Events.instance().raiseEvent(EventNames.LOCAL_CONFIGURATION_CHANGED, navigationContext.getCurrentDocument());
     }
 
     public void saveLocalConfiguration() throws ClientException {
         documentManager.saveDocument(navigationContext.getCurrentDocument());
         navigationContext.invalidateCurrentDocument();
 
-        Events.instance().raiseEvent(EventNames.LOCAL_CONFIGURATION_CHANGED,
-                navigationContext.getCurrentDocument());
+        Events.instance().raiseEvent(EventNames.LOCAL_CONFIGURATION_CHANGED, navigationContext.getCurrentDocument());
         facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get(
-                        LOCAL_CONFIGURATION_CHANGED_LABEL));
+                resourcesAccessor.getMessages().get(LOCAL_CONFIGURATION_CHANGED_LABEL));
     }
 
 }

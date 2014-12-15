@@ -26,8 +26,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = PullDocumentList.ID, category = Constants.CAT_EXECUTION_STACK,
-        label = "Pull Document List", description = "Restore the first saved input document list in the context input stack")
+@Operation(id = PullDocumentList.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pull Document List", description = "Restore the first saved input document list in the context input stack")
 public class PullDocumentList {
 
     public static final String ID = "Document.PullList";
@@ -43,8 +42,7 @@ public class PullDocumentList {
         } else if (obj instanceof DocumentRefList) {
             CoreSession session = ctx.getCoreSession();
             DocumentRefList refs = (DocumentRefList) obj;
-            DocumentModelListImpl list = new DocumentModelListImpl(
-                    (int) refs.totalSize());
+            DocumentModelListImpl list = new DocumentModelListImpl((int) refs.totalSize());
             for (DocumentRef ref : refs) {
                 list.add(session.getDocument(ref));
             }

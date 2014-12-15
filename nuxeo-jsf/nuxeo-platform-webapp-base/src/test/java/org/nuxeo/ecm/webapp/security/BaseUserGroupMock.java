@@ -30,7 +30,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
  * @author dmetzler
- *
  */
 public class BaseUserGroupMock {
 
@@ -56,10 +55,9 @@ public class BaseUserGroupMock {
      * @return
      * @throws ClientException
      */
-    protected Principal getMockedUser(String username, boolean isAdmin,
-            UserManager userManager) throws ClientException {
+    protected Principal getMockedUser(String username, boolean isAdmin, UserManager userManager) throws ClientException {
         Principal user = getMockedUser(username, isAdmin);
-        when(userManager.getPrincipal(username)).thenReturn((NuxeoPrincipal)user);
+        when(userManager.getPrincipal(username)).thenReturn((NuxeoPrincipal) user);
         return user;
     }
 
@@ -102,8 +100,7 @@ public class BaseUserGroupMock {
         when(um.areUsersReadOnly()).thenReturn(false);
         when(um.getAnonymousUserId()).thenReturn(null);
         when(um.areGroupsReadOnly()).thenReturn(false);
-        when(um.getAdministratorsGroups()).thenReturn(
-                Arrays.asList(new String[] { "administrators" }));
+        when(um.getAdministratorsGroups()).thenReturn(Arrays.asList(new String[] { "administrators" }));
         return um;
     }
 }

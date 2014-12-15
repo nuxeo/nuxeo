@@ -17,8 +17,7 @@ import java.util.Map;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 
 /**
- * Describe an operation class. Each registered operation will be stored in the
- * registry as an instance of this class.
+ * Describe an operation class. Each registered operation will be stored in the registry as an instance of this class.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -28,8 +27,7 @@ public interface OperationType {
 
     Class<?> getType();
 
-    Object newInstance(OperationContext ctx, Map<String, Object> args)
-            throws Exception;
+    Object newInstance(OperationContext ctx, Map<String, Object> args) throws Exception;
 
     /**
      * Gets the service that registered that type.
@@ -44,6 +42,7 @@ public interface OperationType {
      * @return
      */
     String getContributingComponent();
+
     InvokableMethod[] getMethodsMatchingInput(Class<?> in);
 
     /**

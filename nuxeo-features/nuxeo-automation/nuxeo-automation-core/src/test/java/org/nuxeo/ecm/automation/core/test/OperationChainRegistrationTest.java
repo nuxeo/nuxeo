@@ -55,8 +55,7 @@ public class OperationChainRegistrationTest {
         OperationParameters params = chain.getOperations().get(1);
         assertEquals(2, params.map().size());
         assertEquals("NXQL", params.map().get("language"));
-        assertEquals("SELECT * FROM Document WHERE dc:created"
-                + "\n          < DATE '2013-08-19'",
+        assertEquals("SELECT * FROM Document WHERE dc:created" + "\n          < DATE '2013-08-19'",
                 params.map().get("query"));
     }
 

@@ -37,16 +37,14 @@ public class AdaptableOperation2 {
 
     @OperationMethod
     public DocumentRef printInfo(DocumentRef ref) throws Exception {
-        Helper.updateContext(ctx, "A2:docref:docref", message,
-                session.getDocument(ref).getPathAsString());
+        Helper.updateContext(ctx, "A2:docref:docref", message, session.getDocument(ref).getPathAsString());
         return ref;
     }
 
     @OperationMethod
     public DocumentRef noInput() throws Exception {
         DocumentModel doc = session.getRootDocument();
-        Helper.updateContext(ctx, "A2:void:docref", message,
-                doc.getPathAsString());
+        Helper.updateContext(ctx, "A2:void:docref", message, doc.getPathAsString());
         return doc.getRef();
     }
 

@@ -20,17 +20,15 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- * This implementation collect {@link DocumentModel} objects and return them as a
- * {@link DocumentModelList} object.
+ * This implementation collect {@link DocumentModel} objects and return them as a {@link DocumentModelList} object.
  * <p>
- * You may use this to automatically iterate over iterable inputs in operation
- * methods that <b>return</b> a {@link DocumentModel} object
+ * You may use this to automatically iterate over iterable inputs in operation methods that <b>return</b> a
+ * {@link DocumentModel} object
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class DocumentModelListCollector extends ArrayList<DocumentModel> implements
-        DocumentModelList, OutputCollector<DocumentModelList, DocumentModelList> {
+public class DocumentModelListCollector extends ArrayList<DocumentModel> implements DocumentModelList,
+        OutputCollector<DocumentModelList, DocumentModelList> {
 
     private static final long serialVersionUID = 5732663048354570870L;
 
@@ -40,8 +38,7 @@ public class DocumentModelListCollector extends ArrayList<DocumentModel> impleme
     }
 
     @Override
-    public void collect(OperationContext ctx, DocumentModelList obj)
-            throws OperationException {
+    public void collect(OperationContext ctx, DocumentModelList obj) throws OperationException {
         addAll(obj);
     }
 

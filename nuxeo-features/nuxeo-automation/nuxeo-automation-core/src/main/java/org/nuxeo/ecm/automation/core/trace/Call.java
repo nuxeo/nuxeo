@@ -50,12 +50,10 @@ public class Call {
 
     protected final Object input;
 
-    public Call(OperationType chain, OperationContext context,
-            OperationType type, InvokableMethod method,
+    public Call(OperationType chain, OperationContext context, OperationType type, InvokableMethod method,
             Map<String, Object> parms) {
         this.type = type;
-        this.variables = (context != null) ? new HashMap<String, Object>(
-                context) : null;
+        this.variables = (context != null) ? new HashMap<String, Object>(context) : null;
         this.method = method;
         this.input = (context != null) ? context.getInput() : null;
         this.parameters = new HashMap<>();
@@ -64,14 +62,13 @@ public class Call {
                 Object paramValue = parms.get(paramId);
                 if (paramValue instanceof Expression) {
                     try {
-                        ExpressionParameter expressionParameter = new
-                                ExpressionParameter(paramId,
+                        ExpressionParameter expressionParameter = new ExpressionParameter(paramId,
                                 ((Expression) paramValue).eval(context));
                         this.parameters.put(paramId, expressionParameter);
                     } catch (Exception e) {
                         log.warn("Cannot evaluate mvel expression for parameter: " +
 
-                                paramId, e);
+                        paramId, e);
                     }
                 } else {
                     this.parameters.put(paramId, paramValue);

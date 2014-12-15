@@ -94,15 +94,13 @@ public class NuxeoSeamHotReloader implements Serializable {
     }
 
     /**
-     * Calls the {@link ReloadService#flush()} method, that should trigger the
-     * reset of a bunch of caches shared by all users, and sends a Seam event
-     * to propagate this to other Seam components.
+     * Calls the {@link ReloadService#flush()} method, that should trigger the reset of a bunch of caches shared by all
+     * users, and sends a Seam event to propagate this to other Seam components.
      * <p>
      * Does nothing if not in dev mode.
      * <p>
-     * The reload service flush method should already be triggerd by
-     * install/uninstall of modules. This method makes it possible to force it
-     * again, and to propagate it to the Seam layer for current user.
+     * The reload service flush method should already be triggerd by install/uninstall of modules. This method makes it
+     * possible to force it again, and to propagate it to the Seam layer for current user.
      *
      * @see #resetSeamComponentsCaches()
      * @see #shouldResetCache(Long)
@@ -130,8 +128,7 @@ public class NuxeoSeamHotReloader implements Serializable {
     }
 
     /**
-     * Returns true if reload service has sent a runtime flush event since
-     * given timestamp.
+     * Returns true if reload service has sent a runtime flush event since given timestamp.
      *
      * @since 5.6
      * @param cacheTimestamp
@@ -185,8 +182,7 @@ public class NuxeoSeamHotReloader implements Serializable {
      * @param cacheTimestamp
      * @see TimestampedService
      */
-    public boolean shouldResetCache(TimestampedService service,
-            Long cacheTimestamp) {
+    public boolean shouldResetCache(TimestampedService service, Long cacheTimestamp) {
         if (cacheTimestamp == null || service == null) {
             return true;
         }
@@ -205,26 +201,20 @@ public class NuxeoSeamHotReloader implements Serializable {
      * <p>
      * This is useful when a change is detected on the reload service.
      * <p>
-     * For compatibility and easier upgrade, this method listens to the
-     * {@link EventNames#FLUSH_EVENT}, and sends other events to the Seam layer
-     * for other components to reset their own cache without needing to change
-     * their code.
+     * For compatibility and easier upgrade, this method listens to the {@link EventNames#FLUSH_EVENT}, and sends other
+     * events to the Seam layer for other components to reset their own cache without needing to change their code.
      * <p>
-     * In the future, this behaviour could be removed, so Seam component should
-     * reset their cache listening to the {@link EventNames#FLUSH_EVENT}
-     * directly.
+     * In the future, this behaviour could be removed, so Seam component should reset their cache listening to the
+     * {@link EventNames#FLUSH_EVENT} directly.
      *
      * @since 5.6
      */
     @Observer(value = { EventNames.FLUSH_EVENT }, create = false)
     @BypassInterceptors
     public void triggerResetOnSeamComponents() {
-        String[] events = {
-                EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED,
-                EventNames.LOCATION_SELECTION_CHANGED,
-                EventNames.CONTENT_ROOT_SELECTION_CHANGED,
-                EventNames.DOMAIN_SELECTION_CHANGED,
-                EventNames.LOCAL_CONFIGURATION_CHANGED, };
+        String[] events = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED,
+                EventNames.LOCATION_SELECTION_CHANGED, EventNames.CONTENT_ROOT_SELECTION_CHANGED,
+                EventNames.DOMAIN_SELECTION_CHANGED, EventNames.LOCAL_CONFIGURATION_CHANGED, };
         Events seamEvents = Events.instance();
         for (String event : events) {
             seamEvents.raiseEvent(event);
@@ -234,8 +224,7 @@ public class NuxeoSeamHotReloader implements Serializable {
     /**
      * Triggers a full reload of Seam context and components.
      * <p>
-     * Needs the Seam debug jar to be present and Seam debug mode to be
-     * enabled.
+     * Needs the Seam debug jar to be present and Seam debug mode to be enabled.
      */
     public String doReload() {
         final FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -253,8 +242,7 @@ public class NuxeoSeamHotReloader implements Serializable {
             response.resetBuffer();
             response.sendRedirect(url);
             response.flushBuffer();
-            request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY,
-                    Boolean.TRUE);
+            request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, Boolean.TRUE);
             facesContext.responseComplete();
         } catch (Exception e) {
             log.error("Error during redirect", e);

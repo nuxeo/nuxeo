@@ -53,15 +53,13 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException
 @Name("groupManagementActions")
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
-public class GroupManagementActions extends AbstractUserGroupManagement
-        implements Serializable {
+public class GroupManagementActions extends AbstractUserGroupManagement implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(GroupManagementActions.class);
 
-    public static final String GROUPS_TAB = USER_CENTER_CATEGORY + ":"
-            + USERS_GROUPS_HOME + ":" + "GroupsHome";
+    public static final String GROUPS_TAB = USER_CENTER_CATEGORY + ":" + USERS_GROUPS_HOME + ":" + "GroupsHome";
 
     public static final String GROUPS_LISTING_CHANGED = "groupsListingChanged";
 
@@ -86,8 +84,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement
     }
 
     // refresh to get references
-    protected DocumentModel refreshGroup(String groupName)
-            throws ClientException {
+    protected DocumentModel refreshGroup(String groupName) throws ClientException {
         return userManager.getGroupModel(groupName);
     }
 
@@ -111,10 +108,8 @@ public class GroupManagementActions extends AbstractUserGroupManagement
         try {
             selectedGroup = userManager.createGroup(newGroup);
             newGroup = null;
-            facesMessages.add(
-                    StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get(
-                            "info.groupManager.groupCreated"));
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    resourcesAccessor.getMessages().get("info.groupManager.groupCreated"));
             if (createAnotherGroup) {
                 showCreateForm = true;
             } else {
@@ -124,10 +119,8 @@ public class GroupManagementActions extends AbstractUserGroupManagement
             }
             fireSeamEvent(GROUPS_LISTING_CHANGED);
         } catch (GroupAlreadyExistsException e) {
-            String message = resourcesAccessor.getMessages().get(
-                    "error.groupManager.groupAlreadyExists");
-            facesMessages.addToControl("groupName",
-                    StatusMessage.Severity.ERROR, message);
+            String message = resourcesAccessor.getMessages().get("error.groupManager.groupAlreadyExists");
+            facesMessages.addToControl("groupName", StatusMessage.Severity.ERROR, message);
         }
     }
 
@@ -159,8 +152,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement
     protected boolean getCanEditGroups() throws ClientException {
         if (canEditGroups == null) {
             canEditGroups = false;
-            if (!userManager.areGroupsReadOnly()
-                    && currentUser instanceof NuxeoPrincipal) {
+            if (!userManager.areGroupsReadOnly() && currentUser instanceof NuxeoPrincipal) {
                 if (webActions.checkFilter(USERS_GROUPS_MANAGEMENT_ACCESS_FILTER)) {
                     canEditGroups = true;
                 }
@@ -170,30 +162,24 @@ public class GroupManagementActions extends AbstractUserGroupManagement
     }
 
     public boolean getAllowDeleteGroup() throws ClientException {
-        return getCanEditGroups()
-                && !BaseSession.isReadOnlyEntry(selectedGroup);
+        return getCanEditGroups() && !BaseSession.isReadOnlyEntry(selectedGroup);
     }
 
     public boolean getAllowEditGroup() throws ClientException {
         // Changing administrator group is only given to administrators (not
         // powerusers)
         // NXP-10584
-        if (userManager.getAdministratorsGroups().contains(
-                selectedGroup.getId())) {
+        if (userManager.getAdministratorsGroups().contains(selectedGroup.getId())) {
             return ((NuxeoPrincipal) currentUser).isAdministrator();
         }
 
-        return getCanEditGroups()
-                && !BaseSession.isReadOnlyEntry(selectedGroup);
+        return getCanEditGroups() && !BaseSession.isReadOnlyEntry(selectedGroup);
     }
 
-    public void validateGroupName(FacesContext context, UIComponent component,
-            Object value) {
-        if (!(value instanceof String)
-                || !StringUtils.containsOnly((String) value, VALID_CHARS)) {
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                            context, "label.groupManager.wrongGroupName"), null);
+    public void validateGroupName(FacesContext context, UIComponent component, Object value) {
+        if (!(value instanceof String) || !StringUtils.containsOnly((String) value, VALID_CHARS)) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                    "label.groupManager.wrongGroupName"), null);
             ((EditableValueHolder) component).setValid(false);
             context.addMessage(component.getClientId(context), message);
             // also add global message

@@ -35,12 +35,12 @@ public class GetDocumentBlob {
     @Param(name = "xpath", required = false, values = "file:content")
     protected String xpath = "file:content";
 
-    @OperationMethod(collector=BlobCollector.class)
+    @OperationMethod(collector = BlobCollector.class)
     public Blob run(DocumentModel doc) throws Exception {
         Blob blob = (Blob) doc.getPropertyValue(xpath);
-        if (blob==null) {
+        if (blob == null) {
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
-            if (bh!=null) {
+            if (bh != null) {
                 blob = bh.getBlob();
             }
         }
@@ -52,6 +52,5 @@ public class GetDocumentBlob {
         }
         return blob;
     }
-
 
 }

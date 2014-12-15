@@ -72,16 +72,14 @@ public class NuxeoSeamWebGate implements ServletContextListener {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         ObjectName names;
         try {
-            names = new ObjectName(
-                    "Catalina:type=Connector,port=*,address=*");
+            names = new ObjectName("Catalina:type=Connector,port=*,address=*");
         } catch (MalformedObjectNameException e) {
             log.error("Cannot query for tomcat connectors", e);
             return connectors;
         }
         Set<ObjectInstance> ois = mbs.queryMBeans(names, null);
         for (ObjectInstance oi : ois) {
-            WebConnector connector = JMX.newMBeanProxy(mbs, oi.getObjectName(),
-                    WebConnector.class);
+            WebConnector connector = JMX.newMBeanProxy(mbs, oi.getObjectName(), WebConnector.class);
             connectors.add(connector);
         }
         return connectors;

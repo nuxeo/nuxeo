@@ -126,13 +126,11 @@ public class Composer {
         return engine;
     }
 
-    public void render(String template, Object ctx, Writer writer)
-            throws RenderingException {
+    public void render(String template, Object ctx, Writer writer) throws RenderingException {
         engine.render(template, ctx, writer);
     }
 
-    public void render(URL template, Object ctx, Writer writer)
-            throws RenderingException {
+    public void render(URL template, Object ctx, Writer writer) throws RenderingException {
         String key = template.toExternalForm();
         urls.putIfAbsent(key, template);
         engine.render(key, ctx, writer);
@@ -148,11 +146,9 @@ public class Composer {
 
     public String render(String templateContent, Object ctx) throws Exception {
         StringReader reader = new StringReader(templateContent);
-        Template temp = new Template("@inline", reader,
-                engine.getConfiguration(), "UTF-8");
+        Template temp = new Template("@inline", reader, engine.getConfiguration(), "UTF-8");
         StringWriter writer = new StringWriter();
-        Environment env = temp.createProcessingEnvironment(ctx, writer,
-                engine.getObjectWrapper());
+        Environment env = temp.createProcessingEnvironment(ctx, writer, engine.getObjectWrapper());
         env.process();
         return writer.toString();
     }
@@ -161,36 +157,32 @@ public class Composer {
         return mailer.newMessage();
     }
 
-    public Mailer.Message newTextMessage(URL template, Object ctx)
-            throws Exception {
+    public Mailer.Message newTextMessage(URL template, Object ctx) throws Exception {
         Mailer.Message msg = mailer.newMessage();
         msg.setText(render(template, ctx), "UTF-8");
         return msg;
     }
 
-    public Mailer.Message newTextMessage(String templateContent, Object ctx)
-            throws Exception {
+    public Mailer.Message newTextMessage(String templateContent, Object ctx) throws Exception {
         Mailer.Message msg = mailer.newMessage();
         msg.setText(render(templateContent, ctx), "UTF-8");
         return msg;
     }
 
-    public Mailer.Message newHtmlMessage(URL template, Object ctx)
-            throws Exception {
+    public Mailer.Message newHtmlMessage(URL template, Object ctx) throws Exception {
         Mailer.Message msg = mailer.newMessage();
         msg.setContent(render(template, ctx), "text/html; charset=utf-8");
         return msg;
     }
 
-    public Mailer.Message newHtmlMessage(String templateContent, Object ctx)
-    throws Exception {
+    public Mailer.Message newHtmlMessage(String templateContent, Object ctx) throws Exception {
         Mailer.Message msg = mailer.newMessage();
         msg.setContent(render(templateContent, ctx), "text/html; charset=utf-8");
         return msg;
     }
 
     public Mailer.Message newMixedMessage(String templateContent, Object ctx, String textType, List<Blob> attachments)
-    throws Exception {
+            throws Exception {
         if (textType == null) {
             textType = "plain";
         }
@@ -221,8 +213,8 @@ public class Composer {
         Map<String, String> map = new HashMap<String, String>();
         map.put("key1", "val1");
 
-        Mailer.Message msg = c.newTextMessage("bla ${key1} bla", map).addFrom(
-                "bs@nuxeo.com").addTo("bstefanescu@nuxeo.com");
+        Mailer.Message msg = c.newTextMessage("bla ${key1} bla", map).addFrom("bs@nuxeo.com").addTo(
+                "bstefanescu@nuxeo.com");
         msg.setSubject("test2");
         msg.send();
     }

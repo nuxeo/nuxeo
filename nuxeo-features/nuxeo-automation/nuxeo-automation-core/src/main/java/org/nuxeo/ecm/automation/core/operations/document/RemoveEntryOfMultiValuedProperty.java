@@ -34,8 +34,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * @since 5.7
  */
 @Operation(id = RemoveEntryOfMultiValuedProperty.ID, category = Constants.CAT_DOCUMENT, label = "Remove Entry Of Multivalued Property", description = "Remove the first entry of the giving value in the multivalued xpath, does nothing if does not exist: <ul<li>if 'is Remove All' is check, all entry instance in the list.</li><li>if not will remove just the first one found</li><ul>")
-public class RemoveEntryOfMultiValuedProperty extends
-        AbstractOperationMultiValuedProperty {
+public class RemoveEntryOfMultiValuedProperty extends AbstractOperationMultiValuedProperty {
 
     public static final String ID = "RemoveEntryOfMultivaluedProperty";
 
@@ -66,17 +65,13 @@ public class RemoveEntryOfMultiValuedProperty extends
         List<Serializable> array = Arrays.asList((Serializable[]) p.getValue());
 
         if (array == null) {
-            log.info(String.format(
-                    "Value \"%s\" not found in %s, can't remove it", value,
-                    doc.getPathAsString()));
+            log.info(String.format("Value \"%s\" not found in %s, can't remove it", value, doc.getPathAsString()));
             return doc;
         }
         List<Serializable> list = new ArrayList<Serializable>(array);
 
         if (!list.contains(value)) {
-            log.info(String.format(
-                    "Value \"%s\" not found in %s, can't remove it", value,
-                    doc.getPathAsString()));
+            log.info(String.format("Value \"%s\" not found in %s, can't remove it", value, doc.getPathAsString()));
             return doc;
         }
 

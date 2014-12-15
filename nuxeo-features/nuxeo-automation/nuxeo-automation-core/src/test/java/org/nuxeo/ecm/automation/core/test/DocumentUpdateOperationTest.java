@@ -66,8 +66,10 @@ public class DocumentUpdateOperationTest {
         chain.add(CreateDocument.ID).from(params);
 
         params = new HashMap<String, Object>();
-        params.put("properties", new MvelTemplate(
-                "dc:title=Test\ndc:issued=@{org.nuxeo.ecm.core.schema.utils.DateParser.formatW3CDateTime(CurrentDate.date)}"));
+        params.put(
+                "properties",
+                new MvelTemplate(
+                        "dc:title=Test\ndc:issued=@{org.nuxeo.ecm.core.schema.utils.DateParser.formatW3CDateTime(CurrentDate.date)}"));
         params.put("save", "true");
         chain.add(UpdateDocument.ID).from(params);
     }
@@ -87,6 +89,6 @@ public class DocumentUpdateOperationTest {
         assertNotNull(doc);
         assertEquals("Test", doc.getTitle());
         assertNotNull(doc.getPropertyValue("dc:issued"));
-//        System.out.println(doc.getPropertyValue("dc:issued"));
+        // System.out.println(doc.getPropertyValue("dc:issued"));
     }
 }

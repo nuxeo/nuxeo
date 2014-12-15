@@ -21,11 +21,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- * Pop a document from the context stack and restore the input from the poped
- * document. If on the top of the stack there is no document an exception is
- * thrown This operation contains dynamic logic so it should be handled in a
- * special way by the UI tools to validate the chain (a Pop operation can
- * succeed only if the last push operation has the same type as the pop)
+ * Pop a document from the context stack and restore the input from the poped document. If on the top of the stack there
+ * is no document an exception is thrown This operation contains dynamic logic so it should be handled in a special way
+ * by the UI tools to validate the chain (a Pop operation can succeed only if the last push operation has the same type
+ * as the pop)
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

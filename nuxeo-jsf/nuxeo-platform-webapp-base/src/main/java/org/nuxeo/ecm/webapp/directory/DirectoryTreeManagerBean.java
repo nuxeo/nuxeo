@@ -52,9 +52,8 @@ import org.richfaces.component.UITree;
 import org.richfaces.event.NodeExpandedEvent;
 
 /**
- * Manage trees defined by xvocabulary directories. Update the associated
- * QueryModel when a node is selected and return a parameterized faces
- * navigation case.
+ * Manage trees defined by xvocabulary directories. Update the associated QueryModel when a node is selected and return
+ * a parameterized faces navigation case.
  *
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
  */
@@ -89,17 +88,14 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
     private transient List<DirectoryTreeNode> directoryTrees;
 
     /*
-     * The directoryTrees need a working core session in order to perform
-     * search actions.
+     * The directoryTrees need a working core session in order to perform search actions.
      */
     public boolean isInitialized() {
         return documentManager != null;
     }
 
     public DirectoryTreeNode get(String treeName) {
-        if (seamReload.isDevModeSet()
-                && seamReload.shouldResetCache(getDirectoryTreeService(),
-                        treeModelsTimestamp)) {
+        if (seamReload.isDevModeSet() && seamReload.shouldResetCache(getDirectoryTreeService(), treeModelsTimestamp)) {
             treeModels = null;
         }
         if (treeModels == null) {
@@ -111,8 +107,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
             // return cached model
             return treeModel;
         }
-        DirectoryTreeDescriptor config = getDirectoryTreeService().getDirectoryTreeDescriptor(
-                treeName);
+        DirectoryTreeDescriptor config = getDirectoryTreeService().getDirectoryTreeDescriptor(treeName);
         if (config == null) {
             log.error("no DirectoryTreeDescriptor registered as " + treeName);
             return null;
@@ -128,14 +123,12 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
             for (String directoryName : directories) {
                 Directory directory = directoryService.getDirectory(directoryName);
                 if (directory == null) {
-                    throw new DirectoryException(directoryName
-                            + " is not a registered directory");
+                    throw new DirectoryException(directoryName + " is not a registered directory");
                 }
                 if (!isFirst) {
                     Schema schema = schemaManager.getSchema(directory.getSchema());
                     if (!schema.hasField(PARENT_FIELD_ID)) {
-                        throw new DirectoryException(directoryName
-                                + "does not have the required field: "
+                        throw new DirectoryException(directoryName + "does not have the required field: "
                                 + PARENT_FIELD_ID);
                     }
                 }
@@ -145,8 +138,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
             throw new RuntimeException(e);
         }
 
-        treeModel = new DirectoryTreeNode(0, config, config.getName(),
-                config.getLabel(), "", null);
+        treeModel = new DirectoryTreeNode(0, config, config.getName(), config.getLabel(), "", null);
 
         // store the build tree to reuse it the next time in the same state
         treeModels.put(treeName, treeModel);
@@ -189,8 +181,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         if (directoryTreeService != null) {
             return directoryTreeService;
         }
-        directoryTreeService = (DirectoryTreeService) Framework.getRuntime().getComponent(
-                DirectoryTreeService.NAME);
+        directoryTreeService = (DirectoryTreeService) Framework.getRuntime().getComponent(DirectoryTreeService.NAME);
         return directoryTreeService;
     }
 
@@ -228,8 +219,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         if (facesContext != null) {
             ExternalContext externalContext = facesContext.getExternalContext();
             if (externalContext != null) {
-                return Boolean.TRUE.equals(externalContext.getRequestMap().get(
-                        NODE_SELECTED_MARKER));
+                return Boolean.TRUE.equals(externalContext.getRequestMap().get(NODE_SELECTED_MARKER));
             }
         }
         return false;
@@ -256,8 +246,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         return getLabelFor(directoryTreeName, fullPath, false);
     }
 
-    public String getLabelFor(String directoryTreeName, String fullPath,
-            boolean includeDirectoryTreeLabel) {
+    public String getLabelFor(String directoryTreeName, String fullPath, boolean includeDirectoryTreeLabel) {
         DirectoryTreeNode rootNode = get(directoryTreeName);
         List<String> labels = new ArrayList<String>();
         computeLabels(labels, rootNode, fullPath, includeDirectoryTreeLabel);
@@ -265,11 +254,10 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         return StringUtils.join(translatedLabels, "/");
     }
 
-    protected void computeLabels(List<String> labels, DirectoryTreeNode node,
-            String fullPath, boolean includeDirectoryTreeLabel) {
+    protected void computeLabels(List<String> labels, DirectoryTreeNode node, String fullPath,
+            boolean includeDirectoryTreeLabel) {
         // add label for the root path only if specified
-        if (!node.getPath().isEmpty()
-                || (node.getPath().isEmpty() && includeDirectoryTreeLabel)) {
+        if (!node.getPath().isEmpty() || (node.getPath().isEmpty() && includeDirectoryTreeLabel)) {
             labels.add(node.getDescription());
         }
         if (fullPath.equals(node.getPath())) {
@@ -277,8 +265,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         }
         for (DirectoryTreeNode treeNode : node.getChildren()) {
             if (fullPath.startsWith(treeNode.getPath())) {
-                computeLabels(labels, treeNode, fullPath,
-                        includeDirectoryTreeLabel);
+                computeLabels(labels, treeNode, fullPath, includeDirectoryTreeLabel);
             }
         }
     }

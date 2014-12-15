@@ -51,8 +51,7 @@ public class Trace {
         this.error = null;
     }
 
-    Trace(Call parent, OperationType chain, List<Call> calls,
-            OperationException error) {
+    Trace(Call parent, OperationType chain, List<Call> calls, OperationException error) {
         this.parent = parent;
         // If chain doesn't exist, this should be one operation call
         this.chain = chain != null ? chain : calls.get(0).getType();
@@ -100,8 +99,7 @@ public class Trace {
                 new TracePrinter(out).litePrint(this);
             }
         } catch (IOException e) {
-            LogFactory.getLog(Trace.class).error(
-                    "Cannot print trace of " + chain.getId(), e);
+            LogFactory.getLog(Trace.class).error("Cannot print trace of " + chain.getId(), e);
             return chain.getId();
         }
         return out.toString();

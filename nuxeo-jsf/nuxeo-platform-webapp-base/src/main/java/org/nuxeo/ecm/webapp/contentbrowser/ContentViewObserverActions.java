@@ -43,8 +43,8 @@ public class ContentViewObserverActions implements Serializable {
     protected ContentViewActions contentViewActions;
 
     /**
-     * Refreshes and resets content views that have declared event
-     * {@link EventNames#DOCUMENT_CHANGED} as a refresh/reset event.
+     * Refreshes and resets content views that have declared event {@link EventNames#DOCUMENT_CHANGED} as a
+     * refresh/reset event.
      */
     @Observer(value = { EventNames.DOCUMENT_CHANGED })
     public void onDocumentChanged() {
@@ -53,8 +53,8 @@ public class ContentViewObserverActions implements Serializable {
     }
 
     /**
-     * Refreshes and resets content views that have declared event
-     * {@link EventNames#DOCUMENT_CHILDREN_CHANGED} as a refresh/reset event.
+     * Refreshes and resets content views that have declared event {@link EventNames#DOCUMENT_CHILDREN_CHANGED} as a
+     * refresh/reset event.
      */
     @Observer(value = { EventNames.DOCUMENT_CHILDREN_CHANGED })
     public void onDocumentChildrenChanged() {
@@ -63,9 +63,8 @@ public class ContentViewObserverActions implements Serializable {
     }
 
     /**
-     * Refreshes and resets content views that have declared event
-     * {@link EventNames#DOCUMENT_PUBLICATION_REJECTED} as a refresh/reset
-     * event.
+     * Refreshes and resets content views that have declared event {@link EventNames#DOCUMENT_PUBLICATION_REJECTED} as a
+     * refresh/reset event.
      *
      * @since 5.6
      */
@@ -76,8 +75,7 @@ public class ContentViewObserverActions implements Serializable {
     }
 
     /**
-     * Resets all caches on {@link EventNames#FLUSH_EVENT}, triggered by hot
-     * reload when dev mode is set.
+     * Resets all caches on {@link EventNames#FLUSH_EVENT}, triggered by hot reload when dev mode is set.
      *
      * @since 5.6
      */

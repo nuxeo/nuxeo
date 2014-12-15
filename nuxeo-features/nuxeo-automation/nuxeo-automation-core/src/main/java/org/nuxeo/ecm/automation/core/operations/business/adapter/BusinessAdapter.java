@@ -70,7 +70,6 @@ public abstract class BusinessAdapter {
         return doc;
     }
 
-
     public String getId() {
         try {
             return doc.getId();
@@ -81,7 +80,7 @@ public abstract class BusinessAdapter {
 
     public String getType() {
 
-       return doc.getType() == null ? type : doc.getType();
+        return doc.getType() == null ? type : doc.getType();
     }
 
 }

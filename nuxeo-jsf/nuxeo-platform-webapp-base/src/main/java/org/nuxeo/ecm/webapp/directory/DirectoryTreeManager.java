@@ -53,20 +53,19 @@ public interface DirectoryTreeManager extends Serializable {
     Boolean adviseNodeOpened(UITree tree);
 
     /**
-     * Returns the internationalized label for a given path of the specified
-     * Directory tree. The Directory tree label is not included.
+     * Returns the internationalized label for a given path of the specified Directory tree. The Directory tree label is
+     * not included.
      *
      * @since 5.4
      */
     public String getLabelFor(String directoryTreeName, String fullPath);
 
     /**
-     * Returns the internationalized label for a given path of the specified
-     * Directory tree, including or not the Directory tree label.
+     * Returns the internationalized label for a given path of the specified Directory tree, including or not the
+     * Directory tree label.
      *
      * @since 5.4
      */
-    public String getLabelFor(String directoryTreeName, String fullPath,
-            boolean includeDirectoryTreeLabel);
+    public String getLabelFor(String directoryTreeName, String fullPath, boolean includeDirectoryTreeLabel);
 
 }

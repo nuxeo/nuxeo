@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.automation.core.scripting.Expression;
 
 /**
  * @since 5.7.3
@@ -53,8 +52,7 @@ public class TracePrinter {
     }
 
     protected void printHeading(String heading) throws IOException {
-        printLine(System.getProperty("line.separator")
-                + System.getProperty("line.separator") + "****** " + heading
+        printLine(System.getProperty("line.separator") + System.getProperty("line.separator") + "****** " + heading
                 + " ******");
     }
 
@@ -91,8 +89,7 @@ public class TracePrinter {
             sb.append(trace.getChain().getId());
             sb.append(System.getProperty("line.separator"));
             sb.append("Produced output type: ");
-            sb.append(trace.output == null ? "Void"
-                    : trace.output.getClass().getSimpleName());
+            sb.append(trace.output == null ? "Void" : trace.output.getClass().getSimpleName());
             printLine(sb.toString());
         }
         StringBuilder stringBuilder = new StringBuilder();
@@ -146,12 +143,10 @@ public class TracePrinter {
                     sb.append(parameter);
                     sb.append(", Value: ");
                     Object value = call.getParmeters().get(parameter);
-                    if(value instanceof Call.ExpressionParameter){
+                    if (value instanceof Call.ExpressionParameter) {
                         value = String.format("Expr:(id=%s | value=%s)",
-                                ((Call.ExpressionParameter) call.getParmeters
-                                        ().get(parameter)).getParameterId(),
-                                ((Call.ExpressionParameter) call.getParmeters
-                                        ().get(parameter)).getParameterValue());
+                                ((Call.ExpressionParameter) call.getParmeters().get(parameter)).getParameterId(),
+                                ((Call.ExpressionParameter) call.getParmeters().get(parameter)).getParameterValue());
                     }
                     sb.append(value);
                 }
@@ -242,8 +237,7 @@ public class TracePrinter {
         }
     }
 
-    private void displayOperationTreeCalls(List<Call> calls,
-            StringBuilder stringBuilder) {
+    private void displayOperationTreeCalls(List<Call> calls, StringBuilder stringBuilder) {
         String tabs = "\t";
         for (Call call : calls) {
             stringBuilder.append(tabs);

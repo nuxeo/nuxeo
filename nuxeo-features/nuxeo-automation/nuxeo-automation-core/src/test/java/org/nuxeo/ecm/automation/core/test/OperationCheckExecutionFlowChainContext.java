@@ -33,8 +33,7 @@ public class OperationCheckExecutionFlowChainContext {
     public DocumentModel run(DocumentModel doc) throws Exception {
         // Check if chain parameters injected into execution flow operation
         // exists
-        if (((Map) ctx.get("ChainParameters")).get("exampleKey2").equals(
-                "exampleValue2")) {
+        if (((Map) ctx.get("ChainParameters")).get("exampleKey2").equals("exampleValue2")) {
             return doc;
         }
         return null;

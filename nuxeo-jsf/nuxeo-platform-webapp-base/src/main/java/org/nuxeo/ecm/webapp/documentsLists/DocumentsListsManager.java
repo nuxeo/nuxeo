@@ -26,14 +26,12 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 /**
  * Seam component used to manage named lists of documents.
  * <p>
- * Managing the DM lists into this component insteed of directly inside the Seam
- * context offers the following advantages:
+ * Managing the DM lists into this component insteed of directly inside the Seam context offers the following
+ * advantages:
  * <ul>
- * <li>DM Lists life cycle management can be done transparently, the
- * DocumentsListsManager can use internal fields or differently scoped variables
- * (Conversation, Process ...)
- * <li>DocumentsListsManager provides (will) an Extension Point mechanisme to
- * register new names lists
+ * <li>DM Lists life cycle management can be done transparently, the DocumentsListsManager can use internal fields or
+ * differently scoped variables (Conversation, Process ...)
+ * <li>DocumentsListsManager provides (will) an Extension Point mechanisme to register new names lists
  * <li>DocumentsListsManager provides add configurations to each lists
  * <ul>
  * <li>List Name
@@ -42,18 +40,15 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  * <li>Category of the list
  * <li>...
  * </ul>
- * <li>DocumentsListsManager provides helpers features for merging and resetting
- * lists
+ * <li>DocumentsListsManager provides helpers features for merging and resetting lists
  * </ul>
  *
  * @author tiry
- *
  */
 public interface DocumentsListsManager {
 
     /**
      * List identifier: Default working list.
-     *
      */
     String DEFAULT_WORKING_LIST = "DEFAULT";
 
@@ -160,20 +155,17 @@ public interface DocumentsListsManager {
      * @param docList the DocumentModels list to append
      * @return the updated list of DocumentModels
      */
-    List<DocumentModel> addToWorkingList(String listName,
-            List<DocumentModel> docList);
+    List<DocumentModel> addToWorkingList(String listName, List<DocumentModel> docList);
 
     /**
      * Adds a list of DocumentModels to the list ListName.
      *
      * @param listName the name of the list to update
      * @param docList the DocumentModels list to append
-     * @param forceAppend force the new elements to be appened even if the list
-     *            default behaviour is reset
+     * @param forceAppend force the new elements to be appened even if the list default behaviour is reset
      * @return the updated list of DocumentModels
      */
-    List<DocumentModel> addToWorkingList(String listName,
-            List<DocumentModel> docList, Boolean forceAppend);
+    List<DocumentModel> addToWorkingList(String listName, List<DocumentModel> docList, Boolean forceAppend);
 
     /**
      * Adds a list of DocumentModels to the default list.
@@ -192,8 +184,7 @@ public interface DocumentsListsManager {
      */
     List<DocumentModel> removeFromWorkingList(String listName, DocumentModel doc);
 
-    List<DocumentModel> removeFromWorkingList(String listName,
-            List<DocumentModel> lst);
+    List<DocumentModel> removeFromWorkingList(String listName, List<DocumentModel> lst);
 
     /**
      * Removes one DocumentModel from the default list.
@@ -225,8 +216,7 @@ public interface DocumentsListsManager {
      * @param newDocList
      * @return
      */
-    List<DocumentModel> resetWorkingList(String listName,
-            List<DocumentModel> newDocList);
+    List<DocumentModel> resetWorkingList(String listName, List<DocumentModel> newDocList);
 
     /**
      * Resets default list and fills it with newDocList.
@@ -265,8 +255,7 @@ public interface DocumentsListsManager {
     void removeFromAllLists(List<DocumentModel> documentsToRemove);
 
     /**
-     * Init Method (replaces for now Registry initialization that will be done
-     * by the extension point and the Runtime).
+     * Init Method (replaces for now Registry initialization that will be done by the extension point and the Runtime).
      */
     void initListManager();
 

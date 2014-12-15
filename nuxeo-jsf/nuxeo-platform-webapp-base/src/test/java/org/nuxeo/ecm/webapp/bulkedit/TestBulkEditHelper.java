@@ -17,6 +17,11 @@
 
 package org.nuxeo.ecm.webapp.bulkedit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,7 +34,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.types.TypeManager;
@@ -40,19 +44,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(user = "Administrator", cleanup = Granularity.METHOD)
-@Deploy( { "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.webapp.base" })
+@Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.webapp.base" })
 public class TestBulkEditHelper {
 
     @Inject
@@ -79,30 +77,26 @@ public class TestBulkEditHelper {
     }
 
     protected List<DocumentModel> createTestDocuments() throws ClientException {
-        DocumentModel file = session.createDocumentModel("/", "testFile",
-                "File");
+        DocumentModel file = session.createDocumentModel("/", "testFile", "File");
         file.setPropertyValue("dc:title", "testTitle");
         file = session.createDocument(file);
         assertNotNull(file);
         file = session.saveDocument(file);
 
-        DocumentModel note = session.createDocumentModel("/", "testFile",
-                "Note");
+        DocumentModel note = session.createDocumentModel("/", "testFile", "Note");
         note.setPropertyValue("dc:title", "testNote");
         note = session.createDocument(note);
         assertNotNull(note);
         note = session.saveDocument(note);
         session.save();
 
-        return Arrays.asList(file,
-                note);
+        return Arrays.asList(file, note);
     }
 
     @Test
     public void testCommonLayouts() throws Exception {
         List<DocumentModel> docs = createTestDocuments();
-        List<String> commonLayouts = BulkEditHelper.getCommonLayouts(
-                typeManager, docs);
+        List<String> commonLayouts = BulkEditHelper.getCommonLayouts(typeManager, docs);
         assertFalse(commonLayouts.isEmpty());
         assertEquals(2, commonLayouts.size());
         assertTrue(commonLayouts.contains("heading"));

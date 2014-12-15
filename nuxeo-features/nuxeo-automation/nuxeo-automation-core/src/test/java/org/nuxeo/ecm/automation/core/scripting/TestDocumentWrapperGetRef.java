@@ -41,7 +41,7 @@ import com.google.inject.Inject;
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.automation.core" })
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-doc-wrapper.xml")
-@RepositoryConfig(init=DefaultRepositoryInit.class, cleanup=Granularity.METHOD)
+@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 public class TestDocumentWrapperGetRef {
 
     @Inject
@@ -55,8 +55,7 @@ public class TestDocumentWrapperGetRef {
      * Test the documentWrapper getRef method to be used in script.
      * This test use the operation chain defined in the test extension src/test/resources/test-doc-wrapper.xml
      */
-    public void testDocumentWrapperGetRef() throws InvalidChainException,
-            OperationException, Exception {
+    public void testDocumentWrapperGetRef() throws InvalidChainException, OperationException, Exception {
 
         // testing scripts using document wrapper get ref method: follow
         // transition
@@ -67,8 +66,7 @@ public class TestDocumentWrapperGetRef {
 
         // before starting, check it's in project
         String lifecycleState = session.getCurrentLifeCycleState(doc.getRef());
-        Assert.assertEquals("At first, the document currentlifecycle state is",
-                "project", lifecycleState);
+        Assert.assertEquals("At first, the document currentlifecycle state is", "project", lifecycleState);
 
         // The automation chain should be similar to the following:
         //
@@ -81,13 +79,11 @@ public class TestDocumentWrapperGetRef {
         // the script operation should run a Session.followTransition using
         // getRef of document wrapper
         lifecycleState = session.getCurrentLifeCycleState(doc.getRef());
-        Assert.assertEquals(
-                "After the test, the document currentlifecycle state is",
-                "deleted", lifecycleState);
+        Assert.assertEquals("After the test, the document currentlifecycle state is", "deleted", lifecycleState);
     }
 
-    private void runChain(DocumentModel inputDoc, String chainId)
-            throws OperationException, InvalidChainException, Exception {
+    private void runChain(DocumentModel inputDoc, String chainId) throws OperationException, InvalidChainException,
+            Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(inputDoc);
         automationService.run(ctx, chainId);

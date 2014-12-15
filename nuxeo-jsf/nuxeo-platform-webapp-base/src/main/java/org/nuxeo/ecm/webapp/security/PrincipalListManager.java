@@ -59,11 +59,17 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 public class PrincipalListManager implements Serializable {
 
     public static final String USER_TYPE = "USER_TYPE";
+
     public static final String GROUP_TYPE = "GROUP_TYPE";
+
     public static final String USER_GROUP_TYPE = "USER_GROUP_TYPE";
+
     public static final String USER_ICON = "/icons/user.png";
+
     public static final String GROUP_ICON = "/icons/group.png";
+
     public static final String USER_ICON_ALT = "user.png";
+
     public static final String GROUP_ICON_ALT = "group.png";
 
     public static final int MAX_SEARCH_RESULTS = 20;
@@ -73,6 +79,7 @@ public class PrincipalListManager implements Serializable {
     private static final Log log = LogFactory.getLog(PrincipalListManager.class);
 
     public final Map<String, String> iconPath;
+
     public final Map<String, String> iconAlt;
 
     @In(create = true, required = false)
@@ -213,8 +220,7 @@ public class PrincipalListManager implements Serializable {
         if (searchFilter == null || searchFilter.length() == 0) {
             return Collections.emptyList();
         }
-        if (searchFilter.equals(previousSearchFilter)
-                && searchType.equals(previousSearchType)) {
+        if (searchFilter.equals(previousSearchFilter) && searchType.equals(previousSearchType)) {
             searchOverflow = previousSearchOverflow;
             return previousSuggestedEntries;
         }
@@ -222,23 +228,20 @@ public class PrincipalListManager implements Serializable {
         searchOverflow = false;
 
         DocumentModelList users;
-        if (USER_TYPE.equals(searchType) || USER_GROUP_TYPE.equals(searchType)
-                || StringUtils.isEmpty(searchType)) {
+        if (USER_TYPE.equals(searchType) || USER_GROUP_TYPE.equals(searchType) || StringUtils.isEmpty(searchType)) {
             users = getSuggestedUsers();
         } else {
             users = new DocumentModelListImpl();
         }
 
         DocumentModelList groups;
-        if (GROUP_TYPE.equals(searchType) || USER_GROUP_TYPE.equals(searchType)
-                || StringUtils.isEmpty(searchType)) {
+        if (GROUP_TYPE.equals(searchType) || USER_GROUP_TYPE.equals(searchType) || StringUtils.isEmpty(searchType)) {
             groups = getSuggestedGroups();
         } else {
             groups = new DocumentModelListImpl();
         }
 
-        List<Map<String, Object>> result = new ArrayList<Map<String, Object>>(
-                users.size() + groups.size());
+        List<Map<String, Object>> result = new ArrayList<Map<String, Object>>(users.size() + groups.size());
 
         for (DocumentModel user : users) {
             if (user == null) {
@@ -271,8 +274,8 @@ public class PrincipalListManager implements Serializable {
         for (DocumentModel group : groups) {
             Map<String, Object> entry = new HashMap<String, Object>();
             try {
-                entry.put("label", group.getProperty(
-                        userManager.getGroupSchemaName(), userManager.getGroupLabelField()));
+                entry.put("label",
+                        group.getProperty(userManager.getGroupSchemaName(), userManager.getGroupLabelField()));
             } catch (ClientException e) {
                 log.warn("Unable to get group label of " + group.getId());
                 log.debug(e);

@@ -22,8 +22,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class PostCommitOperationEventListener implements
-        PostCommitFilteringEventListener {
+public class PostCommitOperationEventListener implements PostCommitFilteringEventListener {
 
     @Override
     public boolean acceptEvent(Event event) {
@@ -45,7 +44,7 @@ public class PostCommitOperationEventListener implements
                 break;
             }
         }
-        if (! processEvents) {
+        if (!processEvents) {
             return;
         }
         for (Event event : events) {

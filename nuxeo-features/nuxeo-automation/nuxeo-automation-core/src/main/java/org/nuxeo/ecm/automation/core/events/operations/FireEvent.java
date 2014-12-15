@@ -53,7 +53,7 @@ public class FireEvent {
             sendDocumentEvent((DocumentModel) input);
         } else if (input instanceof DocumentRef) {
             sendDocumentEvent(session.getDocument((DocumentRef) input));
-        } else if (input instanceof DocumentModelList){
+        } else if (input instanceof DocumentModelList) {
             DocumentModelList docs = (DocumentModelList) input;
             for (DocumentModel documentModel : docs) {
                 sendDocumentEvent(documentModel);
@@ -65,16 +65,14 @@ public class FireEvent {
 
     protected void sendDocumentEvent(DocumentModel input) throws Exception {
         CoreSession session = ctx.getCoreSession();
-        EventContextImpl evctx = new DocumentEventContext(session,
-                session.getPrincipal(), input);
+        EventContextImpl evctx = new DocumentEventContext(session, session.getPrincipal(), input);
         Event event = evctx.newEvent(name);
         service.fireEvent(event);
     }
 
     protected void sendUnknownEvent(Object input) throws Exception {
         CoreSession session = ctx.getCoreSession();
-        EventContextImpl evctx = new EventContextImpl(session,
-                session.getPrincipal(), input);
+        EventContextImpl evctx = new EventContextImpl(session, session.getPrincipal(), input);
         Event event = evctx.newEvent(name);
         service.fireEvent(event);
     }

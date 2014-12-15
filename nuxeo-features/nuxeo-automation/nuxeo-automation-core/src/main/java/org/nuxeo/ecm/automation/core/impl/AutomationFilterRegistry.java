@@ -16,38 +16,34 @@
  */
 package org.nuxeo.ecm.automation.core.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.ecm.automation.AutomationFilter;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @since 5.7.3
  */
-public class AutomationFilterRegistry extends
-        ContributionFragmentRegistry<AutomationFilter> {
+public class AutomationFilterRegistry extends ContributionFragmentRegistry<AutomationFilter> {
 
     /**
-     * Modifiable exception chain registry. Modifying the registry is using a
-     * lock and it's thread safe. Modifications are removing the cache.
+     * Modifiable exception chain registry. Modifying the registry is using a lock and it's thread safe. Modifications
+     * are removing the cache.
      */
     protected final Map<String, AutomationFilter> automationFilters = new HashMap<>();
 
     /**
-     * Read only cache for exception chain lookup. Thread safe. Not using
-     * synchronization if cache already created.
+     * Read only cache for exception chain lookup. Thread safe. Not using synchronization if cache already created.
      */
     protected volatile Map<String, AutomationFilter> lookup;
 
-    public synchronized void addContribution(AutomationFilter automationFilter,
-            boolean replace) throws OperationException {
+    public synchronized void addContribution(AutomationFilter automationFilter, boolean replace)
+            throws OperationException {
         if (!replace && automationFilters.containsKey(automationFilter.getId())) {
-            throw new OperationException(
-                    "An automation filter is already bound to: "
-                            + automationFilter.getId()
-                            + ". Use 'replace=true' to replace an existing automation filter");
+            throw new OperationException("An automation filter is already bound to: " + automationFilter.getId()
+                    + ". Use 'replace=true' to replace an existing automation filter");
         }
         super.addContribution(automationFilter);
     }
@@ -63,8 +59,7 @@ public class AutomationFilterRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id, AutomationFilter contrib,
-                                    AutomationFilter newOrigContrib) {
+    public void contributionUpdated(String id, AutomationFilter contrib, AutomationFilter newOrigContrib) {
         automationFilters.put(id, contrib);
         lookup = null;
     }

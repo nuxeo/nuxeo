@@ -60,7 +60,6 @@ public class EventOperationsTest {
     @Inject
     EventHandlerRegistry registry;
 
-
     @Before
     public void initRepo() throws Exception {
         src = session.createDocumentModel("/", "src", "Workspace");
@@ -79,16 +78,14 @@ public class EventOperationsTest {
     // ------ Tests comes here --------
 
     /**
-     * Create | Copy | Set Property This is also testing
-     * {@link StringToProperties} adapter
+     * Create | Copy | Set Property This is also testing {@link StringToProperties} adapter
      *
      * @throws Exception
      */
     @Test
     public void testCreateNoteWhenFolderCreated() throws Exception {
         // now create a new folder inside src
-        DocumentModel folder = session.createDocumentModel("/src", "myfolder",
-                "Folder");
+        DocumentModel folder = session.createDocumentModel("/src", "myfolder", "Folder");
         folder.setPropertyValue("dc:title", "MyFolder");
         folder = session.createDocument(folder);
         session.save();
@@ -100,16 +97,14 @@ public class EventOperationsTest {
     }
 
     /**
-     * Create | Copy | Set Property in a post commit listener This is also
-     * testing {@link StringToProperties} adapter
+     * Create | Copy | Set Property in a post commit listener This is also testing {@link StringToProperties} adapter
      *
      * @throws Exception
      */
     @Test
     public void testCreateNoteWhenFolderCreatedInPostCommit() throws Exception {
         // now create a new folder inside src
-        DocumentModel folder = session.createDocumentModel("/src", "myfolder",
-                "Folder");
+        DocumentModel folder = session.createDocumentModel("/src", "myfolder", "Folder");
         folder.setPropertyValue("dc:title", "MyFolder");
         folder = session.createDocument(folder);
         session.save();
@@ -129,32 +124,27 @@ public class EventOperationsTest {
 
     @Test
     public void testCreateNoteWhenExpressionNOK() throws Exception {
-       DocumentModel file = session.createDocumentModel("/src", "myfile",
-                "File");
+        DocumentModel file = session.createDocumentModel("/src", "myfile", "File");
         file.setPropertyValue("dc:title", "MyFile");
         assertEquals("MyFile", file.getPropertyValue("dc:title"));
         file = session.createDocument(file);
-        assertEquals("Modified with false expression",
-                file.getPropertyValue("dc:title"));
+        assertEquals("Modified with false expression", file.getPropertyValue("dc:title"));
     }
 
     @Test
     public void testCreateNoteWhenConditionOK() throws Exception {
-       DocumentModel folder = session.createDocumentModel("/src", "myws",
-                "Workspace");
+        DocumentModel folder = session.createDocumentModel("/src", "myws", "Workspace");
         folder.setPropertyValue("dc:title", "My workspace");
         assertEquals("My workspace", folder.getPropertyValue("dc:title"));
         folder = session.createDocument(folder);
-        assertEquals("Modified with true condition",
-                folder.getPropertyValue("dc:title"));
+        assertEquals("Modified with true condition", folder.getPropertyValue("dc:title"));
         session.save();
 
     }
 
     @Test
     public void testShallowFiltering() throws ClientException {
-        DocumentModel doc = session.createDocumentModel("/src", "myfile",
-                "File");
+        DocumentModel doc = session.createDocumentModel("/src", "myfile", "File");
         doc.setPropertyValue("dc:description", "ChangeMySource");
         doc = session.createDocument(doc);
         session.save();
@@ -169,8 +159,7 @@ public class EventOperationsTest {
         EventHandler handler = new EventHandler("documentCreated", "changeSource");
         handler.setCondition("Document.getProperty(\"dc:description\") == \"/src/myfile\"");
         registry.putEventHandler(handler);
-        DocumentModel doc = session.createDocumentModel("/src", "myfile",
-                "File");
+        DocumentModel doc = session.createDocumentModel("/src", "myfile", "File");
         doc.setPropertyValue("dc:description", doc.getPathAsString());
         doc = session.createDocument(doc);
         session.save();

@@ -36,11 +36,10 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 
 /**
- * Compares two dates in a date rage widget and throws a validation error if the
- * second date it's not superior to the stratDate
+ * Compares two dates in a date rage widget and throws a validation error if the second date it's not superior to the
+ * stratDate
  *
  * @since 5.7
- *
  */
 @Name("dateRangeValidator")
 @Scope(ScopeType.CONVERSATION)
@@ -53,8 +52,7 @@ public class DateRangeValidator implements Serializable {
 
     private static final Log log = LogFactory.getLog(DateRangeValidator.class);
 
-    public void validateDateRange(FacesContext context, UIComponent component,
-            Object value) {
+    public void validateDateRange(FacesContext context, UIComponent component, Object value) {
         Map<String, Object> attributes = component.getAttributes();
         String startDateComponentId = (String) attributes.get("startDateComponentId");
         String endDateComponentId = (String) attributes.get("endDateComponentId");
@@ -76,13 +74,9 @@ public class DateRangeValidator implements Serializable {
         Date stratDate = (Date) startDateComp.getLocalValue();
         Date endDate = (Date) endDateComp.getLocalValue();
 
-        if (stratDate != null && endDate != null
-                && endDate.compareTo(stratDate) < 0) {
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    String.format(
-                            messages.get("error.dateRangeValidator.invalidDateRange"),
-                            stratDate, endDate), null);
+        if (stratDate != null && endDate != null && endDate.compareTo(stratDate) < 0) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, String.format(
+                    messages.get("error.dateRangeValidator.invalidDateRange"), stratDate, endDate), null);
             throw new ValidatorException(message);
         }
     }

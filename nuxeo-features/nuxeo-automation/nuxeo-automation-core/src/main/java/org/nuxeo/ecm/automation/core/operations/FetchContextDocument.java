@@ -20,10 +20,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- * Generic fetch document operation that can be used on any context that has a
- * document as the input. This operation is taking the context input and it is
- * returning it as a document If the input is not a document an exception is
- * thrown
+ * Generic fetch document operation that can be used on any context that has a document as the input. This operation is
+ * taking the context input and it is returning it as a document If the input is not a document an exception is thrown
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

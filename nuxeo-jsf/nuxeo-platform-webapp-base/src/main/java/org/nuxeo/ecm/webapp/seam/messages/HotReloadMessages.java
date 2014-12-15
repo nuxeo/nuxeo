@@ -37,8 +37,7 @@ import org.jboss.seam.core.SeamResourceBundle;
 import org.jboss.seam.international.Messages;
 
 /**
- * Factory for a Map that contains interpolated messages defined in the Seam
- * ResourceBundle.
+ * Factory for a Map that contains interpolated messages defined in the Seam ResourceBundle.
  * <p>
  * Overriden to add a control over reload of bundle for hot reload
  *
@@ -64,14 +63,14 @@ public class HotReloadMessages extends Messages {
         return new AbstractMap<String, String>() {
 
             private ResourceBundle seamResourceBundle = getSeamResourceBundle();
+
             /**
              * Returns usual seam bundle, but with a custom resource control
              */
             protected ResourceBundle getSeamResourceBundle() {
                 ResourceBundle.Control control = HotReloadResourceBundleControl.instance();
                 return ResourceBundle.getBundle(SeamResourceBundle.class.getName(),
-                        org.jboss.seam.core.Locale.instance(),
-                        Thread.currentThread().getContextClassLoader(), control);
+                        org.jboss.seam.core.Locale.instance(), Thread.currentThread().getContextClassLoader(), control);
             }
 
             @Override

@@ -61,7 +61,7 @@ public class DateWrapper {
      * @since 5.7
      */
     protected DateWrapper dateWrapper(int unit, int value) {
-        Calendar calendar = (Calendar)this.date.clone();
+        Calendar calendar = (Calendar) this.date.clone();
         calendar.add(unit, value);
         return new DateWrapper(calendar);
     }

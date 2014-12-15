@@ -35,14 +35,14 @@ public interface BulkEditService {
     String CONTEXT_DATA = "contextData";
 
     /**
-     * Copy all the marked properties (stored in the ContextData of
-     * {@code sourceDoc}) from {@code sourceDoc} to all the {@code targetDocs}.
+     * Copy all the marked properties (stored in the ContextData of {@code sourceDoc}) from {@code sourceDoc} to all the
+     * {@code targetDocs}.
      *
      * @param session the {@code CoreSession} to use
      * @param sourceDoc the doc where to get the properties to copy
      * @param targetDocs the docs where to set the properties
      */
-    void updateDocuments(CoreSession session, DocumentModel sourceDoc,
-            List<DocumentModel> targetDocs) throws ClientException;
+    void updateDocuments(CoreSession session, DocumentModel sourceDoc, List<DocumentModel> targetDocs)
+            throws ClientException;
 
 }

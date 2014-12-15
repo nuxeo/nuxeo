@@ -70,8 +70,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
 
     private static final Log log = LogFactory.getLog(TreeActionsBean.class);
 
-    public static final String NODE_SELECTED_MARKER = TreeActionsBean.class.getName()
-            + "_NODE_SELECTED_MARKER";
+    public static final String NODE_SELECTED_MARKER = TreeActionsBean.class.getName() + "_NODE_SELECTED_MARKER";
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -102,33 +101,27 @@ public class TreeActionsBean implements TreeActions, Serializable {
         return getTreeRoots(false);
     }
 
-    public List<DocumentTreeNode> getTreeRoots(String treeName)
-            throws ClientException {
+    public List<DocumentTreeNode> getTreeRoots(String treeName) throws ClientException {
         return getTreeRoots(false, treeName);
     }
 
-    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot,
-            String treeName) throws ClientException {
-        return getTreeRoots(showRoot, navigationContext.getCurrentDocument(),
-                treeName);
+    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot, String treeName) throws ClientException {
+        return getTreeRoots(showRoot, navigationContext.getCurrentDocument(), treeName);
     }
 
-    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot)
+    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot) throws ClientException {
+        return getTreeRoots(showRoot, navigationContext.getCurrentDocument(), DEFAULT_TREE_PLUGIN_NAME);
+    }
+
+    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot, DocumentModel currentDocument)
             throws ClientException {
-        return getTreeRoots(showRoot, navigationContext.getCurrentDocument(),
-                DEFAULT_TREE_PLUGIN_NAME);
-    }
-
-    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot,
-            DocumentModel currentDocument) throws ClientException {
         return getTreeRoots(showRoot, currentDocument, DEFAULT_TREE_PLUGIN_NAME);
     }
 
     /**
      * @since 5.4
      */
-    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot,
-            DocumentModel currentDocument, String treeName)
+    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot, DocumentModel currentDocument, String treeName)
             throws ClientException {
 
         if (treeInvalidator.needsInvalidation()) {
@@ -145,15 +138,13 @@ public class TreeActionsBean implements TreeActions, Serializable {
             if (currentDocument != null) {
 
                 if (Boolean.TRUE.equals(isUserWorkspace)) {
-                    firstAccessibleParent = documentManager.getDocument(new PathRef(
-                            userWorkspacePath));
+                    firstAccessibleParent = documentManager.getDocument(new PathRef(userWorkspacePath));
                 } else {
 
                     List<DocumentModel> parents = documentManager.getParentDocuments(currentDocument.getRef());
                     if (!parents.isEmpty()) {
                         firstAccessibleParent = parents.get(0);
-                    } else if (!"Root".equals(currentDocument.getType())
-                            && currentDocument.isFolder()) {
+                    } else if (!"Root".equals(currentDocument.getType()) && currentDocument.isFolder()) {
                         // default on current doc
                         firstAccessibleParent = currentDocument;
                     } else {
@@ -164,8 +155,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
 
                 }
             }
-            firstAccessibleParentPath = firstAccessibleParent == null ? null
-                    : firstAccessibleParent.getPathAsString();
+            firstAccessibleParentPath = firstAccessibleParent == null ? null : firstAccessibleParent.getPathAsString();
             if (firstAccessibleParent != null) {
                 Filter filter = null;
                 Filter leafFilter = null;
@@ -182,15 +172,12 @@ public class TreeActionsBean implements TreeActions, Serializable {
                 }
 
                 DocumentTreeNode treeRoot = null;
-                treeRoot = new DocumentTreeNodeImpl(
-                        documentManager.getSessionId(), firstAccessibleParent,
-                        filter, leafFilter, sorter, pageProvider);
+                treeRoot = new DocumentTreeNodeImpl(documentManager.getSessionId(), firstAccessibleParent, filter,
+                        leafFilter, sorter, pageProvider);
                 currentTree.add(treeRoot);
-                log.debug("Tree initialized with document: "
-                        + firstAccessibleParent.getId());
+                log.debug("Tree initialized with document: " + firstAccessibleParent.getId());
             } else {
-                log.debug("Could not initialize the navigation tree: no parent"
-                        + " found for current document");
+                log.debug("Could not initialize the navigation tree: no parent" + " found for current document");
             }
             trees.put(treeName, currentTree);
         }
@@ -208,8 +195,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
         if (facesContext != null) {
             ExternalContext externalContext = facesContext.getExternalContext();
             if (externalContext != null) {
-                return Boolean.TRUE.equals(externalContext.getRequestMap().get(
-                        NODE_SELECTED_MARKER));
+                return Boolean.TRUE.equals(externalContext.getRequestMap().get(NODE_SELECTED_MARKER));
             }
         }
         return false;
@@ -231,13 +217,11 @@ public class TreeActionsBean implements TreeActions, Serializable {
             reset();
             return currentDocumentPath;
         }
-        if (userWorkspacePath == null
-                || !userWorkspacePath.contains(currentPersonalWorkspacePath)) {
+        if (userWorkspacePath == null || !userWorkspacePath.contains(currentPersonalWorkspacePath)) {
             // navigate to another personal workspace
             reset();
             try {
-                return documentManager.exists(new PathRef(
-                        currentPersonalWorkspacePath)) ? currentPersonalWorkspacePath
+                return documentManager.exists(new PathRef(currentPersonalWorkspacePath)) ? currentPersonalWorkspacePath
                         : findFarthestContainerPath(currentDocumentPath);
             } catch (ClientException e) {
                 return currentDocumentPath;
@@ -246,15 +230,13 @@ public class TreeActionsBean implements TreeActions, Serializable {
         return userWorkspacePath;
     }
 
-    protected String findFarthestContainerPath(String documentPath)
-            throws ClientException {
+    protected String findFarthestContainerPath(String documentPath) throws ClientException {
         Path containerPath = new Path(documentPath);
         String result;
         do {
             result = containerPath.toString();
             containerPath = containerPath.removeLastSegments(1);
-        } while (!containerPath.isRoot()
-                && documentManager.exists(new PathRef(containerPath.toString())));
+        } while (!containerPath.isRoot() && documentManager.exists(new PathRef(containerPath.toString())));
         return result;
     }
 
@@ -265,11 +247,9 @@ public class TreeActionsBean implements TreeActions, Serializable {
                 DocumentTreeNode treeNode = (DocumentTreeNode) value;
                 String nodePath = treeNode.getPath();
                 String currentDocPath = getCurrentDocumentPath();
-                if (currentDocPath != null && nodePath != null
-                        && currentDocPath.startsWith(nodePath)) {
+                if (currentDocPath != null && nodePath != null && currentDocPath.startsWith(nodePath)) {
                     // additional slower check for strict path prefix
-                    if ((currentDocPath + '/').startsWith(nodePath + '/')
-                            || "/".equals(nodePath)) {
+                    if ((currentDocPath + '/').startsWith(nodePath + '/') || "/".equals(nodePath)) {
                         return true;
                     }
                 }
@@ -304,19 +284,15 @@ public class TreeActionsBean implements TreeActions, Serializable {
         if (currentDocument != null
                 && firstAccessibleParentPath != null
                 && currentDocument.getPathAsString() != null
-                && (!currentDocument.getPathAsString().contains(
-                        firstAccessibleParentPath) || (userWorkspacePath != null
-                        && currentDocument.getPathAsString().contains(
-                                userWorkspacePath) && !firstAccessibleParentPath.contains(userWorkspacePath)))) {
+                && (!currentDocument.getPathAsString().contains(firstAccessibleParentPath) || (userWorkspacePath != null
+                        && currentDocument.getPathAsString().contains(userWorkspacePath) && !firstAccessibleParentPath.contains(userWorkspacePath)))) {
             return true;
         }
         return false;
     }
 
-    @Observer(value = { EventNames.GO_HOME,
-            EventNames.DOMAIN_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED,
-            EventNames.DOCUMENT_SECURITY_CHANGED,
-            EventNames.DOCUMENT_CHILDREN_CHANGED }, create = false)
+    @Observer(value = { EventNames.GO_HOME, EventNames.DOMAIN_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED,
+            EventNames.DOCUMENT_SECURITY_CHANGED, EventNames.DOCUMENT_CHILDREN_CHANGED }, create = false)
     @BypassInterceptors
     public void reset() {
         trees.clear();

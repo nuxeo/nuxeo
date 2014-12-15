@@ -74,8 +74,7 @@ public class DocumentContentViewActions implements Serializable {
     protected Map<String, List<ContentViewHeader>> currentAvailableContentViews;
 
     /**
-     * Map caching content views shown in export defined on a given document
-     * type
+     * Map caching content views shown in export defined on a given document type
      */
     protected Map<String, Map<String, List<ContentViewHeader>>> typeToExportContentView = new HashMap<String, Map<String, List<ContentViewHeader>>>();
 
@@ -83,8 +82,8 @@ public class DocumentContentViewActions implements Serializable {
 
     // API for content view support
 
-    protected Map<String, List<ContentViewHeader>> getContentViewHeaders(
-            TypeInfo typeInfo, boolean export) throws ClientException {
+    protected Map<String, List<ContentViewHeader>> getContentViewHeaders(TypeInfo typeInfo, boolean export)
+            throws ClientException {
         Map<String, List<ContentViewHeader>> res = new LinkedHashMap<String, List<ContentViewHeader>>();
         Map<String, String[]> cvNamesByCat;
         if (export) {
@@ -110,36 +109,30 @@ public class DocumentContentViewActions implements Serializable {
         return res;
     }
 
-    protected void retrieveContentViewHeaders(DocumentModel doc)
-            throws ClientException {
+    protected void retrieveContentViewHeaders(DocumentModel doc) throws ClientException {
         String docType = doc.getType();
         if (!typeToContentView.containsKey(docType)) {
             TypeInfo typeInfo = doc.getAdapter(TypeInfo.class);
-            Map<String, List<ContentViewHeader>> byCategories = getContentViewHeaders(
-                    typeInfo, false);
+            Map<String, List<ContentViewHeader>> byCategories = getContentViewHeaders(typeInfo, false);
             typeToContentView.put(docType, byCategories);
         }
     }
 
-    protected void retrieveExportContentViewHeaders(DocumentModel doc)
-            throws ClientException {
+    protected void retrieveExportContentViewHeaders(DocumentModel doc) throws ClientException {
         String docType = doc.getType();
         if (!typeToExportContentView.containsKey(docType)) {
             TypeInfo typeInfo = doc.getAdapter(TypeInfo.class);
-            Map<String, List<ContentViewHeader>> byCategories = getContentViewHeaders(
-                    typeInfo, true);
+            Map<String, List<ContentViewHeader>> byCategories = getContentViewHeaders(typeInfo, true);
             typeToExportContentView.put(docType, byCategories);
         }
     }
 
     /**
-     * Returns true if content views are defined on given document for given
-     * category.
+     * Returns true if content views are defined on given document for given category.
      * <p>
      * Also fetches content view headers defined on a document type
      */
-    public boolean hasContentViewSupport(DocumentModel doc, String category)
-            throws ClientException {
+    public boolean hasContentViewSupport(DocumentModel doc, String category) throws ClientException {
         if (doc == null) {
             return false;
         }
@@ -151,8 +144,8 @@ public class DocumentContentViewActions implements Serializable {
         return !typeToContentView.get(docType).get(category).isEmpty();
     }
 
-    public Map<String, List<ContentViewHeader>> getAvailableContentViewsForDocument(
-            DocumentModel doc) throws ClientException {
+    public Map<String, List<ContentViewHeader>> getAvailableContentViewsForDocument(DocumentModel doc)
+            throws ClientException {
         if (doc == null) {
             return Collections.emptyMap();
         }
@@ -161,8 +154,8 @@ public class DocumentContentViewActions implements Serializable {
         return typeToContentView.get(docType);
     }
 
-    public List<ContentViewHeader> getAvailableContentViewsForDocument(
-            DocumentModel doc, String category) throws ClientException {
+    public List<ContentViewHeader> getAvailableContentViewsForDocument(DocumentModel doc, String category)
+            throws ClientException {
         if (doc == null) {
             return Collections.emptyList();
         }
@@ -180,8 +173,7 @@ public class DocumentContentViewActions implements Serializable {
         return typeToContentView.get(doc.getType()).get(category);
     }
 
-    public Map<String, List<ContentViewHeader>> getAvailableContentViewsForCurrentDocument()
-            throws ClientException {
+    public Map<String, List<ContentViewHeader>> getAvailableContentViewsForCurrentDocument() throws ClientException {
         if (currentAvailableContentViews == null) {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             currentAvailableContentViews = getAvailableContentViewsForDocument(currentDocument);
@@ -189,8 +181,7 @@ public class DocumentContentViewActions implements Serializable {
         return currentAvailableContentViews;
     }
 
-    public List<ContentViewHeader> getAvailableContentViewsForCurrentDocument(
-            String category) throws ClientException {
+    public List<ContentViewHeader> getAvailableContentViewsForCurrentDocument(String category) throws ClientException {
         if (CONTENT_VIEW_CONFIGURATION_CATEGORY.equals(category)) {
             DocumentModel currentDoc = navigationContext.getCurrentDocument();
             List<ContentViewHeader> localHeaders = getLocalConfiguredContentViews(currentDoc);
@@ -210,8 +201,7 @@ public class DocumentContentViewActions implements Serializable {
                 return null;
             }
             ContentViewConfiguration configuration = localConfigurationService.getConfiguration(
-                    ContentViewConfiguration.class,
-                    CONTENT_VIEW_CONFIGURATION_FACET, doc);
+                    ContentViewConfiguration.class, CONTENT_VIEW_CONFIGURATION_FACET, doc);
             if (configuration == null) {
                 return null;
             }
@@ -235,8 +225,8 @@ public class DocumentContentViewActions implements Serializable {
         return null;
     }
 
-    public Map<String, List<ContentViewHeader>> getExportContentViewsForDocument(
-            DocumentModel doc) throws ClientException {
+    public Map<String, List<ContentViewHeader>> getExportContentViewsForDocument(DocumentModel doc)
+            throws ClientException {
         if (doc == null) {
             return Collections.emptyMap();
         }
@@ -245,8 +235,7 @@ public class DocumentContentViewActions implements Serializable {
         return typeToExportContentView.get(docType);
     }
 
-    public Map<String, List<ContentViewHeader>> getExportContentViewsForCurrentDocument()
-            throws ClientException {
+    public Map<String, List<ContentViewHeader>> getExportContentViewsForCurrentDocument() throws ClientException {
         if (currentExportContentViews == null) {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             currentExportContentViews = getExportContentViewsForDocument(currentDocument);
@@ -254,8 +243,7 @@ public class DocumentContentViewActions implements Serializable {
         return currentExportContentViews;
     }
 
-    public List<ContentViewHeader> getExportContentViewsForCurrentDocument(
-            String category) throws ClientException {
+    public List<ContentViewHeader> getExportContentViewsForCurrentDocument(String category) throws ClientException {
         getExportContentViewsForCurrentDocument();
         return currentExportContentViews.get(category);
     }
@@ -266,11 +254,10 @@ public class DocumentContentViewActions implements Serializable {
         currentAvailableContentViews = null;
         currentExportContentViews = null;
     }
-    
+
     /**
-     * Resets typeToContentView cache on {@link EventNames#FLUSH_EVENT},
-     * triggered by hot reload when dev mode is set.
-     * 
+     * Resets typeToContentView cache on {@link EventNames#FLUSH_EVENT}, triggered by hot reload when dev mode is set.
+     *
      * @since 5.7.1
      */
     @Observer(value = { EventNames.FLUSH_EVENT })

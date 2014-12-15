@@ -26,8 +26,7 @@ import javax.faces.convert.ConverterException;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 
 /**
- * JSF converter that translates between a boolean and a list of document
- * states to filter on
+ * JSF converter that translates between a boolean and a list of document states to filter on
  *
  * @author Anahide Tchertchian
  * @deprecated this converter is not needed anymore, see NXP-6249
@@ -37,8 +36,7 @@ public class SearchDeletedDocumentsConverter implements Converter {
 
     // TODO: make states configurable through converter arguments
 
-    public Object getAsObject(FacesContext context, UIComponent component,
-            String value) {
+    public Object getAsObject(FacesContext context, UIComponent component, String value) {
         if (context == null || component == null) {
             throw new NullPointerException();
         }
@@ -57,8 +55,7 @@ public class SearchDeletedDocumentsConverter implements Converter {
         try {
             Boolean result = (Boolean.valueOf(value));
             if (Boolean.TRUE.equals(result)) {
-                return new String[] { "project", "approved", "obsolete",
-                        LifeCycleConstants.DELETED_STATE };
+                return new String[] { "project", "approved", "obsolete", LifeCycleConstants.DELETED_STATE };
             } else {
                 return new String[] { "project", "approved", "obsolete" };
             }
@@ -68,8 +65,7 @@ public class SearchDeletedDocumentsConverter implements Converter {
     }
 
     @SuppressWarnings("unchecked")
-    public String getAsString(FacesContext context, UIComponent component,
-            Object value) {
+    public String getAsString(FacesContext context, UIComponent component, Object value) {
         if (context == null || component == null) {
             throw new NullPointerException();
         }

@@ -64,8 +64,7 @@ public class OperationTypeImpl implements OperationType {
     protected Class<?> type;
 
     /**
-     * Injectable parameters. a map between the parameter name and the Field
-     * object
+     * Injectable parameters. a map between the parameter name and the Field object
      */
     protected Map<String, Field> params;
 
@@ -85,12 +84,11 @@ public class OperationTypeImpl implements OperationType {
         this(service, type, null);
     }
 
-    public OperationTypeImpl(AutomationService service, Class<?> type,
-            String contributingComponent) {
+    public OperationTypeImpl(AutomationService service, Class<?> type, String contributingComponent) {
         Operation anno = type.getAnnotation(Operation.class);
         if (anno == null) {
-            throw new IllegalArgumentException("Invalid operation class: "
-                    + type + ". No @Operation annotation found on class.");
+            throw new IllegalArgumentException("Invalid operation class: " + type
+                    + ". No @Operation annotation found on class.");
         }
         this.service = service;
         this.type = type;
@@ -176,15 +174,13 @@ public class OperationTypeImpl implements OperationType {
     }
 
     @Override
-    public Object newInstance(OperationContext ctx, Map<String, Object> args)
-            throws Exception {
+    public Object newInstance(OperationContext ctx, Map<String, Object> args) throws Exception {
         Object obj = type.newInstance();
         inject(ctx, args, obj);
         return obj;
     }
 
-    public void inject(OperationContext ctx, Map<String, Object> args,
-            Object target) throws Exception {
+    public void inject(OperationContext ctx, Map<String, Object> args, Object target) throws Exception {
         for (Map.Entry<String, Field> entry : params.entrySet()) {
             Object obj = args.get(entry.getKey());
             if (obj instanceof Expression) {
@@ -199,11 +195,8 @@ public class OperationTypeImpl implements OperationType {
             }
             if (obj == null) {
                 if (entry.getValue().getAnnotation(Param.class).required()) {
-                    throw new OperationException(
-                            "Failed to inject parameter '"
-                                    + entry.getKey()
-                                    + "'. Seems it is missing from the context. Operation: "
-                                    + getId());
+                    throw new OperationException("Failed to inject parameter '" + entry.getKey()
+                            + "'. Seems it is missing from the context. Operation: " + getId());
                 } // else do nothing
             } else {
                 Field field = entry.getValue();
@@ -283,8 +276,7 @@ public class OperationTypeImpl implements OperationType {
         ArrayList<String> result = new ArrayList<String>(methods.size() * 2);
         Collection<String> collectedSigs = new HashSet<String>();
         for (InvokableMethod m : methods) {
-            String in = getParamDocumentationType(m.getInputType(),
-                    m.isIterable());
+            String in = getParamDocumentationType(m.getInputType(), m.isIterable());
             String out = getParamDocumentationType(m.getOutputType());
             String sigKey = in + ":" + out;
             if (!collectedSigs.contains(sigKey)) {
@@ -308,11 +300,9 @@ public class OperationTypeImpl implements OperationType {
 
     protected String getParamDocumentationType(Class<?> type, boolean isIterable) {
         String t;
-        if (DocumentModel.class.isAssignableFrom(type)
-                || DocumentRef.class.isAssignableFrom(type)) {
+        if (DocumentModel.class.isAssignableFrom(type) || DocumentRef.class.isAssignableFrom(type)) {
             t = isIterable ? Constants.T_DOCUMENTS : Constants.T_DOCUMENT;
-        } else if (DocumentModelList.class.isAssignableFrom(type)
-                || DocumentRefList.class.isAssignableFrom(type)) {
+        } else if (DocumentModelList.class.isAssignableFrom(type) || DocumentRefList.class.isAssignableFrom(type)) {
             t = Constants.T_DOCUMENTS;
         } else if (BlobList.class.isAssignableFrom(type)) {
             t = Constants.T_BLOBS;
@@ -328,11 +318,9 @@ public class OperationTypeImpl implements OperationType {
         return t;
     }
 
-
     @Override
     public String toString() {
-        return "OperationTypeImpl [id=" + id + ", type=" + type + ", params="
-                + params + "]";
+        return "OperationTypeImpl [id=" + id + ", type=" + type + ", params=" + params + "]";
     }
 
     /**

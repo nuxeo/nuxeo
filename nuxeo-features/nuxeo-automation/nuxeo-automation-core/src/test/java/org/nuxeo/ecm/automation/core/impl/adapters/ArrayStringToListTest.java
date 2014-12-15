@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.automation.core.impl.adapters;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -57,8 +59,7 @@ public class ArrayStringToListTest {
     public void shouldAdaptArrayStringAsStringList() throws Exception {
         String[] value = new String[] { "a", "b", };
 
-        Object result = automationService.getAdaptedValue(ctx, value,
-                StringList.class);
+        Object result = automationService.getAdaptedValue(ctx, value, StringList.class);
         assertNotNull(result);
         assertTrue(result instanceof StringList);
         StringList list = (StringList) result;

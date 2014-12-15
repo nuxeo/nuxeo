@@ -18,22 +18,19 @@ import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- * This implementation collect {@link Blob} objects and return them as a
- * {@link BlobList} object.
+ * This implementation collect {@link Blob} objects and return them as a {@link BlobList} object.
  * <p>
- * You may use this to automatically iterate over iterable inputs in operation
- * methods that <b>return</b> a {@link Blob} object.
+ * You may use this to automatically iterate over iterable inputs in operation methods that <b>return</b> a {@link Blob}
+ * object.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class BlobCollector extends BlobList implements OutputCollector<Blob, BlobList> {
 
     private static final long serialVersionUID = 5167860889224514027L;
 
     @Override
-    public void collect(OperationContext ctx, Blob obj)
-            throws OperationException {
+    public void collect(OperationContext ctx, Blob obj) throws OperationException {
         add(obj);
     }
 

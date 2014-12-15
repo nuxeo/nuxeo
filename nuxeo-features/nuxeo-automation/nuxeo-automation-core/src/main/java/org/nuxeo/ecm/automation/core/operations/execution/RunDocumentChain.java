@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.automation.core.operations.execution;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
@@ -27,8 +26,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 /**
- * Run an embedded operation chain that returns a DocumentModel using the
- * current input.
+ * Run an embedded operation chain that returns a DocumentModel using the current input.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -46,18 +44,16 @@ public class RunDocumentChain {
     @Param(name = "id")
     protected String chainId;
 
-    @Param(name="isolate", required = false, values = "false")
+    @Param(name = "isolate", required = false, values = "false")
     protected boolean isolate = false;
 
     @Param(name = "parameters", description = "Accessible in the subcontext ChainParameters. For instance, @{ChainParameters['parameterKey']}.", required = false)
     protected Properties chainParameters;
 
-
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
         OperationContext subctx = ctx.getSubContext(isolate, doc);
-        return (DocumentModel) service.run(subctx, chainId,
-                (Map) chainParameters);
+        return (DocumentModel) service.run(subctx, chainId, (Map) chainParameters);
     }
 
     @OperationMethod

@@ -115,17 +115,14 @@ public class UserSuggestionActionsBean implements Serializable {
 
     protected void addSearchOverflowMessage() {
         if (userSuggestionMessageId != null) {
-            facesMessages.addToControl(userSuggestionMessageId,
-                    StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.security.searchOverFlow"));
+            facesMessages.addToControl(userSuggestionMessageId, StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get("label.security.searchOverFlow"));
         } else {
             log.error("Search overflow");
         }
     }
 
-    public List<DocumentModel> getGroupsSuggestions(Object input)
-            throws ClientException {
+    public List<DocumentModel> getGroupsSuggestions(Object input) throws ClientException {
         try {
             Map<String, DocumentModel> uniqueGroups = new HashMap<String, DocumentModel>();
 
@@ -141,16 +138,14 @@ public class UserSuggestionActionsBean implements Serializable {
                     filter.put("__virtualGroup", false);
                 }
 
-                for (DocumentModel group : userManager.searchGroups(filter,
-                        filter.keySet())) {
+                for (DocumentModel group : userManager.searchGroups(filter, filter.keySet())) {
                     uniqueGroups.put(group.getId(), group);
                 }
             }
 
             DocumentModelList groups = new DocumentModelListImpl();
             groups.addAll(uniqueGroups.values());
-            Collections.sort(groups, new DocumentModelComparator(
-                    userManager.getGroupSchemaName(), getGroupsOrderBy()));
+            Collections.sort(groups, new DocumentModelComparator(userManager.getGroupSchemaName(), getGroupsOrderBy()));
             return groups;
         } catch (SizeLimitExceededException e) {
             addSearchOverflowMessage();
@@ -162,13 +157,11 @@ public class UserSuggestionActionsBean implements Serializable {
 
     protected Map<String, String> getGroupsOrderBy() throws ClientException {
         Map<String, String> order = new HashMap<String, String>();
-        order.put(userManager.getGroupLabelField(),
-                DocumentModelComparator.ORDER_ASC);
+        order.put(userManager.getGroupLabelField(), DocumentModelComparator.ORDER_ASC);
         return order;
     }
 
-    public List<DocumentModel> getUserSuggestions(Object input)
-            throws ClientException {
+    public List<DocumentModel> getUserSuggestions(Object input) throws ClientException {
         try {
             String searchPattern = (String) input;
             return userManager.searchUsers(searchPattern);
@@ -192,21 +185,18 @@ public class UserSuggestionActionsBean implements Serializable {
 
     public Object getSuggestions(Object input) throws ClientException {
         if (equals(cachedUserSuggestionSearchType, userSuggestionSearchType)
-                && equals(cachedUserSuggestionMaxSearchResults,
-                        userSuggestionMaxSearchResults)
+                && equals(cachedUserSuggestionMaxSearchResults, userSuggestionMaxSearchResults)
                 && equals(cachedInput, input)) {
             return cachedSuggestions;
         }
 
         List<DocumentModel> users = Collections.emptyList();
-        if (USER_TYPE.equals(userSuggestionSearchType)
-                || StringUtils.isEmpty(userSuggestionSearchType)) {
+        if (USER_TYPE.equals(userSuggestionSearchType) || StringUtils.isEmpty(userSuggestionSearchType)) {
             users = getUserSuggestions(input);
         }
 
         List<DocumentModel> groups = Collections.emptyList();
-        if (GROUP_TYPE.equals(userSuggestionSearchType)
-                || StringUtils.isEmpty(userSuggestionSearchType)) {
+        if (GROUP_TYPE.equals(userSuggestionSearchType) || StringUtils.isEmpty(userSuggestionSearchType)) {
             groups = getGroupsSuggestions(input);
         }
 
@@ -214,18 +204,15 @@ public class UserSuggestionActionsBean implements Serializable {
         int groupSize = groups.size();
         int totalSize = userSize + groupSize;
 
-        if (userSuggestionMaxSearchResults != null
-                && userSuggestionMaxSearchResults > 0) {
-            if (userSize > userSuggestionMaxSearchResults
-                    || groupSize > userSuggestionMaxSearchResults
+        if (userSuggestionMaxSearchResults != null && userSuggestionMaxSearchResults > 0) {
+            if (userSize > userSuggestionMaxSearchResults || groupSize > userSuggestionMaxSearchResults
                     || totalSize > userSuggestionMaxSearchResults) {
                 addSearchOverflowMessage();
                 return null;
             }
         }
 
-        List<Map<String, Object>> result = new ArrayList<Map<String, Object>>(
-                totalSize);
+        List<Map<String, Object>> result = new ArrayList<Map<String, Object>>(totalSize);
 
         for (DocumentModel user : users) {
             Map<String, Object> entry = new HashMap<String, Object>();
@@ -256,8 +243,7 @@ public class UserSuggestionActionsBean implements Serializable {
     }
 
     // XXX: needs optimisation
-    public Map<String, Object> getPrefixedUserInfo(String id)
-            throws ClientException {
+    public Map<String, Object> getPrefixedUserInfo(String id) throws ClientException {
         Map<String, Object> res = new HashMap<String, Object>();
         res.put(PREFIXED_ID_KEY_NAME, id);
         if (!StringUtils.isBlank(id)) {
@@ -287,7 +273,7 @@ public class UserSuggestionActionsBean implements Serializable {
             res.put(PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX + id);
             res.put(TYPE_KEY_NAME, GROUP_TYPE);
             res.put(ENTRY_KEY_NAME, userManager.getGroupModel(id));
-        } else if (!StringUtils.isBlank(id)){
+        } else if (!StringUtils.isBlank(id)) {
             // user
             res.put(PREFIXED_ID_KEY_NAME, NuxeoPrincipal.PREFIX + id);
             res.put(TYPE_KEY_NAME, USER_TYPE);

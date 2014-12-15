@@ -91,15 +91,11 @@ public class NuxeoSeamFlusher implements EventListener {
 
     }
 
-    protected void invalidateWebSessions() throws IOException,
-            MalformedObjectNameException {
+    protected void invalidateWebSessions() throws IOException, MalformedObjectNameException {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        for (ObjectInstance oi : mbs.queryMBeans(new ObjectName(
-                "Catalina:type=Manager,context=/nuxeo,host=*"), null)) {
-            WebSessionFlusher flusher = JMX.newMBeanProxy(mbs,
-                    oi.getObjectName(), WebSessionFlusher.class);
-            StringTokenizer tokenizer = new StringTokenizer(
-                    flusher.listSessionIds(), " ");
+        for (ObjectInstance oi : mbs.queryMBeans(new ObjectName("Catalina:type=Manager,context=/nuxeo,host=*"), null)) {
+            WebSessionFlusher flusher = JMX.newMBeanProxy(mbs, oi.getObjectName(), WebSessionFlusher.class);
+            StringTokenizer tokenizer = new StringTokenizer(flusher.listSessionIds(), " ");
             while (tokenizer.hasMoreTokens()) {
                 String id = tokenizer.nextToken();
                 flusher.expireSession(id);

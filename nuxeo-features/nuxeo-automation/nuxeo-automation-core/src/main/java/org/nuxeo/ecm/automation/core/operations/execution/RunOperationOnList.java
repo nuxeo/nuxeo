@@ -13,7 +13,6 @@ package org.nuxeo.ecm.automation.core.operations.execution;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
@@ -26,8 +25,7 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.Properties;
 
 /**
- * Run an embedded operation chain using the current input. The output is
- * undefined (Void)
+ * Run an embedded operation chain using the current input. The output is undefined (Void)
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @since 5.5
@@ -68,8 +66,7 @@ public class RunOperationOnList {
         } else if (ctx.get(listName) instanceof Collection<?>) {
             list = (Collection<?>) ctx.get(listName);
         } else {
-            throw new UnsupportedOperationException(
-                    ctx.get(listName).getClass() + " is not a Collection");
+            throw new UnsupportedOperationException(ctx.get(listName).getClass() + " is not a Collection");
         }
         for (Object value : list) {
             subctx.put(itemName, value);

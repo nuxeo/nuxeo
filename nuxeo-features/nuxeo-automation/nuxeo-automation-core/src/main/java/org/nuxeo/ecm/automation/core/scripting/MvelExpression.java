@@ -36,11 +36,8 @@ public class MvelExpression implements Expression {
         if (compiled == null) {
             compiled = MVEL.compileExpression(expr);
         }
-        Object result = MVEL.executeExpression(compiled,
-                Scripting.initBindings(ctx));
-        return result != null
-                && result.getClass().isAssignableFrom(BlankLiteral.class) ? ""
-                : result;
+        Object result = MVEL.executeExpression(compiled, Scripting.initBindings(ctx));
+        return result != null && result.getClass().isAssignableFrom(BlankLiteral.class) ? "" : result;
     }
 
 }

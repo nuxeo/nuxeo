@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
 
@@ -39,8 +41,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
- *
- *
  * @since 5.8
  */
 @RunWith(FeaturesRunner.class)
@@ -53,8 +53,7 @@ public class PermissionTest {
 
     @Before
     public void doBefore() throws Exception {
-        when(um.getAdministratorsGroups()).thenReturn(
-                Arrays.asList(new String[] { "administrators" }));
+        when(um.getAdministratorsGroups()).thenReturn(Arrays.asList(new String[] { "administrators" }));
     }
 
     @Test
@@ -62,15 +61,13 @@ public class PermissionTest {
         // Given an ACP
         ACP acp = getInheritedReadWriteACP();
         // When i set Permission to a user
-        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "john",
-                READ_WRITE, false, "john");
+        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "john", READ_WRITE, false, "john");
 
         // Then he still have access and local ACL have an entry
         assertEquals(Access.GRANT, acp.getAccess("john", READ_WRITE));
 
         assertEquals(1, acp.getACL(ACL.LOCAL_ACL).getACEs().length);
-        assertEquals(new ACE("john", READ_WRITE, true),
-                acp.getACL(ACL.LOCAL_ACL).getACEs()[0]);
+        assertEquals(new ACE("john", READ_WRITE, true), acp.getACL(ACL.LOCAL_ACL).getACEs()[0]);
 
     }
 
@@ -83,15 +80,13 @@ public class PermissionTest {
         assertEquals(Access.UNKNOWN, acp.getAccess("john", "comment"));
 
         // When i set Permission to a user
-        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "john",
-                "comment", false, "john");
+        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "john", "comment", false, "john");
 
         // Then he still have access and local ACL have an entry
         assertEquals(Access.GRANT, acp.getAccess("john", "comment"));
 
         assertEquals(1, acp.getACL(ACL.LOCAL_ACL).getACEs().length);
-        assertEquals(new ACE("john", "comment", true),
-                acp.getACL(ACL.LOCAL_ACL).getACEs()[0]);
+        assertEquals(new ACE("john", "comment", true), acp.getACL(ACL.LOCAL_ACL).getACEs()[0]);
 
     }
 
@@ -100,12 +95,10 @@ public class PermissionTest {
         // Given an ACP
         ACP acp = getInheritedReadWriteACP();
         // When i set Permission to a user
-        boolean hasChanged = DocumentPermissionHelper.addPermission(acp,
-                ACL.LOCAL_ACL, "john", READ_WRITE, false, null);
+        boolean hasChanged = DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "john", READ_WRITE, false, null);
         assertTrue(hasChanged);
         // When i call the operation another time
-        hasChanged = DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL,
-                "john", READ_WRITE, false, null);
+        hasChanged = DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "john", READ_WRITE, false, null);
         // Then nothing should change
         assertFalse(hasChanged);
         assertEquals(1, acp.getACL(ACL.LOCAL_ACL).getACEs().length);
@@ -117,8 +110,7 @@ public class PermissionTest {
         ACP acp = getInheritedReadWriteACP();
 
         // When i add the permission to a user with blocking inheritance
-        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "john",
-                READ_WRITE, true, "john");
+        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "john", READ_WRITE, true, "john");
 
         // Then he still have access and local ACL have an entry
         assertEquals(Access.GRANT, acp.getAccess("john", READ_WRITE));
@@ -137,22 +129,19 @@ public class PermissionTest {
         ACP acp = getInheritedReadWriteACP();
 
         // When i add the permission to a user with blocking inheritance
-        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "john",
-                READ_WRITE, true, null);
+        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "john", READ_WRITE, true, null);
 
     }
 
     @Test
-    public void itShoulAddInheritanceEvenIfItAlreadyHasPermission()
-            throws Exception {
+    public void itShoulAddInheritanceEvenIfItAlreadyHasPermission() throws Exception {
         // Given an ACP
         ACP acp = getInheritedReadWriteACP();
         ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
         acl.add(new ACE("john", READ_WRITE, true));
 
         // When i add the permission to a user with blocking inheritance
-        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "john",
-                READ_WRITE, true, "john");
+        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "john", READ_WRITE, true, "john");
 
         // Then he still have access and local ACL have an entry
         assertEquals(Access.GRANT, acp.getAccess("john", READ_WRITE));
@@ -174,8 +163,7 @@ public class PermissionTest {
         assertEquals(4, acp.getACL(ACL.LOCAL_ACL).getACEs().length);
 
         // When i call the removePermission operation
-        boolean hasChanged = DocumentPermissionHelper.removePermission(acp,
-                ACL.LOCAL_ACL, jack);
+        boolean hasChanged = DocumentPermissionHelper.removePermission(acp, ACL.LOCAL_ACL, jack);
 
         // Then the user doesn't have any permission anymore
         assertTrue(hasChanged);
@@ -185,16 +173,14 @@ public class PermissionTest {
     }
 
     @Test
-    public void itDoesNotChangeSecurityWhenRemovingNonExistentUser()
-            throws Exception {
+    public void itDoesNotChangeSecurityWhenRemovingNonExistentUser() throws Exception {
         // Given an ACP
         ACP acp = new ACPImpl();
 
         assertEquals(Access.UNKNOWN, acp.getAccess("jack", READ_WRITE));
 
         // When i call the removePermission operation
-        boolean hasChanged = DocumentPermissionHelper.removePermission(acp,
-                ACL.LOCAL_ACL, "jack");
+        boolean hasChanged = DocumentPermissionHelper.removePermission(acp, ACL.LOCAL_ACL, "jack");
 
         // Then the user doesn't have any permission anymore
         assertFalse(hasChanged);
@@ -211,18 +197,15 @@ public class PermissionTest {
         assertEquals(Access.UNKNOWN, acp.getAccess("john", "comment"));
 
         // When i set Permission to a user with inheritance block
-        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "john",
-                READ_WRITE, true, "john");
+        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "john", READ_WRITE, true, "john");
 
         // only john have Permission
         assertEquals(Access.GRANT, acp.getAccess("john", "ReadWrite"));
         assertEquals(Access.DENY, acp.getAccess("jack", "ReadWrite"));
         assertEquals(Access.DENY, acp.getAccess("jerry", "ReadWrite"));
 
-        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "jack",
-                READ_WRITE, false, "john");
-        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "jerry",
-                READ_WRITE, false, "john");
+        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "jack", READ_WRITE, false, "john");
+        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "jerry", READ_WRITE, false, "john");
 
         // Check jack and jerry have permission, even with inheritance block
         assertEquals(Access.GRANT, acp.getAccess("john", "ReadWrite"));
@@ -233,15 +216,13 @@ public class PermissionTest {
 
     /**
      * @return
-     *
      */
     private ACP getInheritedReadWriteACP() {
         ACP acp = new ACPImpl();
         ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
         acl = acp.getOrCreateACL(ACL.INHERITED_ACL);
 
-        acl.add(new ACE(SecurityConstants.EVERYONE,
-                SecurityConstants.READ_WRITE, true));
+        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ_WRITE, true));
         return acp;
 
     }

@@ -31,7 +31,7 @@ public class CheckOutDocument {
     @Context
     protected CoreSession session;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentRef doc) throws Exception {
         if (!session.isCheckedOut(doc)) {
             session.checkOut(doc);
@@ -39,7 +39,7 @@ public class CheckOutDocument {
         return session.getDocument(doc);
     }
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         if (!doc.isCheckedOut()) {
             session.checkOut(doc.getRef());

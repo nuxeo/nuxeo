@@ -14,15 +14,14 @@ package org.nuxeo.ecm.automation.core.test;
 import static org.junit.Assert.assertNotNull;
 
 import junit.framework.Assert;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.impl.OperationServiceImpl;
-import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -32,12 +31,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -85,8 +81,7 @@ public class ScriptingTest {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
         Assert.assertFalse(src.getTitle().isEmpty());
-        DocumentModel doc = (DocumentModel) ((OperationServiceImpl) service).run(
-                ctx, "testEmptyExpression");
+        DocumentModel doc = (DocumentModel) ((OperationServiceImpl) service).run(ctx, "testEmptyExpression");
         Assert.assertNotNull(doc);
         Assert.assertTrue(doc.getTitle().isEmpty());
     }

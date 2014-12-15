@@ -64,8 +64,7 @@ public class VocabularyTreeActions implements Serializable {
 
     protected transient Map<String, VocabularyTreeNode> treeModels;
 
-    public VocabularyTreeNode get(String vocabularyName,
-            boolean displayObsoleteEntries, char keySeparator,
+    public VocabularyTreeNode get(String vocabularyName, boolean displayObsoleteEntries, char keySeparator,
             String orderingField) {
         if (treeModels == null) {
             treeModels = new HashMap<String, VocabularyTreeNode>();
@@ -77,41 +76,32 @@ public class VocabularyTreeActions implements Serializable {
         }
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
         try {
-            Directory directory = Framework.getLocalService(
-                    DirectoryService.class).getDirectory(vocabularyName);
+            Directory directory = Framework.getLocalService(DirectoryService.class).getDirectory(vocabularyName);
             if (directory == null) {
-                throw new DirectoryException(vocabularyName
-                        + " is not a registered directory");
+                throw new DirectoryException(vocabularyName + " is not a registered directory");
             }
             String dirSchema = directory.getSchema();
-            if (!L10NVOCABULARY_SCHEMA.equals(dirSchema)
-                    && !L10NXVOCABULARY_SCHEMA.equals(dirSchema)) {
-                throw new DirectoryException(vocabularyName
-                        + "does not have the required schema: "
-                        + L10NVOCABULARY_SCHEMA + " or "
-                        + L10NXVOCABULARY_SCHEMA);
+            if (!L10NVOCABULARY_SCHEMA.equals(dirSchema) && !L10NXVOCABULARY_SCHEMA.equals(dirSchema)) {
+                throw new DirectoryException(vocabularyName + "does not have the required schema: "
+                        + L10NVOCABULARY_SCHEMA + " or " + L10NXVOCABULARY_SCHEMA);
             }
         } catch (DirectoryException e) {
             throw new RuntimeException(e);
         }
 
-        treeModel = new VocabularyTreeNode(0, "", "", "", vocabularyName,
-                directoryService, displayObsoleteEntries, keySeparator,
-                orderingField);
+        treeModel = new VocabularyTreeNode(0, "", "", "", vocabularyName, directoryService, displayObsoleteEntries,
+                keySeparator, orderingField);
 
         treeModels.put(vocabularyName, treeModel);
         return treeModel;
     }
 
-    public List<VocabularyTreeNode> getRoots(String vocabularyName,
-            boolean displayObsoleteEntries, char keySeparator,
+    public List<VocabularyTreeNode> getRoots(String vocabularyName, boolean displayObsoleteEntries, char keySeparator,
             String orderingField) {
-        return get(vocabularyName, displayObsoleteEntries, keySeparator,
-                orderingField).getChildren();
+        return get(vocabularyName, displayObsoleteEntries, keySeparator, orderingField).getChildren();
     }
 
-    public String getLabelFor(String vocabularyName, String path,
-            char keySeparator) {
+    public String getLabelFor(String vocabularyName, String path, char keySeparator) {
         Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
         String schemaName = null;
         Session session = null;
@@ -121,8 +111,7 @@ public class VocabularyTreeActions implements Serializable {
             schemaName = directoryService.getDirectorySchema(vocabularyName);
             session = directoryService.open(vocabularyName);
             for (String id : StringUtils.split(path, keySeparator)) {
-                String computeLabel = VocabularyTreeNode.computeLabel(locale,
-                        session.getEntry(id), schemaName);
+                String computeLabel = VocabularyTreeNode.computeLabel(locale, session.getEntry(id), schemaName);
                 if (computeLabel == null) {
                     labels.add(id);
                 } else {

@@ -1,5 +1,7 @@
 package org.nuxeo.ecm.webapp.tree;
 
+import static org.jboss.seam.ScopeType.SESSION;
+
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -9,8 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-
-import static org.jboss.seam.ScopeType.SESSION;
 
 @Name("treeInvalidator")
 @Scope(SESSION)

@@ -22,16 +22,14 @@ import org.nuxeo.ecm.automation.core.OperationChainContribution;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class OperationDocumentation implements
-        Comparable<OperationDocumentation>, Serializable {
+public class OperationDocumentation implements Comparable<OperationDocumentation>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
     public String id;
 
     /**
-     * an array of size multiple of 2. Each pair in the array is the input and
-     * output type of a method.
+     * an array of size multiple of 2. Each pair in the array is the input and output type of a method.
      */
     public String[] signature;
 
@@ -122,8 +120,7 @@ public class OperationDocumentation implements
 
         @Override
         public String toString() {
-            return name + " [" + type + "] "
-                    + (isRequired ? "required" : "optional");
+            return name + " [" + type + "] " + (isRequired ? "required" : "optional");
         }
 
         public int compareTo(Param o) {
@@ -188,8 +185,7 @@ public class OperationDocumentation implements
 
     @Override
     public String toString() {
-        return category + " > " + label + " [" + id + ": "
-                + Arrays.asList(signature) + "] (" + params + ")\n"
+        return category + " > " + label + " [" + id + ": " + Arrays.asList(signature) + "] (" + params + ")\n"
                 + description;
     }
 }

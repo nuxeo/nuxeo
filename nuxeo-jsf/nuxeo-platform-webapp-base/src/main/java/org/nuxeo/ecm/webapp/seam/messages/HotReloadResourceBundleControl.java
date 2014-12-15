@@ -33,9 +33,8 @@ import org.nuxeo.runtime.reload.ReloadService;
 /**
  * Resource bundle controller for Seam.
  * <p>
- * Handles hot reload of resources when in dev mode, relying on the
- * {@link ReloadService#flush()} method to be called when needing to flush
- * messages.
+ * Handles hot reload of resources when in dev mode, relying on the {@link ReloadService#flush()} method to be called
+ * when needing to flush messages.
  *
  * @since 5.6
  */
@@ -43,25 +42,21 @@ import org.nuxeo.runtime.reload.ReloadService;
 @BypassInterceptors
 @Scope(ScopeType.SESSION)
 @AutoCreate
-public class HotReloadResourceBundleControl extends ResourceBundle.Control
-        implements Serializable {
+public class HotReloadResourceBundleControl extends ResourceBundle.Control implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     protected long timeToLive = ResourceBundle.Control.TTL_NO_EXPIRATION_CONTROL;
 
     public static HotReloadResourceBundleControl instance() {
-        return (HotReloadResourceBundleControl) Component.getInstance(
-                HotReloadResourceBundleControl.class, true);
+        return (HotReloadResourceBundleControl) Component.getInstance(HotReloadResourceBundleControl.class, true);
     }
 
     @Override
-    public ResourceBundle newBundle(String baseName, Locale locale,
-            String format, ClassLoader loader, boolean reload)
+    public ResourceBundle newBundle(String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
             throws IllegalAccessException, InstantiationException, IOException {
         // force reload if debug mode is set
-        return super.newBundle(baseName, locale, format, loader,
-                Framework.isDevModeSet());
+        return super.newBundle(baseName, locale, format, loader, Framework.isDevModeSet());
     }
 
 }

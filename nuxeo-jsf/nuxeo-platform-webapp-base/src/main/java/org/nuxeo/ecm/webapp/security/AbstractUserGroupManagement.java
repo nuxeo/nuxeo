@@ -17,7 +17,6 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  * Common properties and methods for Users and Groups management.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  * @since 5.4.2
  */
 public abstract class AbstractUserGroupManagement {
@@ -34,13 +33,11 @@ public abstract class AbstractUserGroupManagement {
 
     public static final String USERS_GROUPS_MANAGER = "UsersGroupsManager";
 
-    public static final String USERS_GROUPS_MANAGER_SUB_TAB = USERS_GROUPS_MANAGER
-            + SUBTAB_CATEGORY_SUFFIX;
+    public static final String USERS_GROUPS_MANAGER_SUB_TAB = USERS_GROUPS_MANAGER + SUBTAB_CATEGORY_SUFFIX;
 
     public static final String USERS_GROUPS_HOME = "UsersGroupsHome";
 
-    public static final String USERS_GROUPS_HOME_SUB_TAB = USERS_GROUPS_HOME
-            + SUBTAB_CATEGORY_SUFFIX;
+    public static final String USERS_GROUPS_HOME_SUB_TAB = USERS_GROUPS_HOME + SUBTAB_CATEGORY_SUFFIX;
 
     public static final String VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789.@";
 

@@ -36,11 +36,8 @@ public class MvelTemplate implements Expression {
         if (compiled == null) {
             compiled = TemplateCompiler.compileTemplate(expr);
         }
-        Object obj = TemplateRuntime.execute(compiled,
-                Scripting.initBindings(ctx));
-        return obj == null
-                || obj.getClass().isAssignableFrom(BlankLiteral.class) ? ""
-                : obj.toString();
+        Object obj = TemplateRuntime.execute(compiled, Scripting.initBindings(ctx));
+        return obj == null || obj.getClass().isAssignableFrom(BlankLiteral.class) ? "" : obj.toString();
     }
 
 }

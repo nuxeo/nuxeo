@@ -22,8 +22,7 @@ import org.nuxeo.ecm.core.schema.utils.DateParser;
  */
 public class StringToDate implements TypeAdapter {
 
-    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
-            throws TypeAdaptException {
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         String content = (String) objectToAdapt;
         if (StringUtils.isEmpty(content)) {
             return null;

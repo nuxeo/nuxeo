@@ -60,8 +60,7 @@ public class PermissionActionListManager implements Serializable {
 
         for (String permissionAction : permissionActions) {
             String label = labeler.makeLabel(permissionAction);
-            SelectItem it = new SelectItem(permissionAction,
-                    resourcesAccessor.getMessages().get(label));
+            SelectItem it = new SelectItem(permissionAction, resourcesAccessor.getMessages().get(label));
             jsfModelList.add(it);
         }
 

@@ -24,8 +24,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Restlet to trigger the reloading. (can not be done directly from a Seam bean
- * without messing up JSF scopes).
+ * Restlet to trigger the reloading. (can not be done directly from a Seam bean without messing up JSF scopes).
  *
  * @author tiry
  */
@@ -59,8 +58,7 @@ public class NuxeoSeamHotReloadRestTrigger extends BaseStatelessNuxeoRestlet {
                 }
             } else {
                 Set<String> reloadableComponents = SeamHotReloadHelper.getHotDeployableComponents(getHttpRequest(req));
-                if (reloadableComponents == null
-                        || reloadableComponents.size() == 0) {
+                if (reloadableComponents == null || reloadableComponents.size() == 0) {
                     sb.append("Nothing to reload");
                 } else {
                     sb.append(reloadableComponents.size());

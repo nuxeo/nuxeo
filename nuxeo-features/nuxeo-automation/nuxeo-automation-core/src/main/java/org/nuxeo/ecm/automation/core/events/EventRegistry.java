@@ -40,8 +40,7 @@ public class EventRegistry extends ContributionFragmentRegistry<EventHandler> {
     }
 
     @Override
-    public void contributionUpdated(String id, EventHandler handler,
-            EventHandler newOrigContrib) {
+    public void contributionUpdated(String id, EventHandler handler, EventHandler newOrigContrib) {
         for (String eventId : handler.getEvents()) {
             putEventHandler(eventId, handler);
         }

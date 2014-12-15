@@ -23,7 +23,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class LoginStack {
 
@@ -65,8 +64,7 @@ public class LoginStack {
             }
             stack.add(entry);
         } catch (Exception e) {
-            throw new OperationException(
-                    "Failed to create new core session for loginAs", e);
+            throw new OperationException("Failed to create new core session for loginAs", e);
         }
     }
 
@@ -80,10 +78,8 @@ public class LoginStack {
     /**
      * Remove the current login context from the stack.
      * <p>
-     * If no login context in in the stack nothing is done. If the login context
-     * has an associated CoreSession the session will be destroyed and the
-     * previous session is restored as the active session of the operation
-     * context.
+     * If no login context in in the stack nothing is done. If the login context has an associated CoreSession the
+     * session will be destroyed and the previous session is restored as the active session of the operation context.
      */
     public void pop() throws OperationException {
         if (!stack.isEmpty()) {
@@ -101,8 +97,7 @@ public class LoginStack {
         }
     }
 
-    protected void refreshSession(CoreSession session)
-            throws OperationException {
+    protected void refreshSession(CoreSession session) throws OperationException {
         if (session != null && !session.isStateSharedByAllThreadSessions()) {
             try {
                 // this will indirectly process refresh the session
@@ -114,9 +109,7 @@ public class LoginStack {
     }
 
     /**
-     * Remove the stacked logins if any. This is called when chain execution is
-     * done.
-     *
+     * Remove the stacked logins if any. This is called when chain execution is done.
      */
     protected void clear() throws OperationException {
         if (!stack.isEmpty()) {

@@ -16,8 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @since 5.7.2 Operation composite exception builder throwing @{link
- *        OperationCompoundException}.
+ * @since 5.7.2 Operation composite exception builder throwing @{link OperationCompoundException}.
  */
 public class OperationCompoundExceptionBuilder {
 

@@ -21,7 +21,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = Query.ID, category = Constants.CAT_FETCH, label = "Query", description = "Perform a query on the repository. The query result will become the input for the next operation.")
@@ -35,8 +34,7 @@ public class Query {
     @Param(name = "query")
     protected String query;
 
-    @Param(name = "language", required = false, widget = Constants.W_OPTION, values = {
-            NXQL.NXQL, "CMISQL" })
+    @Param(name = "language", required = false, widget = Constants.W_OPTION, values = { NXQL.NXQL, "CMISQL" })
     protected String lang = NXQL.NXQL;
 
     @OperationMethod

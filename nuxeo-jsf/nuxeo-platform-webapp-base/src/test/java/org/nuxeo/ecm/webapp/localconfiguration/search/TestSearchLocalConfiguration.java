@@ -44,7 +44,6 @@ import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:ei@nuxeo.com">Eugen Ionica</a>
- *
  */
 
 @RunWith(FeaturesRunner.class)
@@ -62,8 +61,7 @@ public class TestSearchLocalConfiguration {
     @Test
     public void testDefautImportType() throws Exception {
         assertNotNull(session);
-        DocumentModel workspace = session.getDocument(new PathRef(
-                PATH_WORKSPACE));
+        DocumentModel workspace = session.getDocument(new PathRef(PATH_WORKSPACE));
         assertNotNull(workspace);
 
         workspace.setPropertyValue(FIELD_ADVANCED_SEARCH_VIEW, "fakeView");
@@ -80,8 +78,7 @@ public class TestSearchLocalConfiguration {
         SearchLocalConfiguration configuration = null;
         try {
             LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
-            configuration = localConfigurationService.getConfiguration(
-                    SearchLocalConfiguration.class,
+            configuration = localConfigurationService.getConfiguration(SearchLocalConfiguration.class,
                     SEARCH_LOCAL_CONFIGURATION_FACET, doc);
         } catch (Exception e) {
             log.warn("failed to get configuration", e);

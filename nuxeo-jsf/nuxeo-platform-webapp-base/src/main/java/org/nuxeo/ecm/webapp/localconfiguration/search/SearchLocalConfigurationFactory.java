@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.webapp.localconfiguration.search;
 
-import static org.nuxeo.ecm.webapp.localconfiguration.search.SearchLocalConfigurationConstants.*;
+import static org.nuxeo.ecm.webapp.localconfiguration.search.SearchLocalConfigurationConstants.SEARCH_LOCAL_CONFIGURATION_FACET;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;

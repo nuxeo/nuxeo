@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = RemoveProperty.ID, category = Constants.CAT_DOCUMENT, label = "Remove Property", description = "Remove the given property of the input document(s) as specified by the 'xpath' parameter. If the property points to a list then clear the list. Removing a property means setting it to null. Return the document(s).")
@@ -39,7 +38,7 @@ public class RemoveProperty {
     @Param(name = "save", required = false, values = "true")
     protected boolean save = true;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         DocumentHelper.removeProperty(doc, xpath);
         if (save) {

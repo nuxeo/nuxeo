@@ -28,8 +28,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Plugin holding filter and sort configuration information for a document
- * tree.
+ * Plugin holding filter and sort configuration information for a document tree.
  *
  * @author Florent BONNET
  * @author Anahide Tchertchian

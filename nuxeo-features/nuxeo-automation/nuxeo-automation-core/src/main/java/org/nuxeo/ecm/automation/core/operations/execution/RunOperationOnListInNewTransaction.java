@@ -32,14 +32,12 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Run an embedded operation chain inside separated transactions using the
- * current input. The output is undefined (Void)
+ * Run an embedded operation chain inside separated transactions using the current input. The output is undefined (Void)
  *
  * @since 5.7.2
  */
@@ -74,8 +72,7 @@ public class RunOperationOnListInNewTransaction {
     @OperationMethod
     public void run() throws Exception {
 
-        Map<String, Object> vars = isolate ? new HashMap<String, Object>(
-                ctx.getVars()) : ctx.getVars();
+        Map<String, Object> vars = isolate ? new HashMap<String, Object>(ctx.getVars()) : ctx.getVars();
 
         Collection<?> list = null;
         if (ctx.get(listName) instanceof Object[]) {
@@ -83,8 +80,7 @@ public class RunOperationOnListInNewTransaction {
         } else if (ctx.get(listName) instanceof Collection<?>) {
             list = (Collection<?>) ctx.get(listName);
         } else {
-            throw new UnsupportedOperationException(
-                    ctx.get(listName).getClass() + " is not a Collection");
+            throw new UnsupportedOperationException(ctx.get(listName).getClass() + " is not a Collection");
         }
 
         // commit the current transaction
@@ -116,9 +112,7 @@ public class RunOperationOnListInNewTransaction {
                 } else {
                     Object value = vars.get(varName);
                     if (value != null && value instanceof DocumentModel) {
-                        ctx.getVars().put(
-                                varName,
-                                session.getDocument(((DocumentModel) value).getRef()));
+                        ctx.getVars().put(varName, session.getDocument(((DocumentModel) value).getRef()));
                     } else {
                         ctx.getVars().put(varName, value);
                     }

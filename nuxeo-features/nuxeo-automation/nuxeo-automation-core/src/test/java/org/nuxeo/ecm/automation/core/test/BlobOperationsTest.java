@@ -117,10 +117,8 @@ public class BlobOperationsTest {
 
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set(
-                "properties", "dc:title=MyDoc");
-        chain.add(SetDocumentBlob.ID).set("file",
-                new StringBlob("blob content"));
+        chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set("properties", "dc:title=MyDoc");
+        chain.add(SetDocumentBlob.ID).set("file", new StringBlob("blob content"));
         chain.add(GetDocumentBlob.ID);
         // chain.add(Operations.BLOB_POST).set("url", File.createTempFile("",
         // suffix));
@@ -149,12 +147,10 @@ public class BlobOperationsTest {
             FileUtils.writeFile(file, "blob content");
             OperationChain chain = new OperationChain("testChain");
             chain.add(FetchContextDocument.ID);
-            chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set(
-                    "properties", "dc:title=MyDoc");
+            chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set("properties", "dc:title=MyDoc");
             chain.add(SetInputAsVar.ID).set("name", "doc");
             chain.add(CreateBlob.ID).set("file", file.toURI().toURL());
-            chain.add(AttachBlob.ID).set("document",
-                    Scripting.newExpression("doc"));
+            chain.add(AttachBlob.ID).set("document", Scripting.newExpression("doc"));
             chain.add(RestoreDocumentInput.ID).set("name", "doc");
             chain.add(GetDocumentBlob.ID);
             Blob out = (Blob) service.run(ctx, chain);
@@ -177,12 +173,9 @@ public class BlobOperationsTest {
         // chain 1 is creating a list of 2 blobs.
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set(
-                "properties", "dc:title=MyDoc");
-        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file",
-                new StringBlob("blob1"));
-        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file",
-                new StringBlob("blob2"));
+        chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set("properties", "dc:title=MyDoc");
+        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", new StringBlob("blob1"));
+        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", new StringBlob("blob2"));
         chain.add(GetDocumentBlobs.ID);
 
         BlobList out = (BlobList) service.run(ctx, chain);
@@ -212,12 +205,9 @@ public class BlobOperationsTest {
         // chain 1 is creating a list of 2 blobs.
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set(
-                "properties", "dc:title=MyDoc");
-        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file",
-                new StringBlob("blob1"));
-        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file",
-                new StringBlob("blob2"));
+        chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set("properties", "dc:title=MyDoc");
+        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", new StringBlob("blob1"));
+        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", new StringBlob("blob2"));
         chain.add(GetDocumentBlobs.ID);
 
         BlobList out = (BlobList) service.run(ctx, chain);
@@ -247,8 +237,7 @@ public class BlobOperationsTest {
         ctx.setInput(blob);
 
         OperationChain chain = new OperationChain("testChain");
-        chain.add(BlobToFile.ID).set("directory", dir.getAbsolutePath()).set(
-                "prefix", "test-");
+        chain.add(BlobToFile.ID).set("directory", dir.getAbsolutePath()).set("prefix", "test-");
         Blob out = (Blob) service.run(ctx, chain);
         assertSame(blob, out);
 
@@ -276,8 +265,7 @@ public class BlobOperationsTest {
         Blob blob = new StringBlob("the blob content");
         blob.setFilename("initial_name.txt");
         blob.setMimeType("text/plain");
-        DocumentModel file = session.createDocumentModel(src.getPathAsString(),
-                "blobWithName", "File");
+        DocumentModel file = session.createDocumentModel(src.getPathAsString(), "blobWithName", "File");
         file.setPropertyValue("dc:title", "The File");
         file.setPropertyValue("file:content", (Serializable) blob);
         file = session.createDocument(file);
@@ -318,8 +306,7 @@ public class BlobOperationsTest {
         file.put("filename", "initial_name.txt");
         files.add(file);
         // Create document
-        DocumentModel docFile = session.createDocumentModel(
-                src.getPathAsString(), "blobWithName", "File");
+        DocumentModel docFile = session.createDocumentModel(src.getPathAsString(), "blobWithName", "File");
         // Attach files to document
         docFile.setPropertyValue("dc:title", "The File");
         docFile.setPropertyValue("file:content", (Serializable) mainFile);
@@ -373,11 +360,11 @@ public class BlobOperationsTest {
         params.put("filename", "pdfresult");
         ctx = new OperationContext(session);
         ctx.setInput(blobs);
-        try{
+        try {
             service.run(ctx, ConcatenatePDFs.ID, params);
             // Should fails before
             Assert.fail();
-        }catch(OperationException e){
+        } catch (OperationException e) {
             assertEquals("Blob pdfMerge1.pdf is not a PDF.", e.getCause().getMessage());
         }
 
@@ -393,12 +380,13 @@ public class BlobOperationsTest {
         ctx.setInput(blobs);
         // Inject a file into context for failing
         ctx.put("blobToAppend", pdfMerge1);
-        try{
+        try {
             service.run(ctx, ConcatenatePDFs.ID, params);
             // Should fails before
             Assert.fail();
-        }catch(OperationException e){
-            assertNotNull("The blob to append from variable context: 'blobToAppend' is not a blob.", e.getCause().getMessage());
+        } catch (OperationException e) {
+            assertNotNull("The blob to append from variable context: 'blobToAppend' is not a blob.",
+                    e.getCause().getMessage());
         }
     }
     // TODO add post and file2pdf tests

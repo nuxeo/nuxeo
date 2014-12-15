@@ -22,8 +22,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  */
 public class DocRefToDocModel implements TypeAdapter {
 
-    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
-            throws TypeAdaptException {
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         DocumentRef ref = (DocumentRef) objectToAdapt;
         try {
             return ctx.getCoreSession().getDocument(ref);

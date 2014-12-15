@@ -21,7 +21,7 @@
 
 package org.nuxeo.common.collections;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 

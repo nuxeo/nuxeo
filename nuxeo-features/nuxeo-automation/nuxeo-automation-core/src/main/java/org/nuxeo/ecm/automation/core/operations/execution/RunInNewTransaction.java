@@ -31,8 +31,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Operation to run an operation chain in a separate transaction.
- * The existing transaction is committed before running the new transaction.
+ * Operation to run an operation chain in a separate transaction. The existing transaction is committed before running
+ * the new transaction.
  *
  * @since 5.6
  */
@@ -76,8 +76,7 @@ public class RunInNewTransaction {
         // commit the current transaction
         TransactionHelper.commitOrRollbackTransaction();
 
-        Map<String, Object> vars = isolate ? new HashMap<String, Object>(
-                ctx.getVars()) : ctx.getVars();
+        Map<String, Object> vars = isolate ? new HashMap<String, Object>(ctx.getVars()) : ctx.getVars();
 
         int to = timeout == null ? 0 : timeout.intValue();
 
@@ -113,9 +112,7 @@ public class RunInNewTransaction {
                 } else {
                     Object value = vars.get(varName);
                     if (value != null && value instanceof DocumentModel) {
-                        ctx.getVars().put(
-                                varName,
-                                session.getDocument(((DocumentModel) value).getRef()));
+                        ctx.getVars().put(varName, session.getDocument(((DocumentModel) value).getRef()));
                     } else {
                         ctx.getVars().put(varName, value);
                     }

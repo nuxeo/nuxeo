@@ -55,8 +55,7 @@ public class ChainExceptionFilter implements AutomationFilter {
         }
     }
 
-    public ChainExceptionFilter(
-            AutomationFilterDescriptor automationFilterDescriptor) {
+    public ChainExceptionFilter(AutomationFilterDescriptor automationFilterDescriptor) {
         this.id = automationFilterDescriptor.getId();
         String value = automationFilterDescriptor.getValue();
         if (value.startsWith("expr:")) {

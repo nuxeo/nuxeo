@@ -45,20 +45,19 @@ public class CreateDocument {
     @Param(name = "properties", required = false)
     protected Properties content;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         if (name == null) {
             name = "Untitled";
         }
-        DocumentModel newDoc = session.createDocumentModel(
-                doc.getPathAsString(), name, type);
+        DocumentModel newDoc = session.createDocumentModel(doc.getPathAsString(), name, type);
         if (content != null) {
             DocumentHelper.setProperties(session, newDoc, content);
         }
         return session.createDocument(newDoc);
     }
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentRef doc) throws Exception {
         return run(session.getDocument(doc));
     }

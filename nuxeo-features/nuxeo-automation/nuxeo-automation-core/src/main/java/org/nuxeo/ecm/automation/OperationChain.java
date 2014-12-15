@@ -55,8 +55,7 @@ public class OperationChain implements Serializable {
         chainParameters = new HashMap<String, Object>();
     }
 
-    public OperationChain(String id, List<OperationParameters> operations,
-            Map<String, Object> chainParameters) {
+    public OperationChain(String id, List<OperationParameters> operations, Map<String, Object> chainParameters) {
         this.id = id;
         this.operations = operations;
         this.chainParameters = chainParameters;
@@ -97,16 +96,14 @@ public class OperationChain implements Serializable {
     }
 
     /**
-     * @since 5.7.2
-     * Adding chain parameters
+     * @since 5.7.2 Adding chain parameters
      */
     public void addChainParameters(Map<String, Object> chainParameter) {
         chainParameters.putAll(chainParameter);
     }
 
     /**
-     * @since 5.7.2
-     * Getting chain parameters
+     * @since 5.7.2 Getting chain parameters
      */
     public Map<String, Object> getChainParameters() {
         return chainParameters;

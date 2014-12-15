@@ -43,15 +43,15 @@ public class UpdateDocument {
     @Param(name = "changeToken", required = false)
     protected String changeToken = null;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
 
-        if (changeToken!=null) {
+        if (changeToken != null) {
             // Check for dirty update
-           String repoToken = doc.getChangeToken();
-           if (!changeToken.equals(repoToken)) {
-               throw new ConflictOperationException(doc);
-           }
+            String repoToken = doc.getChangeToken();
+            if (!changeToken.equals(repoToken)) {
+                throw new ConflictOperationException(doc);
+            }
         }
 
         DocumentHelper.setProperties(session, doc, properties);

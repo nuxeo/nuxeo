@@ -23,8 +23,7 @@ import org.nuxeo.ecm.automation.TypeAdapter;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class AdapterKeyedRegistry extends
-        SuperKeyedRegistry<TypeAdapterKey, TypeAdapter> {
+public class AdapterKeyedRegistry extends SuperKeyedRegistry<TypeAdapterKey, TypeAdapter> {
 
     protected final Set<Class<?>> blacklist;
 

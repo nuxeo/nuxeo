@@ -19,11 +19,13 @@
 
 package org.nuxeo.ecm.webapp.tree;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -39,10 +41,8 @@ public class TestTreeManagerService extends NXRuntimeTestCase {
         super.setUp();
 
         // deploy needed bundles
-        deployContrib("org.nuxeo.ecm.webapp.base",
-                "OSGI-INF/nxtreemanager-framework.xml");
-        deployContrib("org.nuxeo.ecm.webapp.base",
-                "OSGI-INF/nxtreemanager-contrib.xml");
+        deployContrib("org.nuxeo.ecm.webapp.base", "OSGI-INF/nxtreemanager-framework.xml");
+        deployContrib("org.nuxeo.ecm.webapp.base", "OSGI-INF/nxtreemanager-contrib.xml");
 
         treeManager = Framework.getService(TreeManager.class);
         assertNotNull(treeManager);
@@ -51,18 +51,15 @@ public class TestTreeManagerService extends NXRuntimeTestCase {
     @After
     public void tearDown() throws Exception {
         // undeploy bundles
-        undeployContrib("org.nuxeo.ecm.webapp.base",
-                "OSGI-INF/nxtreemanager-framework.xml");
-        undeployContrib("org.nuxeo.ecm.webapp.base",
-                "OSGI-INF/nxtreemanager-contrib.xml");
+        undeployContrib("org.nuxeo.ecm.webapp.base", "OSGI-INF/nxtreemanager-framework.xml");
+        undeployContrib("org.nuxeo.ecm.webapp.base", "OSGI-INF/nxtreemanager-contrib.xml");
         super.tearDown();
     }
 
     @Test
     public void testDefaultContribs() {
         String filterName = "navigation";
-        assertEquals("tree_children",
-                treeManager.getPageProviderName(filterName));
+        assertEquals("tree_children", treeManager.getPageProviderName(filterName));
         assertNull(treeManager.getFilter(filterName));
         assertNotNull(treeManager.getLeafFilter(filterName));
         assertNull(treeManager.getSorter(filterName));
@@ -70,11 +67,9 @@ public class TestTreeManagerService extends NXRuntimeTestCase {
 
     @Test
     public void testOverride() {
-        deployContrib(Thread.currentThread().getContextClassLoader().getResource(
-                "test-nxtreemanager-contrib.xml"));
+        deployContrib(Thread.currentThread().getContextClassLoader().getResource("test-nxtreemanager-contrib.xml"));
         String filterName = "navigation";
-        assertEquals("tree_children",
-                treeManager.getPageProviderName(filterName));
+        assertEquals("tree_children", treeManager.getPageProviderName(filterName));
         assertNotNull(treeManager.getFilter(filterName));
         assertNull(treeManager.getLeafFilter(filterName));
         assertNotNull(treeManager.getSorter(filterName));

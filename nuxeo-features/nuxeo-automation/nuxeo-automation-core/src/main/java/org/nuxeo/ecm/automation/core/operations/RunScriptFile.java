@@ -26,10 +26,8 @@ import org.nuxeo.ecm.automation.core.scripting.Scripting;
  * Save the session - TODO remove this?
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @deprecated Not enabled for now since not fully implemented. To activate it
- *             uncomment the registration from
- *             {@link AutomationComponent#activate(org.nuxeo.runtime.model.ComponentContext)}
- *             and enable the unit test.
+ * @deprecated Not enabled for now since not fully implemented. To activate it uncomment the registration from
+ *             {@link AutomationComponent#activate(org.nuxeo.runtime.model.ComponentContext)} and enable the unit test.
  */
 @Deprecated
 @Operation(id = RunScriptFile.ID, category = Constants.CAT_SCRIPTING, label = "Run Script File", description = "Run a script file in the current context. The file is located using the bundle class loader.")

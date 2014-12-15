@@ -30,8 +30,7 @@ public interface OperationCallback {
 
     void onChain(OperationType chain);
 
-    void onOperation(OperationContext context, OperationType type,
-            InvokableMethod method, Map<String, Object> parms);
+    void onOperation(OperationContext context, OperationType type, InvokableMethod method, Map<String, Object> parms);
 
     void onError(OperationException error);
 

@@ -27,9 +27,8 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * This operation map pojo client side to document adapter server side and
- * create NX document assuming that pojo and adapter have both properties in
- * common.
+ * This operation map pojo client side to document adapter server side and create NX document assuming that pojo and
+ * adapter have both properties in common.
  *
  * @since 5.7
  */
@@ -48,17 +47,14 @@ public class BusinessCreateOperation {
     protected String name;
 
     @OperationMethod
-    public BusinessAdapter run(BusinessAdapter input) throws ClientException,
-            DocumentException {
+    public BusinessAdapter run(BusinessAdapter input) throws ClientException, DocumentException {
         DocumentModel document = input.getDocument();
-        DocumentModel createDocumentModel = session.createDocumentModel(parentPath, name,input.getType());
-
+        DocumentModel createDocumentModel = session.createDocumentModel(parentPath, name, input.getType());
 
         for (Entry<String, DataModel> entry : createDocumentModel.getDataModels().entrySet()) {
             DataModel dataModel = document.getDataModel(entry.getKey());
             entry.getValue().setMap(dataModel.getMap());
         }
-
 
         document = session.createDocument(document);
         return document.getAdapter(input.getClass());

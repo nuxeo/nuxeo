@@ -74,22 +74,19 @@ public class DocumentManagerBusinessDelegate implements Serializable {
     @Unwrap
     public CoreSession getDocumentManager() throws ClientException {
         /*
-         * Explicit lookup, as this method is the only user of the Seam
-         * component. Also, in some cases (Seam remoting), it seems that the
-         * injection is not done correctly.
+         * Explicit lookup, as this method is the only user of the Seam component. Also, in some cases (Seam remoting),
+         * it seems that the injection is not done correctly.
          */
         RepositoryLocation currentServerLocation = (RepositoryLocation) Component.getInstance("currentServerLocation");
         return getDocumentManager(currentServerLocation);
     }
 
-    public CoreSession getDocumentManager(RepositoryLocation serverLocation)
-            throws ClientException {
+    public CoreSession getDocumentManager(RepositoryLocation serverLocation) throws ClientException {
 
         if (serverLocation == null) {
             /*
-             * currentServerLocation (factory in ServerContextBean) is set
-             * through navigationContext, which itself injects documentManager,
-             * so it will be null the first time.
+             * currentServerLocation (factory in ServerContextBean) is set through navigationContext, which itself
+             * injects documentManager, so it will be null the first time.
              */
             return null;
         }
@@ -98,11 +95,9 @@ public class DocumentManagerBusinessDelegate implements Serializable {
         if (session == null) {
             if (Lifecycle.isDestroying()) {
                 /*
-                 * During Seam component destroy phases, we don't want to
-                 * recreate a core session just for injection. This happens
-                 * during logout when the session context is destroyed; we don't
-                 * want to cause EJB calls in this case as the authentication
-                 * wouldn't work.
+                 * During Seam component destroy phases, we don't want to recreate a core session just for injection.
+                 * This happens during logout when the session context is destroyed; we don't want to cause EJB calls in
+                 * this case as the authentication wouldn't work.
                  */
                 return null;
             }
@@ -113,8 +108,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
                 session = repository.open();
                 log.debug("Opened session for repository " + serverName);
             } catch (Exception e) {
-                throw new ClientException(
-                        "Error opening session for repository " + serverName, e);
+                throw new ClientException("Error opening session for repository " + serverName, e);
             }
             sessions.put(serverLocation, session);
         }
