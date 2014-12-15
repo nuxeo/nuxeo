@@ -27,6 +27,19 @@ import java.util.Map;
 public interface ExternalReferenceService {
 
     /**
+     * Put this value in the {@link org.nuxeo.ecm.core.api.DocumentModel} to force referenced entity fetching when
+     * calling org.nuxeo.ecm.core.api.DocumentModel#setPropertyValue()
+     * <p>
+     * The associated value is of type {@link Fetching}
+     * </p>
+     */
+    public static final String CTX_MAP_KEY = "ExternalReferenceService.Fetch";
+
+    public static enum Fetching {
+        FETCH_ALL, FETCH_NONE;
+    }
+
+    /**
      * @param type the xsd type, a resolver could manage.
      * @param parameters the parameters for this resolver.
      * @return

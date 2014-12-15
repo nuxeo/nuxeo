@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.constraints.ConstraintViolation;
 import org.nuxeo.ecm.core.schema.types.constraints.ExternalReferenceConstraint;
+import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceService.Fetching;
 import org.nuxeo.ecm.core.schema.types.reference.TestingColorDummyReferenceResolver.Color;
 import org.nuxeo.ecm.core.schema.types.reference.TestingColorDummyReferenceResolver.PrimaryColor;
 import org.nuxeo.ecm.core.schema.types.reference.TestingColorDummyReferenceResolver.SecondaryColor;
@@ -124,6 +125,29 @@ public class TestExternalReferenceProperties {
         doc.setPropertyValue(XPATH, "RED");
         session.createDocument(doc);
         assertTrue(PrimaryColor.RED == prop().getReferencedEntity());
+    }
+
+    @Test
+    public void testDocumentPropertyAccessorFetchingDefault() {
+        doc.setPropertyValue(XPATH, "RED");
+        session.createDocument(doc);
+        assertEquals("RED", doc.getPropertyValue(XPATH));
+    }
+
+    @Test
+    public void testDocumentPropertyAccessorFetchingNone() {
+        doc.setPropertyValue(XPATH, "RED");
+        session.createDocument(doc);
+        doc.putContextData(ExternalReferenceService.CTX_MAP_KEY, Fetching.FETCH_NONE);
+        assertEquals("RED", doc.getPropertyValue(XPATH));
+    }
+
+    @Test
+    public void testDocumentPropertyAccessorFetchingAll() {
+        doc.setPropertyValue(XPATH, "RED");
+        session.createDocument(doc);
+        doc.putContextData(ExternalReferenceService.CTX_MAP_KEY, Fetching.FETCH_ALL);
+        assertEquals(PrimaryColor.RED, doc.getPropertyValue(XPATH));
     }
 
     @Test
