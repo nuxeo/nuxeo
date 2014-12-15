@@ -18,15 +18,16 @@ package org.nuxeo.ecm.platform.rendition.service;
 import static org.nuxeo.ecm.platform.rendition.Constants.FILES_FILES_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.FILES_SCHEMA;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
-import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_NAME_PROPERTY;
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -43,11 +44,16 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 public class RenditionCreator extends UnrestrictedSessionRunner {
+
+    private static final Log log = LogFactory.getLog(RenditionCreator.class);
 
     protected DocumentRef renditionRef;
 
@@ -84,6 +90,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         DocumentModel rendition = createRenditionDocument(versionDocument);
         removeBlobs(rendition);
         updateMainBlob(rendition);
+        updateIconAndSizeFields(rendition);
 
         // create a copy of the doc
         rendition = session.createDocument(rendition);
@@ -129,6 +136,24 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
     protected void updateMainBlob(DocumentModel rendition) throws ClientException {
         BlobHolder bh = rendition.getAdapter(BlobHolder.class);
         bh.setBlob(renditionBlob);
+    }
+
+    private void updateIconAndSizeFields(DocumentModel rendition) throws ClientException {
+        if (!rendition.hasSchema("common")) {
+            return;
+        }
+        MimetypeRegistry mimetypeService;
+        try {
+            mimetypeService = Framework.getService(MimetypeRegistry.class);
+        } catch (Exception e) {
+            log.error("Cannot fetch Mimetype service when updating icon and file size rendition", e);
+            return;
+        }
+        MimetypeEntry mimetypeEntry = mimetypeService.getMimetypeEntryByMimeType(renditionBlob.getMimeType());
+        if (mimetypeEntry != null && mimetypeEntry.getIconPath() != null) {
+            rendition.setPropertyValue("common:icon", "/icons/" + mimetypeEntry.getIconPath());
+        }
+        rendition.setPropertyValue("common:size", renditionBlob.getLength());
     }
 
     protected void giveReadRightToUser(DocumentModel rendition) throws ClientException {
