@@ -1115,7 +1115,7 @@ public interface CoreSession {
      * @param version the version descriptor
      * @return the version document just created
      * @throws ClientException
-     * @deprecated use {@link #checkIn(DocumentRef, String)} instead
+     * @deprecated use {@link #checkIn(DocumentRef, VersioningOption, String)} instead
      */
     @Deprecated
     DocumentModel checkIn(DocumentRef docRef, VersionModel version)
