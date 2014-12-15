@@ -22,8 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to mark a {@link WebElement} field on a {@link Page} object to indicate
- * that lookup should expect the field to not load instantly.
+ * Used to mark a {@link WebElement} field on a {@link Page} object to indicate that lookup should expect the field to
+ * not load instantly.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

@@ -24,12 +24,10 @@ import org.openqa.selenium.support.FindBys;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
- *
  */
 public class ManageTabSubPage extends DocumentBasePage {
 
-    @FindBys({ @FindBy(id = "nxw_documentSubTabs_panel"),
-            @FindBy(linkText = "Access rights") })
+    @FindBys({ @FindBy(id = "nxw_documentSubTabs_panel"), @FindBy(linkText = "Access rights") })
     WebElement accessRightsLink;
 
     @FindBy(linkText = "Trash")

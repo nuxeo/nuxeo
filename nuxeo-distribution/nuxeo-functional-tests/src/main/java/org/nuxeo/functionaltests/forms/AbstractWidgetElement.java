@@ -21,9 +21,8 @@ import org.openqa.selenium.WebDriver;
 /**
  * Base class to handle widgets
  * <p>
- * Needs a constructor accepting {@link WebDriver} and {@link String} as id to
- * be instantiated by the {@link LayoutElement#getWidget(String, Class)}
- * method.
+ * Needs a constructor accepting {@link WebDriver} and {@link String} as id to be instantiated by the
+ * {@link LayoutElement#getWidget(String, Class)} method.
  *
  * @since 5.7
  */

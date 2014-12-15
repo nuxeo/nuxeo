@@ -19,8 +19,6 @@ package org.nuxeo.functionaltests.forms;
 import org.openqa.selenium.WebElement;
 
 /**
- *
- *
  * @since 5.9.2
  */
 public interface LayoutFragment {

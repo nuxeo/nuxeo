@@ -20,8 +20,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /**
- * Represents a list widget, with helper method to retrieve/check its
- * subwidgets.
+ * Represents a list widget, with helper method to retrieve/check its subwidgets.
  *
  * @since 5.7
  */
@@ -36,8 +35,7 @@ public class ListWidgetElement extends AbstractWidgetElement {
     }
 
     protected String getListSubElementId(String subId, int index) {
-        return String.format("%s:%s:%s", getListElementId(),
-                Integer.valueOf(index), subId);
+        return String.format("%s:%s:%s", getListElementId(), Integer.valueOf(index), subId);
     }
 
     public void addNewElement() {
@@ -48,8 +46,7 @@ public class ListWidgetElement extends AbstractWidgetElement {
 
     public void removeElement(int index) {
         String wid = getWidgetId();
-        String delId = String.format("%s:%s:%s_delete", getListElementId(),
-                Integer.valueOf(index), wid);
+        String delId = String.format("%s:%s:%s_delete", getListElementId(), Integer.valueOf(index), wid);
         WebElement delElement = getSubElement(delId);
         delElement.click();
     }
@@ -65,8 +62,7 @@ public class ListWidgetElement extends AbstractWidgetElement {
         return getWidget(getListSubElementId(id, index));
     }
 
-    public <T> T getSubWidget(String id, int index,
-            Class<T> widgetClassToProxy, boolean wait) {
+    public <T> T getSubWidget(String id, int index, Class<T> widgetClassToProxy, boolean wait) {
         if (wait) {
             waitForSubWidget(id, index);
         }

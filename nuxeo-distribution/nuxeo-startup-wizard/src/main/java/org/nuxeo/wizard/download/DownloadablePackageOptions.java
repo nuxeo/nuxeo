@@ -86,8 +86,7 @@ public class DownloadablePackageOptions {
                 return checkSelectionValid(newIds);
             }
             // force selection of parents
-            if (option.getParent() != null
-                    && !ids.contains(option.getParent().getId())) {
+            if (option.getParent() != null && !ids.contains(option.getParent().getId())) {
                 List<String> newIds = new ArrayList<String>();
                 newIds.addAll(ids);
                 newIds.add(0, option.getParent().getId());
@@ -148,14 +147,12 @@ public class DownloadablePackageOptions {
         }
     }
 
-    protected DownloadablePackageOption findById(String id,
-            List<DownloadablePackageOption> options) {
+    protected DownloadablePackageOption findById(String id, List<DownloadablePackageOption> options) {
         for (DownloadablePackageOption option : options) {
             if (option.getId().equals(id)) {
                 return option;
             }
-            DownloadablePackageOption childOption = findById(id,
-                    option.getChildrenPackages());
+            DownloadablePackageOption childOption = findById(id, option.getChildrenPackages());
             if (childOption != null) {
                 return childOption;
             }
@@ -164,8 +161,7 @@ public class DownloadablePackageOptions {
     }
 
     public List<DownloadPackage> getPkg4Install() {
-        List<DownloadPackage> pkgs = new ArrayList<DownloadPackage>(
-                commonPackages);
+        List<DownloadPackage> pkgs = new ArrayList<DownloadPackage>(commonPackages);
         pkgs.addAll(pkg4Install);
         return pkgs;
     }

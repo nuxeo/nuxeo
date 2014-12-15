@@ -21,7 +21,6 @@ import org.openqa.selenium.WebDriver;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
- *
  */
 public class FileDocumentBasePage extends DocumentBasePage {
 

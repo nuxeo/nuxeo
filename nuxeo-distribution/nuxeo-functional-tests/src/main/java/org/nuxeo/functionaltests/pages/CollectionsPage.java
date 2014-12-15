@@ -33,7 +33,7 @@ import org.openqa.selenium.support.FindBy;
 public class CollectionsPage extends HomePage {
 
     @Required
-    @FindBy(id="user_collection_contentview")
+    @FindBy(id = "user_collection_contentview")
     protected WebElement collectionContentView;
 
     public CollectionsPage(final WebDriver driver) {
@@ -56,7 +56,5 @@ public class CollectionsPage extends HomePage {
         Locator.findElementWithTimeout(By.linkText(collectionName), collectionContentView).click();
         return asPage(CollectionContentTabSubPage.class);
     }
-
-
 
 }

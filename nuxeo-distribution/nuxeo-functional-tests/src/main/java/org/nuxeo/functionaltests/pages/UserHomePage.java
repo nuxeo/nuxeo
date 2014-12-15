@@ -41,8 +41,7 @@ public class UserHomePage extends AbstractPage {
 
     protected GadgetsContainerFragment getGadgetsFragment() {
         if (gadgetsFragment == null) {
-            gadgetsFragment = getWebFragment(gadgetsContainer,
-                    GadgetsContainerFragment.class);
+            gadgetsFragment = getWebFragment(gadgetsContainer, GadgetsContainerFragment.class);
         }
         return gadgetsFragment;
     }

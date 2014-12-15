@@ -63,9 +63,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
- *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public class PackageDownloader {
 
@@ -125,13 +123,10 @@ public class PackageDownloader {
 
     protected String getBaseUrl() {
         if (baseUrl == null) {
-            String base = getConfig().getUserConfig().getProperty(BASE_URL_KEY,
-                    "");
+            String base = getConfig().getUserConfig().getProperty(BASE_URL_KEY, "");
             if ("".equals(base)) {
-                base = DEFAULT_BASE_URL
-                        + "nuxeo-"
-                        + getConfig().getUserConfig().getProperty(
-                                "org.nuxeo.ecm.product.version") + "/mp/";
+                base = DEFAULT_BASE_URL + "nuxeo-"
+                        + getConfig().getUserConfig().getProperty("org.nuxeo.ecm.product.version") + "/mp/";
             }
             if (!base.endsWith("/")) {
                 base = base + "/";
@@ -141,42 +136,35 @@ public class PackageDownloader {
         return baseUrl;
     }
 
-    protected ThreadPoolExecutor download_tpe = new ThreadPoolExecutor(
-            NB_DOWNLOAD_THREADS, NB_DOWNLOAD_THREADS, 10L, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<Runnable>(QUEUESIZE), new ThreadFactory() {
+    protected ThreadPoolExecutor download_tpe = new ThreadPoolExecutor(NB_DOWNLOAD_THREADS, NB_DOWNLOAD_THREADS, 10L,
+            TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(QUEUESIZE), new ThreadFactory() {
                 @Override
                 public Thread newThread(Runnable r) {
                     Thread t = new Thread(r);
                     t.setDaemon(true);
-                    t.setName("DownloaderThread-"
-                            + dwThreadCount.incrementAndGet());
+                    t.setName("DownloaderThread-" + dwThreadCount.incrementAndGet());
                     return t;
                 }
             });
 
-    protected ThreadPoolExecutor check_tpe = new ThreadPoolExecutor(
-            NB_CHECK_THREADS, NB_CHECK_THREADS, 10L, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<Runnable>(QUEUESIZE), new ThreadFactory() {
+    protected ThreadPoolExecutor check_tpe = new ThreadPoolExecutor(NB_CHECK_THREADS, NB_CHECK_THREADS, 10L,
+            TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(QUEUESIZE), new ThreadFactory() {
                 @Override
                 public Thread newThread(Runnable r) {
                     Thread t = new Thread(r);
                     t.setDaemon(true);
-                    t.setName("MD5CheckThread-"
-                            + checkThreadCount.incrementAndGet());
+                    t.setName("MD5CheckThread-" + checkThreadCount.incrementAndGet());
                     return t;
                 }
             });
 
     protected PackageDownloader() {
         SchemeRegistry registry = new SchemeRegistry();
-        registry.register(new Scheme("http", 80,
-                PlainSocketFactory.getSocketFactory()));
-        registry.register(new Scheme("https", 443,
-                SSLSocketFactory.getSocketFactory()));
+        registry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
+        registry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
         HttpParams httpParams = new BasicHttpParams();
         HttpProtocolParams.setUseExpectContinue(httpParams, false);
-        ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(
-                registry);
+        ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(registry);
         cm.setMaxTotal(NB_DOWNLOAD_THREADS);
         cm.setDefaultMaxPerRoute(NB_DOWNLOAD_THREADS);
         httpClient = new DefaultHttpClient(cm, httpParams);
@@ -198,29 +186,23 @@ public class PackageDownloader {
         }
     }
 
-    public void setProxy(String proxy, int port, String login, String password,
-            String NTLMHost, String NTLMDomain) {
+    public void setProxy(String proxy, int port, String login, String password, String NTLMHost, String NTLMDomain) {
         if (proxy != null) {
             HttpHost proxyHost = new HttpHost(proxy, port);
-            httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,
-                    proxyHost);
+            httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxyHost);
             if (login != null) {
                 if (NTLMHost != null && !NTLMHost.trim().isEmpty()) {
-                    NTCredentials ntlmCredentials = new NTCredentials(login,
-                            password, NTLMHost, NTLMDomain);
-                    httpClient.getCredentialsProvider().setCredentials(
-                            new AuthScope(proxy, port), ntlmCredentials);
+                    NTCredentials ntlmCredentials = new NTCredentials(login, password, NTLMHost, NTLMDomain);
+                    httpClient.getCredentialsProvider().setCredentials(new AuthScope(proxy, port), ntlmCredentials);
                 } else {
-                    httpClient.getCredentialsProvider().setCredentials(
-                            new AuthScope(proxy, port),
+                    httpClient.getCredentialsProvider().setCredentials(new AuthScope(proxy, port),
                             new UsernamePasswordCredentials(login, password));
                 }
             } else {
                 httpClient.getCredentialsProvider().clear();
             }
         } else {
-            httpClient.getParams().removeParameter(
-                    ConnRoutePNames.DEFAULT_PROXY);
+            httpClient.getParams().removeParameter(ConnRoutePNames.DEFAULT_PROXY);
             httpClient.getCredentialsProvider().clear();
         }
     }
@@ -264,8 +246,7 @@ public class PackageDownloader {
                 if (response.getStatusLine().getStatusCode() == 200) {
                     canReachServer = true;
                 } else {
-                    log.info("Unable to ping server -> status code :"
-                            + response.getStatusLine().getStatusCode() + " ("
+                    log.info("Unable to ping server -> status code :" + response.getStatusLine().getStatusCode() + " ("
                             + response.getStatusLine().getReasonPhrase() + ")");
                     canReachServer = false;
                 }
@@ -294,14 +275,12 @@ public class PackageDownloader {
             }
             if (packageFile != null) {
                 try {
-                    downloadOptions = DownloadDescriptorParser.parsePackages(new FileInputStream(
-                            packageFile));
+                    downloadOptions = DownloadDescriptorParser.parsePackages(new FileInputStream(packageFile));
 
                     // manage init from presets if available
                     Properties defaultSelection = getDefaultPackageSelection();
                     if (defaultSelection != null) {
-                        String presetId = defaultSelection.getProperty(
-                                PACKAGES_DEFAULT_SELECTION_PRESETS, null);
+                        String presetId = defaultSelection.getProperty(PACKAGES_DEFAULT_SELECTION_PRESETS, null);
                         if (presetId != null && !presetId.isEmpty()) {
                             for (Preset preset : downloadOptions.getPresets()) {
                                 if (preset.getId().equals(presetId)) {
@@ -311,8 +290,7 @@ public class PackageDownloader {
                                 }
                             }
                         } else {
-                            String pkgIdsList = defaultSelection.getProperty(
-                                    PACKAGES_DEFAULT_SELECTION_PACKAGES, null);
+                            String pkgIdsList = defaultSelection.getProperty(PACKAGES_DEFAULT_SELECTION_PACKAGES, null);
                             if (pkgIdsList != null && !pkgIdsList.isEmpty()) {
                                 String[] ids = pkgIdsList.split(",");
                                 List<String> pkgIds = Arrays.asList(ids);
@@ -338,9 +316,8 @@ public class PackageDownloader {
                 FileUtils.copyToFile(response.getEntity().getContent(), desc);
             } else {
                 log.warn("Unable to download remote packages.xml, status code :"
-                        + response.getStatusLine().getStatusCode()
-                        + " ("
-                        + response.getStatusLine().getReasonPhrase() + ")");
+                        + response.getStatusLine().getStatusCode() + " (" + response.getStatusLine().getReasonPhrase()
+                        + ")");
                 return null;
             }
         } catch (Exception e) {
@@ -402,8 +379,7 @@ public class PackageDownloader {
         return pkgs;
     }
 
-    public void scheduleDownloadedPackagesForInstallation(
-            String installationFilePath) throws IOException {
+    public void scheduleDownloadedPackagesForInstallation(String installationFilePath) throws IOException {
         List<String> fileEntries = new ArrayList<String>();
         fileEntries.add("init");
 
@@ -412,8 +388,7 @@ public class PackageDownloader {
         for (DownloadPackage pkg : pkgs) {
             if (pkg.isVirtual()) {
                 log.debug("No install for virtual package: " + pkg.getId());
-            } else if (pkg.isAlreadyInLocal()
-                    || StringUtils.isBlank(pkg.getFilename())) {
+            } else if (pkg.isAlreadyInLocal() || StringUtils.isBlank(pkg.getFilename())) {
                 // Blank filename means later downloaded
                 fileEntries.add("install " + pkg.getId());
                 pkgInstallIds.add(pkg.getId());
@@ -422,13 +397,11 @@ public class PackageDownloader {
                     if (download.getPkg().equals(pkg)) {
                         if (download.getStatus() == PendingDownload.VERIFIED) {
                             File file = download.getDowloadingFile();
-                            fileEntries.add("add file:"
-                                    + file.getAbsolutePath());
+                            fileEntries.add("add file:" + file.getAbsolutePath());
                             fileEntries.add("install " + pkg.getId());
                             pkgInstallIds.add(pkg.getId());
                         } else {
-                            log.error("One selected package has not been downloaded : "
-                                    + pkg.getId());
+                            log.error("One selected package has not been downloaded : " + pkg.getId());
                         }
                     }
                 }
@@ -463,8 +436,7 @@ public class PackageDownloader {
     public void reStartDownload(String id) {
         for (PendingDownload pending : pendingDownloads) {
             if (pending.getPkg().getId().equals(id)) {
-                if (Arrays.asList(PendingDownload.CORRUPTED,
-                        PendingDownload.ABORTED).contains(pending.getStatus())) {
+                if (Arrays.asList(PendingDownload.CORRUPTED, PendingDownload.ABORTED).contains(pending.getStatus())) {
                     pendingDownloads.remove(pending);
                     startDownloadPackage(pending.getPkg());
                 }
@@ -504,8 +476,7 @@ public class PackageDownloader {
 
                 @Override
                 public void run() {
-                    log.info("Starting download on Thread "
-                            + Thread.currentThread().getName());
+                    log.info("Starting download on Thread " + Thread.currentThread().getName());
                     download.setStatus(PendingDownload.INPROGRESS);
                     String url = pkg.getDownloadUrl();
                     if (!url.startsWith("http")) {
@@ -516,26 +487,22 @@ public class PackageDownloader {
                     try {
                         HttpResponse response = httpClient.execute(dw);
                         if (response.getStatusLine().getStatusCode() == 200) {
-                            filePkg = new File(getDownloadDirectory(),
-                                    pkg.filename);
+                            filePkg = new File(getDownloadDirectory(), pkg.filename);
                             Header clh = response.getFirstHeader("Content-Length");
                             if (clh != null) {
                                 long filesize = Long.parseLong(clh.getValue());
                                 download.setFile(filesize, filePkg);
                             }
-                            FileUtils.copyToFile(
-                                    response.getEntity().getContent(), filePkg);
+                            FileUtils.copyToFile(response.getEntity().getContent(), filePkg);
                             download.setStatus(PendingDownload.COMPLETED);
                         } else if (response.getStatusLine().getStatusCode() == 404) {
-                            log.error("Package " + pkg.filename
-                                    + " not found :" + url);
+                            log.error("Package " + pkg.filename + " not found :" + url);
                             download.setStatus(PendingDownload.MISSING);
                             EntityUtils.consume(response.getEntity());
                             dw.abort();
                             return;
                         } else {
-                            log.error("Received StatusCode "
-                                    + response.getStatusLine().getStatusCode());
+                            log.error("Received StatusCode " + response.getStatusLine().getStatusCode());
                             download.setStatus(PendingDownload.ABORTED);
                             EntityUtils.consume(response.getEntity());
                             dw.abort();
@@ -561,11 +528,9 @@ public class PackageDownloader {
                 download.setStatus(PendingDownload.VERIFICATION);
                 String expectedDigest = download.getPkg().getMd5();
                 String digest = getDigest(filePkg);
-                if (digest == null
-                        || (expectedDigest != null && !expectedDigest.equals(digest))) {
+                if (digest == null || (expectedDigest != null && !expectedDigest.equals(digest))) {
                     download.setStatus(PendingDownload.CORRUPTED);
-                    log.error("Digest check failed : expected :"
-                            + expectedDigest + " computed :" + digest);
+                    log.error("Digest check failed : expected :" + expectedDigest + " computed :" + digest);
                     return;
                 }
                 File newFile = new File(getDownloadDirectory(), digest);
@@ -632,8 +597,7 @@ public class PackageDownloader {
         }
         int nbInProgress = 0;
         for (PendingDownload download : pendingDownloads) {
-            if (download.getStatus() < PendingDownload.VERIFIED
-                    && download.getStatus() >= PendingDownload.PENDING) {
+            if (download.getStatus() < PendingDownload.VERIFIED && download.getStatus() >= PendingDownload.PENDING) {
                 nbInProgress++;
             }
         }

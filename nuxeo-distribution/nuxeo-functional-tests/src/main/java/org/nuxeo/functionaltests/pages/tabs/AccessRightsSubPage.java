@@ -34,15 +34,16 @@ import org.openqa.selenium.support.ui.Select;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
- *
  */
 public class AccessRightsSubPage extends AbstractPage {
 
     private static final Log log = LogFactory.getLog(AccessRightsSubPage.class);
 
-    /*@Required
-    @FindBy(id = "add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest")
-    WebElement userSelectionSuggestInputText;*/
+    /*
+     * @Required
+     * @FindBy(id = "add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest") WebElement
+     * userSelectionSuggestInputText;
+     */
 
     @Required
     @FindBy(id = "add_rights_form:rights_permission_select")
@@ -56,8 +57,7 @@ public class AccessRightsSubPage extends AbstractPage {
     WebElement validateButton;
 
     @Required
-    @FindBys({ @FindBy(id = "block_inherit"),
-            @FindBy(xpath = "//input[@type='checkbox']") })
+    @FindBys({ @FindBy(id = "block_inherit"), @FindBy(xpath = "//input[@type='checkbox']") })
     WebElement blockInherit;
 
     public AccessRightsSubPage(WebDriver driver) {
@@ -70,8 +70,7 @@ public class AccessRightsSubPage extends AbstractPage {
     }
 
     public boolean hasPermissionForUser(String permission, String username) {
-        List<WebElement> trElements = driver.findElements(new ByChained(
-                By.className("dataOutput"), By.tagName("tr")));
+        List<WebElement> trElements = driver.findElements(new ByChained(By.className("dataOutput"), By.tagName("tr")));
         boolean hasPermission = false;
         for (WebElement trElement : trElements) {
             List<WebElement> tds = trElement.findElements(By.tagName("td"));
@@ -81,12 +80,10 @@ public class AccessRightsSubPage extends AbstractPage {
                 String aceDeniedPerm = tds.get(3).getText();
 
                 if (username.equals(aceUsername)) {
-                    if (aceGrantedPerm.equals(permission)
-                            || "Manage everything".equals(aceGrantedPerm)) {
+                    if (aceGrantedPerm.equals(permission) || "Manage everything".equals(aceGrantedPerm)) {
                         hasPermission = true;
                     } else {
-                        if (aceDeniedPerm.equals(permission)
-                                || "Manage everything".equals(aceDeniedPerm)) {
+                        if (aceDeniedPerm.equals(permission) || "Manage everything".equals(aceDeniedPerm)) {
                             hasPermission = false;
                         }
                     }
@@ -105,8 +102,7 @@ public class AccessRightsSubPage extends AbstractPage {
      * @deprecated use {@link #grantPermissionForUser} unless negative ACL are enabled.
      */
     @Deprecated
-    public AccessRightsSubPage addPermissionForUser(String username,
-        String permission, boolean grant) {
+    public AccessRightsSubPage addPermissionForUser(String username, String permission, boolean grant) {
 
         boolean allowNegativeACL = hasElement(By.id("add_rights_form:rights_grant_select"));
 
@@ -147,8 +143,7 @@ public class AccessRightsSubPage extends AbstractPage {
     /**
      * @since 6.0
      */
-    public AccessRightsSubPage grantPermissionForUser(String permission,
-            String username) {
+    public AccessRightsSubPage grantPermissionForUser(String permission, String username) {
 
         Select2WidgetElement userSelection = new Select2WidgetElement(
                 driver,

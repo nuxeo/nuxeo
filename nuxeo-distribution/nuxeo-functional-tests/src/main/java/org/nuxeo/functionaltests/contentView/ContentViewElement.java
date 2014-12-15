@@ -32,8 +32,7 @@ import org.openqa.selenium.support.FindBy;
 public class ContentViewElement extends WebFragmentImpl {
 
     public static enum ResultLayout {
-        THUMBNAIL("Thumbnail view"),
-        LISTING("List view");
+        THUMBNAIL("Thumbnail view"), LISTING("List view");
 
         private final String title;
 
@@ -46,14 +45,12 @@ public class ContentViewElement extends WebFragmentImpl {
     @Required
     private WebElement upperActions;
 
-    public ContentViewElement(WebDriver driver,
-        WebElement element) {
+    public ContentViewElement(WebDriver driver, WebElement element) {
         super(driver, element);
     }
 
     public WebElement getActionByTitle(String title) {
-        return upperActions.findElement(
-            By.xpath("//img[@alt=\"" + title + "\"]"));
+        return upperActions.findElement(By.xpath("//img[@alt=\"" + title + "\"]"));
     }
 
     public void switchToResultLayout(ResultLayout layout) {

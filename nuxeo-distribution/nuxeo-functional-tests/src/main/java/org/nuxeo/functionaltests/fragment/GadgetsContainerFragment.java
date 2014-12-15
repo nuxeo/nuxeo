@@ -52,10 +52,10 @@ public class GadgetsContainerFragment extends WebFragmentImpl {
     }
 
     public WebElement waitForGadgetsLoad(final String mandatoryElements) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                5, TimeUnit.SECONDS).ignoring(NoSuchElementException.class);
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(AbstractTest.LOAD_TIMEOUT_SECONDS,
+                TimeUnit.SECONDS).pollingEvery(5, TimeUnit.SECONDS).ignoring(NoSuchElementException.class);
         return wait.until(new Function<WebDriver, WebElement>() {
+            @Override
             public WebElement apply(WebDriver driver) {
                 WebElement container = getElement();
                 // iterate through all frames, and ensure opensocial ones are
@@ -66,13 +66,10 @@ public class GadgetsContainerFragment extends WebFragmentImpl {
                     List<String> mandatory = Arrays.asList(mandatoryElements.split(","));
                     for (WebElement frame : framesList) {
                         String frameName = frame.getAttribute("name");
-                        if (frameName == null
-                                || !frameName.startsWith("open-social")) {
+                        if (frameName == null || !frameName.startsWith("open-social")) {
                             continue;
                         }
-                        log.debug(String.format(
-                                "Found one GWT gadget frame named '%s' ",
-                                frameName));
+                        log.debug(String.format("Found one GWT gadget frame named '%s' ", frameName));
                         oneFound = true;
                         boolean loaded = false;
                         driver.switchTo().defaultContent();
@@ -81,27 +78,21 @@ public class GadgetsContainerFragment extends WebFragmentImpl {
                             try {
                                 driver.findElement(By.id(mand));
                                 loaded = true;
-                                log.debug(String.format(
-                                        "Gadget frame '%s' mandatory element '%s' loaded",
-                                        frameName, mand));
+                                log.debug(String.format("Gadget frame '%s' mandatory element '%s' loaded", frameName,
+                                        mand));
                             } catch (NoSuchElementException e) {
                                 loaded = false;
-                                log.debug(String.format(
-                                        "Gadget frame '%s' not loaded yet, "
-                                                + "mandatory element '%s' not found",
-                                        frameName, mand));
+                                log.debug(String.format("Gadget frame '%s' not loaded yet, "
+                                        + "mandatory element '%s' not found", frameName, mand));
                                 break;
                             }
                         }
                         if (!loaded) {
-                            log.debug(String.format(
-                                    "Gadget frame '%s' not loaded yet",
-                                    frameName));
+                            log.debug(String.format("Gadget frame '%s' not loaded yet", frameName));
                             driver.switchTo().defaultContent();
                             return null;
                         }
-                        log.debug(String.format("Gadget frame '%s' loaded",
-                                frameName));
+                        log.debug(String.format("Gadget frame '%s' loaded", frameName));
                         driver.switchTo().defaultContent();
                     }
                 }
@@ -143,8 +134,7 @@ public class GadgetsContainerFragment extends WebFragmentImpl {
         WebElement title = getGadgetTitleElement(gadgetTitle);
         WebElement parent = title.findElement(By.xpath("parent::*"));
         driver.switchTo().defaultContent();
-        return driver.switchTo().frame(
-                "open-social-" + parent.getAttribute("id"));
+        return driver.switchTo().frame("open-social-" + parent.getAttribute("id"));
     }
 
 }

@@ -41,8 +41,8 @@ import org.openqa.selenium.support.FindBy;
 import com.google.common.base.Function;
 
 /**
- * The content tab sub page. Most of the time available for folderish documents
- * and displaying the current document's children.
+ * The content tab sub page. Most of the time available for folderish documents and displaying the current document's
+ * children.
  */
 public class ContentTabSubPage extends DocumentBasePage {
 
@@ -118,8 +118,8 @@ public class ContentTabSubPage extends DocumentBasePage {
         // get all table item and if the link has the documents title, click
         // (enable) checkbox
 
-        List<WebElement> trelements = documentContentForm.findElement(
-                By.tagName("tbody")).findElements(By.tagName("tr"));
+        List<WebElement> trelements = documentContentForm.findElement(By.tagName("tbody")).findElements(
+                By.tagName("tr"));
         for (WebElement trItem : trelements) {
             try {
                 trItem.findElement(By.linkText(documentTitle));
@@ -169,12 +169,12 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @param timeout
      * @since 5.7.2
      */
-    public void filterDocument(final String filter,
-            final int expectedNbOfDisplayedResult, final int timeout) {
+    public void filterDocument(final String filter, final int expectedNbOfDisplayedResult, final int timeout) {
         filterInput.clear();
         filterInput.sendKeys(filter);
         filterButton.click();
         Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
+            @Override
             public Boolean apply(WebDriver driver) {
                 try {
                     return getChildDocumentRows().size() == expectedNbOfDisplayedResult;
@@ -192,10 +192,10 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @param timeout
      * @since 5.7.2
      */
-    public void clearFilter(final int expectedNbOfDisplayedResult,
-            final int timeout) {
+    public void clearFilter(final int expectedNbOfDisplayedResult, final int timeout) {
         clearFilterButton.click();
         Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
+            @Override
             public Boolean apply(WebDriver driver) {
                 try {
                     return getChildDocumentRows().size() == expectedNbOfDisplayedResult;
@@ -250,8 +250,7 @@ public class ContentTabSubPage extends DocumentBasePage {
     }
 
     /**
-     * Select the document by their index in the content view and copy them in
-     * the clipboard.
+     * Select the document by their index in the content view and copy them in the clipboard.
      *
      * @param indexes
      * @since 5.7.8
@@ -262,8 +261,7 @@ public class ContentTabSubPage extends DocumentBasePage {
     }
 
     /**
-     * Select the document by their title in the content view and copy them in
-     * the clipboard.
+     * Select the document by their title in the content view and copy them in the clipboard.
      *
      * @param indexes
      * @since 5.7.8
@@ -287,8 +285,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 5.9.3
      */
     public DocumentBasePage goToDocument(final int index) {
-        getChildDocumentRows().get(index).findElement(
-                By.xpath("td[3]/div/a[1]")).click();
+        getChildDocumentRows().get(index).findElement(By.xpath("td[3]/div/a[1]")).click();
         return asPage(DocumentBasePage.class);
     }
 }

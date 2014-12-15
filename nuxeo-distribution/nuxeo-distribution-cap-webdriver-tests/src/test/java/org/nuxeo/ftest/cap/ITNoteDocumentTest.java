@@ -57,8 +57,8 @@ public class ITNoteDocumentTest extends AbstractTest {
         DocumentBasePage testWorkspacePage = initRepository(defaultDomainPage);
 
         // Create a Note
-        NoteDocumentBasePage noteDocumentPage = createNote(testWorkspacePage,
-                NOTE_TITLE, NOTE_DESCRIPTION, true, CONTENT_NOTE);
+        NoteDocumentBasePage noteDocumentPage = createNote(testWorkspacePage, NOTE_TITLE, NOTE_DESCRIPTION, true,
+                CONTENT_NOTE);
         NoteSummaryTabSubPage noteSummaryPage = noteDocumentPage.getNoteSummaryTab();
 
         // Test the result
@@ -79,14 +79,13 @@ public class ITNoteDocumentTest extends AbstractTest {
         DocumentBasePage testWorkspacePage = initRepository(defaultDomainPage);
 
         // Get the Note creation form
-        NoteCreationFormPage noteCreationPage = testWorkspacePage.getContentTab().getDocumentCreatePage(
-                "Note", NoteCreationFormPage.class);
+        NoteCreationFormPage noteCreationPage = testWorkspacePage.getContentTab().getDocumentCreatePage("Note",
+                NoteCreationFormPage.class);
         noteCreationPage.titleTextInput.sendKeys(NOTE_TITLE);
         noteCreationPage.descriptionTextInput.sendKeys(NOTE_DESCRIPTION);
 
         // Get the editor and define the content
-        RichEditorElement editor = new RichEditorElement(driver,
-                "document_create:nxl_note:nxw_note");
+        RichEditorElement editor = new RichEditorElement(driver, "document_create:nxl_note:nxw_note");
         editor.clickBoldButton();
         editor.insertContent(CONTENT_NOTE);
         editor.clickBoldButton();
@@ -123,18 +122,16 @@ public class ITNoteDocumentTest extends AbstractTest {
         DocumentBasePage testWorkspacePage = initRepository(defaultDomainPage);
 
         // Create a Note
-        NoteDocumentBasePage noteDocumentPage = createNote(testWorkspacePage,
-                NOTE_TITLE, NOTE_DESCRIPTION, true, CONTENT_NOTE);
+        NoteDocumentBasePage noteDocumentPage = createNote(testWorkspacePage, NOTE_TITLE, NOTE_DESCRIPTION, true,
+                CONTENT_NOTE);
         // Edit the note
         EditTabSubPage editTab = noteDocumentPage.getEditTab();
-        RichEditorElement editor = new RichEditorElement(driver,
-                "document_edit:nxl_note:nxw_note");
+        RichEditorElement editor = new RichEditorElement(driver, "document_edit:nxl_note:nxw_note");
         editor.insertContent(CONTENT_NOTE_EDITED);
         editTab.save();
 
         // Check the result
-        String expectedText = String.format("%s%s", CONTENT_NOTE_EDITED,
-                CONTENT_NOTE);
+        String expectedText = String.format("%s%s", CONTENT_NOTE_EDITED, CONTENT_NOTE);
         NoteSummaryTabSubPage noteSummaryPage = noteDocumentPage.getNoteSummaryTab();
         assertEquals(expectedText, noteSummaryPage.getTextBlockContentText());
 

@@ -42,8 +42,8 @@ public class ITUsersTest extends AbstractTest {
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(TEST_USERNAME);
         if (!usersTab.isUserFound(TEST_USERNAME)) {
-            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, firstname,
-                    "lastname1", "company1", "email1", TEST_PASSWORD, "members");
+            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, firstname, "lastname1", "company1", "email1",
+                    TEST_PASSWORD, "members");
             // no confirmation message anymore
             // assertEquals(page.getFeedbackMessage(), "User created");
             usersTab = page.getUsersTab(true);
@@ -57,8 +57,8 @@ public class ITUsersTest extends AbstractTest {
         usersTab = usersTab.exitAdminCenter().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
 
         // user already exists
-        page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, "firstname1",
-                "lastname1", "company1", "email1", TEST_PASSWORD, "members");
+        page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, "firstname1", "lastname1", "company1", "email1",
+                TEST_PASSWORD, "members");
         assertEquals("User already exists", page.getErrorFeedbackMessage());
         // cancel
         usersTab = asPage(UserCreationFormPage.class).cancelCreation();
@@ -66,8 +66,8 @@ public class ITUsersTest extends AbstractTest {
         // modify a user firstname
         firstname = firstname + "modified";
         usersTab = page.getUsersGroupsHomePage().getUsersTab();
-        usersTab = usersTab.viewUser(TEST_USERNAME).getEditUserTab().editUser(
-                firstname, null, "newcompany", null, "Administrators group").backToTheList();
+        usersTab = usersTab.viewUser(TEST_USERNAME).getEditUserTab().editUser(firstname, null, "newcompany", null,
+                "Administrators group").backToTheList();
 
         // search user using its new firstname
         usersTab = usersTab.searchUser(firstname);
@@ -85,8 +85,7 @@ public class ITUsersTest extends AbstractTest {
         usersTab = page.getUsersTab();
         usersTab = usersTab.searchUser(firstname);
         String password = "testmodified";
-        UserViewTabSubPage tab = usersTab.viewUser(TEST_USERNAME).getChangePasswordUserTab().changePassword(
-                password);
+        UserViewTabSubPage tab = usersTab.viewUser(TEST_USERNAME).getChangePasswordUserTab().changePassword(password);
 
         tab.exitAdminCenter();
         logout();

@@ -46,8 +46,7 @@ import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
  */
 public class ITModifyWorkspaceDescriptionTest extends AbstractTest {
 
-    private final String WORKSPACE_TITLE = "WorkspaceDescriptionModify_"
-            + new Date().getTime();
+    private final String WORKSPACE_TITLE = "WorkspaceDescriptionModify_" + new Date().getTime();
 
     @Test
     public void testModifyWsDescription() throws Exception {
@@ -56,9 +55,8 @@ public class ITModifyWorkspaceDescriptionTest extends AbstractTest {
         UsersGroupsBasePage usergroupPage = login().getAdminCenter().getUsersGroupsHomePage();
         UsersTabSubPage page = usergroupPage.getUsersTab().searchUser(TEST_USERNAME);
         if (!page.isUserFound(TEST_USERNAME)) {
-            usergroupPage = page.getUserCreatePage().createUser(TEST_USERNAME,
-                    "John", "Smith", "Nuxeo", "jsmith@nuxeo.com", TEST_PASSWORD,
-                    "members");
+            usergroupPage = page.getUserCreatePage().createUser(TEST_USERNAME, "John", "Smith", "Nuxeo",
+                    "jsmith@nuxeo.com", TEST_PASSWORD, "members");
         }
 
         DocumentBasePage documentBasePage = usergroupPage.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
@@ -66,30 +64,24 @@ public class ITModifyWorkspaceDescriptionTest extends AbstractTest {
         AccessRightsSubPage accessRightSubTab = documentBasePage.getManageTab().getAccessRightsSubTab();
         // Need WriteSecurity (so in practice Manage everything) to edit a
         // Workspace
-        if (!accessRightSubTab.hasPermissionForUser("Manage everything",
-                TEST_USERNAME)) {
-            accessRightSubTab.grantPermissionForUser("Manage everything",
-                TEST_USERNAME);
+        if (!accessRightSubTab.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
+            accessRightSubTab.grantPermissionForUser("Manage everything", TEST_USERNAME);
         }
 
         logout();
 
         // Starting the test for real
-        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab().goToDocument(
-                "Workspaces");
+        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab().goToDocument("Workspaces");
 
         // Create a new workspace named 'WorkspaceDescriptionModify_{current
         // time}'
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage,
-                WORKSPACE_TITLE, "A workspace description");
+        DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, "A workspace description");
 
         // Modify Workspace description
         String descriptionModified = "Description modified";
-        workspacePage = workspacePage.getEditTab().edit(null,
-                descriptionModified, null);
+        workspacePage = workspacePage.getEditTab().edit(null, descriptionModified, null);
 
-        assertEquals(descriptionModified,
-                workspacePage.getCurrentFolderishDescription());
+        assertEquals(descriptionModified, workspacePage.getCurrentFolderishDescription());
         assertEquals(WORKSPACE_TITLE, workspacePage.getCurrentDocumentTitle());
 
         // Clean up repository

@@ -50,7 +50,6 @@ public class UsersGroupsBasePage extends AbstractPage {
 
     /**
      * View the Users tab.
-     *
      */
     public UsersTabSubPage getUsersTab(boolean force) {
         if (force) {

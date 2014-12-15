@@ -57,15 +57,9 @@ public class ServerController {
     protected static boolean doExec(String path, String logPath) {
         String[] cmd;
         if (isWindows()) {
-            cmd = new String[] { "cmd", "/C",
-                    winEscape(new File(path, CMD_WIN).getPath()),
-                    "--gui=false", "restartbg" };
+            cmd = new String[] { "cmd", "/C", winEscape(new File(path, CMD_WIN).getPath()), "--gui=false", "restartbg" };
         } else {
-            cmd = new String[] {
-                    "/bin/sh",
-                    "-c",
-                    "\"" + new File(path, CMD_POSIX).getPath() + "\""
-                            + " restartbg" };
+            cmd = new String[] { "/bin/sh", "-c", "\"" + new File(path, CMD_POSIX).getPath() + "\"" + " restartbg" };
         }
 
         Process p1;
@@ -82,10 +76,8 @@ public class ServerController {
 
         if (isWindows()) {
             File logPathDir = new File(logPath);
-            File out = new File(logPathDir, "restart-"
-                    + System.currentTimeMillis() + ".log");
-            File err = new File(logPathDir, "restart-err-"
-                    + System.currentTimeMillis() + ".log");
+            File out = new File(logPathDir, "restart-" + System.currentTimeMillis() + ".log");
+            File err = new File(logPathDir, "restart-err-" + System.currentTimeMillis() + ".log");
             OutputStream fout = null;
             OutputStream ferr = null;
             try {
@@ -96,10 +88,8 @@ public class ServerController {
             new ThreadedStreamGobbler(p1.getInputStream(), fout).start();
             new ThreadedStreamGobbler(p1.getErrorStream(), ferr).start();
         } else {
-            new ThreadedStreamGobbler(p1.getInputStream(),
-                    SimpleLog.LOG_LEVEL_OFF).start();
-            new ThreadedStreamGobbler(p1.getErrorStream(),
-                    SimpleLog.LOG_LEVEL_ERROR).start();
+            new ThreadedStreamGobbler(p1.getInputStream(), SimpleLog.LOG_LEVEL_OFF).start();
+            new ThreadedStreamGobbler(p1.getErrorStream(), SimpleLog.LOG_LEVEL_ERROR).start();
         }
         return true;
     }
@@ -140,7 +130,6 @@ public class ServerController {
             cgForRestart = new ConfigurationGenerator();
             cgForRestart.init();
         }
-        return cgForRestart.getUserConfig().getProperty(
-                ConfigurationGenerator.PARAM_NUXEO_URL);
+        return cgForRestart.getUserConfig().getProperty(ConfigurationGenerator.PARAM_NUXEO_URL);
     }
 }

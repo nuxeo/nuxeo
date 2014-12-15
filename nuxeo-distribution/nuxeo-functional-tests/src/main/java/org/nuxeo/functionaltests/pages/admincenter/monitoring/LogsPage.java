@@ -58,8 +58,7 @@ public class LogsPage extends MonitoringPage {
 
     public WebElement getDownloadButton(String serverLogFileName) {
         String downloadButtonValue = "Download " + serverLogFileName;
-        return findElementWithTimeout(By.xpath("//input[@value='"
-                + downloadButtonValue + "']"));
+        return findElementWithTimeout(By.xpath("//input[@value='" + downloadButtonValue + "']"));
     }
 
 }

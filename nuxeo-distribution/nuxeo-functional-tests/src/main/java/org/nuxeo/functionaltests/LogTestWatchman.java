@@ -60,8 +60,7 @@ public class LogTestWatchman extends TestWatchman {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Statement apply(final Statement base, final FrameworkMethod method,
-            Object target) {
+    public Statement apply(final Statement base, final FrameworkMethod method, Object target) {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
@@ -82,8 +81,7 @@ public class LogTestWatchman extends TestWatchman {
                                 // special function, we could register
                                 // functions specially annotated.
                                 FrameworkMethod first = afters.get(0);
-                                Method m = AbstractTest.class.getMethod(
-                                        "runBeforeAfters", (Class<?>[]) null);
+                                Method m = AbstractTest.class.getMethod("runBeforeAfters", (Class<?>[]) null);
                                 FrameworkMethod f = new FrameworkMethod(m);
                                 if (first != null && !first.equals(f)) {
                                     afters.add(0, f);
@@ -106,8 +104,7 @@ public class LogTestWatchman extends TestWatchman {
     }
 
     /**
-     * @deprecated since 5.9.2, use
-     *             {@link ScreenshotTaker#dumpPageSource(org.openqa.selenium.WebDriver, String)}
+     * @deprecated since 5.9.2, use {@link ScreenshotTaker#dumpPageSource(org.openqa.selenium.WebDriver, String)}
      *             instead.
      */
     @Deprecated
@@ -120,8 +117,7 @@ public class LogTestWatchman extends TestWatchman {
     public void failed(Throwable e, FrameworkMethod method) {
         String className = getTestClassName(method);
         String methodName = method.getName();
-        log.error(String.format("Test '%s#%s' failed", className, methodName),
-                e);
+        log.error(String.format("Test '%s#%s' failed", className, methodName), e);
 
         if (lastScreenshot == null || lastPageSource == null) {
             ScreenshotTaker taker = new ScreenshotTaker();
@@ -137,17 +133,14 @@ public class LogTestWatchman extends TestWatchman {
             }
 
         }
-        log.info(String.format("Created screenshot file named '%s'",
-                lastScreenshot));
-        log.info(String.format("Created page source file named '%s'",
-                lastPageSource));
+        log.info(String.format("Created screenshot file named '%s'", lastScreenshot));
+        log.info(String.format("Created page source file named '%s'", lastPageSource));
         super.failed(e, method);
     }
 
     @Override
     public void finished(FrameworkMethod method) {
-        log.info(String.format("Finished test '%s#%s'",
-                getTestClassName(method), method.getName()));
+        log.info(String.format("Finished test '%s#%s'", getTestClassName(method), method.getName()));
         lastScreenshot = null;
         lastPageSource = null;
         super.finished(method);
@@ -167,8 +160,7 @@ public class LogTestWatchman extends TestWatchman {
 
     protected void logOnServer(String message) {
         if (driver != null) {
-            driver.get(String.format(
-                    "%s/restAPI/systemLog?token=dolog&level=WARN&message=----- WebDriver: %s",
+            driver.get(String.format("%s/restAPI/systemLog?token=dolog&level=WARN&message=----- WebDriver: %s",
                     serverURL, URIUtils.quoteURIPathComponent(message, true)));
         } else {
             log.warn(String.format("Cannot log on server message: %s", message));
@@ -191,13 +183,11 @@ public class LogTestWatchman extends TestWatchman {
 
     @Override
     public void starting(FrameworkMethod method) {
-        String message = String.format("Starting test '%s#%s'",
-                getTestClassName(method), method.getName());
+        String message = String.format("Starting test '%s#%s'", getTestClassName(method), method.getName());
         log.info(message);
         String className = getTestClassName(method);
         String methodName = method.getName();
-        filePrefix = String.format("screenshot-lastpage-%s-%s", className,
-                methodName);
+        filePrefix = String.format("screenshot-lastpage-%s-%s", className, methodName);
         logOnServer(message);
     }
 
@@ -212,8 +202,7 @@ public class LogTestWatchman extends TestWatchman {
     }
 
     /**
-     * @deprecated since 5.9.2, use
-     *             {@link ScreenshotTaker#takeScreenshot(org.openqa.selenium.WebDriver, String)}
+     * @deprecated since 5.9.2, use {@link ScreenshotTaker#takeScreenshot(org.openqa.selenium.WebDriver, String)}
      *             instead.
      */
     @Deprecated

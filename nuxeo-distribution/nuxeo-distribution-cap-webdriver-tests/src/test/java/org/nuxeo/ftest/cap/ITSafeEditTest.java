@@ -69,7 +69,7 @@ public class ITSafeEditTest extends AbstractTest {
         private final JavascriptExecutor js;
 
         public LocalStorage(WebDriver webDriver) {
-            this.js = (JavascriptExecutor) webDriver;
+            js = (JavascriptExecutor) webDriver;
         }
 
         public void clearLocalStorage() {
@@ -77,13 +77,11 @@ public class ITSafeEditTest extends AbstractTest {
         }
 
         public String getItemFromLocalStorage(String key) {
-            return (String) js.executeScript(String.format(
-                    "return window.localStorage.getItem('%s');", key));
+            return (String) js.executeScript(String.format("return window.localStorage.getItem('%s');", key));
         }
 
         public String getKeyFromLocalStorage(int key) {
-            return (String) js.executeScript(String.format(
-                    "return window.localStorage.key('%s');",
+            return (String) js.executeScript(String.format("return window.localStorage.key('%s');",
                     Integer.valueOf(key)));
         }
 
@@ -92,26 +90,22 @@ public class ITSafeEditTest extends AbstractTest {
         }
 
         public boolean isItemPresentInLocalStorage(String item) {
-            return !(js.executeScript(String.format(
-                    "return window.localStorage.getItem('%s');", item)) == null);
+            return !(js.executeScript(String.format("return window.localStorage.getItem('%s');", item)) == null);
         }
 
         public void removeItemFromLocalStorage(String item) {
-            js.executeScript(String.format(
-                    "window.localStorage.removeItem('%s');", item));
+            js.executeScript(String.format("window.localStorage.removeItem('%s');", item));
         }
 
         public void setItemInLocalStorage(String item, String value) {
-            js.executeScript(String.format(
-                    "window.localStorage.setItem('%s','%s');", item, value));
+            js.executeScript(String.format("window.localStorage.setItem('%s','%s');", item, value));
         }
 
     }
 
     private static final Log log = LogFactory.getLog(AbstractTest.class);
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_"
-            + new Date().getTime();
+    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
 
     private final static String NEW_WORKSPACE_TITLE = "newWorkspaceName";
 
@@ -132,32 +126,28 @@ public class ITSafeEditTest extends AbstractTest {
         UsersTabSubPage usersTab = s.getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(TEST_USERNAME);
         if (!usersTab.isUserFound(TEST_USERNAME)) {
-            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, TEST_USERNAME,
-                    "lastname1", "company1", "email1", TEST_PASSWORD, "members");
+            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, TEST_USERNAME, "lastname1", "company1",
+                    "email1", TEST_PASSWORD, "members");
             usersTab = page.getUsersTab(true);
         } // search user usersTab =
         usersTab.searchUser(TEST_USERNAME);
         assertTrue(usersTab.isUserFound(TEST_USERNAME));
 
         // create a new wokspace and grant all rights to the test user
-        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                "Workspaces");
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage,
-                WORKSPACE_TITLE, INITIAL_DESCRIPTION);
+        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument("Workspaces");
+        DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, INITIAL_DESCRIPTION);
         AccessRightsSubPage accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
         // Need WriteSecurity (so in practice Manage everything) to edit a
         // Workspace
-        if (!accessRightSubTab.hasPermissionForUser("Manage everything",
-                TEST_USERNAME)) {
-            accessRightSubTab.grantPermissionForUser("Manage everything",
-                TEST_USERNAME);
+        if (!accessRightSubTab.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
+            accessRightSubTab.grantPermissionForUser("Manage everything", TEST_USERNAME);
         }
         logout();
     }
 
     /**
-     * workaround to by pass the popup windows which is supposed to prevent the
-     * user from leaving the page with unsaved modification.
+     * workaround to by pass the popup windows which is supposed to prevent the user from leaving the page with unsaved
+     * modification.
      *
      * @since 5.7.1
      */
@@ -169,11 +159,9 @@ public class ITSafeEditTest extends AbstractTest {
     private void checkSafeEditRestoreProvided() {
         // We must find the status message asking if we want to restore
         // previous unchanged data, and make sure it is visible
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5,
-                TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(
-                NoSuchElementException.class);
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(
-                By.className("ambiance-title"),
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5, TimeUnit.SECONDS).pollingEvery(100,
+                TimeUnit.MILLISECONDS).ignoring(NoSuchElementException.class);
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.className("ambiance-title"),
                 "A draft of this document has been saved"));
     }
 
@@ -194,8 +182,8 @@ public class ITSafeEditTest extends AbstractTest {
     }
 
     /**
-     * Returns true if detected FF browser version is >= FF 14, to avoid running
-     * the test on browsers that do not support localstorage.
+     * Returns true if detected FF browser version is >= FF 14, to avoid running the test on browsers that do not
+     * support localstorage.
      *
      * @return whether we run the test or not
      * @since 5.7.2
@@ -220,9 +208,8 @@ public class ITSafeEditTest extends AbstractTest {
     }
 
     /**
-     * This methods checks that once a simple html input is changed within a
-     * page, the new value is stored in the browser local storage in case of
-     * accidental loose (crash, freeze, network failure). The value can then be
+     * This methods checks that once a simple html input is changed within a page, the new value is stored in the
+     * browser local storage in case of accidental loose (crash, freeze, network failure). The value can then be
      * restored from the local storage when re-editing the page afterwards.
      *
      * @since 5.7.1
@@ -241,8 +228,8 @@ public class ITSafeEditTest extends AbstractTest {
         WebElement descriptionElt, titleElt;
 
         // Log as test user and edit the created workdspace
-        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab().goToDocument(
-                "Workspaces").getContentTab().goToDocument(WORKSPACE_TITLE);
+        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab().goToDocument("Workspaces").getContentTab().goToDocument(
+                WORKSPACE_TITLE);
         documentBasePage.getEditTab();
 
         LocalStorage localStorage = new LocalStorage(driver);
@@ -259,8 +246,7 @@ public class ITSafeEditTest extends AbstractTest {
             ctrlKey = Keys.COMMAND;
         }
         titleElt.click();
-        titleElt.sendKeys(Keys.chord(ctrlKey, "a") + Keys.DELETE
-                + NEW_WORKSPACE_TITLE);
+        titleElt.sendKeys(Keys.chord(ctrlKey, "a") + Keys.DELETE + NEW_WORKSPACE_TITLE);
         // weird thing in webdriver: we need to call clear on an input of the
         // form to fire an onchange event
         descriptionElt.click();
@@ -269,27 +255,20 @@ public class ITSafeEditTest extends AbstractTest {
 
         // Now must have something saved in the localstorage
         String lsItem = localStorage.getItemFromLocalStorage(currentDocumentId);
-        final String lookupString = "\"" + TITLE_ELT_ID + "\":\""
-                + NEW_WORKSPACE_TITLE + "\"";
+        final String lookupString = "\"" + TITLE_ELT_ID + "\":\"" + NEW_WORKSPACE_TITLE + "\"";
 
         assertTrue(lsItem != null && lsItem.length() > 0);
         assertTrue(lsItem.contains(lookupString));
 
-        /*// Let's leave the edit tab of the workspace with unsaved changes. A
-        // popup should prevent us from doing that
-        try {
-            documentBasePage.getContentTab();
-            // Should never occur
-            fail("There are unsaved modifications pending and the page can only be left after clicking \"Leave this page\"");
-        } catch (UnhandledAlertException e) {
-            // Expected behavior
-            // The following is a workaround to by pass the popup windows which
-            // is supposed to prevent the user from leaving the page with
-            // unsaved modifications
-            log.debug("3 - " + localStorage.getLocalStorageLength());
-            byPassLeavePagePopup();
-            log.debug("4 - " + localStorage.getLocalStorageLength());
-        }*/
+        /*
+         * // Let's leave the edit tab of the workspace with unsaved changes. A // popup should prevent us from doing
+         * that try { documentBasePage.getContentTab(); // Should never occur
+         * fail("There are unsaved modifications pending and the page can only be left after clicking \"Leave this page\""
+         * ); } catch (UnhandledAlertException e) { // Expected behavior // The following is a workaround to by pass the
+         * popup windows which // is supposed to prevent the user from leaving the page with // unsaved modifications
+         * log.debug("3 - " + localStorage.getLocalStorageLength()); byPassLeavePagePopup(); log.debug("4 - " +
+         * localStorage.getLocalStorageLength()); }
+         */
 
         // The following is a workaround to by pass the popup windows which
         // is supposed to prevent the user from leaving the page with
@@ -346,16 +325,15 @@ public class ITSafeEditTest extends AbstractTest {
 
         DocumentBasePage documentBasePage;
         // Log as test user and edit the created workdspace
-        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab().goToDocument(
-                "Workspaces").getContentTab().goToDocument(WORKSPACE_TITLE);
+        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab().goToDocument("Workspaces").getContentTab().goToDocument(
+                WORKSPACE_TITLE);
 
         // Create test File
-        FileDocumentBasePage filePage = createFile(documentBasePage,
-                "Test file", "Test File description", false, null, null, null);
+        FileDocumentBasePage filePage = createFile(documentBasePage, "Test file", "Test File description", false, null,
+                null, null);
         EditTabSubPage editTabSubPage = filePage.getEditTab();
 
-        Select2WidgetElement coverageWidget = new Select2WidgetElement(
-                driver,
+        Select2WidgetElement coverageWidget = new Select2WidgetElement(driver,
                 driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_1_select2']")));
         coverageWidget.selectValue(COVERAGE);
 
@@ -385,11 +363,11 @@ public class ITSafeEditTest extends AbstractTest {
     }
 
     private void waitForSavedNotification() {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5,
-                TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(
-                NoSuchElementException.class);
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5, TimeUnit.SECONDS).pollingEvery(100,
+                TimeUnit.MILLISECONDS).ignoring(NoSuchElementException.class);
         try {
             wait.until(new Function<WebDriver, WebElement>() {
+                @Override
                 public WebElement apply(WebDriver driver) {
                     return driver.findElement(By.xpath("//div[contains(.,'" + DRAFT_SAVE_TEXT_NOTIFICATION + "')]"));
                 }
@@ -407,8 +385,7 @@ public class ITSafeEditTest extends AbstractTest {
         // confirmRestoreYes.click();
         // We just want to trigger the js event handler attached to
         // confirmRestoreYes element. This is the workaround.
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();",
-                confirmRestoreYes);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", confirmRestoreYes);
     }
 
 }

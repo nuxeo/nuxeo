@@ -33,14 +33,12 @@ public class SummaryWizardPage extends WizardPage {
     public LoginPage restart() {
         nav(WizardPage.class, "Start Nuxeo");
         try {
-            findElementWithTimeout(By.id("username"),
-                    RESTART_TIMEOUT_MINUTES * 60 * 1000);
+            findElementWithTimeout(By.id("username"), RESTART_TIMEOUT_MINUTES * 60 * 1000);
             return asPage(LoginPage.class);
         } catch (NoSuchElementException e) {
             String currentUrl = driver.getCurrentUrl();
             throw new NoSuchElementException(
-                    String.format(
-                            "Unable to find login screen after %s minutes, currentUrl=%s",
+                    String.format("Unable to find login screen after %s minutes, currentUrl=%s",
                             RESTART_TIMEOUT_MINUTES, currentUrl), e);
         }
     }

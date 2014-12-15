@@ -62,16 +62,13 @@ public class NewVocabularyEntryForm extends WebFragmentImpl {
         super(driver, element);
     }
 
-    private void findParentNodeAndSelect(final WebElement selectParentFancyBox,
-            final String[] path) {
+    private void findParentNodeAndSelect(final WebElement selectParentFancyBox, final String[] path) {
         if (path.length == 1) {
             selectParentFancyBox.findElement(By.linkText(path[0])).click();
         } else {
-            WebElement node = selectParentFancyBox.findElement(By.xpath("//table[contains(text(),'"
-                    + path[0] + "')]"));
+            WebElement node = selectParentFancyBox.findElement(By.xpath("//table[contains(text(),'" + path[0] + "')]"));
             node.findElement(By.xpath("tbody/tr[1]/td[1]/div/a")).click();
-            findParentNodeAndSelect(selectParentFancyBox,
-                    Arrays.copyOfRange(path, 1, path.length));
+            findParentNodeAndSelect(selectParentFancyBox, Arrays.copyOfRange(path, 1, path.length));
         }
     }
 

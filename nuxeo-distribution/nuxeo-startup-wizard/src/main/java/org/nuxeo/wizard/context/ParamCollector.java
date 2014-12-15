@@ -105,11 +105,9 @@ public class ParamCollector {
         Enumeration<String> names = req.getParameterNames();
         while (names.hasMoreElements()) {
             String name = names.nextElement();
-            if (name.startsWith("org.nuxeo.") || name.startsWith("nuxeo.")
-                    || name.startsWith("mail.")) {
+            if (name.startsWith("org.nuxeo.") || name.startsWith("nuxeo.") || name.startsWith("mail.")) {
                 String value = req.getParameter(name);
-                if (!value.isEmpty()
-                        || (value.isEmpty() && configurationParams.containsKey(name))) {
+                if (!value.isEmpty() || (value.isEmpty() && configurationParams.containsKey(name))) {
                     addConfigurationParam(name, value);
                 }
             }

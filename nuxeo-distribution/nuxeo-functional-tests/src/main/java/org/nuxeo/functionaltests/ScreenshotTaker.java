@@ -33,8 +33,7 @@ import org.openqa.selenium.WebDriverException;
  * <p>
  * Allows taking a png screenshot and the HTML source of the page.
  * <p>
- * Files are saved in a file in the maven base dir/target, and fallback on the
- * the system temp folder if can't find it.
+ * Files are saved in a file in the maven base dir/target, and fallback on the the system temp folder if can't find it.
  * <p>
  * This temp file won't be deleted on exist.
  *
@@ -63,8 +62,7 @@ public class ScreenshotTaker {
             try {
                 Thread.sleep(250);
                 String name = filename;
-                return TakesScreenshot.class.cast(driver).getScreenshotAs(
-                        new ScreenShotFileOutput(targetDirName, name));
+                return TakesScreenshot.class.cast(driver).getScreenshotAs(new ScreenShotFileOutput(targetDirName, name));
             } catch (InterruptedException e) {
                 log.error(e, e);
             }
@@ -78,8 +76,7 @@ public class ScreenshotTaker {
         }
         FileWriter writer = null;
         try {
-            String location = System.getProperty("basedir") + File.separator
-                    + "target";
+            String location = System.getProperty("basedir") + File.separator + "target";
             File outputFolder = new File(location);
             if (!outputFolder.exists() || !outputFolder.isDirectory()) {
                 outputFolder = null;
@@ -89,8 +86,7 @@ public class ScreenshotTaker {
                 outputFolder.mkdir();
             }
             File tmpFile = File.createTempFile(filename, ".html", outputFolder);
-            log.trace(String.format("Created page source file named '%s'",
-                    tmpFile.getPath()));
+            log.trace(String.format("Created page source file named '%s'", tmpFile.getPath()));
             writer = new FileWriter(tmpFile);
             writer.write(driver.getPageSource());
             return tmpFile;

@@ -39,13 +39,13 @@ public class AjaxRequestManager {
 
     public AjaxRequestManager(WebDriver driver) {
         super();
-        this.js = (JavascriptExecutor) driver;
+        js = (JavascriptExecutor) driver;
         reset();
     }
 
     protected void reset() {
-        this.active = false;
-        this.count = 0;
+        active = false;
+        count = 0;
     }
 
     public void watchAjaxRequests() {
@@ -76,8 +76,7 @@ public class AjaxRequestManager {
         sb.append("if (typeof jsf !== 'undefined') {");
         sb.append("  jsf.ajax.addOnEvent(function(e) {"
                 + "if (e.status == 'begin') {window.NuxeoTestFaces.increment();}"
-                + "if (e.status == 'success') {window.NuxeoTestFaces.decrement();}"
-                + "})");
+                + "if (e.status == 'success') {window.NuxeoTestFaces.decrement();}" + "})");
         sb.append("}");
         sb.append("}");
         js.executeScript(sb.toString());
@@ -85,6 +84,7 @@ public class AjaxRequestManager {
 
     public void waitForAjaxRequests() {
         waitUntil((new Function<WebDriver, Boolean>() {
+            @Override
             public Boolean apply(WebDriver driver) {
                 Boolean res = (Boolean) js.executeScript("return window.NuxeoTestFaces.finished();");
                 return res;
@@ -97,6 +97,7 @@ public class AjaxRequestManager {
      */
     public void waitForJQueryRequests() {
         waitUntil(new Function<WebDriver, Boolean>() {
+            @Override
             public Boolean apply(WebDriver driver) {
                 Boolean res = (Boolean) ((JavascriptExecutor) driver).executeScript("return jQuery.active == 0;");
                 return res;
@@ -106,9 +107,9 @@ public class AjaxRequestManager {
 
     private void waitUntil(Function<WebDriver, Boolean> function) {
         Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-            AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-            AbstractTest.POLLING_FREQUENCY_MILLISECONDS,
-            TimeUnit.MILLISECONDS).ignoring(NoSuchElementException.class);
+                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
+                AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
+                NoSuchElementException.class);
         wait.until(function);
     }
 }

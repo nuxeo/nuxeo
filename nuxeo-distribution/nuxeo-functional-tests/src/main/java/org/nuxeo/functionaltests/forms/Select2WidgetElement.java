@@ -46,9 +46,9 @@ public class Select2WidgetElement extends WebFragmentImpl {
 
     private static class Select2Wait implements Function<WebElement, Boolean> {
 
+        @Override
         public Boolean apply(WebElement element) {
-            boolean result = !element.getAttribute("class").contains(
-                    S2_CSS_ACTIVE_CLASS);
+            boolean result = !element.getAttribute("class").contains(S2_CSS_ACTIVE_CLASS);
             return result;
         }
     }
@@ -91,10 +91,9 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * @param by the by locator of the widget
      * @param multiple whether the widget can have multiple values
      */
-    public Select2WidgetElement(final WebDriver driver, WebElement element,
-            final boolean multiple) {
+    public Select2WidgetElement(final WebDriver driver, WebElement element, final boolean multiple) {
         this(driver, element);
-        this.mutliple = multiple;
+        mutliple = multiple;
     }
 
     /**
@@ -102,8 +101,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
      */
     public WebElement getSelectedValue() {
         if (mutliple) {
-            throw new UnsupportedOperationException(
-                    "The select2 is multiple and has multiple selected values");
+            throw new UnsupportedOperationException("The select2 is multiple and has multiple selected values");
         }
         return element.findElement(By.xpath(S2_SINGLE_CURRENT_SELECTION_XPATH));
     }
@@ -124,8 +122,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
      */
     protected String getSubmittedValue() {
         String eltId = element.getAttribute("id");
-        String submittedEltId = element.getAttribute("id").substring("s2id_".length(),
-                eltId.length());
+        String submittedEltId = element.getAttribute("id").substring("s2id_".length(), eltId.length());
         return driver.findElement(By.id(submittedEltId)).getAttribute("value");
     }
 
@@ -142,20 +139,19 @@ public class Select2WidgetElement extends WebFragmentImpl {
      */
     public void removeFromSelection(final String displayedText) {
         if (!mutliple) {
-            throw new UnsupportedOperationException(
-                    "The select2 is not multiple and you can't remove a specific value");
+            throw new UnsupportedOperationException("The select2 is not multiple and you can't remove a specific value");
         }
         final String submittedValueBefore = getSubmittedValue();
-        boolean found =false;
+        boolean found = false;
         for (WebElement el : getSelectedValues()) {
             if (el.getText().equals(displayedText)) {
-                el.findElement(
-                        By.xpath("a[@class='select2-search-choice-close']")).click();
+                el.findElement(By.xpath("a[@class='select2-search-choice-close']")).click();
                 found = true;
             }
         }
         if (found) {
             Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
+                @Override
                 public Boolean apply(WebDriver driver) {
                     return !submittedValueBefore.equals(getSubmittedValue());
                 }
@@ -169,7 +165,6 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * Select a single value.
      *
      * @param value the value to be selected
-     *
      * @since 5.7.3
      */
     public void selectValue(final String value) {
@@ -186,8 +181,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
         waitSelect2();
 
         if (getSuggestedEntries() != null && getSuggestedEntries().size() > 1) {
-            log.warn("Suggestion for element "
-                    + element.getAttribute("id")
+            log.warn("Suggestion for element " + element.getAttribute("id")
                     + " returned more than 1 result, the first suggestion will be selected : "
                     + getSuggestedEntries().get(0).getText());
         }
@@ -200,7 +194,6 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * Select multiple values.
      *
      * @param values the values
-     *
      * @since 5.7.3
      */
     public void selectValues(final String[] values) {
@@ -214,7 +207,6 @@ public class Select2WidgetElement extends WebFragmentImpl {
      *
      * @param value The value to type in the select2.
      * @return The suggested values for the parameter.
-     *
      * @since 6.0
      */
     public List<WebElement> typeAndGetResult(final String value) {
@@ -227,8 +219,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
         try {
             waitSelect2();
         } catch (TimeoutException e) {
-            log.warn("Suggestion timed out with input : " + value
-                    + ". Let's try with next letter.");
+            log.warn("Suggestion timed out with input : " + value + ". Let's try with next letter.");
         }
 
         return getSuggestedEntries();
@@ -251,7 +242,6 @@ public class Select2WidgetElement extends WebFragmentImpl {
 
     /**
      * @return The suggest input element.
-     *
      * @since 6.0
      */
     private WebElement getSuggestInput() {
@@ -269,19 +259,13 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * Do a wait on the select2 field.
      *
      * @throws TimeoutException
-     *
      * @since 6.0
      */
-    private void waitSelect2()
-            throws TimeoutException {
+    private void waitSelect2() throws TimeoutException {
         Wait<WebElement> wait = new FluentWait<WebElement>(
                 !mutliple ? driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH))
-                        : element.findElement(By.xpath(S2_MULTIPLE_INPUT_XPATH))).withTimeout(
-                SELECT2_LOADING_TIMEOUT,
-                TimeUnit.SECONDS).pollingEvery(
-                100,
-                TimeUnit.MILLISECONDS).ignoring(
-                NoSuchElementException.class);
+                        : element.findElement(By.xpath(S2_MULTIPLE_INPUT_XPATH))).withTimeout(SELECT2_LOADING_TIMEOUT,
+                TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(NoSuchElementException.class);
         Function<WebElement, Boolean> s2WaitFunction = new Select2Wait();
         wait.until(s2WaitFunction);
     }
@@ -333,8 +317,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
         try {
             waitSelect2();
         } catch (TimeoutException e) {
-            log.warn("Suggestion timed out with input : " + value
-                    + ". Let's try with next letter.");
+            log.warn("Suggestion timed out with input : " + value + ". Let's try with next letter.");
         }
         suggestInput.sendKeys(Keys.RETURN);
 

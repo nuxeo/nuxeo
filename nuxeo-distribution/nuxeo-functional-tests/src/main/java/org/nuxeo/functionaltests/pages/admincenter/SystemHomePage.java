@@ -60,8 +60,7 @@ public class SystemHomePage extends AdminCenterBasePage {
         } else {
             return null;
         }
-        findElementWithTimeout(By.id("username"),
-                RESTART_TIMEOUT_MINUTES * 60 * 1000);
+        findElementWithTimeout(By.id("username"), RESTART_TIMEOUT_MINUTES * 60 * 1000);
         return asPage(LoginPage.class);
     }
 
@@ -69,8 +68,7 @@ public class SystemHomePage extends AdminCenterBasePage {
         if (!SETUP_SUBTAB.equals(getSelectedSubTab())) {
             selectSubTab(SETUP_SUBTAB);
         }
-        WebElement input = findElementWithTimeout(By.xpath("//td[@id='" + id
-                + "']/input"));
+        WebElement input = findElementWithTimeout(By.xpath("//td[@id='" + id + "']/input"));
         if (input != null) {
             input.sendKeys(value);
             return true;
@@ -82,8 +80,7 @@ public class SystemHomePage extends AdminCenterBasePage {
         if (!SETUP_SUBTAB.equals(getSelectedSubTab())) {
             selectSubTab(SETUP_SUBTAB);
         }
-        WebElement input = findElementWithTimeout(By.xpath("//td[@id='" + id
-                + "']/input"));
+        WebElement input = findElementWithTimeout(By.xpath("//td[@id='" + id + "']/input"));
         if (input != null) {
             return input.getAttribute("value");
         }

@@ -56,24 +56,22 @@ public class ITDefaultWorkflowTest extends AbstractTest {
     private static final String USER_JDOE = "jdoe_workflow";
 
     @Override
-    protected DocumentBasePage initRepository(DocumentBasePage currentPage)
-            throws Exception {
+    protected DocumentBasePage initRepository(DocumentBasePage currentPage) throws Exception {
         // Create test Workspace
         DocumentBasePage workspacePage = super.initRepository(currentPage);
         // Create test File
-        FileDocumentBasePage filePage = createFile(workspacePage, "Test file",
-                "Test File description", false, null, null, null);
+        FileDocumentBasePage filePage = createFile(workspacePage, "Test file", "Test File description", false, null,
+                null, null);
         return filePage;
     }
 
-    protected void createTestUser(String username, String pswd)
-            throws Exception {
+    protected void createTestUser(String username, String pswd) throws Exception {
         UsersGroupsBasePage page;
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(username);
         if (!usersTab.isUserFound(username)) {
-            page = usersTab.getUserCreatePage().createUser(username, username,
-                    "lastname1", "company1", "email1", pswd, "members");
+            page = usersTab.getUserCreatePage().createUser(username, username, "lastname1", "company1", "email1", pswd,
+                    "members");
             usersTab = page.getUsersTab(true);
         }
         // search user
@@ -122,8 +120,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         // get value for Participants on the review that were set on the
         // previous step
         // the value is stored in a global workflow variable
-        String participantsOnTheReview = taskLayoutDiv.findElement(
-                By.className("user")).getText();
+        String participantsOnTheReview = taskLayoutDiv.findElement(By.className("user")).getText();
 
         assertEquals("jdoe_workflow lastname1", participantsOnTheReview);
         workflowTab.endTask("Validate");
@@ -355,13 +352,11 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         deleteTestUser(USER_LINNET);
     }
 
-    protected DocumentBasePage startDefaultSerialWorkflow(
-            DocumentBasePage filePage, final String username) {
+    protected DocumentBasePage startDefaultSerialWorkflow(DocumentBasePage filePage, final String username) {
         // start workflow
         SummaryTabSubPage summaryTabPage = filePage.getSummaryTab();
         summaryTabPage.startDefaultWorkflow();
-        assertTrue(summaryTabPage.workflowTasksForm.getText().contains(
-                "Please select some participants for the review"));
+        assertTrue(summaryTabPage.workflowTasksForm.getText().contains("Please select some participants for the review"));
         // click on the workflow tab
         WorkflowTabSubPage workflowTab = filePage.getWorkflow();
         workflowTab.showGraphView();
@@ -373,13 +368,11 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         return filePage;
     }
 
-    protected DocumentBasePage startDefaultParallelWorkflow(
-            DocumentBasePage filePage) {
+    protected DocumentBasePage startDefaultParallelWorkflow(DocumentBasePage filePage) {
         // start workflow
         SummaryTabSubPage summaryTabPage = filePage.getSummaryTab();
         summaryTabPage.startDefaultParallelWorkflow();
-        assertTrue(summaryTabPage.workflowTasksForm.getText().contains(
-                "Please select some participants for the review"));
+        assertTrue(summaryTabPage.workflowTasksForm.getText().contains("Please select some participants for the review"));
         // click on the workflow tab
         WorkflowTabSubPage workflowTab = filePage.getWorkflow();
         workflowTab.showGraphView();

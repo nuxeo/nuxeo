@@ -43,8 +43,7 @@ public class RichEditorElement extends AbstractWidgetElement {
      */
     public void insertContent(String content) {
         // Define the script which sets the content of the editor
-        String scriptToExecute = String.format("tinyMCE.activeEditor.insertContent('%s')",
-                content);
+        String scriptToExecute = String.format("tinyMCE.activeEditor.insertContent('%s')", content);
         // Set the content of the editor
         ((JavascriptExecutor) driver).executeScript(scriptToExecute);
     }

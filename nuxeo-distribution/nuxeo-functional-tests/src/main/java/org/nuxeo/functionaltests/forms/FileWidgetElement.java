@@ -24,8 +24,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /**
- * Represents a file widget, with helper methods to retrieve/check its own
- * elements.
+ * Represents a file widget, with helper methods to retrieve/check its own elements.
  *
  * @since 5.7
  */
@@ -45,10 +44,8 @@ public class FileWidgetElement extends AbstractWidgetElement {
         return link.getText();
     }
 
-    public void uploadTestFile(String prefix, String suffix, String content)
-            throws IOException {
-        String fileToUploadPath = AbstractTest.getTmpFileToUploadPath(prefix, suffix,
-                content);
+    public void uploadTestFile(String prefix, String suffix, String content) throws IOException {
+        String fileToUploadPath = AbstractTest.getTmpFileToUploadPath(prefix, suffix, content);
         WebElement upRadioButton = getSubElement("choiceupload");
         upRadioButton.click();
         WebElement fileInput = getSubElement("upload");
@@ -63,8 +60,7 @@ public class FileWidgetElement extends AbstractWidgetElement {
             WebElement delRadioButton = getSubElement("choicedelete");
             delRadioButton.click();
         } else {
-            throw new NoSuchElementException(
-                    "No delete choice available on widget");
+            throw new NoSuchElementException("No delete choice available on widget");
         }
     }
 

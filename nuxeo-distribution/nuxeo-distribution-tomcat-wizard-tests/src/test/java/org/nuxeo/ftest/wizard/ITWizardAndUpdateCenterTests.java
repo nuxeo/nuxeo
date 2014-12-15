@@ -124,8 +124,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         assertFalse(somePage.hasError());
         proxyPage = somePage.previous();
 
-        assertTrue(proxyPage.selectOption("nuxeo.http.proxy.type",
-                "authenticated"));
+        assertTrue(proxyPage.selectOption("nuxeo.http.proxy.type", "authenticated"));
         proxyPage.clearInput("nuxeo.http.proxy.login");
         proxyPage.clearInput("nuxeo.http.proxy.password");
         proxyPage = proxyPage.next(true);
@@ -191,27 +190,21 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         // try to validate
         ConnectWizardPage connectPage2 = connectPage1.submitWithError();
         assertNotNull(connectPage2);
-        assertTrue(connectPage2.getErrorMessage().startsWith(
-                "There were some errors in your form:"));
+        assertTrue(connectPage2.getErrorMessage().startsWith("There were some errors in your form:"));
 
         // ok, let's try to skip the screen
-        WizardPage connectSkip = connectPage1.navByLink(WizardPage.class,
-                "Or skip and don't register", true);
+        WizardPage connectSkip = connectPage1.navByLink(WizardPage.class, "Or skip and don't register", true);
         assertNotNull(connectSkip);
-        assertEquals(
-                "You have not signed up for a free trial of Nuxeo Connect.",
-                connectSkip.getTitle2());
+        assertEquals("You have not signed up for a free trial of Nuxeo Connect.", connectSkip.getTitle2());
 
         // ok, let's register
-        connectWizardPage = connectSkip.navById(WizardPage.class, "btnRetry",
-                true);
+        connectWizardPage = connectSkip.navById(WizardPage.class, "btnRetry", true);
         connectPage1 = connectWizardPage.getConnectPage(); // enter iframe
                                                            // again
         assertNotNull(connectPage1);
 
         // Register with a existing account
-        ConnectRegistrationPage connectSignIn = connectPage1.getLink(
-                "click here").asPage(ConnectRegistrationPage.class);
+        ConnectRegistrationPage connectSignIn = connectPage1.getLink("click here").asPage(ConnectRegistrationPage.class);
 
         // Login through CAS
         String mainWindow = driver.getWindowHandle();
@@ -224,8 +217,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         driver.switchTo().window(mainWindow);
 
         IFrameHelper.focusOnConnectFrame(driver);
-        assertEquals("Register your new Nuxeo instance",
-                connectSignIn.getTitle());
+        assertEquals("Register your new Nuxeo instance", connectSignIn.getTitle());
 
         // select the associated project
         connectSignIn.selectOption("project", CONNECT_PROJECT_SELECTOR_UUID);
@@ -233,8 +225,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
         // **********************
         // Exit Connect Form and Display Packages selection
-        WizardPage packageSelectiondPage = connectSignIn.nav(WizardPage.class,
-                "Continue");
+        WizardPage packageSelectiondPage = connectSignIn.nav(WizardPage.class, "Continue");
 
         assertNotNull(packageSelectiondPage);
         assertEquals("Select Modules", packageSelectiondPage.getTitle());
@@ -322,21 +313,15 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
             // try to validate
             ConnectWizardPage connectPage2 = connectPage1.next(ConnectWizardPage.class);
             assertNotNull(connectPage2);
-            assertEquals(
-                    "There were some errors in your form: You must define a login",
-                    connectPage2.getErrorMessage());
+            assertEquals("There were some errors in your form: You must define a login", connectPage2.getErrorMessage());
 
             // ok, let's try to skip the screen
-            ConnectWizardPage connectSkip = connectPage1.nav(
-                    ConnectWizardPage.class, "Skip");
+            ConnectWizardPage connectSkip = connectPage1.nav(ConnectWizardPage.class, "Skip");
             assertNotNull(connectSkip);
-            assertEquals(
-                    "You have not registered your instance on Nuxeo Connect.",
-                    connectSkip.getTitle2());
+            assertEquals("You have not registered your instance on Nuxeo Connect.", connectSkip.getTitle2());
 
             // ok, let's register
-            connectWizardPage = connectSkip.navById(WizardPage.class,
-                    "btnRetry");
+            connectWizardPage = connectSkip.navById(WizardPage.class, "btnRetry");
 
         }
 
@@ -395,8 +380,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         assertNotNull(packageListing);
         WebElement packageLink = packageListing.getPackageLink(MARKETPLACE_PACKAGE_ID);
         assertNotNull(packageLink);
-        assertTrue(packageLink.getText().trim().toLowerCase().startsWith(
-                "restart"));
+        assertTrue(packageLink.getText().trim().toLowerCase().startsWith("restart"));
 
         updateCenterHome = packageListing.exit();
         assertNotNull(updateCenterHome);

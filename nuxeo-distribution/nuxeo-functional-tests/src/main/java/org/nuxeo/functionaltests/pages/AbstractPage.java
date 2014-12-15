@@ -67,13 +67,11 @@ public abstract class AbstractPage {
         return AbstractTest.asPage(pageClassToProxy);
     }
 
-    public <T extends WebFragment> T getWebFragment(By by,
-            Class<T> webFragmentClass) {
+    public <T extends WebFragment> T getWebFragment(By by, Class<T> webFragmentClass) {
         return AbstractTest.getWebFragment(by, webFragmentClass);
     }
 
-    public <T extends WebFragment> T getWebFragment(WebElement element,
-            Class<T> webFragmentClass) {
+    public <T extends WebFragment> T getWebFragment(WebElement element, Class<T> webFragmentClass) {
         return AbstractTest.getWebFragment(element, webFragmentClass);
     }
 
@@ -87,8 +85,7 @@ public abstract class AbstractPage {
     public String getFeedbackMessage() {
         String ret;
         try {
-            ret = findElementWithTimeout(
-                    By.xpath("//li[@class=\"errorFeedback\"]")).getText();
+            ret = findElementWithTimeout(By.xpath("//li[@class=\"errorFeedback\"]")).getText();
         } catch (NoSuchElementException e) {
             ret = "";
         }
@@ -98,8 +95,8 @@ public abstract class AbstractPage {
     /**
      * Returns the error feedback message.
      * <p>
-     * If there are more than one error message, always return the second one
-     * (not interested by 'Please correct errors' message).
+     * If there are more than one error message, always return the second one (not interested by 'Please correct errors'
+     * message).
      *
      * @since 5.8
      */
@@ -117,6 +114,7 @@ public abstract class AbstractPage {
         }
         return ret.trim();
     }
+
     /**
      * Gets the top bar navigation sub page.
      */
@@ -133,29 +131,25 @@ public abstract class AbstractPage {
     public WebElement getFancyBoxContent() {
         // make sure the fancybox content is loaded
         WebElement fancyBox = findElementWithTimeout(By.id("fancybox-content"));
-        WebDriverWait wait = new WebDriverWait(driver,
-                AbstractTest.LOAD_TIMEOUT_SECONDS);
+        WebDriverWait wait = new WebDriverWait(driver, AbstractTest.LOAD_TIMEOUT_SECONDS);
         wait.until(ExpectedConditions.visibilityOf(fancyBox));
         return fancyBox;
     }
 
     /**
-     * Finds the first {@link WebElement} using the given method, with a
-     * timeout.
+     * Finds the first {@link WebElement} using the given method, with a timeout.
      *
      * @param by the locating mechanism
      * @param timeout the timeout in milliseconds
      * @return the first matching element on the current page, if found
      * @throws NoSuchElementException when not found
      */
-    public WebElement findElementWithTimeout(By by, int timeout)
-            throws NoSuchElementException {
+    public WebElement findElementWithTimeout(By by, int timeout) throws NoSuchElementException {
         return Locator.findElementWithTimeout(by, timeout);
     }
 
     /**
-     * Finds the first {@link WebElement} using the given method, with a
-     * timeout.
+     * Finds the first {@link WebElement} using the given method, with a timeout.
      *
      * @param by the locating mechanism
      * @param timeout the timeout in milliseconds
@@ -163,44 +157,39 @@ public abstract class AbstractPage {
      * @return the first matching element on the current page, if found
      * @throws NoSuchElementException when not found
      */
-    public WebElement findElementWithTimeout(By by, int timeout,
-            WebElement parentElement) throws NoSuchElementException {
+    public WebElement findElementWithTimeout(By by, int timeout, WebElement parentElement)
+            throws NoSuchElementException {
         return Locator.findElementWithTimeout(by, timeout, parentElement);
     }
 
     /**
-     * Finds the first {@link WebElement} using the given method, with a
-     * timeout.
+     * Finds the first {@link WebElement} using the given method, with a timeout.
      *
      * @param by the locating mechanism
      * @param timeout the timeout in milliseconds
      * @return the first matching element on the current page, if found
      * @throws NoSuchElementException when not found
      */
-    public static WebElement findElementWithTimeout(By by)
-            throws NoSuchElementException {
+    public static WebElement findElementWithTimeout(By by) throws NoSuchElementException {
         return Locator.findElementWithTimeout(by);
     }
 
     /**
      * Finds webelement list using the given method, with a timeout
      */
-    public static List<WebElement> findElementsWithTimeout(By by)
-            throws NoSuchElementException {
+    public static List<WebElement> findElementsWithTimeout(By by) throws NoSuchElementException {
         return Locator.findElementsWithTimeout(by);
     }
 
     /**
-     * Finds the first {@link WebElement} using the given method, with a
-     * timeout.
+     * Finds the first {@link WebElement} using the given method, with a timeout.
      *
      * @param by the locating mechanism
      * @param parentElement find from the element
      * @return the first matching element on the current page, if found
      * @throws NoSuchElementException when not found
      */
-    public static WebElement findElementWithTimeout(By by,
-            WebElement parentElement) throws NoSuchElementException {
+    public static WebElement findElementWithTimeout(By by, WebElement parentElement) throws NoSuchElementException {
         return Locator.findElementWithTimeout(by, parentElement);
     }
 
@@ -209,83 +198,69 @@ public abstract class AbstractPage {
      *
      * @param element the element
      */
-    public static void waitUntilEnabled(WebElement element)
-            throws NotFoundException {
+    public static void waitUntilEnabled(WebElement element) throws NotFoundException {
         Locator.waitUntilEnabled(element);
     }
 
     /**
-     * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled,
-     * with a {@code waitUntilEnabledTimeout}.
+     * Finds the first {@link WebElement} using the given method, with a {@code findElementTimeout}. Then waits until
+     * the element is enabled, with a {@code waitUntilEnabledTimeout}.
      *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
-     * @param waitUntilEnabledTimeout the wait until enabled timeout in
-     *            milliseconds
+     * @param waitUntilEnabledTimeout the wait until enabled timeout in milliseconds
      * @return the first matching element on the current page, if found
      * @throws NotFoundException if the element is not found or not enabled
      */
-    public static WebElement findElementAndWaitUntilEnabled(By by,
-            int findElementTimeout, int waitUntilEnabledTimeout)
+    public static WebElement findElementAndWaitUntilEnabled(By by, int findElementTimeout, int waitUntilEnabledTimeout)
             throws NotFoundException {
-        return Locator.findElementAndWaitUntilEnabled(by,
-                findElementTimeout, waitUntilEnabledTimeout);
+        return Locator.findElementAndWaitUntilEnabled(by, findElementTimeout, waitUntilEnabledTimeout);
     }
 
     /**
-     * Finds the first {@link WebElement} using the given method, with the
-     * default timeout. Then waits until the element is enabled, with the
-     * default timeout.
+     * Finds the first {@link WebElement} using the given method, with the default timeout. Then waits until the element
+     * is enabled, with the default timeout.
      *
      * @param by the locating mechanism
      * @return the first matching element on the current page, if found
      * @throws NotFoundException if the element is not found or not enabled
      */
-    public static WebElement findElementAndWaitUntilEnabled(By by)
-            throws NotFoundException {
+    public static WebElement findElementAndWaitUntilEnabled(By by) throws NotFoundException {
         return Locator.findElementAndWaitUntilEnabled(by);
     }
 
     /**
-     * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled,
-     * with a {@code waitUntilEnabledTimeout}. Then clicks on the element.
+     * Finds the first {@link WebElement} using the given method, with a {@code findElementTimeout}. Then waits until
+     * the element is enabled, with a {@code waitUntilEnabledTimeout}. Then clicks on the element.
      *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
-     * @param waitUntilEnabledTimeout the wait until enabled timeout in
-     *            milliseconds
+     * @param waitUntilEnabledTimeout the wait until enabled timeout in milliseconds
      * @throws NotFoundException if the element is not found or not enabled
      */
-    public static void findElementWaitUntilEnabledAndClick(By by,
-            int findElementTimeout, int waitUntilEnabledTimeout)
+    public static void findElementWaitUntilEnabledAndClick(By by, int findElementTimeout, int waitUntilEnabledTimeout)
             throws NotFoundException {
-        Locator.waitUntilElementEnabledAndClick(by,
-                findElementTimeout, waitUntilEnabledTimeout);
+        Locator.waitUntilElementEnabledAndClick(by, findElementTimeout, waitUntilEnabledTimeout);
     }
 
     /**
-     * Finds the first {@link WebElement} using the given method, with the
-     * default timeout. Then waits until the element is enabled, with the
-     * default timeout. Then clicks on the element.
+     * Finds the first {@link WebElement} using the given method, with the default timeout. Then waits until the element
+     * is enabled, with the default timeout. Then clicks on the element.
      *
      * @param by the locating mechanism
      * @throws NotFoundException if the element is not found or not enabled
      */
-    public static void findElementWaitUntilEnabledAndClick(By by)
-            throws NotFoundException {
+    public static void findElementWaitUntilEnabledAndClick(By by) throws NotFoundException {
         Locator.findElementWaitUntilEnabledAndClick(by);
     }
 
     /**
-     * Waits until the URL is different from the one given in parameter, with a
-     * timeout.
+     * Waits until the URL is different from the one given in parameter, with a timeout.
      *
      * @param url the URL to compare to
      */
     public void waitUntilURLDifferentFrom(String url) {
-       Locator.waitUntilURLDifferentFrom(url);
+        Locator.waitUntilURLDifferentFrom(url);
     }
 
     /**

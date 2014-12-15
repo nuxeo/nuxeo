@@ -54,13 +54,10 @@ public class VocabulariesPage extends AdminCenterBasePage {
      * @return
      * @since 5.9.3
      */
-    public VocabulariesPage addEntry(final String entryId,
-            final String parentId, final String entryEnglishLabel,
-            final String entryFrenchLabel, final boolean obsolete,
-            final int order) {
+    public VocabulariesPage addEntry(final String entryId, final String parentId, final String entryEnglishLabel,
+            final String entryFrenchLabel, final boolean obsolete, final int order) {
         addNewEntryLink.click();
-        NewVocabularyEntryForm newVocabularyEntryForm = getWebFragment(
-                By.id("addEntryView:addEntryForm"),
+        NewVocabularyEntryForm newVocabularyEntryForm = getWebFragment(By.id("addEntryView:addEntryForm"),
                 NewVocabularyEntryForm.class);
         newVocabularyEntryForm.setNewVocabularyId(entryId);
         newVocabularyEntryForm.setNewVocabularyEnglishLabel(entryEnglishLabel);
@@ -69,8 +66,7 @@ public class VocabulariesPage extends AdminCenterBasePage {
         newVocabularyEntryForm.setNewVocabularyOrder(order);
         newVocabularyEntryForm.setNewVocabularyParentId(parentId);
         newVocabularyEntryForm.save();
-        Locator.waitForTextPresent(By.id("ambiance-notification"),
-                "Vocabulary entry added");
+        Locator.waitForTextPresent(By.id("ambiance-notification"), "Vocabulary entry added");
         return asPage(VocabulariesPage.class);
     }
 
@@ -83,8 +79,7 @@ public class VocabulariesPage extends AdminCenterBasePage {
         entryDeleteButton.click();
         Alert confirmRemove = driver.switchTo().alert();
         confirmRemove.accept();
-        Locator.waitForTextPresent(By.id("ambiance-notification"),
-                "Vocabulary entry deleted");
+        Locator.waitForTextPresent(By.id("ambiance-notification"), "Vocabulary entry deleted");
         return asPage(VocabulariesPage.class);
     }
 
@@ -112,8 +107,7 @@ public class VocabulariesPage extends AdminCenterBasePage {
                 return entryElement;
             }
         }
-        throw new NoSuchElementException(String.format(
-                "Vocabulary entry with id %s not found", entryId));
+        throw new NoSuchElementException(String.format("Vocabulary entry with id %s not found", entryId));
     }
 
     /**
@@ -145,8 +139,7 @@ public class VocabulariesPage extends AdminCenterBasePage {
                 return asPage(VocabulariesPage.class);
             }
         }
-        throw new NoSuchElementException(String.format(
-                "directoryName %s not available", directoryName));
+        throw new NoSuchElementException(String.format("directoryName %s not available", directoryName));
     }
 
 }

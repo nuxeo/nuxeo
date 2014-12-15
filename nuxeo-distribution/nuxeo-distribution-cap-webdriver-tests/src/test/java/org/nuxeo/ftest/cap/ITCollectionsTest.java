@@ -36,7 +36,6 @@ import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.NavigationSubPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ManageTabSubPage;
@@ -52,8 +51,7 @@ import org.openqa.selenium.WebElement;
  */
 public class ITCollectionsTest extends AbstractTest {
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_"
-            + new Date().getTime();
+    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
 
     public final static String TEST_FILE_NAME = "test1";
 
@@ -95,18 +93,15 @@ public class ITCollectionsTest extends AbstractTest {
     }
 
     @Test
-    public void testAddDocumentToCollectionAndRemove()
-            throws UserNotConnectedException, IOException {
+    public void testAddDocumentToCollectionAndRemove() throws UserNotConnectedException, IOException {
         DocumentBasePage documentBasePage = login();
         // Check we can not add Domain to a collection
         assertFalse(documentBasePage.isAddToCollectionUpperActionAvailable());
         // Create test File
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage,
-                WORKSPACE_TITLE, null);
+        DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, null);
 
-        FileDocumentBasePage fileDocumentBasePage = createFile(workspacePage,
-                TEST_FILE_NAME, "Test File description", false, null, null,
-                null);
+        FileDocumentBasePage fileDocumentBasePage = createFile(workspacePage, TEST_FILE_NAME, "Test File description",
+                false, null, null, null);
 
         // Check that collection widget summary is not displayed
         SummaryTabSubPage summaryTabSubPage = fileDocumentBasePage.getSummaryTab();
@@ -126,11 +121,10 @@ public class ITCollectionsTest extends AbstractTest {
         assertTrue(summaryTabSubPage.isCollectionsFormDisplayed());
         assertEquals(1, summaryTabSubPage.getCollectionCount());
 
-        workspacePage = fileDocumentBasePage.getNavigationSubPage().goToDocument(
-                WORKSPACE_TITLE);
+        workspacePage = fileDocumentBasePage.getNavigationSubPage().goToDocument(WORKSPACE_TITLE);
 
-        fileDocumentBasePage = createFile(workspacePage, TEST_FILE_NAME2,
-                "Test File description", false, null, null, null);
+        fileDocumentBasePage = createFile(workspacePage, TEST_FILE_NAME2, "Test File description", false, null, null,
+                null);
 
         addToCollectionForm = fileDocumentBasePage.getAddToCollectionPopup();
 
@@ -140,8 +134,7 @@ public class ITCollectionsTest extends AbstractTest {
 
         assertTrue(addToCollectionForm.isExistingDescriptionVisible());
 
-        assertEquals(COLLECTION_DESSCRIPTION_1,
-                addToCollectionForm.getExistingDescription());
+        assertEquals(COLLECTION_DESSCRIPTION_1, addToCollectionForm.getExistingDescription());
 
         fileDocumentBasePage = addToCollectionForm.add(FileDocumentBasePage.class);
 
@@ -176,14 +169,12 @@ public class ITCollectionsTest extends AbstractTest {
         List<WebElement> personalWorkspaceRootDocs = contentTabSubPage.getChildDocumentRows();
 
         assertEquals(2, personalWorkspaceRootDocs.size());
-        final String myCollectionsDocName = personalWorkspaceRootDocs.get(0).findElement(
-                By.xpath("td[3]")).getText();
+        final String myCollectionsDocName = personalWorkspaceRootDocs.get(0).findElement(By.xpath("td[3]")).getText();
         boolean isFrench = MY_COLLECTIONS_FR_LABEL.equals(myCollectionsDocName);
         boolean isEnglish = MY_COLLECTIONS_EN_LABEL.equals(myCollectionsDocName);
 
         assertTrue(isEnglish || isFrench);
-        final String myFavoritesDocName = personalWorkspaceRootDocs.get(1).findElement(
-                By.xpath("td[3]")).getText();
+        final String myFavoritesDocName = personalWorkspaceRootDocs.get(1).findElement(By.xpath("td[3]")).getText();
         assertEquals(isEnglish ? MY_FAVORITES_EN_LABEL : MY_FAVORITES_FR_LABEL, myFavoritesDocName);
 
         contentTabSubPage.swithToDocumentBase();
@@ -191,19 +182,18 @@ public class ITCollectionsTest extends AbstractTest {
         CollectionContentTabSubPage collectionContentTabSubPage = contentTabSubPage.goToHomePage().goToCollections().gotToCollection(
                 COLLECTION_NAME_1);
 
-        assertEquals(2,
-                collectionContentTabSubPage.getChildDocumentRows().size());
+        assertEquals(2, collectionContentTabSubPage.getChildDocumentRows().size());
 
         collectionContentTabSubPage = collectionContentTabSubPage.goToHomePage().goToCollections().gotToCollection(
                 COLLECTION_NAME_2);
 
-        assertEquals(2,
-                collectionContentTabSubPage.getChildDocumentRows().size());
+        assertEquals(2, collectionContentTabSubPage.getChildDocumentRows().size());
 
         // Check copy/paste collection
         contentTabSubPage = collectionContentTabSubPage.swithToPersonalWorkspace().getContentTab();
 
-        contentTabSubPage = contentTabSubPage.goToDocument(isEnglish ? MY_COLLECTIONS_EN_LABEL : MY_COLLECTIONS_FR_LABEL).getContentTab();
+        contentTabSubPage = contentTabSubPage.goToDocument(
+                isEnglish ? MY_COLLECTIONS_EN_LABEL : MY_COLLECTIONS_FR_LABEL).getContentTab();
 
         contentTabSubPage.copyByTitle(COLLECTION_NAME_1);
 
@@ -228,9 +218,8 @@ public class ITCollectionsTest extends AbstractTest {
         UsersTabSubPage usersTab = documentBasePage.getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(TEST_USERNAME);
         if (!usersTab.isUserFound(TEST_USERNAME)) {
-            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME,
-                    TEST_USERNAME, "lastname1", "company1", "email1",
-                    TEST_PASSWORD, "members");
+            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, TEST_USERNAME, "lastname1", "company1",
+                    "email1", TEST_PASSWORD, "members");
             usersTab = page.getUsersTab(true);
         } else {
             throw new IllegalStateException(String.format("user %s already exists", TEST_USERNAME));
@@ -238,35 +227,28 @@ public class ITCollectionsTest extends AbstractTest {
         usersTab.searchUser(TEST_USERNAME);
         assertTrue(usersTab.isUserFound(TEST_USERNAME));
 
-        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                "Workspaces");
+        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument("Workspaces");
 
         // Create 2 collections in "My Collections" container
         documentBasePage = documentBasePage.swithToPersonalWorkspace();
-        DocumentBasePage workspacePage = documentBasePage.getNavigationSubPage().goToDocument(
-                "Administrator");
+        DocumentBasePage workspacePage = documentBasePage.getNavigationSubPage().goToDocument("Administrator");
         // Add a file to this collection that test user can't see
-        FileDocumentBasePage fileDocumentBasePage = createFile(workspacePage,
-                TEST_FILE_NAME, "Test File description", false, null, null,
-                null);
+        FileDocumentBasePage fileDocumentBasePage = createFile(workspacePage, TEST_FILE_NAME, "Test File description",
+                false, null, null, null);
         AddToCollectionForm addToCollectionForm = fileDocumentBasePage.getAddToCollectionPopup();
         addToCollectionForm.setCollection(COLLECTION_NAME_2);
         fileDocumentBasePage = addToCollectionForm.add(FileDocumentBasePage.class);
 
         NavigationSubPage navigationSubPage = fileDocumentBasePage.getNavigationSubPage();
         if (navigationSubPage.canNavigateToDocument(MY_COLLECTIONS_EN_LABEL)) {
-            documentBasePage = fileDocumentBasePage.getNavigationSubPage().goToDocument(
-                    MY_COLLECTIONS_EN_LABEL);
+            documentBasePage = fileDocumentBasePage.getNavigationSubPage().goToDocument(MY_COLLECTIONS_EN_LABEL);
         } else {
-            documentBasePage = fileDocumentBasePage.getNavigationSubPage().goToDocument(
-                    MY_COLLECTIONS_FR_LABEL);
+            documentBasePage = fileDocumentBasePage.getNavigationSubPage().goToDocument(MY_COLLECTIONS_FR_LABEL);
         }
 
-        documentBasePage = createCollection(workspacePage, COLLECTION_NAME_2,
-                COLLECTION_DESSCRIPTION_2);
+        documentBasePage = createCollection(workspacePage, COLLECTION_NAME_2, COLLECTION_DESSCRIPTION_2);
 
-        documentBasePage.getManageTab().getAccessRightsSubTab().grantPermissionForUser(
-                CAN_COLLECT_RIGHT, TEST_USERNAME);
+        documentBasePage.getManageTab().getAccessRightsSubTab().grantPermissionForUser(CAN_COLLECT_RIGHT, TEST_USERNAME);
 
         logout();
 
@@ -280,13 +262,12 @@ public class ITCollectionsTest extends AbstractTest {
 
         // Check that I can't see the file Admin added
         CollectionContentTabSubPage collectionContentTabSubPage = collectionsPage.gotToCollection(COLLECTION_NAME_2);
-        assertEquals(0,
-                collectionContentTabSubPage.getChildDocumentRows().size());
+        assertEquals(0, collectionContentTabSubPage.getChildDocumentRows().size());
 
         // Create a file in test user workspace and add it to the collection
         documentBasePage = collectionContentTabSubPage.swithToPersonalWorkspace();
-        fileDocumentBasePage = createFile(workspacePage, TEST_FILE_NAME,
-                "Test File description", false, null, null, null);
+        fileDocumentBasePage = createFile(workspacePage, TEST_FILE_NAME, "Test File description", false, null, null,
+                null);
         addToCollectionForm = fileDocumentBasePage.getAddToCollectionPopup();
         addToCollectionForm.setCollection(COLLECTION_NAME_2);
         fileDocumentBasePage = addToCollectionForm.add(FileDocumentBasePage.class);
@@ -294,8 +275,7 @@ public class ITCollectionsTest extends AbstractTest {
         // Check now the collection has one file
         collectionsPage = documentBasePage.goToHomePage().goToCollections();
         collectionContentTabSubPage = collectionsPage.gotToCollection(COLLECTION_NAME_2);
-        assertEquals(1,
-                collectionContentTabSubPage.getChildDocumentRows().size());
+        assertEquals(1, collectionContentTabSubPage.getChildDocumentRows().size());
 
         logout();
     }

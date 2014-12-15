@@ -56,20 +56,20 @@ public class AddToCollectionForm extends WebFragmentImpl {
 
     public AddToCollectionForm(WebDriver driver, WebElement element) {
         super(driver, element);
-        Locator.waitUntilGivenFunctionIgnoring(
-                new Function<WebDriver, Boolean>() {
-                    public Boolean apply(WebDriver driver) {
-                        try {
-                            driver.findElement(By.id(ADD_BUTTON_ID));
-                            multiple = false;
-                            return true;
-                        } catch (NoSuchElementException e) {
-                            driver.findElement(By.id(ADD_ALL_BUTTON_ID));
-                            multiple = true;
-                            return true;
-                        }
-                    }
-                }, NoSuchElementException.class);
+        Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
+            @Override
+            public Boolean apply(WebDriver driver) {
+                try {
+                    driver.findElement(By.id(ADD_BUTTON_ID));
+                    multiple = false;
+                    return true;
+                } catch (NoSuchElementException e) {
+                    driver.findElement(By.id(ADD_ALL_BUTTON_ID));
+                    multiple = true;
+                    return true;
+                }
+            }
+        }, NoSuchElementException.class);
     }
 
     public DocumentBasePage add() {
@@ -91,21 +91,16 @@ public class AddToCollectionForm extends WebFragmentImpl {
     }
 
     public void setCollection(final String collectionName) {
-        Select2WidgetElement s2Collection = new Select2WidgetElement(driver,
-                Locator.findElementWithTimeout(
-                        By.id(multiple ? S2_CHOOSE_COLLECTION_MULTIPLE_ID
-                                : S2_CHOOSE_COLLECTION_ID), getElement()),
-                false);
+        Select2WidgetElement s2Collection = new Select2WidgetElement(driver, Locator.findElementWithTimeout(
+                By.id(multiple ? S2_CHOOSE_COLLECTION_MULTIPLE_ID : S2_CHOOSE_COLLECTION_ID), getElement()), false);
         s2Collection.selectValue(collectionName);
-        Locator.waitUntilGivenFunctionIgnoring(
-                new Function<WebDriver, Boolean>() {
-                    public Boolean apply(WebDriver driver) {
-                        return StringUtils.isBlank(driver.findElement(
-                                By.id(multiple ? ADD_ALL_BUTTON_ID
-                                        : ADD_BUTTON_ID)).getAttribute(
-                                "disabled"));
-                    }
-                }, StaleElementReferenceException.class);
+        Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
+            @Override
+            public Boolean apply(WebDriver driver) {
+                return StringUtils.isBlank(driver.findElement(By.id(multiple ? ADD_ALL_BUTTON_ID : ADD_BUTTON_ID)).getAttribute(
+                        "disabled"));
+            }
+        }, StaleElementReferenceException.class);
     }
 
     public void setNewDescription(final String collectionDescription) {
@@ -114,7 +109,8 @@ public class AddToCollectionForm extends WebFragmentImpl {
             Thread.sleep(500);
         } catch (InterruptedException e) {
         }
-        Locator.findElementWithTimeout(By.id(multiple ? NEW_COLLECTION_DESCRIPTION_MULTIPLE_ID : NEW_COLLECTION_DESCRIPTION_ID)).sendKeys(
+        Locator.findElementWithTimeout(
+                By.id(multiple ? NEW_COLLECTION_DESCRIPTION_MULTIPLE_ID : NEW_COLLECTION_DESCRIPTION_ID)).sendKeys(
                 collectionDescription);
     }
 
@@ -129,7 +125,8 @@ public class AddToCollectionForm extends WebFragmentImpl {
 
     public boolean isExistingDescriptionVisible() {
         try {
-            driver.findElement(By.id(multiple ? EXISTING_COLLECTION_DESCRIPTION_MULTIPLE_ID : EXISTING_COLLECTION_DESCRIPTION_ID));
+            driver.findElement(By.id(multiple ? EXISTING_COLLECTION_DESCRIPTION_MULTIPLE_ID
+                    : EXISTING_COLLECTION_DESCRIPTION_ID));
             return true;
         } catch (NoSuchElementException e) {
             return false;
@@ -137,29 +134,27 @@ public class AddToCollectionForm extends WebFragmentImpl {
     }
 
     public String getExistingDescription() {
-        return driver.findElement(By.id(multiple ? EXISTING_COLLECTION_DESCRIPTION_MULTIPLE_ID : EXISTING_COLLECTION_DESCRIPTION_ID)).getText();
+        return driver.findElement(
+                By.id(multiple ? EXISTING_COLLECTION_DESCRIPTION_MULTIPLE_ID : EXISTING_COLLECTION_DESCRIPTION_ID)).getText();
     }
 
     public void removeDocumentToBeAddedToCollection(int index) {
         if (!multiple) {
-            throw new UnsupportedOperationException(
-                    "You are not adding many documents to the collection");
+            throw new UnsupportedOperationException("You are not adding many documents to the collection");
         }
 
-        List<WebElement> docsToBeAdded = getElement().findElements(
-                By.xpath("//div[@class='simpleBox']"));
+        List<WebElement> docsToBeAdded = getElement().findElements(By.xpath("//div[@class='simpleBox']"));
 
         final int docsToBeAddedSize = docsToBeAdded.size();
 
         docsToBeAdded.get(index).findElement(By.xpath("a")).click();
 
-        Locator.waitUntilGivenFunctionIgnoring(
-                new Function<WebDriver, Boolean>() {
-                    public Boolean apply(WebDriver driver) {
-                        return getElement().findElements(
-                                By.xpath("//div[@class='simpleBox']")).size() == docsToBeAddedSize - 1;
-                    }
-                }, StaleElementReferenceException.class);
+        Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
+            @Override
+            public Boolean apply(WebDriver driver) {
+                return getElement().findElements(By.xpath("//div[@class='simpleBox']")).size() == docsToBeAddedSize - 1;
+            }
+        }, StaleElementReferenceException.class);
 
     }
 }

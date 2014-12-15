@@ -25,8 +25,8 @@ import org.openqa.selenium.support.pagefactory.ElementLocator;
 import org.openqa.selenium.support.pagefactory.ElementLocatorFactory;
 
 /**
- * Element locator factory that creates normal or time-delayed locators
- * depending on the presence of the {@link SlowLoading} field annotation.
+ * Element locator factory that creates normal or time-delayed locators depending on the presence of the
+ * {@link SlowLoading} field annotation.
  */
 public class VariableElementLocatorFactory implements ElementLocatorFactory {
 

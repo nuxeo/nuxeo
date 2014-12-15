@@ -56,14 +56,12 @@ public class WorkflowHomePage extends AbstractPage {
 
     public boolean taskExistsOnTasksDashboard(String taskName) {
         WebElement taskNameEl = Locator.findElementWithTimeout(
-                By.xpath("//span[contains(@id, 'nxw_routing_task_name')]"),
-                userTasksPanel);
+                By.xpath("//span[contains(@id, 'nxw_routing_task_name')]"), userTasksPanel);
         return taskName.equals(taskNameEl.getText());
     }
 
     public void processFirstTask() {
-        userTasksPanel.findElement(
-                By.xpath("//input[@type='submit' and @value='Process']")).click();
+        userTasksPanel.findElement(By.xpath("//input[@type='submit' and @value='Process']")).click();
     }
 
     public SummaryTabSubPage redirectToTask(String taskTitle) {
@@ -107,12 +105,9 @@ public class WorkflowHomePage extends AbstractPage {
      * @since 5.9.1
      */
     public TaskFancyBoxFragment showTaskFancyBox(String taskAction) {
-        driver.findElement(
-                By.xpath(String.format(
-                        "//input[@type='submit' and @value='%s']", taskAction))).click();
-        WebElement element = this.getFancyBoxContent();
-        return getWebFragment(element,
-                WorkflowHomePage.TaskFancyBoxFragment.class);
+        driver.findElement(By.xpath(String.format("//input[@type='submit' and @value='%s']", taskAction))).click();
+        WebElement element = getFancyBoxContent();
+        return getWebFragment(element, WorkflowHomePage.TaskFancyBoxFragment.class);
     }
 
     /**
@@ -133,16 +128,15 @@ public class WorkflowHomePage extends AbstractPage {
         public void cancel() {
             cancelButton.click();
             // make sure the fancybox content is not loaded anymore
-            WebDriverWait wait = new WebDriverWait(driver,
-                    AbstractTest.LOAD_TIMEOUT_SECONDS);
+            WebDriverWait wait = new WebDriverWait(driver, AbstractTest.LOAD_TIMEOUT_SECONDS);
             wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("fancybox-content")));
         }
 
+        @Override
         public void submit() {
             sumbitButton.click();
             // make sure the fancybox content is not loaded anymore
-            WebDriverWait wait = new WebDriverWait(driver,
-                    AbstractTest.LOAD_TIMEOUT_SECONDS);
+            WebDriverWait wait = new WebDriverWait(driver, AbstractTest.LOAD_TIMEOUT_SECONDS);
             wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("fancybox-content")));
         }
     }

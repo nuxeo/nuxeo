@@ -34,7 +34,7 @@ public class TrashSubPage extends AbstractPage {
 
     private static final String SELECT_ALL_BUTTON_ID = "document_trash_content:nxl_document_listing_table:listing_table_selection_box_with_current_document_header";
 
-    private static final String PERMANENT_DELETE_BUTTON_ID= "document_trash_content_buttons:nxw_CURRENT_SELECTION_DELETE_form:nxw_CURRENT_SELECTION_DELETE";
+    private static final String PERMANENT_DELETE_BUTTON_ID = "document_trash_content_buttons:nxw_CURRENT_SELECTION_DELETE_form:nxw_CURRENT_SELECTION_DELETE";
 
     @Required
     @FindBy(id = "cv_document_trash_content_0_resultsPanel")

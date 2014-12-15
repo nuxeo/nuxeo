@@ -56,7 +56,6 @@ public class DocumentBasePage extends AbstractPage {
 
     /**
      * Exception occurred a user is expected to be connected but it isn't.
-     *
      */
     public class UserNotConnectedException extends Exception {
         /**
@@ -65,8 +64,7 @@ public class DocumentBasePage extends AbstractPage {
         private static final long serialVersionUID = 1L;
 
         public UserNotConnectedException(String username) {
-            super("The user " + username
-                    + " is expected to be connected but isn't");
+            super("The user " + username + " is expected to be connected but isn't");
         }
     }
 
@@ -120,11 +118,11 @@ public class DocumentBasePage extends AbstractPage {
     public WebElement userMenuActions;
 
     @Required
-    @FindBy (linkText = "HOME")
+    @FindBy(linkText = "HOME")
     public WebElement homePageLink;
 
     @Required
-    @FindBy (linkText = "SEARCH")
+    @FindBy(linkText = "SEARCH")
     public WebElement searchPageLink;
 
     public DocumentBasePage(WebDriver driver) {
@@ -132,8 +130,7 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     /**
-     * Check if the title of the current document page is equal to the
-     * {@code expectedTitle}.
+     * Check if the title of the current document page is equal to the {@code expectedTitle}.
      *
      * @param expectedTitle the expected title
      */
@@ -142,14 +139,12 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     /**
-     * Check if the user is connected by looking for the text: You are logged as
-     * Username
+     * Check if the user is connected by looking for the text: You are logged as Username
      *
      * @param username
      * @throws UserNotConnectedException
      */
-    public void checkUserConnected(String username)
-            throws UserNotConnectedException {
+    public void checkUserConnected(String username) throws UserNotConnectedException {
         if (!(getHeaderLinks().getText().contains(username))) {
             throw new UserNotConnectedException(username);
         }
@@ -169,7 +164,6 @@ public class DocumentBasePage extends AbstractPage {
 
     /**
      * Click on the content tab and return the subpage of this page.
-     *
      */
     public ContentTabSubPage getContentTab() {
         return getContentTab(ContentTabSubPage.class);
@@ -264,7 +258,6 @@ public class DocumentBasePage extends AbstractPage {
 
     /**
      * For workspace type, the content tab is a bit different.
-     *
      */
     public WorkspacesContentTabSubPage getWorkspacesContentTab() {
         clickOnLinkIfNotSelected(contentTabLink);
@@ -276,15 +269,14 @@ public class DocumentBasePage extends AbstractPage {
         return asPage(DocumentBasePage.class);
     }
 
-
     private static final String ADD_TO_COLLECTION_UPPER_ACTION_ID = "nxw_addToCollectionAction_form:nxw_documentActionsUpperButtons_addToCollectionAction_subview:nxw_documentActionsUpperButtons_addToCollectionAction_link";
 
     private static final String ADD_ALL_TO_COLLECTION_ACTION_ID = "document_content_buttons:nxw_addSelectedToCollectionAction_form:nxw_cvButton_addSelectedToCollectionAction_subview:nxw_cvButton_addSelectedToCollectionAction_link";
 
-    @FindBy(id=ADD_TO_COLLECTION_UPPER_ACTION_ID)
+    @FindBy(id = ADD_TO_COLLECTION_UPPER_ACTION_ID)
     private WebElement addToCollectionUpperAction;
 
-    @FindBy(id=ADD_ALL_TO_COLLECTION_ACTION_ID)
+    @FindBy(id = ADD_ALL_TO_COLLECTION_ACTION_ID)
     private WebElement addAllToCollectionAction;
 
     /**
@@ -293,27 +285,23 @@ public class DocumentBasePage extends AbstractPage {
     public AddToCollectionForm getAddToCollectionPopup() {
         addToCollectionUpperAction.click();
         Locator.waitUntilElementPresent(By.id("fancybox-content"));
-        return getWebFragment(
-                By.id("fancybox-content"),
-                AddToCollectionForm.class);
+        return getWebFragment(By.id("fancybox-content"), AddToCollectionForm.class);
     }
 
     /**
      * @since 5.9.3
      */
     public AddToCollectionForm getAddAllToCollectionPopup() {
-        Locator.waitUntilGivenFunctionIgnoring(
-                new Function<WebDriver, Boolean>() {
-                    public Boolean apply(WebDriver driver) {
-                        return StringUtils.isBlank(driver.findElement(
-                                By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).getAttribute(
-                                "disabled"));
-                    }
-                }, StaleElementReferenceException.class);
+        Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
+            @Override
+            public Boolean apply(WebDriver driver) {
+                return StringUtils.isBlank(driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).getAttribute(
+                        "disabled"));
+            }
+        }, StaleElementReferenceException.class);
         driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).click();
         Locator.waitUntilElementPresent(By.id("fancybox-content"));
-        return getWebFragment(By.id("fancybox-content"),
-                AddToCollectionForm.class);
+        return getWebFragment(By.id("fancybox-content"), AddToCollectionForm.class);
     }
 
     public boolean isAddToCollectionUpperActionAvailable() {
@@ -331,10 +319,10 @@ public class DocumentBasePage extends AbstractPage {
     public void popupUserMenuActions() {
         userMenuActions.findElement(By.id("nxw_userMenuActions_dropDownMenu")).click();
         Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
+            @Override
             public Boolean apply(WebDriver driver) {
-                return !userMenuActions.findElement(
-                        By.xpath("//ul[@class='actionSubList']")).getAttribute(
-                        "style").equals("display: none;");
+                return !userMenuActions.findElement(By.xpath("//ul[@class='actionSubList']")).getAttribute("style").equals(
+                        "display: none;");
             }
         }, StaleElementReferenceException.class);
     }

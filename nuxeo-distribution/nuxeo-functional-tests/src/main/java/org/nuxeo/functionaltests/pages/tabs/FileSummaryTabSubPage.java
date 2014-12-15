@@ -24,7 +24,6 @@ import org.openqa.selenium.support.FindBy;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
- *
  */
 public class FileSummaryTabSubPage extends AbstractPage {
 

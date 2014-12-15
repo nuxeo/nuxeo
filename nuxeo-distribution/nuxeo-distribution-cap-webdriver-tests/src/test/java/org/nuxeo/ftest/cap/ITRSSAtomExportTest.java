@@ -39,13 +39,15 @@ public class ITRSSAtomExportTest extends AbstractTest {
     public void testRSSPage() throws UserNotConnectedException, IOException {
         login();
 
-        getWithoutErrorHandler(NUXEO_URL + "/nxpath/default/default-domain@rss?contentViewName=document_content", RSSPage.class);
+        getWithoutErrorHandler(NUXEO_URL + "/nxpath/default/default-domain@rss?contentViewName=document_content",
+                RSSPage.class);
 
         WebElement rssTitle = driver.findElement(By.id("feedTitleText"));
 
         assertEquals("RSS feed for document 'Default domain' and content view 'Document content'", rssTitle.getText());
 
-        getWithoutErrorHandler(NUXEO_URL + "/nxpath/default/default-domain@atom?contentViewName=document_content", AtomPage.class);
+        getWithoutErrorHandler(NUXEO_URL + "/nxpath/default/default-domain@atom?contentViewName=document_content",
+                AtomPage.class);
 
         WebElement atomTitle = driver.findElement(By.id("feedTitleText"));
 

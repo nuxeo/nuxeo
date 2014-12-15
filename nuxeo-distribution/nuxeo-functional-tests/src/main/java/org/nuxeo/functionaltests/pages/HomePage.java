@@ -31,7 +31,6 @@ public class HomePage extends DocumentBasePage {
     @FindBy(id = "nxw_homeTabs_panel")
     protected WebElement menu;
 
-
     public HomePage(WebDriver driver) {
         super(driver);
     }

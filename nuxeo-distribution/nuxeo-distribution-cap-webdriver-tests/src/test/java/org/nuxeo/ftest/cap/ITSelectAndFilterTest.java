@@ -45,13 +45,11 @@ public class ITSelectAndFilterTest extends AbstractTest {
 
     protected final String RESET_FILTER_XPATH = "cv_document_content_0_resetFilterForm:resetFilter";
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_"
-            + new Date().getTime();
+    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
 
     /**
-     * This tests create 2 documents in a workspace, select one of them, filter
-     * the other one, clear the filter and make sure the originally selected
-     * document is still selected.
+     * This tests create 2 documents in a workspace, select one of them, filter the other one, clear the filter and make
+     * sure the originally selected document is still selected.
      *
      * @throws Exception
      * @since 5.7.2
@@ -61,20 +59,15 @@ public class ITSelectAndFilterTest extends AbstractTest {
 
         DocumentBasePage defaultDomain = login();
 
-        DocumentBasePage workspacePage = createWorkspace(defaultDomain,
-                WORKSPACE_TITLE, null);
+        DocumentBasePage workspacePage = createWorkspace(defaultDomain, WORKSPACE_TITLE, null);
 
         // Create test File 1
-        DocumentBasePage newFile = createFile(workspacePage,
-                Boolean.toString(true), null, false, null, null, null);
-        workspacePage = newFile.getNavigationSubPage().goToDocument(
-                WORKSPACE_TITLE);
+        DocumentBasePage newFile = createFile(workspacePage, Boolean.toString(true), null, false, null, null, null);
+        workspacePage = newFile.getNavigationSubPage().goToDocument(WORKSPACE_TITLE);
 
         // Create test File 2
-        newFile = createFile(workspacePage, Boolean.toString(false), null,
-                false, null, null, null);
-        workspacePage = newFile.getNavigationSubPage().goToDocument(
-                WORKSPACE_TITLE);
+        newFile = createFile(workspacePage, Boolean.toString(false), null, false, null, null, null);
+        workspacePage = newFile.getNavigationSubPage().goToDocument(WORKSPACE_TITLE);
 
         ContentTabSubPage contentTabSubPage = workspacePage.getContentTab();
 
@@ -86,12 +79,10 @@ public class ITSelectAndFilterTest extends AbstractTest {
 
         // Select the first document
         trelements.get(0).findElement(By.xpath(CHECK_BOX_XPATH)).click();
-        boolean selectedFileName = Boolean.parseBoolean(trelements.get(0).findElement(
-                By.xpath(DOCUMENT_TITLE_XPATH)).getText());
+        boolean selectedFileName = Boolean.parseBoolean(trelements.get(0).findElement(By.xpath(DOCUMENT_TITLE_XPATH)).getText());
 
         // Filter on the name of the other document
-        contentTabSubPage.filterDocument(Boolean.toString(!selectedFileName),
-                1, AJAX_TIMEOUT_SECONDS * 1000);
+        contentTabSubPage.filterDocument(Boolean.toString(!selectedFileName), 1, AJAX_TIMEOUT_SECONDS * 1000);
         Locator.waitUntilElementPresent(By.id(RESET_FILTER_XPATH));
 
         trelements = contentTabSubPage.getChildDocumentRows();
@@ -101,8 +92,7 @@ public class ITSelectAndFilterTest extends AbstractTest {
         assertEquals(1, trelements.size());
 
         // Reset filter
-        workspacePage.getContentTab().clearFilter(2,
-                AJAX_TIMEOUT_SECONDS * 1000);
+        workspacePage.getContentTab().clearFilter(2, AJAX_TIMEOUT_SECONDS * 1000);
         Locator.waitUntilElementNotPresent(By.id(RESET_FILTER_XPATH));
 
         trelements = contentTabSubPage.getChildDocumentRows();
@@ -114,8 +104,7 @@ public class ITSelectAndFilterTest extends AbstractTest {
         // Now check that the selection is the same than before filtering
         boolean isSelectionOk = true;
         for (WebElement tr : trelements) {
-            final boolean isCurrentTrSelected = tr.findElement(
-                    By.xpath(CHECK_BOX_XPATH)).isSelected();
+            final boolean isCurrentTrSelected = tr.findElement(By.xpath(CHECK_BOX_XPATH)).isSelected();
             String s = tr.findElement(By.xpath(DOCUMENT_TITLE_XPATH)).getText();
             final boolean isPreviouslySelectedDoc = (Boolean.parseBoolean(s) == selectedFileName);
             if (isCurrentTrSelected ^ isPreviouslySelectedDoc) {

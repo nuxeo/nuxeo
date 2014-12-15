@@ -41,27 +41,22 @@ import org.openqa.selenium.WebElement;
  *
  * @since 6.0
  */
-public class ITSuggestBoxTest extends
-        AbstractTest {
+public class ITSuggestBoxTest extends AbstractTest {
 
     /**
      * Use a workspace title with special characters (NXP-15618).
      */
-    private final static String WORKSPACE_TITLE = "#W/o=rk^s+pa>ce'~Title%"
-            + new Date().getTime();
+    private final static String WORKSPACE_TITLE = "#W/o=rk^s+pa>ce'~Title%" + new Date().getTime();
 
     private static final String USER1_NAME = "user1";
 
     private static final String USER2_NAME = "user2";
 
-    private static final String FILE_01_NAME = "Test01"
-            + new Date().getTime();
+    private static final String FILE_01_NAME = "Test01" + new Date().getTime();
 
-    private static final String FILE_02_NAME = "Test02"
-            + new Date().getTime();
+    private static final String FILE_02_NAME = "Test02" + new Date().getTime();
 
-    private static final String FILE_03_NAME = "Test03"
-            + new Date().getTime();
+    private static final String FILE_03_NAME = "Test03" + new Date().getTime();
 
     private static final String XPATH_SUGGESTBOX = "//*[@id='s2id_nxw_suggest_search_box_form:nxw_suggest_search_box_select2']";
 
@@ -72,58 +67,34 @@ public class ITSuggestBoxTest extends
      *
      * @throws Exception
      */
-    protected void initTest()
-            throws Exception {
+    protected void initTest() throws Exception {
         // Login as Administrator
         DocumentBasePage defaultDomainPage = login();
         // Init repository with a File and its archived versions
-        DocumentBasePage wsPage = createWorkspace(
-                defaultDomainPage,
-                WORKSPACE_TITLE,
-                "Workspace for Webdriver test.");
+        DocumentBasePage wsPage = createWorkspace(defaultDomainPage, WORKSPACE_TITLE, "Workspace for Webdriver test.");
 
         // Create test Files
-        FileDocumentBasePage file01Page = createFile(
-                wsPage,
-                FILE_01_NAME,
-                "Test File description",
-                false, null, null, null);
-        wsPage = file01Page.getNavigationSubPage().goToDocument(
-                WORKSPACE_TITLE);
-        FileDocumentBasePage file02Page = createFile(
-                wsPage,
-                FILE_02_NAME,
-                "Test File description",
-                false, null, null, null);
-        wsPage = file02Page.getNavigationSubPage().goToDocument(
-                WORKSPACE_TITLE);
-        FileDocumentBasePage file03Page = createFile(
-                wsPage,
-                FILE_03_NAME,
-                "Test File description",
-                false, null, null, null);
-        wsPage = file03Page.getNavigationSubPage().goToDocument(
-                WORKSPACE_TITLE);
+        FileDocumentBasePage file01Page = createFile(wsPage, FILE_01_NAME, "Test File description", false, null, null,
+                null);
+        wsPage = file01Page.getNavigationSubPage().goToDocument(WORKSPACE_TITLE);
+        FileDocumentBasePage file02Page = createFile(wsPage, FILE_02_NAME, "Test File description", false, null, null,
+                null);
+        wsPage = file02Page.getNavigationSubPage().goToDocument(WORKSPACE_TITLE);
+        FileDocumentBasePage file03Page = createFile(wsPage, FILE_03_NAME, "Test File description", false, null, null,
+                null);
+        wsPage = file03Page.getNavigationSubPage().goToDocument(WORKSPACE_TITLE);
 
         // Create test users
-        createTestUser(USER1_NAME,
-                USER1_NAME);
-        createTestUser(USER2_NAME,
-                USER2_NAME);
+        createTestUser(USER1_NAME, USER1_NAME);
+        createTestUser(USER2_NAME, USER2_NAME);
     }
 
-    protected void createTestUser(
-            String username, String pswd)
-            throws Exception {
+    protected void createTestUser(String username, String pswd) throws Exception {
         UsersGroupsBasePage page;
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(username);
         if (!usersTab.isUserFound(username)) {
-            page = usersTab.getUserCreatePage().createUser(
-                    username, username,
-                    "lastname1",
-                    "company1",
-                    "email1", pswd,
+            page = usersTab.getUserCreatePage().createUser(username, username, "lastname1", "company1", "email1", pswd,
                     "members");
             usersTab = page.getUsersTab(true);
         }
@@ -134,16 +105,13 @@ public class ITSuggestBoxTest extends
     }
 
     @Test
-    public void simpleSearchTest()
-            throws Exception {
+    public void simpleSearchTest() throws Exception {
         initTest();
 
         // Test a simple search
         login();
-        Select2WidgetElement searchElement = new Select2WidgetElement(
-                driver,
-                driver.findElement(By.xpath(XPATH_SUGGESTBOX)),
-                true);
+        Select2WidgetElement searchElement = new Select2WidgetElement(driver,
+                driver.findElement(By.xpath(XPATH_SUGGESTBOX)), true);
         List<WebElement> listEntries = searchElement.typeAndGetResult("Tes");
         assertTrue(listEntries.size() > 0);
         searchElement.clearSuggestInput();
@@ -157,10 +125,7 @@ public class ITSuggestBoxTest extends
         documentPage.checkDocTitle(FILE_01_NAME);
 
         // Search a user
-        searchElement = new Select2WidgetElement(
-                driver,
-                driver.findElement(By.xpath(XPATH_SUGGESTBOX)),
-                true);
+        searchElement = new Select2WidgetElement(driver, driver.findElement(By.xpath(XPATH_SUGGESTBOX)), true);
         listEntries = searchElement.typeAndGetResult(USER1_NAME);
         assertTrue(listEntries.size() == 2);
         listEntries.get(1).click();
@@ -176,10 +141,8 @@ public class ITSuggestBoxTest extends
     @Test
     public void testSuggestBoxRedirect() throws Exception {
         login();
-        Select2WidgetElement searchElement = new Select2WidgetElement(
-                driver,
-                driver.findElement(By.xpath(XPATH_SUGGESTBOX)),
-                true);
+        Select2WidgetElement searchElement = new Select2WidgetElement(driver,
+                driver.findElement(By.xpath(XPATH_SUGGESTBOX)), true);
         SearchPage searchPage = searchElement.typeValueAndTypeEnter("Administrator");
         assertTrue(searchPage.isQuickSearch());
         QuickSearchSubPage quickSearchPage = searchPage.getQuickSearch();
@@ -194,10 +157,8 @@ public class ITSuggestBoxTest extends
     @Test
     public void requestEncodingTest() throws Exception {
         login();
-        Select2WidgetElement searchElement = new Select2WidgetElement(
-                driver,
-                driver.findElement(By.xpath(XPATH_SUGGESTBOX)),
-                true);
+        Select2WidgetElement searchElement = new Select2WidgetElement(driver,
+                driver.findElement(By.xpath(XPATH_SUGGESTBOX)), true);
         SearchPage searchPage = searchElement.typeValueAndTypeEnter(VALUE_WITH_SPECIALS_CHAR);
         assertTrue(searchPage.isQuickSearch());
         assertEquals(VALUE_WITH_SPECIALS_CHAR, searchPage.getQuickSearch().textSearchElement.getAttribute("value"));

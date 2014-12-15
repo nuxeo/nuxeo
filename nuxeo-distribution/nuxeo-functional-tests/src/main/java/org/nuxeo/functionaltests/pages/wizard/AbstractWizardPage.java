@@ -46,15 +46,14 @@ public abstract class AbstractWizardPage extends AbstractPage {
         return next(wizardPageClass, null);
     }
 
-    public <T extends AbstractWizardPage> T next(Class<T> wizardPageClass,
-            Function<WebDriver, Boolean> function) {
+    public <T extends AbstractWizardPage> T next(Class<T> wizardPageClass, Function<WebDriver, Boolean> function) {
         WebElement buttonNext = findElementWithTimeout(By.xpath(getNextButtonLocator()));
         String URLbefore = driver.getCurrentUrl();
         buttonNext.click();
         if (function == null) {
             waitUntilURLDifferentFrom(URLbefore);
         } else {
-          Locator.waitUntilGivenFunction(function);
+            Locator.waitUntilGivenFunction(function);
         }
         return asPage(wizardPageClass);
     }
@@ -63,8 +62,7 @@ public abstract class AbstractWizardPage extends AbstractPage {
         return previous(wizardPageClass, null);
     }
 
-    public <T extends AbstractWizardPage> T previous(Class<T> wizardPageClass,
-            Function<WebDriver, Boolean> function) {
+    public <T extends AbstractWizardPage> T previous(Class<T> wizardPageClass, Function<WebDriver, Boolean> function) {
         WebElement buttonPrev = findElementWithTimeout(By.xpath(getPreviousButtonLocator()));
         String URLbefore = driver.getCurrentUrl();
         buttonPrev.click();
@@ -76,13 +74,11 @@ public abstract class AbstractWizardPage extends AbstractPage {
         return asPage(wizardPageClass);
     }
 
-    public <T extends AbstractPage> T nav(Class<T> wizardPageClass,
-            String buttonLabel) {
+    public <T extends AbstractPage> T nav(Class<T> wizardPageClass, String buttonLabel) {
         return nav(wizardPageClass, buttonLabel, false);
     }
 
-    public <T extends AbstractPage> T nav(Class<T> wizardPageClass,
-            String buttonLabel, Boolean waitForURLChange) {
+    public <T extends AbstractPage> T nav(Class<T> wizardPageClass, String buttonLabel, Boolean waitForURLChange) {
         WebElement button = findNavButton(buttonLabel);
         if (button == null) {
             return null;
@@ -95,13 +91,11 @@ public abstract class AbstractWizardPage extends AbstractPage {
         return asPage(wizardPageClass);
     }
 
-    public <T extends AbstractPage> T navByLink(Class<T> wizardPageClass,
-            String linkLabel) {
+    public <T extends AbstractPage> T navByLink(Class<T> wizardPageClass, String linkLabel) {
         return navByLink(wizardPageClass, linkLabel, false);
     }
 
-    public <T extends AbstractPage> T navByLink(Class<T> wizardPageClass,
-            String linkLabel, Boolean waitForURLChange) {
+    public <T extends AbstractPage> T navByLink(Class<T> wizardPageClass, String linkLabel, Boolean waitForURLChange) {
         WebElement link = findElementWithTimeout(By.linkText(linkLabel));
         if (link == null) {
             return null;
@@ -112,13 +106,11 @@ public abstract class AbstractWizardPage extends AbstractPage {
         return asPage(wizardPageClass);
     }
 
-    public <T extends AbstractPage> T navById(Class<T> wizardPageClass,
-            String buttonId) {
+    public <T extends AbstractPage> T navById(Class<T> wizardPageClass, String buttonId) {
         return navById(wizardPageClass, buttonId, false);
     }
 
-    public <T extends AbstractPage> T navById(Class<T> wizardPageClass,
-            String buttonId, Boolean waitForURLChange) {
+    public <T extends AbstractPage> T navById(Class<T> wizardPageClass, String buttonId, Boolean waitForURLChange) {
         WebElement button = findElementWithTimeout(By.id(buttonId));
         if (button == null) {
             return null;
@@ -138,8 +130,7 @@ public abstract class AbstractWizardPage extends AbstractPage {
     }
 
     protected WebElement findNavButton(String label) {
-        return findElementWithTimeout(By.xpath(BUTTON_LOCATOR.replace("LABEL",
-                label)));
+        return findElementWithTimeout(By.xpath(BUTTON_LOCATOR.replace("LABEL", label)));
     }
 
     public boolean fillInput(String name, String value) {
@@ -171,8 +162,7 @@ public abstract class AbstractWizardPage extends AbstractPage {
             // page is reload, need to fetch element again
             element = findElementWithTimeout(By.name(name));
             select = new Select(element);
-            return select.getFirstSelectedOption().getAttribute("value").equals(
-                    value);
+            return select.getFirstSelectedOption().getAttribute("value").equals(value);
         }
         return false;
     }

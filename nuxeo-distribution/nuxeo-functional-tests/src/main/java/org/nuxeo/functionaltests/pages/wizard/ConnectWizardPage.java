@@ -82,8 +82,7 @@ public class ConnectWizardPage extends AbstractWizardPage {
         });
     }
 
-    public <T extends AbstractPage> T getLink(Class<T> wizardPageClass,
-            String text) {
+    public <T extends AbstractPage> T getLink(Class<T> wizardPageClass, String text) {
         WebElement link = findElementWithTimeout(By.linkText(text));
         if (link == null) {
             return null;

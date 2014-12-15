@@ -22,8 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to mark a {@link WebElement} field on a {@link Page} object to indicate
- * that it is required to be loaded before the page is returned.
+ * Used to mark a {@link WebElement} field on a {@link Page} object to indicate that it is required to be loaded before
+ * the page is returned.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

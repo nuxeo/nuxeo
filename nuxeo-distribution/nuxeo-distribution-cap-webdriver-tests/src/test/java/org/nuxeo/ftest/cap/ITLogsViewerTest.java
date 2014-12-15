@@ -39,8 +39,7 @@ import org.openqa.selenium.WebElement;
 public class ITLogsViewerTest extends AbstractTest {
 
     @Test
-    public void testLogsViewerTab()
-            throws DocumentBasePage.UserNotConnectedException {
+    public void testLogsViewerTab() throws DocumentBasePage.UserNotConnectedException {
         LogsPage logsTab = login().getAdminCenter().getMonitoringPage().getLogsPage();
         List<String> serverLogFileNames = logsTab.getServerLogFileNames();
         assertEquals(5, serverLogFileNames.size());

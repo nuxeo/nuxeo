@@ -18,12 +18,10 @@ import org.openqa.selenium.support.ui.Wait;
 import com.google.common.base.Function;
 
 /**
- * Wizard and Connect use frames and callback pages to communicate. So focusing
- * the right frame can be tricky because, for example we never want to do any
- * test on the callback pages.
+ * Wizard and Connect use frames and callback pages to communicate. So focusing the right frame can be tricky because,
+ * for example we never want to do any test on the callback pages.
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public class IFrameHelper {
 
@@ -35,14 +33,12 @@ public class IFrameHelper {
 
     public static final String CONNECT_FRAME_NAME = "connectForm";
 
-    private static void switchToIFrame(final WebDriver driver,
-            final WebElement iframe) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                AbstractTest.POLLING_FREQUENCY_MILLISECONDS,
-                TimeUnit.MILLISECONDS).ignoring(NoSuchFrameException.class,
-                StaleElementReferenceException.class);
+    private static void switchToIFrame(final WebDriver driver, final WebElement iframe) {
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(AbstractTest.LOAD_TIMEOUT_SECONDS,
+                TimeUnit.SECONDS).pollingEvery(AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
+                NoSuchFrameException.class, StaleElementReferenceException.class);
         wait.until(new Function<WebDriver, Boolean>() {
+            @Override
             public Boolean apply(WebDriver driver) {
                 if (iframe == null) {
                     return driver.switchTo().defaultContent() != null;
@@ -59,8 +55,7 @@ public class IFrameHelper {
                 WebElement connectFormIFrame = Locator.findElementWithTimeout(By.id(CONNECT_FRAME_NAME));
                 switchToIFrame(driver, connectFormIFrame);
             } catch (TimeoutException e) {
-                log.error("Unable to find IFrame on page "
-                        + driver.getCurrentUrl());
+                log.error("Unable to find IFrame on page " + driver.getCurrentUrl());
                 return false;
             }
             return true;
@@ -78,8 +73,7 @@ public class IFrameHelper {
             switchToIFrame(driver, null);
             return true;
         } catch (TimeoutException e) {
-            log.error("Unable to find top windows on page "
-                    + driver.getCurrentUrl());
+            log.error("Unable to find top windows on page " + driver.getCurrentUrl());
             return false;
         }
     }

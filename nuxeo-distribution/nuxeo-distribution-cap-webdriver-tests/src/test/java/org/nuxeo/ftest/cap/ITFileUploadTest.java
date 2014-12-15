@@ -42,14 +42,12 @@ public class ITFileUploadTest extends AbstractTest {
 
         // Create a File with an uploaded blob
         String filePrefix = "NX-Webdriver-test-";
-        FileDocumentBasePage fileDocumentBasePage = createFile(
-                testWorkspacePage, "File title", "File description", true,
-                filePrefix, ".txt", "Webdriver test file content.");
+        FileDocumentBasePage fileDocumentBasePage = createFile(testWorkspacePage, "File title", "File description",
+                true, filePrefix, ".txt", "Webdriver test file content.");
 
         // Check uploaded file name
         String uploadedFileName = fileDocumentBasePage.getFileSummaryTab().getMainContentFileText();
-        assertTrue("Wrong uploaded file name '" + uploadedFileName
-                + "', expected it to contain '" + filePrefix + "'",
+        assertTrue("Wrong uploaded file name '" + uploadedFileName + "', expected it to contain '" + filePrefix + "'",
                 uploadedFileName.contains(filePrefix));
 
         // Clean up repository

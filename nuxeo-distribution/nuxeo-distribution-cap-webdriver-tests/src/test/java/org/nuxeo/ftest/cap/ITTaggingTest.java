@@ -40,27 +40,21 @@ public class ITTaggingTest extends AbstractTest {
 
     public final static String TEST_FILE_NAME = "test1";
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_"
-            + new Date().getTime();
+    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
 
     public final static String SELECT2_TAG_ELT_ID = "s2id_nxl_grid_summary_layout:nxw_summary_current_document_tagging_form:nxw_summary_current_document_tagging_select2";
 
     @Test
-    public void testAddAndRemoveTagOnDocument()
-            throws UserNotConnectedException, IOException {
+    public void testAddAndRemoveTagOnDocument() throws UserNotConnectedException, IOException {
         DocumentBasePage documentBasePage = login();
 
         // Create test File
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage,
-                WORKSPACE_TITLE, null);
-        FileDocumentBasePage fileDocumentBasePage = createFile(workspacePage,
-                TEST_FILE_NAME, "Test File description", false, null, null,
-                null);
+        DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, null);
+        FileDocumentBasePage fileDocumentBasePage = createFile(workspacePage, TEST_FILE_NAME, "Test File description",
+                false, null, null, null);
 
-        Select2WidgetElement tagWidget = new Select2WidgetElement(
-                driver,
-                Locator.findElementWithTimeout(By.id(SELECT2_TAG_ELT_ID)),
-                true);
+        Select2WidgetElement tagWidget = new Select2WidgetElement(driver,
+                Locator.findElementWithTimeout(By.id(SELECT2_TAG_ELT_ID)), true);
         assertTrue(tagWidget.getSelectedValues().isEmpty());
         AjaxRequestManager a = new AjaxRequestManager(driver);
         a.watchAjaxRequests();
@@ -73,10 +67,7 @@ public class ITTaggingTest extends AbstractTest {
         assertEquals(2, tagWidget.getSelectedValues().size());
         fileDocumentBasePage.getEditTab();
         fileDocumentBasePage.getSummaryTab();
-        tagWidget = new Select2WidgetElement(
-                driver,
-                Locator.findElementWithTimeout(By.id(SELECT2_TAG_ELT_ID)),
-                true);
+        tagWidget = new Select2WidgetElement(driver, Locator.findElementWithTimeout(By.id(SELECT2_TAG_ELT_ID)), true);
         assertEquals(2, tagWidget.getSelectedValues().size());
         a.watchAjaxRequests();
         tagWidget.removeFromSelection("first_tag");
@@ -84,10 +75,7 @@ public class ITTaggingTest extends AbstractTest {
         assertEquals(1, tagWidget.getSelectedValues().size());
         fileDocumentBasePage.getEditTab();
         fileDocumentBasePage.getSummaryTab();
-        tagWidget = new Select2WidgetElement(
-                driver,
-                Locator.findElementWithTimeout(By.id(SELECT2_TAG_ELT_ID)),
-                true);
+        tagWidget = new Select2WidgetElement(driver, Locator.findElementWithTimeout(By.id(SELECT2_TAG_ELT_ID)), true);
         assertEquals(1, tagWidget.getSelectedValues().size());
     }
 

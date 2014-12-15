@@ -25,7 +25,6 @@ import org.openqa.selenium.support.FindBy;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
- *
  */
 public class NavigationSubPage extends AbstractPage {
 
@@ -54,7 +53,7 @@ public class NavigationSubPage extends AbstractPage {
         try {
             navigationTree.findElement(By.linkText(docTitle));
             return true;
-        } catch(NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             return false;
         }
     }

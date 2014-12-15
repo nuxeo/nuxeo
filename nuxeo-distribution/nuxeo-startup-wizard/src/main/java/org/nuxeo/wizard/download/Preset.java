@@ -18,9 +18,7 @@
 package org.nuxeo.wizard.download;
 
 /**
- *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public class Preset {
 

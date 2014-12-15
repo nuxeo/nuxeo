@@ -44,7 +44,7 @@ public class DownloadablePackageOption {
     public DownloadablePackageOption(DownloadPackage pkg, int idx) {
         this.pkg = pkg;
         // this.id = UUID.randomUUID().toString();
-        this.id = "o" + idx;
+        id = "o" + idx;
     }
 
     public DownloadablePackageOption(DownloadPackage pkg, String id) {
@@ -96,7 +96,7 @@ public class DownloadablePackageOption {
         List<DownloadablePackageOption> siblings = new ArrayList<DownloadablePackageOption>();
         if (parent != null) {
             for (DownloadablePackageOption sibling : parent.getChildrenPackages()) {
-                if (sibling.getId() != this.getId()) {
+                if (sibling.getId() != getId()) {
                     siblings.add(sibling);
                 }
             }
@@ -142,7 +142,7 @@ public class DownloadablePackageOption {
     }
 
     public String getShortLabel() {
-        if (pkg!=null) {
+        if (pkg != null) {
             return pkg.getShortLabel();
         }
         return null;

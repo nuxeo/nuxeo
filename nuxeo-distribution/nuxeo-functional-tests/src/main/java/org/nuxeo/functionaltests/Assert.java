@@ -44,8 +44,7 @@ public class Assert {
     }
 
     /**
-     * Returns true if {@code text} is present in the element retrieved with the
-     * given method.
+     * Returns true if {@code text} is present in the element retrieved with the given method.
      *
      * @since 5.7.3
      */

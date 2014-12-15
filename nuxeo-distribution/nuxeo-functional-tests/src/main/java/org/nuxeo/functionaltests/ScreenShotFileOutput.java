@@ -28,8 +28,8 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriverException;
 
 /**
- * Screenshot into a temp file (will try to save it in maven base dir/target,
- * save it in the system temp folder if can't find it).
+ * Screenshot into a temp file (will try to save it in maven base dir/target, save it in the system temp folder if can't
+ * find it).
  * <p>
  * This temp file won't be deleted on exist.
  *
@@ -44,8 +44,7 @@ public class ScreenShotFileOutput implements OutputType<File> {
     protected String screenshotFilePrefix;
 
     /**
-     * @param targetDir name of the target dir (can be null), will be ignored
-     *            if file is created in temp directory.
+     * @param targetDir name of the target dir (can be null), will be ignored if file is created in temp directory.
      * @param screenshotFilePrefix prefix of the screen shot file.
      * @since 5.9.2
      */
@@ -71,8 +70,7 @@ public class ScreenShotFileOutput implements OutputType<File> {
     public File convertFromPngBytes(byte[] data) {
         FileOutputStream fos = null;
         try {
-            String location = System.getProperty("basedir") + File.separator
-                    + "target";
+            String location = System.getProperty("basedir") + File.separator + "target";
             File outputFolder = new File(location);
             if (!outputFolder.exists() || !outputFolder.isDirectory()) {
                 outputFolder = null;
@@ -81,10 +79,8 @@ public class ScreenShotFileOutput implements OutputType<File> {
                 outputFolder = new File(outputFolder, targetDir);
                 outputFolder.mkdir();
             }
-            File tmpFile = File.createTempFile(screenshotFilePrefix, ".png",
-                    outputFolder);
-            log.trace(String.format("Created screenshot file named '%s'",
-                    tmpFile.getPath()));
+            File tmpFile = File.createTempFile(screenshotFilePrefix, ".png", outputFolder);
+            log.trace(String.format("Created screenshot file named '%s'", tmpFile.getPath()));
             fos = new FileOutputStream(tmpFile);
             fos.write(data);
             return tmpFile;
