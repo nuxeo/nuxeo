@@ -1447,9 +1447,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     @Override
-    public <T> void setPropertyReferencedEntity(String xpath, T entity) {
-        ExternalReferenceResolver<T> resolver = getResolver(xpath);
-        if (resolver != null && resolver.getEntityTypes().isInstance(entity)) {
+    public void setPropertyReferencedEntity(String xpath, Object entity) {
+        ExternalReferenceResolver resolver = getResolver(xpath);
+        if (resolver != null) {
             Serializable reference = resolver.getReference(entity);
             setPropertyValue(xpath, reference);
         } else {
@@ -1458,8 +1458,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     @Override
-    public <T> T getPropertyReferencedEntity(String xpath) {
-        ExternalReferenceResolver<T> resolver = getResolver(xpath);
+    public Object getPropertyReferencedEntity(String xpath) {
+        ExternalReferenceResolver resolver = getResolver(xpath);
         if (resolver != null) {
             return resolver.fetch(getPropertyValue(xpath));
         } else {
@@ -1467,14 +1467,13 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    protected <T> ExternalReferenceResolver<T> getResolver(String xpath) {
+    protected <T> ExternalReferenceResolver getResolver(String xpath) {
         Property property = getProperty(xpath);
         if (!property.isReference()) {
             return null;
         }
         SimpleType type = (SimpleType) property.getType();
-        return (ExternalReferenceResolver<T>) type.getResolver();
+        return type.getResolver();
     }
 
     private void clearPrefetch(String schemaName) {

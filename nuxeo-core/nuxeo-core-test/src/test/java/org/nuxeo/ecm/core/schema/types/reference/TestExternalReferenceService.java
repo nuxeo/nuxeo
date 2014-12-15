@@ -114,7 +114,7 @@ public class TestExternalReferenceService {
     private void checkResolver(Field field) {
         assertTrue(field.getType().isReference());
         SimpleType simpleType = (SimpleType) field.getType();
-        ExternalReferenceResolver<?> resolver = simpleType.getResolver();
+        ExternalReferenceResolver resolver = simpleType.getResolver();
         assertNotNull(resolver);
         assertTrue(resolver instanceof TestingColorDummyReferenceResolver);
         Map<String, Serializable> parameters = resolver.getParameters();

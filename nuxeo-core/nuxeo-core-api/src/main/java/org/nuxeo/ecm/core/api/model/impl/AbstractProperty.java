@@ -83,24 +83,23 @@ public abstract class AbstractProperty implements Property {
         property.setValue(value);
     }
 
-    protected ExternalReferenceResolver<?> resolver;
+    protected ExternalReferenceResolver resolver;
 
-    @SuppressWarnings("unchecked")
-    protected <T> ExternalReferenceResolver<T> getResolver() {
+    protected ExternalReferenceResolver getResolver() {
         if (resolver == null) {
             if (!isReference()) {
                 return null;
             }
             SimpleType type = (SimpleType) getType();
-            ExternalReferenceResolver<?> resolver = type.getResolver();
+            ExternalReferenceResolver resolver = type.getResolver();
             this.resolver = resolver;
         }
-        return (ExternalReferenceResolver<T>) resolver;
+        return resolver;
     }
 
     @Override
-    public <T> T getReferencedEntity() {
-        ExternalReferenceResolver<T> resolver = getResolver();
+    public Object getReferencedEntity() {
+        ExternalReferenceResolver resolver = getResolver();
         if (resolver != null) {
             return resolver.fetch(getValue());
         } else {
@@ -109,9 +108,9 @@ public abstract class AbstractProperty implements Property {
     }
 
     @Override
-    public <T> void setReferencedEntity(T entity) {
-        ExternalReferenceResolver<T> resolver = getResolver();
-        if (resolver != null && resolver.getEntityTypes().isInstance(entity)) {
+    public void setReferencedEntity(Object entity) {
+        ExternalReferenceResolver resolver = getResolver();
+        if (resolver != null) {
             Serializable reference = resolver.getReference(entity);
             setValue(reference);
         } else {
@@ -323,11 +322,11 @@ public abstract class AbstractProperty implements Property {
     @Override
     public <T> T getValue(Class<T> type) throws PropertyException {
         Serializable value = getValue();
-        if (isReference() && type.isAssignableFrom(getResolver().getEntityTypes())) {
+        if (isReference()) {
             if (value == null) {
                 return null;
             }
-            Object entity = getResolver().fetch(value);
+            Object entity = getResolver().fetch(type, value);
             if (entity == null) {
                 return convertTo(value, type);
             }

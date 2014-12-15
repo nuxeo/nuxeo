@@ -318,12 +318,12 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
-    public <T> void setPropertyReferencedEntity(String xpath, T entity) {
+    public void setPropertyReferencedEntity(String xpath, Object entity) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public <T> T getPropertyReferencedEntity(String xpath) {
+    public Object getPropertyReferencedEntity(String xpath) {
         throw new UnsupportedOperationException();
     }
 

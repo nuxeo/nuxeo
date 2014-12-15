@@ -288,7 +288,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * Tests whether this property is references an external entity (see {@link ExternalReferenceResolver} ).
      *
      * @return true if this property is a reference, false otherwise
-	 * @since 7.1
+     * @since 7.1
      */
     boolean isReference();
 
@@ -612,7 +612,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * @throws UnsupportedOperationException If this property's value is not a reference.
      * @since 7.1
      */
-    <T> void setReferencedEntity(T entity);
+    void setReferencedEntity(Object entity);
 
     /**
      * Gets the entity referenced by this property value.
@@ -621,7 +621,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * @throws UnsupportedOperationException If this property's value is not a reference.
      * @since 7.1
      */
-    <T> T getReferencedEntity();
+    Object getReferencedEntity();
 
     /**
      * Normalizes the given value as dictated by the property type.

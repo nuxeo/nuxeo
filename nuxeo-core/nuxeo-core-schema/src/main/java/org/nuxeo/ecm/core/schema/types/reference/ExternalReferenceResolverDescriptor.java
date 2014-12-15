@@ -32,12 +32,12 @@ public class ExternalReferenceResolverDescriptor {
     private String type;
 
     @XNode("@class")
-    private Class<? extends ExternalReferenceResolver<?>> resolver;
+    private Class<? extends ExternalReferenceResolver> resolver;
 
     public ExternalReferenceResolverDescriptor() {
     }
 
-    public ExternalReferenceResolverDescriptor(String type, Class<? extends ExternalReferenceResolver<?>> resolver) {
+    public ExternalReferenceResolverDescriptor(String type, Class<? extends ExternalReferenceResolver> resolver) {
         super();
         this.type = type;
         this.resolver = resolver;
@@ -51,11 +51,11 @@ public class ExternalReferenceResolverDescriptor {
         this.type = type;
     }
 
-    public Class<? extends ExternalReferenceResolver<?>> getResolver() {
+    public Class<? extends ExternalReferenceResolver> getResolver() {
         return resolver;
     }
 
-    public void setResolver(Class<? extends ExternalReferenceResolver<?>> resolver) {
+    public void setResolver(Class<? extends ExternalReferenceResolver> resolver) {
         this.resolver = resolver;
     }
 

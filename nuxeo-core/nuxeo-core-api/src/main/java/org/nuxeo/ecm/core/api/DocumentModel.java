@@ -856,7 +856,7 @@ public interface DocumentModel extends Serializable {
      * @param entity The entity referenced by this property.
      * @since 7.1
      */
-    <T> void setPropertyReferencedEntity(String xpath, T entity);
+    void setPropertyReferencedEntity(String xpath, Object entity);
 
     /**
      * Gets the entity referenced by a property value given a xpath.
@@ -865,7 +865,7 @@ public interface DocumentModel extends Serializable {
      * @return The entity
      * @since 7.1
      */
-    <T> T getPropertyReferencedEntity(String xpath);
+    Object getPropertyReferencedEntity(String xpath);
 
     /**
      * Clears any prefetched or cached document data.

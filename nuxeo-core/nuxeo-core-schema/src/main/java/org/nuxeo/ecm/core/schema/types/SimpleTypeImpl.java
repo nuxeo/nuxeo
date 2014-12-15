@@ -30,7 +30,7 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
 
     protected Set<Constraint> constraints;
 
-    private ExternalReferenceResolver<?> resolver;
+    private ExternalReferenceResolver resolver;
 
     private PrimitiveType primitiveType;
 
@@ -102,12 +102,12 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
         return resolver != null;
     }
 
-    public void setResolver(ExternalReferenceResolver<?> resolver) {
+    public void setResolver(ExternalReferenceResolver resolver) {
         this.resolver = resolver;
     }
 
     @Override
-    public ExternalReferenceResolver<?> getResolver() {
+    public ExternalReferenceResolver getResolver() {
         return resolver;
     }
 

@@ -25,10 +25,9 @@ import java.util.Map;
  * External references are document field with a simple type whose value refers to an external business entity. Objects
  * implementing this interface are able to resolve the entity using the reference.
  *
- * @param <T> The type of a the referenced entities.
  * @since 7.1
  */
-public interface ExternalReferenceResolver<T> {
+public interface ExternalReferenceResolver {
 
     /**
      * Configure this resolver.
@@ -56,14 +55,6 @@ public interface ExternalReferenceResolver<T> {
     Map<String, Serializable> getParameters();
 
     /**
-     * Returns the type of the entity whose this resolver manages the references.
-     *
-     * @return The entity type.
-     * @since 7.1
-     */
-    Class<?> getEntityTypes();
-
-    /**
      * Validates some value references an existing entity.
      *
      * @param value The reference.
@@ -81,7 +72,17 @@ public interface ExternalReferenceResolver<T> {
      * @throws IllegalStateException If this resolver has not been configured.
      * @since 7.1
      */
-    T fetch(Object value) throws IllegalStateException;
+    Object fetch(Object value) throws IllegalStateException;
+
+    /**
+     * Provides the entity referenced by a value, return the entity as expected type.
+     *
+     * @param value The reference.
+     * @return The referenced entity, null if no entity matches the value or if this entity cannot be converted as type.
+     * @throws IllegalStateException If this resolver has not been configured.
+     * @since 7.1
+     */
+    <T> T fetch(Class<T> type, Object value) throws IllegalStateException;
 
     /**
      * Generates a reference to an entity.
@@ -93,7 +94,7 @@ public interface ExternalReferenceResolver<T> {
      * @throws NullPointerException If entity is null
      * @since 7.1
      */
-    Serializable getReference(T entity) throws IllegalStateException, IllegalArgumentException;
+    Serializable getReference(Object entity) throws IllegalStateException, IllegalArgumentException;
 
     /**
      * Provides an error message to display when some invalid value does not match existing entity.

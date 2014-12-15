@@ -32,6 +32,6 @@ public interface ExternalReferenceService {
      * @return
      * @since 7.1
      */
-    ExternalReferenceResolver<?> getResolver(String type, Map<String, String> parameters);
+    ExternalReferenceResolver getResolver(String type, Map<String, String> parameters);
 
 }

@@ -597,7 +597,7 @@ public class XSDLoader {
                 }
             }
             if (refName != null) {
-                ExternalReferenceResolver<?> resolver = getReferenceService().getResolver(refName, refParameters);
+                ExternalReferenceResolver resolver = getReferenceService().getResolver(refName, refParameters);
                 if (resolver != null) {
                     simpleType.setResolver(resolver);
                     constraints.add(new ExternalReferenceConstraint(resolver));

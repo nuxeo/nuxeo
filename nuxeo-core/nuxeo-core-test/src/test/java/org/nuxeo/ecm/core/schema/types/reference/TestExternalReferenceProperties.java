@@ -161,9 +161,17 @@ public class TestExternalReferenceProperties {
     }
 
     @Test
-    public void testDocumentCastAccessor() {
+    public void testDocumentCastAccessor1() {
         prop().setReferencedEntity(PrimaryColor.BLUE);
         Color color = prop().getValue(Color.class);
+        assertNotNull(color);
+        assertTrue(PrimaryColor.BLUE == color);
+    }
+
+    @Test
+    public void testDocumentCastAccessor2() {
+        prop().setReferencedEntity(PrimaryColor.BLUE);
+        Color color = prop().getValue(PrimaryColor.class);
         assertNotNull(color);
         assertTrue(PrimaryColor.BLUE == color);
     }
@@ -172,6 +180,13 @@ public class TestExternalReferenceProperties {
     public void testDocumentCastAccessorReturnNullWithNullValue() {
         prop().setValue(null);
         assertNull(prop().getValue(Color.class));
+    }
+
+    @Test(expected = PropertyConversionException.class)
+    public void testDocumentCastAccessorReturnNullWithWrongType() {
+        prop().setReferencedEntity(PrimaryColor.BLUE);
+        Color color = prop().getValue(SecondaryColor.class);
+        assertNull(color);
     }
 
     @Test(expected = PropertyConversionException.class)

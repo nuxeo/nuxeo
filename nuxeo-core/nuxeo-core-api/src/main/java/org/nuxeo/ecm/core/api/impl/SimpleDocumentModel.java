@@ -287,12 +287,12 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public <T> void setPropertyReferencedEntity(String xpath, T entity) {
+    public void setPropertyReferencedEntity(String xpath, Object entity) {
         getProperty(xpath).setReferencedEntity(entity);
     }
 
     @Override
-    public <T> T getPropertyReferencedEntity(String xpath) {
+    public Object getPropertyReferencedEntity(String xpath) {
         return getProperty(xpath).getReferencedEntity();
     }
 

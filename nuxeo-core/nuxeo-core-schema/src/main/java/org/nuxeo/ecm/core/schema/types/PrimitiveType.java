@@ -36,7 +36,7 @@ public abstract class PrimitiveType extends AbstractType implements SimpleType {
     public abstract boolean validate(Object object);
 
     @Override
-    public ExternalReferenceResolver<?> getResolver() {
+    public ExternalReferenceResolver getResolver() {
         return null;
     }
 

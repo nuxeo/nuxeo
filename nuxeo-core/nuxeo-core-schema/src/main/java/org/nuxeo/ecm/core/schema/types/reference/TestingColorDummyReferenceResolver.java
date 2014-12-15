@@ -6,9 +6,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.schema.types.reference.TestingColorDummyReferenceResolver.Color;
-
-public class TestingColorDummyReferenceResolver implements ExternalReferenceResolver<Color> {
+public class TestingColorDummyReferenceResolver implements ExternalReferenceResolver {
 
     public static enum MODE {
         PRIMARY, SECONDARY;
@@ -60,11 +58,6 @@ public class TestingColorDummyReferenceResolver implements ExternalReferenceReso
     }
 
     @Override
-    public Class<?> getEntityTypes() {
-        return Color.class;
-    }
-
-    @Override
     public boolean validate(Object value) throws IllegalStateException {
         return fetch(value) != null;
     }
@@ -94,19 +87,35 @@ public class TestingColorDummyReferenceResolver implements ExternalReferenceReso
     }
 
     @Override
-    public Serializable getReference(Color color) throws IllegalStateException, IllegalArgumentException {
-        if (color != null) {
-            switch (mode) {
-            case PRIMARY:
-                if (color instanceof PrimaryColor) {
-                    return color.name();
+    @SuppressWarnings("unchecked")
+    public <T> T fetch(Class<T> type, Object value) throws IllegalStateException {
+        if (Color.class.equals(type)) {
+            return (T) fetch(value);
+        } else if (mode == MODE.PRIMARY && PrimaryColor.class.equals(type)) {
+            return (T) fetch(value);
+        } else if (mode == MODE.SECONDARY && SecondaryColor.class.equals(type)) {
+            return (T) fetch(value);
+        }
+        return null;
+    }
+
+    @Override
+    public Serializable getReference(Object entity) throws IllegalStateException, IllegalArgumentException {
+        if (entity instanceof Color) {
+            Color color = (Color) entity;
+            if (color != null) {
+                switch (mode) {
+                case PRIMARY:
+                    if (color instanceof PrimaryColor) {
+                        return color.name();
+                    }
+                    break;
+                case SECONDARY:
+                    if (color instanceof SecondaryColor) {
+                        return color.name();
+                    }
+                    break;
                 }
-                break;
-            case SECONDARY:
-                if (color instanceof SecondaryColor) {
-                    return color.name();
-                }
-                break;
             }
         }
         return null;

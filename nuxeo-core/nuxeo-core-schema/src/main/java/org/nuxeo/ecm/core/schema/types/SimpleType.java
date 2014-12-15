@@ -47,6 +47,6 @@ public interface SimpleType extends Type {
      * @return
      * @since 7.1
      */
-    ExternalReferenceResolver<?> getResolver();
+    ExternalReferenceResolver getResolver();
 
 }

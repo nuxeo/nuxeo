@@ -35,12 +35,12 @@ public class ExternalReferenceServiceImpl extends DefaultComponent implements Ex
 
     private static final Log log = LogFactory.getLog(ExternalReferenceServiceImpl.class);
 
-    private Map<String, Class<? extends ExternalReferenceResolver<?>>> resolvers;
+    private Map<String, Class<? extends ExternalReferenceResolver>> resolvers;
 
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        resolvers = new HashMap<String, Class<? extends ExternalReferenceResolver<?>>>();
+        resolvers = new HashMap<String, Class<? extends ExternalReferenceResolver>>();
     }
 
     @Override
@@ -60,12 +60,12 @@ public class ExternalReferenceServiceImpl extends DefaultComponent implements Ex
     }
 
     @Override
-    public ExternalReferenceResolver<?> getResolver(String type, Map<String, String> parameters) {
-        Class<? extends ExternalReferenceResolver<?>> resolverClass = resolvers.get(type);
+    public ExternalReferenceResolver getResolver(String type, Map<String, String> parameters) {
+        Class<? extends ExternalReferenceResolver> resolverClass = resolvers.get(type);
         if (resolverClass == null) {
             return null;
         }
-        ExternalReferenceResolver<?> resolver = null;
+        ExternalReferenceResolver resolver = null;
         try {
             resolver = resolverClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {

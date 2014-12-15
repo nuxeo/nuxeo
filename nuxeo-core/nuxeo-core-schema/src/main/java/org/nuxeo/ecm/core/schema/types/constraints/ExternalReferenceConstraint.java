@@ -29,21 +29,20 @@ import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
  * constraints ensure some value is a reference of an existing external entity resolved by the underlying resolver :
  * {@link #getResolver()} .
  *
- * @param <T> The type of a the referenced entities.
- * @since TODO
+ * @since 7.1
  */
 public final class ExternalReferenceConstraint extends AbstractConstraint {
 
     private static final long serialVersionUID = 1L;
 
-    private ExternalReferenceResolver<?> resolver;
+    private ExternalReferenceResolver resolver;
 
-    public ExternalReferenceConstraint(ExternalReferenceResolver<?> resolver) {
+    public ExternalReferenceConstraint(ExternalReferenceResolver resolver) {
         super();
         this.resolver = resolver;
     }
 
-    public ExternalReferenceResolver<?> getResolver() {
+    public ExternalReferenceResolver getResolver() {
         return resolver;
     }
 
