@@ -62,3 +62,11 @@ elasticsearch.httpEnabled=false
 elasticsearch.fetchDocFromEs=false
 # Comma separated list of CorePageProvider names to supersede by Elasticsearch
 elasticsearch.override.pageproviders=default_search
+# Reindexing option, number of documents to process per worker
+elasticsearch.reindex.bucketReadSize=500
+# Reindexing option, number of documents to submit to Elasticsearch per bulk command
+elasticsearch.reindex.bucketWriteSize=50
+# Maximum size of the indexing thread pool
+elasticsearch.indexing.maxThreads=4
+# Time to keep the completed indexing worker states
+elasticsearch.indexing.clearCompletedAfterSeconds=90
