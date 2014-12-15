@@ -16,6 +16,8 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.commands.IndexingCommands;
 import org.nuxeo.elasticsearch.commands.IndexingCommandsStacker;
 
+import org.nuxeo.elasticsearch.commands.IndexingCommand.Name;
+
 /**
  * Test that the logic for transforming CoreEvents in ElasticSearch commands
  *
@@ -102,13 +104,13 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
 
         IndexingCommands ic1 = getCommands(doc1);
         Assert.assertEquals(1, ic1.getCommands().size());
-        Assert.assertTrue(ic1.contains(IndexingCommand.INSERT));
-        Assert.assertEquals(IndexingCommand.INSERT, ic1.getCommands().get(0).getName());
+        Assert.assertTrue(ic1.contains(Name.INSERT));
+        Assert.assertEquals(Name.INSERT, ic1.getCommands().get(0).getName());
 
         IndexingCommands ic2 = getCommands(doc2);
         Assert.assertEquals(1, ic2.getCommands().size());
-        Assert.assertTrue(ic2.contains(IndexingCommand.UPDATE));
-        Assert.assertEquals(IndexingCommand.UPDATE, ic2.getCommands().get(0).getName());
+        Assert.assertTrue(ic2.contains(Name.UPDATE));
+        Assert.assertEquals(Name.UPDATE, ic2.getCommands().get(0).getName());
 
         IndexingCommands ic3 = getCommands(doc3);
         Assert.assertEquals(0, ic3.getCommands().size());
@@ -136,14 +138,14 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
 
         IndexingCommands ic1 = getCommands(doc1);
         Assert.assertEquals(1, ic1.getCommands().size());
-        Assert.assertTrue(ic1.contains(IndexingCommand.UPDATE));
-        Assert.assertEquals(IndexingCommand.UPDATE, ic1.getCommands().get(0).getName());
+        Assert.assertTrue(ic1.contains(Name.UPDATE));
+        Assert.assertEquals(Name.UPDATE, ic1.getCommands().get(0).getName());
         Assert.assertTrue(ic1.getCommands().get(0).isSync());
 
         IndexingCommands ic2 = getCommands(doc2);
         Assert.assertEquals(1, ic2.getCommands().size());
-        Assert.assertTrue(ic2.contains(IndexingCommand.INSERT));
-        Assert.assertEquals(IndexingCommand.INSERT, ic2.getCommands().get(0).getName());
+        Assert.assertTrue(ic2.contains(Name.INSERT));
+        Assert.assertEquals(Name.INSERT, ic2.getCommands().get(0).getName());
         Assert.assertTrue(ic2.getCommands().get(0).isSync());
 
         flushCommands();
@@ -164,14 +166,14 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
 
         IndexingCommands ic1 = getCommands(doc1);
         Assert.assertEquals(1, ic1.getCommands().size());
-        Assert.assertTrue(ic1.contains(IndexingCommand.UPDATE));
-        Assert.assertEquals(IndexingCommand.UPDATE, ic1.getCommands().get(0).getName());
+        Assert.assertTrue(ic1.contains(Name.UPDATE));
+        Assert.assertEquals(Name.UPDATE, ic1.getCommands().get(0).getName());
         Assert.assertTrue(ic1.getCommands().get(0).isRecurse());
 
         IndexingCommands ic2 = getCommands(doc2);
         Assert.assertEquals(1, ic2.getCommands().size());
-        Assert.assertTrue(ic2.contains(IndexingCommand.UPDATE_SECURITY));
-        Assert.assertEquals(IndexingCommand.UPDATE_SECURITY, ic2.getCommands().get(0).getName());
+        Assert.assertTrue(ic2.contains(Name.UPDATE_SECURITY));
+        Assert.assertEquals(Name.UPDATE_SECURITY, ic2.getCommands().get(0).getName());
         Assert.assertTrue(ic2.getCommands().get(0).isRecurse());
 
         flushCommands();
@@ -190,8 +192,8 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
         IndexingCommands ic1 = getCommands(doc1);
         // We should have 2 commands 1 sync + 1 async and recursive
         Assert.assertEquals(2, ic1.getCommands().size());
-        Assert.assertTrue(ic1.contains(IndexingCommand.UPDATE));
-        Assert.assertEquals(IndexingCommand.UPDATE, ic1.getCommands().get(0).getName());
+        Assert.assertTrue(ic1.contains(Name.UPDATE));
+        Assert.assertEquals(Name.UPDATE, ic1.getCommands().get(0).getName());
         Assert.assertFalse(ic1.getCommands().get(0).isRecurse());
         Assert.assertTrue(ic1.getCommands().get(1).isRecurse());
 

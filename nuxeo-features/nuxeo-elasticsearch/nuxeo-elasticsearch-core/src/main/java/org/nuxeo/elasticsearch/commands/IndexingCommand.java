@@ -43,9 +43,9 @@ import org.nuxeo.elasticsearch.listener.EventConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Holds information about what type of indexing operation must be processed. IndexingCommands are create "on the fly"
- * via a Synchronous event listener and at commit time the system will merge the commands and generate events for the
- * sync commands.
+ * Holds information about what org.nuxeo.elasticsearch.commandstype of indexing operation must be processed.
+ * IndexingCommands are create "on the fly" via a Synchronous event listener and at commit time the system will merge
+ * the commands and generate events for the sync commands.
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
@@ -53,19 +53,15 @@ public class IndexingCommand implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String INSERT = "ES_INSERT";
+    public enum Name {
+        INSERT, UPDATE, UPDATE_SECURITY, DELETE
+    };
 
-    public static final String UPDATE = "ES_UPDATE";
-
-    public static final String UPDATE_SECURITY = "ES_UPDATE_SECURITY";
-
-    public static final String DELETE = "ES_DELETE";
+    protected Name name;
 
     public static final String PREFIX = "IndexingCommand-";
 
     public static final String UNKOWN_DOCUMENT_ID = "unknown";
-
-    protected String name;
 
     protected boolean sync;
 
@@ -91,9 +87,13 @@ public class IndexingCommand implements Serializable {
         //
     }
 
-    public IndexingCommand(DocumentModel targetDocument, String command, boolean sync, boolean recurse) {
+    public IndexingCommand(DocumentModel targetDocument, boolean sync, boolean recurse) {
+        this(targetDocument, Name.INSERT, sync, recurse);
+    }
+
+    public IndexingCommand(DocumentModel targetDocument, Name command, boolean sync, boolean recurse) {
         // we don't want sync and recursive command
-        assert (!(sync && recurse) || DELETE.equals(command));
+        assert (!(sync && recurse) || command == Name.DELETE);
         id = PREFIX + UUID.randomUUID().toString();
         name = command;
         this.sync = sync;
@@ -134,10 +134,6 @@ public class IndexingCommand implements Serializable {
         return mgr.getDefaultRepository().getName();
     }
 
-    public IndexingCommand(DocumentModel targetDocument, boolean sync, boolean recurse) {
-        this(targetDocument, INSERT, sync, recurse);
-    }
-
     public void refresh(CoreSession session) throws ClientException {
         IdRef idref = new IdRef(uid);
         if ((uid != null) && (session.exists(idref))) {
@@ -165,10 +161,10 @@ public class IndexingCommand implements Serializable {
     }
 
     public boolean canBeMerged(IndexingCommand other) {
-        if (!name.equals(other.name)) {
+        if (name != other.name) {
             return false;
         }
-        if (DELETE.equals(name)) {
+        if (name == Name.DELETE) {
             // we support recursive sync deletion
             return true;
         }
@@ -184,7 +180,7 @@ public class IndexingCommand implements Serializable {
         return recurse;
     }
 
-    public String getName() {
+    public Name getName() {
         return name;
     }
 
@@ -205,7 +201,7 @@ public class IndexingCommand implements Serializable {
     public void toJSON(JsonGenerator jsonGen) throws IOException {
         jsonGen.writeStartObject();
         jsonGen.writeStringField("id", id);
-        jsonGen.writeStringField("name", name);
+        jsonGen.writeStringField("name", name.toString());
         jsonGen.writeStringField("docId", getDocId());
         if (targetDocument != null) {
             jsonGen.writeStringField("path", targetDocument.getPathAsString());
@@ -243,7 +239,7 @@ public class IndexingCommand implements Serializable {
             String fieldname = jp.getCurrentName();
             jp.nextToken(); // move to value, or START_OBJECT/START_ARRAY
             if ("name".equals(fieldname)) { // contains an object
-                cmd.name = jp.getText();
+                cmd.name = Name.valueOf(jp.getText());
             } else if ("docId".equals(fieldname)) {
                 cmd.uid = jp.getText();
             } else if ("path".equals(fieldname)) {
@@ -266,7 +262,7 @@ public class IndexingCommand implements Serializable {
             } else {
                 IdRef ref = new IdRef(cmd.uid);
                 if (!session.exists(ref)) {
-                    if (!IndexingCommand.DELETE.equals(cmd.getName())) {
+                    if (cmd.getName() != Name.DELETE) {
                         log.warn("Unable to retrieve document " + cmd.uid + " form indexing command " + cmd.name);
                     }
                 } else {
@@ -356,7 +352,7 @@ public class IndexingCommand implements Serializable {
      */
     public void makeSync() {
         if (!sync) {
-            if (!recurse || DELETE.equals(name)) {
+            if (!recurse || name == Name.DELETE) {
                 sync = true;
                 if (log.isDebugEnabled()) {
                     log.debug("Turn command into sync: " + toString());
