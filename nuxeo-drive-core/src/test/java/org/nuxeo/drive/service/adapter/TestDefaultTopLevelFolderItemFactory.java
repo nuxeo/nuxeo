@@ -122,6 +122,7 @@ public class TestDefaultTopLevelFolderItemFactory {
         assertEquals("Nuxeo Drive", topLevelFolderItem.getName());
         assertTrue(topLevelFolderItem.isFolder());
         assertEquals("system", topLevelFolderItem.getCreator());
+        assertEquals("system", topLevelFolderItem.getLastContributor());
         assertFalse(topLevelFolderItem.getCanRename());
         try {
             topLevelFolderItem.rename("newName");
@@ -189,6 +190,7 @@ public class TestDefaultTopLevelFolderItemFactory {
         assertEquals("syncRoot1", firstRootAsFsItem.getName());
         assertTrue(firstRootAsFsItem.isFolder());
         assertEquals("Administrator", firstRootAsFsItem.getCreator());
+        assertEquals("Administrator", firstRootAsFsItem.getLastContributor());
         assertTrue(firstRootAsFsItem.getCanRename());
         firstRootAsFsItem.rename("newName");
         assertEquals("newName", firstRootAsFsItem.getName());

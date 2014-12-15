@@ -163,6 +163,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
         // FileSystemItem attributes
         id = computeId(docId);
         creator = (String) doc.getPropertyValue("dc:creator");
+        lastContributor = (String) doc.getPropertyValue("dc:lastContributor");
         creationDate = (Calendar) doc.getPropertyValue("dc:created");
         lastModificationDate = (Calendar) doc.getPropertyValue("dc:modified");
         CoreSession docSession = doc.getCoreSession();

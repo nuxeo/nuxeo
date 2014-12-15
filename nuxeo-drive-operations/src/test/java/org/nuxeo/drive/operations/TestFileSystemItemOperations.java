@@ -212,6 +212,7 @@ public class TestFileSystemItemOperations {
         assertEquals("folder1", child.getName());
         assertTrue(child.isFolder());
         assertEquals("Administrator", child.getCreator());
+        assertEquals("Administrator", child.getLastContributor());
         assertTrue(child.getCanRename());
         assertTrue(child.getCanDelete());
         assertTrue(child.getCanCreateChild());
@@ -222,6 +223,7 @@ public class TestFileSystemItemOperations {
         assertEquals("folder2", child.getName());
         assertTrue(child.isFolder());
         assertEquals("Administrator", child.getCreator());
+        assertEquals("Administrator", child.getLastContributor());
         assertTrue(child.getCanRename());
         assertTrue(child.getCanDelete());
         assertTrue(child.getCanCreateChild());
@@ -280,6 +282,7 @@ public class TestFileSystemItemOperations {
         assertEquals("Nuxeo Drive", topLevelFolderItem.getName());
         assertTrue(topLevelFolderItem.isFolder());
         assertEquals("system", topLevelFolderItem.getCreator());
+        assertEquals("system", topLevelFolderItem.getLastContributor());
         assertFalse(topLevelFolderItem.getCanRename());
         assertFalse(topLevelFolderItem.getCanDelete());
         assertFalse(topLevelFolderItem.getCanCreateChild());
@@ -297,6 +300,7 @@ public class TestFileSystemItemOperations {
         assertEquals("folder1", syncRootFolderItem.getName());
         assertTrue(syncRootFolderItem.isFolder());
         assertEquals("Administrator", syncRootFolderItem.getCreator());
+        assertEquals("Administrator", syncRootFolderItem.getLastContributor());
         assertTrue(syncRootFolderItem.getCanRename());
         assertTrue(syncRootFolderItem.getCanDelete());
         assertTrue(syncRootFolderItem.getCanCreateChild());
@@ -313,6 +317,7 @@ public class TestFileSystemItemOperations {
         assertEquals("First file.odt", fileItem.getName());
         assertFalse(fileItem.isFolder());
         assertEquals("Administrator", fileItem.getCreator());
+        assertEquals("Administrator", fileItem.getLastContributor());
         assertTrue(fileItem.getCanRename());
         assertTrue(fileItem.getCanDelete());
         assertTrue(fileItem.getCanUpdate());
@@ -381,6 +386,7 @@ public class TestFileSystemItemOperations {
         assertEquals("newFolder", newFolder.getName());
         assertTrue(newFolder.isFolder());
         assertEquals("Administrator", newFolder.getCreator());
+        assertEquals("Administrator", newFolder.getLastContributor());
         assertTrue(newFolder.getCanRename());
         assertTrue(newFolder.getCanDelete());
         assertTrue(newFolder.getCanCreateChild());
@@ -417,6 +423,7 @@ public class TestFileSystemItemOperations {
         assertEquals("New file.odt", newFile.getName());
         assertFalse(newFile.isFolder());
         assertEquals("Administrator", newFile.getCreator());
+        assertEquals("Administrator", newFile.getLastContributor());
         assertTrue(newFile.getCanRename());
         assertTrue(newFile.getCanDelete());
         assertTrue(newFile.getCanUpdate());
@@ -456,6 +463,7 @@ public class TestFileSystemItemOperations {
         assertEquals("Updated file 1.odt", updatedFile.getName());
         assertFalse(updatedFile.isFolder());
         assertEquals("Administrator", updatedFile.getCreator());
+        assertEquals("Administrator", updatedFile.getLastContributor());
         assertTrue(updatedFile.getCanRename());
         assertTrue(updatedFile.getCanDelete());
         assertTrue(updatedFile.getCanUpdate());
@@ -882,6 +890,7 @@ public class TestFileSystemItemOperations {
                     assertEquals("Third file.odt", fsItem.getName());
                     assertFalse(fsItem.isFolder());
                     assertEquals("Administrator", fsItem.getCreator());
+                    assertEquals("Administrator", fsItem.getLastContributor());
                     assertTrue(fsItem.getCanRename());
                     assertTrue(fsItem.getCanDelete());
                     assertTrue(fsItem.getCanUpdate());
@@ -901,6 +910,7 @@ public class TestFileSystemItemOperations {
                     assertEquals("Fourth file.odt", fsItem.getName());
                     assertFalse(fsItem.isFolder());
                     assertEquals("Administrator", fsItem.getCreator());
+                    assertEquals("Administrator", fsItem.getLastContributor());
                     assertTrue(fsItem.getCanRename());
                     assertTrue(fsItem.getCanDelete());
                     assertTrue(fsItem.getCanUpdate());
