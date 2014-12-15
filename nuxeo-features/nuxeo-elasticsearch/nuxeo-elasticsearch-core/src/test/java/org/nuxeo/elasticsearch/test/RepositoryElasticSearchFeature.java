@@ -17,6 +17,10 @@
 
 package org.nuxeo.elasticsearch.test;
 
+import com.google.inject.Inject;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.storage.sql.DatabaseDerby;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
@@ -38,11 +42,25 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 public class RepositoryElasticSearchFeature extends SimpleFeature {
 
+    @Inject
+    protected FeaturesRunner featuresRunner;
+
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
         super.initialize(runner);
         // Uncomment to use Derby when h2 lucene lib is not aligned with ES
         DatabaseHelper.setDatabaseForTests(DatabaseDerby.class.getCanonicalName());
+    }
+
+    public CoreSession openSessionAsAdmin() throws ClientException {
+        CoreFeature coreFeature = featuresRunner.getFeature(CoreFeature.class);
+        // See NXP-14118 in nuxeo 5.8 Administrator account is not system user
+        return coreFeature.getRepository().getRepositoryHandler().openSessionAs(
+                "system");
+    }
+
+    public void closeSession(CoreSession session) {
+        CoreInstance.getInstance().close(session);
     }
 
 }

@@ -21,7 +21,6 @@ import java.util.Arrays;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -57,6 +56,9 @@ import com.google.inject.Inject;
 @Deploy({ "org.nuxeo.ecm.platform.tag" })
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestReindex {
+
+    @Inject
+    RepositoryElasticSearchFeature repoFeature;
 
     @Inject
     protected CoreSession session;
@@ -137,31 +139,32 @@ public class TestReindex {
     }
 
     @Test
-    @Ignore("NXP-15826 in progress")
     public void shouldReindexDocument() throws Exception {
         buildDocs();
         startTransaction();
+        CoreSession adminSession = repoFeature.openSessionAsAdmin();
+        try {
+            String nxql = "SELECT * FROM Document, Relation order by ecm:uuid";
+            ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+            DocumentModelList coreDocs = session.query(nxql);
+            DocumentModelList docs = ess.query(new NxQueryBuilder(adminSession).nxql(nxql).limit(100));
+            // Assert.assertEquals(coreDocs.totalSize(), docs.totalSize());
+            Assert.assertEquals(getDigest(coreDocs), getDigest(docs));
+            // can not do that because of NXP-16154
+            // Assert.assertEquals(getDigest(coreDocs), 42, docs.totalSize());
+            esa.initIndexes(true);
+            esa.refresh();
+            DocumentModelList docs2 = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
+            Assert.assertEquals(0, docs2.totalSize());
+            esi.reindex(session.getRepositoryName(), "SELECT * FROM Document");
+            esi.reindex(session.getRepositoryName(), "SELECT * FROM Relation");
+            waitForIndexing();
+            docs2 = ess.query(new NxQueryBuilder(adminSession).nxql(nxql).limit(100));
 
-        String nxql = "SELECT * FROM Document, Relation order by ecm:uuid";
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-        DocumentModelList coreDocs = session.query(nxql);
-        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(nxql).limit(100));
-
-        Assert.assertEquals(coreDocs.totalSize(), docs.totalSize());
-        Assert.assertEquals(getDigest(coreDocs), getDigest(docs));
-        // can not do that because of NXP-16154
-        // Assert.assertEquals(getDigest(coreDocs), 42, docs.totalSize());
-        esa.initIndexes(true);
-        esa.refresh();
-        DocumentModelList docs2 = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
-        Assert.assertEquals(0, docs2.totalSize());
-        esi.reindex(session.getRepositoryName(), "SELECT * FROM Document");
-        esi.reindex(session.getRepositoryName(), "SELECT * FROM Relation");
-        waitForIndexing();
-        docs2 = ess.query(new NxQueryBuilder(session).nxql(nxql).limit(100));
-
-        Assert.assertEquals(getDigest(coreDocs), getDigest(docs2));
-
+            Assert.assertEquals(getDigest(docs), getDigest(docs2));
+        } finally {
+            repoFeature.closeSession(adminSession);
+        }
     }
 
     private void buildDocs() throws Exception {
