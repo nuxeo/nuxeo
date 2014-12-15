@@ -17,7 +17,6 @@
 package org.nuxeo.drive.service.impl;
 
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.services.event.Event;

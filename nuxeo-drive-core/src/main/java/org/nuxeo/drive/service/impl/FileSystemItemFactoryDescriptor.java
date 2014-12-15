@@ -25,7 +25,6 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * XMap descriptor for factories contributed to the {@code fileSystemItemFactory} extension point of the
