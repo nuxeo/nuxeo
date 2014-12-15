@@ -38,7 +38,10 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
  * Pdf2Image converter based on imageMagick's convert command-line executable.
  *
  * @author ldoguin
+ * @deprecated since 7.1. The 'pdf2image' converter now uses
+ *             {@link org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter}.
  */
+@Deprecated
 public class PDF2ImageConverter extends CommandLineBasedConverter {
 
     @Override
