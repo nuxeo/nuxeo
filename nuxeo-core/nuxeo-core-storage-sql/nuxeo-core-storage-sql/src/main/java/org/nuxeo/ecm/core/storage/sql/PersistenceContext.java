@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.storage.sql.RowMapper.NodeInfo;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowUpdate;
 import org.nuxeo.ecm.core.storage.sql.SimpleFragment.FieldComparator;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
@@ -66,6 +67,15 @@ import com.codahale.metrics.SharedMetricRegistries;
 public class PersistenceContext {
 
     protected static final Log log = LogFactory.getLog(PersistenceContext.class);
+
+    /**
+     * Property for threshold at which we warn that a Selection may be too big, with stack trace.
+     *
+     * @since 7.1
+     */
+    public static final String SEL_WARN_THRESHOLD_PROP = "org.nuxeo.vcs.selection.warn.threshold";
+
+    public static final String SEL_WARN_THRESHOLD_DEFAULT = "15000";
 
     protected static final FieldComparator POS_COMPARATOR = new FieldComparator(Model.HIER_CHILD_POS_KEY);
 
@@ -136,6 +146,11 @@ public class PersistenceContext {
 
     protected final Counter cacheHitCount;
 
+    /**
+     * Threshold at which we warn that a Selection may be too big, with stack trace.
+     */
+    protected long bigSelWarnThreshold;
+
     @SuppressWarnings("unchecked")
     public PersistenceContext(Model model, RowMapper mapper, SessionImpl session) throws StorageException {
         this.model = model;
@@ -167,6 +182,11 @@ public class PersistenceContext {
                 "caches", "count"));
         cacheHitCount = registry.counter(MetricRegistry.name("nuxeo", "repositories", session.getRepositoryName(),
                 "caches", "hit"));
+        try {
+            bigSelWarnThreshold = Long.parseLong(Framework.getProperty(SEL_WARN_THRESHOLD_PROP, SEL_WARN_THRESHOLD_DEFAULT));
+        } catch (NumberFormatException e) {
+            log.error("Invalid value for " + SEL_WARN_THRESHOLD_PROP + ": " + Framework.getProperty(SEL_WARN_THRESHOLD_PROP));
+        }
     }
 
     protected int clearCaches() {
