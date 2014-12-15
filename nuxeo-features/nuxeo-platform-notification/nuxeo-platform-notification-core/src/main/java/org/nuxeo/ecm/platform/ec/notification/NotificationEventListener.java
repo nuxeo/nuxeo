@@ -204,7 +204,7 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
         return getUserManager().getUsersInGroupAndSubGroups(groupId);
     }
 
-    private void sendNotificationSignalForUser(Notification notification, String subscriptor, Event event,
+    protected void sendNotificationSignalForUser(Notification notification, String subscriptor, Event event,
             DocumentEventContext ctx) throws ClientException {
 
         Principal principal;
