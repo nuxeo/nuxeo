@@ -19,8 +19,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 
 /**
- * A dummy QueryMaker usable to capture the low level sqlInfo, model and session
- * from a high-level session, in order to further test QueryMakers.
+ * A dummy QueryMaker usable to capture the low level sqlInfo, model and session from a high-level session, in order to
+ * further test QueryMakers.
  *
  * @author Florent Guillaume
  */
@@ -47,9 +47,8 @@ public class CapturingQueryMaker implements QueryMaker {
     }
 
     @Override
-    public Query buildQuery(SQLInfo sqlInfo, Model model,
-            PathResolver pathResolver, String query, QueryFilter queryFilter,
-            Object... params) throws StorageException {
+    public Query buildQuery(SQLInfo sqlInfo, Model model, PathResolver pathResolver, String query,
+            QueryFilter queryFilter, Object... params) throws StorageException {
         Captured captured = (Captured) params[0];
         captured.sqlInfo = sqlInfo;
         captured.model = model;

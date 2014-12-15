@@ -41,15 +41,16 @@ public interface SQLRepositoryStatusMBean {
 
     /**
      * Evaluate caches size
+     * 
      * @since 5.7.2
      */
     long getCachesSize();
+
     /**
      * GC the unused binaries.
      *
-     * @param delete if {@code false} don't actually delete the GCed binaries
-     *            (but still return statistics about them), if {@code true}
-     *            delete them
+     * @param delete if {@code false} don't actually delete the GCed binaries (but still return statistics about them),
+     *            if {@code true} delete them
      * @return a status about the number of GCed binaries
      */
     BinaryManagerStatus gcBinaries(boolean delete);
@@ -57,8 +58,7 @@ public interface SQLRepositoryStatusMBean {
     /**
      * Is a GC of the binaries in progress?
      * <p>
-     * It's only useful to call this from a separate thread from the one that
-     * called {@link #gcBinaries}.
+     * It's only useful to call this from a separate thread from the one that called {@link #gcBinaries}.
      *
      * @return {@code true} if a GC of the binaries is in progress
      */

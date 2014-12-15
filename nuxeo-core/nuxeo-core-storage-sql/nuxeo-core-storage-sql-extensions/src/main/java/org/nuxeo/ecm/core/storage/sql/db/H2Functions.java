@@ -45,23 +45,21 @@ public class H2Functions extends EmbeddedFunctions {
         // log.trace("SQL: " + String.format(message.replace("?", "%s"), args));
     }
 
-    public static boolean isInTreeString(Connection conn, String id,
-            String baseId) throws SQLException {
+    public static boolean isInTreeString(Connection conn, String id, String baseId) throws SQLException {
         return isInTree(conn, id, baseId);
     }
 
-    public static boolean isInTreeLong(Connection conn, Long id, Long baseId)
+    public static boolean isInTreeLong(Connection conn, Long id, Long baseId) throws SQLException {
+        return isInTree(conn, id, baseId);
+    }
+
+    public static boolean isAccessAllowedString(Connection conn, String id, String principals, String permissions)
             throws SQLException {
-        return isInTree(conn, id, baseId);
-    }
-
-    public static boolean isAccessAllowedString(Connection conn, String id,
-            String principals, String permissions) throws SQLException {
         return isAccessAllowed(conn, id, split(principals), split(permissions));
     }
 
-    public static boolean isAccessAllowedLong(Connection conn, Long id,
-            String principals, String permissions) throws SQLException {
+    public static boolean isAccessAllowedLong(Connection conn, Long id, String principals, String permissions)
+            throws SQLException {
         return isAccessAllowed(conn, id, split(principals), split(permissions));
     }
 
@@ -69,13 +67,12 @@ public class H2Functions extends EmbeddedFunctions {
      * Adds an invalidation from this cluster node to the invalidations list.
      */
     @SuppressWarnings("boxing")
-    public static void clusterInvalidateString(Connection conn, String id,
-            String fragments, int kind) throws SQLException {
+    public static void clusterInvalidateString(Connection conn, String id, String fragments, int kind)
+            throws SQLException {
         PreparedStatement ps = null;
         try {
             // find other node ids
-            String sql = "SELECT \"NODEID\" FROM \"CLUSTER_NODES\" "
-                    + "WHERE \"NODEID\" <> SESSION_ID()";
+            String sql = "SELECT \"NODEID\" FROM \"CLUSTER_NODES\" " + "WHERE \"NODEID\" <> SESSION_ID()";
             if (isLogEnabled()) {
                 logDebug(sql);
             }
@@ -89,8 +86,7 @@ public class H2Functions extends EmbeddedFunctions {
                 logDebug("  -> " + nodeIds);
             }
             // invalidate
-            sql = "INSERT INTO \"CLUSTER_INVALS\" "
-                    + "(\"NODEID\", \"ID\", \"FRAGMENTS\", \"KIND\") "
+            sql = "INSERT INTO \"CLUSTER_INVALS\" " + "(\"NODEID\", \"ID\", \"FRAGMENTS\", \"KIND\") "
                     + "VALUES (?, ?, ?, ?)";
             for (Long nodeId : nodeIds) {
                 if (isLogEnabled()) {
@@ -115,8 +111,7 @@ public class H2Functions extends EmbeddedFunctions {
      *
      * @return a result set with columns id, fragments, kind
      */
-    public static ResultSet getClusterInvalidationsString(Connection conn)
-            throws SQLException {
+    public static ResultSet getClusterInvalidationsString(Connection conn) throws SQLException {
         DatabaseMetaData meta = conn.getMetaData();
         SimpleResultSet result = new SimpleResultSet();
         result.addColumn("ID", Types.VARCHAR, 0, 0); // String id
@@ -174,8 +169,7 @@ public class H2Functions extends EmbeddedFunctions {
         }
     }
 
-    public static ResultSet upgradeVersions(Connection conn)
-            throws SQLException {
+    public static ResultSet upgradeVersions(Connection conn) throws SQLException {
         PreparedStatement ps1 = null;
         PreparedStatement ps2 = null;
         try {
@@ -224,8 +218,7 @@ public class H2Functions extends EmbeddedFunctions {
         return new SimpleResultSet();
     }
 
-    public static ResultSet upgradeLastContributor(Connection conn)
-            throws SQLException {
+    public static ResultSet upgradeLastContributor(Connection conn) throws SQLException {
         PreparedStatement ps1 = null;
         PreparedStatement ps2 = null;
         try {
@@ -259,8 +252,7 @@ public class H2Functions extends EmbeddedFunctions {
         return new SimpleResultSet();
     }
 
-    public static ResultSet getAncestorsIds(Connection conn, String idsString)
-            throws SQLException {
+    public static ResultSet getAncestorsIds(Connection conn, String idsString) throws SQLException {
         Set<String> ids = split(idsString);
         DatabaseMetaData meta = conn.getMetaData();
         SimpleResultSet result = new SimpleResultSet();
@@ -322,8 +314,7 @@ public class H2Functions extends EmbeddedFunctions {
     }
 
     protected static String getSelectParentIdsByIdsSql(int size) {
-        StringBuilder buf = new StringBuilder(
-                "SELECT DISTINCT \"PARENTID\" FROM \"HIERARCHY\" WHERE \"ID\" IN (");
+        StringBuilder buf = new StringBuilder("SELECT DISTINCT \"PARENTID\" FROM \"HIERARCHY\" WHERE \"ID\" IN (");
         for (int i = 0; i < size; i++) {
             if (i != 0) {
                 buf.append(", ");

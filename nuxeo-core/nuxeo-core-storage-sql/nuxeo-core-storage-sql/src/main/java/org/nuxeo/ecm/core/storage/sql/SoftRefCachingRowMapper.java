@@ -40,8 +40,7 @@ import com.codahale.metrics.Timer;
 /**
  * A {@link RowMapper} that has an internal cache.
  * <p>
- * The cache only holds {@link Row}s that are known to be identical to what's in
- * the underlying {@link RowMapper}.
+ * The cache only holds {@link Row}s that are known to be identical to what's in the underlying {@link RowMapper}.
  */
 public class SoftRefCachingRowMapper implements RowMapper {
 
@@ -50,15 +49,14 @@ public class SoftRefCachingRowMapper implements RowMapper {
     private static final String ABSENT = "__ABSENT__\0\0\0";
 
     /**
-     * The cached rows. All held data is identical to what is present in the
-     * underlying {@link RowMapper} and could be refetched if needed.
+     * The cached rows. All held data is identical to what is present in the underlying {@link RowMapper} and could be
+     * refetched if needed.
      * <p>
-     * The values are either {@link Row} for fragments present in the database,
-     * or a row with tableName {@link #ABSENT} to denote a fragment known to be
-     * absent from the database.
+     * The values are either {@link Row} for fragments present in the database, or a row with tableName {@link #ABSENT}
+     * to denote a fragment known to be absent from the database.
      * <p>
-     * This cache is memory-sensitive (all values are soft-referenced), a
-     * fragment can always be refetched if the GC collects it.
+     * This cache is memory-sensitive (all values are soft-referenced), a fragment can always be refetched if the GC
+     * collects it.
      */
     // we use a new Row instance for the absent case to avoid keeping other
     // references to it which would prevent its GCing
@@ -67,20 +65,18 @@ public class SoftRefCachingRowMapper implements RowMapper {
     private Model model;
 
     /**
-     * The {@link RowMapper} to which operations that cannot be processed from
-     * the cache are delegated.
+     * The {@link RowMapper} to which operations that cannot be processed from the cache are delegated.
      */
     private RowMapper rowMapper;
 
     /**
-     * The local invalidations due to writes through this mapper that should be
-     * propagated to other sessions at post-commit time.
+     * The local invalidations due to writes through this mapper that should be propagated to other sessions at
+     * post-commit time.
      */
     private final Invalidations localInvalidations;
 
     /**
-     * The queue of cache invalidations received from other session, to process
-     * at pre-transaction time.
+     * The queue of cache invalidations received from other session, to process at pre-transaction time.
      */
     // public for unit tests
     public final InvalidationsQueue cacheQueue;
@@ -91,8 +87,8 @@ public class SoftRefCachingRowMapper implements RowMapper {
     private InvalidationsPropagator cachePropagator;
 
     /**
-     * The queue of invalidations used for events, a single queue is shared by
-     * all mappers corresponding to the same client repository.
+     * The queue of invalidations used for events, a single queue is shared by all mappers corresponding to the same
+     * client repository.
      */
     private InvalidationsQueue eventQueue;
 
@@ -126,17 +122,14 @@ public class SoftRefCachingRowMapper implements RowMapper {
 
     @SuppressWarnings("unchecked")
     public SoftRefCachingRowMapper() {
-        cache = new ReferenceMap(AbstractReferenceMap.HARD,
-                AbstractReferenceMap.SOFT);
+        cache = new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.SOFT);
         localInvalidations = new Invalidations();
         cacheQueue = new InvalidationsQueue("mapper-" + this);
         forRemoteClient = false;
     }
 
-    public void initialize(Model model, RowMapper rowMapper,
-            InvalidationsPropagator cachePropagator,
-            InvalidationsPropagator eventPropagator,
-            InvalidationsQueue repositoryEventQueue,
+    public void initialize(Model model, RowMapper rowMapper, InvalidationsPropagator cachePropagator,
+            InvalidationsPropagator eventPropagator, InvalidationsQueue repositoryEventQueue,
             Map<String, String> properties) {
         this.model = model;
         this.rowMapper = rowMapper;
@@ -171,8 +164,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
         // for ACL collections, make sure the order is correct
         // (without the cache, the query to get a list of collection does an
         // ORDER BY pos, so users of the cache must get the same behavior)
-        if (row.isCollection() && row.values.length > 0
-                && row.values[0] instanceof ACLRow) {
+        if (row.isCollection() && row.values.length > 0 && row.values[0] instanceof ACLRow) {
             row.values = sortACLRows((ACLRow[]) row.values);
         }
         cache.put(new RowId(row), row);
@@ -264,14 +256,12 @@ public class SoftRefCachingRowMapper implements RowMapper {
         if (invalidations.isEmpty() && events.isEmpty()) {
             return null;
         }
-        return new InvalidationsPair(invalidations.isEmpty() ? null
-                : invalidations, events.isEmpty() ? null : events);
+        return new InvalidationsPair(invalidations.isEmpty() ? null : invalidations, events.isEmpty() ? null : events);
     }
 
     // propagate invalidations
     @Override
-    public void sendInvalidations(Invalidations invalidations)
-            throws StorageException {
+    public void sendInvalidations(Invalidations invalidations) throws StorageException {
         // add local invalidations
         if (!localInvalidations.isEmpty()) {
             if (invalidations == null) {
@@ -300,8 +290,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
     }
 
     /**
-     * Used by the server to associate each mapper to a single event
-     * invalidations queue per client repository.
+     * Used by the server to associate each mapper to a single event invalidations queue per client repository.
      */
     public void setEventQueue(InvalidationsQueue eventQueue) {
         // don't remove the original global repository queue
@@ -315,14 +304,14 @@ public class SoftRefCachingRowMapper implements RowMapper {
      */
     public void setSession(SessionImpl session) {
         this.session = session;
-        cacheHitCount = registry.counter(MetricRegistry.name(
-                "nuxeo", "repositories", session.repository.getName(), "caches", "soft-ref", "hits"));
-        cacheGetTimer = registry.timer(MetricRegistry.name(
-                "nuxeo", "repositories", session.repository.getName(), "caches", "soft-ref", "get"));
-        sorRows = registry.counter(MetricRegistry.name(
-                "nuxeo", "repositories", session.repository.getName(), "caches", "soft-ref", "sor", "rows"));
-        sorGetTimer = registry.timer(MetricRegistry.name(
-                "nuxeo", "repositories", session.repository.getName(), "caches", "soft-ref", "sor", "get"));
+        cacheHitCount = registry.counter(MetricRegistry.name("nuxeo", "repositories", session.repository.getName(),
+                "caches", "soft-ref", "hits"));
+        cacheGetTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", session.repository.getName(),
+                "caches", "soft-ref", "get"));
+        sorRows = registry.counter(MetricRegistry.name("nuxeo", "repositories", session.repository.getName(), "caches",
+                "soft-ref", "sor", "rows"));
+        sorGetTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", session.repository.getName(),
+                "caches", "soft-ref", "sor", "get"));
     }
 
     @Override
@@ -355,8 +344,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
      * Use those from the cache if available, read from the mapper for the rest.
      */
     @Override
-    public List<? extends RowId> read(Collection<RowId> rowIds,
-            boolean cacheOnly) throws StorageException {
+    public List<? extends RowId> read(Collection<RowId> rowIds, boolean cacheOnly) throws StorageException {
         List<RowId> res = new ArrayList<RowId>(rowIds.size());
         // find which are in cache, and which not
         List<RowId> todo = new LinkedList<RowId>();
@@ -452,8 +440,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
     }
 
     @Override
-    public Serializable[] readCollectionRowArray(RowId rowId)
-            throws StorageException {
+    public Serializable[] readCollectionRowArray(RowId rowId) throws StorageException {
         Row row = cacheGet(rowId);
         if (row == null) {
             Serializable[] array = rowMapper.readCollectionRowArray(rowId);
@@ -469,11 +456,9 @@ public class SoftRefCachingRowMapper implements RowMapper {
     }
 
     @Override
-    public List<Row> readSelectionRows(SelectionType selType,
-            Serializable selId, Serializable filter, Serializable criterion,
-            boolean limitToOne) throws StorageException {
-        List<Row> rows = rowMapper.readSelectionRows(selType, selId, filter,
-                criterion, limitToOne);
+    public List<Row> readSelectionRows(SelectionType selType, Serializable selId, Serializable filter,
+            Serializable criterion, boolean limitToOne) throws StorageException {
+        List<Row> rows = rowMapper.readSelectionRows(selType, selId, filter, criterion, limitToOne);
         for (Row row : rows) {
             cachePut(row);
         }
@@ -485,10 +470,9 @@ public class SoftRefCachingRowMapper implements RowMapper {
      */
 
     @Override
-    public CopyResult copy(IdWithTypes source, Serializable destParentId,
-            String destName, Row overwriteRow) throws StorageException {
-        CopyResult result = rowMapper.copy(source, destParentId, destName,
-                overwriteRow);
+    public CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow)
+            throws StorageException {
+        CopyResult result = rowMapper.copy(source, destParentId, destName, overwriteRow);
         Invalidations invalidations = result.invalidations;
         if (invalidations.modified != null) {
             for (RowId rowId : invalidations.modified) {
@@ -509,8 +493,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
     public List<NodeInfo> remove(NodeInfo rootInfo) throws StorageException {
         List<NodeInfo> infos = rowMapper.remove(rootInfo);
         for (NodeInfo info : infos) {
-            for (String fragmentName : model.getTypeFragments(new IdWithTypes(
-                    info.id, info.primaryType, null))) {
+            for (String fragmentName : model.getTypeFragments(new IdWithTypes(info.id, info.primaryType, null))) {
                 RowId rowId = new RowId(fragmentName, info.id);
                 cacheRemove(rowId);
                 localInvalidations.addDeleted(rowId);

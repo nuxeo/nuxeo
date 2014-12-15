@@ -30,12 +30,10 @@ import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 
 /**
- * A {@link SelectionContext} holds information for a set {@link Selection}
- * objects, mostly acting as a cache.
+ * A {@link SelectionContext} holds information for a set {@link Selection} objects, mostly acting as a cache.
  * <p>
- * Some of the information is identical to what's in the database and can be
- * safely be GC'ed, so it lives in a memory-sensitive map (softMap), otherwise
- * it's moved to a normal map (hardMap) (creation or deletion).
+ * Some of the information is identical to what's in the database and can be safely be GC'ed, so it lives in a
+ * memory-sensitive map (softMap), otherwise it's moved to a normal map (hardMap) (creation or deletion).
  */
 public class SelectionContext {
 
@@ -53,8 +51,8 @@ public class SelectionContext {
     public final Map<Serializable, Selection> hardMap;
 
     /**
-     * The selections modified in the transaction, that should be propagated as
-     * invalidations to other sessions at post-commit time.
+     * The selections modified in the transaction, that should be propagated as invalidations to other sessions at
+     * post-commit time.
      */
     private final Set<Serializable> modifiedInTransaction;
 
@@ -63,27 +61,25 @@ public class SelectionContext {
 
     protected final Counter modifiedInTransactionCount;
 
-    protected final Counter cacheHitCount ;
+    protected final Counter cacheHitCount;
 
     protected final Timer cacheGetTimer;
 
     @SuppressWarnings("unchecked")
-    public SelectionContext(SelectionType selType, Serializable criterion,
-            RowMapper mapper, PersistenceContext context) {
+    public SelectionContext(SelectionType selType, Serializable criterion, RowMapper mapper, PersistenceContext context) {
         this.selType = selType;
         this.criterion = criterion;
         this.mapper = mapper;
         this.context = context;
-        softMap = new ReferenceMap(AbstractReferenceMap.HARD,
-                AbstractReferenceMap.SOFT);
+        softMap = new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.SOFT);
         hardMap = new HashMap<Serializable, Selection>();
         modifiedInTransaction = new HashSet<Serializable>();
-        modifiedInTransactionCount = registry.counter(MetricRegistry.name(
-                "nuxeo", "repositories", context.session.repository.getName(), "caches", "selections", "modified"));
-        cacheHitCount = registry.counter(MetricRegistry.name(
-                "nuxeo", "repositories", context.session.repository.getName(), "caches", "selections", "hit"));
-        cacheGetTimer = registry.timer(MetricRegistry.name(
-                "nuxeo", "repositories", context.session.repository.getName(), "caches", "selections", "get"));
+        modifiedInTransactionCount = registry.counter(MetricRegistry.name("nuxeo", "repositories",
+                context.session.repository.getName(), "caches", "selections", "modified"));
+        cacheHitCount = registry.counter(MetricRegistry.name("nuxeo", "repositories",
+                context.session.repository.getName(), "caches", "selections", "hit"));
+        cacheGetTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories",
+                context.session.repository.getName(), "caches", "selections", "get"));
     }
 
     public int clearCaches() {
@@ -117,8 +113,7 @@ public class SelectionContext {
             timerContext.stop();
         }
 
-        return new Selection(selId, selType.tableName, false,
-                selType.filterKey, context, softMap, hardMap);
+        return new Selection(selId, selType.tableName, false, selType.filterKey, context, softMap, hardMap);
     }
 
     public boolean applicable(SimpleFragment fragment) throws StorageException {
@@ -154,17 +149,14 @@ public class SelectionContext {
      * Notes that a new empty selection should be created.
      */
     public void newSelection(Serializable selId) {
-        new Selection(selId, selType.tableName, true, selType.filterKey,
-                context, softMap, hardMap);
+        new Selection(selId, selType.tableName, true, selType.filterKey, context, softMap, hardMap);
     }
 
     /**
-     * @param invalidate {@code true} if this is for a fragment newly created by
-     *            internal database process (copy, etc.) and must notified to
-     *            other session; {@code false} if this is a normal read
+     * @param invalidate {@code true} if this is for a fragment newly created by internal database process (copy, etc.)
+     *            and must notified to other session; {@code false} if this is a normal read
      */
-    public void recordExisting(SimpleFragment fragment, boolean invalidate)
-            throws StorageException {
+    public void recordExisting(SimpleFragment fragment, boolean invalidate) throws StorageException {
         Serializable selId = fragment.get(selType.selKey);
         if (selId != null) {
             getSelection(selId).addExisting(fragment.getId());
@@ -181,8 +173,7 @@ public class SelectionContext {
     }
 
     /** Removes a selection item from the selection. */
-    public void recordRemoved(Serializable id, Serializable selId)
-            throws StorageException {
+    public void recordRemoved(Serializable id, Serializable selId) throws StorageException {
         if (selId != null) {
             getSelection(selId).remove(id);
             modifiedInTransaction.add(selId);
@@ -191,8 +182,7 @@ public class SelectionContext {
     }
 
     /** Records a selection as removed. */
-    public void recordRemovedSelection(Serializable selId)
-            throws StorageException {
+    public void recordRemovedSelection(Serializable selId) throws StorageException {
         softMap.remove(selId);
         hardMap.remove(selId);
         modifiedInTransaction.add(selId);
@@ -208,16 +198,13 @@ public class SelectionContext {
      * @param filter the value to filter on
      * @return the fragment, or {@code null} if not found
      */
-    public SimpleFragment getSelectionFragment(Serializable selId, String filter)
-            throws StorageException {
+    public SimpleFragment getSelectionFragment(Serializable selId, String filter) throws StorageException {
         SimpleFragment fragment = getSelection(selId).getFragmentByValue(filter);
         if (fragment == SimpleFragment.UNKNOWN) {
             // read it through the mapper
-            List<Row> rows = mapper.readSelectionRows(selType, selId, filter,
-                    criterion, true);
+            List<Row> rows = mapper.readSelectionRows(selType, selId, filter, criterion, true);
             Row row = rows.isEmpty() ? null : rows.get(0);
-            fragment = (SimpleFragment) context.getFragmentFromFetchedRow(row,
-                    false);
+            fragment = (SimpleFragment) context.getFragmentFromFetchedRow(row, false);
         }
         return fragment;
     }
@@ -231,17 +218,14 @@ public class SelectionContext {
      * @param filter the value to filter on, or {@code null} for all
      * @return the list of fragments
      */
-    public List<SimpleFragment> getSelectionFragments(Serializable selId,
-            String filter) throws StorageException {
+    public List<SimpleFragment> getSelectionFragments(Serializable selId, String filter) throws StorageException {
         Selection selection = getSelection(selId);
         List<SimpleFragment> fragments = selection.getFragmentsByValue(filter);
         if (fragments == null) {
             // no complete list is known
             // ask the actual selection to the mapper
-            List<Row> rows = mapper.readSelectionRows(selType, selId, null,
-                    criterion, false);
-            List<Fragment> frags = context.getFragmentsFromFetchedRows(rows,
-                    false);
+            List<Row> rows = mapper.readSelectionRows(selType, selId, null, criterion, false);
+            List<Fragment> frags = context.getFragmentsFromFetchedRows(rows, false);
             fragments = new ArrayList<SimpleFragment>(frags.size());
             List<Serializable> ids = new ArrayList<Serializable>(frags.size());
             for (Fragment fragment : frags) {
@@ -266,8 +250,7 @@ public class SelectionContext {
     }
 
     /**
-     * Marks locally all the invalidations gathered by a {@link Mapper}
-     * operation (like a version restore).
+     * Marks locally all the invalidations gathered by a {@link Mapper} operation (like a version restore).
      */
     public void markInvalidated(Set<RowId> modified) {
         for (RowId rowId : modified) {
@@ -294,8 +277,7 @@ public class SelectionContext {
      */
     public void gatherInvalidations(Invalidations invalidations) {
         for (Serializable id : modifiedInTransaction) {
-            invalidations.addModified(new RowId(selType.invalidationTableName,
-                    id));
+            invalidations.addModified(new RowId(selType.invalidationTableName, id));
         }
         modifiedInTransactionCount.dec(modifiedInTransaction.size());
         modifiedInTransaction.clear();
@@ -306,8 +288,7 @@ public class SelectionContext {
      * <p>
      * Called pre-transaction.
      */
-    public void processReceivedInvalidations(Set<RowId> modified)
-            throws StorageException {
+    public void processReceivedInvalidations(Set<RowId> modified) throws StorageException {
         for (RowId rowId : modified) {
             if (selType.invalidationTableName.equals(rowId.tableName)) {
                 Serializable id = rowId.id;

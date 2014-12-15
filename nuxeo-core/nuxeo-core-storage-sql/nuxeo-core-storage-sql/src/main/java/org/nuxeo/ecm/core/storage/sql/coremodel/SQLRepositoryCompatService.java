@@ -24,8 +24,7 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Compatibility component to register old-style VCS repository extension
- * points.
+ * Compatibility component to register old-style VCS repository extension points.
  *
  * @since 5.9.3
  */
@@ -36,8 +35,7 @@ public class SQLRepositoryCompatService extends DefaultComponent {
     private static final String XP_REPOSITORY = "repository";
 
     @Override
-    public void registerContribution(Object contrib, String xpoint,
-            ComponentInstance contributor) {
+    public void registerContribution(Object contrib, String xpoint, ComponentInstance contributor) {
         if (XP_REPOSITORY.equals(xpoint)) {
             addContribution((RepositoryDescriptor) contrib);
         } else {
@@ -46,8 +44,7 @@ public class SQLRepositoryCompatService extends DefaultComponent {
     }
 
     @Override
-    public void unregisterContribution(Object contrib, String xpoint,
-            ComponentInstance contributor) throws Exception {
+    public void unregisterContribution(Object contrib, String xpoint, ComponentInstance contributor) throws Exception {
         if (XP_REPOSITORY.equals(xpoint)) {
             removeContribution((RepositoryDescriptor) contrib);
         } else {
@@ -56,10 +53,8 @@ public class SQLRepositoryCompatService extends DefaultComponent {
     }
 
     protected void addContribution(RepositoryDescriptor cdesc) {
-        log.warn("Using old-style extension point"
-                + " org.nuxeo.ecm.core.repository.RepositoryService"
-                + " for repository \""
-                + cdesc.name
+        log.warn("Using old-style extension point" + " org.nuxeo.ecm.core.repository.RepositoryService"
+                + " for repository \"" + cdesc.name
                 + "\", use org.nuxeo.ecm.core.storage.sql.RepositoryService instead");
         RepositoryDescriptor descriptor = getRepositoryDescriptor(cdesc);
         SQLRepositoryService sqlRepositoryService = Framework.getLocalService(SQLRepositoryService.class);
@@ -72,8 +67,7 @@ public class SQLRepositoryCompatService extends DefaultComponent {
         sqlRepositoryService.removeContribution(descriptor);
     }
 
-    protected RepositoryDescriptor getRepositoryDescriptor(
-            RepositoryDescriptor cdesc) {
+    protected RepositoryDescriptor getRepositoryDescriptor(RepositoryDescriptor cdesc) {
         RepositoryDescriptor descriptor = cdesc.repositoryDescriptor;
         if (descriptor == null) {
             // old-style extension point with new-style descriptor

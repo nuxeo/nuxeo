@@ -28,8 +28,7 @@ import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.runtime.services.streaming.FileSource;
 
 /**
- * The session is the main high level access point to data from the underlying
- * database.
+ * The session is the main high level access point to data from the underlying database.
  *
  * @author Florent Guillaume
  */
@@ -50,8 +49,7 @@ public interface Session extends Connection {
     boolean isLive();
 
     /**
-     * Returns {@code true} if all sessions in the current thread share the same
-     * state.
+     * Returns {@code true} if all sessions in the current thread share the same state.
      */
     boolean isStateSharedByAllThreadSessions();
 
@@ -99,19 +97,16 @@ public interface Session extends Connection {
      * Gets several nodes given their ids.
      *
      * @param ids the ids
-     * @return the nodes, in the same order as the ids, with elements being
-     *         {@code null} if not found
+     * @return the nodes, in the same order as the ids, with elements being {@code null} if not found
      * @throws StorageException
      */
     List<Node> getNodesByIds(List<Serializable> ids) throws StorageException;
 
     /**
-     * Gets a node given its absolute path, or given an existing node and a
-     * relative path.
+     * Gets a node given its absolute path, or given an existing node and a relative path.
      *
      * @param path the path
      * @param node the node (ignored for absolute paths)
-     *
      * @return the node, or {@code null} if not found
      * @throws StorageException
      */
@@ -124,8 +119,7 @@ public interface Session extends Connection {
      *
      * @param node the node
      * @param mixin the mixin name
-     * @return {@code true} if the mixin was added, or {@code false} if it is
-     *         already present
+     * @return {@code true} if the mixin was added, or {@code false} if it is already present
      * @since 5.8
      */
     boolean addMixinType(Node node, String mixin) throws StorageException;
@@ -137,15 +131,14 @@ public interface Session extends Connection {
      *
      * @param node the node
      * @param mixin the mixin
-     * @return {@code true} if the mixin was removed, or {@code false} if it
-     *         isn't present or is present on the type or does not exist
+     * @return {@code true} if the mixin was removed, or {@code false} if it isn't present or is present on the type or
+     *         does not exist
      * @since 5.8
      */
     boolean removeMixinType(Node node, String mixin) throws StorageException;
 
     /**
-     * Interface for a class that knows how to resolve a node path into a node
-     * id.
+     * Interface for a class that knows how to resolve a node path into a node id.
      */
     interface PathResolver {
         /**
@@ -180,58 +173,48 @@ public interface Session extends Connection {
     /**
      * Checks if a child node with the given name exists.
      * <p>
-     * There are two kinds of children, the regular children documents and the
-     * complex properties. The {@code boolean} {@value #complexProp} allows a
-     * choice between those.
+     * There are two kinds of children, the regular children documents and the complex properties. The {@code boolean}
+     * {@value #complexProp} allows a choice between those.
      *
      * @param parent the parent node
      * @param name the child name
-     * @param complexProp whether to check complex properties or regular
-     *            children
+     * @param complexProp whether to check complex properties or regular children
      * @return {@code true} if a child node with that name exists
      * @throws StorageException
      */
-    boolean hasChildNode(Node parent, String name, boolean complexProp)
-            throws StorageException;
+    boolean hasChildNode(Node parent, String name, boolean complexProp) throws StorageException;
 
     /**
      * Gets a child node given its parent and name.
      *
      * @param parent the parent node
      * @param name the child name
-     * @param complexProp whether to check complex properties or regular
-     *            children
+     * @param complexProp whether to check complex properties or regular children
      * @return the child node, or {@code null} is not found
      * @throws StorageException
      */
-    Node getChildNode(Node parent, String name, boolean complexProp)
-            throws StorageException;
+    Node getChildNode(Node parent, String name, boolean complexProp) throws StorageException;
 
     /**
      * Checks it a node has children.
      *
      * @param parent the parent node
-     * @param complexProp whether to check complex properties or regular
-     *            children
+     * @param complexProp whether to check complex properties or regular children
      * @return {@code true} if the parent has children
      * @throws StorageException
      */
-    boolean hasChildren(Node parent, boolean complexProp)
-            throws StorageException;
+    boolean hasChildren(Node parent, boolean complexProp) throws StorageException;
 
     /**
      * Gets the children of a node.
      *
      * @param parent the parent node
-     * @param name the children name to get (for lists of complex properties),
-     *            or {@code null} for all
-     * @param complexProp whether to check complex properties or regular
-     *            children
+     * @param name the children name to get (for lists of complex properties), or {@code null} for all
+     * @param complexProp whether to check complex properties or regular children
      * @return the collection of children
      * @throws StorageException
      */
-    List<Node> getChildren(Node parent, String name, boolean complexProp)
-            throws StorageException;
+    List<Node> getChildren(Node parent, String name, boolean complexProp) throws StorageException;
 
     /**
      * Creates a new child node.
@@ -240,13 +223,11 @@ public interface Session extends Connection {
      * @param name the child name
      * @param pos the child position, or {@code null}
      * @param typeName the child type
-     * @param complexProp whether this is a complex property ({@code true}) or a
-     *            regular child ({@code false})
+     * @param complexProp whether this is a complex property ({@code true}) or a regular child ({@code false})
      * @return the new node
      * @throws StorageException
      */
-    Node addChildNode(Node parent, String name, Long pos, String typeName,
-            boolean complexProp) throws StorageException;
+    Node addChildNode(Node parent, String name, Long pos, String typeName, boolean complexProp) throws StorageException;
 
     /**
      * Creates a new child node with given id (used for import).
@@ -256,13 +237,12 @@ public interface Session extends Connection {
      * @param name the child name
      * @param pos the child position, or {@code null}
      * @param typeName the child type
-     * @param complexProp whether this is a complex property ({@code true}) or a
-     *            regular child ({@code false})
+     * @param complexProp whether this is a complex property ({@code true}) or a regular child ({@code false})
      * @return the new node
      * @throws StorageException
      */
-    Node addChildNode(Serializable id, Node parent, String name, Long pos,
-            String typeName, boolean complexProp) throws StorageException;
+    Node addChildNode(Serializable id, Node parent, String name, Long pos, String typeName, boolean complexProp)
+            throws StorageException;
 
     /**
      * Creates a proxy for a version node.
@@ -275,8 +255,8 @@ public interface Session extends Connection {
      * @return the new proxy node
      * @throws StorageException
      */
-    Node addProxy(Serializable targetId, Serializable versionSeriesId,
-            Node parent, String name, Long pos) throws StorageException;
+    Node addProxy(Serializable targetId, Serializable versionSeriesId, Node parent, String name, Long pos)
+            throws StorageException;
 
     /**
      * Sets a proxies' target.
@@ -285,14 +265,12 @@ public interface Session extends Connection {
      * @param targetId the new target id
      * @since 5.5
      */
-    void setProxyTarget(Node proxy, Serializable targetId)
-            throws StorageException;
+    void setProxyTarget(Node proxy, Serializable targetId) throws StorageException;
 
     /**
      * Removes a node from the storage.
      * <p>
-     * This is much more complex that removing a property node (
-     * {@link #removePropertyNode}).
+     * This is much more complex that removing a property node ( {@link #removePropertyNode}).
      *
      * @param node the node to remove
      * @throws StorageException
@@ -303,8 +281,7 @@ public interface Session extends Connection {
     /**
      * Removes a property node from the storage.
      * <p>
-     * This is much less complex that removing a generic document node (
-     * {@link #removeNode}).
+     * This is much less complex that removing a generic document node ( {@link #removeNode}).
      *
      * @param node the property node to remove
      * @throws StorageException
@@ -313,19 +290,16 @@ public interface Session extends Connection {
     void removePropertyNode(Node node) throws StorageException;
 
     /**
-     * Order the given source child node before the destination child node. The
-     * source node will be placed before the destination one. If destination is
-     * {@code null}, the source node will be appended at the end of the children
+     * Order the given source child node before the destination child node. The source node will be placed before the
+     * destination one. If destination is {@code null}, the source node will be appended at the end of the children
      * list.
      *
      * @param parent the parent node
      * @param source the child node to move
-     * @param dest the child node before which to place the source node, or
-     *            {@code null} to move at the end
+     * @param dest the child node before which to place the source node, or {@code null} to move at the end
      * @throws StorageException
      */
-    void orderBefore(Node parent, Node source, Node dest)
-            throws StorageException;
+    void orderBefore(Node parent, Node source, Node dest) throws StorageException;
 
     /**
      * Moves a node to a new location with a new name.
@@ -354,8 +328,7 @@ public interface Session extends Connection {
     Node copy(Node source, Node parent, String name) throws StorageException;
 
     /**
-     * Checks in a checked-out node: creates a new version with a copy of its
-     * information.
+     * Checks in a checked-out node: creates a new version with a copy of its information.
      * <p>
      * A {@link #save} is automatically done first.
      *
@@ -365,8 +338,7 @@ public interface Session extends Connection {
      * @return the created version
      * @throws StorageException
      */
-    Node checkIn(Node node, String label, String checkinComment)
-            throws StorageException;
+    Node checkIn(Node node, String label, String checkinComment) throws StorageException;
 
     /**
      * Checks out a checked-in node.
@@ -395,8 +367,7 @@ public interface Session extends Connection {
      * @return the version node, or {@code null} if not found
      * @throws StorageException
      */
-    Node getVersionByLabel(Serializable versionSeriesId, String label)
-            throws StorageException;
+    Node getVersionByLabel(Serializable versionSeriesId, String label) throws StorageException;
 
     /**
      * Gets all the versions for a given version series id.
@@ -407,8 +378,7 @@ public interface Session extends Connection {
      * @return the list of versions
      * @throws StorageException
      */
-    List<Node> getVersions(Serializable versionSeriesId)
-            throws StorageException;
+    List<Node> getVersions(Serializable versionSeriesId) throws StorageException;
 
     /**
      * Gets the last version for a given version series id.
@@ -441,14 +411,11 @@ public interface Session extends Connection {
     Binary getBinary(FileSource source) throws StorageException;
 
     /**
-     * Finds the proxies for a document. If the parent is not null, the search
-     * will be limited to its direct children.
+     * Finds the proxies for a document. If the parent is not null, the search will be limited to its direct children.
      * <p>
-     * If the document is a version, then only proxies to that version will be
-     * looked up.
+     * If the document is a version, then only proxies to that version will be looked up.
      * <p>
-     * Otherwise all proxies to the same version series than the document are
-     * retrieved.
+     * Otherwise all proxies to the same version series than the document are retrieved.
      * <p>
      * A {@link #save} is automatically done first.
      *
@@ -464,12 +431,10 @@ public interface Session extends Connection {
      *
      * @param query the query
      * @param queryFilter the query filter
-     * @param countTotal if {@code true}, also count the total size without
-     *            offset/limit
+     * @param countTotal if {@code true}, also count the total size without offset/limit
      * @return the resulting list with total size included
      */
-    PartialList<Serializable> query(String query, QueryFilter queryFilter,
-            boolean countTotal) throws StorageException;
+    PartialList<Serializable> query(String query, QueryFilter queryFilter, boolean countTotal) throws StorageException;
 
     /**
      * Makes a query to the database.
@@ -477,22 +442,18 @@ public interface Session extends Connection {
      * @param query the query
      * @param query the query type
      * @param queryFilter the query filter
-     * @param countUpTo if {@code -1}, also count the total size without
-     *            offset/limit.<br>
+     * @param countUpTo if {@code -1}, also count the total size without offset/limit.<br>
      *            If {@code 0}, don't count the total size.<br>
-     *            If {@code n}, count the total number if there are less than n
-     *            documents otherwise set the size to {@code -1}.
+     *            If {@code n}, count the total number if there are less than n documents otherwise set the size to
+     *            {@code -1}.
      * @return the resulting list with total size included
-     *
      * @Since 5.6
      */
-    PartialList<Serializable> query(String query, String queryType,
-            QueryFilter queryFilter, long countUpTo)
+    PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, long countUpTo)
             throws StorageException;
 
     /**
-     * Makes a query to the database and returns an iterable (which must be
-     * closed when done).
+     * Makes a query to the database and returns an iterable (which must be closed when done).
      *
      * @param query the query
      * @param queryType the query type
@@ -501,8 +462,8 @@ public interface Session extends Connection {
      * @return an iterable, which <b>must</b> be closed when done
      * @throws StorageException
      */
-    IterableQueryResult queryAndFetch(String query, String queryType,
-            QueryFilter queryFilter, Object... params) throws StorageException;
+    IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object... params)
+            throws StorageException;
 
     /**
      * Gets the lock state of a document.
@@ -517,13 +478,12 @@ public interface Session extends Connection {
     /**
      * Sets a lock on a document.
      * <p>
-     * If the document is already locked, returns its existing lock status
-     * (there is no re-locking, {@link #removeLock} must be called first).
+     * If the document is already locked, returns its existing lock status (there is no re-locking, {@link #removeLock}
+     * must be called first).
      *
      * @param id the document id
      * @param lock the lock object to set
-     * @return {@code null} if locking succeeded, or the existing lock if
-     *         locking failed
+     * @return {@code null} if locking succeeded, or the existing lock if locking failed
      */
     Lock setLock(Serializable id, Lock lock);
 
@@ -532,28 +492,23 @@ public interface Session extends Connection {
      * <p>
      * The previous lock is returned.
      * <p>
-     * If {@code owner} is {@code null} then the lock is unconditionally
-     * removed.
+     * If {@code owner} is {@code null} then the lock is unconditionally removed.
      * <p>
-     * If {@code owner} is not {@code null}, it must match the existing lock
-     * owner for the lock to be removed. If it doesn't match, the returned lock
-     * will return {@code true} for {@link Lock#getFailed}.
+     * If {@code owner} is not {@code null}, it must match the existing lock owner for the lock to be removed. If it
+     * doesn't match, the returned lock will return {@code true} for {@link Lock#getFailed}.
      *
      * @param id the document id
      * @param the owner to check, or {@code null} for no check
-     * @param force {@code true} to just do the remove and not return the
-     *            previous lock
+     * @param force {@code true} to just do the remove and not return the previous lock
      * @return the previous lock
      */
     Lock removeLock(Serializable id, String owner, boolean force);
 
     /**
-     * Read ACLs are optimized ACLs for the read permission, they need to be
-     * updated after document creation or ACL change.
+     * Read ACLs are optimized ACLs for the read permission, they need to be updated after document creation or ACL
+     * change.
      * <p>
-     * This method flag the current session, the read ACLs update will be done
-     * automatically at save time.
-     *
+     * This method flag the current session, the read ACLs update will be done automatically at save time.
      */
     void requireReadAclsUpdate();
 
@@ -576,7 +531,6 @@ public interface Session extends Connection {
      *
      * @since 5.9.3
      */
-    Map<String, String> getBinaryFulltext(Serializable id)
-            throws StorageException;
+    Map<String, String> getBinaryFulltext(Serializable id) throws StorageException;
 
 }

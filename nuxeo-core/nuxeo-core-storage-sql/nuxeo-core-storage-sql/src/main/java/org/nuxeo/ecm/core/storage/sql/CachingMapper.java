@@ -21,12 +21,9 @@ public interface CachingMapper extends Mapper {
 
     /**
      * Initialize the caching mapper instance
-     *
      */
-    public void initialize(Model model, Mapper mapper,
-            InvalidationsPropagator cachePropagator,
-            InvalidationsPropagator eventPropagator,
-            InvalidationsQueue repositoryEventQueue,
+    public void initialize(Model model, Mapper mapper, InvalidationsPropagator cachePropagator,
+            InvalidationsPropagator eventPropagator, InvalidationsQueue repositoryEventQueue,
             Map<String, String> properties);
 
     /**

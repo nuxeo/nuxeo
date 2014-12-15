@@ -48,8 +48,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement;
 
 /**
- * This singleton generates and holds the actual SQL DDL and DML statements for
- * the operations needed by the {@link Mapper}, given a {@link Model}.
+ * This singleton generates and holds the actual SQL DDL and DML statements for the operations needed by the
+ * {@link Mapper}, given a {@link Model}.
  * <p>
  * It is specific to one SQL dialect.
  */
@@ -108,8 +108,7 @@ public class SQLInfo {
     protected List<Column> getBinariesColumns;
 
     /**
-     * Generates and holds the needed SQL statements given a {@link Model} and a
-     * {@link Dialect}.
+     * Generates and holds the needed SQL statements given a {@link Model} and a {@link Dialect}.
      *
      * @param model the model
      * @param dialect the SQL dialect
@@ -149,8 +148,7 @@ public class SQLInfo {
         initSelections();
 
         try {
-            initSQLStatements(JDBCMapper.testProps,
-                    repositoryDescriptor.sqlInitFiles);
+            initSQLStatements(JDBCMapper.testProps, repositoryDescriptor.sqlInitFiles);
         } catch (IOException e) {
             throw new StorageException(e);
         }
@@ -184,8 +182,7 @@ public class SQLInfo {
     }
 
     public String getSelectChildrenIdsAndTypesSql(boolean onlyComplex) {
-        return onlyComplex ? selectComplexChildrenIdsAndTypesSql
-                : selectChildrenIdsAndTypesSql;
+        return onlyComplex ? selectComplexChildrenIdsAndTypesSql : selectChildrenIdsAndTypesSql;
     }
 
     public List<Column> getSelectChildrenIdsAndTypesWhatColumns() {
@@ -209,8 +206,8 @@ public class SQLInfo {
     // ----- insert -----
 
     /**
-     * Returns the SQL {@code INSERT} to add a row. The columns that represent
-     * sequences that are implicitly auto-incremented aren't included.
+     * Returns the SQL {@code INSERT} to add a row. The columns that represent sequences that are implicitly
+     * auto-incremented aren't included.
      *
      * @param tableName the table name
      * @return the SQL {@code INSERT} statement
@@ -220,8 +217,7 @@ public class SQLInfo {
     }
 
     /**
-     * Returns the list of columns to use for an {@INSERT} statement
-     * {@link #getInsertSql}.
+     * Returns the list of columns to use for an {@INSERT} statement {@link #getInsertSql}.
      *
      * @param tableName the table name
      * @return the list of columns
@@ -241,13 +237,12 @@ public class SQLInfo {
      * @return the clause, like {@code table.id = ?}
      */
     public String getIdEqualsClause(String tableName) {
-        return database.getTable(tableName).getColumn(model.MAIN_KEY).getQuotedName()
-                + " = ?" + getSoftDeleteClause(tableName);
+        return database.getTable(tableName).getColumn(model.MAIN_KEY).getQuotedName() + " = ?"
+                + getSoftDeleteClause(tableName);
     }
 
     /**
-     * Returns {@code AND isdeleted IS NULL} if this is the hierarchy table and
-     * soft delete is activated.
+     * Returns {@code AND isdeleted IS NULL} if this is the hierarchy table and soft delete is activated.
      *
      * @param tableName the table name
      * @return the clause
@@ -261,15 +256,13 @@ public class SQLInfo {
     }
 
     /**
-     * Returns null or {@code AND isdeleted IS NULL} if soft delete is
-     * activated.
+     * Returns null or {@code AND isdeleted IS NULL} if soft delete is activated.
      *
      * @return the clause, or null
      */
     public String getSoftDeleteClause() {
         if (softDeleteEnabled) {
-            return database.getTable(model.HIER_TABLE_NAME).getColumn(
-                    model.MAIN_IS_DELETED_KEY).getFullQuotedName()
+            return database.getTable(model.HIER_TABLE_NAME).getColumn(model.MAIN_IS_DELETED_KEY).getFullQuotedName()
                     + " IS NULL";
         } else {
             return null;
@@ -280,8 +273,7 @@ public class SQLInfo {
 
     // TODO these two methods are redundant with one another
 
-    public SQLInfoSelect getUpdateById(String tableName,
-            Collection<String> keys, Set<String> deltas) {
+    public SQLInfoSelect getUpdateById(String tableName, Collection<String> keys, Set<String> deltas) {
         Table table = database.getTable(tableName);
         List<Column> columns = new LinkedList<Column>();
         for (String key : keys) {
@@ -314,11 +306,10 @@ public class SQLInfo {
     }
 
     /**
-     * Select by ids for all values of several fragments (maybe ordered along
-     * columns -- for collection fragments retrieval).
+     * Select by ids for all values of several fragments (maybe ordered along columns -- for collection fragments
+     * retrieval).
      */
-    public SQLInfoSelect getSelectFragmentsByIds(String tableName, int nids,
-            String[] orderBys, Set<String> skipColumns) {
+    public SQLInfoSelect getSelectFragmentsByIds(String tableName, int nids, String[] orderBys, Set<String> skipColumns) {
         Table table = database.getTable(tableName);
         List<Column> whatColumns = new LinkedList<Column>();
         List<String> whats = new LinkedList<String>();
@@ -326,8 +317,7 @@ public class SQLInfo {
         for (Column column : table.getColumns()) {
             if (column.isOpaque()) {
                 opaqueColumns.add(column);
-            } else if (skipColumns == null
-                    || !skipColumns.contains(column.getKey())) {
+            } else if (skipColumns == null || !skipColumns.contains(column.getKey())) {
                 whatColumns.add(column);
                 whats.add(column.getQuotedName());
             }
@@ -354,16 +344,14 @@ public class SQLInfo {
             }
             select.setOrderBy(StringUtils.join(orders, ", "));
         }
-        return new SQLInfoSelect(select.getStatement(), whatColumns,
-                Collections.singletonList(whereColumn),
+        return new SQLInfoSelect(select.getStatement(), whatColumns, Collections.singletonList(whereColumn),
                 opaqueColumns.isEmpty() ? null : opaqueColumns);
     }
 
     /**
      * Select all ancestors ids for several fragments.
      * <p>
-     * Fast alternative to the slowest iterative
-     * {@link #getSelectParentIds}.
+     * Fast alternative to the slowest iterative {@link #getSelectParentIds}.
      *
      * @return null if it's not possible in one call in this dialect
      */
@@ -376,8 +364,7 @@ public class SQLInfo {
         Column mainColumn = table.getColumn(model.MAIN_KEY);
         // no soft-delete check needed, as ancestors of a non-deleted doc
         // aren't deleted either
-        return new SQLInfoSelect(sql, Collections.singletonList(mainColumn),
-                null, null);
+        return new SQLInfoSelect(sql, Collections.singletonList(mainColumn), null, null);
     }
 
     /**
@@ -401,16 +388,14 @@ public class SQLInfo {
         select.setWhat("DISTINCT " + whatColumn.getQuotedName());
         select.setFrom(table.getQuotedName());
         select.setWhere(wherebuf.toString());
-        return new SQLInfoSelect(select.getStatement(),
-                Collections.singletonList(whatColumn),
+        return new SQLInfoSelect(select.getStatement(), Collections.singletonList(whatColumn),
                 Collections.singletonList(whereColumn), null);
     }
 
     // ----- delete -----
 
     /**
-     * Returns the SQL {@code DELETE} to delete a row. The primary key columns
-     * are free parameters.
+     * Returns the SQL {@code DELETE} to delete a row. The primary key columns are free parameters.
      *
      * @param tableName the table name
      * @return the SQL {@code DELETE} statement
@@ -420,8 +405,7 @@ public class SQLInfo {
     }
 
     /**
-     * Returns the SQL {@code DELETE} to delete several rows. The primary key
-     * columns are free parameters.
+     * Returns the SQL {@code DELETE} to delete several rows. The primary key columns are free parameters.
      *
      * @param tableName the table name
      * @param n the number of rows to delete
@@ -455,8 +439,7 @@ public class SQLInfo {
     }
 
     /**
-     * Returns the SQL to soft-delete several rows. The array of ids and the
-     * time are free parameters.
+     * Returns the SQL to soft-delete several rows. The array of ids and the time are free parameters.
      *
      * @return the SQL statement
      */
@@ -465,15 +448,13 @@ public class SQLInfo {
     }
 
     /**
-     * Returns the SQL to clean (hard-delete) soft-deleted rows. The max and
-     * beforeTime are free parameters.
+     * Returns the SQL to clean (hard-delete) soft-deleted rows. The max and beforeTime are free parameters.
      *
      * @return the SQL statement
      */
     public String getSoftDeleteCleanupSql() {
         return dialect.getSoftDeleteCleanupSql();
     }
-
 
     // ----- copy -----
 
@@ -513,8 +494,7 @@ public class SQLInfo {
         select.setWhere(whereColumn.getQuotedName() + " = ?");
         insert.setValues(select.getStatement());
         String sql = insert.getStatement();
-        return new SQLInfoSelect(sql, selectWhatColumns,
-                Collections.singletonList(whereColumn), null);
+        return new SQLInfoSelect(sql, selectWhatColumns, Collections.singletonList(whereColumn), null);
     }
 
     public String getCopySql(String tableName) {
@@ -535,8 +515,7 @@ public class SQLInfo {
         // structural tables
         if (model.getRepositoryDescriptor().getClusteringEnabled()) {
             if (!dialect.isClusteringSupported()) {
-                throw new StorageException("Clustering not supported for "
-                        + dialect.getClass().getSimpleName());
+                throw new StorageException("Clustering not supported for " + dialect.getClass().getSimpleName());
             }
             initClusterSQL();
         }
@@ -581,10 +560,8 @@ public class SQLInfo {
         if (!model.getRepositoryDescriptor().getFulltextDisabled()) {
             Table table = database.getTable(model.FULLTEXT_TABLE_NAME);
             FulltextConfiguration fulltextConfiguration = model.getFulltextConfiguration();
-            if (fulltextConfiguration.indexNames.size() > 1
-                    && !dialect.supportsMultipleFulltextIndexes()) {
-                String msg = String.format(
-                        "SQL database supports only one fulltext index, but %d are configured: %s",
+            if (fulltextConfiguration.indexNames.size() > 1 && !dialect.supportsMultipleFulltextIndexes()) {
+                String msg = String.format("SQL database supports only one fulltext index, but %d are configured: %s",
                         fulltextConfiguration.indexNames.size(), fulltextConfiguration.indexNames);
                 throw new StorageException(msg);
             }
@@ -592,11 +569,9 @@ public class SQLInfo {
                 String suffix = model.getFulltextIndexSuffix(indexName);
                 int ftic = dialect.getFulltextIndexedColumns();
                 if (ftic == 1) {
-                    table.addIndex(indexName, IndexType.FULLTEXT,
-                            model.FULLTEXT_FULLTEXT_KEY + suffix);
+                    table.addIndex(indexName, IndexType.FULLTEXT, model.FULLTEXT_FULLTEXT_KEY + suffix);
                 } else if (ftic == 2) {
-                    table.addIndex(indexName, IndexType.FULLTEXT,
-                            model.FULLTEXT_SIMPLETEXT_KEY + suffix,
+                    table.addIndex(indexName, IndexType.FULLTEXT, model.FULLTEXT_SIMPLETEXT_KEY + suffix,
                             model.FULLTEXT_BINARYTEXT_KEY + suffix);
                 }
             }
@@ -629,16 +604,15 @@ public class SQLInfo {
         maker = new TableMaker(model.CLUSTER_INVALS_TABLE_NAME);
         maker.newColumn(model.CLUSTER_INVALS_NODEID_KEY, ColumnType.CLUSTERNODE);
         maker.newColumn(model.CLUSTER_INVALS_ID_KEY, ColumnType.NODEVAL);
-        maker.newColumn(model.CLUSTER_INVALS_FRAGMENTS_KEY,
-                ColumnType.CLUSTERFRAGS);
+        maker.newColumn(model.CLUSTER_INVALS_FRAGMENTS_KEY, ColumnType.CLUSTERFRAGS);
         maker.newColumn(model.CLUSTER_INVALS_KIND_KEY, ColumnType.TINYINT);
         maker.table.addIndex(model.CLUSTER_INVALS_NODEID_KEY);
         maker.postProcessClusterInvalidations();
     }
 
     /**
-     * Creates the SQL for the table holding global repository information. This
-     * includes the id of the hierarchy root node.
+     * Creates the SQL for the table holding global repository information. This includes the id of the hierarchy root
+     * node.
      */
     protected void initRepositorySQL() {
         TableMaker maker = new TableMaker(model.REPOINFO_TABLE_NAME);
@@ -655,8 +629,7 @@ public class SQLInfo {
         // if (separateMainTable)
         // maker.newColumn(model.MAIN_KEY, ColumnType.NODEIDFK);
         maker.newColumn(model.MAIN_KEY, ColumnType.NODEID);
-        Column column = maker.newColumn(model.HIER_PARENT_KEY,
-                ColumnType.NODEIDFKNULL);
+        Column column = maker.newColumn(model.HIER_PARENT_KEY, ColumnType.NODEIDFKNULL);
         maker.newColumn(model.HIER_CHILD_POS_KEY, ColumnType.INTEGER);
         maker.newColumn(model.HIER_CHILD_NAME_KEY, ColumnType.STRING);
         maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, ColumnType.BOOLEAN); // notnull
@@ -685,8 +658,7 @@ public class SQLInfo {
         }
         Column mainColumn = hierTable.getColumn(model.MAIN_KEY);
         List<Column> whatCols = new ArrayList<Column>(Arrays.asList(mainColumn,
-                hierTable.getColumn(model.HIER_PARENT_KEY),
-                hierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY),
+                hierTable.getColumn(model.HIER_PARENT_KEY), hierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY),
                 hierTable.getColumn(model.HIER_CHILD_ISPROPERTY_KEY)));
         if (proxiesEnabled) {
             whatCols.add(proxyTable.getColumn(model.PROXY_VERSIONABLE_KEY));
@@ -701,8 +673,7 @@ public class SQLInfo {
         select.setWhat(StringUtils.join(whats, ", "));
         String from = hierTable.getQuotedName();
         if (proxiesEnabled) {
-            from += " LEFT JOIN " + proxyTable.getQuotedName() + " ON "
-                    + mainColumn.getFullQuotedName() + " = "
+            from += " LEFT JOIN " + proxyTable.getQuotedName() + " ON " + mainColumn.getFullQuotedName() + " = "
                     + proxyTable.getColumn(model.MAIN_KEY).getFullQuotedName();
         }
         select.setFrom(from);
@@ -716,8 +687,8 @@ public class SQLInfo {
     /**
      * Creates the SQL for the table holding ancestors information.
      * <p>
-     * This table holds trigger-updated information extracted from the recursive
-     * parent-child relationship in the hierarchy table.
+     * This table holds trigger-updated information extracted from the recursive parent-child relationship in the
+     * hierarchy table.
      */
     protected void initAncestorsSQL() {
         TableMaker maker = new TableMaker(model.ANCESTORS_TABLE_NAME);
@@ -749,8 +720,7 @@ public class SQLInfo {
 
     protected void initSelections() {
         for (SelectionType selType : SelectionType.values()) {
-            if (!proxiesEnabled
-                    && selType.tableName.equals(Model.PROXY_TABLE_NAME)) {
+            if (!proxiesEnabled && selType.tableName.equals(Model.PROXY_TABLE_NAME)) {
                 continue;
             }
             selections.put(selType, new SQLInfoSelection(selType));
@@ -796,11 +766,9 @@ public class SQLInfo {
                 column.setNullable(false);
                 table.addIndex(key);
             }
-            if (type == ColumnType.NODEIDFK || type == ColumnType.NODEIDFKNP
-                    || type == ColumnType.NODEIDFKNULL
+            if (type == ColumnType.NODEIDFK || type == ColumnType.NODEIDFKNP || type == ColumnType.NODEIDFKNULL
                     || type == ColumnType.NODEIDFKMUL) {
-                column.setReferences(database.getTable(model.HIER_TABLE_NAME),
-                        model.MAIN_KEY);
+                column.setReferences(database.getTable(model.HIER_TABLE_NAME), model.MAIN_KEY);
             }
             return column;
         }
@@ -808,10 +776,8 @@ public class SQLInfo {
         // ----------------------- post processing -----------------------
 
         protected void postProcessClusterInvalidations() {
-            clusterInvalidationsColumns = Arrays.asList(
-                    table.getColumn(model.CLUSTER_INVALS_ID_KEY),
-                    table.getColumn(model.CLUSTER_INVALS_FRAGMENTS_KEY),
-                    table.getColumn(model.CLUSTER_INVALS_KIND_KEY));
+            clusterInvalidationsColumns = Arrays.asList(table.getColumn(model.CLUSTER_INVALS_ID_KEY),
+                    table.getColumn(model.CLUSTER_INVALS_FRAGMENTS_KEY), table.getColumn(model.CLUSTER_INVALS_KIND_KEY));
         }
 
         protected void postProcessRepository() {
@@ -842,8 +808,7 @@ public class SQLInfo {
         }
 
         /**
-         * Precompute what we can from the information available for a regular
-         * schema table, or a collection table.
+         * Precompute what we can from the information available for a regular schema table, or a collection table.
          */
         protected void postProcess() {
             postProcessSelectById();
@@ -860,8 +825,7 @@ public class SQLInfo {
         }
 
         protected void postProcessSelectById() {
-            String[] orderBys = orderBy == null ? NO_ORDER_BY : new String[] {
-                    orderBy, ORDER_ASC };
+            String[] orderBys = orderBy == null ? NO_ORDER_BY : new String[] { orderBy, ORDER_ASC };
             SQLInfoSelect select = makeSelect(table, orderBys, model.MAIN_KEY);
             selectFragmentById.put(tableName, select);
         }
@@ -881,15 +845,14 @@ public class SQLInfo {
             Select select = new Select(table);
             select.setWhat(StringUtils.join(whats, ", "));
             select.setFrom(table.getQuotedName());
-            String where = table.getColumn(model.HIER_PARENT_KEY).getQuotedName()
-                    + " = ?" + getSoftDeleteClause(tableName);
+            String where = table.getColumn(model.HIER_PARENT_KEY).getQuotedName() + " = ?"
+                    + getSoftDeleteClause(tableName);
             select.setWhere(where);
             selectChildrenIdsAndTypesSql = select.getStatement();
             selectChildrenIdsAndTypesWhatColumns = whatColumns;
             // now only complex properties
-            where += " AND "
-                    + table.getColumn(model.HIER_CHILD_ISPROPERTY_KEY).getQuotedName()
-                    + " = " + dialect.toBooleanValueString(true);
+            where += " AND " + table.getColumn(model.HIER_CHILD_ISPROPERTY_KEY).getQuotedName() + " = "
+                    + dialect.toBooleanValueString(true);
             select.setWhere(where);
             selectComplexChildrenIdsAndTypesSql = select.getStatement();
         }
@@ -971,29 +934,25 @@ public class SQLInfo {
         /**
          * Standard select for given columns.
          */
-        public SQLInfoSelect(String sql, List<Column> whatColumns,
-                List<Column> whereColumns, List<Column> opaqueColumns) {
+        public SQLInfoSelect(String sql, List<Column> whatColumns, List<Column> whereColumns, List<Column> opaqueColumns) {
             this(sql, whatColumns, null, whereColumns, opaqueColumns);
         }
 
         /**
-         * Select where some column keys may be aliased, and some columns may be
-         * computed. The {@link MapMaker} is used by the queryAndFetch() method.
+         * Select where some column keys may be aliased, and some columns may be computed. The {@link MapMaker} is used
+         * by the queryAndFetch() method.
          */
         public SQLInfoSelect(String sql, MapMaker mapMaker) {
             this(sql, null, mapMaker, null, null);
         }
 
-        public SQLInfoSelect(String sql, List<Column> whatColumns,
-                MapMaker mapMaker, List<Column> whereColumns,
+        public SQLInfoSelect(String sql, List<Column> whatColumns, MapMaker mapMaker, List<Column> whereColumns,
                 List<Column> opaqueColumns) {
             this.sql = sql;
             this.whatColumns = whatColumns;
             this.mapMaker = mapMaker;
-            this.whereColumns = whereColumns == null ? null
-                    : new ArrayList<Column>(whereColumns);
-            this.opaqueColumns = opaqueColumns == null ? null
-                    : new ArrayList<Column>(opaqueColumns);
+            this.whereColumns = whereColumns == null ? null : new ArrayList<Column>(whereColumns);
+            this.opaqueColumns = opaqueColumns == null ? null : new ArrayList<Column>(opaqueColumns);
         }
     }
 
@@ -1020,24 +979,19 @@ public class SQLInfo {
                 clauses = null;
             } else {
                 Table hierTable = database.getTable(model.HIER_TABLE_NAME);
-                Join join = new Join(Join.INNER, hierTable.getQuotedName(),
-                        null, null, hierTable.getColumn(model.MAIN_KEY),
-                        table.getColumn(model.MAIN_KEY));
+                Join join = new Join(Join.INNER, hierTable.getQuotedName(), null, null,
+                        hierTable.getColumn(model.MAIN_KEY), table.getColumn(model.MAIN_KEY));
                 from += join.toSql(dialect);
                 String clause = getSoftDeleteClause();
-                clauses = clause == null ? null
-                        : Collections.singletonList(clause);
+                clauses = clause == null ? null : Collections.singletonList(clause);
             }
             if (selType.criterionKey == null) {
-                selectAll = makeSelect(table, from, clauses, NO_ORDER_BY,
-                        selType.selKey);
-                selectFiltered = makeSelect(table, from, clauses, NO_ORDER_BY,
-                        selType.selKey, selType.filterKey);
+                selectAll = makeSelect(table, from, clauses, NO_ORDER_BY, selType.selKey);
+                selectFiltered = makeSelect(table, from, clauses, NO_ORDER_BY, selType.selKey, selType.filterKey);
             } else {
-                selectAll = makeSelect(table, from, clauses, NO_ORDER_BY,
-                        selType.selKey, selType.criterionKey);
-                selectFiltered = makeSelect(table, from, clauses, NO_ORDER_BY,
-                        selType.selKey, selType.filterKey, selType.criterionKey);
+                selectAll = makeSelect(table, from, clauses, NO_ORDER_BY, selType.selKey, selType.criterionKey);
+                selectFiltered = makeSelect(table, from, clauses, NO_ORDER_BY, selType.selKey, selType.filterKey,
+                        selType.criterionKey);
             }
             this.selectAll = selectAll;
             this.selectFiltered = selectFiltered;
@@ -1045,8 +999,8 @@ public class SQLInfo {
     }
 
     /**
-     * Knows how to build a result map for a row given a {@link ResultSet}. This
-     * abstraction may be used to compute some values on the fly.
+     * Knows how to build a result map for a row given a {@link ResultSet}. This abstraction may be used to compute some
+     * values on the fly.
      */
     public interface MapMaker {
         Map<String, Serializable> makeMap(ResultSet rs) throws SQLException;
@@ -1074,8 +1028,7 @@ public class SQLInfo {
         }
 
         @Override
-        public Map<String, Serializable> makeMap(ResultSet rs)
-                throws SQLException {
+        public Map<String, Serializable> makeMap(ResultSet rs) throws SQLException {
             Map<String, Serializable> map = new HashMap<String, Serializable>();
             int i = 1;
             for (Column column : columns) {
@@ -1094,16 +1047,15 @@ public class SQLInfo {
      * <p>
      * with optional ORDER BY x, y DESC
      */
-    public SQLInfoSelect makeSelect(Table table, String[] orderBys,
-            String... freeColumns) {
+    public SQLInfoSelect makeSelect(Table table, String[] orderBys, String... freeColumns) {
         return makeSelect(table, null, null, orderBys, freeColumns);
     }
 
     /**
      * Same as above but the FROM can be passed in, to allow JOINs.
      */
-    public SQLInfoSelect makeSelect(Table table, String from,
-            List<String> clauses, String[] orderBys, String... freeColumns) {
+    public SQLInfoSelect makeSelect(Table table, String from, List<String> clauses, String[] orderBys,
+            String... freeColumns) {
         boolean fullQuotedName = from != null;
         List<String> freeColumnsList = Arrays.asList(freeColumns);
         List<Column> whatColumns = new LinkedList<Column>();
@@ -1112,8 +1064,7 @@ public class SQLInfo {
         List<String> whats = new LinkedList<String>();
         List<String> wheres = new LinkedList<String>();
         for (Column column : table.getColumns()) {
-            String qname = fullQuotedName ? column.getFullQuotedName()
-                    : column.getQuotedName();
+            String qname = fullQuotedName ? column.getFullQuotedName() : column.getQuotedName();
             if (freeColumnsList.contains(column.getKey())) {
                 whereColumns.add(column);
                 wheres.add(qname + " = ?");
@@ -1137,26 +1088,22 @@ public class SQLInfo {
             from = table.getQuotedName();
         }
         select.setFrom(from);
-        String where = StringUtils.join(wheres, " AND ")
-                + getSoftDeleteClause(table.getKey());
+        String where = StringUtils.join(wheres, " AND ") + getSoftDeleteClause(table.getKey());
         select.setWhere(where);
         List<String> orders = new LinkedList<String>();
         for (int i = 0; i < orderBys.length; i++) {
             String name = orderBys[i++];
-            String ascdesc = orderBys[i].equals(ORDER_DESC) ? " " + ORDER_DESC
-                    : "";
+            String ascdesc = orderBys[i].equals(ORDER_DESC) ? " " + ORDER_DESC : "";
             Column col = table.getColumn(name);
-            String qcol = fullQuotedName ? col.getFullQuotedName()
-                    : col.getQuotedName();
+            String qcol = fullQuotedName ? col.getFullQuotedName() : col.getQuotedName();
             orders.add(qcol + ascdesc);
         }
         select.setOrderBy(StringUtils.join(orders, ", "));
-        return new SQLInfoSelect(select.getStatement(), whatColumns,
-                whereColumns, opaqueColumns.isEmpty() ? null : opaqueColumns);
+        return new SQLInfoSelect(select.getStatement(), whatColumns, whereColumns, opaqueColumns.isEmpty() ? null
+                : opaqueColumns);
     }
 
-    public void initSQLStatements(Map<String, Serializable> testProps,
-            List<String> sqlInitFiles) throws IOException {
+    public void initSQLStatements(Map<String, Serializable> testProps, List<String> sqlInitFiles) throws IOException {
         sqlStatements = new HashMap<String, List<SQLStatement>>();
         SQLStatement.read(dialect.getSQLStatementsFilename(), sqlStatements);
         if (sqlInitFiles != null) {
@@ -1165,11 +1112,9 @@ public class SQLInfo {
             }
         }
         if (!testProps.isEmpty()) {
-            SQLStatement.read(dialect.getTestSQLStatementsFilename(),
-                    sqlStatements);
+            SQLStatement.read(dialect.getTestSQLStatementsFilename(), sqlStatements);
         }
-        sqlStatementsProperties = dialect.getSQLStatementsProperties(model,
-                database);
+        sqlStatementsProperties = dialect.getSQLStatementsProperties(model, database);
         if (!testProps.isEmpty()) {
             sqlStatementsProperties.putAll(testProps);
         }
@@ -1178,8 +1123,7 @@ public class SQLInfo {
     /**
      * Executes the SQL statements for the given category.
      */
-    public void executeSQLStatements(String category, JDBCConnection jdbc)
-            throws SQLException {
+    public void executeSQLStatements(String category, JDBCConnection jdbc) throws SQLException {
         List<SQLStatement> statements = sqlStatements.get(category);
         if (statements != null) {
             SQLStatement.execute(statements, sqlStatementsProperties, jdbc);

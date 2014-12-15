@@ -50,8 +50,7 @@ public class EmbeddedFunctions {
      * @param id the id to check for
      * @param baseId the base id
      */
-    public static boolean isInTree(Serializable id, Serializable baseId)
-            throws SQLException {
+    public static boolean isInTree(Serializable id, Serializable baseId) throws SQLException {
         Connection conn = DriverManager.getConnection("jdbc:default:connection");
         try {
             return isInTree(conn, id, baseId);
@@ -67,8 +66,7 @@ public class EmbeddedFunctions {
      * @param id the id to check for
      * @param baseId the base id
      */
-    public static boolean isInTree(Connection conn, Serializable id,
-            Serializable baseId) throws SQLException {
+    public static boolean isInTree(Connection conn, Serializable id, Serializable baseId) throws SQLException {
         if (baseId == null || id == null || baseId.equals(id)) {
             // containment check is strict
             return false;
@@ -120,8 +118,7 @@ public class EmbeddedFunctions {
      * @param principals the allowed identities
      * @param permissions the allowed permissions
      */
-    public static boolean isAccessAllowed(Serializable id,
-            Set<String> principals, Set<String> permissions)
+    public static boolean isAccessAllowed(Serializable id, Set<String> principals, Set<String> permissions)
             throws SQLException {
         Connection conn = DriverManager.getConnection("jdbc:default:connection");
         try {
@@ -141,20 +138,17 @@ public class EmbeddedFunctions {
      * @param principals the allowed identities
      * @param permissions the allowed permissions
      */
-    public static boolean isAccessAllowed(Connection conn, Serializable id,
-            Set<String> principals, Set<String> permissions)
-            throws SQLException {
+    public static boolean isAccessAllowed(Connection conn, Serializable id, Set<String> principals,
+            Set<String> permissions) throws SQLException {
         if (isLogEnabled()) {
-            logDebug("isAccessAllowed " + id + " " + principals + " "
-                    + permissions);
+            logDebug("isAccessAllowed " + id + " " + principals + " " + permissions);
         }
         PreparedStatement ps1 = null;
         PreparedStatement ps2 = null;
         PreparedStatement ps3 = null;
         try {
             ps1 = conn.prepareStatement( //
-            "SELECT \"GRANT\", \"PERMISSION\", \"USER\" FROM \"ACLS\" "
-                    + "WHERE ID = ? ORDER BY POS");
+            "SELECT \"GRANT\", \"PERMISSION\", \"USER\" FROM \"ACLS\" " + "WHERE ID = ? ORDER BY POS");
             ps2 = conn.prepareStatement("SELECT PARENTID FROM HIERARCHY WHERE ID = ?");
             boolean first = true;
             do {
@@ -170,8 +164,7 @@ public class EmbeddedFunctions {
                     if (isLogEnabled()) {
                         logDebug(" -> " + user + " " + permission + " " + grant);
                     }
-                    if (principals.contains(user)
-                            && permissions.contains(permission)) {
+                    if (principals.contains(user) && permissions.contains(permission)) {
                         if (isLogEnabled()) {
                             logDebug(" => " + grant);
                         }
@@ -316,11 +309,9 @@ public class EmbeddedFunctions {
 
     private static final String STOPWORDS = "a an are and as at be by for from how "
             + "i in is it of on or that the this to was what when where who will with "
-            + "car donc est il ils je la le les mais ni nous or ou pour tu un une vous "
-            + "www com net org";
+            + "car donc est il ils je la le les mais ni nous or ou pour tu un une vous " + "www com net org";
 
-    private static final Set<String> stopWords = new HashSet<String>(split(
-            STOPWORDS, ' '));
+    private static final Set<String> stopWords = new HashSet<String>(split(STOPWORDS, ' '));
 
     public static final String parseWord(String string) {
         int len = string.length();

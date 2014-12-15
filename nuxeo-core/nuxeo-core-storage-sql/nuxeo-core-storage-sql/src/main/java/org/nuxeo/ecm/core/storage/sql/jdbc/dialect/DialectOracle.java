@@ -103,39 +103,35 @@ public class DialectOracle extends Dialect {
         protected final Method m_oracleSQLError;
 
         public XAErrorLogger() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
-             oracleXAExceptionClass = Thread.currentThread().getContextClassLoader().loadClass(
+            oracleXAExceptionClass = Thread.currentThread().getContextClassLoader().loadClass(
                     "oracle.jdbc.xa.OracleXAException");
-             m_xaError = oracleXAExceptionClass.getMethod("getXAError",
-                    new Class[] {});
-             m_xaErrorMessage = oracleXAExceptionClass.getMethod(
-                    "getXAErrorMessage", new Class[] { m_xaError.getReturnType() });
-             m_oracleError = oracleXAExceptionClass.getMethod(
-                    "getOracleError", new Class[] {});
-             m_oracleSQLError = oracleXAExceptionClass.getMethod(
-                    "getOracleSQLError", new Class[] {});
+            m_xaError = oracleXAExceptionClass.getMethod("getXAError", new Class[] {});
+            m_xaErrorMessage = oracleXAExceptionClass.getMethod("getXAErrorMessage",
+                    new Class[] { m_xaError.getReturnType() });
+            m_oracleError = oracleXAExceptionClass.getMethod("getOracleError", new Class[] {});
+            m_oracleSQLError = oracleXAExceptionClass.getMethod("getOracleSQLError", new Class[] {});
         }
 
-        public void log(XAException e) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-            int xaError = ((Integer)m_xaError.invoke(e)).intValue();
-            String xaErrorMessage = (String)m_xaErrorMessage.invoke(xaError);
-            int oracleError = ((Integer)m_oracleError.invoke(e)).intValue();
-            int oracleSQLError = ((Integer)m_oracleSQLError.invoke(e)).intValue();
+        public void log(XAException e) throws IllegalAccessException, IllegalArgumentException,
+                InvocationTargetException {
+            int xaError = ((Integer) m_xaError.invoke(e)).intValue();
+            String xaErrorMessage = (String) m_xaErrorMessage.invoke(xaError);
+            int oracleError = ((Integer) m_oracleError.invoke(e)).intValue();
+            int oracleSQLError = ((Integer) m_oracleSQLError.invoke(e)).intValue();
             StringBuilder builder = new StringBuilder();
-            builder.append("Oracle XA Error : " + xaError + " (" + xaErrorMessage +"),");
-            builder.append("Oracle Error : " + oracleError +",");
+            builder.append("Oracle XA Error : " + xaError + " (" + xaErrorMessage + "),");
+            builder.append("Oracle Error : " + oracleError + ",");
             builder.append("Oracle SQL Error : " + oracleSQLError);
             log.warn(builder.toString(), e);
         }
 
     }
 
-    public DialectOracle(DatabaseMetaData metadata,
-            BinaryManager binaryManager,
+    public DialectOracle(DatabaseMetaData metadata, BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(metadata, binaryManager, repositoryDescriptor);
-        fulltextParameters = repositoryDescriptor == null ? null
-                : repositoryDescriptor.fulltextAnalyzer == null ? ""
-                        : repositoryDescriptor.fulltextAnalyzer;
+        fulltextParameters = repositoryDescriptor == null ? null : repositoryDescriptor.fulltextAnalyzer == null ? ""
+                : repositoryDescriptor.fulltextAnalyzer;
         pathOptimizationsEnabled = repositoryDescriptor == null ? false
                 : repositoryDescriptor.getPathOptimizationsEnabled();
         if (pathOptimizationsEnabled) {
@@ -178,11 +174,9 @@ public class DialectOracle extends Dialect {
     private void initArrayReflection() throws StorageException {
         try {
             Class<?> arrayDescriptorClass = Class.forName("oracle.sql.ArrayDescriptor");
-            arrayDescriptorConstructor = arrayDescriptorClass.getConstructor(
-                    String.class, Connection.class);
+            arrayDescriptorConstructor = arrayDescriptorClass.getConstructor(String.class, Connection.class);
             Class<?> arrayClass = Class.forName("oracle.sql.ARRAY");
-            arrayConstructor = arrayClass.getConstructor(arrayDescriptorClass,
-                    Connection.class, Object.class);
+            arrayConstructor = arrayClass.getConstructor(arrayDescriptorClass, Connection.class, Object.class);
             arrayGetLongArrayMethod = arrayClass.getDeclaredMethod("getLongArray");
         } catch (ClassNotFoundException e) {
             // query syntax unit test run without Oracle JDBC driver
@@ -193,8 +187,7 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
-    public String getConnectionSchema(Connection connection)
-            throws SQLException {
+    public String getConnectionSchema(Connection connection) throws SQLException {
         Statement st = connection.createStatement();
         String sql = "SELECT SYS_CONTEXT('USERENV', 'SESSION_USER') FROM DUAL";
         log.trace("SQL: " + sql);
@@ -275,51 +268,41 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
-    public boolean isAllowedConversion(int expected, int actual,
-            String actualName, int actualSize) {
+    public boolean isAllowedConversion(int expected, int actual, String actualName, int actualSize) {
         // Oracle internal conversions
         if (expected == Types.DOUBLE && actual == Types.FLOAT) {
             return true;
         }
-        if (expected == Types.VARCHAR && actual == Types.OTHER
-                && actualName.equals("NVARCHAR2")) {
+        if (expected == Types.VARCHAR && actual == Types.OTHER && actualName.equals("NVARCHAR2")) {
             return true;
         }
-        if (expected == Types.CLOB && actual == Types.OTHER
-                && actualName.equals("NCLOB")) {
+        if (expected == Types.CLOB && actual == Types.OTHER && actualName.equals("NCLOB")) {
             return true;
         }
-        if (expected == Types.BIT && actual == Types.DECIMAL
-                && actualName.equals("NUMBER") && actualSize == 1) {
+        if (expected == Types.BIT && actual == Types.DECIMAL && actualName.equals("NUMBER") && actualSize == 1) {
             return true;
         }
-        if (expected == Types.TINYINT && actual == Types.DECIMAL
-                && actualName.equals("NUMBER") && actualSize == 3) {
+        if (expected == Types.TINYINT && actual == Types.DECIMAL && actualName.equals("NUMBER") && actualSize == 3) {
             return true;
         }
-        if (expected == Types.INTEGER && actual == Types.DECIMAL
-                && actualName.equals("NUMBER") && actualSize == 10) {
+        if (expected == Types.INTEGER && actual == Types.DECIMAL && actualName.equals("NUMBER") && actualSize == 10) {
             return true;
         }
-        if (expected == Types.BIGINT && actual == Types.DECIMAL
-                && actualName.equals("NUMBER") && actualSize == 19) {
+        if (expected == Types.BIGINT && actual == Types.DECIMAL && actualName.equals("NUMBER") && actualSize == 19) {
             return true;
         }
         // CLOB vs VARCHAR compatibility
-        if (expected == Types.VARCHAR && actual == Types.OTHER
-                && actualName.equals("NCLOB")) {
+        if (expected == Types.VARCHAR && actual == Types.OTHER && actualName.equals("NCLOB")) {
             return true;
         }
-        if (expected == Types.CLOB && actual == Types.OTHER
-                && actualName.equals("NVARCHAR2")) {
+        if (expected == Types.CLOB && actual == Types.OTHER && actualName.equals("NVARCHAR2")) {
             return true;
         }
         return false;
     }
 
     @Override
-    public Serializable getGeneratedId(Connection connection)
-            throws SQLException {
+    public Serializable getGeneratedId(Connection connection) throws SQLException {
         if (idType != DialectIdType.SEQUENCE) {
             return super.getGeneratedId(connection);
         }
@@ -335,8 +318,7 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
-    public void setId(PreparedStatement ps, int index, Serializable value)
-            throws SQLException {
+    public void setId(PreparedStatement ps, int index, Serializable value) throws SQLException {
         switch (idType) {
         case VARCHAR:
             ps.setObject(index, value);
@@ -350,8 +332,8 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
-    public void setToPreparedStatement(PreparedStatement ps, int index,
-            Serializable value, Column column) throws SQLException {
+    public void setToPreparedStatement(PreparedStatement ps, int index, Serializable value, Column column)
+            throws SQLException {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
         case Types.CLOB:
@@ -385,15 +367,13 @@ public class DialectOracle extends Dialect {
             }
             throw new SQLException("Unhandled type: " + column.getType());
         default:
-            throw new SQLException("Unhandled JDBC type: "
-                    + column.getJdbcType());
+            throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
         }
     }
 
     @Override
     @SuppressWarnings("boxing")
-    public Serializable getFromResultSet(ResultSet rs, int index, Column column)
-            throws SQLException {
+    public Serializable getFromResultSet(ResultSet rs, int index, Column column) throws SQLException {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
             return getFromResultSetString(rs, index, column);
@@ -443,13 +423,10 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
-    public String getCreateFulltextIndexSql(String indexName,
-            String quotedIndexName, Table table, List<Column> columns,
-            Model model) {
-        return String.format(
-                "CREATE INDEX %s ON %s(%s) INDEXTYPE IS CTXSYS.CONTEXT "
-                        + "PARAMETERS('%s SYNC (ON COMMIT) TRANSACTIONAL')",
-                quotedIndexName, table.getQuotedName(),
+    public String getCreateFulltextIndexSql(String indexName, String quotedIndexName, Table table,
+            List<Column> columns, Model model) {
+        return String.format("CREATE INDEX %s ON %s(%s) INDEXTYPE IS CTXSYS.CONTEXT "
+                + "PARAMETERS('%s SYNC (ON COMMIT) TRANSACTIONAL')", quotedIndexName, table.getQuotedName(),
                 columns.get(0).getQuotedName(), fulltextParameters);
     }
 
@@ -462,8 +439,7 @@ public class DialectOracle extends Dialect {
         if (ft == null) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        return FulltextQueryAnalyzer.translateFulltext(ft, "OR", "AND", "NOT",
-                "{", "}", CHARS_RESERVED, "", "", true);
+        return FulltextQueryAnalyzer.translateFulltext(ft, "OR", "AND", "NOT", "{", "}", CHARS_RESERVED, "", "", true);
     }
 
     // SELECT ..., (SCORE(1) / 100) AS "_nxscore"
@@ -471,30 +447,25 @@ public class DialectOracle extends Dialect {
     // WHERE ... AND CONTAINS(fulltext.fulltext, ?, 1) > 0
     // ORDER BY "_nxscore" DESC
     @Override
-    public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery,
-            String indexName, int nthMatch, Column mainColumn, Model model,
-            Database database) {
+    public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery, String indexName, int nthMatch,
+            Column mainColumn, Model model, Database database) {
         String indexSuffix = model.getFulltextIndexSuffix(indexName);
         Table ft = database.getTable(Model.FULLTEXT_TABLE_NAME);
         Column ftMain = ft.getColumn(Model.MAIN_KEY);
-        Column ftColumn = ft.getColumn(Model.FULLTEXT_FULLTEXT_KEY
-                + indexSuffix);
+        Column ftColumn = ft.getColumn(Model.FULLTEXT_FULLTEXT_KEY + indexSuffix);
         String score = String.format("SCORE(%d)", nthMatch);
         String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
         FulltextMatchInfo info = new FulltextMatchInfo();
         if (nthMatch == 1) {
             // Need only one JOIN involving the fulltext table
-            info.joins = Collections.singletonList(new Join(Join.INNER,
-                    ft.getQuotedName(), null, null, ftMain.getFullQuotedName(),
-                    mainColumn.getFullQuotedName()));
+            info.joins = Collections.singletonList(new Join(Join.INNER, ft.getQuotedName(), null, null,
+                    ftMain.getFullQuotedName(), mainColumn.getFullQuotedName()));
         }
-        info.whereExpr = String.format("CONTAINS(%s, ?, %d) > 0",
-                ftColumn.getFullQuotedName(), nthMatch);
+        info.whereExpr = String.format("CONTAINS(%s, ?, %d) > 0", ftColumn.getFullQuotedName(), nthMatch);
         info.whereExprParam = fulltextQuery;
         info.scoreExpr = String.format("(%s / 100)", score);
         info.scoreAlias = openQuote() + "_nxscore" + nthSuffix + closeQuote();
-        info.scoreCol = new Column(mainColumn.getTable(), null,
-                ColumnType.DOUBLE, null);
+        info.scoreCol = new Column(mainColumn.getTable(), null, ColumnType.DOUBLE, null);
         return info;
     }
 
@@ -569,17 +540,16 @@ public class DialectOracle extends Dialect {
     @Override
     public String getInTreeSql(String idColumnName) {
         if (pathOptimizationsVersion == 2) {
-            return String.format(
-                    "EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = %s AND ancestor = ?)",
+            return String.format("EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = %s AND ancestor = ?)",
                     idColumnName);
         } else if (pathOptimizationsVersion == 1) {
             // using nested table optim
-            return String.format(
-                    "EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = %s AND ? MEMBER OF ancestors)",
+            return String.format("EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = %s AND ? MEMBER OF ancestors)",
                     idColumnName);
         } else {
             // no optimization
-            return String.format("%s in (SELECT id FROM hierarchy WHERE LEVEL>1 AND isproperty = 0 START WITH id=? CONNECT BY PRIOR id = parentid)",
+            return String.format(
+                    "%s in (SELECT id FROM hierarchy WHERE LEVEL>1 AND isproperty = 0 START WITH id=? CONNECT BY PRIOR id = parentid)",
                     idColumnName);
         }
     }
@@ -597,9 +567,8 @@ public class DialectOracle extends Dialect {
     }
 
     /*
-     * For Oracle we don't use a function to return values and delete them at
-     * the same time, because pipelined functions that need to do DML have to do
-     * it in an autonomous transaction which could cause consistency issues.
+     * For Oracle we don't use a function to return values and delete them at the same time, because pipelined functions
+     * that need to do DML have to do it in an autonomous transaction which could cause consistency issues.
      */
     @Override
     public boolean isClusteringDeleteNeeded() {
@@ -613,8 +582,7 @@ public class DialectOracle extends Dialect {
 
     @Override
     public String getClusterGetInvalidations() {
-        return "SELECT id, fragments, kind FROM cluster_invals "
-                + "WHERE nodeid = '%s'";
+        return "SELECT id, fragments, kind FROM cluster_invals " + "WHERE nodeid = '%s'";
     }
 
     @Override
@@ -629,8 +597,9 @@ public class DialectOracle extends Dialect {
 
     @Override
     public String addPagingClause(String sql, long limit, long offset) {
-        return String.format("SELECT * FROM (SELECT /*+ FIRST_ROWS(%d) */  a.*, ROWNUM rnum FROM (%s) a WHERE ROWNUM <= %d) WHERE rnum  > %d",
-                    limit, sql, limit + offset, offset);
+        return String.format(
+                "SELECT * FROM (SELECT /*+ FIRST_ROWS(%d) */  a.*, ROWNUM rnum FROM (%s) a WHERE ROWNUM <= %d) WHERE rnum  > %d",
+                limit, sql, limit + offset, offset);
     }
 
     @Override
@@ -678,8 +647,7 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
-    public Array createArrayOf(int type, Object[] elements,
-            Connection connection) throws SQLException {
+    public Array createArrayOf(int type, Object[] elements, Connection connection) throws SQLException {
         if (elements == null || elements.length == 0) {
             return null;
         }
@@ -705,10 +673,8 @@ public class DialectOracle extends Dialect {
         }
         try {
             connection = ConnectionHelper.unwrap(connection);
-            Object arrayDescriptor = arrayDescriptorConstructor.newInstance(
-                    typeName, connection);
-            return (Array) arrayConstructor.newInstance(arrayDescriptor,
-                    connection, elements);
+            Object arrayDescriptor = arrayDescriptorConstructor.newInstance(typeName, connection);
+            return (Array) arrayConstructor.newInstance(arrayDescriptor, connection, elements);
         } catch (Exception e) {
             throw new SQLException(e.getMessage(), e);
         }
@@ -725,8 +691,7 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
-    public Map<String, Serializable> getSQLStatementsProperties(Model model,
-            Database database) {
+    public Map<String, Serializable> getSQLStatementsProperties(Model model, Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         switch (idType) {
         case VARCHAR:
@@ -747,10 +712,8 @@ public class DialectOracle extends Dialect {
         default:
             throw new AssertionError("Unknown id type: " + idType);
         }
-        properties.put("aclOptimizationsEnabled",
-                Boolean.valueOf(aclOptimizationsEnabled));
-        properties.put("pathOptimizationsEnabled",
-                Boolean.valueOf(pathOptimizationsEnabled));
+        properties.put("aclOptimizationsEnabled", Boolean.valueOf(aclOptimizationsEnabled));
+        properties.put("pathOptimizationsEnabled", Boolean.valueOf(pathOptimizationsEnabled));
         properties.put("pathOptimizationsVersion1", (pathOptimizationsVersion == 1) ? true : false);
         properties.put("pathOptimizationsVersion2", (pathOptimizationsVersion == 2) ? true : false);
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
@@ -765,25 +728,18 @@ public class DialectOracle extends Dialect {
             for (String indexName : fti.indexNames) {
                 String suffix = model.getFulltextIndexSuffix(indexName);
                 Column ftft = ft.getColumn(Model.FULLTEXT_FULLTEXT_KEY + suffix);
-                Column ftst = ft.getColumn(Model.FULLTEXT_SIMPLETEXT_KEY
-                        + suffix);
-                Column ftbt = ft.getColumn(Model.FULLTEXT_BINARYTEXT_KEY
-                        + suffix);
-                String line = String.format(
-                        "  :NEW.%s := :NEW.%s || ' ' || :NEW.%s; ",
-                        ftft.getQuotedName(), ftst.getQuotedName(),
-                        ftbt.getQuotedName());
+                Column ftst = ft.getColumn(Model.FULLTEXT_SIMPLETEXT_KEY + suffix);
+                Column ftbt = ft.getColumn(Model.FULLTEXT_BINARYTEXT_KEY + suffix);
+                String line = String.format("  :NEW.%s := :NEW.%s || ' ' || :NEW.%s; ", ftft.getQuotedName(),
+                        ftst.getQuotedName(), ftbt.getQuotedName());
                 lines.add(line);
             }
-            properties.put("fulltextTriggerStatements",
-                    StringUtils.join(lines, "\n"));
+            properties.put("fulltextTriggerStatements", StringUtils.join(lines, "\n"));
         }
-        String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(
-                SecurityConstants.BROWSE);
+        String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(SecurityConstants.BROWSE);
         List<String> permsList = new LinkedList<String>();
         for (String perm : permissions) {
-            permsList.add(String.format("  INTO ACLR_PERMISSION VALUES ('%s')",
-                    perm));
+            permsList.add(String.format("  INTO ACLR_PERMISSION VALUES ('%s')", perm));
         }
         properties.put("readPermissions", StringUtils.join(permsList, "\n"));
         properties.put("usersSeparator", getUsersSeparator());
@@ -814,7 +770,7 @@ public class DialectOracle extends Dialect {
     public boolean isConnectionClosedException(Throwable t) {
         if (t instanceof XAException) {
             try {
-                xaErrorLogger.log((XAException)t);
+                xaErrorLogger.log((XAException) t);
             } catch (Exception e) {
                 log.error("Cannot introspect oracle error ", t);
             }
@@ -824,7 +780,7 @@ public class DialectOracle extends Dialect {
             return true;
         }
         if (t instanceof SQLException) {
-            return isConnectionClosed(((SQLException)t).getErrorCode());
+            return isConnectionClosed(((SQLException) t).getErrorCode());
         }
         log.warn("Unknown exception type " + t.getClass(), t);
         return false;
@@ -843,14 +799,14 @@ public class DialectOracle extends Dialect {
 
     protected boolean isConnectionClosed(int oracleError) {
         switch (oracleError) {
-        case 28:    // your session has been killed.
-        case 1033:  // Oracle initialization or shudown in progress.
-        case 1034:  // Oracle not available
-        case 1041:  // internal error. hostdef extension doesn't exist
-        case 1089:  // immediate shutdown in progress - no operations are permitted
-        case 1090:  // shutdown in progress - connection is not permitted
-        case 3113:  // end-of-file on communication channel
-        case 3114:  // not connected to ORACLE
+        case 28: // your session has been killed.
+        case 1033: // Oracle initialization or shudown in progress.
+        case 1034: // Oracle not available
+        case 1041: // internal error. hostdef extension doesn't exist
+        case 1089: // immediate shutdown in progress - no operations are permitted
+        case 1090: // shutdown in progress - connection is not permitted
+        case 3113: // end-of-file on communication channel
+        case 3114: // not connected to ORACLE
         case 12571: // TNS:packet writer failure
         case 17002: // IO Exception
         case 17008: // Closed Connection

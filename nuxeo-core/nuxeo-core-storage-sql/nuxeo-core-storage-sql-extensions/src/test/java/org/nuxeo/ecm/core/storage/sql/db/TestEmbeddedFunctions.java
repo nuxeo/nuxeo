@@ -27,13 +27,11 @@ import org.junit.Test;
 public class TestEmbeddedFunctions {
 
     public static void checkSplit(String string, String... expected) {
-        assertEquals(new HashSet<String>(Arrays.asList(expected)),
-                EmbeddedFunctions.split(string));
+        assertEquals(new HashSet<String>(Arrays.asList(expected)), EmbeddedFunctions.split(string));
     }
 
     public static void checkSplit(char sep, String string, String... expected) {
-        assertEquals(new HashSet<String>(Arrays.asList(expected)),
-                EmbeddedFunctions.split(string, sep));
+        assertEquals(new HashSet<String>(Arrays.asList(expected)), EmbeddedFunctions.split(string, sep));
     }
 
     @Test
@@ -58,16 +56,14 @@ public class TestEmbeddedFunctions {
     }
 
     protected static void checkParseFullText(String expected, String text) {
-        assertEquals(new HashSet<String>(Arrays.asList(expected.split(" "))),
-                EmbeddedFunctions.parseFullText(text));
+        assertEquals(new HashSet<String>(Arrays.asList(expected.split(" "))), EmbeddedFunctions.parseFullText(text));
     }
 
     @Test
     public void testParseFullText() {
         checkParseFullText("brown dog fail fox jump lazy over quick",
                 "The quick brown fox jumps over the lazy dog -- and fails!");
-        checkParseFullText("aime cafe jure pas",
-                "J'aime PAS le caf\u00e9, je te jure.");
+        checkParseFullText("aime cafe jure pas", "J'aime PAS le caf\u00e9, je te jure.");
         checkParseFullText("007 bond jame thx1138", "James Bond 007 && THX1138");
     }
 

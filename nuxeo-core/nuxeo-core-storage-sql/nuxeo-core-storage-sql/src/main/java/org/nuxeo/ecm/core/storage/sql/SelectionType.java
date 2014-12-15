@@ -12,35 +12,30 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 /**
- * The different types of selections available, and information about what they
- * correspond to in the database.
+ * The different types of selections available, and information about what they correspond to in the database.
  */
 public enum SelectionType {
 
     /**
      * Selection for the children of a given parent id.
      */
-    CHILDREN(Model.HIER_TABLE_NAME, Model.HIER_PARENT_KEY,
-            Model.HIER_CHILD_NAME_KEY, Model.HIER_CHILD_ISPROPERTY_KEY,
+    CHILDREN(Model.HIER_TABLE_NAME, Model.HIER_PARENT_KEY, Model.HIER_CHILD_NAME_KEY, Model.HIER_CHILD_ISPROPERTY_KEY,
             Invalidations.PARENT),
 
     /**
      * Selection for the versions of a given version series.
      */
-    SERIES_VERSIONS(Model.VERSION_TABLE_NAME, Model.VERSION_VERSIONABLE_KEY,
-            null, null, "__SERIES_VERSIONS__"),
+    SERIES_VERSIONS(Model.VERSION_TABLE_NAME, Model.VERSION_VERSIONABLE_KEY, null, null, "__SERIES_VERSIONS__"),
 
     /**
      * Selection for the proxies of a given version series.
      */
-    SERIES_PROXIES(Model.PROXY_TABLE_NAME, Model.PROXY_VERSIONABLE_KEY, null,
-            null, Invalidations.SERIES_PROXIES),
+    SERIES_PROXIES(Model.PROXY_TABLE_NAME, Model.PROXY_VERSIONABLE_KEY, null, null, Invalidations.SERIES_PROXIES),
 
     /**
      * Selection for the proxies of a given target.
      */
-    TARGET_PROXIES(Model.PROXY_TABLE_NAME, Model.PROXY_TARGET_KEY, null, null,
-            Invalidations.TARGET_PROXIES);
+    TARGET_PROXIES(Model.PROXY_TABLE_NAME, Model.PROXY_TARGET_KEY, null, null, Invalidations.TARGET_PROXIES);
 
     /**
      * The table name for this selection.
@@ -75,8 +70,8 @@ public enum SelectionType {
      */
     public final String invalidationTableName;
 
-    private SelectionType(String tableName, String selKey, String filterKey,
-            String criterionKey, String invalidationTableName) {
+    private SelectionType(String tableName, String selKey, String filterKey, String criterionKey,
+            String invalidationTableName) {
         this.tableName = tableName;
         this.selKey = selKey;
         this.filterKey = filterKey;

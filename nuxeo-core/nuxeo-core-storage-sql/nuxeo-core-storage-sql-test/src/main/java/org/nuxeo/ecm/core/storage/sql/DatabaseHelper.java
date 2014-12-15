@@ -50,8 +50,7 @@ public abstract class DatabaseHelper {
     public static final String DB_CLASS_NAME_BASE = "org.nuxeo.ecm.core.storage.sql.Database";
 
     /**
-     * Maximum number of times we retry a connection if the server says it's
-     * overloaded.
+     * Maximum number of times we retry a connection if the server says it's overloaded.
      */
     private static final int MAX_CONNECTION_TRIES = 5;
 
@@ -98,8 +97,7 @@ public abstract class DatabaseHelper {
 
     public static String setSystemProperty(String name, String def) {
         String value = System.getProperty(name);
-        if (value == null || value.equals("")
-                || value.equals("${" + name + "}")) {
+        if (value == null || value.equals("") || value.equals("${" + name + "}")) {
             System.setProperty(name, def);
         }
         return value;
@@ -107,8 +105,7 @@ public abstract class DatabaseHelper {
 
     public static String setProperty(String name, String def) {
         String value = System.getProperty(name);
-        if (value == null || value.equals("")
-                || value.equals("${" + name + "}")) {
+        if (value == null || value.equals("") || value.equals("${" + name + "}")) {
             value = def;
         }
         Framework.getProperties().put(name, value);
@@ -138,8 +135,7 @@ public abstract class DatabaseHelper {
         try {
             DATABASE = (DatabaseHelper) Class.forName(className).newInstance();
         } catch (Exception e) {
-            throw new ExceptionInInitializerError("Database class not found: "
-                    + className);
+            throw new ExceptionInInitializerError("Database class not found: " + className);
         }
         String msg = "Database used for VCS tests: " + className;
         // System.out used on purpose, don't remove
@@ -152,8 +148,7 @@ public abstract class DatabaseHelper {
      *
      * @since 5.9.3
      */
-    public static Connection getConnection(String url, String user,
-            String password) throws SQLException {
+    public static Connection getConnection(String url, String user, String password) throws SQLException {
         for (int tryNo = 1;; tryNo++) {
             try {
                 return DriverManager.getConnection(url, user, password);
@@ -170,9 +165,8 @@ public abstract class DatabaseHelper {
                 // SQLState = "66000"
                 // Happens when connections are open too fast (unit tests)
                 // -> retry a few times after a small delay
-                log.warn(String.format(
-                        "Connections open too fast, retrying in %ds: %s",
-                        tryNo, e.getMessage().replace("\n", " ")));
+                log.warn(String.format("Connections open too fast, retrying in %ds: %s", tryNo,
+                        e.getMessage().replace("\n", " ")));
                 try {
                     Thread.sleep(1000 * tryNo);
                 } catch (InterruptedException ie) {
@@ -187,12 +181,11 @@ public abstract class DatabaseHelper {
     /**
      * Executes one statement on all the tables in a database.
      */
-    public static void doOnAllTables(Connection connection, String catalog,
-            String schemaPattern, String statement) throws SQLException {
+    public static void doOnAllTables(Connection connection, String catalog, String schemaPattern, String statement)
+            throws SQLException {
         DatabaseMetaData metadata = connection.getMetaData();
         List<String> tableNames = new LinkedList<String>();
-        ResultSet rs = metadata.getTables(catalog, schemaPattern, "%",
-                new String[] { "TABLE" });
+        ResultSet rs = metadata.getTables(catalog, schemaPattern, "%", new String[] { "TABLE" });
         while (rs.next()) {
             String tableName = rs.getString("TABLE_NAME");
             if (tableName.indexOf('$') != -1) {
@@ -211,8 +204,7 @@ public abstract class DatabaseHelper {
                 // skip nested table that is dropped by the main table
                 continue;
             }
-            if ("ACLR_MODIFIED".equals(tableName)
-                    && DATABASE instanceof DatabaseOracle) {
+            if ("ACLR_MODIFIED".equals(tableName) && DATABASE instanceof DatabaseOracle) {
                 // skip temporary table on Oracle, cannot be dropped
                 continue;
             }
@@ -242,14 +234,12 @@ public abstract class DatabaseHelper {
         st.close();
     }
 
-    protected static void executeSql(Statement st, String sql)
-            throws SQLException {
+    protected static void executeSql(Statement st, String sql) throws SQLException {
         log.trace("SQL: " + sql);
         st.execute(sql);
     }
 
-    public void setUp(Class<? extends RepositoryFactory> factoryClass)
-            throws Exception {
+    public void setUp(Class<? extends RepositoryFactory> factoryClass) throws Exception {
         setUp();
         setRepositoryFactory(factoryClass);
     }
@@ -278,8 +268,7 @@ public abstract class DatabaseHelper {
 
     protected void setOwner() {
         if (owner != null) {
-            Error e = new Error("Second call to setUp() without tearDown()",
-                    owner);
+            Error e = new Error("Second call to setUp() without tearDown()", owner);
             log.fatal(e.getMessage(), e);
             throw e;
         }
@@ -293,16 +282,12 @@ public abstract class DatabaseHelper {
         owner = null;
     }
 
-    public static void setRepositoryFactory(
-            Class<? extends RepositoryFactory> factoryClass) {
-        setProperty("nuxeo.test.vcs.repository-factory",
-                factoryClass.getName());
+    public static void setRepositoryFactory(Class<? extends RepositoryFactory> factoryClass) {
+        setProperty("nuxeo.test.vcs.repository-factory", factoryClass.getName());
     }
 
-    public static void setBinaryManager(
-            Class<? extends BinaryManager> binaryManagerClass, String key) {
-        setProperty("nuxeo.test.vcs.binary-manager",
-                binaryManagerClass.getName());
+    public static void setBinaryManager(Class<? extends BinaryManager> binaryManagerClass, String key) {
+        setProperty("nuxeo.test.vcs.binary-manager", binaryManagerClass.getName());
         setProperty("nuxeo.test.vcs.binary-manager-key", key);
     }
 
@@ -311,8 +296,7 @@ public abstract class DatabaseHelper {
     public abstract RepositoryDescriptor getRepositoryDescriptor();
 
     public static void setSingleDataSourceMode() {
-        if (Boolean.parseBoolean(System.getProperty(SINGLEDS_PROPERTY))
-                || SINGLEDS_DEFAULT) {
+        if (Boolean.parseBoolean(System.getProperty(SINGLEDS_PROPERTY)) || SINGLEDS_DEFAULT) {
             // the name doesn't actually matter, as code in
             // ConnectionHelper.getDataSource ignores it and uses
             // nuxeo.test.vcs.url etc. for connections in test mode
@@ -328,8 +312,7 @@ public abstract class DatabaseHelper {
     }
 
     /**
-     * For databases that don't have subsecond resolution, sleep a bit to get to
-     * the next second.
+     * For databases that don't have subsecond resolution, sleep a bit to get to the next second.
      */
     public void maybeSleepToNextSecond() {
         if (!hasSubSecondResolution()) {

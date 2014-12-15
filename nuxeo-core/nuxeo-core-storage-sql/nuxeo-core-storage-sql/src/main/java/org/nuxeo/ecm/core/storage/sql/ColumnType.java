@@ -36,8 +36,7 @@ public class ColumnType implements Serializable {
 
     public static final ColumnType STRING = new ColumnType(ColumnSpec.STRING);
 
-    public static final ColumnType CLOB = new ColumnType(ColumnSpec.STRING,
-            CLOB_LENGTH);
+    public static final ColumnType CLOB = new ColumnType(ColumnSpec.STRING, CLOB_LENGTH);
 
     public static final ColumnType BOOLEAN = new ColumnType(ColumnSpec.BOOLEAN);
 
@@ -45,61 +44,45 @@ public class ColumnType implements Serializable {
 
     public static final ColumnType DOUBLE = new ColumnType(ColumnSpec.DOUBLE);
 
-    public static final ColumnType TIMESTAMP = new ColumnType(
-            ColumnSpec.TIMESTAMP);
+    public static final ColumnType TIMESTAMP = new ColumnType(ColumnSpec.TIMESTAMP);
 
     public static final ColumnType BLOBID = new ColumnType(ColumnSpec.BLOBID);
 
-    public static final ColumnType ARRAY_STRING = new ColumnType(
-            ColumnSpec.ARRAY_STRING, -1, true);
+    public static final ColumnType ARRAY_STRING = new ColumnType(ColumnSpec.ARRAY_STRING, -1, true);
 
-    public static final ColumnType ARRAY_CLOB = new ColumnType(
-            ColumnSpec.ARRAY_STRING, CLOB_LENGTH, true);
+    public static final ColumnType ARRAY_CLOB = new ColumnType(ColumnSpec.ARRAY_STRING, CLOB_LENGTH, true);
 
-    public static final ColumnType ARRAY_BOOLEAN = new ColumnType(
-            ColumnSpec.ARRAY_BOOLEAN, -1, true);
+    public static final ColumnType ARRAY_BOOLEAN = new ColumnType(ColumnSpec.ARRAY_BOOLEAN, -1, true);
 
-    public static final ColumnType ARRAY_LONG = new ColumnType(
-            ColumnSpec.ARRAY_LONG, -1, true);
+    public static final ColumnType ARRAY_LONG = new ColumnType(ColumnSpec.ARRAY_LONG, -1, true);
 
-    public static final ColumnType ARRAY_DOUBLE = new ColumnType(
-            ColumnSpec.ARRAY_DOUBLE, -1, true);
+    public static final ColumnType ARRAY_DOUBLE = new ColumnType(ColumnSpec.ARRAY_DOUBLE, -1, true);
 
-    public static final ColumnType ARRAY_TIMESTAMP = new ColumnType(
-            ColumnSpec.ARRAY_TIMESTAMP, -1, true);
+    public static final ColumnType ARRAY_TIMESTAMP = new ColumnType(ColumnSpec.ARRAY_TIMESTAMP, -1, true);
 
-    public static final ColumnType ARRAY_BLOBID = new ColumnType(
-            ColumnSpec.ARRAY_BLOBID, -1, true);
+    public static final ColumnType ARRAY_BLOBID = new ColumnType(ColumnSpec.ARRAY_BLOBID, -1, true);
 
-    public static final ColumnType ARRAY_INTEGER = new ColumnType(
-            ColumnSpec.ARRAY_INTEGER, -1, true);
+    public static final ColumnType ARRAY_INTEGER = new ColumnType(ColumnSpec.ARRAY_INTEGER, -1, true);
 
     public static final ColumnType NODEID = new ColumnType(ColumnSpec.NODEID);
 
-    public static final ColumnType NODEIDFK = new ColumnType(
-            ColumnSpec.NODEIDFK);
+    public static final ColumnType NODEIDFK = new ColumnType(ColumnSpec.NODEIDFK);
 
-    public static final ColumnType NODEIDFKNP = new ColumnType(
-            ColumnSpec.NODEIDFKNP);
+    public static final ColumnType NODEIDFKNP = new ColumnType(ColumnSpec.NODEIDFKNP);
 
-    public static final ColumnType NODEIDFKMUL = new ColumnType(
-            ColumnSpec.NODEIDFKMUL);
+    public static final ColumnType NODEIDFKMUL = new ColumnType(ColumnSpec.NODEIDFKMUL);
 
-    public static final ColumnType NODEIDFKNULL = new ColumnType(
-            ColumnSpec.NODEIDFKNULL);
+    public static final ColumnType NODEIDFKNULL = new ColumnType(ColumnSpec.NODEIDFKNULL);
 
-    public static final ColumnType NODEIDPK = new ColumnType(
-            ColumnSpec.NODEIDPK);
+    public static final ColumnType NODEIDPK = new ColumnType(ColumnSpec.NODEIDPK);
 
     public static final ColumnType NODEVAL = new ColumnType(ColumnSpec.NODEVAL);
 
-    public static final ColumnType NODEARRAY = new ColumnType(
-            ColumnSpec.NODEARRAY, -1, true);
+    public static final ColumnType NODEARRAY = new ColumnType(ColumnSpec.NODEARRAY, -1, true);
 
     public static final ColumnType SYSNAME = new ColumnType(ColumnSpec.SYSNAME);
 
-    public static final ColumnType SYSNAMEARRAY = new ColumnType(
-            ColumnSpec.SYSNAMEARRAY, -1, true);
+    public static final ColumnType SYSNAMEARRAY = new ColumnType(ColumnSpec.SYSNAMEARRAY, -1, true);
 
     public static final ColumnType TINYINT = new ColumnType(ColumnSpec.TINYINT);
 
@@ -107,17 +90,13 @@ public class ColumnType implements Serializable {
 
     public static final ColumnType AUTOINC = new ColumnType(ColumnSpec.AUTOINC);
 
-    public static final ColumnType FTINDEXED = new ColumnType(
-            ColumnSpec.FTINDEXED);
+    public static final ColumnType FTINDEXED = new ColumnType(ColumnSpec.FTINDEXED);
 
-    public static final ColumnType FTSTORED = new ColumnType(
-            ColumnSpec.FTSTORED);
+    public static final ColumnType FTSTORED = new ColumnType(ColumnSpec.FTSTORED);
 
-    public static final ColumnType CLUSTERNODE = new ColumnType(
-            ColumnSpec.CLUSTERNODE);
+    public static final ColumnType CLUSTERNODE = new ColumnType(ColumnSpec.CLUSTERNODE);
 
-    public static final ColumnType CLUSTERFRAGS = new ColumnType(
-            ColumnSpec.CLUSTERFRAGS);
+    public static final ColumnType CLUSTERFRAGS = new ColumnType(ColumnSpec.CLUSTERFRAGS);
 
     public final ColumnSpec spec;
 
@@ -159,8 +138,7 @@ public class ColumnType implements Serializable {
     }
 
     /**
-     * Wraps a string that needs to be mapped to an id column in prepared
-     * statements.
+     * Wraps a string that needs to be mapped to an id column in prepared statements.
      *
      * @since 5.7
      */
@@ -184,15 +162,14 @@ public class ColumnType implements Serializable {
         if (isUnconstrained()) {
             return spec.toString();
         } else if (isClob()) {
-            return  isArray() ? "ARRAY_CLOB" : "CLOB";
+            return isArray() ? "ARRAY_CLOB" : "CLOB";
         } else {
             return spec.toString() + '(' + length + ')';
         }
     }
 
     /**
-     * Gets the column type from a Nuxeo Schema field, including its constrained
-     * length if any.
+     * Gets the column type from a Nuxeo Schema field, including its constrained length if any.
      */
     public static ColumnType fromField(Field field) {
         return fromFieldType(field.getType(), field.getMaxLength());
@@ -206,8 +183,8 @@ public class ColumnType implements Serializable {
     }
 
     /**
-     * Gets the column type from a Nuxeo Schema field type (unconstrained)
-     * with array {@code true} if an array type is required
+     * Gets the column type from a Nuxeo Schema field type (unconstrained) with array {@code true} if an array type is
+     * required
      */
     public static ColumnType fromFieldType(Type type, boolean array) {
         return fromFieldType(type, -1, array);
@@ -240,8 +217,7 @@ public class ColumnType implements Serializable {
             // comes from a constraint
             return fromFieldType(type.getSuperType(), maxLength);
         } else {
-            throw new RuntimeException("Invalid primitive type: "
-                    + type.getClass().getName());
+            throw new RuntimeException("Invalid primitive type: " + type.getClass().getName());
         }
     }
 

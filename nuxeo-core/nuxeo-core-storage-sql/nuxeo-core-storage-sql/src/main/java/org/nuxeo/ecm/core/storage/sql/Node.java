@@ -22,8 +22,7 @@ import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
- * A {@code Node} implementation. The actual data is stored in contained objects
- * that are {@link Fragment}s.
+ * A {@code Node} implementation. The actual data is stored in contained objects that are {@link Fragment}s.
  */
 public class Node {
 
@@ -39,14 +38,13 @@ public class Node {
     protected final FragmentsMap fragments;
 
     /**
-     * Path, only for immediate consumption after construction (will be reset to
-     * null afterwards).
+     * Path, only for immediate consumption after construction (will be reset to null afterwards).
      */
     protected String path;
 
     /**
-     * Cache of property objects already retrieved. They are dumb objects, just
-     * providing an indirection to an underlying {@link Fragment}.
+     * Cache of property objects already retrieved. They are dumb objects, just providing an indirection to an
+     * underlying {@link Fragment}.
      */
     private final Map<String, BaseProperty> propertyCache;
 
@@ -60,8 +58,7 @@ public class Node {
      * @param path the path, if known at construction time
      */
     @SuppressWarnings("unchecked")
-    protected Node(PersistenceContext context, FragmentGroup fragmentGroup,
-            String path) throws StorageException {
+    protected Node(PersistenceContext context, FragmentGroup fragmentGroup, String path) throws StorageException {
         this.context = context;
         model = context.model;
         hierFragment = fragmentGroup.hier;
@@ -84,8 +81,7 @@ public class Node {
      */
     public Serializable getId() {
         /*
-         * We don't cache the id as it changes between the initial creation and
-         * the first save.
+         * We don't cache the id as it changes between the initial creation and the first save.
          */
         return hierFragment.getId();
     }
@@ -127,8 +123,8 @@ public class Node {
     }
 
     /**
-     * Gets the path that was assigned at {@link Node} construction time. Then
-     * it's reset to {@code null}. Should only be used once.
+     * Gets the path that was assigned at {@link Node} construction time. Then it's reset to {@code null}. Should only
+     * be used once.
      *
      * @return the path, or {@code null} for unknown
      */
@@ -148,8 +144,7 @@ public class Node {
     public boolean isVersion() {
         if (isVersion == null) {
             try {
-                isVersion = (Boolean) getSimpleProperty(
-                        model.MAIN_IS_VERSION_PROP).getValue();
+                isVersion = (Boolean) getSimpleProperty(model.MAIN_IS_VERSION_PROP).getValue();
             } catch (StorageException e) {
                 throw new RuntimeException(e);
             }
@@ -189,8 +184,7 @@ public class Node {
      */
     public Set<String> getAllMixinTypes() {
         // linked for deterministic result
-        Set<String> mixins = new LinkedHashSet<String>(
-                model.getDocumentTypeFacets(getPrimaryType()));
+        Set<String> mixins = new LinkedHashSet<String>(model.getDocumentTypeFacets(getPrimaryType()));
         mixins.addAll(Arrays.asList(getMixinTypes()));
         return mixins;
     }
@@ -227,8 +221,7 @@ public class Node {
      * @return the property
      * @throws IllegalArgumentException if the name is invalid
      */
-    public SimpleProperty getSimpleProperty(String name)
-            throws StorageException {
+    public SimpleProperty getSimpleProperty(String name) throws StorageException {
         SimpleProperty property = (SimpleProperty) propertyCache.get(name);
         if (property == null) {
             ModelProperty propertyInfo = getPropertyInfo(name);
@@ -241,8 +234,7 @@ public class Node {
         return property;
     }
 
-    protected SimpleProperty makeSimpleProperty(String name,
-            ModelProperty propertyInfo) throws StorageException {
+    protected SimpleProperty makeSimpleProperty(String name, ModelProperty propertyInfo) throws StorageException {
         String fragmentName = propertyInfo.fragmentName;
         Fragment fragment = fragments.get(fragmentName);
         if (fragment == null) {
@@ -251,8 +243,7 @@ public class Node {
             fragment = context.get(rowId, true);
             fragments.put(fragmentName, fragment);
         }
-        return new SimpleProperty(name, propertyInfo.propertyType,
-                propertyInfo.readonly, (SimpleFragment) fragment,
+        return new SimpleProperty(name, propertyInfo.propertyType, propertyInfo.readonly, (SimpleFragment) fragment,
                 propertyInfo.fragmentKey);
     }
 
@@ -263,8 +254,7 @@ public class Node {
      * @return the property
      * @throws IllegalArgumentException if the name is invalid
      */
-    public CollectionProperty getCollectionProperty(String name)
-            throws StorageException {
+    public CollectionProperty getCollectionProperty(String name) throws StorageException {
         CollectionProperty property = (CollectionProperty) propertyCache.get(name);
         if (property == null) {
             ModelProperty propertyInfo = getPropertyInfo(name);
@@ -277,8 +267,8 @@ public class Node {
         return property;
     }
 
-    protected CollectionProperty makeCollectionProperty(String name,
-            ModelProperty propertyInfo) throws StorageException {
+    protected CollectionProperty makeCollectionProperty(String name, ModelProperty propertyInfo)
+            throws StorageException {
         String fragmentName = propertyInfo.fragmentName;
         Fragment fragment = fragments.get(fragmentName);
         if (fragment == null) {
@@ -287,20 +277,18 @@ public class Node {
             fragment = context.get(rowId, true);
         }
         if (fragment instanceof CollectionFragment) {
-            return new CollectionProperty(name, propertyInfo.propertyType,
-                    propertyInfo.readonly, (CollectionFragment) fragment);
+            return new CollectionProperty(name, propertyInfo.propertyType, propertyInfo.readonly,
+                    (CollectionFragment) fragment);
         } else {
             fragments.put(fragmentName, fragment);
-            return new CollectionProperty(name, propertyInfo.propertyType,
-                    propertyInfo.readonly, (SimpleFragment) fragment,
-                    propertyInfo.fragmentKey);
+            return new CollectionProperty(name, propertyInfo.propertyType, propertyInfo.readonly,
+                    (SimpleFragment) fragment, propertyInfo.fragmentKey);
         }
     }
 
     protected ModelProperty getPropertyInfo(String name) {
         // check primary type
-        ModelProperty propertyInfo = model.getPropertyInfo(getPrimaryType(),
-                name);
+        ModelProperty propertyInfo = model.getPropertyInfo(getPrimaryType(), name);
         if (propertyInfo != null) {
             return propertyInfo;
         }
@@ -321,14 +309,12 @@ public class Node {
         return null;
     }
 
-    public void setSimpleProperty(String name, Serializable value)
-            throws StorageException {
+    public void setSimpleProperty(String name, Serializable value) throws StorageException {
         SimpleProperty property = getSimpleProperty(name);
         property.setValue(value);
     }
 
-    public void setCollectionProperty(String name, Serializable[] value)
-            throws StorageException {
+    public void setCollectionProperty(String name, Serializable[] value) throws StorageException {
         CollectionProperty property = getCollectionProperty(name);
         property.setValue(value);
     }
@@ -371,9 +357,8 @@ public class Node {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(uuid=" + getId() + ", name="
-                + getName() + ", primaryType=" + getPrimaryType()
-                + ", parentId=" + getParentId() + ")";
+        return getClass().getSimpleName() + "(uuid=" + getId() + ", name=" + getName() + ", primaryType="
+                + getPrimaryType() + ", parentId=" + getParentId() + ")";
     }
 
 }

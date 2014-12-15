@@ -26,8 +26,7 @@ import org.nuxeo.runtime.jtajca.NuxeoContainer;
 /**
  * Pooling repository factory.
  * <p>
- * This class is mentioned in the repository extension point defining a given
- * repository.
+ * This class is mentioned in the repository extension point defining a given repository.
  * <p>
  * To function properly, it needs the bundle nuxeo-runtime-jtajca to be depoyed.
  */
@@ -55,13 +54,11 @@ public class PoolingRepositoryFactory implements RepositoryFactory {
     }
 
     /**
-     * Various binding names for the ConnectionManager. They depend on the
-     * application server used and how the configuration is done.
+     * Various binding names for the ConnectionManager. They depend on the application server used and how the
+     * configuration is done.
      */
-    private static final String[] CM_NAMES_PREFIXES = {
-            "java:comp/NuxeoConnectionManager/",
-            "java:comp/env/NuxeoConnectionManager/",
-            "java:NuxeoConnectionManager/" };
+    private static final String[] CM_NAMES_PREFIXES = { "java:comp/NuxeoConnectionManager/",
+            "java:comp/env/NuxeoConnectionManager/", "java:NuxeoConnectionManager/" };
 
     protected static ConnectionManager lookupConnectionManager(NuxeoConnectionManagerConfiguration pool)
             throws NamingException {

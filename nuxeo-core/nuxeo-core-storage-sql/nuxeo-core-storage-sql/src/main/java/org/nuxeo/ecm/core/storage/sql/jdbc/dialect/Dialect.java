@@ -68,10 +68,8 @@ public abstract class Dialect {
     private final AtomicLong temporaryIdCounter = new AtomicLong(0);
 
     /**
-     * Property used to disable NULLS LAST usage when sorting DESC.
-     *
-     * This increase performance for some dialects because they can use an index
-     * for sorting when there are no NULL value.
+     * Property used to disable NULLS LAST usage when sorting DESC. This increase performance for some dialects because
+     * they can use an index for sorting when there are no NULL value.
      *
      * @Since 5.9
      */
@@ -85,10 +83,9 @@ public abstract class Dialect {
     protected String descending;
 
     /**
-     * System property to override the dialect to use globally instead of the
-     * one auto-detected. It can be suffixed by "." and the database name
-     * (without spaces and as returned by the database itself) to override only
-     * for a specific database.
+     * System property to override the dialect to use globally instead of the one auto-detected. It can be suffixed by
+     * "." and the database name (without spaces and as returned by the database itself) to override only for a specific
+     * database.
      *
      * @since 5.6
      */
@@ -119,8 +116,7 @@ public abstract class Dialect {
             this(string, jdbcType, null, 0);
         }
 
-        public JDBCInfo(String string, int jdbcType,
-                String jdbcBaseTypeString, int jdbcBaseType) {
+        public JDBCInfo(String string, int jdbcType, String jdbcBaseTypeString, int jdbcBaseType) {
             this.string = string;
             this.jdbcType = jdbcType;
             this.jdbcBaseTypeString = jdbcBaseTypeString;
@@ -143,19 +139,16 @@ public abstract class Dialect {
     }
 
     public static JDBCInfo jdbcInfo(String string, int length, int jdbcType) {
-        return new JDBCInfo(String.format(string, Integer.valueOf(length)),
-                jdbcType);
+        return new JDBCInfo(String.format(string, Integer.valueOf(length)), jdbcType);
     }
 
-    public static JDBCInfo jdbcInfo(String string, int jdbcType,
-            String jdbcBaseTypeString, int jdbcBaseType) {
+    public static JDBCInfo jdbcInfo(String string, int jdbcType, String jdbcBaseTypeString, int jdbcBaseType) {
         return new JDBCInfo(string, jdbcType, jdbcBaseTypeString, jdbcBaseType);
     }
 
-    public static JDBCInfo jdbcInfo(String string, int length, int jdbcType,
-            String jdbcBaseTypeString, int jdbcBaseType) {
-        return new JDBCInfo(String.format(string, Integer.valueOf(length)), jdbcType,
-                String.format(jdbcBaseTypeString, Integer.valueOf(length)), jdbcBaseType);
+    public static JDBCInfo jdbcInfo(String string, int length, int jdbcType, String jdbcBaseTypeString, int jdbcBaseType) {
+        return new JDBCInfo(String.format(string, Integer.valueOf(length)), jdbcType, String.format(jdbcBaseTypeString,
+                Integer.valueOf(length)), jdbcBaseType);
     }
 
     protected final BinaryManager binaryManager;
@@ -181,13 +174,11 @@ public abstract class Dialect {
     protected final int readAclMaxSize;
 
     /**
-     * Creates a {@code Dialect} by connecting to the datasource to check what
-     * database is used.
+     * Creates a {@code Dialect} by connecting to the datasource to check what database is used.
      *
      * @throws StorageException if a SQL connection problem occurs
      */
-    public static Dialect createDialect(Connection connection,
-            BinaryManager binaryManager,
+    public static Dialect createDialect(Connection connection, BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         DatabaseMetaData metadata;
         String databaseName;
@@ -203,15 +194,13 @@ public abstract class Dialect {
         }
         String dialectClassName = Framework.getProperty(DIALECT_CLASS);
         if (dialectClassName == null) {
-            dialectClassName = Framework.getProperty(DIALECT_CLASS + '.'
-                    + databaseName.replace(" ", ""));
+            dialectClassName = Framework.getProperty(DIALECT_CLASS + '.' + databaseName.replace(" ", ""));
         }
         Class<? extends Dialect> dialectClass;
         if (dialectClassName == null) {
             dialectClass = DIALECTS.get(databaseName);
             if (dialectClass == null) {
-                throw new StorageException("Unsupported database: "
-                        + databaseName);
+                throw new StorageException("Unsupported database: " + databaseName);
             }
         } else {
             Class<?> klass;
@@ -228,16 +217,13 @@ public abstract class Dialect {
         }
         Constructor<? extends Dialect> ctor;
         try {
-            ctor = dialectClass.getConstructor(DatabaseMetaData.class,
-                    BinaryManager.class, RepositoryDescriptor.class);
+            ctor = dialectClass.getConstructor(DatabaseMetaData.class, BinaryManager.class, RepositoryDescriptor.class);
         } catch (Exception e) {
-            throw new StorageException("Bad constructor signature for: "
-                    + dialectClassName, e);
+            throw new StorageException("Bad constructor signature for: " + dialectClassName, e);
         }
         Dialect dialect;
         try {
-            dialect = ctor.newInstance(metadata, binaryManager,
-                    repositoryDescriptor);
+            dialect = ctor.newInstance(metadata, binaryManager, repositoryDescriptor);
         } catch (InvocationTargetException e) {
             Throwable t = e.getTargetException();
             if (t instanceof StorageException) {
@@ -246,14 +232,13 @@ public abstract class Dialect {
                 throw new StorageException(t.getMessage(), t);
             }
         } catch (Exception e) {
-            throw new StorageException("Cannot construct dialect: "
-                    + dialectClassName, e);
+            throw new StorageException("Cannot construct dialect: " + dialectClassName, e);
         }
         return dialect;
     }
 
-    public Dialect(DatabaseMetaData metadata, BinaryManager binaryManager,
-            RepositoryDescriptor repositoryDescriptor) throws StorageException {
+    public Dialect(DatabaseMetaData metadata, BinaryManager binaryManager, RepositoryDescriptor repositoryDescriptor)
+            throws StorageException {
         try {
             storesUpperCaseIdentifiers = metadata.storesUpperCaseIdentifiers();
         } catch (SQLException e) {
@@ -284,8 +269,7 @@ public abstract class Dialect {
     /**
      * Gets the schema to use to query metadata about existing tables.
      */
-    public String getConnectionSchema(Connection connection)
-            throws SQLException {
+    public String getConnectionSchema(Connection connection) throws SQLException {
         return null;
     }
 
@@ -295,19 +279,16 @@ public abstract class Dialect {
     public abstract JDBCInfo getJDBCTypeAndString(ColumnType type);
 
     /**
-     * Check mismatches between expected and actual JDBC types read from
-     * database introspection.
+     * Check mismatches between expected and actual JDBC types read from database introspection.
      */
-    public boolean isAllowedConversion(int expected, int actual,
-            String actualName, int actualSize) {
+    public boolean isAllowedConversion(int expected, int actual, String actualName, int actualSize) {
         return false;
     }
 
     /**
      * Gets a generated id if so configured, otherwise returns null.
      */
-    public Serializable getGeneratedId(Connection connection)
-            throws SQLException {
+    public Serializable getGeneratedId(Connection connection) throws SQLException {
         if (DEBUG_UUIDS) {
             if (DEBUG_REAL_UUIDS) {
                 return String.format("00000000-0000-0000-0000-%012x",
@@ -327,17 +308,14 @@ public abstract class Dialect {
      * @param index the parameter index in the prepared statement
      * @param value the value to set
      */
-    public void setId(PreparedStatement ps, int index, Serializable value)
-            throws SQLException {
+    public void setId(PreparedStatement ps, int index, Serializable value) throws SQLException {
         ps.setObject(index, value);
     }
 
     /**
-     * Sets a long id (sequence) from a value that may be a String or already a
-     * Long.
+     * Sets a long id (sequence) from a value that may be a String or already a Long.
      */
-    public void setIdLong(PreparedStatement ps, int index, Serializable value)
-            throws SQLException {
+    public void setIdLong(PreparedStatement ps, int index, Serializable value) throws SQLException {
         long l;
         if (value instanceof String) {
             try {
@@ -348,19 +326,18 @@ public abstract class Dialect {
         } else if (value instanceof Long) {
             l = ((Long) value).longValue();
         } else {
-            throw new SQLException("Unsupported class for long id, class: "
-                    + value.getClass() + " value: " + value);
+            throw new SQLException("Unsupported class for long id, class: " + value.getClass() + " value: " + value);
         }
         ps.setLong(index, l);
     }
 
-    public abstract void setToPreparedStatement(PreparedStatement ps,
-            int index, Serializable value, Column column) throws SQLException;
+    public abstract void setToPreparedStatement(PreparedStatement ps, int index, Serializable value, Column column)
+            throws SQLException;
 
     public static final String ARRAY_SEP = "|";
 
-    protected void setToPreparedStatementString(PreparedStatement ps,
-            int index, Serializable value, Column column) throws SQLException {
+    protected void setToPreparedStatementString(PreparedStatement ps, int index, Serializable value, Column column)
+            throws SQLException {
         String v;
         ColumnType type = column.getType();
         if (type == ColumnType.BLOBID) {
@@ -385,11 +362,10 @@ public abstract class Dialect {
         ps.setString(index, v);
     }
 
-    public void setToPreparedStatementTimestamp(PreparedStatement ps,
-            int index, Serializable value, Column column) throws SQLException {
+    public void setToPreparedStatementTimestamp(PreparedStatement ps, int index, Serializable value, Column column)
+            throws SQLException {
         Calendar cal = (Calendar) value;
-        Timestamp ts = cal == null ? null
-                : new Timestamp(cal.getTimeInMillis());
+        Timestamp ts = cal == null ? null : new Timestamp(cal.getTimeInMillis());
         ps.setTimestamp(index, ts, cal); // cal passed for timezone
     }
 
@@ -428,11 +404,9 @@ public abstract class Dialect {
         return cal;
     }
 
-    public abstract Serializable getFromResultSet(ResultSet rs, int index,
-            Column column) throws SQLException;
+    public abstract Serializable getFromResultSet(ResultSet rs, int index, Column column) throws SQLException;
 
-    protected Serializable getFromResultSetString(ResultSet rs, int index,
-            Column column) throws SQLException {
+    protected Serializable getFromResultSetString(ResultSet rs, int index, Column column) throws SQLException {
         String string = rs.getString(index);
         if (string == null) {
             return null;
@@ -454,8 +428,7 @@ public abstract class Dialect {
         }
     }
 
-    protected Serializable getFromResultSetTimestamp(ResultSet rs, int index,
-            Column column) throws SQLException {
+    protected Serializable getFromResultSetTimestamp(ResultSet rs, int index, Column column) throws SQLException {
         Timestamp ts = rs.getTimestamp(index);
         if (ts == null) {
             return null;
@@ -491,10 +464,8 @@ public abstract class Dialect {
     }
 
     /*
-     * Needs to be deterministic and not change between Nuxeo EP releases.
-     *
-     * Turns "field_with_too_many_chars_for_oracle" into
-     * "FIELD_WITH_TOO_MANY_C_58557BA3".
+     * Needs to be deterministic and not change between Nuxeo EP releases. Turns "field_with_too_many_chars_for_oracle"
+     * into "FIELD_WITH_TOO_MANY_C_58557BA3".
      */
     protected String makeName(String name, int maxNameSize) {
         if (name.length() > maxNameSize) {
@@ -509,19 +480,16 @@ public abstract class Dialect {
             name = name.substring(0, maxNameSize - 1 - 8);
             name += '_' + toHexString(digest.digest()).substring(0, 8);
         }
-        name = storesUpperCaseIdentifiers() ? name.toUpperCase()
-                : name.toLowerCase();
+        name = storesUpperCaseIdentifiers() ? name.toUpperCase() : name.toLowerCase();
         name = name.replace(':', '_');
         return name;
     }
 
     /*
-     * Used for one-time names (IDX, FK, PK), ok if algorithm changes.
-     *
-     * If too long, keeps 4 chars of the prefix and the full suffix.
+     * Used for one-time names (IDX, FK, PK), ok if algorithm changes. If too long, keeps 4 chars of the prefix and the
+     * full suffix.
      */
-    protected String makeName(String prefix, String string, String suffix,
-            int maxNameSize) {
+    protected String makeName(String prefix, String string, String suffix, int maxNameSize) {
         String name = prefix + string + suffix;
         if (name.length() > maxNameSize) {
             MessageDigest digest;
@@ -536,8 +504,7 @@ public abstract class Dialect {
             name += '_' + toHexString(digest.digest()).substring(0, 8);
             name += suffix;
         }
-        name = storesUpperCaseIdentifiers() ? name.toUpperCase()
-                : name.toLowerCase();
+        name = storesUpperCaseIdentifiers() ? name.toUpperCase() : name.toLowerCase();
         name = name.replace(':', '_');
         return name;
     }
@@ -565,15 +532,12 @@ public abstract class Dialect {
         return makeName(tableName, "", "_PK", getMaxNameSize());
     }
 
-    public String getForeignKeyConstraintName(String tableName,
-            String foreignColumnName, String foreignTableName) {
-        return makeName(tableName + '_', foreignColumnName + '_'
-                + foreignTableName, "_FK", getMaxNameSize());
+    public String getForeignKeyConstraintName(String tableName, String foreignColumnName, String foreignTableName) {
+        return makeName(tableName + '_', foreignColumnName + '_' + foreignTableName, "_FK", getMaxNameSize());
     }
 
     public String getIndexName(String tableName, List<String> columnNames) {
-        return makeName(qualifyIndexName() ? tableName + '_' : "",
-                StringUtils.join(columnNames, '_'), "_IDX",
+        return makeName(qualifyIndexName() ? tableName + '_' : "", StringUtils.join(columnNames, '_'), "_IDX",
                 getMaxIndexNameSize());
     }
 
@@ -586,8 +550,7 @@ public abstract class Dialect {
      * @param columns the columns to index
      * @param model the model
      */
-    public String getCreateIndexSql(String indexName,
-            Table.IndexType indexType, Table table, List<Column> columns,
+    public String getCreateIndexSql(String indexName, Table.IndexType indexType, Table table, List<Column> columns,
             Model model) {
         List<String> qcols = new ArrayList<String>(columns.size());
         List<String> pcols = new ArrayList<String>(columns.size());
@@ -595,14 +558,12 @@ public abstract class Dialect {
             qcols.add(col.getQuotedName());
             pcols.add(col.getPhysicalName());
         }
-        String quotedIndexName = openQuote()
-                + getIndexName(table.getKey(), pcols) + closeQuote();
+        String quotedIndexName = openQuote() + getIndexName(table.getKey(), pcols) + closeQuote();
         if (indexType == Table.IndexType.FULLTEXT) {
-            return getCreateFulltextIndexSql(indexName, quotedIndexName, table,
-                    columns, model);
+            return getCreateFulltextIndexSql(indexName, quotedIndexName, table, columns, model);
         } else {
-            return String.format("CREATE INDEX %s ON %s (%s)", quotedIndexName,
-                    table.getQuotedName(), StringUtils.join(qcols, ", "));
+            return String.format("CREATE INDEX %s ON %s (%s)", quotedIndexName, table.getQuotedName(),
+                    StringUtils.join(qcols, ", "));
         }
     }
 
@@ -628,9 +589,8 @@ public abstract class Dialect {
     /**
      * Gets a CREATE INDEX statement for a fulltext index.
      */
-    public abstract String getCreateFulltextIndexSql(String indexName,
-            String quotedIndexName, Table table, List<Column> columns,
-            Model model);
+    public abstract String getCreateFulltextIndexSql(String indexName, String quotedIndexName, Table table,
+            List<Column> columns, Model model);
 
     /**
      * Get the dialect-specific version of a fulltext query.
@@ -661,22 +621,18 @@ public abstract class Dialect {
     }
 
     /**
-     * Gets the SQL information needed to do a a fulltext match, either with a
-     * direct expression in the WHERE clause, or using a join with an additional
-     * table.
+     * Gets the SQL information needed to do a a fulltext match, either with a direct expression in the WHERE clause, or
+     * using a join with an additional table.
      */
-    public abstract FulltextMatchInfo getFulltextScoredMatchInfo(
-            String fulltextQuery, String indexName, int nthMatch,
+    public abstract FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery, String indexName, int nthMatch,
             Column mainColumn, Model model, Database database);
 
     /**
      * Gets the SQL fragment to match a mixin type.
      */
-    public String getMatchMixinType(Column mixinsColumn, String mixin,
-            boolean positive, String[] returnParam) {
+    public String getMatchMixinType(Column mixinsColumn, String mixin, boolean positive, String[] returnParam) {
         returnParam[0] = "%" + ARRAY_SEP + mixin + ARRAY_SEP + "%";
-        return String.format("%s %s ?", mixinsColumn.getFullQuotedName(),
-                positive ? "LIKE" : "NOT LIKE");
+        return String.format("%s %s ?", mixinsColumn.getFullQuotedName(), positive ? "LIKE" : "NOT LIKE");
     }
 
     /**
@@ -709,9 +665,8 @@ public abstract class Dialect {
     /**
      * Gets the JDBC expression setting a free value for this column type.
      * <p>
-     * Needed for columns that need an expression around the value being set,
-     * usually for conversion (this is the case for PostgreSQL fulltext
-     * {@code TSVECTOR} columns for instance).
+     * Needed for columns that need an expression around the value being set, usually for conversion (this is the case
+     * for PostgreSQL fulltext {@code TSVECTOR} columns for instance).
      *
      * @param type the column type
      * @return the expression containing a free variable
@@ -736,13 +691,10 @@ public abstract class Dialect {
         return String.format(" ADD CONSTRAINT %s PRIMARY KEY ", constraintName);
     }
 
-    public String getAddForeignKeyConstraintString(String constraintName,
-            String[] foreignKeys, String referencedTable, String[] primaryKeys,
-            boolean referencesPrimaryKey) {
-        String sql = String.format(
-                " ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s",
-                constraintName, StringUtils.join(foreignKeys, ", "),
-                referencedTable);
+    public String getAddForeignKeyConstraintString(String constraintName, String[] foreignKeys, String referencedTable,
+            String[] primaryKeys, boolean referencesPrimaryKey) {
+        String sql = String.format(" ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s", constraintName,
+                StringUtils.join(foreignKeys, ", "), referencedTable);
         if (!referencesPrimaryKey) {
             sql += " (" + StringUtils.join(primaryKeys, ", ") + ')';
         }
@@ -780,14 +732,13 @@ public abstract class Dialect {
     public abstract boolean supportsUpdateFrom();
 
     /**
-     * When doing an UPDATE t SET ... FROM t, u WHERE ..., does the FROM clause
-     * need to repeate the updated table (t).
+     * When doing an UPDATE t SET ... FROM t, u WHERE ..., does the FROM clause need to repeate the updated table (t).
      */
     public abstract boolean doesUpdateFromRepeatSelf();
 
     /**
-     * When doing a SELECT DISTINCT that uses a ORDER BY, do the keys along
-     * which we order have to be mentioned in the DISTINCT clause?
+     * When doing a SELECT DISTINCT that uses a ORDER BY, do the keys along which we order have to be mentioned in the
+     * DISTINCT clause?
      */
     public boolean needsOrderByKeysAfterDistinct() {
         return true;
@@ -801,24 +752,21 @@ public abstract class Dialect {
     }
 
     /**
-     * Whether a GROUP BY can only be used with the original column name and not
-     * an alias.
+     * Whether a GROUP BY can only be used with the original column name and not an alias.
      */
     public boolean needsOriginalColumnInGroupBy() {
         return false;
     }
 
     /**
-     * Whether implicit Oracle joins (instead of explicit ANSI joins) are
-     * needed.
+     * Whether implicit Oracle joins (instead of explicit ANSI joins) are needed.
      */
     public boolean needsOracleJoins() {
         return false;
     }
 
     /**
-     * The dialect need an extra SQL statement to populate a user read acl cache
-     * before running the query.
+     * The dialect need an extra SQL statement to populate a user read acl cache before running the query.
      *
      * @since 5.5
      */
@@ -836,15 +784,13 @@ public abstract class Dialect {
     }
 
     /**
-     * When using a CLOB field in an expression, is some casting required and
-     * with what pattern?
+     * When using a CLOB field in an expression, is some casting required and with what pattern?
      * <p>
      * Needed for Derby and H2.
      *
      * @param inOrderBy {@code true} if the expression is for an ORDER BY column
-     * @return a pattern for String.format with one parameter for the column
-     *         name and one for the width, or {@code null} if no cast is
-     *         required
+     * @return a pattern for String.format with one parameter for the column name and one for the width, or {@code null}
+     *         if no cast is required
      */
     public String getClobCast(boolean inOrderBy) {
         return null;
@@ -853,8 +799,7 @@ public abstract class Dialect {
     /**
      * Get the expression to use to cast a column to a DATE type.
      *
-     * @return a pattern for String.format with one parameter for the column
-     *         name
+     * @return a pattern for String.format with one parameter for the column name
      * @since 5.6
      */
     public String getDateCast() {
@@ -886,8 +831,7 @@ public abstract class Dialect {
      * Gets the expression to use to check security.
      *
      * @param idColumnName the quoted name of the id column to use
-     * @return an SQL expression with two parameters (principals and
-     *         permissions) that is true if access is allowed
+     * @return an SQL expression with two parameters (principals and permissions) that is true if access is allowed
      */
     public abstract String getSecurityCheckSql(String idColumnName);
 
@@ -902,14 +846,12 @@ public abstract class Dialect {
      * Gets the expression to use to check tree membership.
      *
      * @param idColumnName the quoted name of the id column to use
-     * @return an SQL expression with one parameters for the based id that is
-     *         true if the document is under base id
+     * @return an SQL expression with one parameters for the based id that is true if the document is under base id
      */
     public abstract String getInTreeSql(String idColumnName);
 
     /**
-     * Does the dialect support passing ARRAY values (to stored procedures
-     * mostly).
+     * Does the dialect support passing ARRAY values (to stored procedures mostly).
      * <p>
      * If not, we'll simulate them using a string and a separator.
      *
@@ -920,8 +862,8 @@ public abstract class Dialect {
     }
 
     /**
-     * Does a stored function returning an result set need to access it as a
-     * single array instead of iterating over a normal result set's rows.
+     * Does a stored function returning an result set need to access it as a single array instead of iterating over a
+     * normal result set's rows.
      * <p>
      * Oracle needs this.
      */
@@ -939,8 +881,7 @@ public abstract class Dialect {
     }
 
     /**
-     * Checks if the dialect supports storing arrays of system names (for mixins
-     * for instance).
+     * Checks if the dialect supports storing arrays of system names (for mixins for instance).
      */
     public boolean supportsSysNameArray() {
         return false;
@@ -979,8 +920,7 @@ public abstract class Dialect {
     /**
      * Gets the dialect-specific subquery for an array column.
      */
-    public ArraySubQuery getArraySubQuery(Column arrayColumn,
-            String subQueryAlias) throws QueryMakerException {
+    public ArraySubQuery getArraySubQuery(Column arrayColumn, String subQueryAlias) throws QueryMakerException {
         throw new QueryMakerException("Not supported");
     }
 
@@ -989,8 +929,7 @@ public abstract class Dialect {
      *
      * @throws QueryMakerException
      */
-    public String getArrayElementString(String arrayColumnName,
-            int arrayElementIndex) throws QueryMakerException {
+    public String getArrayElementString(String arrayColumnName, int arrayElementIndex) throws QueryMakerException {
         throw new QueryMakerException("Not supported");
     }
 
@@ -999,8 +938,7 @@ public abstract class Dialect {
      *
      * @throws QueryMakerException
      */
-    public String getArrayInSql(Column arrayColumn, String cast,
-            boolean positive, List<Serializable> params)
+    public String getArrayInSql(Column arrayColumn, String cast, boolean positive, List<Serializable> params)
             throws QueryMakerException {
         throw new QueryMakerException("Not supported");
     }
@@ -1010,8 +948,8 @@ public abstract class Dialect {
      *
      * @throws QueryMakerException
      */
-    public String getArrayLikeSql(Column arrayColumn, String refName,
-            boolean positive, Table dataHierTable) throws QueryMakerException {
+    public String getArrayLikeSql(Column arrayColumn, String refName, boolean positive, Table dataHierTable)
+            throws QueryMakerException {
         throw new QueryMakerException("Not supported");
     }
 
@@ -1020,25 +958,22 @@ public abstract class Dialect {
      *
      * @throws QueryMakerException
      */
-    public String getArrayIlikeSql(Column arrayColumn, String refName,
-            boolean positive, Table dataHierTable) throws QueryMakerException {
+    public String getArrayIlikeSql(Column arrayColumn, String refName, boolean positive, Table dataHierTable)
+            throws QueryMakerException {
         throw new QueryMakerException("Not supported");
     }
 
     /**
-     * Factory method for creating Array objects, suitable for passing to
-     * {@link PreparedStatement#setArray}.
+     * Factory method for creating Array objects, suitable for passing to {@link PreparedStatement#setArray}.
      * <p>
-     * (An equivalent method is defined by JDBC4 on the {@link Connection}
-     * class.)
+     * (An equivalent method is defined by JDBC4 on the {@link Connection} class.)
      *
      * @param type the SQL type of the elements
      * @param elements the elements of the array
      * @param connection the connection
      * @return an Array holding the elements
      */
-    public Array createArrayOf(int type, Object[] elements,
-            Connection connection) throws SQLException {
+    public Array createArrayOf(int type, Object[] elements, Connection connection) throws SQLException {
         throw new SQLException("Not supported");
     }
 
@@ -1052,8 +987,7 @@ public abstract class Dialect {
     /**
      * Gets the properties to use with the SQL statements.
      */
-    public abstract Map<String, Serializable> getSQLStatementsProperties(
-            Model model, Database database);
+    public abstract Map<String, Serializable> getSQLStatementsProperties(Model model, Database database);
 
     /**
      * Checks that clustering is supported.
@@ -1063,16 +997,14 @@ public abstract class Dialect {
     }
 
     /**
-     * Returns the cluster node id, for some databases where this info is needed
-     * at the Java level.
+     * Returns the cluster node id, for some databases where this info is needed at the Java level.
      */
     public String getClusterNodeIdSql() {
         return null;
     }
 
     /**
-     * Does clustering fetch of invalidations (
-     * {@link #getClusterGetInvalidations}) need a separate delete for them (
+     * Does clustering fetch of invalidations ( {@link #getClusterGetInvalidations}) need a separate delete for them (
      * {@link #getClusterDeleteInvalidations}).
      */
     public boolean isClusteringDeleteNeeded() {
@@ -1108,7 +1040,6 @@ public abstract class Dialect {
 
     /**
      * Does the dialect support ILIKE operator
-     *
      */
     public boolean supportsIlike() {
         return false;
@@ -1116,7 +1047,6 @@ public abstract class Dialect {
 
     /**
      * Does the dialect support an optimized read security checks
-     *
      */
     public boolean supportsReadAcl() {
         return false;
@@ -1151,7 +1081,6 @@ public abstract class Dialect {
 
     /**
      * Gets the statement to update the read acls
-     *
      */
     public String getUpdateReadAclsSql() {
         return null;
@@ -1159,29 +1088,23 @@ public abstract class Dialect {
 
     /**
      * Gets the statement to rebuild the wall read acls
-     *
      */
     public String getRebuildReadAclsSql() {
         return null;
     }
 
     /**
-     * Gets the expression to check if access is allowed using read acls. The
-     * dialect must suppportsReadAcl.
+     * Gets the expression to check if access is allowed using read acls. The dialect must suppportsReadAcl.
      *
-     * @param userIdCol the quoted name of the aclr_user_map user_id column to
-     *            use
-     * @return an SQL expression with one parameter (principals) that is true if
-     *         access is allowed
+     * @param userIdCol the quoted name of the aclr_user_map user_id column to use
+     * @return an SQL expression with one parameter (principals) that is true if access is allowed
      */
     public String getReadAclsCheckSql(String userIdCol) {
         return null;
     }
 
     /**
-     * Gets the SQL expression to prepare the user read acls cache.
-     *
-     * This can be used to populate a table cache.
+     * Gets the SQL expression to prepare the user read acls cache. This can be used to populate a table cache.
      *
      * @since 5.5
      * @return and SQL expression with one parameter (principals)
@@ -1191,13 +1114,12 @@ public abstract class Dialect {
     }
 
     /**
-     * Called before a table is created, when it's been determined that it
-     * doesn't exist yet.
+     * Called before a table is created, when it's been determined that it doesn't exist yet.
      *
      * @return {@code false} if the table must actually not be created
      */
-    public boolean preCreateTable(Connection connection, Table table,
-            Model model, Database database) throws SQLException {
+    public boolean preCreateTable(Connection connection, Table table, Model model, Database database)
+            throws SQLException {
         return true;
     }
 
@@ -1206,8 +1128,7 @@ public abstract class Dialect {
      * <p>
      * Used for migrations/upgrades.
      */
-    public List<String> getPostCreateTableSqls(Table table, Model model,
-            Database database) {
+    public List<String> getPostCreateTableSqls(Table table, Model model, Database database) {
         return Collections.emptyList();
     }
 
@@ -1216,13 +1137,12 @@ public abstract class Dialect {
      * <p>
      * Used for migrations/upgrades.
      */
-    public void existingTableDetected(Connection connection, Table table,
-            Model model, Database database) throws SQLException {
+    public void existingTableDetected(Connection connection, Table table, Model model, Database database)
+            throws SQLException {
     }
 
     /**
-     * Checks if an exception received means that the low level connection has
-     * been trashed and must be reset.
+     * Checks if an exception received means that the low level connection has been trashed and must be reset.
      */
     public boolean isConnectionClosedException(Throwable t) {
         while (t.getCause() != null) {
@@ -1232,8 +1152,7 @@ public abstract class Dialect {
     }
 
     /**
-     * Checks if an exception received means that a concurrent update was
-     * detected.
+     * Checks if an exception received means that a concurrent update was detected.
      *
      * @since 5.8
      */
@@ -1242,18 +1161,16 @@ public abstract class Dialect {
     }
 
     /**
-     * Let the dialect processes additional statements after tables creation and
-     * conditional statements. Can be used for specific upgrade procedure.
+     * Let the dialect processes additional statements after tables creation and conditional statements. Can be used for
+     * specific upgrade procedure.
      *
      * @param connection
      */
-    public void performAdditionalStatements(Connection connection)
-            throws SQLException {
+    public void performAdditionalStatements(Connection connection) throws SQLException {
     }
 
     /**
-     * A query that, when executed, will make at least a round-trip to the
-     * server to check that the connection is alive.
+     * A query that, when executed, will make at least a round-trip to the server to check that the connection is alive.
      * <p>
      * The query should throw an error if the connection is dead.
      */
@@ -1270,16 +1187,13 @@ public abstract class Dialect {
     }
 
     /**
-     * Let the dialect perform additional statements just after the connection
-     * is opened.
+     * Let the dialect perform additional statements just after the connection is opened.
      */
-    public void performPostOpenStatements(Connection connection)
-            throws SQLException {
+    public void performPostOpenStatements(Connection connection) throws SQLException {
     }
 
     /**
-     * Gets additional SQL statements to execute after the CREATE TABLE when
-     * creating an identity column.
+     * Gets additional SQL statements to execute after the CREATE TABLE when creating an identity column.
      * <p>
      * Oracle needs both a sequence and a trigger.
      */
@@ -1288,8 +1202,7 @@ public abstract class Dialect {
     }
 
     /**
-     * Checks if an identity column is already defined as a primary key and does
-     * not need a separate index added.
+     * Checks if an identity column is already defined as a primary key and does not need a separate index added.
      * <p>
      * MySQL defines the identity column directly as primary key.
      */
@@ -1298,8 +1211,7 @@ public abstract class Dialect {
     }
 
     /**
-     * True if the dialect returns the generated key for the identity from the
-     * insert statement.
+     * True if the dialect returns the generated key for the identity from the insert statement.
      * <p>
      * Oracle needs a separate call to CURRVAL.
      */
@@ -1308,8 +1220,7 @@ public abstract class Dialect {
     }
 
     /**
-     * Gets the SQL query to execute to retrieve the last generated identity
-     * key.
+     * Gets the SQL query to execute to retrieve the last generated identity key.
      * <p>
      * Oracle needs a separate call to CURRVAL.
      */
@@ -1327,16 +1238,14 @@ public abstract class Dialect {
     }
 
     /**
-     * Gets the SQL descending sort direction with option to sort nulls last.
-     *
-     * Use to unify database behavior.
+     * Gets the SQL descending sort direction with option to sort nulls last. Use to unify database behavior.
      *
      * @return DESC or DESC NULLS LAST depending on dialects.
      */
     public String getDescending() {
         if (descending == null) {
-            if (needsNullsLastOnDescSort() && Boolean.parseBoolean(Framework.getProperty(
-                    NULLS_LAST_ON_DESC_PROP, "true"))) {
+            if (needsNullsLastOnDescSort()
+                    && Boolean.parseBoolean(Framework.getProperty(NULLS_LAST_ON_DESC_PROP, "true"))) {
                 descending = " DESC NULLS LAST";
             } else {
                 descending = " DESC";
@@ -1367,16 +1276,14 @@ public abstract class Dialect {
     }
 
     /**
-     * SQL to soft delete documents. SQL returned has free parameters for the
-     * array of ids and time.
+     * SQL to soft delete documents. SQL returned has free parameters for the array of ids and time.
      */
     public String getSoftDeleteSql() {
         throw new UnsupportedOperationException("Soft deletes not supported");
     }
 
     /**
-     * SQL to clean soft-delete documents. SQL returned has free parameters
-     * max and beforeTime.
+     * SQL to clean soft-delete documents. SQL returned has free parameters max and beforeTime.
      */
     public String getSoftDeleteCleanupSql() {
         throw new UnsupportedOperationException("Soft deletes not supported");

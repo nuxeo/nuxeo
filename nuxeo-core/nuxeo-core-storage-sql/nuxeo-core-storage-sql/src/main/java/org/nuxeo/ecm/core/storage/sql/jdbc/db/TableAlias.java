@@ -111,8 +111,7 @@ public class TableAlias implements Table {
     }
 
     @Override
-    public Column addColumn(String name, ColumnType type, String key,
-            Model model) {
+    public Column addColumn(String name, ColumnType type, String key, Model model) {
         throw new UnsupportedOperationException();
     }
 
@@ -122,8 +121,7 @@ public class TableAlias implements Table {
     }
 
     @Override
-    public void addIndex(String indexName, IndexType indexType,
-            String... columnNames) {
+    public void addIndex(String indexName, IndexType indexType, String... columnNames) {
         throw new UnsupportedOperationException();
     }
 

@@ -42,8 +42,7 @@ public class TestSQLBackendUpgrade extends SQLBackendTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
-                "OSGI-INF/test-backend-core-types-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests", "OSGI-INF/test-backend-core-types-contrib.xml");
         JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
     }
 
@@ -55,22 +54,19 @@ public class TestSQLBackendUpgrade extends SQLBackendTestCase {
     }
 
     protected void setUpTestProp(String prop) {
-        for (String p : Arrays.asList(JDBCMapper.TEST_UPGRADE_VERSIONS,
-                JDBCMapper.TEST_UPGRADE_LAST_CONTRIBUTOR,
+        for (String p : Arrays.asList(JDBCMapper.TEST_UPGRADE_VERSIONS, JDBCMapper.TEST_UPGRADE_LAST_CONTRIBUTOR,
                 JDBCMapper.TEST_UPGRADE_LOCKS)) {
             JDBCMapper.testProps.put(p, Boolean.valueOf(p.equals(prop)));
         }
     }
 
     protected static boolean isLatestVersion(Node node) throws Exception {
-        Boolean b = (Boolean) node.getSimpleProperty(
-                Model.VERSION_IS_LATEST_PROP).getValue();
+        Boolean b = (Boolean) node.getSimpleProperty(Model.VERSION_IS_LATEST_PROP).getValue();
         return b.booleanValue();
     }
 
     protected static boolean isLatestMajorVersion(Node node) throws Exception {
-        Boolean b = (Boolean) node.getSimpleProperty(
-                Model.VERSION_IS_LATEST_MAJOR_PROP).getValue();
+        Boolean b = (Boolean) node.getSimpleProperty(Model.VERSION_IS_LATEST_MAJOR_PROP).getValue();
         return b.booleanValue();
     }
 
@@ -89,19 +85,14 @@ public class TestSQLBackendUpgrade extends SQLBackendTestCase {
         nodea.setSimpleProperty("tst:title", "hello world");
         nodea.setSimpleProperty("tst:rate", Double.valueOf(1.5));
         nodea.setSimpleProperty("tst:count", Long.valueOf(123456789));
-        Calendar cal = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34,
-                56);
+        Calendar cal = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34, 56);
         nodea.setSimpleProperty("tst:created", cal);
-        nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
-                "c" });
+        nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b", "c" });
         nodea.setCollectionProperty("tst:tags", new String[] { "1", "2" });
 
-        assertEquals("hello world",
-                nodea.getSimpleProperty("tst:title").getString());
-        assertEquals(Double.valueOf(1.5),
-                nodea.getSimpleProperty("tst:rate").getValue());
-        assertEquals(Long.valueOf(123456789),
-                nodea.getSimpleProperty("tst:count").getValue());
+        assertEquals("hello world", nodea.getSimpleProperty("tst:title").getString());
+        assertEquals(Double.valueOf(1.5), nodea.getSimpleProperty("tst:rate").getValue());
+        assertEquals(Long.valueOf(123456789), nodea.getSimpleProperty("tst:count").getValue());
         assertNotNull(nodea.getSimpleProperty("tst:created").getValue());
         String[] subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
         String[] tags = nodea.getCollectionProperty("tst:tags").getStrings();
@@ -134,12 +125,9 @@ public class TestSQLBackendUpgrade extends SQLBackendTestCase {
         root = session.getRootNode();
         assertNotNull(root);
         nodea = session.getChildNode(root, "foo", false);
-        assertEquals("another",
-                nodea.getSimpleProperty("tst:title").getString());
-        assertEquals(Double.valueOf(3.14),
-                nodea.getSimpleProperty("tst:rate").getValue());
-        assertEquals(Long.valueOf(1234567891234L),
-                nodea.getSimpleProperty("tst:count").getValue());
+        assertEquals("another", nodea.getSimpleProperty("tst:title").getString());
+        assertEquals(Double.valueOf(3.14), nodea.getSimpleProperty("tst:rate").getValue());
+        assertEquals(Long.valueOf(1234567891234L), nodea.getSimpleProperty("tst:count").getValue());
         subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
         tags = nodea.getCollectionProperty("tst:tags").getStrings();
         assertEquals(Arrays.asList("z", "c"), Arrays.asList(subjects));
@@ -200,18 +188,14 @@ public class TestSQLBackendUpgrade extends SQLBackendTestCase {
         ver = session.getNodeById("12121212-dddd-dddd-dddd-000000000000");
         assertNotNull(ver);
         assertEquals("mynddoc", ver.getName());
-        assertEquals("Administrator",
-                ver.getSimpleProperty("dc:creator").getString());
-        assertEquals("Administrator",
-                ver.getSimpleProperty("dc:lastContributor").getString());
+        assertEquals("Administrator", ver.getSimpleProperty("dc:creator").getString());
+        assertEquals("Administrator", ver.getSimpleProperty("dc:lastContributor").getString());
 
         ver = session.getNodeById("12121212-dddd-dddd-dddd-000000000001");
         assertNotNull(ver);
         assertEquals("myrddoc", ver.getName());
-        assertEquals("Administrator",
-                ver.getSimpleProperty("dc:creator").getString());
-        assertEquals("FakeOne",
-                ver.getSimpleProperty("dc:lastContributor").getString());
+        assertEquals("Administrator", ver.getSimpleProperty("dc:creator").getString());
+        assertEquals("FakeOne", ver.getSimpleProperty("dc:lastContributor").getString());
     }
 
     @Test
@@ -227,8 +211,7 @@ public class TestSQLBackendUpgrade extends SQLBackendTestCase {
         lock = session.getLock(id);
         assertNotNull(lock);
         assertEquals("bob", lock.getOwner());
-        Calendar expected = new GregorianCalendar(2011, Calendar.JANUARY, 26,
-                0, 0, 0);
+        Calendar expected = new GregorianCalendar(2011, Calendar.JANUARY, 26, 0, 0, 0);
         assertEquals(expected, lock.getCreated());
 
         // old lock was nulled after unlock

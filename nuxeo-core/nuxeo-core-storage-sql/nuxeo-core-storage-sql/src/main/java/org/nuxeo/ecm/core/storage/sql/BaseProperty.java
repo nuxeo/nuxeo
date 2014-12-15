@@ -15,8 +15,8 @@ package org.nuxeo.ecm.core.storage.sql;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
- * A {@code Property} gives access to a scalar or array value stored in an
- * underlying table. This base class contains common code.
+ * A {@code Property} gives access to a scalar or array value stored in an underlying table. This base class contains
+ * common code.
  * <p>
  * When stored, the values are normalized to their standard type.
  *

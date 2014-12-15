@@ -35,8 +35,7 @@ public class TestRepositoryDescriptor {
     protected RepositoryDescriptor desc;
 
     protected static URL getResource(String resource) {
-        return Thread.currentThread().getContextClassLoader().getResource(
-                resource);
+        return Thread.currentThread().getContextClassLoader().getResource(resource);
     }
 
     @Before
@@ -73,28 +72,24 @@ public class TestRepositoryDescriptor {
         assertNull(fti.name);
         assertNull(fti.fieldType);
         assertEquals(new HashSet(), fti.fields);
-        assertEquals(new HashSet(Collections.singleton("dc:creator")),
-                fti.excludeFields);
+        assertEquals(new HashSet(Collections.singleton("dc:creator")), fti.excludeFields);
 
         fti = desc.fulltextIndexes.get(1);
         assertEquals("titraille", fti.name);
         assertNull(fti.fieldType);
-        assertEquals(new HashSet(Arrays.asList("dc:title", "dc:description")),
-                fti.fields);
+        assertEquals(new HashSet(Arrays.asList("dc:title", "dc:description")), fti.fields);
         assertEquals(new HashSet(), fti.excludeFields);
 
         fti = desc.fulltextIndexes.get(2);
         assertEquals("blobs", fti.name);
         assertEquals("blob", fti.fieldType);
         assertEquals(new HashSet(), fti.fields);
-        assertEquals(new HashSet(Collections.singleton("foo:bar")),
-                fti.excludeFields);
+        assertEquals(new HashSet(Collections.singleton("foo:bar")), fti.excludeFields);
 
         fti = desc.fulltextIndexes.get(3);
         assertEquals("pictures", fti.name);
         assertNull(fti.fieldType);
-        assertEquals(new HashSet(
-                Collections.singleton("picture:views/*/filename")), fti.fields);
+        assertEquals(new HashSet(Collections.singleton("picture:views/*/filename")), fti.fields);
         assertEquals(new HashSet(), fti.excludeFields);
         assertEquals("martian", fti.analyzer);
         assertEquals("other", fti.catalog);
@@ -156,8 +151,7 @@ public class TestRepositoryDescriptor {
         desc.merge(desc2);
         assertEquals("/foo/bar2", desc.binaryStorePath);
         assertFalse(desc.getClusteringEnabled());
-        assertEquals(Arrays.asList("file1", "file2", "file3"),
-                desc.sqlInitFiles);
+        assertEquals(Arrays.asList("file1", "file2", "file3"), desc.sqlInitFiles);
         assertTrue(desc.getPathOptimizationsEnabled());
         assertEquals(2, desc.getPathOptimizationsVersion());
 
@@ -197,9 +191,7 @@ public class TestRepositoryDescriptor {
         fti = desc.fulltextIndexes.get(1);
         assertEquals("titraille", fti.name);
         assertNull(fti.fieldType);
-        assertEquals(
-                new HashSet<String>(Arrays.asList("dc:title", "dc:description",
-                        "my:desc")), fti.fields);
+        assertEquals(new HashSet<String>(Arrays.asList("dc:title", "dc:description", "my:desc")), fti.fields);
         assertEquals(new HashSet<String>(), fti.excludeFields);
 
         fti = desc.fulltextIndexes.get(2);
@@ -211,8 +203,7 @@ public class TestRepositoryDescriptor {
         fti = desc.fulltextIndexes.get(3);
         assertEquals("pictures", fti.name);
         assertNull(fti.fieldType);
-        assertEquals(Collections.singleton("picture:views/*/filename"),
-                fti.fields);
+        assertEquals(Collections.singleton("picture:views/*/filename"), fti.fields);
         assertEquals(new HashSet<String>(), fti.excludeFields);
         assertEquals("venusian", fti.analyzer);
         assertEquals("other", fti.catalog);
@@ -223,12 +214,9 @@ public class TestRepositoryDescriptor {
         assertEquals(Collections.singleton("my:other"), fti.fields);
         assertEquals(new HashSet<String>(), fti.excludeFields);
 
-        assertEquals(
-                new HashSet<String>(Arrays.asList("Folder", "Workspace",
-                        "OtherExcluded")), desc.fulltextExcludedTypes);
-        assertEquals(
-                new HashSet<String>(Arrays.asList("Note", "File",
-                        "OtherIncluded")), desc.fulltextIncludedTypes);
+        assertEquals(new HashSet<String>(Arrays.asList("Folder", "Workspace", "OtherExcluded")),
+                desc.fulltextExcludedTypes);
+        assertEquals(new HashSet<String>(Arrays.asList("Note", "File", "OtherIncluded")), desc.fulltextIncludedTypes);
     }
 
 }

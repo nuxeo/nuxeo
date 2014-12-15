@@ -15,13 +15,12 @@ package org.nuxeo.ecm.core.storage.sql.management;
 import org.nuxeo.ecm.core.management.api.Probe;
 import org.nuxeo.ecm.core.management.api.ProbeStatus;
 
-
 public class RemoteSessionsProbe implements Probe {
 
     @Override
-    public ProbeStatus run()  {
-       SQLRepositoryStatus status = new SQLRepositoryStatus();
-       return ProbeStatus.newSuccess(status.listRemoteSessions());
+    public ProbeStatus run() {
+        SQLRepositoryStatus status = new SQLRepositoryStatus();
+        return ProbeStatus.newSuccess(status.listRemoteSessions());
     }
 
 }

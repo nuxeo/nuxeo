@@ -54,8 +54,7 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         return newRepository(null, clusteringDelay);
     }
 
-    protected Repository newRepository(String name, long clusteringDelay)
-            throws Exception {
+    protected Repository newRepository(String name, long clusteringDelay) throws Exception {
         RepositoryDescriptor descriptor = newDescriptor(name, clusteringDelay);
         RepositoryImpl repo = new RepositoryImpl(descriptor);
         SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
@@ -63,8 +62,7 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         return repo;
     }
 
-    protected RepositoryDescriptor newDescriptor(String name,
-            long clusteringDelay) {
+    protected RepositoryDescriptor newDescriptor(String name, long clusteringDelay) {
         if (name == null) {
             name = DatabaseHelper.DATABASE.repositoryName;
         }

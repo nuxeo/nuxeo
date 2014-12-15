@@ -18,9 +18,8 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * SQL repository factory.
  * <p>
- * This class is mentioned in the repository extension point defining a given
- * repository. It is constructed by RepositoryManager#getOrRegisterRepository,
- * itself called by the *ManagedConnectionFactory#createRepository of the RA.
+ * This class is mentioned in the repository extension point defining a given repository. It is constructed by
+ * RepositoryManager#getOrRegisterRepository, itself called by the *ManagedConnectionFactory#createRepository of the RA.
  */
 public class SQLRepositoryFactory implements RepositoryFactory {
 

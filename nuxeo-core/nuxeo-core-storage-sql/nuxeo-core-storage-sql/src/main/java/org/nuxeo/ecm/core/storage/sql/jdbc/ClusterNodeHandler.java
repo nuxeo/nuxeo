@@ -45,8 +45,8 @@ public class ClusterNodeHandler {
     /** Cluster node id, needed at the Java level for some databases. */
     private String nodeId;
 
-    public ClusterNodeHandler(Mapper clusterNodeMapper,
-            RepositoryDescriptor repositoryDescriptor) throws StorageException {
+    public ClusterNodeHandler(Mapper clusterNodeMapper, RepositoryDescriptor repositoryDescriptor)
+            throws StorageException {
         this.clusterNodeMapper = clusterNodeMapper;
         nodeId = clusterNodeMapper.createClusterNode();
         clusteringDelay = repositoryDescriptor.getClusteringDelay();
@@ -82,8 +82,7 @@ public class ClusterNodeHandler {
 
     // TODO should be called by RepositoryManagement
     public void processClusterInvalidationsNext() {
-        clusterNodeLastInvalidationTimeMillis = System.currentTimeMillis()
-                - clusteringDelay - 1;
+        clusterNodeLastInvalidationTimeMillis = System.currentTimeMillis() - clusteringDelay - 1;
     }
 
     /**
@@ -103,16 +102,14 @@ public class ClusterNodeHandler {
     /**
      * Propagates invalidations to all the queues of this cluster node.
      */
-    public void propagateInvalidations(Invalidations invalidations,
-            InvalidationsQueue skipQueue) {
+    public void propagateInvalidations(Invalidations invalidations, InvalidationsQueue skipQueue) {
         propagator.propagateInvalidations(invalidations, null);
     }
 
     /**
      * Receives cluster invalidations from other cluster nodes.
      */
-    public Invalidations receiveClusterInvalidations()
-            throws StorageException {
+    public Invalidations receiveClusterInvalidations() throws StorageException {
         synchronized (clusterNodeMapper) {
             if (clusterNodeLastInvalidationTimeMillis + clusteringDelay > System.currentTimeMillis()) {
                 // delay hasn't expired
@@ -133,8 +130,7 @@ public class ClusterNodeHandler {
     /**
      * Sends cluster invalidations to other cluster nodes.
      */
-    public void sendClusterInvalidations(Invalidations invalidations)
-            throws StorageException {
+    public void sendClusterInvalidations(Invalidations invalidations) throws StorageException {
         if (invalidations == null || invalidations.isEmpty()) {
             return;
         }

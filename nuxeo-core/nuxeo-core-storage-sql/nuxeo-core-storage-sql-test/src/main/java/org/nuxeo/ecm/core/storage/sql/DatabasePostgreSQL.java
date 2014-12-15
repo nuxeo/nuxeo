@@ -48,10 +48,7 @@ public class DatabasePostgreSQL extends DatabaseHelper {
         String password = setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
         // for sql directory tests
         String driver = setProperty(DRIVER_PROPERTY, DRIVER);
-        String url = String.format("jdbc:postgresql://%s:%s/%s",
-                server,
-                port,
-                db);
+        String url = String.format("jdbc:postgresql://%s:%s/%s", server, port, db);
         setProperty(URL_PROPERTY, url);
         setProperty(ID_TYPE_PROPERTY, DEF_ID_TYPE);
     }
@@ -61,10 +58,8 @@ public class DatabasePostgreSQL extends DatabaseHelper {
         super.setUp();
         Class.forName(DRIVER);
         setProperties();
-        Connection connection = DriverManager.getConnection(
-                Framework.getProperty(URL_PROPERTY),
-                Framework.getProperty(USER_PROPERTY),
-                Framework.getProperty(PASSWORD_PROPERTY));
+        Connection connection = DriverManager.getConnection(Framework.getProperty(URL_PROPERTY),
+                Framework.getProperty(USER_PROPERTY), Framework.getProperty(PASSWORD_PROPERTY));
         try {
             doOnAllTables(connection, null, "public", "DROP TABLE \"%s\" CASCADE");
             Statement st = connection.createStatement();

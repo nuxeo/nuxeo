@@ -22,12 +22,11 @@ import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.storage.binary.Binary;
 
 /**
- * The data of a single row in a table (keys/values form a map), or of multiple
- * rows with the same id (values is an array of Serializable).
+ * The data of a single row in a table (keys/values form a map), or of multiple rows with the same id (values is an
+ * array of Serializable).
  * <p>
- * The id of the row is distinguished internally from other columns. For
- * fragments corresponding to created data, the initial id is a temporary one,
- * and it will be changed after database insert.
+ * The id of the row is distinguished internally from other columns. For fragments corresponding to created data, the
+ * initial id is a temporary one, and it will be changed after database insert.
  */
 public final class Row extends RowId implements Serializable, Cloneable {
 
@@ -40,8 +39,8 @@ public final class Row extends RowId implements Serializable, Cloneable {
     }
 
     /**
-     * A database value we don't care about reading. When present in a fragment,
-     * it won't be written, but any other value will be.
+     * A database value we don't care about reading. When present in a fragment, it won't be written, but any other
+     * value will be.
      */
     public static final Serializable OPAQUE = OpaqueValue.OPAQUE_VALUE;
 
@@ -74,8 +73,7 @@ public final class Row extends RowId implements Serializable, Cloneable {
     }
 
     /**
-     * Constructs an empty {@link Row} for the given table with the given id
-     * (may be {@code null}).
+     * Constructs an empty {@link Row} for the given table with the given id (may be {@code null}).
      */
     public Row(String tableName, Serializable id) {
         super(tableName, id);
@@ -270,8 +268,7 @@ public final class Row extends RowId implements Serializable, Cloneable {
         } else if (value instanceof String) {
             String v = (String) value;
             if (v.length() > MAX_STRING) {
-                v = v.substring(0, MAX_STRING) + "...(" + v.length()
-                        + " chars)...";
+                v = v.substring(0, MAX_STRING) + "...(" + v.length() + " chars)...";
             }
             buf.append('"');
             buf.append(v);
@@ -286,9 +283,7 @@ public final class Row extends RowId implements Serializable, Cloneable {
             } else {
                 sign = '+';
             }
-            buf.append(String.format(
-                    "Calendar(%04d-%02d-%02dT%02d:%02d:%02d.%03d%c%02d:%02d)",
-                    cal.get(Calendar.YEAR), //
+            buf.append(String.format("Calendar(%04d-%02d-%02dT%02d:%02d:%02d.%03d%c%02d:%02d)", cal.get(Calendar.YEAR), //
                     cal.get(Calendar.MONTH) + 1, //
                     cal.get(Calendar.DAY_OF_MONTH), //
                     cal.get(Calendar.HOUR_OF_DAY), //

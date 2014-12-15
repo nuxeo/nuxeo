@@ -29,7 +29,6 @@ public class Activator implements BundleActivator {
 
     private BundleContext context;
 
-
     public static URL getResource(String path) {
         Activator a = instance;
         if (a != null) {

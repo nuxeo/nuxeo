@@ -17,7 +17,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
 public class MonitoredJDBCBackend extends MonitoredBackend {
 
     public MonitoredJDBCBackend() {
-       super(new JDBCBackend());
+        super(new JDBCBackend());
     }
 
 }

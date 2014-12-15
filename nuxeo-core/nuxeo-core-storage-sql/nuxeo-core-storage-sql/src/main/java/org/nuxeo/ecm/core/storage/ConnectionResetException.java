@@ -12,8 +12,8 @@
 package org.nuxeo.ecm.core.storage;
 
 /**
- * A storage exception thrown if the connection was reset (and should be working
- * again). Helpful for callers that may want to retry things.
+ * A storage exception thrown if the connection was reset (and should be working again). Helpful for callers that may
+ * want to retry things.
  *
  * @since 5.6
  */

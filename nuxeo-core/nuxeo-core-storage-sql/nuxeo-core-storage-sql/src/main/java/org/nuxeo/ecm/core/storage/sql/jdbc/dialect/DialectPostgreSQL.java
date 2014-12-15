@@ -57,6 +57,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableAlias;
+
 /**
  * PostgreSQL-specific dialect.
  *
@@ -77,8 +78,7 @@ public class DialectPostgreSQL extends Dialect {
 
     private static final String PREFIX_REPL = PREFIX_SEARCH + "$2";
 
-    private static final String[] RESERVED_COLUMN_NAMES = { "xmin", "xmax",
-            "cmin", "cmax", "ctid", "oid", "tableoid" };
+    private static final String[] RESERVED_COLUMN_NAMES = { "xmin", "xmax", "cmin", "cmax", "ctid", "oid", "tableoid" };
 
     private static final String UNLOGGED_KEYWORD = "UNLOGGED";
 
@@ -100,8 +100,7 @@ public class DialectPostgreSQL extends Dialect {
 
     protected String idSequenceName;
 
-    public DialectPostgreSQL(DatabaseMetaData metadata,
-            BinaryManager binaryManager,
+    public DialectPostgreSQL(DatabaseMetaData metadata, BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(metadata, binaryManager, repositoryDescriptor);
         fulltextAnalyzer = repositoryDescriptor == null ? null
@@ -148,10 +147,8 @@ public class DialectPostgreSQL extends Dialect {
         }
     }
 
-    protected boolean getCompatibilityFulltextTable(DatabaseMetaData metadata)
-            throws SQLException {
-        ResultSet rs = metadata.getColumns(null, null,
-                Model.FULLTEXT_TABLE_NAME, "%");
+    protected boolean getCompatibilityFulltextTable(DatabaseMetaData metadata) throws SQLException {
+        ResultSet rs = metadata.getColumns(null, null, Model.FULLTEXT_TABLE_NAME, "%");
         while (rs.next()) {
             // COLUMN_NAME=fulltext DATA_TYPE=1111 TYPE_NAME=tsvector
             String columnName = rs.getString("COLUMN_NAME");
@@ -195,8 +192,7 @@ public class DialectPostgreSQL extends Dialect {
             } else if (type.isClob()) {
                 return jdbcInfo("text[]", Types.ARRAY, "text", Types.CLOB);
             } else {
-                return jdbcInfo("varchar(%d)[]", type.length, Types.ARRAY,
-                        "varchar", Types.VARCHAR);
+                return jdbcInfo("varchar(%d)[]", type.length, Types.ARRAY, "varchar", Types.VARCHAR);
             }
         case BOOLEAN:
             return jdbcInfo("bool", Types.BIT);
@@ -276,8 +272,7 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public boolean isAllowedConversion(int expected, int actual,
-            String actualName, int actualSize) {
+    public boolean isAllowedConversion(int expected, int actual, String actualName, int actualSize) {
         // CLOB vs VARCHAR compatibility
         if (expected == Types.VARCHAR && actual == Types.CLOB) {
             return true;
@@ -294,16 +289,14 @@ public class DialectPostgreSQL extends Dialect {
         }
         // TSVECTOR vs CLOB compatibility during upgrade tests
         // where column detection is done before upgrade test setup
-        if (expected == Types.CLOB
-                && (actual == Types.OTHER && actualName.equals("tsvector"))) {
+        if (expected == Types.CLOB && (actual == Types.OTHER && actualName.equals("tsvector"))) {
             return true;
         }
         return false;
     }
 
     @Override
-    public Serializable getGeneratedId(Connection connection)
-            throws SQLException {
+    public Serializable getGeneratedId(Connection connection) throws SQLException {
         if (idType != DialectIdType.SEQUENCE) {
             return super.getGeneratedId(connection);
         }
@@ -319,8 +312,7 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public void setId(PreparedStatement ps, int index, Serializable value)
-            throws SQLException {
+    public void setId(PreparedStatement ps, int index, Serializable value) throws SQLException {
         switch (idType) {
         case VARCHAR:
             ps.setObject(index, value);
@@ -350,8 +342,8 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public void setToPreparedStatement(PreparedStatement ps, int index,
-            Serializable value, Column column) throws SQLException {
+    public void setToPreparedStatement(PreparedStatement ps, int index, Serializable value, Column column)
+            throws SQLException {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
         case Types.CLOB:
@@ -377,10 +369,9 @@ public class DialectPostgreSQL extends Dialect {
             int jdbcBaseType = column.getJdbcBaseType();
             String jdbcBaseTypeName = column.getSqlBaseTypeString();
             if (jdbcBaseType == Types.TIMESTAMP) {
-                value = getTimestampFromCalendar((Serializable[] ) value);
+                value = getTimestampFromCalendar((Serializable[]) value);
             }
-            Array array = ps.getConnection().createArrayOf(
-                    jdbcBaseTypeName, (Object[]) value);
+            Array array = ps.getConnection().createArrayOf(jdbcBaseTypeName, (Object[]) value);
             ps.setArray(index, array);
             return;
         case Types.OTHER:
@@ -394,22 +385,20 @@ public class DialectPostgreSQL extends Dialect {
             }
             throw new SQLException("Unhandled type: " + column.getType());
         default:
-            throw new SQLException("Unhandled JDBC type: "
-                    + column.getJdbcType());
+            throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
         }
     }
 
     @Override
     @SuppressWarnings("boxing")
-    public Serializable getFromResultSet(ResultSet rs, int index, Column column)
-            throws SQLException {
+    public Serializable getFromResultSet(ResultSet rs, int index, Column column) throws SQLException {
         int jdbcType = rs.getMetaData().getColumnType(index);
         if (column.getJdbcType() == Types.ARRAY && jdbcType != Types.ARRAY) {
             jdbcType = column.getJdbcBaseType();
         } else {
             jdbcType = column.getJdbcType();
         }
-        switch(jdbcType) {
+        switch (jdbcType) {
         case Types.VARCHAR:
         case Types.CLOB:
             return getFromResultSetString(rs, index, column);
@@ -440,8 +429,8 @@ public class DialectPostgreSQL extends Dialect {
             }
             throw new SQLException("Unhandled type: " + column.getType());
         }
-        throw new SQLException("Unhandled JDBC type: " + column.getJdbcType()
-                + " for type " + column.getType().toString());
+        throw new SQLException("Unhandled JDBC type: " + column.getJdbcType() + " for type "
+                + column.getType().toString());
     }
 
     @Override
@@ -464,17 +453,15 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public String getCreateFulltextIndexSql(String indexName,
-            String quotedIndexName, Table table, List<Column> columns,
-            Model model) {
+    public String getCreateFulltextIndexSql(String indexName, String quotedIndexName, Table table,
+            List<Column> columns, Model model) {
         String sql;
         if (compatibilityFulltextTable) {
             sql = "CREATE INDEX %s ON %s USING GIN(%s)";
         } else {
             sql = "CREATE INDEX %s ON %s USING GIN(NX_TO_TSVECTOR(%s))";
         }
-        return String.format(sql, quotedIndexName.toLowerCase(),
-                table.getQuotedName(), columns.get(0).getQuotedName());
+        return String.format(sql, quotedIndexName.toLowerCase(), table.getQuotedName(), columns.get(0).getQuotedName());
     }
 
     // must not be interpreted as a regexp, we split on it
@@ -496,31 +483,22 @@ public class DialectPostgreSQL extends Dialect {
             return ""; // won't match anything
         }
         if (!FulltextQueryAnalyzer.hasPhrase(ft)) {
-            return FulltextQueryAnalyzer.translateFulltext(ft, "|", "&", "& !",
-                    "");
+            return FulltextQueryAnalyzer.translateFulltext(ft, "|", "&", "& !", "");
         }
         if (compatibilityFulltextTable) {
-            throw new QueryMakerException(
-                    "Cannot use phrase search in fulltext compatibilty mode. "
-                            + "Please upgrade the fulltext table: " + query);
+            throw new QueryMakerException("Cannot use phrase search in fulltext compatibilty mode. "
+                    + "Please upgrade the fulltext table: " + query);
         }
         /*
-         * Phrase search.
-         *
-         * We have to do the phrase query using a LIKE, but for performance we
-         * pre-filter using as many fulltext matches as possible by breaking
-         * some of the phrases into words. We do an AND of the two.
-         *
-         * 1. pre-filter using fulltext on a query that is a superset of the
-         * original query,
+         * Phrase search. We have to do the phrase query using a LIKE, but for performance we pre-filter using as many
+         * fulltext matches as possible by breaking some of the phrases into words. We do an AND of the two. 1.
+         * pre-filter using fulltext on a query that is a superset of the original query,
          */
         FulltextQuery broken = breakPhrases(ft);
-        String ftsql = FulltextQueryAnalyzer.translateFulltext(broken, "|",
-                "&", "& !", "");
+        String ftsql = FulltextQueryAnalyzer.translateFulltext(broken, "|", "&", "& !", "");
         /*
-         * 2. AND with a LIKE-based search for all terms, except those that are
-         * already exactly matched by the first part, i.e., toplevel ANDed
-         * non-phrases.
+         * 2. AND with a LIKE-based search for all terms, except those that are already exactly matched by the first
+         * part, i.e., toplevel ANDed non-phrases.
          */
         FulltextQuery noand = removeToplevelAndedWords(ft);
         if (noand != null) {
@@ -533,11 +511,9 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     /**
-     * Returns a fulltext query that is a superset of the original one and does
-     * not have phrase searches.
+     * Returns a fulltext query that is a superset of the original one and does not have phrase searches.
      * <p>
-     * Negative phrases (which are at AND level) are removed, positive phrases
-     * are split into ANDed words.
+     * Negative phrases (which are at AND level) are removed, positive phrases are split into ANDed words.
      */
     protected static FulltextQuery breakPhrases(FulltextQuery ft) {
         FulltextQuery newFt = new FulltextQuery();
@@ -683,22 +659,20 @@ public class DialectPostgreSQL extends Dialect {
     // AND fulltext LIKE '% foo bar %' -- when phrase search
     // ORDER BY nxscore DESC
     @Override
-    public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery,
-            String indexName, int nthMatch, Column mainColumn, Model model,
-            Database database) {
+    public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery, String indexName, int nthMatch,
+            Column mainColumn, Model model, Database database) {
         String indexSuffix = model.getFulltextIndexSuffix(indexName);
         Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
         Column ftMain = ft.getColumn(model.MAIN_KEY);
-        Column ftColumn = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY
-                + indexSuffix);
+        Column ftColumn = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY + indexSuffix);
         String ftColumnName = ftColumn.getFullQuotedName();
         String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
         FulltextMatchInfo info = new FulltextMatchInfo();
         info.joins = new ArrayList<Join>();
         if (nthMatch == 1) {
             // Need only one JOIN involving the fulltext table
-            info.joins.add(new Join(Join.INNER, ft.getQuotedName(), null, null,
-                    ftMain.getFullQuotedName(), mainColumn.getFullQuotedName()));
+            info.joins.add(new Join(Join.INNER, ft.getQuotedName(), null, null, ftMain.getFullQuotedName(),
+                    mainColumn.getFullQuotedName()));
         }
         /*
          * for phrase search, fulltextQuery may contain a LIKE part
@@ -724,12 +698,10 @@ public class DialectPostgreSQL extends Dialect {
         }
         info.whereExpr = where;
         info.whereExprParam = fulltextQuery;
-        info.scoreExpr = String.format("TS_RANK_CD(%s, %s, 32)", tsvector,
-                tsquery);
+        info.scoreExpr = String.format("TS_RANK_CD(%s, %s, 32)", tsvector, tsquery);
         info.scoreExprParam = fulltextQuery;
         info.scoreAlias = "_nxscore" + nthSuffix;
-        info.scoreCol = new Column(mainColumn.getTable(), null,
-                ColumnType.DOUBLE, null);
+        info.scoreCol = new Column(mainColumn.getTable(), null, ColumnType.DOUBLE, null);
         return info;
     }
 
@@ -783,8 +755,7 @@ public class DialectPostgreSQL extends Dialect {
 
     @Override
     public String getReadAclsCheckSql(String userIdCol) {
-        return String.format("%s = md5(array_to_string(?, '%s'))", userIdCol,
-                getUsersSeparator());
+        return String.format("%s = md5(array_to_string(?, '%s'))", userIdCol, getUsersSeparator());
     }
 
     @Override
@@ -812,8 +783,7 @@ public class DialectPostgreSQL extends Dialect {
         if (pathOptimizationsEnabled) {
             // TODO SEQUENCE
             String cast = idType == DialectIdType.UUID ? "::uuid[]" : "";
-            return String.format(
-                    "EXISTS(SELECT 1 FROM ancestors WHERE id = %s AND ARRAY[?]%s <@ ancestors)",
+            return String.format("EXISTS(SELECT 1 FROM ancestors WHERE id = %s AND ARRAY[?]%s <@ ancestors)",
                     idColumnName, cast);
         } else {
             return String.format("%s IN (SELECT * FROM nx_children(?))", idColumnName);
@@ -821,8 +791,7 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public String getMatchMixinType(Column mixinsColumn, String mixin,
-            boolean positive, String[] returnParam) {
+    public String getMatchMixinType(Column mixinsColumn, String mixin, boolean positive, String[] returnParam) {
         returnParam[0] = mixin;
         String sql = "ARRAY[?]::varchar[] <@ " + mixinsColumn.getFullQuotedName();
         return positive ? sql : "NOT(" + sql + ")";
@@ -858,14 +827,12 @@ public class DialectPostgreSQL extends Dialect {
         @Override
         public Column getSubQueryIdColumn() {
             Column column = fakeSubqueryTableAlias.getColumn(Model.MAIN_KEY);
-            return new ArraySubQueryPostgreSQLColumn(
-                    column.getPhysicalName(), column.getType());
+            return new ArraySubQueryPostgreSQLColumn(column.getPhysicalName(), column.getType());
         }
 
         @Override
         public Column getSubQueryValueColumn() {
-            return new ArraySubQueryPostgreSQLColumn(
-                        Model.COLL_TABLE_VALUE_KEY, arrayColumn.getBaseType());
+            return new ArraySubQueryPostgreSQLColumn(Model.COLL_TABLE_VALUE_KEY, arrayColumn.getBaseType());
         }
 
         public class ArraySubQueryPostgreSQLColumn extends Column {
@@ -877,39 +844,33 @@ public class DialectPostgreSQL extends Dialect {
 
             @Override
             public String getFullQuotedName() {
-                return dialect.openQuote() + subQueryAlias + dialect.closeQuote()
-                        + '.' + getQuotedName();
+                return dialect.openQuote() + subQueryAlias + dialect.closeQuote() + '.' + getQuotedName();
             }
         }
 
         @Override
         public String toSql() {
             Table table = arrayColumn.getTable();
-            return String.format(
-                    "(SELECT %s, UNNEST(%s) AS %s, generate_subscripts(%s, 1) AS %s FROM %s) ",
-                    table.getColumn(Model.MAIN_KEY).getQuotedName(),
-                    arrayColumn.getQuotedName(), Model.COLL_TABLE_VALUE_KEY,
-                    arrayColumn.getQuotedName(), Model.COLL_TABLE_POS_KEY,
+            return String.format("(SELECT %s, UNNEST(%s) AS %s, generate_subscripts(%s, 1) AS %s FROM %s) ",
+                    table.getColumn(Model.MAIN_KEY).getQuotedName(), arrayColumn.getQuotedName(),
+                    Model.COLL_TABLE_VALUE_KEY, arrayColumn.getQuotedName(), Model.COLL_TABLE_POS_KEY,
                     table.getRealTable().getQuotedName());
         }
     }
 
     @Override
-    public ArraySubQuery getArraySubQuery(Column arrayColumn,
-            String subQueryAlias) throws QueryMakerException {
+    public ArraySubQuery getArraySubQuery(Column arrayColumn, String subQueryAlias) throws QueryMakerException {
         return new ArraySubQueryPostgreSQL(arrayColumn, subQueryAlias);
     }
 
     @Override
-    public String getArrayElementString(String arrayColumnName,
-            int arrayElementIndex) throws QueryMakerException {
+    public String getArrayElementString(String arrayColumnName, int arrayElementIndex) throws QueryMakerException {
         // PostgreSQL arrays index start at 1
         return arrayColumnName + "[" + (arrayElementIndex + 1) + "]";
     }
 
     @Override
-    public String getArrayInSql(Column arrayColumn, String cast,
-            boolean positive, List<Serializable> params) {
+    public String getArrayInSql(Column arrayColumn, String cast, boolean positive, List<Serializable> params) {
         StringBuilder sql = new StringBuilder();
         if (!positive) {
             sql.append("(NOT(");
@@ -948,32 +909,23 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public String getArrayLikeSql(Column arrayColumn, String refName,
-            boolean positive, Table dataHierTable) {
-        return getArrayOpSql(arrayColumn, refName, positive, dataHierTable,
-                "LIKE");
+    public String getArrayLikeSql(Column arrayColumn, String refName, boolean positive, Table dataHierTable) {
+        return getArrayOpSql(arrayColumn, refName, positive, dataHierTable, "LIKE");
     }
 
     @Override
-    public String getArrayIlikeSql(Column arrayColumn, String refName,
-            boolean positive, Table dataHierTable) {
-        return getArrayOpSql(arrayColumn, refName, positive, dataHierTable,
-                "ILIKE");
+    public String getArrayIlikeSql(Column arrayColumn, String refName, boolean positive, Table dataHierTable) {
+        return getArrayOpSql(arrayColumn, refName, positive, dataHierTable, "ILIKE");
     }
 
-    protected String getArrayOpSql(Column arrayColumn, String refName,
-            boolean positive, Table dataHierTable, String op) {
+    protected String getArrayOpSql(Column arrayColumn, String refName, boolean positive, Table dataHierTable, String op) {
         Table table = arrayColumn.getTable();
-        String tableAliasName = openQuote() + getTableName(refName)
-                + closeQuote();
-        String sql = String.format(
-                "EXISTS (SELECT 1 FROM %s AS %s WHERE %s = %s AND %s %s ?)",
-                getArraySubQuery(arrayColumn, tableAliasName).toSql(),
-                tableAliasName,
+        String tableAliasName = openQuote() + getTableName(refName) + closeQuote();
+        String sql = String.format("EXISTS (SELECT 1 FROM %s AS %s WHERE %s = %s AND %s %s ?)",
+                getArraySubQuery(arrayColumn, tableAliasName).toSql(), tableAliasName,
                 dataHierTable.getColumn(Model.MAIN_KEY).getFullQuotedName(),
-                tableAliasName + '.'
-                        + table.getColumn(Model.MAIN_KEY).getQuotedName(),
-                tableAliasName + '.' + Model.COLL_TABLE_VALUE_KEY, op);
+                tableAliasName + '.' + table.getColumn(Model.MAIN_KEY).getQuotedName(), tableAliasName + '.'
+                        + Model.COLL_TABLE_VALUE_KEY, op);
         if (!positive) {
             sql = "NOT(" + sql + ")";
         }
@@ -981,8 +933,7 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public Array createArrayOf(int type, Object[] elements,
-            Connection connection) throws SQLException {
+    public Array createArrayOf(int type, Object[] elements, Connection connection) throws SQLException {
         if (elements == null || elements.length == 0) {
             return null;
         }
@@ -1044,8 +995,7 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public Map<String, Serializable> getSQLStatementsProperties(Model model,
-            Database database) {
+    public Map<String, Serializable> getSQLStatementsProperties(Model model, Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         switch (idType) {
         case VARCHAR:
@@ -1067,10 +1017,8 @@ public class DialectPostgreSQL extends Dialect {
             properties.put("sequenceEnabled", Boolean.TRUE);
             properties.put("idSequenceName", idSequenceName);
         }
-        properties.put("aclOptimizationsEnabled",
-                Boolean.valueOf(aclOptimizationsEnabled));
-        properties.put("pathOptimizationsEnabled",
-                Boolean.valueOf(pathOptimizationsEnabled));
+        properties.put("aclOptimizationsEnabled", Boolean.valueOf(aclOptimizationsEnabled));
+        properties.put("pathOptimizationsEnabled", Boolean.valueOf(pathOptimizationsEnabled));
         properties.put("fulltextAnalyzer", fulltextAnalyzer);
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
@@ -1084,10 +1032,8 @@ public class DialectPostgreSQL extends Dialect {
             for (String indexName : fti.indexNames) {
                 String suffix = model.getFulltextIndexSuffix(indexName);
                 Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY + suffix);
-                Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY
-                        + suffix);
-                Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY
-                        + suffix);
+                Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY + suffix);
+                Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY + suffix);
                 String concat;
                 if (compatibilityFulltextTable) {
                     // tsvector
@@ -1096,15 +1042,12 @@ public class DialectPostgreSQL extends Dialect {
                     // text with space at beginning and end
                     concat = "  NEW.%s := ' ' || COALESCE(NEW.%s, '') || ' ' || COALESCE(NEW.%s, '') || ' ';";
                 }
-                String line = String.format(concat, ftft.getQuotedName(),
-                        ftst.getQuotedName(), ftbt.getQuotedName());
+                String line = String.format(concat, ftft.getQuotedName(), ftst.getQuotedName(), ftbt.getQuotedName());
                 lines.add(line);
             }
-            properties.put("fulltextTriggerStatements",
-                    StringUtils.join(lines, "\n"));
+            properties.put("fulltextTriggerStatements", StringUtils.join(lines, "\n"));
         }
-        String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(
-                SecurityConstants.BROWSE);
+        String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(SecurityConstants.BROWSE);
         List<String> permsList = new LinkedList<String>();
         for (String perm : permissions) {
             permsList.add("('" + perm + "')");
@@ -1118,8 +1061,8 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public boolean preCreateTable(Connection connection, Table table,
-            Model model, Database database) throws SQLException {
+    public boolean preCreateTable(Connection connection, Table table, Model model, Database database)
+            throws SQLException {
         String tableKey = table.getKey();
         if (model.HIER_TABLE_NAME.equals(tableKey)) {
             hierarchyCreated = true;
@@ -1152,8 +1095,7 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public List<String> getPostCreateTableSqls(Table table, Model model,
-            Database database) {
+    public List<String> getPostCreateTableSqls(Table table, Model model, Database database) {
         if (Model.ANCESTORS_TABLE_NAME.equals(table.getKey())) {
             List<String> sqls = new ArrayList<String>();
             if (pathOptimizationsEnabled) {
@@ -1167,8 +1109,8 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public void existingTableDetected(Connection connection, Table table,
-            Model model, Database database) throws SQLException {
+    public void existingTableDetected(Connection connection, Table table, Model model, Database database)
+            throws SQLException {
         if (Model.ANCESTORS_TABLE_NAME.equals(table.getKey())) {
             if (!pathOptimizationsEnabled) {
                 log.info("Path optimizations disabled");
@@ -1184,8 +1126,7 @@ public class DialectPostgreSQL extends Dialect {
             s.close();
             if (empty) {
                 pathOptimizationsEnabled = false;
-                log.error("Table ANCESTORS empty, must be upgraded by hand by calling: "
-                        + "SELECT nx_init_ancestors()");
+                log.error("Table ANCESTORS empty, must be upgraded by hand by calling: " + "SELECT nx_init_ancestors()");
                 log.info("Path optimizations disabled");
             }
         }
@@ -1203,8 +1144,7 @@ public class DialectPostgreSQL extends Dialect {
 
     @Override
     public String getClusterGetInvalidations() {
-        return "DELETE FROM cluster_invals WHERE nodeid = pg_backend_pid()"
-                + " RETURNING id, fragments, kind";
+        return "DELETE FROM cluster_invals WHERE nodeid = pg_backend_pid()" + " RETURNING id, fragments, kind";
     }
 
     @Override
@@ -1274,8 +1214,7 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public void performAdditionalStatements(Connection connection)
-            throws SQLException {
+    public void performAdditionalStatements(Connection connection) throws SQLException {
         // Warn user if BROWSE permissions has changed
         Set<String> dbPermissions = new HashSet<String>();
         String sql = "SELECT * FROM aclr_permission";
@@ -1360,11 +1299,9 @@ public class DialectPostgreSQL extends Dialect {
             // extract tokens from tsvector
             List<String> columnsAs = new ArrayList<String>(columns.size());
             for (String col : columns) {
-                columnsAs.add("regexp_replace(" + col
-                        + "::text, $$'|'\\:[^']*'?$$, ' ', 'g')");
+                columnsAs.add("regexp_replace(" + col + "::text, $$'|'\\:[^']*'?$$, ' ', 'g')");
             }
-            return "SELECT " + StringUtils.join(columnsAs, ", ")
-                    + " FROM fulltext WHERE id=?";
+            return "SELECT " + StringUtils.join(columnsAs, ", ") + " FROM fulltext WHERE id=?";
         }
         return super.getBinaryFulltextSql(columns);
     }

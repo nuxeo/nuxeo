@@ -95,16 +95,16 @@ public interface Table extends Serializable {
     String getAddColumnSql(Column column);
 
     /**
-     * Computes the SQL statements to finish creating the table, usually some
-     * ALTER TABLE statements to add constraints or indexes.
+     * Computes the SQL statements to finish creating the table, usually some ALTER TABLE statements to add constraints
+     * or indexes.
      *
      * @return the SQL strings
      */
     List<String> getPostCreateSqls(Model model);
 
     /**
-     * Computes the SQL statements to finish adding a column, usually some ALTER
-     * TABLE statements to add constraints or indexes.
+     * Computes the SQL statements to finish adding a column, usually some ALTER TABLE statements to add constraints or
+     * indexes.
      *
      * @return the SQL strings
      */

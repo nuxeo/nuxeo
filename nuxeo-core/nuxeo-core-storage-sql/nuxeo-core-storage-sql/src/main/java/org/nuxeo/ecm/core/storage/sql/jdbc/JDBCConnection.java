@@ -36,8 +36,7 @@ import org.nuxeo.runtime.datasource.ConnectionHelper;
 public class JDBCConnection {
 
     /**
-     * Maximum number of time we retry a connection if the server says it's
-     * overloaded.
+     * Maximum number of time we retry a connection if the server says it's overloaded.
      */
     public static final int MAX_CONNECTION_TRIES = 5;
 
@@ -84,8 +83,7 @@ public class JDBCConnection {
     private final long instanceNumber = instanceCounter.incrementAndGet();
 
     // for debug
-    public final JDBCLogger logger = new JDBCLogger(
-            String.valueOf(instanceNumber));
+    public final JDBCLogger logger = new JDBCLogger(String.valueOf(instanceNumber));
 
     /**
      * Creates a new Mapper.
@@ -94,10 +92,8 @@ public class JDBCConnection {
      * @param sqlInfo the sql info
      * @param xadatasource the XA datasource to use to get connections
      */
-    public JDBCConnection(Model model, SQLInfo sqlInfo,
-            XADataSource xadatasource,
-            JDBCConnectionPropagator connectionPropagator, boolean noSharing)
-            throws StorageException {
+    public JDBCConnection(Model model, SQLInfo sqlInfo, XADataSource xadatasource,
+            JDBCConnectionPropagator connectionPropagator, boolean noSharing) throws StorageException {
         this.model = model;
         this.sqlInfo = sqlInfo;
         this.xadatasource = xadatasource;
@@ -109,6 +105,7 @@ public class JDBCConnection {
 
     /**
      * for tests only
+     * 
      * @since 5.9.3
      */
     public JDBCConnection() {
@@ -164,9 +161,8 @@ public class JDBCConnection {
                     // SQLState = "66000"
                     // Happens when connections are open too fast (unit tests)
                     // -> retry a few times after a small delay
-                    logger.warn(String.format(
-                            "Connections open too fast, retrying in %ds: %s",
-                            tryNo, e.getMessage().replace("\n", " ")));
+                    logger.warn(String.format("Connections open too fast, retrying in %ds: %s", tryNo,
+                            e.getMessage().replace("\n", " ")));
                     try {
                         Thread.sleep(1000 * tryNo);
                     } catch (InterruptedException ie) {
@@ -261,12 +257,10 @@ public class JDBCConnection {
     }
 
     /**
-     * Checks the SQL error we got and determine if the low level connection has
-     * to be reset.
+     * Checks the SQL error we got and determine if the low level connection has to be reset.
      * <p>
-     * Called with a generic Exception and not just SQLException because the
-     * PostgreSQL JDBC driver sometimes fails to unwrap properly some
-     * InvocationTargetException / UndeclaredThrowableException.
+     * Called with a generic Exception and not just SQLException because the PostgreSQL JDBC driver sometimes fails to
+     * unwrap properly some InvocationTargetException / UndeclaredThrowableException.
      *
      * @param t the error
      */
@@ -275,22 +269,19 @@ public class JDBCConnection {
     }
 
     /**
-     * Checks the SQL error we got and determine if the low level connection has
-     * to be reset.
+     * Checks the SQL error we got and determine if the low level connection has to be reset.
      * <p>
-     * Called with a generic Exception and not just SQLException because the
-     * PostgreSQL JDBC driver sometimes fails to unwrap properly some
-     * InvocationTargetException / UndeclaredThrowableException.
+     * Called with a generic Exception and not just SQLException because the PostgreSQL JDBC driver sometimes fails to
+     * unwrap properly some InvocationTargetException / UndeclaredThrowableException.
      *
      * @param t the error
-     * @param throwIfReset {@code true} if a {@link ConnectionResetException}
-     *            should be thrown when the connection is reset
+     * @param throwIfReset {@code true} if a {@link ConnectionResetException} should be thrown when the connection is
+     *            reset
      * @since 5.6
      */
-    protected void checkConnectionReset(Throwable t, boolean throwIfReset)
-            throws StorageException, ConnectionResetException {
-        if (connection == null
-                || dialect.isConnectionClosedException(t)) {
+    protected void checkConnectionReset(Throwable t, boolean throwIfReset) throws StorageException,
+            ConnectionResetException {
+        if (connection == null || dialect.isConnectionClosedException(t)) {
             resetConnection();
             if (throwIfReset) {
                 throw new ConnectionResetException(t);
@@ -299,12 +290,10 @@ public class JDBCConnection {
     }
 
     /**
-     * Checks the XA error we got and determine if the low level connection has
-     * to be reset.
+     * Checks the XA error we got and determine if the low level connection has to be reset.
      */
     protected void checkConnectionReset(XAException e) {
-        if (connection == null
-                || dialect.isConnectionClosedException(e)) {
+        if (connection == null || dialect.isConnectionClosedException(e)) {
             try {
                 resetConnection();
             } catch (StorageException ee) {
@@ -314,18 +303,15 @@ public class JDBCConnection {
     }
 
     /**
-     * Checks the SQL error we got and determine if a concurrent update
-     * happened. Throws if that's the case.
+     * Checks the SQL error we got and determine if a concurrent update happened. Throws if that's the case.
      * <p>
-     * Called with a generic Exception and not just SQLException because the
-     * PostgreSQL JDBC driver sometimes fails to unwrap properly some
-     * InvocationTargetException / UndeclaredThrowableException.
+     * Called with a generic Exception and not just SQLException because the PostgreSQL JDBC driver sometimes fails to
+     * unwrap properly some InvocationTargetException / UndeclaredThrowableException.
      *
      * @param t the exception
      * @since 5.8
      */
-    protected void checkConcurrentUpdate(Throwable t)
-            throws ConcurrentUpdateStorageException {
+    protected void checkConcurrentUpdate(Throwable t) throws ConcurrentUpdateStorageException {
         if (dialect.isConcurrentUpdateException(t)) {
             throw new ConcurrentUpdateStorageException(t);
         }

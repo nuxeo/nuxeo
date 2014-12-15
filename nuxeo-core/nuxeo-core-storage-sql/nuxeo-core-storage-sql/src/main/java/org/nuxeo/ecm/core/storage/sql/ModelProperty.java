@@ -30,19 +30,16 @@ public class ModelProperty {
     protected final boolean isIntermediateSegment;
 
     /**
-     * Creates a model for a scalar property, or the last segment of a complex
-     * property.
+     * Creates a model for a scalar property, or the last segment of a complex property.
      */
-    public ModelProperty(PropertyType propertyType, String fragmentName,
-            String fragmentKey, boolean readonly) {
+    public ModelProperty(PropertyType propertyType, String fragmentName, String fragmentKey, boolean readonly) {
         this.propertyType = propertyType;
         this.fragmentName = fragmentName;
         this.fragmentKey = fragmentKey;
         this.readonly = readonly;
         isIntermediateSegment = false;
         // TODO use some config to decide this
-        fulltext = (propertyType.equals(PropertyType.STRING)
-                || propertyType.equals(PropertyType.BINARY) || propertyType.equals(PropertyType.ARRAY_STRING))
+        fulltext = (propertyType.equals(PropertyType.STRING) || propertyType.equals(PropertyType.BINARY) || propertyType.equals(PropertyType.ARRAY_STRING))
                 && (fragmentKey == null || !fragmentKey.equals(Model.MAIN_KEY))
                 && !fragmentName.equals(Model.HIER_TABLE_NAME)
                 && !fragmentName.equals(Model.VERSION_TABLE_NAME)
@@ -57,7 +54,6 @@ public class ModelProperty {
      * Create a model for an intermediate segment of a complex property.
      *
      * @param name the canonical segment name
-     *
      * @since 5.7.3
      */
     public ModelProperty(String propertyName) {
@@ -80,8 +76,7 @@ public class ModelProperty {
     }
 
     /**
-     * Checks if this is a pseudo-model for an intermediate segment of a complex
-     * property.
+     * Checks if this is a pseudo-model for an intermediate segment of a complex property.
      *
      * @since 5.7.3
      */
@@ -91,9 +86,8 @@ public class ModelProperty {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + fragmentName + ", "
-                + fragmentKey + ", " + propertyType + (readonly ? ", RO" : "")
-                + (fulltext ? ", FT" : "") + ')';
+        return getClass().getSimpleName() + '(' + fragmentName + ", " + fragmentKey + ", " + propertyType
+                + (readonly ? ", RO" : "") + (fulltext ? ", FT" : "") + ')';
     }
 
 }

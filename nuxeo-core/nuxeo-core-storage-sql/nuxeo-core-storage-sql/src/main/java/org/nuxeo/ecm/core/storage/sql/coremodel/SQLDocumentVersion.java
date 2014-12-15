@@ -42,8 +42,8 @@ public class SQLDocumentVersion extends SQLDocumentLive {
 
     }
 
-    protected SQLDocumentVersion(Node node, ComplexType type,
-            SQLSession session, boolean readonly) throws DocumentException {
+    protected SQLDocumentVersion(Node node, ComplexType type, SQLSession session, boolean readonly)
+            throws DocumentException {
         super(node, type, session, readonly);
         Serializable versionSeriesId = getPropertyValue(Model.VERSION_VERSIONABLE_PROP);
         versionableNode = session.getNodeById(versionSeriesId);
@@ -69,8 +69,7 @@ public class SQLDocumentVersion extends SQLDocumentLive {
             return false;
         }
         try {
-            return !Boolean.TRUE.equals(versionableNode.getSimpleProperty(
-                    Model.MAIN_CHECKED_IN_PROP).getValue());
+            return !Boolean.TRUE.equals(versionableNode.getSimpleProperty(Model.MAIN_CHECKED_IN_PROP).getValue());
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -78,8 +77,7 @@ public class SQLDocumentVersion extends SQLDocumentLive {
 
     @Override
     public boolean isMajorVersion() throws DocumentException {
-        return Long.valueOf(0).equals(
-                getPropertyValue(Model.MAIN_MINOR_VERSION_PROP));
+        return Long.valueOf(0).equals(getPropertyValue(Model.MAIN_MINOR_VERSION_PROP));
     }
 
     @Override
@@ -149,8 +147,7 @@ public class SQLDocumentVersion extends SQLDocumentLive {
     }
 
     @Override
-    public Document addChild(String name, String typeName)
-            throws DocumentException {
+    public Document addChild(String name, String typeName) throws DocumentException {
         throw new VersionNotModifiableException();
     }
 
@@ -208,11 +205,10 @@ public class SQLDocumentVersion extends SQLDocumentLive {
      */
 
     @Override
-    public void setPropertyValue(String name, Serializable value)
-            throws DocumentException {
+    public void setPropertyValue(String name, Serializable value) throws DocumentException {
         if (isReadOnlyProperty(name)) {
-            throw new VersionNotModifiableException(String.format(
-                    "Cannot set property on a version: %s = %s", name, value));
+            throw new VersionNotModifiableException(String.format("Cannot set property on a version: %s = %s", name,
+                    value));
         }
         // import
         super.setPropertyValue(name, value);

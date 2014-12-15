@@ -22,8 +22,7 @@ import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.query.sql.model.WhereClause;
 
 /**
- * Dummy security policy denying all access to File objects with a query
- * transformer.
+ * Dummy security policy denying all access to File objects with a query transformer.
  *
  * @author Florent Guillaume
  */
@@ -40,8 +39,8 @@ public class NoFile2SecurityPolicy extends NoFileSecurityPolicy {
     public static class NoFileTransformer implements Transformer {
         private static final long serialVersionUID = 1L;
 
-        public static final Predicate NO_FILE = new Predicate(new Reference(
-                "ecm:primaryType"), Operator.NOTEQ, new StringLiteral("File"));
+        public static final Predicate NO_FILE = new Predicate(new Reference("ecm:primaryType"), Operator.NOTEQ,
+                new StringLiteral("File"));
 
         @Override
         public SQLQuery transform(Principal principal, SQLQuery query) {
@@ -50,12 +49,10 @@ public class NoFile2SecurityPolicy extends NoFileSecurityPolicy {
             if (where == null || where.predicate == null) {
                 predicate = NO_FILE;
             } else {
-                predicate = new Predicate(NO_FILE, Operator.AND,
-                        where.predicate);
+                predicate = new Predicate(NO_FILE, Operator.AND, where.predicate);
             }
-            SQLQuery newQuery = new SQLQuery(query.select, query.from,
-                    new WhereClause(predicate), query.groupBy, query.having,
-                    query.orderBy, query.limit, query.offset);
+            SQLQuery newQuery = new SQLQuery(query.select, query.from, new WhereClause(predicate), query.groupBy,
+                    query.having, query.orderBy, query.limit, query.offset);
             return newQuery;
         }
     }

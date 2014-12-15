@@ -21,12 +21,10 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 
 /**
- * This is the {@link Session} factory when the repository is used outside of a
- * datasource.
+ * This is the {@link Session} factory when the repository is used outside of a datasource.
  * <p>
- * (When repositories are looked up through JNDI, the class
- * org.nuxeo.ecm.core.storage.sql.ra.ConnectionFactoryImpl is used instead of
- * this one.) [suppressed link for solving cycle dependencies in eclipse]
+ * (When repositories are looked up through JNDI, the class org.nuxeo.ecm.core.storage.sql.ra.ConnectionFactoryImpl is
+ * used instead of this one.) [suppressed link for solving cycle dependencies in eclipse]
  * <p>
  * This class is constructed by {@link SQLRepositoryFactory}.
  *

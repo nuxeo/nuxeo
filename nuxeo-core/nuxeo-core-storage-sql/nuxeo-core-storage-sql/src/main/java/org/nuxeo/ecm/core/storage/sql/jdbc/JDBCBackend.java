@@ -107,8 +107,7 @@ public class JDBCBackend implements RepositoryBackend {
         try {
             instance = klass.newInstance();
         } catch (Exception e) {
-            throw new StorageException(
-                    "Cannot instantiate class: " + className, e);
+            throw new StorageException("Cannot instantiate class: " + className, e);
         }
         if (!(instance instanceof XADataSource)) {
             throw new StorageException("Not a XADataSource: " + className);
@@ -125,8 +124,7 @@ public class JDBCBackend implements RepositoryBackend {
             }
             // transform to proper JavaBean convention
             if (Character.isLowerCase(name.charAt(1))) {
-                name = Character.toLowerCase(name.charAt(0))
-                        + name.substring(1);
+                name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
             }
             try {
                 BeanUtils.setProperty(xadatasource, name, value);
@@ -139,12 +137,10 @@ public class JDBCBackend implements RepositoryBackend {
     /**
      * {@inheritDoc}
      * <p>
-     * Opens a connection to get the dialect and finish initializing the
-     * {@link ModelSetup}.
+     * Opens a connection to get the dialect and finish initializing the {@link ModelSetup}.
      */
     @Override
-    public void initializeModelSetup(ModelSetup modelSetup)
-            throws StorageException {
+    public void initializeModelSetup(ModelSetup modelSetup) throws StorageException {
         try {
             XAConnection xaconnection = null;
             // try single-datasource non-XA mode
@@ -155,8 +151,7 @@ public class JDBCBackend implements RepositoryBackend {
                     xaconnection = xadatasource.getXAConnection();
                     connection = xaconnection.getConnection();
                 }
-                dialect = Dialect.createDialect(connection,
-                        repository.getBinaryManager(),
+                dialect = Dialect.createDialect(connection, repository.getBinaryManager(),
                         repository.getRepositoryDescriptor());
             } finally {
                 if (connection != null) {
@@ -195,17 +190,14 @@ public class JDBCBackend implements RepositoryBackend {
     }
 
     @Override
-    public Mapper newMapper(Model model, PathResolver pathResolver,
-            MapperKind kind) throws StorageException {
-        boolean noSharing = kind == MapperKind.LOCK_MANAGER
-                || kind == MapperKind.CLUSTER_NODE_HANDLER;
+    public Mapper newMapper(Model model, PathResolver pathResolver, MapperKind kind) throws StorageException {
+        boolean noSharing = kind == MapperKind.LOCK_MANAGER || kind == MapperKind.CLUSTER_NODE_HANDLER;
         boolean noInvalidationPropagation = kind == MapperKind.LOCK_MANAGER;
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
 
-        ClusterNodeHandler cnh = noInvalidationPropagation ? null
-                : clusterNodeHandler;
-        Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo,
-                xadatasource, cnh, connectionPropagator, noSharing, repository);
+        ClusterNodeHandler cnh = noInvalidationPropagation ? null : clusterNodeHandler;
+        Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo, xadatasource, cnh, connectionPropagator,
+                noSharing, repository);
         if (isPooledDataSource) {
             mapper = JDBCMapperConnector.newConnector(mapper);
             if (noSharing) {
@@ -224,8 +216,7 @@ public class JDBCBackend implements RepositoryBackend {
             }
         }
         if (kind == MapperKind.CLUSTER_NODE_HANDLER) {
-            clusterNodeHandler = new ClusterNodeHandler(mapper,
-                    repositoryDescriptor);
+            clusterNodeHandler = new ClusterNodeHandler(mapper, repositoryDescriptor);
             connectionPropagator.setClusterNodeHandler(clusterNodeHandler);
         }
         return mapper;

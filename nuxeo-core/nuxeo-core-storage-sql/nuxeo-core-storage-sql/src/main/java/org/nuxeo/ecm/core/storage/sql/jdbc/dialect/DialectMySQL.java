@@ -62,14 +62,11 @@ public class DialectMySQL extends Dialect {
     }
 
     @Override
-    public String getAddForeignKeyConstraintString(String constraintName,
-            String[] foreignKeys, String referencedTable, String[] primaryKeys,
-            boolean referencesPrimaryKey) {
+    public String getAddForeignKeyConstraintString(String constraintName, String[] foreignKeys, String referencedTable,
+            String[] primaryKeys, boolean referencesPrimaryKey) {
         String cols = StringUtils.join(foreignKeys, ", ");
-        String sql = String.format(
-                " ADD INDEX %s (%s), ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s)",
-                constraintName, cols, constraintName, cols, referencedTable,
-                StringUtils.join(primaryKeys, ", "));
+        String sql = String.format(" ADD INDEX %s (%s), ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s)",
+                constraintName, cols, constraintName, cols, referencedTable, StringUtils.join(primaryKeys, ", "));
         return sql;
     }
 
@@ -140,8 +137,7 @@ public class DialectMySQL extends Dialect {
     }
 
     @Override
-    public boolean isAllowedConversion(int expected, int actual,
-            String actualName, int actualSize) {
+    public boolean isAllowedConversion(int expected, int actual, String actualName, int actualSize) {
         // LONGVARCHAR vs VARCHAR compatibility
         if (expected == Types.VARCHAR && actual == Types.LONGVARCHAR) {
             return true;
@@ -160,8 +156,8 @@ public class DialectMySQL extends Dialect {
     }
 
     @Override
-    public void setToPreparedStatement(PreparedStatement ps, int index,
-            Serializable value, Column column) throws SQLException {
+    public void setToPreparedStatement(PreparedStatement ps, int index, Serializable value, Column column)
+            throws SQLException {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
         case Types.LONGVARCHAR:
@@ -182,15 +178,13 @@ public class DialectMySQL extends Dialect {
             setToPreparedStatementTimestamp(ps, index, value, column);
             return;
         default:
-            throw new SQLException("Unhandled JDBC type: "
-                    + column.getJdbcType());
+            throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
         }
     }
 
     @Override
     @SuppressWarnings("boxing")
-    public Serializable getFromResultSet(ResultSet rs, int index, Column column)
-            throws SQLException {
+    public Serializable getFromResultSet(ResultSet rs, int index, Column column) throws SQLException {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
         case Types.LONGVARCHAR:
@@ -215,15 +209,13 @@ public class DialectMySQL extends Dialect {
     }
 
     @Override
-    public String getCreateFulltextIndexSql(String indexName,
-            String quotedIndexName, Table table, List<Column> columns,
-            Model model) {
+    public String getCreateFulltextIndexSql(String indexName, String quotedIndexName, Table table,
+            List<Column> columns, Model model) {
         List<String> columnNames = new ArrayList<String>(columns.size());
         for (Column col : columns) {
             columnNames.add(col.getQuotedName());
         }
-        return String.format("CREATE FULLTEXT INDEX %s ON %s (%s)",
-                quotedIndexName, table.getQuotedName(),
+        return String.format("CREATE FULLTEXT INDEX %s ON %s (%s)", quotedIndexName, table.getQuotedName(),
                 StringUtils.join(columnNames, ", "));
     }
 
@@ -239,8 +231,7 @@ public class DialectMySQL extends Dialect {
         return buf.toString();
     }
 
-    protected static void translateForMySQL(FulltextQuery ft, Op superOp,
-            StringBuilder buf) {
+    protected static void translateForMySQL(FulltextQuery ft, Op superOp, StringBuilder buf) {
         if (ft.op == Op.AND || ft.op == Op.OR) {
             if (superOp == Op.AND) {
                 buf.append('+');
@@ -281,25 +272,20 @@ public class DialectMySQL extends Dialect {
     // ................... AGAINST (? IN BOOLEAN MODE)
     // ORDER BY nxscore DESC
     @Override
-    public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery,
-            String indexName, int nthMatch, Column mainColumn, Model model,
-            Database database) {
+    public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery, String indexName, int nthMatch,
+            Column mainColumn, Model model, Database database) {
         String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
         String indexSuffix = model.getFulltextIndexSuffix(indexName);
         Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
         Column ftMain = ft.getColumn(model.MAIN_KEY);
-        Column stColumn = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY
-                + indexSuffix);
-        Column btColumn = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY
-                + indexSuffix);
-        String match = String.format("MATCH (%s, %s)",
-                stColumn.getFullQuotedName(), btColumn.getFullQuotedName());
+        Column stColumn = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY + indexSuffix);
+        Column btColumn = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY + indexSuffix);
+        String match = String.format("MATCH (%s, %s)", stColumn.getFullQuotedName(), btColumn.getFullQuotedName());
         FulltextMatchInfo info = new FulltextMatchInfo();
         if (nthMatch == 1) {
             // Need only one JOIN involving the fulltext table
-            info.joins = Collections.singletonList(new Join(Join.INNER,
-                    ft.getQuotedName(), null, null, ftMain.getFullQuotedName(),
-                    mainColumn.getFullQuotedName()));
+            info.joins = Collections.singletonList(new Join(Join.INNER, ft.getQuotedName(), null, null,
+                    ftMain.getFullQuotedName(), mainColumn.getFullQuotedName()));
         }
         info.whereExpr = String.format("%s AGAINST (? IN BOOLEAN MODE)", match);
         info.whereExprParam = fulltextQuery;
@@ -311,8 +297,7 @@ public class DialectMySQL extends Dialect {
         info.scoreExpr = String.format("(%s AGAINST (?) / 10)", match);
         info.scoreExprParam = fulltextQuery;
         info.scoreAlias = "_nxscore" + nthSuffix;
-        info.scoreCol = new Column(mainColumn.getTable(), null,
-                ColumnType.DOUBLE, null);
+        info.scoreCol = new Column(mainColumn.getTable(), null, ColumnType.DOUBLE, null);
         return info;
     }
 
@@ -376,8 +361,7 @@ public class DialectMySQL extends Dialect {
     }
 
     @Override
-    public Map<String, Serializable> getSQLStatementsProperties(Model model,
-            Database database) {
+    public Map<String, Serializable> getSQLStatementsProperties(Model model, Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("idType", "varchar(36)");
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
@@ -400,8 +384,7 @@ public class DialectMySQL extends Dialect {
         // com.mysql.jdbc.exceptions.jdbc4.CommunicationsException:
         // Communications link failure
         String message = t.toString() + " " + t.getMessage();
-        if (message.contains("Communications link failure")
-                || message.contains("CommunicationsException")) {
+        if (message.contains("Communications link failure") || message.contains("CommunicationsException")) {
             return true;
         }
         return false;

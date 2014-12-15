@@ -47,14 +47,12 @@ public class SQLStatement {
     public static class Tag {
 
         /**
-         * Tag for a SELECT statement whose number of rows must be counted. Var
-         * "emptyResult" is set accordingly.
+         * Tag for a SELECT statement whose number of rows must be counted. Var "emptyResult" is set accordingly.
          */
         public static final String TAG_TEST = "#TEST:";
 
         /**
-         * Tag to only execute statement if a var is true. Var may be preceded
-         * by ! inverse the test.
+         * Tag to only execute statement if a var is true. Var may be preceded by ! inverse the test.
          */
         public static final String TAG_IF = "#IF:";
 
@@ -104,8 +102,7 @@ public class SQLStatement {
     /**
      * Reads SQL statements from a text file.
      * <p>
-     * Statements have a category, and optional tags (that may condition
-     * execution).
+     * Statements have a category, and optional tags (that may condition execution).
      *
      * <pre>
      *   #CATEGORY: mycat
@@ -123,14 +120,13 @@ public class SQLStatement {
      *
      * An empty line terminates a statement.
      */
-    public static Map<String, List<SQLStatement>> read(String filename,
-            Map<String, List<SQLStatement>> statements) throws IOException {
+    public static Map<String, List<SQLStatement>> read(String filename, Map<String, List<SQLStatement>> statements)
+            throws IOException {
         InputStream is = Activator.getResourceAsStream(filename);
         if (is == null) {
             throw new IOException("Cannot open: " + filename);
         }
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is,
-                "UTF-8"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
         String line;
         String category = null;
         List<Tag> tags = null;
@@ -139,8 +135,7 @@ public class SQLStatement {
                 if (line.startsWith(SQLStatement.CATEGORY)) {
                     category = line.substring(SQLStatement.CATEGORY.length()).trim();
                     continue;
-                } else if (line.startsWith(Tag.TAG_TEST)
-                        || line.startsWith(Tag.TAG_IF)) {
+                } else if (line.startsWith(Tag.TAG_TEST) || line.startsWith(Tag.TAG_IF)) {
                     String key = line.substring(0, line.indexOf(':') + 1);
                     String value = line.substring(key.length()).trim();
                     if (value.length() == 0) {
@@ -170,8 +165,7 @@ public class SQLStatement {
                         SQLStatement statement = new SQLStatement(sql, tags);
                         List<SQLStatement> catStatements = statements.get(category);
                         if (catStatements == null) {
-                            statements.put(category,
-                                    catStatements = new LinkedList<SQLStatement>());
+                            statements.put(category, catStatements = new LinkedList<SQLStatement>());
                         }
                         catStatements.add(statement);
                         break;
@@ -193,14 +187,12 @@ public class SQLStatement {
         return statements;
     }
 
-    protected static String replaceVars(String sql,
-            Map<String, Serializable> properties) {
+    protected static String replaceVars(String sql, Map<String, Serializable> properties) {
         if (properties != null) {
             for (Entry<String, Serializable> en : properties.entrySet()) {
                 String key = "${" + en.getKey() + "}";
                 String value = String.valueOf(en.getValue());
-                sql = sql.replaceAll(Pattern.quote(key),
-                        Matcher.quoteReplacement(value));
+                sql = sql.replaceAll(Pattern.quote(key), Matcher.quoteReplacement(value));
             }
         }
         return sql;
@@ -209,8 +201,7 @@ public class SQLStatement {
     /**
      * Executes a list of SQL statements, following the tags.
      */
-    public static void execute(List<SQLStatement> statements,
-            Map<String, Serializable> properties, JDBCConnection jdbc)
+    public static void execute(List<SQLStatement> statements, Map<String, Serializable> properties, JDBCConnection jdbc)
             throws SQLException {
         Statement st = jdbc.connection.createStatement();
         try {
@@ -263,8 +254,7 @@ public class SQLStatement {
                 }
 
                 jdbc.logger.log(sql.replace("\n", "\n    ")); // indented
-                if (sql.endsWith(";")
-                        && properties.containsKey(DIALECT_WITH_NO_SEMICOLON)) {
+                if (sql.endsWith(";") && properties.containsKey(DIALECT_WITH_NO_SEMICOLON)) {
                     // derby at least doesn't allow a terminating semicolon
                     sql = sql.substring(0, sql.length() - 1);
                 }
@@ -279,8 +269,7 @@ public class SQLStatement {
                         st.execute(sql);
                     }
                 } catch (SQLException e) {
-                    throw new SQLException("Error executing: " + sql + " : "
-                            + e.getMessage(), e);
+                    throw new SQLException("Error executing: " + sql + " : " + e.getMessage(), e);
                 }
             }
         } finally {

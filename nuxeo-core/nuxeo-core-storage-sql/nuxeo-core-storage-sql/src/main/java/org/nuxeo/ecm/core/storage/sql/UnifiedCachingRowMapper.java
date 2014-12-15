@@ -55,8 +55,7 @@ import com.codahale.metrics.Timer.Context;
 /**
  * A {@link RowMapper} that use an unified ehcache.
  * <p>
- * The cache only holds {@link Row}s that are known to be identical to what's in
- * the underlying {@link RowMapper}.
+ * The cache only holds {@link Row}s that are known to be identical to what's in the underlying {@link RowMapper}.
  */
 public class UnifiedCachingRowMapper implements RowMapper {
 
@@ -73,20 +72,18 @@ public class UnifiedCachingRowMapper implements RowMapper {
     private Model model;
 
     /**
-     * The {@link RowMapper} to which operations that cannot be processed from
-     * the cache are delegated.
+     * The {@link RowMapper} to which operations that cannot be processed from the cache are delegated.
      */
     private RowMapper rowMapper;
 
     /**
-     * The local invalidations due to writes through this mapper that should be
-     * propagated to other sessions at post-commit time.
+     * The local invalidations due to writes through this mapper that should be propagated to other sessions at
+     * post-commit time.
      */
     private final Invalidations localInvalidations;
 
     /**
-     * The queue of cache invalidations received from other session, to process
-     * at pre-transaction time.
+     * The queue of cache invalidations received from other session, to process at pre-transaction time.
      */
     private final InvalidationsQueue cacheQueue;
 
@@ -96,8 +93,8 @@ public class UnifiedCachingRowMapper implements RowMapper {
     private InvalidationsPropagator cachePropagator;
 
     /**
-     * The queue of invalidations used for events, a single queue is shared by
-     * all mappers corresponding to the same client repository.
+     * The queue of invalidations used for events, a single queue is shared by all mappers corresponding to the same
+     * client repository.
      */
     private InvalidationsQueue eventQueue;
 
@@ -141,10 +138,8 @@ public class UnifiedCachingRowMapper implements RowMapper {
         forRemoteClient = false;
     }
 
-    synchronized public void initialize(Model model, RowMapper rowMapper,
-            InvalidationsPropagator cachePropagator,
-            InvalidationsPropagator eventPropagator,
-            InvalidationsQueue repositoryEventQueue,
+    synchronized public void initialize(Model model, RowMapper rowMapper, InvalidationsPropagator cachePropagator,
+            InvalidationsPropagator eventPropagator, InvalidationsQueue repositoryEventQueue,
             Map<String, String> properties) {
         this.model = model;
         this.rowMapper = rowMapper;
@@ -156,19 +151,16 @@ public class UnifiedCachingRowMapper implements RowMapper {
         if (cacheManager == null) {
             if (properties.containsKey(EHCACHE_FILE_PROP)) {
                 String value = properties.get(EHCACHE_FILE_PROP);
-                log.info("Creating ehcache manager for VCS, using ehcache file: "
-                        + value);
+                log.info("Creating ehcache manager for VCS, using ehcache file: " + value);
                 cacheManager = CacheManager.create(value);
             } else {
                 log.info("Creating ehcache manager for VCS, No ehcache file provided");
                 cacheManager = CacheManager.create();
             }
-            isXA = cacheManager.getConfiguration().getCacheConfigurations().get(
-                    CACHE_NAME).isXaTransactional();
+            isXA = cacheManager.getConfiguration().getCacheConfigurations().get(CACHE_NAME).isXaTransactional();
             // Exposes cache to JMX
             MBeanServer mBeanServer = Framework.getLocalService(ServerLocator.class).lookupServer();
-            ManagementService.registerMBeans(cacheManager, mBeanServer, true,
-                    true, true, true);
+            ManagementService.registerMBeans(cacheManager, mBeanServer, true, true, true, true);
         }
         rowMapperCount.incrementAndGet();
         cache = cacheManager.getCache(CACHE_NAME);
@@ -257,8 +249,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
         // for ACL collections, make sure the order is correct
         // (without the cache, the query to get a list of collection does an
         // ORDER BY pos, so users of the cache must get the same behavior)
-        if (row.isCollection() && row.values.length > 0
-                && row.values[0] instanceof ACLRow) {
+        if (row.isCollection() && row.values.length > 0 && row.values[0] instanceof ACLRow) {
             row.values = sortACLRows((ACLRow[]) row.values);
         }
         Element element = new Element(new RowId(row), row);
@@ -273,8 +264,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
     }
 
     protected void cachePutAbsent(RowId rowId) {
-        Element element = new Element(new RowId(rowId), new Row(ABSENT,
-                (Serializable) null));
+        Element element = new Element(new RowId(rowId), new Row(ABSENT, (Serializable) null));
         ehCachePut(element);
     }
 
@@ -349,14 +339,12 @@ public class UnifiedCachingRowMapper implements RowMapper {
         if (invalidations.isEmpty() && events.isEmpty()) {
             return null;
         }
-        return new InvalidationsPair(invalidations.isEmpty() ? null
-                : invalidations, events.isEmpty() ? null : events);
+        return new InvalidationsPair(invalidations.isEmpty() ? null : invalidations, events.isEmpty() ? null : events);
     }
 
     // propagate invalidations
     @Override
-    public void sendInvalidations(Invalidations invalidations)
-            throws StorageException {
+    public void sendInvalidations(Invalidations invalidations) throws StorageException {
         // add local invalidations
         if (!localInvalidations.isEmpty()) {
             if (invalidations == null) {
@@ -385,8 +373,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
     }
 
     /**
-     * Used by the server to associate each mapper to a single event
-     * invalidations queue per client repository.
+     * Used by the server to associate each mapper to a single event invalidations queue per client repository.
      */
     public void setEventQueue(InvalidationsQueue eventQueue) {
         // don't remove the original global repository queue
@@ -400,16 +387,16 @@ public class UnifiedCachingRowMapper implements RowMapper {
      */
     public void setSession(SessionImpl session) {
         this.session = session;
-        cacheHitCount = registry.counter(MetricRegistry.name(
-                "nuxeo", "repositories", session.repository.getName(), "caches", "unified", "hits"));
-        cacheGetTimer = registry.timer(MetricRegistry.name(
-                "nuxeo", "repositories", session.repository.getName(), "caches", "unified", "get"));
-        sorRows = registry.counter(MetricRegistry.name(
-                "nuxeo", "repositories", session.repository.getName(), "caches", "unified", "sor", "rows"));
-        sorGetTimer = registry.timer(MetricRegistry.name(
-                "nuxeo", "repositories", session.repository.getName(), "caches", "unified", "sor", "get"));
-        String gaugeName = MetricRegistry.name(
-                "nuxeo", "repositories", session.repository.getName(), "caches", "unified", "cache-size");
+        cacheHitCount = registry.counter(MetricRegistry.name("nuxeo", "repositories", session.repository.getName(),
+                "caches", "unified", "hits"));
+        cacheGetTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", session.repository.getName(),
+                "caches", "unified", "get"));
+        sorRows = registry.counter(MetricRegistry.name("nuxeo", "repositories", session.repository.getName(), "caches",
+                "unified", "sor", "rows"));
+        sorGetTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", session.repository.getName(),
+                "caches", "unified", "sor", "get"));
+        String gaugeName = MetricRegistry.name("nuxeo", "repositories", session.repository.getName(), "caches",
+                "unified", "cache-size");
         SortedMap<String, Gauge> gauges = registry.getGauges();
         if (!gauges.containsKey(gaugeName)) {
             registry.register(gaugeName, new Gauge<Integer>() {
@@ -449,8 +436,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
      * Use those from the cache if available, read from the mapper for the rest.
      */
     @Override
-    public List<? extends RowId> read(Collection<RowId> rowIds,
-            boolean cacheOnly) throws StorageException {
+    public List<? extends RowId> read(Collection<RowId> rowIds, boolean cacheOnly) throws StorageException {
         List<RowId> res = new ArrayList<RowId>(rowIds.size());
         // find which are in cache, and which not
         List<RowId> todo = new LinkedList<RowId>();
@@ -555,8 +541,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
     }
 
     @Override
-    public Serializable[] readCollectionRowArray(RowId rowId)
-            throws StorageException {
+    public Serializable[] readCollectionRowArray(RowId rowId) throws StorageException {
         Row row = cacheGet(rowId);
         if (row == null) {
             Serializable[] array = rowMapper.readCollectionRowArray(rowId);
@@ -572,11 +557,9 @@ public class UnifiedCachingRowMapper implements RowMapper {
     }
 
     @Override
-    public List<Row> readSelectionRows(SelectionType selType,
-            Serializable selId, Serializable filter, Serializable criterion,
-            boolean limitToOne) throws StorageException {
-        List<Row> rows = rowMapper.readSelectionRows(selType, selId, filter,
-                criterion, limitToOne);
+    public List<Row> readSelectionRows(SelectionType selType, Serializable selId, Serializable filter,
+            Serializable criterion, boolean limitToOne) throws StorageException {
+        List<Row> rows = rowMapper.readSelectionRows(selType, selId, filter, criterion, limitToOne);
         for (Row row : rows) {
             cachePut(row);
         }
@@ -588,10 +571,9 @@ public class UnifiedCachingRowMapper implements RowMapper {
      */
 
     @Override
-    public CopyResult copy(IdWithTypes source, Serializable destParentId,
-            String destName, Row overwriteRow) throws StorageException {
-        CopyResult result = rowMapper.copy(source, destParentId, destName,
-                overwriteRow);
+    public CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow)
+            throws StorageException {
+        CopyResult result = rowMapper.copy(source, destParentId, destName, overwriteRow);
         Invalidations invalidations = result.invalidations;
         if (invalidations.modified != null) {
             for (RowId rowId : invalidations.modified) {
@@ -612,8 +594,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
     public List<NodeInfo> remove(NodeInfo rootInfo) throws StorageException {
         List<NodeInfo> infos = rowMapper.remove(rootInfo);
         for (NodeInfo info : infos) {
-            for (String fragmentName : model.getTypeFragments(new IdWithTypes(
-                    info.id, info.primaryType, null))) {
+            for (String fragmentName : model.getTypeFragments(new IdWithTypes(info.id, info.primaryType, null))) {
                 RowId rowId = new RowId(fragmentName, info.id);
                 cacheRemove(rowId);
                 localInvalidations.addDeleted(rowId);

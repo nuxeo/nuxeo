@@ -17,8 +17,7 @@ import java.io.Serializable;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
- * A SimpleProperty gives access to a scalar value stored in an underlying
- * {@link SimpleFragment}.
+ * A SimpleProperty gives access to a scalar value stored in an underlying {@link SimpleFragment}.
  *
  * @author Florent Guillaume
  */
@@ -33,8 +32,7 @@ public class SimpleProperty extends BaseProperty {
     /**
      * Creates a SimpleProperty, with specific info about row and key.
      */
-    public SimpleProperty(String name, PropertyType type, boolean readonly,
-            SimpleFragment fragment, String key) {
+    public SimpleProperty(String name, PropertyType type, boolean readonly, SimpleFragment fragment, String key) {
         super(name, type, readonly);
         this.fragment = fragment;
         this.key = key;

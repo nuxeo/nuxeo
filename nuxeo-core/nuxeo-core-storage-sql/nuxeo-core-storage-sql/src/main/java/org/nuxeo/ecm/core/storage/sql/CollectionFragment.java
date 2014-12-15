@@ -29,8 +29,7 @@ public class CollectionFragment extends Fragment {
      *
      * @param row the row
      * @param state the initial state for the fragment
-     * @param context the persistence context to which the fragment is tied, or
-     *            {@code null}
+     * @param context the persistence context to which the fragment is tied, or {@code null}
      */
     public CollectionFragment(Row row, State state, PersistenceContext context) {
         super(row, state, context);

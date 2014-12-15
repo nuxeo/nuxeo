@@ -30,8 +30,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Adapter for a simple JDBC Connection that gives it the XAResource interface,
- * without actually implementing XA (prepare does nothing).
+ * Adapter for a simple JDBC Connection that gives it the XAResource interface, without actually implementing XA
+ * (prepare does nothing).
  *
  * @since 5.7
  */
@@ -143,8 +143,7 @@ public class XAResourceConnectionAdapter implements XAResource {
         return this == xares;
     }
 
-    protected static XAException newXAException(int errorCode, String message,
-            Exception cause) {
+    protected static XAException newXAException(int errorCode, String message, Exception cause) {
         return (XAException) newXAException(errorCode, message).initCause(cause);
     }
 

@@ -35,15 +35,12 @@ public class TestSQLBackendScrambling extends SQLBackendTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
-                "OSGI-INF/test-backend-core-types-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests", "OSGI-INF/test-backend-core-types-contrib.xml");
     }
 
     @Override
-    protected RepositoryDescriptor newDescriptor(String name,
-            long clusteringDelay) {
-        RepositoryDescriptor descriptor = super.newDescriptor(name,
-                clusteringDelay);
+    protected RepositoryDescriptor newDescriptor(String name, long clusteringDelay) {
+        RepositoryDescriptor descriptor = super.newDescriptor(name, clusteringDelay);
         descriptor.binaryManagerClass = XORBinaryManager.class;
         descriptor.binaryManagerKey = "AB";
         return descriptor;

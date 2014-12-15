@@ -17,8 +17,8 @@ import java.util.List;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
- * Knows all the {@link JDBCConnection}s in use by a backend, so that they can
- * notify each other when there's a connection failure.
+ * Knows all the {@link JDBCConnection}s in use by a backend, so that they can notify each other when there's a
+ * connection failure.
  */
 public class JDBCConnectionPropagator {
 
@@ -47,10 +47,8 @@ public class JDBCConnectionPropagator {
      *
      * @param connection the connection that was reset
      */
-    public synchronized void connectionWasReset(JDBCConnection connection)
-            throws StorageException {
-        if (clusterNodeHandler != null
-                && clusterNodeHandler.getConnection() == connection) {
+    public synchronized void connectionWasReset(JDBCConnection connection) throws StorageException {
+        if (clusterNodeHandler != null && clusterNodeHandler.getConnection() == connection) {
             clusterNodeHandler.connectionWasReset();
         }
         for (JDBCConnection c : connections) {

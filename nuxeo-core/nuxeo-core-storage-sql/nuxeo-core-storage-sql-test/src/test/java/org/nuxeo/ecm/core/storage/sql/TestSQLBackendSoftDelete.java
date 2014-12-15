@@ -35,10 +35,8 @@ public class TestSQLBackendSoftDelete extends TestSQLBackend {
     }
 
     @Override
-    protected RepositoryDescriptor newDescriptor(String name,
-            long clusteringDelay) {
-        RepositoryDescriptor descriptor = super.newDescriptor(name,
-                clusteringDelay);
+    protected RepositoryDescriptor newDescriptor(String name, long clusteringDelay) {
+        RepositoryDescriptor descriptor = super.newDescriptor(name, clusteringDelay);
         descriptor.setSoftDeleteEnabled(true);
         return descriptor;
     }
@@ -48,18 +46,13 @@ public class TestSQLBackendSoftDelete extends TestSQLBackend {
         SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
         Session session = repository.getConnection();
         Node root = session.getRootNode();
-        Node folder1 = session.addChildNode(root, "folder1", null, "TestDoc",
-                false);
-        Node folder2 = session.addChildNode(root, "folder2", null, "TestDoc",
-                false);
-        Node folder3 = session.addChildNode(root, "folder3", null, "TestDoc",
-                false);
-        Node folder4 = session.addChildNode(folder1, "folder4", null,
-                "TestDoc", false);
+        Node folder1 = session.addChildNode(root, "folder1", null, "TestDoc", false);
+        Node folder2 = session.addChildNode(root, "folder2", null, "TestDoc", false);
+        Node folder3 = session.addChildNode(root, "folder3", null, "TestDoc", false);
+        Node folder4 = session.addChildNode(folder1, "folder4", null, "TestDoc", false);
         session.addChildNode(folder4, "folder5", null, "TestDoc", false);
         // create node in folder1
-        Node node = session.addChildNode(folder1, "node", null, "TestDoc",
-                false);
+        Node node = session.addChildNode(folder1, "node", null, "TestDoc", false);
         // create version
         Node ver = session.checkIn(node, "foolab1", "desc1");
         // create proxy2 in folder2
@@ -83,10 +76,8 @@ public class TestSQLBackendSoftDelete extends TestSQLBackend {
         SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
         Session session = repository.getConnection();
         Node root = session.getRootNode();
-        Node folder1 = session.addChildNode(root, "folder1", null, "TestDoc",
-                false);
-        Node node = session.addChildNode(folder1, "node", null, "TestDoc",
-                false);
+        Node folder1 = session.addChildNode(root, "folder1", null, "TestDoc", false);
+        Node node = session.addChildNode(folder1, "node", null, "TestDoc", false);
 
         // test date cutoff for cleanup
         session.removeNode(node);
@@ -104,8 +95,7 @@ public class TestSQLBackendSoftDelete extends TestSQLBackend {
         SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
         Session session = repository.getConnection();
         Node root = session.getRootNode();
-        Node folder = session.addChildNode(root, "folder", null, "TestDoc",
-                false);
+        Node folder = session.addChildNode(root, "folder", null, "TestDoc", false);
         for (int i = 0; i < 10; i++) {
             session.addChildNode(folder, "doc" + i, null, "TestDoc", false);
         }

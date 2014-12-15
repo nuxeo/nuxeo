@@ -49,8 +49,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 
 /**
- * {@link Repository} implementation, to be extended by backend-specific
- * initialization code.
+ * {@link Repository} implementation, to be extended by backend-specific initialization code.
  *
  * @see RepositoryBackend
  */
@@ -84,8 +83,8 @@ public class RepositoryImpl implements Repository {
     private final InvalidationsPropagator cachePropagator;
 
     /**
-     * Propagator of event invalidations to all event queues (only one queue if
-     * there are not remote client repositories).
+     * Propagator of event invalidations to all event queues (only one queue if there are not remote client
+     * repositories).
      */
     private final InvalidationsPropagator eventPropagator;
 
@@ -95,19 +94,16 @@ public class RepositoryImpl implements Repository {
     private Model model;
 
     /**
-     * Transient id for this repository assigned by the server on first
-     * connection. This is not persisted.
+     * Transient id for this repository assigned by the server on first connection. This is not persisted.
      */
     public String repositoryId;
 
-    public RepositoryImpl(RepositoryDescriptor repositoryDescriptor)
-            throws StorageException {
+    public RepositoryImpl(RepositoryDescriptor repositoryDescriptor) throws StorageException {
         this.repositoryDescriptor = repositoryDescriptor;
         sessions = new CopyOnWriteArrayList<SessionImpl>();
         cachePropagator = new InvalidationsPropagator("cache-" + this);
         eventPropagator = new InvalidationsPropagator("event-" + this);
-        repositoryEventQueue = new InvalidationsQueue("repo-"
-                + repositoryDescriptor.name);
+        repositoryEventQueue = new InvalidationsQueue("repo-" + repositoryDescriptor.name);
         try {
             eventService = Framework.getService(EventService.class);
         } catch (Exception e) {
@@ -120,31 +116,27 @@ public class RepositoryImpl implements Repository {
         }
         Class<?> klass;
         try {
-            klass = Thread.currentThread().getContextClassLoader().loadClass(
-                    className);
+            klass = Thread.currentThread().getContextClassLoader().loadClass(className);
         } catch (ClassNotFoundException e) {
-            throw new StorageException("Unknown fulltext parser class: "
-                    + className, e);
+            throw new StorageException("Unknown fulltext parser class: " + className, e);
         }
         if (!FulltextParser.class.isAssignableFrom(klass)) {
-            throw new StorageException("Invalid fulltext parser class: "
-                    + className);
+            throw new StorageException("Invalid fulltext parser class: " + className);
         }
         fulltextParserClass = (Class<? extends FulltextParser>) klass;
 
         binaryManager = createBinaryManager();
         backend = createBackend();
-        repositoryUp = registry.counter(MetricRegistry.name("nuxeo",
-                "repositories", repositoryDescriptor.name, "instance-up"));
+        repositoryUp = registry.counter(MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name,
+                "instance-up"));
         repositoryUp.inc();
-        sessionCount = registry.counter(MetricRegistry.name("nuxeo",
-                "repositories", repositoryDescriptor.name, "sessions"));
+        sessionCount = registry.counter(MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name,
+                "sessions"));
         createMetricsGauges();
     }
 
     protected void createMetricsGauges() {
-        String gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name,
-                "caches", "size");
+        String gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name, "caches", "size");
         registry.remove(gaugeName);
         registry.register(gaugeName, new Gauge<Long>() {
             @Override
@@ -153,8 +145,7 @@ public class RepositoryImpl implements Repository {
             }
 
         });
-        gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name,
-                "caches", "pristines");
+        gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name, "caches", "pristines");
         registry.remove(gaugeName);
         registry.register(gaugeName, new Gauge<Long>() {
             @Override
@@ -162,8 +153,8 @@ public class RepositoryImpl implements Repository {
                 return getCachePristineSize();
             }
         });
-        gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name,
-                "caches", "selections");;
+        gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name, "caches", "selections");
+        ;
         registry.remove(gaugeName);
         registry.register(gaugeName, new Gauge<Long>() {
             @Override
@@ -171,8 +162,8 @@ public class RepositoryImpl implements Repository {
                 return getCacheSelectionSize();
             }
         });
-        gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name,
-                "caches", "mappers");;
+        gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name, "caches", "mappers");
+        ;
         registry.remove(gaugeName);
         registry.register(gaugeName, new Gauge<Long>() {
             @Override
@@ -219,16 +210,14 @@ public class RepositoryImpl implements Repository {
         }
     }
 
-    protected Mapper createCachingMapper(Model model, Mapper mapper)
-            throws StorageException {
+    protected Mapper createCachingMapper(Model model, Mapper mapper) throws StorageException {
         try {
             Class<? extends CachingMapper> cachingMapperClass = getCachingMapperClass();
             if (cachingMapperClass == null) {
                 return mapper;
             }
             CachingMapper cachingMapper = cachingMapperClass.newInstance();
-            cachingMapper.initialize(model, mapper, cachePropagator,
-                    eventPropagator, repositoryEventQueue,
+            cachingMapper.initialize(model, mapper, cachePropagator, eventPropagator, repositoryEventQueue,
                     repositoryDescriptor.cachingMapperProperties);
             return cachingMapper;
         } catch (Exception e) {
@@ -284,8 +273,7 @@ public class RepositoryImpl implements Repository {
      * @throws StorageException
      */
     @Override
-    public SessionImpl getConnection(ConnectionSpec connectionSpec)
-            throws StorageException {
+    public SessionImpl getConnection(ConnectionSpec connectionSpec) throws StorageException {
         return getConnection();
     }
 
@@ -324,8 +312,7 @@ public class RepositoryImpl implements Repository {
         // create the mapper for the cluster node handler
         if (repositoryDescriptor.getClusteringEnabled()) {
             backend.newMapper(model, null, MapperKind.CLUSTER_NODE_HANDLER);
-            log.info("Clustering enabled with "
-                    + repositoryDescriptor.getClusteringDelay()
+            log.info("Clustering enabled with " + repositoryDescriptor.getClusteringDelay()
                     + " ms delay for repository: " + getName());
         }
 
@@ -347,12 +334,10 @@ public class RepositoryImpl implements Repository {
             // default to a VCSLockManager
             lockManager = new VCSLockManager(lockManagerName);
         }
-        log.info("Repository " + getName() + " using lock manager "
-                + lockManager);
+        log.info("Repository " + getName() + " using lock manager " + lockManager);
     }
 
-    protected SessionImpl newSession(Model model, Mapper mapper)
-            throws StorageException {
+    protected SessionImpl newSession(Model model, Mapper mapper) throws StorageException {
         mapper = createCachingMapper(model, mapper);
         return new SessionImpl(this, model, mapper);
     }
@@ -415,12 +400,9 @@ public class RepositoryImpl implements Repository {
         BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
         bms.removeBinaryManager(repositoryDescriptor.name);
 
-        registry.remove(MetricRegistry.name(RepositoryImpl.class, getName(),
-                "cache-size"));
-        registry.remove(MetricRegistry.name(PersistenceContext.class,
-                getName(), "cache-size"));
-        registry.remove(MetricRegistry.name(SelectionContext.class, getName(),
-                "cache-size"));
+        registry.remove(MetricRegistry.name(RepositoryImpl.class, getName(), "cache-size"));
+        registry.remove(MetricRegistry.name(PersistenceContext.class, getName(), "cache-size"));
+        registry.remove(MetricRegistry.name(SelectionContext.class, getName(), "cache-size"));
     }
 
     protected synchronized void closeAllSessions() throws StorageException {

@@ -34,16 +34,14 @@ import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerWrapper;
 
 /**
- * The connection factory delegates connection requests to the application
- * server {@link ConnectionManager}.
+ * The connection factory delegates connection requests to the application server {@link ConnectionManager}.
  * <p>
- * An instance of this class is returned to the application when a JNDI lookup
- * is done. This is the datasource equivalent of {@link SQLRepository}.
+ * An instance of this class is returned to the application when a JNDI lookup is done. This is the datasource
+ * equivalent of {@link SQLRepository}.
  *
  * @author Florent Guillaume
  */
-public class ConnectionFactoryImpl implements Repository,
-        org.nuxeo.ecm.core.model.Repository {
+public class ConnectionFactoryImpl implements Repository, org.nuxeo.ecm.core.model.Repository {
 
     private static final long serialVersionUID = 1L;
 
@@ -56,16 +54,14 @@ public class ConnectionFactoryImpl implements Repository,
     private Reference reference;
 
     /**
-     * This is {@code true} if the connectionManager comes from an application
-     * server, or {@code false} if the {@link ConnectionFactoryImpl} was
-     * constructed by application code and passed our manual
+     * This is {@code true} if the connectionManager comes from an application server, or {@code false} if the
+     * {@link ConnectionFactoryImpl} was constructed by application code and passed our manual
      * {@link ConnectionManagerImpl}.
      */
     @SuppressWarnings("unused")
     private final boolean managed;
 
-    public ConnectionFactoryImpl(
-            ManagedConnectionFactoryImpl managedConnectionFactory,
+    public ConnectionFactoryImpl(ManagedConnectionFactoryImpl managedConnectionFactory,
             ConnectionManager connectionManager) {
         this.managedConnectionFactory = managedConnectionFactory;
         this.connectionManager = connectionManager;
@@ -89,8 +85,7 @@ public class ConnectionFactoryImpl implements Repository,
      * @return the connection
      */
     @Override
-    public Session getConnection(ConnectionSpec connectionSpec)
-            throws StorageException {
+    public Session getConnection(ConnectionSpec connectionSpec) throws StorageException {
         return getConnection();
     }
 
@@ -102,22 +97,18 @@ public class ConnectionFactoryImpl implements Repository,
     @Override
     public Session getConnection() throws StorageException {
         try {
-            return (Session) connectionManager.allocateConnection(
-                    managedConnectionFactory, null);
+            return (Session) connectionManager.allocateConnection(managedConnectionFactory, null);
         } catch (StorageException e) {
             throw e;
         } catch (ResourceException e) {
             String msg = e.getMessage();
-            if (msg != null
-                    && msg.startsWith("No ManagedConnections available")) {
+            if (msg != null && msg.startsWith("No ManagedConnections available")) {
                 String err = "Connection pool is fully used";
                 if (connectionManager instanceof ConnectionManagerWrapper) {
                     ConnectionManagerWrapper cmw = (ConnectionManagerWrapper) connectionManager;
                     NuxeoConnectionManagerConfiguration config = cmw.getConfiguration();
-                    err = err + ", consider increasing "
-                            + "nuxeo.vcs.blocking-timeout-millis (currently "
-                            + config.getBlockingTimeoutMillis() + ") or "
-                            + "nuxeo.vcs.max-pool-size (currently "
+                    err = err + ", consider increasing " + "nuxeo.vcs.blocking-timeout-millis (currently "
+                            + config.getBlockingTimeoutMillis() + ") or " + "nuxeo.vcs.max-pool-size (currently "
                             + config.getMaxPoolSize() + ")";
                 }
                 throw new StorageException(err, e);
@@ -170,8 +161,7 @@ public class ConnectionFactoryImpl implements Repository,
     }
 
     @Override
-    public org.nuxeo.ecm.core.model.Session getSession(String sessionId)
-            throws DocumentException {
+    public org.nuxeo.ecm.core.model.Session getSession(String sessionId) throws DocumentException {
         try {
             return new SQLSession(getConnection(), this, sessionId);
         } catch (StorageException e) {
@@ -184,14 +174,12 @@ public class ConnectionFactoryImpl implements Repository,
         try {
             NuxeoContainer.disposeConnectionManager(connectionManager);
         } catch (Exception e) {
-            LogFactory.getLog(ConnectionFactoryImpl.class).warn("cannot dispose connection manager of "
-                    + name);
+            LogFactory.getLog(ConnectionFactoryImpl.class).warn("cannot dispose connection manager of " + name);
         }
         try {
             managedConnectionFactory.shutdown();
         } catch (StorageException e) {
-            LogFactory.getLog(ConnectionFactoryImpl.class).warn("cannot shutdown connection factory  "
-                    + name);
+            LogFactory.getLog(ConnectionFactoryImpl.class).warn("cannot shutdown connection factory  " + name);
         }
     }
 

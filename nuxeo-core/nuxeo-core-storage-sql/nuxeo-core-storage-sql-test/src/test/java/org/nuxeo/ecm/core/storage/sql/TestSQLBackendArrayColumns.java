@@ -16,8 +16,7 @@ import static org.junit.Assume.assumeTrue;
 import org.junit.BeforeClass;
 
 /**
- * All the tests of TestSQLBackend with storage of collections as array columns
- * activated.
+ * All the tests of TestSQLBackend with storage of collections as array columns activated.
  */
 public class TestSQLBackendArrayColumns extends TestSQLBackend {
 
@@ -30,10 +29,8 @@ public class TestSQLBackendArrayColumns extends TestSQLBackend {
     }
 
     @Override
-    protected RepositoryDescriptor newDescriptor(String name,
-            long clusteringDelay) {
-        RepositoryDescriptor descriptor = super.newDescriptor(name,
-                clusteringDelay);
+    protected RepositoryDescriptor newDescriptor(String name, long clusteringDelay) {
+        RepositoryDescriptor descriptor = super.newDescriptor(name, clusteringDelay);
         descriptor.setArrayColumns(true);
         return descriptor;
     }

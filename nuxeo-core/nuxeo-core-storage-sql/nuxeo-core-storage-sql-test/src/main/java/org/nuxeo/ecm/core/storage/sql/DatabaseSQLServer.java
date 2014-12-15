@@ -67,21 +67,15 @@ public class DatabaseSQLServer extends DatabaseHelper {
         setProperty(DRIVER_PROPERTY, DRIVER);
         String url;
         if (DRIVER.startsWith("com.microsoft")) {
-            url = String.format(
-                    "jdbc:sqlserver://%s:%s;databaseName=%s;user=%s;password=%s",
-                    Framework.getProperty(SERVER_PROPERTY),
-                    Framework.getProperty(PORT_PROPERTY),
-                    Framework.getProperty(DATABASE_PROPERTY),
-                    Framework.getProperty(USER_PROPERTY),
+            url = String.format("jdbc:sqlserver://%s:%s;databaseName=%s;user=%s;password=%s",
+                    Framework.getProperty(SERVER_PROPERTY), Framework.getProperty(PORT_PROPERTY),
+                    Framework.getProperty(DATABASE_PROPERTY), Framework.getProperty(USER_PROPERTY),
                     Framework.getProperty(PASSWORD_PROPERTY));
 
         } else {
-            url = String.format(
-                    "jdbc:jtds:sqlserver://%s:%s;databaseName=%s;user=%s;password=%s",
-                    Framework.getProperty(SERVER_PROPERTY),
-                    Framework.getProperty(PORT_PROPERTY),
-                    Framework.getProperty(DATABASE_PROPERTY),
-                    Framework.getProperty(USER_PROPERTY),
+            url = String.format("jdbc:jtds:sqlserver://%s:%s;databaseName=%s;user=%s;password=%s",
+                    Framework.getProperty(SERVER_PROPERTY), Framework.getProperty(PORT_PROPERTY),
+                    Framework.getProperty(DATABASE_PROPERTY), Framework.getProperty(USER_PROPERTY),
                     Framework.getProperty(PASSWORD_PROPERTY));
         }
         setProperty(URL_PROPERTY, url);
@@ -94,15 +88,14 @@ public class DatabaseSQLServer extends DatabaseHelper {
         Class.forName(DRIVER);
         setProperties();
         Connection connection = DriverManager.getConnection(Framework.getProperty(URL_PROPERTY));
-        try  {
+        try {
             doOnAllTables(connection, null, null, "DROP TABLE [%s]"); // no CASCADE...
             checkSupports(connection);
             // SEQUENCE in SQL Server 2012, but not Azure
             if (supportsSequences) {
                 Statement st = connection.createStatement();
-                executeSql(st,
-                        "IF EXISTS (SELECT 1 FROM sys.sequences WHERE name = 'hierarchy_seq')"
-                                + " DROP SEQUENCE hierarchy_seq");
+                executeSql(st, "IF EXISTS (SELECT 1 FROM sys.sequences WHERE name = 'hierarchy_seq')"
+                        + " DROP SEQUENCE hierarchy_seq");
                 st.close();
             }
         } finally {

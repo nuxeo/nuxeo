@@ -56,8 +56,7 @@ public class DatabaseH2 extends DatabaseHelper {
     protected void setProperties() {
         url = setProperty(URL_PROPERTY, String.format(URL_FORMAT, databaseName));
 
-        setProperty(REPOSITORY_PROPERTY,
-                repositoryName);
+        setProperty(REPOSITORY_PROPERTY, repositoryName);
         setProperty(DATABASE_PROPERTY, databaseName);
         user = setProperty(USER_PROPERTY, DEF_USER);
         password = setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
@@ -68,8 +67,7 @@ public class DatabaseH2 extends DatabaseHelper {
     protected void setProperties2() {
         url2 = String.format(URL_FORMAT, databaseName + "2");
         setProperty(URL_PROPERTY + "2", url2);
-        Framework.getProperties().setProperty(REPOSITORY_PROPERTY + "2",
-                repositoryName + "2");
+        Framework.getProperties().setProperty(REPOSITORY_PROPERTY + "2", repositoryName + "2");
     }
 
     @Override
@@ -81,8 +79,7 @@ public class DatabaseH2 extends DatabaseHelper {
     }
 
     protected void checkDatabaseLive() throws SQLException {
-        try (Connection connection = DriverManager.getConnection(url,
-                Framework.getProperty(USER_PROPERTY, "sa"),
+        try (Connection connection = DriverManager.getConnection(url, Framework.getProperty(USER_PROPERTY, "sa"),
                 Framework.getProperty(PASSWORD_PROPERTY, null))) {
             try (Statement st = connection.createStatement()) {
                 st.execute("SELECT 1");
@@ -114,9 +111,7 @@ public class DatabaseH2 extends DatabaseHelper {
     }
 
     protected void tearDownDatabase(String url) throws SQLException {
-        Connection connection = DriverManager.getConnection(url,
-                user,
-                password);
+        Connection connection = DriverManager.getConnection(url, user, password);
         try {
             Statement st = connection.createStatement();
             try {

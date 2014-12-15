@@ -68,8 +68,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     public static final int DEBUG_MAX_TREE = 50;
 
     /**
-     * Cluster node handler, or {@code null} if this {@link Mapper} is not the
-     * cluster node mapper.
+     * Cluster node handler, or {@code null} if this {@link Mapper} is not the cluster node mapper.
      */
     private final ClusterNodeHandler clusterNodeHandler;
 
@@ -78,9 +77,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      */
     private final InvalidationsQueue queue;
 
-    public JDBCRowMapper(Model model, SQLInfo sqlInfo,
-            XADataSource xadatasource, ClusterNodeHandler clusterNodeHandler,
-            JDBCConnectionPropagator connectionPropagator, boolean noSharing)
+    public JDBCRowMapper(Model model, SQLInfo sqlInfo, XADataSource xadatasource,
+            ClusterNodeHandler clusterNodeHandler, JDBCConnectionPropagator connectionPropagator, boolean noSharing)
             throws StorageException {
         super(model, sqlInfo, xadatasource, connectionPropagator, noSharing);
         this.clusterNodeHandler = clusterNodeHandler;
@@ -107,8 +105,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             receiveClusterInvalidations();
             invalidations = queue.getInvalidations();
         }
-        return invalidations == null ? null : new InvalidationsPair(
-                invalidations, null);
+        return invalidations == null ? null : new InvalidationsPair(invalidations, null);
     }
 
     protected void receiveClusterInvalidations() throws StorageException {
@@ -120,8 +117,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public void sendInvalidations(Invalidations invalidations)
-            throws StorageException {
+    public void sendInvalidations(Invalidations invalidations) throws StorageException {
         if (clusterNodeHandler != null) {
             clusterNodeHandler.sendClusterInvalidations(invalidations);
         }
@@ -148,8 +144,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     protected CollectionIO getCollectionIO(String tableName) {
-        return tableName.equals(model.ACL_TABLE_NAME) ? ACLCollectionIO.INSTANCE
-                : ScalarCollectionIO.INSTANCE;
+        return tableName.equals(model.ACL_TABLE_NAME) ? ACLCollectionIO.INSTANCE : ScalarCollectionIO.INSTANCE;
     }
 
     @Override
@@ -171,8 +166,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      */
 
     @Override
-    public List<? extends RowId> read(Collection<RowId> rowIds,
-            boolean cacheOnly) throws StorageException {
+    public List<? extends RowId> read(Collection<RowId> rowIds, boolean cacheOnly) throws StorageException {
         List<RowId> res = new ArrayList<RowId>(rowIds.size());
         if (cacheOnly) {
             // return no data
@@ -206,8 +200,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                         end = size;
                     }
                     // needs to be Serializable -> copy
-                    List<Serializable> chunkIds = new ArrayList<Serializable>(
-                            idList.subList(start, end));
+                    List<Serializable> chunkIds = new ArrayList<Serializable>(idList.subList(start, end));
                     List<Row> chunkRows;
                     if (model.isCollectionFragment(tableName)) {
                         chunkRows = readCollectionArrays(tableName, chunkIds);
@@ -238,22 +231,18 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     /**
-     * Gets a list of rows for {@link SimpleFragment}s from the database, given
-     * the table name and the ids.
+     * Gets a list of rows for {@link SimpleFragment}s from the database, given the table name and the ids.
      *
      * @param tableName the table name
      * @param ids the ids
      * @return the list of rows, without the missing ones
      */
-    protected List<Row> readSimpleRows(String tableName,
-            Collection<Serializable> ids) throws StorageException {
+    protected List<Row> readSimpleRows(String tableName, Collection<Serializable> ids) throws StorageException {
         if (ids.isEmpty()) {
             return Collections.emptyList();
         }
-        SQLInfoSelect select = sqlInfo.getSelectFragmentsByIds(tableName,
-                ids.size());
-        Map<String, Serializable> criteriaMap = Collections.singletonMap(
-                model.MAIN_KEY, (Serializable) ids);
+        SQLInfoSelect select = sqlInfo.getSelectFragmentsByIds(tableName, ids.size());
+        Map<String, Serializable> criteriaMap = Collections.singletonMap(model.MAIN_KEY, (Serializable) ids);
         return getSelectRows(tableName, select, criteriaMap, null, false);
     }
 
@@ -263,17 +252,14 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      * @param tableName the table name
      * @param ids the ids
      */
-    protected List<Row> readCollectionArrays(String tableName,
-            Collection<Serializable> ids) throws StorageException {
+    protected List<Row> readCollectionArrays(String tableName, Collection<Serializable> ids) throws StorageException {
         if (ids.isEmpty()) {
             return Collections.emptyList();
         }
         String[] orderBys = { model.MAIN_KEY, model.COLL_TABLE_POS_KEY }; // clusters
                                                                           // results
-        Set<String> skipColumns = new HashSet<String>(
-                Arrays.asList(model.COLL_TABLE_POS_KEY));
-        SQLInfoSelect select = sqlInfo.getSelectFragmentsByIds(tableName,
-                ids.size(), orderBys, skipColumns);
+        Set<String> skipColumns = new HashSet<String>(Arrays.asList(model.COLL_TABLE_POS_KEY));
+        SQLInfoSelect select = sqlInfo.getSelectFragmentsByIds(tableName, ids.size(), orderBys, skipColumns);
 
         String sql = select.sql;
         try {
@@ -301,14 +287,12 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 List<Row> res = new LinkedList<Row>();
                 Set<Serializable> remainingIds = new HashSet<Serializable>(ids);
                 while (rs.next()) {
-                    Serializable value = io.getCurrentFromResultSet(rs,
-                            select.whatColumns, model, returnId, returnPos);
+                    Serializable value = io.getCurrentFromResultSet(rs, select.whatColumns, model, returnId, returnPos);
                     Serializable newId = returnId[0];
                     if (newId != null && !newId.equals(curId)) {
                         // flush old list
                         if (list != null) {
-                            res.add(new Row(tableName, curId,
-                                    type.collectionToArray(list)));
+                            res.add(new Row(tableName, curId, type.collectionToArray(list)));
                             remainingIds.remove(curId);
                         }
                         curId = newId;
@@ -318,8 +302,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 }
                 if (curId != null && list != null) {
                     // flush last list
-                    res.add(new Row(tableName, curId,
-                            type.collectionToArray(list)));
+                    res.add(new Row(tableName, curId, type.collectionToArray(list)));
                     remainingIds.remove(curId);
                 }
 
@@ -346,20 +329,16 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     /**
-     * Fetches the rows for a select with fixed criteria given as two maps (a
-     * criteriaMap whose values and up in the returned rows, and a joinMap for
-     * other criteria).
+     * Fetches the rows for a select with fixed criteria given as two maps (a criteriaMap whose values and up in the
+     * returned rows, and a joinMap for other criteria).
      */
-    protected List<Row> getSelectRows(String tableName, SQLInfoSelect select,
-            Map<String, Serializable> criteriaMap,
-            Map<String, Serializable> joinMap, boolean limitToOne)
-            throws StorageException {
+    protected List<Row> getSelectRows(String tableName, SQLInfoSelect select, Map<String, Serializable> criteriaMap,
+            Map<String, Serializable> joinMap, boolean limitToOne) throws StorageException {
         List<Row> list = new LinkedList<Row>();
         if (select.whatColumns.isEmpty()) {
             // happens when we fetch a fragment whose columns are all opaque
             // check it's a by-id query
-            if (select.whereColumns.size() == 1
-                    && select.whereColumns.get(0).getKey() == model.MAIN_KEY
+            if (select.whereColumns.size() == 1 && select.whereColumns.get(0).getKey() == model.MAIN_KEY
                     && joinMap == null) {
                 Row row = new Row(tableName, criteriaMap);
                 if (select.opaqueColumns != null) {
@@ -404,8 +383,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 if (v instanceof Collection<?>) {
                     // allow insert of several values, for the IN (...) case
                     for (Object vv : (Collection<?>) v) {
-                        column.setToPreparedStatement(ps, i++,
-                                (Serializable) vv);
+                        column.setToPreparedStatement(ps, i++, (Serializable) vv);
                         if (debugValues != null) {
                             debugValues.add((Serializable) vv);
                         }
@@ -512,8 +490,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         for (RowUpdate rowu : updates) {
             List<RowUpdate> rows = tableRows.get(rowu.row.tableName);
             if (rows == null) {
-                tableRows.put(rowu.row.tableName,
-                        rows = new LinkedList<RowUpdate>());
+                tableRows.put(rowu.row.tableName, rows = new LinkedList<RowUpdate>());
             }
             rows.add(rowu);
         }
@@ -529,8 +506,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
     }
 
-    protected void writeDeletes(Collection<RowId> deletes)
-            throws StorageException {
+    protected void writeDeletes(Collection<RowId> deletes) throws StorageException {
         // reorganize by table
         Map<String, Set<Serializable>> tableIds = new HashMap<String, Set<Serializable>>();
         for (RowId rowId : deletes) {
@@ -551,8 +527,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     /**
      * Inserts multiple rows, all for the same table.
      */
-    protected void insertSimpleRows(String tableName, List<Row> rows)
-            throws StorageException {
+    protected void insertSimpleRows(String tableName, List<Row> rows) throws StorageException {
         if (rows.isEmpty()) {
             return;
         }
@@ -560,8 +535,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         if (sql == null) {
             throw new StorageException("Unknown table: " + tableName);
         }
-        String loggedSql = supportsBatchUpdates && rows.size() > 1 ? sql
-                + " -- BATCHED" : sql;
+        String loggedSql = supportsBatchUpdates && rows.size() > 1 ? sql + " -- BATCHED" : sql;
         List<Column> columns = sqlInfo.getInsertColumns(tableName);
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -574,8 +548,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     }
                     int i = 1;
                     for (Column column : columns) {
-                        column.setToPreparedStatement(ps, i++,
-                                row.get(column.getKey()));
+                        column.setToPreparedStatement(ps, i++, row.get(column.getKey()));
                     }
                     if (supportsBatchUpdates) {
                         ps.addBatch();
@@ -612,8 +585,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     /**
      * Updates multiple collection rows, all for the same table.
      */
-    protected void insertCollectionRows(String tableName, List<Row> rows)
-            throws StorageException {
+    protected void insertCollectionRows(String tableName, List<Row> rows) throws StorageException {
         if (rows.isEmpty()) {
             return;
         }
@@ -623,8 +595,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
-                io.executeInserts(ps, rows, columns, supportsBatchUpdates, sql,
-                        this);
+                io.executeInserts(ps, rows, columns, supportsBatchUpdates, sql, this);
             } finally {
                 closeStatement(ps);
             }
@@ -637,8 +608,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     /**
      * Updates multiple simple rows, all for the same table.
      */
-    protected void updateSimpleRows(String tableName, List<RowUpdate> rows)
-            throws StorageException {
+    protected void updateSimpleRows(String tableName, List<RowUpdate> rows) throws StorageException {
         if (rows.isEmpty()) {
             return;
         }
@@ -653,7 +623,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 continue;
             }
             Set<String> deltas = new HashSet<>();
-            for (ListIterator<String> it = keys.listIterator(); it.hasNext(); ) {
+            for (ListIterator<String> it = keys.listIterator(); it.hasNext();) {
                 String key = it.next();
                 Serializable value = rowu.row.get(key);
                 if (value instanceof Delta) {
@@ -676,11 +646,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             List<RowUpdate> keysUpdates = updatesByCanonKeys.get(ck);
             Collection<String> keys = keysByCanonKeys.get(ck);
             Set<String> deltas = deltasByCanonKeys.get(ck);
-            SQLInfoSelect update = sqlInfo.getUpdateById(tableName, keys,
-                    deltas);
-            String loggedSql = supportsBatchUpdates && rows.size() > 1 ? update.sql
-                    + " -- BATCHED"
-                    : update.sql;
+            SQLInfoSelect update = sqlInfo.getUpdateById(tableName, keys, deltas);
+            String loggedSql = supportsBatchUpdates && rows.size() > 1 ? update.sql + " -- BATCHED" : update.sql;
             try {
                 PreparedStatement ps = connection.prepareStatement(update.sql);
                 int batch = 0;
@@ -688,8 +655,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     for (RowUpdate rowu : keysUpdates) {
                         batch++;
                         if (logger.isLogEnabled()) {
-                            logger.logSQL(loggedSql, update.whatColumns,
-                                    rowu.row, deltas);
+                            logger.logSQL(loggedSql, update.whatColumns, rowu.row, deltas);
                         }
                         int i = 1;
                         for (Column column : update.whatColumns) {
@@ -727,8 +693,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
     }
 
-    protected void updateCollectionRows(String tableName, List<RowUpdate> rowus)
-            throws StorageException {
+    protected void updateCollectionRows(String tableName, List<RowUpdate> rowus) throws StorageException {
         Set<Serializable> ids = new HashSet<Serializable>(rowus.size());
         List<Row> rows = new ArrayList<Row>(rowus.size());
         for (RowUpdate rowu : rowus) {
@@ -742,8 +707,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     /**
      * Deletes multiple rows, all for the same table.
      */
-    protected void deleteRows(String tableName, Set<Serializable> ids)
-            throws StorageException {
+    protected void deleteRows(String tableName, Set<Serializable> ids) throws StorageException {
         if (ids.isEmpty()) {
             return;
         }
@@ -757,8 +721,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     end = size;
                 }
                 // needs to be Serializable -> copy
-                List<Serializable> chunkIds = new ArrayList<Serializable>(
-                        idList.subList(start, end));
+                List<Serializable> chunkIds = new ArrayList<Serializable>(idList.subList(start, end));
                 deleteRowsDirect(tableName, chunkIds);
             }
         } else {
@@ -766,8 +729,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
     }
 
-    protected void deleteRowsSoft(List<NodeInfo> nodeInfos)
-            throws StorageException {
+    protected void deleteRowsSoft(List<NodeInfo> nodeInfos) throws StorageException {
         try {
             int size = nodeInfos.size();
             List<Serializable> ids = new ArrayList<Serializable>(size);
@@ -828,13 +790,12 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
     }
 
-    protected void setToPreparedStatementIdArray(PreparedStatement ps,
-            int index, Serializable idArray) throws SQLException {
+    protected void setToPreparedStatementIdArray(PreparedStatement ps, int index, Serializable idArray)
+            throws SQLException {
         if (idArray instanceof String) {
             ps.setString(index, (String) idArray);
         } else {
-            Array array = dialect.createArrayOf(Types.OTHER,
-                    (Object[]) idArray, connection);
+            Array array = dialect.createArrayOf(Types.OTHER, (Object[]) idArray, connection);
             ps.setArray(index, array);
         }
     }
@@ -842,26 +803,21 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     /**
      * Clean up soft-deleted rows.
      * <p>
-     * Rows deleted more recently than the beforeTime are left alone. Only a
-     * limited number of rows may be deleted, to prevent transaction during too
-     * long.
+     * Rows deleted more recently than the beforeTime are left alone. Only a limited number of rows may be deleted, to
+     * prevent transaction during too long.
+     * 
      * @param max the maximum number of rows to delete at a time
      * @param beforeTime the maximum deletion time of the rows to delete
-     *
      * @return the number of rows deleted
      * @throws StorageException
      */
-    public int cleanupDeletedRows(int max, Calendar beforeTime)
-            throws StorageException {
+    public int cleanupDeletedRows(int max, Calendar beforeTime) throws StorageException {
         if (max < 0) {
             max = 0;
         }
         String sql = sqlInfo.getSoftDeleteCleanupSql();
         if (logger.isLogEnabled()) {
-            logger.logSQL(
-                    sql,
-                    Arrays.<Serializable> asList(beforeTime,
-                            Long.valueOf(max)));
+            logger.logSQL(sql, Arrays.<Serializable> asList(beforeTime, Long.valueOf(max)));
         }
         try {
             if (sql.startsWith("{")) {
@@ -872,8 +828,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 CallableStatement cs = connection.prepareCall(sql);
                 try {
                     cs.setInt(inIndex, max);
-                    dialect.setToPreparedStatementTimestamp(cs, inIndex + 1,
-                            beforeTime, null);
+                    dialect.setToPreparedStatementTimestamp(cs, inIndex + 1, beforeTime, null);
                     cs.registerOutParameter(outIndex, Types.INTEGER);
                     cs.execute();
                     int count = cs.getInt(outIndex);
@@ -887,8 +842,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 PreparedStatement ps = connection.prepareStatement(sql);
                 try {
                     ps.setInt(1, max);
-                    dialect.setToPreparedStatementTimestamp(ps, 2, beforeTime,
-                            null);
+                    dialect.setToPreparedStatementTimestamp(ps, 2, beforeTime, null);
                     ResultSet rs = ps.executeQuery();
                     countExecute();
                     if (!rs.next()) {
@@ -907,8 +861,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
     }
 
-    protected void deleteRowsDirect(String tableName,
-            Collection<Serializable> ids) throws StorageException {
+    protected void deleteRowsDirect(String tableName, Collection<Serializable> ids) throws StorageException {
         try {
             String sql = sqlInfo.getDeleteSql(tableName, ids.size());
             if (logger.isLogEnabled()) {
@@ -936,17 +889,15 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     @Override
     public Row readSimpleRow(RowId rowId) throws StorageException {
         SQLInfoSelect select = sqlInfo.selectFragmentById.get(rowId.tableName);
-        Map<String, Serializable> criteriaMap = Collections.singletonMap(
-                model.MAIN_KEY, rowId.id);
-        List<Row> maps = getSelectRows(rowId.tableName, select, criteriaMap,
-                null, true);
+        Map<String, Serializable> criteriaMap = Collections.singletonMap(model.MAIN_KEY, rowId.id);
+        List<Row> maps = getSelectRows(rowId.tableName, select, criteriaMap, null, true);
         return maps.isEmpty() ? null : maps.get(0);
     }
 
     @Override
     public Map<String, String> getBinaryFulltext(RowId rowId) throws StorageException {
         ArrayList<String> columns = new ArrayList<String>();
-        for (String index: model.getFulltextConfiguration().indexesAllBinary) {
+        for (String index : model.getFulltextConfiguration().indexesAllBinary) {
             String col = Model.FULLTEXT_BINARYTEXT_KEY + model.getFulltextIndexSuffix(index);
             columns.add(col);
         }
@@ -967,8 +918,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 dialect.setId(ps, 1, id);
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
-                    for (int i=1; i <= columns.size(); i++) {
-                        ret.put(columns.get(i-1), rs.getString(i));
+                    for (int i = 1; i <= columns.size(); i++) {
+                        ret.put(columns.get(i - 1), rs.getString(i));
                     }
                 }
                 if (logger.isLogEnabled()) {
@@ -985,8 +936,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public Serializable[] readCollectionRowArray(RowId rowId)
-            throws StorageException {
+    public Serializable[] readCollectionRowArray(RowId rowId) throws StorageException {
         String tableName = rowId.tableName;
         Serializable id = rowId.id;
         String sql = sqlInfo.selectFragmentById.get(tableName).sql;
@@ -1008,8 +958,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 Serializable[] returnId = new Serializable[1];
                 int[] returnPos = { -1 };
                 while (rs.next()) {
-                    list.add(io.getCurrentFromResultSet(rs, columns, model,
-                            returnId, returnPos));
+                    list.add(io.getCurrentFromResultSet(rs, columns, model, returnId, returnPos));
                 }
                 PropertyType type = model.getCollectionFragmentType(tableName).getArrayBaseType();
                 Serializable[] array = type.collectionToArray(list);
@@ -1028,9 +977,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public List<Row> readSelectionRows(SelectionType selType,
-            Serializable selId, Serializable filter, Serializable criterion,
-            boolean limitToOne) throws StorageException {
+    public List<Row> readSelectionRows(SelectionType selType, Serializable selId, Serializable filter,
+            Serializable criterion, boolean limitToOne) throws StorageException {
         SQLInfoSelection selInfo = sqlInfo.getSelection(selType);
         Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
         criteriaMap.put(selType.selKey, selId);
@@ -1044,21 +992,19 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         if (selType.criterionKey != null) {
             criteriaMap.put(selType.criterionKey, criterion);
         }
-        return getSelectRows(selType.tableName, select, criteriaMap, null,
-                limitToOne);
+        return getSelectRows(selType.tableName, select, criteriaMap, null, limitToOne);
     }
 
     @Override
-    public CopyResult copy(IdWithTypes source, Serializable destParentId,
-            String destName, Row overwriteRow) throws StorageException {
+    public CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow)
+            throws StorageException {
         // assert !model.separateMainTable; // other case not implemented
         Invalidations invalidations = new Invalidations();
         try {
             Map<Serializable, Serializable> idMap = new LinkedHashMap<Serializable, Serializable>();
             Map<Serializable, IdWithTypes> idToTypes = new HashMap<Serializable, IdWithTypes>();
             // copy the hierarchy fragments recursively
-            Serializable overwriteId = overwriteRow == null ? null
-                    : overwriteRow.id;
+            Serializable overwriteId = overwriteRow == null ? null : overwriteRow.id;
             if (overwriteId != null) {
                 // overwrite hier root with explicit values
                 String tableName = model.HIER_TABLE_NAME;
@@ -1069,19 +1015,16 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
             // create the new hierarchy by copy
             boolean resetVersion = destParentId != null;
-            Serializable newRootId = copyHierRecursive(source, destParentId,
-                    destName, overwriteId, resetVersion, idMap, idToTypes);
+            Serializable newRootId = copyHierRecursive(source, destParentId, destName, overwriteId, resetVersion,
+                    idMap, idToTypes);
             // invalidate children
-            Serializable invalParentId = overwriteId == null ? destParentId
-                    : overwriteId;
+            Serializable invalParentId = overwriteId == null ? destParentId : overwriteId;
             if (invalParentId != null) { // null for a new version
-                invalidations.addModified(new RowId(Invalidations.PARENT,
-                        invalParentId));
+                invalidations.addModified(new RowId(Invalidations.PARENT, invalParentId));
             }
             // copy all collected fragments
             Set<Serializable> proxyIds = new HashSet<Serializable>();
-            for (Entry<String, Set<Serializable>> entry : model.getPerFragmentIds(
-                    idToTypes).entrySet()) {
+            for (Entry<String, Set<Serializable>> entry : model.getPerFragmentIds(idToTypes).entrySet()) {
                 String tableName = entry.getKey();
                 if (tableName.equals(model.HIER_TABLE_NAME)) {
                     // already done
@@ -1098,34 +1041,29 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                         proxyIds.add(idMap.get(id)); // copied ids
                     }
                 }
-                Boolean invalidation = copyRows(tableName, ids, idMap,
-                        overwriteId);
+                Boolean invalidation = copyRows(tableName, ids, idMap, overwriteId);
                 if (invalidation != null) {
                     // overwrote something
                     // make sure things are properly invalidated in this and
                     // other sessions
                     if (Boolean.TRUE.equals(invalidation)) {
-                        invalidations.addModified(new RowId(tableName,
-                                overwriteId));
+                        invalidations.addModified(new RowId(tableName, overwriteId));
                     } else {
-                        invalidations.addDeleted(new RowId(tableName,
-                                overwriteId));
+                        invalidations.addDeleted(new RowId(tableName, overwriteId));
                     }
                 }
             }
             return new CopyResult(newRootId, invalidations, proxyIds);
         } catch (Exception e) {
             checkConnectionReset(e);
-            throw new StorageException("Could not copy: "
-                    + source.id.toString(), e);
+            throw new StorageException("Could not copy: " + source.id.toString(), e);
         }
     }
 
     /**
      * Updates a row in the database with given explicit values.
      */
-    protected void updateSimpleRowWithValues(String tableName, Row row)
-            throws StorageException {
+    protected void updateSimpleRowWithValues(String tableName, Row row) throws StorageException {
         Update update = sqlInfo.getUpdateByIdForKeys(tableName, row.getKeys());
         Table table = update.getTable();
         String sql = update.getStatement();
@@ -1165,19 +1103,16 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      * <p>
      * If name is {@code null}, then the original name is kept.
      * <p>
-     * {@code idMap} is filled with info about the correspondence between
-     * original and copied ids. {@code idType} is filled with the type of each
-     * (source) fragment.
+     * {@code idMap} is filled with info about the correspondence between original and copied ids. {@code idType} is
+     * filled with the type of each (source) fragment.
      * <p>
      * TODO: this should be optimized to use a stored procedure.
      *
-     * @param overwriteId when not {@code null}, the copy is done onto this
-     *            existing node (skipped)
+     * @param overwriteId when not {@code null}, the copy is done onto this existing node (skipped)
      * @return the new root id
      */
-    protected Serializable copyHierRecursive(IdWithTypes source,
-            Serializable parentId, String name, Serializable overwriteId,
-            boolean resetVersion, Map<Serializable, Serializable> idMap,
+    protected Serializable copyHierRecursive(IdWithTypes source, Serializable parentId, String name,
+            Serializable overwriteId, boolean resetVersion, Map<Serializable, Serializable> idMap,
             Map<Serializable, IdWithTypes> idToTypes) throws SQLException {
         idToTypes.put(source.id, source);
         Serializable newId;
@@ -1200,14 +1135,12 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      * <p>
      * If name is {@code null}, then the original name is kept.
      * <p>
-     * {@code idMap} is filled with info about the correspondence between
-     * original and copied ids. {@code idType} is filled with the type of each
-     * (source) fragment.
+     * {@code idMap} is filled with info about the correspondence between original and copied ids. {@code idType} is
+     * filled with the type of each (source) fragment.
      *
      * @return the new id
      */
-    protected Serializable copyHier(Serializable id, Serializable parentId,
-            String name, boolean resetVersion,
+    protected Serializable copyHier(Serializable id, Serializable parentId, String name, boolean resetVersion,
             Map<Serializable, Serializable> idMap) throws SQLException {
         boolean explicitName = name != null;
 
@@ -1232,11 +1165,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 } else if (key.equals(model.MAIN_KEY)) {
                     // present if APP_UUID generation
                     v = newId;
-                } else if (key.equals(model.MAIN_BASE_VERSION_KEY)
-                        || key.equals(model.MAIN_CHECKED_IN_KEY)) {
+                } else if (key.equals(model.MAIN_BASE_VERSION_KEY) || key.equals(model.MAIN_CHECKED_IN_KEY)) {
                     v = null;
-                } else if (key.equals(model.MAIN_MINOR_VERSION_KEY)
-                        || key.equals(model.MAIN_MAJOR_VERSION_KEY)) {
+                } else if (key.equals(model.MAIN_MINOR_VERSION_KEY) || key.equals(model.MAIN_MAJOR_VERSION_KEY)) {
                     // present if reset version (regular copy, not checkin)
                     v = null;
                 } else {
@@ -1271,8 +1202,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     /**
      * Gets the children ids and types of a node.
      */
-    protected List<IdWithTypes> getChildrenIdsWithTypes(Serializable id,
-            boolean onlyComplex) throws SQLException {
+    protected List<IdWithTypes> getChildrenIdsWithTypes(Serializable id, boolean onlyComplex) throws SQLException {
         List<IdWithTypes> children = new LinkedList<IdWithTypes>();
         String sql = sqlInfo.getSelectChildrenIdsAndTypesSql(onlyComplex);
         if (logger.isLogEnabled()) {
@@ -1304,11 +1234,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                         childMixinTypes = (String[]) value;
                     }
                 }
-                children.add(new IdWithTypes(childId, childPrimaryType,
-                        childMixinTypes));
+                children.add(new IdWithTypes(childId, childPrimaryType, childMixinTypes));
                 if (debugValues != null) {
-                    debugValues.add(childId + "/" + childPrimaryType + "/"
-                            + Arrays.toString(childMixinTypes));
+                    debugValues.add(childId + "/" + childPrimaryType + "/" + Arrays.toString(childMixinTypes));
                 }
             }
             if (debugValues != null) {
@@ -1321,19 +1249,16 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     /**
-     * Copy the rows from tableName with given ids into new ones with new ids
-     * given by idMap.
+     * Copy the rows from tableName with given ids into new ones with new ids given by idMap.
      * <p>
      * A new row with id {@code overwriteId} is first deleted.
      *
-     * @return {@link Boolean#TRUE} for a modification or creation,
-     *         {@link Boolean#FALSE} for a deletion, {@code null} otherwise
-     *         (still absent)
+     * @return {@link Boolean#TRUE} for a modification or creation, {@link Boolean#FALSE} for a deletion, {@code null}
+     *         otherwise (still absent)
      * @throws SQLException
      */
-    protected Boolean copyRows(String tableName, Set<Serializable> ids,
-            Map<Serializable, Serializable> idMap, Serializable overwriteId)
-            throws SQLException {
+    protected Boolean copyRows(String tableName, Set<Serializable> ids, Map<Serializable, Serializable> idMap,
+            Serializable overwriteId) throws SQLException {
         String copySql = sqlInfo.getCopySql(tableName);
         Column copyIdColumn = sqlInfo.getCopyIdColumn(tableName);
         PreparedStatement copyPs = connection.prepareStatement(copySql);
@@ -1348,8 +1273,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 if (overwrite) {
                     // remove existing first
                     if (logger.isLogEnabled()) {
-                        logger.logSQL(deleteSql,
-                                Collections.singletonList(newId));
+                        logger.logSQL(deleteSql, Collections.singletonList(newId));
                     }
                     dialect.setId(deletePs, 1, newId);
                     int delCount = deletePs.executeUpdate();
@@ -1392,8 +1316,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         return info;
     }
 
-    protected List<NodeInfo> getDescendantsInfo(Serializable rootId)
-            throws StorageException {
+    protected List<NodeInfo> getDescendantsInfo(Serializable rootId) throws StorageException {
         List<NodeInfo> descendants = new LinkedList<NodeInfo>();
         String sql = sqlInfo.getSelectDescendantsInfoSql();
         if (logger.isLogEnabled()) {
@@ -1437,8 +1360,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     // no mixins (not useful to caller)
                     // no versions (not fileable)
                 }
-                descendants.add(new NodeInfo(id, parentId, primaryType,
-                        isProperty, versionableId, targetId));
+                descendants.add(new NodeInfo(id, parentId, primaryType, isProperty, versionableId, targetId));
                 if (debugValues != null) {
                     if (debugValues.size() < DEBUG_MAX_TREE) {
                         debugValues.add(id + "/" + primaryType);

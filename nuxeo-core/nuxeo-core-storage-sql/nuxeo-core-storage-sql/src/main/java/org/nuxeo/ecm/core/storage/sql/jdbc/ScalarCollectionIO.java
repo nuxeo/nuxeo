@@ -30,9 +30,8 @@ public class ScalarCollectionIO implements CollectionIO {
     public static final CollectionIO INSTANCE = new ScalarCollectionIO();
 
     @Override
-    public Serializable getCurrentFromResultSet(ResultSet rs,
-            List<Column> columns, Model model, Serializable[] returnId,
-            int[] returnPos) throws SQLException {
+    public Serializable getCurrentFromResultSet(ResultSet rs, List<Column> columns, Model model,
+            Serializable[] returnId, int[] returnPos) throws SQLException {
         Serializable id = null;
         Serializable value = null;
         int i = 0;
@@ -59,13 +58,10 @@ public class ScalarCollectionIO implements CollectionIO {
     }
 
     @Override
-    public void executeInserts(PreparedStatement ps, List<Row> rows,
-            List<Column> columns, boolean supportsBatchUpdates, String sql,
-            JDBCConnection connection) throws SQLException {
-        List<Serializable> debugValues = connection.logger.isLogEnabled() ? new ArrayList<Serializable>()
-                : null;
-        String loggedSql = supportsBatchUpdates && rows.size() > 1 ? sql
-                + " -- BATCHED" : sql;
+    public void executeInserts(PreparedStatement ps, List<Row> rows, List<Column> columns,
+            boolean supportsBatchUpdates, String sql, JDBCConnection connection) throws SQLException {
+        List<Serializable> debugValues = connection.logger.isLogEnabled() ? new ArrayList<Serializable>() : null;
+        String loggedSql = supportsBatchUpdates && rows.size() > 1 ? sql + " -- BATCHED" : sql;
         int batch = 0;
         for (Row row : rows) {
             batch++;

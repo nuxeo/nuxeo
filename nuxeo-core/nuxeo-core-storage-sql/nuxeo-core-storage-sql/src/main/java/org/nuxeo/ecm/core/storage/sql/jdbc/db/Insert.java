@@ -51,8 +51,7 @@ public class Insert implements Serializable {
     }
 
     /**
-     * Gets the statement to insert a row, or copy it if {@link #setValues} has
-     * been called.
+     * Gets the statement to insert a row, or copy it if {@link #setValues} has been called.
      * <p>
      * Example: {@code INSERT INTO foo (a, b, c) SELECT ?, b, c FROM foo WHERE
      * id = ?}

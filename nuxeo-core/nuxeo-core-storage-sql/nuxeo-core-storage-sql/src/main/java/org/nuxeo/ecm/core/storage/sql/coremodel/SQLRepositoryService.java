@@ -50,8 +50,7 @@ public class SQLRepositoryService extends DefaultComponent {
 
     protected RepositoryDescriptorRegistry registry = new RepositoryDescriptorRegistry();
 
-    protected static class RepositoryDescriptorRegistry extends
-            SimpleContributionRegistry<RepositoryDescriptor> {
+    protected static class RepositoryDescriptorRegistry extends SimpleContributionRegistry<RepositoryDescriptor> {
 
         @Override
         public String getContributionId(RepositoryDescriptor contrib) {
@@ -97,8 +96,7 @@ public class SQLRepositoryService extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contrib, String xpoint,
-            ComponentInstance contributor) {
+    public void registerContribution(Object contrib, String xpoint, ComponentInstance contributor) {
         if (XP_REPOSITORY.equals(xpoint)) {
             addContribution((RepositoryDescriptor) contrib);
         } else {
@@ -107,8 +105,7 @@ public class SQLRepositoryService extends DefaultComponent {
     }
 
     @Override
-    public void unregisterContribution(Object contrib, String xpoint,
-            ComponentInstance contributor) throws Exception {
+    public void unregisterContribution(Object contrib, String xpoint, ComponentInstance contributor) throws Exception {
         if (XP_REPOSITORY.equals(xpoint)) {
             removeContribution((RepositoryDescriptor) contrib);
         } else {
@@ -150,12 +147,11 @@ public class SQLRepositoryService extends DefaultComponent {
         try {
             repositoryFactory = repositoryFactoryClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException("Cannot instantiate repository: "
-                    + repositoryName, e);
+            throw new RuntimeException("Cannot instantiate repository: " + repositoryName, e);
         }
         repositoryFactory.init(repositoryName);
-        Repository repository = new Repository(repositoryName,
-                descriptor.label, descriptor.isDefault(), repositoryFactory);
+        Repository repository = new Repository(repositoryName, descriptor.label, descriptor.isDefault(),
+                repositoryFactory);
         repositoryManager.addRepository(repository);
     }
 
@@ -206,8 +202,7 @@ public class SQLRepositoryService extends DefaultComponent {
             // from SQLRepositoryFactory called by descriptor at registration
             return ((SQLRepository) repository).repository;
         } else {
-            throw new RuntimeException("Unknown repository class: "
-                    + repository.getClass().getName());
+            throw new RuntimeException("Unknown repository class: " + repository.getClass().getName());
         }
     }
 
@@ -217,19 +212,16 @@ public class SQLRepositoryService extends DefaultComponent {
             return (RepositoryImpl) repository;
         }
         if (!CONNECTIONFACTORYIMPL_CLASS.equals(repository.getClass().getName())) {
-            throw new RuntimeException("Unknown repository class: "
-                    + repository.getClass());
+            throw new RuntimeException("Unknown repository class: " + repository.getClass());
         }
         try {
-            Field f1 = repository.getClass().getDeclaredField(
-                    "managedConnectionFactory");
+            Field f1 = repository.getClass().getDeclaredField("managedConnectionFactory");
             f1.setAccessible(true);
             Object factory = f1.get(repository);
             Field f2 = factory.getClass().getDeclaredField("repository");
             f2.setAccessible(true);
             return (RepositoryImpl) f2.get(factory);
-        } catch (SecurityException | NoSuchFieldException
-                | IllegalAccessException e) {
+        } catch (SecurityException | NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
@@ -248,8 +240,7 @@ public class SQLRepositoryService extends DefaultComponent {
         return repositories;
     }
 
-    public Class<? extends FulltextParser> getFulltextParserClass(
-            String repositoryName) {
+    public Class<? extends FulltextParser> getFulltextParserClass(String repositoryName) {
         return getRepositoryImpl(repositoryName).getFulltextParserClass();
     }
 
@@ -258,17 +249,15 @@ public class SQLRepositoryService extends DefaultComponent {
     }
 
     /**
-     * Returns the datasource definition for the given repository and fills the
-     * properties map with the datasource configuration.
+     * Returns the datasource definition for the given repository and fills the properties map with the datasource
+     * configuration.
      *
      * @param repositoryName the repository name
      * @param properties a return map of properties
-     * @return the XA datasource name, or null if single datasource is
-     *         configured
+     * @return the XA datasource name, or null if single datasource is configured
      * @since 5.9.5
      */
-    public String getRepositoryDataSourceAndProperties(String repositoryName,
-            Map<String, String> properties) {
+    public String getRepositoryDataSourceAndProperties(String repositoryName, Map<String, String> properties) {
         RepositoryDescriptor desc = getRepositoryImpl(repositoryName).getRepositoryDescriptor();
         if (desc.properties != null) {
             properties.putAll(desc.properties);
