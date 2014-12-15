@@ -36,6 +36,7 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -114,11 +115,16 @@ public class VocabularyTreeActions implements Serializable {
             schemaName = directoryService.getDirectorySchema(vocabularyName);
             session = directoryService.open(vocabularyName);
             for (String id : StringUtils.split(path, keySeparator)) {
-                String computeLabel = VocabularyTreeNode.computeLabel(locale, session.getEntry(id), schemaName);
-                if (computeLabel == null) {
-                    labels.add(id);
+                DocumentModel entry = session.getEntry(id);
+                if (entry != null) {
+                    String computeLabel = VocabularyTreeNode.computeLabel(locale, entry, schemaName);
+                    if (computeLabel == null) {
+                        labels.add(id);
+                    } else {
+                        labels.add(computeLabel);
+                    }
                 } else {
-                    labels.add(computeLabel);
+                    labels.add(id);
                 }
             }
         } catch (DirectoryException e) {
