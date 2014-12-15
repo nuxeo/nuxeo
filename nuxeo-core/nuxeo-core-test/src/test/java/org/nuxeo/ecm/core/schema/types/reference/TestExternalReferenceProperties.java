@@ -1,10 +1,13 @@
 package org.nuxeo.ecm.core.schema.types.reference;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.validation.DocumentValidationService.CTX_MAP_KEY;
+
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +20,9 @@ import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService.Forcing;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
+import org.nuxeo.ecm.core.schema.types.constraints.ConstraintViolation;
+import org.nuxeo.ecm.core.schema.types.constraints.ExternalReferenceConstraint;
 import org.nuxeo.ecm.core.schema.types.reference.TestingColorDummyReferenceResolver.Color;
 import org.nuxeo.ecm.core.schema.types.reference.TestingColorDummyReferenceResolver.PrimaryColor;
 import org.nuxeo.ecm.core.schema.types.reference.TestingColorDummyReferenceResolver.SecondaryColor;
@@ -76,9 +82,18 @@ public class TestExternalReferenceProperties {
 
     @Test
     public void testPropertyValidationSucceed() {
-        prop().setValue("bob");
-        validator.validate(prop());
+        prop().setValue(PrimaryColor.BLUE.name());
+        assertTrue(validator.validate(prop()).isEmpty());
+    }
 
+    @Test
+    public void testPropertyValidationFailed() {
+        prop().setValue("bob");
+        List<ConstraintViolation> violations = validator.validate(prop());
+        assertEquals(1, violations.size());
+        Constraint constraint = violations.get(0).getConstraint();
+        assertTrue(constraint instanceof ExternalReferenceConstraint);
+        assertTrue(((ExternalReferenceConstraint) constraint).getResolver() instanceof TestingColorDummyReferenceResolver);
     }
 
     @Test(expected = DocumentValidationException.class)
