@@ -21,9 +21,6 @@
 
 package org.nuxeo.common.utils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -31,6 +28,9 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * An iterator over the entries in a zip file.

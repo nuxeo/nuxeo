@@ -11,11 +11,6 @@
  */
 package org.nuxeo.ecm.automation.core.scripting;
 
-import groovy.lang.Binding;
-import groovy.lang.GroovyClassLoader;
-import groovy.lang.GroovyCodeSource;
-import groovy.lang.Script;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -24,6 +19,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.runtime.InvokerHelper;
+
+import groovy.lang.Binding;
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyCodeSource;
+import groovy.lang.Script;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

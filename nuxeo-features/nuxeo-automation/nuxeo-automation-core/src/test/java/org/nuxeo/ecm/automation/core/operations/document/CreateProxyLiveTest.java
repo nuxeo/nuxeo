@@ -11,7 +11,8 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

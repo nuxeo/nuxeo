@@ -16,9 +16,9 @@
  */
 package org.nuxeo.ecm.automation;
 
-import org.nuxeo.ecm.automation.core.exception.CatchChainException;
-
 import java.util.ArrayList;
+
+import org.nuxeo.ecm.automation.core.exception.CatchChainException;
 
 /**
  * @since 5.7.3

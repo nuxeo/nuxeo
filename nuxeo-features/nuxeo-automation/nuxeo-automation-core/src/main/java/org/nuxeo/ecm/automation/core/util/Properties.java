@@ -18,13 +18,13 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import com.google.common.base.Objects;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.runtime.api.Framework;
+
+import com.google.common.base.Objects;
 
 /**
  * Inline properties file content. This class exists to have a real type for parameters accepting properties content.

@@ -16,12 +16,12 @@
  */
 package org.nuxeo.ecm.automation.core.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.ecm.automation.AutomationFilter;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @since 5.7.3

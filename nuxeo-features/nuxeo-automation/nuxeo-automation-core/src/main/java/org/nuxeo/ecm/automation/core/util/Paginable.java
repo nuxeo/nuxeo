@@ -11,10 +11,10 @@
  */
 package org.nuxeo.ecm.automation.core.util;
 
-import org.nuxeo.ecm.platform.query.api.Aggregate;
-
 import java.util.List;
 import java.util.Map;
+
+import org.nuxeo.ecm.platform.query.api.Aggregate;
 
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>

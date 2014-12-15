@@ -11,8 +11,6 @@
  */
 package org.nuxeo.ecm.automation.core.scripting;
 
-import groovy.lang.Binding;
-
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
@@ -31,6 +29,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
+
+import groovy.lang.Binding;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

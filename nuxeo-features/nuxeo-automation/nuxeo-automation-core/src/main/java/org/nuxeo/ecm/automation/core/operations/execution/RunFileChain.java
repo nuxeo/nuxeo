@@ -12,6 +12,9 @@
  */
 package org.nuxeo.ecm.automation.core.operations.execution;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -24,9 +27,6 @@ import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Run an embedded operation chain that returns a Blob using the current input.
