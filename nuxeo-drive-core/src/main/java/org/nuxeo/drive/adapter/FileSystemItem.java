@@ -58,6 +58,8 @@ public interface FileSystemItem extends Comparable<FileSystemItem>, Serializable
 
     String getCreator();
 
+    String getLastContributor();
+
     Calendar getCreationDate();
 
     Calendar getLastModificationDate();

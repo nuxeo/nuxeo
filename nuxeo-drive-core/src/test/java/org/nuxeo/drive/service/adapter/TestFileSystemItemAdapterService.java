@@ -112,6 +112,7 @@ public class TestFileSystemItemAdapterService {
 
         file = session.createDocumentModel(syncRootFolder.getPathAsString(), "aFile", "File");
         file.setPropertyValue("dc:creator", "Joe");
+        file.setPropertyValue("dc:lastContributor", "Joe");
         Blob blob = new StringBlob("Content of Joe's file.");
         blob.setFilename("Joe's file.txt");
         file.setPropertyValue("file:content", (Serializable) blob);
@@ -120,10 +121,12 @@ public class TestFileSystemItemAdapterService {
         folder = session.createDocumentModel(syncRootFolder.getPathAsString(), "aFolder", "Folder");
         folder.setPropertyValue("dc:title", "Jack's folder");
         folder.setPropertyValue("dc:creator", "Jack");
+        folder.setPropertyValue("dc:lastContributor", "Jack");
         folder = session.createDocument(folder);
 
         custom = session.createDocumentModel(syncRootFolder.getPathAsString(), "aCustom", "Custom");
         custom.setPropertyValue("dc:creator", "Bonnie");
+        custom.setPropertyValue("dc:lastContributor", "Bonnie");
         blob = new StringBlob("Content of the custom document's blob.");
         blob.setFilename("Bonnie's file.txt");
         custom.setPropertyValue("file:content", (Serializable) blob);
@@ -265,6 +268,7 @@ public class TestFileSystemItemAdapterService {
         assertEquals("Dummy file with id " + file.getId(), fsItem.getName());
         assertFalse(fsItem.isFolder());
         assertEquals("Joe", fsItem.getCreator());
+        assertEquals("Joe", fsItem.getLastContributor());
 
         // Folder => should use the dummyFacetFactory bound to the
         // DummyFolderItemFactory class
@@ -277,6 +281,7 @@ public class TestFileSystemItemAdapterService {
         assertEquals("Dummy folder with id " + folder.getId(), fsItem.getName());
         assertTrue(fsItem.isFolder());
         assertEquals("Jack", fsItem.getCreator());
+        assertEquals("Jack", fsItem.getLastContributor());
 
         // Custom => should use the defaultFileSystemItemFactory bound to the
         // DefaultFileSystemItemFactory class
@@ -291,6 +296,7 @@ public class TestFileSystemItemAdapterService {
         assertEquals("Bonnie's file.txt", fsItem.getName());
         assertFalse(fsItem.isFolder());
         assertEquals("Bonnie", fsItem.getCreator());
+        assertEquals("Bonnie", fsItem.getLastContributor());
         Blob fileFsItemBlob = ((FileItem) fsItem).getBlob();
         assertEquals("Bonnie's file.txt", fileFsItemBlob.getFilename());
         assertEquals("Content of the custom document's blob.", fileFsItemBlob.getString());
@@ -542,6 +548,7 @@ public class TestFileSystemItemAdapterService {
         assertEquals("Jack's folder", fsItem.getName());
         assertTrue(fsItem.isFolder());
         assertEquals("Jack", fsItem.getCreator());
+        assertEquals("Jack", fsItem.getLastContributor());
 
         // Custom => should try the dummyVirtualFolderItemFactory
         // bound to the DummyVirtualFolderItemFactory, returning null because

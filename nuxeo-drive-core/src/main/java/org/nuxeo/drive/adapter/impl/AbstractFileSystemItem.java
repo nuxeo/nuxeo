@@ -53,6 +53,8 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
 
     protected String creator;
 
+    protected String lastContributor;
+
     protected Calendar creationDate;
 
     protected Calendar lastModificationDate;
@@ -135,6 +137,11 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     @Override
     public String getCreator() {
         return creator;
+    }
+
+    @Override
+    public String getLastContributor() {
+        return lastContributor;
     }
 
     @Override
@@ -235,6 +242,10 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
 
     protected void setCreator(String creator) {
         this.creator = creator;
+    }
+
+    protected void setLastContributor(String lastContributor) {
+        this.lastContributor = lastContributor;
     }
 
     protected void setCreationDate(Calendar creationDate) {

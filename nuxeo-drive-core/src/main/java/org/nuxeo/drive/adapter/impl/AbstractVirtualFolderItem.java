@@ -45,6 +45,7 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
         name = folderName;
         folder = true;
         creator = "system";
+        lastContributor = "system";
         // The Fixed Origin of (Unix) Time
         creationDate = Calendar.getInstance(NuxeoDriveManagerImpl.UTC);
         creationDate.set(1970, 0, 1, 0, 0, 0);
