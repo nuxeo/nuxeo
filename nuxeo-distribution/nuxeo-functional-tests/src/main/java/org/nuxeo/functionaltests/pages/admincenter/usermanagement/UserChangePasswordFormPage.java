@@ -25,7 +25,6 @@ import org.openqa.selenium.support.FindBy;
  * Change password sub tab page (New user management in the admin center)
  *
  * @since 5.4.2
- *
  */
 public class UserChangePasswordFormPage extends UsersGroupsBasePage {
 

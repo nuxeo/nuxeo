@@ -70,8 +70,7 @@ public class LoginPage extends AbstractPage {
      *
      * @param username the username
      * @param password the password
-     * @param language value of one of the options in the language select box.
-     *            For example, English (United States)
+     * @param language value of one of the options in the language select box. For example, English (United States)
      */
     public void login(String username, String password, String language) {
         JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
@@ -95,8 +94,7 @@ public class LoginPage extends AbstractPage {
     }
 
     /**
-     * Fills in the login form with the username and password. Uses the default
-     * language.
+     * Fills in the login form with the username and password. Uses the default language.
      *
      * @param username the username
      * @param password the password
@@ -113,8 +111,7 @@ public class LoginPage extends AbstractPage {
      * @param pageClassToProxy the next page's class
      * @return the next page
      */
-    public <T> T login(String username, String password,
-            Class<T> pageClassToProxy) {
+    public <T> T login(String username, String password, Class<T> pageClassToProxy) {
         try {
             login(username, password);
             return asPage(pageClassToProxy);
@@ -133,11 +130,8 @@ public class LoginPage extends AbstractPage {
                 if (hasElement(By.xpath(LOGIN_DIV_XPATH))) {
                     // Means we are still on login page.
                     if (hasElement(By.xpath(FEEDBACK_MESSAGE_DIV_XPATH))) {
-                        throw new NoSuchElementException(
-                                "Login failed. Application said : "
-                                        + driver.findElement(
-                                                By.xpath(FEEDBACK_MESSAGE_DIV_XPATH)).getText(),
-                                e);
+                        throw new NoSuchElementException("Login failed. Application said : "
+                                + driver.findElement(By.xpath(FEEDBACK_MESSAGE_DIV_XPATH)).getText(), e);
                     } else {
                         throw new NoSuchElementException("Login failed", e);
                     }

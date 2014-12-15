@@ -69,9 +69,8 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
         super(driver);
     }
 
-    public UsersGroupsBasePage createUser(String username, String firstname,
-            String lastname, String company, String email, String password,
-            String group) throws NoSuchElementException {
+    public UsersGroupsBasePage createUser(String username, String firstname, String lastname, String company,
+            String email, String password, String group) throws NoSuchElementException {
         usernameInput.sendKeys(username);
         firstnameInput.sendKeys(firstname);
         lastnameInput.sendKeys(lastname);

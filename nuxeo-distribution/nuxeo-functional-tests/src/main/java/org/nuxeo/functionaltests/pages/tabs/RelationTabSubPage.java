@@ -93,15 +93,14 @@ public class RelationTabSubPage extends DocumentBasePage {
         addANewRelationLink.click();
 
         Function<WebDriver, Boolean> createRelationFormVisible = new Function<WebDriver, Boolean>() {
+            @Override
             public Boolean apply(WebDriver driver) {
                 return createRelationForm != null;
             }
         };
 
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
-                CREATE_FORM_LOADING_TIMEOUT, TimeUnit.SECONDS).pollingEvery(
-                100, TimeUnit.MILLISECONDS).ignoring(
-                NoSuchElementException.class);
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(CREATE_FORM_LOADING_TIMEOUT,
+                TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(NoSuchElementException.class);
 
         wait.until(createRelationFormVisible);
 
@@ -120,20 +119,20 @@ public class RelationTabSubPage extends DocumentBasePage {
         return isObjectChecked(2);
     }
 
-    public RelationTabSubPage setRelationWithDocument(String documentName,
-            String predicateUri) {
+    public RelationTabSubPage setRelationWithDocument(String documentName, String predicateUri) {
 
         org.junit.Assert.assertFalse(isObjectDocumentChecked());
 
         Select predicateSelect = new Select(predicate);
         predicateSelect.selectByValue(predicateUri);
 
-        Select2WidgetElement documentSuggestionWidget = new Select2WidgetElement(
-                driver, driver.findElement(By.xpath(SELECT2_DOCUMENT_XPATH)));
+        Select2WidgetElement documentSuggestionWidget = new Select2WidgetElement(driver,
+                driver.findElement(By.xpath(SELECT2_DOCUMENT_XPATH)));
 
         documentSuggestionWidget.selectValue(documentName);
 
         Function<WebDriver, Boolean> isDocumentSelected = new Function<WebDriver, Boolean>() {
+            @Override
             public Boolean apply(WebDriver driver) {
                 WebElement selectedDocument = driver.findElement(By.id(OBJECT_DOCUMENT_UID_ID));
                 String value = selectedDocument.getAttribute("value");
@@ -147,16 +146,14 @@ public class RelationTabSubPage extends DocumentBasePage {
 
         org.junit.Assert.assertTrue(isObjectDocumentChecked());
 
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
-                SELECT2_CHANGE_TIMEOUT, TimeUnit.SECONDS).pollingEvery(100,
-                TimeUnit.MILLISECONDS).ignoring(StaleElementReferenceException.class);
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(SELECT2_CHANGE_TIMEOUT, TimeUnit.SECONDS).pollingEvery(
+                100, TimeUnit.MILLISECONDS).ignoring(StaleElementReferenceException.class);
 
         wait.until(isDocumentSelected);
 
         if (log.isDebugEnabled()) {
             WebElement selectedDocument = driver.findElement(By.id(OBJECT_DOCUMENT_UID_ID));
-            log.debug("Submitting relation on document: "
-                    + selectedDocument.getAttribute("value"));
+            log.debug("Submitting relation on document: " + selectedDocument.getAttribute("value"));
         }
 
         addButton.click();

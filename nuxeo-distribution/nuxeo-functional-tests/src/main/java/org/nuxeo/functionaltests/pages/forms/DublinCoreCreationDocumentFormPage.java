@@ -28,7 +28,6 @@ import org.openqa.selenium.support.FindBy;
  */
 public class DublinCoreCreationDocumentFormPage extends AbstractPage {
 
-
     @Required
     @FindBy(id = "document_create:nxl_heading:nxw_title")
     public WebElement titleTextInput;
@@ -45,22 +44,19 @@ public class DublinCoreCreationDocumentFormPage extends AbstractPage {
         super(driver);
     }
 
-   public void create() {
-       createButton.click();
-   }
+    public void create() {
+        createButton.click();
+    }
 
-   protected void fillDublinCoreFieldsAndCreate(String title,
-           String description) {
-       titleTextInput.sendKeys(title);
-       descriptionTextInput.sendKeys(description);
-       create();
-   }
+    protected void fillDublinCoreFieldsAndCreate(String title, String description) {
+        titleTextInput.sendKeys(title);
+        descriptionTextInput.sendKeys(description);
+        create();
+    }
 
-   public DocumentBasePage createDocument(String title,
-           String description) {
-       fillDublinCoreFieldsAndCreate(title, description);
-       return asPage(DocumentBasePage.class);
-   }
-
+    public DocumentBasePage createDocument(String title, String description) {
+        fillDublinCoreFieldsAndCreate(title, description);
+        return asPage(DocumentBasePage.class);
+    }
 
 }

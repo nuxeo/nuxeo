@@ -34,8 +34,8 @@ public class PackageListingPage extends AbstractPage {
     }
 
     public WebElement getPackageDownloadLink(String packageId) {
-        WebElement link =  getPackageLink(packageId);
-        if (link!=null) {
+        WebElement link = getPackageLink(packageId);
+        if (link != null) {
             if (link.getText().trim().toLowerCase().startsWith("download")) {
                 return link;
             }
@@ -44,8 +44,8 @@ public class PackageListingPage extends AbstractPage {
     }
 
     public WebElement getPackageInstallLink(String packageId) {
-        WebElement link =  getPackageLink(packageId);
-        if (link!=null) {
+        WebElement link = getPackageLink(packageId);
+        if (link != null) {
             if (link.getText().trim().toLowerCase().startsWith("install")) {
                 return link;
             }

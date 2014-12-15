@@ -63,8 +63,7 @@ public class UsersTabSubPage extends UsersGroupsBasePage {
      */
     public boolean isUserFound(String username) {
         try {
-            findElementWithTimeout(By.linkText(username),
-                    AbstractTest.LOAD_SHORT_TIMEOUT_SECONDS * 1000);
+            findElementWithTimeout(By.linkText(username), AbstractTest.LOAD_SHORT_TIMEOUT_SECONDS * 1000);
         } catch (NoSuchElementException e) {
             return false;
         }

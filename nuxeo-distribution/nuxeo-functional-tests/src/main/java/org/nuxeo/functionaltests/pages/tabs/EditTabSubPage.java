@@ -54,8 +54,7 @@ public class EditTabSubPage extends AbstractPage {
      * @param title
      * @param description
      */
-    public DocumentBasePage edit(String title, String description,
-            String versionIncrementLabel) {
+    public DocumentBasePage edit(String title, String description, String versionIncrementLabel) {
 
         if (title != null) {
             titleInputText.clear();
@@ -66,8 +65,8 @@ public class EditTabSubPage extends AbstractPage {
             descriptionInputText.sendKeys(description);
         }
         if (versionIncrementLabel != null) {
-            WebElement versionIncrementRadio = driver.findElement(By.xpath("//input[@value=\""
-                    + versionIncrementLabel + "\"]"));
+            WebElement versionIncrementRadio = driver.findElement(By.xpath("//input[@value=\"" + versionIncrementLabel
+                    + "\"]"));
             versionIncrementRadio.click();
         }
 

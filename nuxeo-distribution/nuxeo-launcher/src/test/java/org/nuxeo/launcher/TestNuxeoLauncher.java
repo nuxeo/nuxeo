@@ -67,13 +67,11 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
 
     private static final String SOL_PS1_CMD = "fsflush";
 
-    private static final String SOL_PS1 = "root         3  0.2  0.0    0    0 ?        S 16:02:16  0:00 "
-            + SOL_PS1_CMD;
+    private static final String SOL_PS1 = "root         3  0.2  0.0    0    0 ?        S 16:02:16  0:00 " + SOL_PS1_CMD;
 
     private static final String SOL_PS2_CMD = "/usr/lib/rad/rad -m /usr/lib/rad/transport -m /usr/lib/rad/protocol -m /usr/lib/rad/module -m /usr/lib/rad/site-modules -t pipe:fd=3,exit -e 180";
 
-    private static final String SOL_PS2 = "fguillau  1786  0.0  0.219136 3908 ?        S 16:05:41  0:00 "
-            + SOL_PS2_CMD;
+    private static final String SOL_PS2 = "fguillau  1786  0.0  0.219136 3908 ?        S 16:05:41  0:00 " + SOL_PS2_CMD;
 
     private static final String SOL_PS3_CMD = "gnome-terminal";
 
@@ -108,12 +106,11 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
 
     /** Code from {@link NuxeoLauncher#init} */
     protected String getRegex() {
-        return "^(?!/bin/sh).*" + Pattern.quote(NUXEO_PATH) + ".*"
-                + Pattern.quote(STARTUP_CLASS) + ".*$";
+        return "^(?!/bin/sh).*" + Pattern.quote(NUXEO_PATH) + ".*" + Pattern.quote(STARTUP_CLASS) + ".*$";
     }
 
-    protected static void assertSolarisMatch(MockSolarisProcessManager pm,
-            String expectedPid, String expectedCommand, String line) {
+    protected static void assertSolarisMatch(MockSolarisProcessManager pm, String expectedPid, String expectedCommand,
+            String line) {
         Matcher lineMatcher = pm.getLineMatcher(line);
         assertTrue(lineMatcher.matches());
         String pid = lineMatcher.group(1);
@@ -144,37 +141,30 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
         nuxeoHome.mkdirs();
         File nuxeoConf = getResourceFile("config/nuxeo.conf");
         FileUtils.copyFileToDirectory(nuxeoConf, nuxeoHome);
-        FileUtils.copyDirectory(getResourceFile("templates"), new File(
-                nuxeoHome, "templates"));
+        FileUtils.copyDirectory(getResourceFile("templates"), new File(nuxeoHome, "templates"));
         System.setProperty(Environment.NUXEO_HOME, nuxeoHome.getPath());
-        System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(
-                nuxeoHome, nuxeoConf.getName()).getPath());
-        System.setProperty(
-                TomcatConfigurator.TOMCAT_HOME,
+        System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(nuxeoHome, nuxeoConf.getName()).getPath());
+        System.setProperty(TomcatConfigurator.TOMCAT_HOME,
                 org.nuxeo.common.Environment.getDefault().getServerHome().getPath());
     }
 
     @Test
-    public void testClidOption() throws ConfigurationException, ParseException,
-            IOException, PackageException, InvalidCLID {
+    public void testClidOption() throws ConfigurationException, ParseException, IOException, PackageException,
+            InvalidCLID {
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
         Path instanceClid = Paths.get(TEST_INSTANCE_CLID);
         if (!Files.exists(instanceClid)) {
             throw new AssumptionViolatedException("No test CLID available");
         }
-        String[] args = new String[] { "--clid", instanceClid.toString(),
-                "showconf" };
+        String[] args = new String[] { "--clid", instanceClid.toString(), "showconf" };
         final NuxeoLauncher launcher = NuxeoLauncher.createLauncher(args);
         InstanceInfo info = launcher.showConfig();
         assertNotNull("Failed to get instance info", info);
-        List<String> clidLines = Files.readAllLines(instanceClid,
-                Charsets.UTF_8);
-        LogicalInstanceIdentifier expectedClid = new LogicalInstanceIdentifier(
-                clidLines.get(0) + LogicalInstanceIdentifier.ID_SEP
-                        + clidLines.get(1), "expected clid");
-        assertEquals("Not the right instance.clid file: ",
-                expectedClid.getCLID(), info.clid);
+        List<String> clidLines = Files.readAllLines(instanceClid, Charsets.UTF_8);
+        LogicalInstanceIdentifier expectedClid = new LogicalInstanceIdentifier(clidLines.get(0)
+                + LogicalInstanceIdentifier.ID_SEP + clidLines.get(1), "expected clid");
+        assertEquals("Not the right instance.clid file: ", expectedClid.getCLID(), info.clid);
     }
 
     @Override

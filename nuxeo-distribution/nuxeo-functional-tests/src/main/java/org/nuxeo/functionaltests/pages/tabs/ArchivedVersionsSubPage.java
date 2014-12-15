@@ -67,8 +67,7 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
         List<String> versionLabels = new ArrayList<String>();
         List<WebElement> trElements;
         try {
-            trElements = documentVersionsForm.findElement(By.tagName("tbody")).findElements(
-                    By.tagName("tr"));
+            trElements = documentVersionsForm.findElement(By.tagName("tbody")).findElements(By.tagName("tr"));
         } catch (NoSuchElementException nsee) {
             return versionLabels;
         }
@@ -91,12 +90,11 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
      */
     public ArchivedVersionsSubPage selectVersion(String versionLabel) {
 
-        List<WebElement> trElements = documentVersionsForm.findElement(
-                By.tagName("tbody")).findElements(By.tagName("tr"));
+        List<WebElement> trElements = documentVersionsForm.findElement(By.tagName("tbody")).findElements(
+                By.tagName("tr"));
         for (WebElement trItem : trElements) {
             try {
-                trItem.findElement(By.xpath("td[text()=\"" + versionLabel
-                        + "\"]"));
+                trItem.findElement(By.xpath("td[text()=\"" + versionLabel + "\"]"));
                 WebElement checkBox = trItem.findElement(By.xpath("td/input[@type=\"checkbox\"]"));
                 checkBox.click();
                 break;
@@ -117,29 +115,22 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
     }
 
     /**
-     * Checks the ability to execute the action identified by {@code actionId}
-     * on selected versions.
+     * Checks the ability to execute the action identified by {@code actionId} on selected versions.
      *
      * @param actionId the action id
-     * @param canExecute true to check if can execute action identified by
-     *            {@code actionId} on selected versions
+     * @param canExecute true to check if can execute action identified by {@code actionId} on selected versions
      */
-    public void checkCanExecuteActionOnSelectedVersions(String actionId,
-            boolean canExecute) {
+    public void checkCanExecuteActionOnSelectedVersions(String actionId, boolean canExecute) {
         try {
-            findElementAndWaitUntilEnabled(
-                    By.xpath("//span[@id=\"" + actionId + "\"]/input"),
-                    AbstractTest.LOAD_TIMEOUT_SECONDS * 1000,
-                    AbstractTest.AJAX_SHORT_TIMEOUT_SECONDS * 1000);
+            findElementAndWaitUntilEnabled(By.xpath("//span[@id=\"" + actionId + "\"]/input"),
+                    AbstractTest.LOAD_TIMEOUT_SECONDS * 1000, AbstractTest.AJAX_SHORT_TIMEOUT_SECONDS * 1000);
             if (!canExecute) {
-                fail(actionId
-                        + " action should not be enabled because there is no version selected.");
+                fail(actionId + " action should not be enabled because there is no version selected.");
             }
         } catch (NotFoundException nfe) {
             if (canExecute) {
                 nfe.printStackTrace();
-                fail(actionId
-                        + " action should be enabled because there is at least one version selected.");
+                fail(actionId + " action should be enabled because there is at least one version selected.");
             }
         }
     }
@@ -160,9 +151,8 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
         long end = clock.laterBy(AbstractTest.LOAD_TIMEOUT_SECONDS * 1000);
         while (clock.isNowBefore(end)) {
             try {
-                archivedVersionsPage = executeActionOnSelectedVersions(
-                        DELETE_ACTION_ID, true, ArchivedVersionsSubPage.class,
-                        AbstractTest.LOAD_SHORT_TIMEOUT_SECONDS * 1000,
+                archivedVersionsPage = executeActionOnSelectedVersions(DELETE_ACTION_ID, true,
+                        ArchivedVersionsSubPage.class, AbstractTest.LOAD_SHORT_TIMEOUT_SECONDS * 1000,
                         AbstractTest.AJAX_TIMEOUT_SECONDS * 1000);
             } catch (NotFoundException nfe) {
                 if (archivedVersionsPage == null) {
@@ -187,16 +177,13 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
      * @param isConfirm true if the action needs a javascript confirm
      * @param pageClass the class of the page to return
      * @param findElementTimeout the find element timeout in milliseconds
-     * @param waitUntilEnabledTimeout the wait until enabled timeout in
-     *            milliseconds
+     * @param waitUntilEnabledTimeout the wait until enabled timeout in milliseconds
      * @return the page displayed after the action execution
      */
-    public <T> T executeActionOnSelectedVersions(String actionId,
-            boolean isConfirm, Class<T> pageClass, int findElementTimeout,
-            int waitUntilEnabledTimeout) {
-        findElementWaitUntilEnabledAndClick(
-                By.xpath("//span[@id=\"" + actionId + "\"]/input"),
-                findElementTimeout, waitUntilEnabledTimeout);
+    public <T> T executeActionOnSelectedVersions(String actionId, boolean isConfirm, Class<T> pageClass,
+            int findElementTimeout, int waitUntilEnabledTimeout) {
+        findElementWaitUntilEnabledAndClick(By.xpath("//span[@id=\"" + actionId + "\"]/input"), findElementTimeout,
+                waitUntilEnabledTimeout);
         if (isConfirm) {
             Alert alert = driver.switchTo().alert();
             assertEquals("Delete selected document(s)?", alert.getText());
@@ -226,24 +213,20 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
     }
 
     /**
-     * Executes the action identified by {@code actionId} on the version with
-     * label {@code versionLabel}.
+     * Executes the action identified by {@code actionId} on the version with label {@code versionLabel}.
      *
      * @param versionLabel the version label
      * @param actionId the action id
      * @return the page displayed after the action execution
      */
-    public DocumentBasePage executeActionOnVersion(String versionLabel,
-            String actionId) {
+    public DocumentBasePage executeActionOnVersion(String versionLabel, String actionId) {
 
-        List<WebElement> trElements = documentVersionsForm.findElement(
-                By.tagName("tbody")).findElements(By.tagName("tr"));
+        List<WebElement> trElements = documentVersionsForm.findElement(By.tagName("tbody")).findElements(
+                By.tagName("tr"));
         for (WebElement trItem : trElements) {
             try {
-                trItem.findElement(By.xpath("td[text()=\"" + versionLabel
-                        + "\"]"));
-                WebElement actionButton = trItem.findElement(By.xpath("td/span[@id=\""
-                        + actionId + "\"]/input"));
+                trItem.findElement(By.xpath("td[text()=\"" + versionLabel + "\"]"));
+                WebElement actionButton = trItem.findElement(By.xpath("td/span[@id=\"" + actionId + "\"]/input"));
                 actionButton.click();
                 break;
             } catch (NoSuchElementException e) {

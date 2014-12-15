@@ -64,18 +64,15 @@ public class ITContextualActionsTest extends AbstractTest {
 
         // Create a workspace and navigate into it
         WorkspaceFormPage workspaceFormPage = workspacesContent.getWorkspaceCreatePage();
-        DocumentBasePage workspacePage = workspaceFormPage.createNewWorkspace(
-                WORKSPACE_NAME, WORKSPACE_DESC);
+        DocumentBasePage workspacePage = workspaceFormPage.createNewWorkspace(WORKSPACE_NAME, WORKSPACE_DESC);
 
         // Create a File with an uploaded blob
         String filePrefix = "NX-Webdriver-test-";
-        FileDocumentBasePage filePage = createFile(workspacePage,
-                DOCUMENT_NAME, DOCUMENT_DESC, true, filePrefix, ".txt",
-                "Webdriver test file content.");
+        FileDocumentBasePage filePage = createFile(workspacePage, DOCUMENT_NAME, DOCUMENT_DESC, true, filePrefix,
+                ".txt", "Webdriver test file content.");
 
         // Verify summary informations
-        Assert.assertEquals(DOCUMENT_DESC,
-                filePage.getCurrentDocumentDescription());
+        Assert.assertEquals(DOCUMENT_DESC, filePage.getCurrentDocumentDescription());
         Assert.assertEquals(DOCUMENT_NAME, filePage.getCurrentDocumentTitle());
         List<String> states = filePage.getCurrentStates();
         Assert.assertTrue(states.contains(DOCUMENT_STATE));
@@ -98,8 +95,7 @@ public class ITContextualActionsTest extends AbstractTest {
         actions.clickOnButton(actions.permaButton);
         // wait for element to be shown to close it, otherwise DOM may not be
         // udpated yet
-        actions.findElementWithTimeout(By.className(actions.permaBoxFocusName),
-                20 * 1000);
+        actions.findElementWithTimeout(By.className(actions.permaBoxFocusName), 20 * 1000);
         actions.clickOnButton(actions.closePermaBoxButton);
 
         // Test follow action

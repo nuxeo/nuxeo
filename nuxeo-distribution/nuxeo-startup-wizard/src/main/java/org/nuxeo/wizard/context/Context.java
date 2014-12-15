@@ -87,20 +87,14 @@ public class Context {
             configurationGenerator.init();
             try {
                 Properties distribution = new Properties();
-                distribution.load(new FileInputStream(new File(
-                        configurationGenerator.getConfigDir(),
+                distribution.load(new FileInputStream(new File(configurationGenerator.getConfigDir(),
                         "distribution.properties")));
-                String name = distribution.getProperty(
-                        "org.nuxeo.distribution.name", "unknown").toLowerCase();
-                String server = distribution.getProperty(
-                        "org.nuxeo.distribution.server", "unknown").toLowerCase();
-                String version = distribution.getProperty(
-                        "org.nuxeo.distribution.version", "unknown").toLowerCase();
-                String pkg = distribution.getProperty(
-                        "org.nuxeo.distribution.package", "unknown").toLowerCase();
+                String name = distribution.getProperty("org.nuxeo.distribution.name", "unknown").toLowerCase();
+                String server = distribution.getProperty("org.nuxeo.distribution.server", "unknown").toLowerCase();
+                String version = distribution.getProperty("org.nuxeo.distribution.version", "unknown").toLowerCase();
+                String pkg = distribution.getProperty("org.nuxeo.distribution.package", "unknown").toLowerCase();
 
-                distributionKey = name + "-" + server + "-" + version + "-"
-                        + pkg;
+                distributionKey = name + "-" + server + "-" + version + "-" + pkg;
 
             } catch (Exception e) {
                 distributionKey = "unknown";
@@ -152,8 +146,7 @@ public class Context {
     }
 
     public boolean isConnectRegistrationDone() {
-        return connectMap != null
-                && "true".equals(connectMap.get("registrationOK"));
+        return connectMap != null && "true".equals(connectMap.get("registrationOK"));
     }
 
     public static Map<String, String> getConnectMap() {

@@ -21,7 +21,7 @@ import org.openqa.selenium.WebDriver;
 /**
  * @since 6.0
  */
-public class NXQLSearchSubPage extends AbstractSearchSubPage  {
+public class NXQLSearchSubPage extends AbstractSearchSubPage {
 
     public NXQLSearchSubPage(WebDriver driver) {
         super(driver);

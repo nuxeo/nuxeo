@@ -37,23 +37,13 @@ public class SimpleNavigationHandler {
 
     // I am too lazy to load a file
     // navCode / jsp Page / active flag / hidden flag
-    protected static final String[] nav = { "Home|welcome.jsp|1|0",
-            "NetworkBlocked|networkBlocked.jsp|0|0",
-            "General|generalSettings.jsp|1|0",
-            "Proxy|proxySettings.jsp|1|0",
-            "DB|dbSettings.jsp|1|0",
-            "User|userSettings.jsp|1|0",
-            "Smtp|smtpSettings.jsp|1|0",
-            "Connect|connectForm.jsp|1|0",
-            "ConnectCallback|connectCallback.jsp|0|1",
-            "ConnectFinish|connectFinish.jsp|0|0",
-            "PackagesSelection|packagesSelection.jsp|1|0",
-            "PackagesDownload|packagesDownload.jsp|1|0",
-            "PackagesSelectionDone|packagesSelectionDone.jsp|0|0",
-            "Recap|recapScreen.jsp|1|0",
-            "Restart|reStarting.jsp|1|1",
-            "Reset|Welcome.jsp|1|1",
-            "PackageOptionsResource||1|1" };
+    protected static final String[] nav = { "Home|welcome.jsp|1|0", "NetworkBlocked|networkBlocked.jsp|0|0",
+            "General|generalSettings.jsp|1|0", "Proxy|proxySettings.jsp|1|0", "DB|dbSettings.jsp|1|0",
+            "User|userSettings.jsp|1|0", "Smtp|smtpSettings.jsp|1|0", "Connect|connectForm.jsp|1|0",
+            "ConnectCallback|connectCallback.jsp|0|1", "ConnectFinish|connectFinish.jsp|0|0",
+            "PackagesSelection|packagesSelection.jsp|1|0", "PackagesDownload|packagesDownload.jsp|1|0",
+            "PackagesSelectionDone|packagesSelectionDone.jsp|0|0", "Recap|recapScreen.jsp|1|0",
+            "Restart|reStarting.jsp|1|1", "Reset|Welcome.jsp|1|1", "PackageOptionsResource||1|1" };
 
     protected List<Page> pages = new ArrayList<Page>();
 
@@ -95,7 +85,7 @@ public class SimpleNavigationHandler {
         ConfigurationGenerator configurationGenerator = new ConfigurationGenerator();
         configurationGenerator.init();
         String skipPages = configurationGenerator.getUserConfig().getProperty(SKIP_PAGES_KEY, null);
-        if (skipPages!=null) {
+        if (skipPages != null) {
             String[] pages2Skip = skipPages.split(",");
             for (String pageKey : pages2Skip) {
                 deactivatePage(pageKey);
@@ -158,15 +148,15 @@ public class SimpleNavigationHandler {
     }
 
     public void activatePage(String action) {
-        Page page =findPageByAction(action);
-        if (page!=null) {
+        Page page = findPageByAction(action);
+        if (page != null) {
             page.active = true;
         }
     }
 
     public void deactivatePage(String action) {
-        Page page =findPageByAction(action);
-        if (page!=null) {
+        Page page = findPageByAction(action);
+        if (page != null) {
             page.active = false;
         }
     }

@@ -45,8 +45,7 @@ import org.openqa.selenium.WebElement;
  */
 public class ITSelect2Test extends AbstractTest {
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_"
-            + new Date().getTime();
+    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
 
     public final static String[] SUBJECTS = { "Comics", "Religion", "Education" };
 
@@ -58,7 +57,6 @@ public class ITSelect2Test extends AbstractTest {
      * Delete created user and data.
      *
      * @throws UserNotConnectedException
-     *
      * @since 5.7.3
      */
     private void restoreSate() throws Exception {
@@ -72,11 +70,9 @@ public class ITSelect2Test extends AbstractTest {
     }
 
     /**
-     * Create a file document and manipulate coverage and subjects fields based
-     * on select2 attributes.
+     * Create a file document and manipulate coverage and subjects fields based on select2 attributes.
      *
      * @throws Exception
-     *
      * @since 5.7.3
      */
     @Test
@@ -90,46 +86,40 @@ public class ITSelect2Test extends AbstractTest {
         UsersTabSubPage usersTab = s.getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(TEST_USERNAME);
         if (!usersTab.isUserFound(TEST_USERNAME)) {
-            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, TEST_USERNAME,
-                    "lastname1", "company1", "email1", TEST_PASSWORD, "members");
+            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, TEST_USERNAME, "lastname1", "company1",
+                    "email1", TEST_PASSWORD, "members");
             usersTab = page.getUsersTab(true);
         } // search user usersTab =
         usersTab.searchUser(TEST_USERNAME);
         assertTrue(usersTab.isUserFound(TEST_USERNAME));
 
         // create a new wokspace and grant all rights to the test user
-        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                "Workspaces");
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage,
-                WORKSPACE_TITLE, null);
+        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument("Workspaces");
+        DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, null);
         AccessRightsSubPage accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
         // Need WriteSecurity (so in practice Manage everything) to edit a
         // Workspace
-        if (!accessRightSubTab.hasPermissionForUser("Manage everything",
-                TEST_USERNAME)) {
-            accessRightSubTab.grantPermissionForUser("Manage everything",
-                TEST_USERNAME);
+        if (!accessRightSubTab.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
+            accessRightSubTab.grantPermissionForUser("Manage everything", TEST_USERNAME);
         }
 
         logout();
 
         // Log as test user and edit the created workdspace
-        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab().goToDocument(
-                "Workspaces").getContentTab().goToDocument(WORKSPACE_TITLE);
+        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab().goToDocument("Workspaces").getContentTab().goToDocument(
+                WORKSPACE_TITLE);
 
         // Create test File
-        FileDocumentBasePage filePage = createFile(workspacePage, "Test file",
-                "Test File description", false, null, null, null);
+        FileDocumentBasePage filePage = createFile(workspacePage, "Test file", "Test File description", false, null,
+                null, null);
         EditTabSubPage editTabSubPage = filePage.getEditTab();
 
-        Select2WidgetElement subjectsWidget = new Select2WidgetElement(
-                driver,
+        Select2WidgetElement subjectsWidget = new Select2WidgetElement(driver,
                 driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_1_select2']")),
                 true);
         subjectsWidget.selectValues(SUBJECTS);
 
-        Select2WidgetElement coverageWidget = new Select2WidgetElement(
-                driver,
+        Select2WidgetElement coverageWidget = new Select2WidgetElement(driver,
                 driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_1_select2']")),
                 false);
         coverageWidget.selectValue(COVERAGE);

@@ -36,18 +36,16 @@ public class FileCreationFormPage extends DublinCoreCreationDocumentFormPage {
         super(driver);
     }
 
-    public FileDocumentBasePage createFileDocument(String title,
-            String description, boolean uploadBlob, String filePrefix,
-            String fileSuffix, String fileContent) throws IOException {
+    public FileDocumentBasePage createFileDocument(String title, String description, boolean uploadBlob,
+            String filePrefix, String fileSuffix, String fileContent) throws IOException {
         titleTextInput.sendKeys(title);
         descriptionTextInput.sendKeys(description);
 
         if (uploadBlob) {
-            LayoutElement layout = new LayoutElement(driver,"document_create:nxl_file");
+            LayoutElement layout = new LayoutElement(driver, "document_create:nxl_file");
             // on file document, a widget template is used => standard file
             // widget is wrapped, hence the duplicate nxw_file id
-            FileWidgetElement fileWidget = layout.getWidget(
-                    "nxw_file:nxw_file_file", FileWidgetElement.class);
+            FileWidgetElement fileWidget = layout.getWidget("nxw_file:nxw_file_file", FileWidgetElement.class);
             fileWidget.uploadTestFile(filePrefix, fileSuffix, fileContent);
         }
 

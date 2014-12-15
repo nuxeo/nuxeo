@@ -67,8 +67,7 @@ public class UserEditFormPage extends UsersGroupsBasePage {
      * @param group
      * @throws NoSuchElementException
      */
-    public UserViewTabSubPage editUser(String firstname, String lastname,
-            String company, String email, String group)
+    public UserViewTabSubPage editUser(String firstname, String lastname, String company, String email, String group)
             throws NoSuchElementException {
         updateInput(firstnameInput, firstname);
         updateInput(lastnameInput, lastname);

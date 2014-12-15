@@ -18,10 +18,8 @@
 
 package org.nuxeo.functionaltests.pages.admincenter;
 
-import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.workflow.WorkflowGraph;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;

@@ -94,16 +94,14 @@ public class RouterServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         // process action
         handleAction(getAction(req), req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         // store posted data
         Context.instance(req).getCollector().collectConfigurationParams(req);
@@ -116,14 +114,14 @@ public class RouterServlet extends HttpServlet {
         String methodName = "handle" + currentPage.getAction() + verb;
         Method method = null;
         try {
-            method = this.getClass().getMethod(methodName, Page.class,
-                    HttpServletRequest.class, HttpServletResponse.class);
+            method = this.getClass().getMethod(methodName, Page.class, HttpServletRequest.class,
+                    HttpServletResponse.class);
         } catch (Exception e) {
             // fall back to default Handler lookup
             methodName = "handleDefault" + verb;
             try {
-                method = this.getClass().getMethod(methodName, Page.class,
-                        HttpServletRequest.class, HttpServletResponse.class);
+                method = this.getClass().getMethod(methodName, Page.class, HttpServletRequest.class,
+                        HttpServletResponse.class);
             } catch (Exception e2) {
                 log.error("Unable to resolve default handler for " + verb, e);
             }
@@ -131,8 +129,8 @@ public class RouterServlet extends HttpServlet {
         return method;
     }
 
-    protected void handleAction(String action, HttpServletRequest req,
-            HttpServletResponse resp) throws ServletException, IOException {
+    protected void handleAction(String action, HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
         // locate page
         Page currentPage = navHandler.getCurrentPage(action);
@@ -160,28 +158,27 @@ public class RouterServlet extends HttpServlet {
 
     // default handlers
 
-    public void handleDefaultGET(Page currentPage, HttpServletRequest req,
-            HttpServletResponse resp) throws ServletException, IOException {
+    public void handleDefaultGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         currentPage.dispatchToJSP(req, resp);
     }
 
-    public void handleDefaultPOST(Page currentPage, HttpServletRequest req,
-            HttpServletResponse resp) throws ServletException, IOException {
+    public void handleDefaultPOST(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         // XXX validate data
         currentPage.next().dispatchToJSP(req, resp, true);
     }
 
     // custom handlers
 
-    public void handleConnectGET(Page currentPage, HttpServletRequest req,
-            HttpServletResponse resp) throws ServletException, IOException {
+    public void handleConnectGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
         Context ctx = Context.instance(req);
 
         // compute CB url
         String cbUrl = req.getRequestURL().toString();
-        cbUrl = cbUrl.replace("/router/" + currentPage.getAction(),
-                "/ConnectCallback?cb=yes");
+        cbUrl = cbUrl.replace("/router/" + currentPage.getAction(), "/ConnectCallback?cb=yes");
         // In order to avoid any issue with badly configured reverse proxies
         // => get url from the client side
         if (ctx.getBaseUrl() != null) {
@@ -194,8 +191,7 @@ public class RouterServlet extends HttpServlet {
         handleDefaultGET(currentPage, req, resp);
     }
 
-    public void handleConnectCallbackGET(Page currentPage,
-            HttpServletRequest req, HttpServletResponse resp)
+    public void handleConnectCallbackGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
         String token = req.getParameter(CONNECT_TOKEN_KEY);
@@ -251,8 +247,7 @@ public class RouterServlet extends HttpServlet {
         handleDefaultGET(currentPage, req, resp);
     }
 
-    public void handleConnectFinishGET(Page currentPage,
-            HttpServletRequest req, HttpServletResponse resp)
+    public void handleConnectFinishGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
         // get the connect Token and decode associated infos
@@ -273,8 +268,8 @@ public class RouterServlet extends HttpServlet {
         handleDefaultGET(currentPage, req, resp);
     }
 
-    public void handleDBPOST(Page currentPage, HttpServletRequest req,
-            HttpServletResponse resp) throws ServletException, IOException {
+    public void handleDBPOST(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
@@ -286,8 +281,7 @@ public class RouterServlet extends HttpServlet {
             return;
         }
 
-        if (!collector.getConfigurationParam(
-                ConfigurationGenerator.PARAM_TEMPLATE_DBNAME).equals("default")) {
+        if (!collector.getConfigurationParam(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME).equals("default")) {
             if (collector.getConfigurationParam("nuxeo.db.name").isEmpty()) {
                 ctx.trackError("nuxeo.db.name", "error.dbname.required");
             }
@@ -338,8 +332,8 @@ public class RouterServlet extends HttpServlet {
 
     }
 
-    public void handleUserPOST(Page currentPage, HttpServletRequest req,
-            HttpServletResponse resp) throws ServletException, IOException {
+    public void handleUserPOST(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
@@ -355,10 +349,8 @@ public class RouterServlet extends HttpServlet {
             return;
         }
 
-        if ("checkNetwork".equals(refreshParam)
-                || "checkAuth".equals(refreshParam)
-                || "checkUserLdapParam".equals(refreshParam)
-                || "checkGroupLdapParam".equals(refreshParam)) {
+        if ("checkNetwork".equals(refreshParam) || "checkAuth".equals(refreshParam)
+                || "checkUserLdapParam".equals(refreshParam) || "checkGroupLdapParam".equals(refreshParam)) {
             try {
                 if ("checkNetwork".equals(refreshParam)) {
                     bindLdapConnection(collector, false);
@@ -367,8 +359,7 @@ public class RouterServlet extends HttpServlet {
                     bindLdapConnection(collector, true);
                     ctx.trackInfo("nuxeo.ldap.auth", "info.auth.success");
                 } else {
-                    DirContext dirContext = new InitialDirContext(
-                            getContextEnv(collector, true));
+                    DirContext dirContext = new InitialDirContext(getContextEnv(collector, true));
                     String searchScope;
                     String searchBaseDn;
                     String searchClass;
@@ -391,20 +382,16 @@ public class RouterServlet extends HttpServlet {
                     } else {
                         scts.setSearchScope(SearchControls.SUBTREE_SCOPE);
                     }
-                    String filter = String.format("(&(%s)(objectClass=%s))",
-                            searchFilter.isEmpty() ? "objectClass=*"
-                                    : searchFilter, searchClass.isEmpty() ? "*"
-                                    : searchClass);
+                    String filter = String.format("(&(%s)(objectClass=%s))", searchFilter.isEmpty() ? "objectClass=*"
+                            : searchFilter, searchClass.isEmpty() ? "*" : searchClass);
                     NamingEnumeration<SearchResult> results;
                     try {
                         results = dirContext.search(searchBaseDn, filter, scts);
                         if (!results.hasMore()) {
-                            ctx.trackError("nuxeo.ldap.search",
-                                    "error.ldap.noresult");
+                            ctx.trackError("nuxeo.ldap.search", "error.ldap.noresult");
                         } else {
                             SearchResult result = results.next();
-                            if (searchBaseDn.equalsIgnoreCase(result.getNameInNamespace())
-                                    && results.hasMore()) {
+                            if (searchBaseDn.equalsIgnoreCase(result.getNameInNamespace()) && results.hasMore()) {
                                 // try not to display the root of the search
                                 // base DN
                                 result = results.next();
@@ -421,13 +408,11 @@ public class RouterServlet extends HttpServlet {
                                 while (values.hasMore()) {
                                     sb.append(values.next()).append(" , ");
                                 }
-                                ctx.trackInfo(id,
-                                        sb.substring(0, sb.length() - 3));
+                                ctx.trackInfo(id, sb.substring(0, sb.length() - 3));
                             }
                         }
                     } catch (NameNotFoundException e) {
-                        ctx.trackError("nuxeo.ldap.search",
-                                "error.ldap.searchBaseDn");
+                        ctx.trackError("nuxeo.ldap.search", "error.ldap.searchBaseDn");
                         log.warn(e);
                     }
                     dirContext.close();
@@ -453,62 +438,41 @@ public class RouterServlet extends HttpServlet {
 
             // then check mandatory fields
             if (collector.getConfigurationParam("nuxeo.ldap.user.searchBaseDn").isEmpty()) {
-                ctx.trackError("nuxeo.ldap.user.searchBaseDn",
-                        "error.user.searchBaseDn.required");
+                ctx.trackError("nuxeo.ldap.user.searchBaseDn", "error.user.searchBaseDn.required");
             }
             if (collector.getConfigurationParam("nuxeo.ldap.user.mapping.rdn").isEmpty()) {
-                ctx.trackError("nuxeo.ldap.user.mapping.rdn",
-                        "error.user.rdn.required");
+                ctx.trackError("nuxeo.ldap.user.mapping.rdn", "error.user.rdn.required");
             }
-            if (collector.getConfigurationParam(
-                    "nuxeo.ldap.user.mapping.username").isEmpty()) {
-                ctx.trackError("nuxeo.ldap.user.mapping.username",
-                        "error.user.username.required");
+            if (collector.getConfigurationParam("nuxeo.ldap.user.mapping.username").isEmpty()) {
+                ctx.trackError("nuxeo.ldap.user.mapping.username", "error.user.username.required");
             }
-            if (collector.getConfigurationParam(
-                    "nuxeo.ldap.user.mapping.password").isEmpty()) {
-                ctx.trackError("nuxeo.ldap.user.mapping.password",
-                        "error.user.password.required");
+            if (collector.getConfigurationParam("nuxeo.ldap.user.mapping.password").isEmpty()) {
+                ctx.trackError("nuxeo.ldap.user.mapping.password", "error.user.password.required");
             }
-            if (collector.getConfigurationParam(
-                    "nuxeo.ldap.user.mapping.firstname").isEmpty()) {
-                ctx.trackError("nuxeo.ldap.user.mapping.firstname",
-                        "error.user.firstname.required");
+            if (collector.getConfigurationParam("nuxeo.ldap.user.mapping.firstname").isEmpty()) {
+                ctx.trackError("nuxeo.ldap.user.mapping.firstname", "error.user.firstname.required");
             }
-            if (collector.getConfigurationParam(
-                    "nuxeo.ldap.user.mapping.lastname").isEmpty()) {
-                ctx.trackError("nuxeo.ldap.user.mapping.lastname",
-                        "error.user.lastname.required");
+            if (collector.getConfigurationParam("nuxeo.ldap.user.mapping.lastname").isEmpty()) {
+                ctx.trackError("nuxeo.ldap.user.mapping.lastname", "error.user.lastname.required");
             }
             String userGroupStorage = collector.getConfigurationParam("nuxeo.user.group.storage");
-            if (!"userLdapOnly".equals(userGroupStorage)
-                    && !"multiUserSqlGroup".equals(userGroupStorage)) {
-                if (collector.getConfigurationParam(
-                        "nuxeo.ldap.group.searchBaseDn").isEmpty()) {
-                    ctx.trackError("nuxeo.ldap.group.searchBaseDn",
-                            "error.group.searchBaseDn.required");
+            if (!"userLdapOnly".equals(userGroupStorage) && !"multiUserSqlGroup".equals(userGroupStorage)) {
+                if (collector.getConfigurationParam("nuxeo.ldap.group.searchBaseDn").isEmpty()) {
+                    ctx.trackError("nuxeo.ldap.group.searchBaseDn", "error.group.searchBaseDn.required");
                 }
-                if (collector.getConfigurationParam(
-                        "nuxeo.ldap.group.mapping.rdn").isEmpty()) {
-                    ctx.trackError("nuxeo.ldap.group.mapping.rdn",
-                            "error.group.rdn.required");
+                if (collector.getConfigurationParam("nuxeo.ldap.group.mapping.rdn").isEmpty()) {
+                    ctx.trackError("nuxeo.ldap.group.mapping.rdn", "error.group.rdn.required");
                 }
-                if (collector.getConfigurationParam(
-                        "nuxeo.ldap.group.mapping.name").isEmpty()) {
-                    ctx.trackError("nuxeo.ldap.group.mapping.name",
-                            "error.group.name.required");
+                if (collector.getConfigurationParam("nuxeo.ldap.group.mapping.name").isEmpty()) {
+                    ctx.trackError("nuxeo.ldap.group.mapping.name", "error.group.name.required");
                 }
             }
             if ("true".equals(collector.getConfigurationParam("nuxeo.user.emergency.enable"))) {
-                if (collector.getConfigurationParam(
-                        "nuxeo.user.emergency.username").isEmpty()) {
-                    ctx.trackError("nuxeo.user.emergency.username",
-                            "error.emergency.username.required");
+                if (collector.getConfigurationParam("nuxeo.user.emergency.username").isEmpty()) {
+                    ctx.trackError("nuxeo.user.emergency.username", "error.emergency.username.required");
                 }
-                if (collector.getConfigurationParam(
-                        "nuxeo.user.emergency.password").isEmpty()) {
-                    ctx.trackError("nuxeo.user.emergency.password",
-                            "error.emergency.password.required");
+                if (collector.getConfigurationParam("nuxeo.user.emergency.password").isEmpty()) {
+                    ctx.trackError("nuxeo.user.emergency.password", "error.emergency.password.required");
                 }
             }
         }
@@ -520,44 +484,37 @@ public class RouterServlet extends HttpServlet {
         }
     }
 
-    private Hashtable<Object, Object> getContextEnv(ParamCollector collector,
-            boolean checkAuth) {
+    private Hashtable<Object, Object> getContextEnv(ParamCollector collector, boolean checkAuth) {
         String ldapUrl = collector.getConfigurationParam("nuxeo.ldap.url");
         String ldapBindDn = collector.getConfigurationParam("nuxeo.ldap.binddn");
         String ldapBindPassword = collector.getConfigurationParam("nuxeo.ldap.bindpassword");
         ConfigurationGenerator cg = collector.getConfigurationGenerator();
-        return cg.getContextEnv(ldapUrl, ldapBindDn, ldapBindPassword,
-                checkAuth);
+        return cg.getContextEnv(ldapUrl, ldapBindDn, ldapBindPassword, checkAuth);
     }
 
-    private void bindLdapConnection(ParamCollector collector,
-            boolean authenticate) throws NamingException {
+    private void bindLdapConnection(ParamCollector collector, boolean authenticate) throws NamingException {
         ConfigurationGenerator cg = collector.getConfigurationGenerator();
         cg.checkLdapConnection(getContextEnv(collector, authenticate));
     }
 
-    public void handleSmtpPOST(Page currentPage, HttpServletRequest req,
-            HttpServletResponse resp) throws ServletException, IOException {
+    public void handleSmtpPOST(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
 
-        if (collector.getConfigurationParam("mail.transport.auth").equals(
-                "true")) {
+        if (collector.getConfigurationParam("mail.transport.auth").equals("true")) {
             if (collector.getConfigurationParam("mail.transport.user").isEmpty()) {
-                ctx.trackError("mail.transport.user",
-                        "error.mail.transport.user.required");
+                ctx.trackError("mail.transport.user", "error.mail.transport.user.required");
             }
             if (collector.getConfigurationParam("mail.transport.password").isEmpty()) {
-                ctx.trackError("mail.transport.password",
-                        "error.mail.transport.password.required");
+                ctx.trackError("mail.transport.password", "error.mail.transport.password.required");
             }
         }
 
         if (!collector.getConfigurationParam("mail.transport.port").isEmpty()) {
             if (!NumberValidator.validate(collector.getConfigurationParam("mail.transport.port"))) {
-                ctx.trackError("mail.transport.port",
-                        "error.mail.transport.port.mustbeanumber");
+                ctx.trackError("mail.transport.port", "error.mail.transport.port.mustbeanumber");
             }
         }
 
@@ -569,8 +526,8 @@ public class RouterServlet extends HttpServlet {
 
     }
 
-    public void handleRecapPOST(Page currentPage, HttpServletRequest req,
-            HttpServletResponse resp) throws ServletException, IOException {
+    public void handleRecapPOST(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
@@ -594,8 +551,8 @@ public class RouterServlet extends HttpServlet {
         }
     }
 
-    public void handleGeneralPOST(Page currentPage, HttpServletRequest req,
-            HttpServletResponse resp) throws ServletException, IOException {
+    public void handleGeneralPOST(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
@@ -621,8 +578,8 @@ public class RouterServlet extends HttpServlet {
         }
     }
 
-    public void handleHomeGET(Page currentPage, HttpServletRequest req,
-            HttpServletResponse resp) throws ServletException, IOException {
+    public void handleHomeGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
         Context ctx = Context.instance(req);
         if (PackageDownloaderHelper.isPackageSelectionDone(ctx)) {
@@ -634,8 +591,8 @@ public class RouterServlet extends HttpServlet {
         handleDefaultGET(currentPage, req, resp);
     }
 
-    public void handleHomePOST(Page currentPage, HttpServletRequest req,
-            HttpServletResponse resp) throws ServletException, IOException {
+    public void handleHomePOST(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
         String baseUrl = req.getParameter("baseUrl");
         if (baseUrl != null && !baseUrl.isEmpty()) {
@@ -659,8 +616,8 @@ public class RouterServlet extends HttpServlet {
         currentPage.next().dispatchToJSP(req, resp, true);
     }
 
-    public void handleProxyPOST(Page currentPage, HttpServletRequest req,
-            HttpServletResponse resp) throws ServletException, IOException {
+    public void handleProxyPOST(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
@@ -672,42 +629,34 @@ public class RouterServlet extends HttpServlet {
             collector.addConfigurationParam("nuxeo.http.proxy.host", null);
             collector.addConfigurationParam("nuxeo.http.proxy.port", null);
             collector.addConfigurationParam("nuxeo.http.proxy.ntml.host", null);
-            collector.addConfigurationParam("nuxeo.http.proxy.ntml.domain",
-                    null);
+            collector.addConfigurationParam("nuxeo.http.proxy.ntml.domain", null);
             if (!PackageDownloaderHelper.isPackageSelectionDone(ctx)) {
-                PackageDownloader.instance().setProxy(null, 0, null, null,
-                        null, null);
+                PackageDownloader.instance().setProxy(null, 0, null, null, null, null);
             }
         } else {
             if (!NumberValidator.validate(collector.getConfigurationParam("nuxeo.http.proxy.port"))) {
-                ctx.trackError("nuxeo.http.proxy.port",
-                        "error.nuxeo.http.proxy.port");
+                ctx.trackError("nuxeo.http.proxy.port", "error.nuxeo.http.proxy.port");
             }
             if (collector.getConfigurationParam("nuxeo.http.proxy.host").isEmpty()) {
-                ctx.trackError("nuxeo.http.proxy.host",
-                        "error.nuxeo.http.proxy.emptyHost");
+                ctx.trackError("nuxeo.http.proxy.host", "error.nuxeo.http.proxy.emptyHost");
             }
             if ("anonymous".equals(proxyType)) {
                 collector.addConfigurationParam("nuxeo.http.proxy.login", null);
-                collector.addConfigurationParam("nuxeo.http.proxy.password",
-                        null);
-                collector.addConfigurationParam("nuxeo.http.proxy.ntml.host",
-                        null);
-                collector.addConfigurationParam("nuxeo.http.proxy.ntml.domain",
-                        null);
+                collector.addConfigurationParam("nuxeo.http.proxy.password", null);
+                collector.addConfigurationParam("nuxeo.http.proxy.ntml.host", null);
+                collector.addConfigurationParam("nuxeo.http.proxy.ntml.domain", null);
 
                 if (!ctx.hasErrors()) {
                     if (!PackageDownloaderHelper.isPackageSelectionDone(ctx)) {
                         PackageDownloader.instance().setProxy(
                                 collector.getConfigurationParamValue("nuxeo.http.proxy.host"),
-                                Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.port")),
-                                null, null, null, null);
+                                Integer.parseInt(collector.getConfigurationParamValue("nuxeo.http.proxy.port")), null,
+                                null, null, null);
                     }
                 }
             } else {
                 if (collector.getConfigurationParam("nuxeo.http.proxy.login").isEmpty()) {
-                    ctx.trackError("nuxeo.http.proxy.login",
-                            "error.nuxeo.http.proxy.emptyLogin");
+                    ctx.trackError("nuxeo.http.proxy.login", "error.nuxeo.http.proxy.emptyLogin");
                 } else {
                     if (!ctx.hasErrors()) {
                         if (!PackageDownloaderHelper.isPackageSelectionDone(ctx)) {
@@ -731,8 +680,7 @@ public class RouterServlet extends HttpServlet {
         }
     }
 
-    public void handleResetGET(Page currentPage, HttpServletRequest req,
-            HttpServletResponse resp) throws IOException {
+    public void handleResetGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         // reset
         Context.reset();
@@ -740,9 +688,7 @@ public class RouterServlet extends HttpServlet {
         PackageDownloader.reset();
 
         // return to first page
-        String target = "/"
-                + req.getContextPath()
-                + "/"
+        String target = "/" + req.getContextPath() + "/"
                 + SimpleNavigationHandler.instance().getDefaultPage().getAction();
         if (target.startsWith("//")) {
             target = target.substring(1);
@@ -750,8 +696,7 @@ public class RouterServlet extends HttpServlet {
         resp.sendRedirect(target);
     }
 
-    public void handlePackageOptionsResourceGET(Page currentPage,
-            HttpServletRequest req, HttpServletResponse resp)
+    public void handlePackageOptionsResourceGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
 
         DownloadablePackageOptions options = PackageDownloader.instance().getPackageOptions();
@@ -760,15 +705,13 @@ public class RouterServlet extends HttpServlet {
 
     }
 
-    public void handlePackagesSelectionGET(Page currentPage,
-            HttpServletRequest req, HttpServletResponse resp)
+    public void handlePackagesSelectionGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
         handleDefaultGET(currentPage, req, resp);
     }
 
-    public void handlePackagesSelectionPOST(Page currentPage,
-            HttpServletRequest req, HttpServletResponse resp)
+    public void handlePackagesSelectionPOST(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         List<String> options = new ArrayList<String>();
         Enumeration<String> params = req.getParameterNames();
@@ -784,20 +727,17 @@ public class RouterServlet extends HttpServlet {
         currentPage.next().dispatchToJSP(req, resp, true);
     }
 
-    public void handlePackagesDownloadGET(Page currentPage,
-            HttpServletRequest req, HttpServletResponse resp)
+    public void handlePackagesDownloadGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         if ("true".equals(req.getParameter("startDownload"))) {
             PackageDownloader.instance().startDownload();
         } else if (req.getParameter("reStartDownload") != null) {
-            PackageDownloader.instance().reStartDownload(
-                    req.getParameter("reStartDownload"));
+            PackageDownloader.instance().reStartDownload(req.getParameter("reStartDownload"));
         }
         currentPage.dispatchToJSP(req, resp);
     }
 
-    public void handlePackagesDownloadPOST(Page currentPage,
-            HttpServletRequest req, HttpServletResponse resp)
+    public void handlePackagesDownloadPOST(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         ParamCollector collector = Context.instance(req).getCollector();
 
@@ -805,8 +745,7 @@ public class RouterServlet extends HttpServlet {
                 collector.getConfigurationParam(org.nuxeo.common.Environment.NUXEO_DATA_DIR),
                 ConfigurationGenerator.INSTALL_AFTER_RESTART).getAbsolutePath();
 
-        PackageDownloader.instance().scheduleDownloadedPackagesForInstallation(
-                installationFilePath);
+        PackageDownloader.instance().scheduleDownloadedPackagesForInstallation(installationFilePath);
         PackageDownloader.reset();
 
         currentPage.next().dispatchToJSP(req, resp, true);

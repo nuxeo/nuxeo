@@ -28,9 +28,11 @@ import com.google.common.base.Function;
 
 public class WizardPage extends AbstractWizardPage {
 
-//    protected static final String NEXT_BUTTON_LOCATOR = "//input[@class=\"glossyButton\" and @value=\"Next step\"]";
-//    protected static final String PREV_BUTTON_LOCATOR = "//input[@class=\"glossyButton\" and @value=\"Previous step\"]";
+    // protected static final String NEXT_BUTTON_LOCATOR = "//input[@class=\"glossyButton\" and @value=\"Next step\"]";
+    // protected static final String PREV_BUTTON_LOCATOR =
+    // "//input[@class=\"glossyButton\" and @value=\"Previous step\"]";
     protected static final String NEXT_BUTTON_LOCATOR = "id('btnNext')";
+
     protected static final String PREV_BUTTON_LOCATOR = "id('btnPrev')";
 
     public WizardPage(WebDriver driver) {
@@ -44,12 +46,12 @@ public class WizardPage extends AbstractWizardPage {
 
     public WizardPage next(Boolean errorExpected) {
         if (errorExpected) {
-            return next(WizardPage.class,
-                    new Function<WebDriver, Boolean>() {
-                        public Boolean apply(WebDriver driver) {
-                            return hasError();
-                        }
-                    });
+            return next(WizardPage.class, new Function<WebDriver, Boolean>() {
+                @Override
+                public Boolean apply(WebDriver driver) {
+                    return hasError();
+                }
+            });
         } else {
             return next(WizardPage.class);
         }
@@ -61,12 +63,12 @@ public class WizardPage extends AbstractWizardPage {
 
     public WizardPage previous(Boolean errorExpected) {
         if (errorExpected) {
-            return previous(WizardPage.class,
-                    new Function<WebDriver, Boolean>() {
-                        public Boolean apply(WebDriver driver) {
-                            return hasError();
-                        }
-                    });
+            return previous(WizardPage.class, new Function<WebDriver, Boolean>() {
+                @Override
+                public Boolean apply(WebDriver driver) {
+                    return hasError();
+                }
+            });
         } else {
             return previous(WizardPage.class);
         }

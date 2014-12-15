@@ -36,9 +36,9 @@ public class TrashSubPage extends AbstractPage {
 
     protected static final String SELECT_ALL_BUTTON_ID = "document_trash_content:nxl_document_listing_table:listing_table_selection_box_with_current_document_header";
 
-    protected static final String PERMANENT_DELETE_BUTTON_ID= "document_trash_content_buttons:nxw_CURRENT_SELECTION_DELETE_form:nxw_CURRENT_SELECTION_DELETE";
+    protected static final String PERMANENT_DELETE_BUTTON_ID = "document_trash_content_buttons:nxw_CURRENT_SELECTION_DELETE_form:nxw_CURRENT_SELECTION_DELETE";
 
-    protected static final String EMPTY_TRASH_BUTTON_ID= "document_trash_content_buttons:nxw_CURRENT_SELECTION_EMPTY_TRASH_form:nxw_CURRENT_SELECTION_EMPTY_TRASH";
+    protected static final String EMPTY_TRASH_BUTTON_ID = "document_trash_content_buttons:nxw_CURRENT_SELECTION_EMPTY_TRASH_form:nxw_CURRENT_SELECTION_EMPTY_TRASH";
 
     @FindBy(xpath = "//form[@id=\"document_trash_content\"]//tbody//tr")
     List<WebElement> childDocumentRows;
@@ -59,8 +59,7 @@ public class TrashSubPage extends AbstractPage {
         TrashSubPage page = asPage(TrashSubPage.class);
         findElementWaitUntilEnabledAndClick(By.id(EMPTY_TRASH_BUTTON_ID));
         Alert alert = driver.switchTo().alert();
-        assertEquals("Permanently delete all documents in trash?",
-                alert.getText());
+        assertEquals("Permanently delete all documents in trash?", alert.getText());
         alert.accept();
         return page;
     }

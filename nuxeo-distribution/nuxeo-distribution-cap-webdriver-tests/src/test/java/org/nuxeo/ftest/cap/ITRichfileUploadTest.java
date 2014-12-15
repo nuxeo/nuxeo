@@ -63,8 +63,7 @@ public class ITRichfileUploadTest extends AbstractTest {
 
     public final static String TEST_FILE_NAME = "test1";
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_"
-            + new Date().getTime();
+    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
 
     @After
     public void tearDown() throws UserNotConnectedException {
@@ -74,15 +73,12 @@ public class ITRichfileUploadTest extends AbstractTest {
     }
 
     @Test
-    public void testRichFileUpload() throws IOException,
-            UserNotConnectedException {
+    public void testRichFileUpload() throws IOException, UserNotConnectedException {
         DocumentBasePage documentBasePage = login();
 
         // Create test File
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage,
-                WORKSPACE_TITLE, null);
-        createFile(workspacePage, TEST_FILE_NAME, "Test File description",
-                false, null, null, null);
+        DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, null);
+        createFile(workspacePage, TEST_FILE_NAME, "Test File description", false, null, null, null);
 
         // Go to Files tab
         Locator.findElementWithTimeoutAndClick(By.id(FILES_TAB_ID));
@@ -115,8 +111,7 @@ public class ITRichfileUploadTest extends AbstractTest {
         final String mockFile3 = getTmpFileToUploadPath("dummy", "test", "txt");
         Locator.findElementWithTimeout(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(mockFile2);
         Locator.waitUntilElementPresent(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
-        Locator.findElementWithTimeout(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(
-                mockFile3);
+        Locator.findElementWithTimeout(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(mockFile3);
         // check we have 2 items
         clearLinks = driver.findElements(By.xpath(RF_UPLOADED_FILE_ITEMS_XPATH));
         assertEquals(2, clearLinks.size());
@@ -126,9 +121,9 @@ public class ITRichfileUploadTest extends AbstractTest {
         Locator.waitUntilElementNotPresent(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
         // check we have 0 items
         Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
+            @Override
             public Boolean apply(WebDriver driver) {
-                return driver.findElements(
-                        By.xpath(RF_UPLOADED_FILE_ITEMS_XPATH)).size() == 0;
+                return driver.findElements(By.xpath(RF_UPLOADED_FILE_ITEMS_XPATH)).size() == 0;
             }
         });
         // check that clear all is not visible
@@ -137,17 +132,16 @@ public class ITRichfileUploadTest extends AbstractTest {
         // upload 2 and submit
         final String mockFile4 = getTmpFileToUploadPath("dummy", "test", "txt");
         final String mockFile5 = getTmpFileToUploadPath("dummy", "test", "txt");
-        Locator.findElementWithTimeout(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(
-                mockFile4);
+        Locator.findElementWithTimeout(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(mockFile4);
         Locator.waitUntilElementPresent(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
-        Locator.findElementWithTimeout(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(
-                mockFile5);
+        Locator.findElementWithTimeout(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(mockFile5);
 
         Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
                 AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                AbstractTest.POLLING_FREQUENCY_MILLISECONDS,
-                TimeUnit.MILLISECONDS).ignoring(StaleElementReferenceException.class);
+                AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
+                StaleElementReferenceException.class);
         Function<WebDriver, Boolean> function = new Function<WebDriver, Boolean>() {
+            @Override
             public Boolean apply(WebDriver driver) {
                 try {
                     driver.findElement(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH)).click();
@@ -164,6 +158,7 @@ public class ITRichfileUploadTest extends AbstractTest {
         assertEquals(2, uploadedFiles.size());
         // remove the first one
         Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
+            @Override
             public Boolean apply(WebDriver driver) {
                 List<WebElement> uploadedFiles = driver.findElements(By.xpath(NX_UPLOADED_FILES_XPATH));
                 uploadedFiles.get(0).findElements(By.tagName("a")).get(0).click();
@@ -175,6 +170,7 @@ public class ITRichfileUploadTest extends AbstractTest {
         confirmRemove.accept();
         // check we have 1 uploaded file
         Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
+            @Override
             public Boolean apply(WebDriver driver) {
                 return driver.findElements(By.xpath(NX_UPLOADED_FILES_XPATH)).size() == 1;
             }

@@ -34,14 +34,13 @@ public class NoteCreationFormPage extends DublinCoreCreationDocumentFormPage {
         super(driver);
     }
 
-    public NoteDocumentBasePage createNoteDocument(String title,
-            String description, boolean defineNote, String noteContent) {
+    public NoteDocumentBasePage createNoteDocument(String title, String description, boolean defineNote,
+            String noteContent) {
         titleTextInput.sendKeys(title);
         descriptionTextInput.sendKeys(description);
 
         if (defineNote) {
-            RichEditorElement editor = new RichEditorElement(driver,
-                    "document_create:nxl_note:nxw_note_editor");
+            RichEditorElement editor = new RichEditorElement(driver, "document_create:nxl_note:nxw_note_editor");
             editor.insertContent(noteContent);
         }
 

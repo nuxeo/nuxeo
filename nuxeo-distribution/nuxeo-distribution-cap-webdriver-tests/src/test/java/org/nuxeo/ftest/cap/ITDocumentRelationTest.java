@@ -42,8 +42,7 @@ import org.openqa.selenium.WebElement;
  */
 public class ITDocumentRelationTest extends AbstractTest {
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_"
-            + new Date().getTime();
+    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
 
     private final String FILE_NAME1 = "File1";
 
@@ -53,21 +52,16 @@ public class ITDocumentRelationTest extends AbstractTest {
     public void setUp() throws UserNotConnectedException, IOException {
         DocumentBasePage documentBasePage = login();
 
-        documentBasePage = documentBasePage.getNavigationSubPage().goToDocument(
-                "Workspaces");
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage,
-                WORKSPACE_TITLE, null);
+        documentBasePage = documentBasePage.getNavigationSubPage().goToDocument("Workspaces");
+        DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, null);
 
         // Create test File 1
-        DocumentBasePage newFile = createFile(workspacePage, FILE_NAME1, null,
-                false, null, null, null);
+        DocumentBasePage newFile = createFile(workspacePage, FILE_NAME1, null, false, null, null, null);
 
-        workspacePage = newFile.getNavigationSubPage().goToDocument(
-                WORKSPACE_TITLE);
+        workspacePage = newFile.getNavigationSubPage().goToDocument(WORKSPACE_TITLE);
 
         // Create test File 2
-        newFile = createFile(workspacePage, FILE_NAME2, null, false, null,
-                null, null);
+        newFile = createFile(workspacePage, FILE_NAME2, null, false, null, null, null);
         logout();
     }
 
@@ -84,26 +78,23 @@ public class ITDocumentRelationTest extends AbstractTest {
      * Create a relation between 2 documents and delete it.
      *
      * @throws UserNotConnectedException
-     *
      * @since 5.9.1
      */
     @Test
-    public void testSimpleRelationBetweenTwoDocuments()
-            throws UserNotConnectedException {
+    public void testSimpleRelationBetweenTwoDocuments() throws UserNotConnectedException {
         DocumentBasePage documentBasePage = login();
 
-        documentBasePage = documentBasePage.getContentTab().goToDocument(
-                "Workspaces").getContentTab().goToDocument(WORKSPACE_TITLE);
+        documentBasePage = documentBasePage.getContentTab().goToDocument("Workspaces").getContentTab().goToDocument(
+                WORKSPACE_TITLE);
 
-        documentBasePage = documentBasePage.getContentTab().goToDocument(
-                FILE_NAME1);
+        documentBasePage = documentBasePage.getContentTab().goToDocument(FILE_NAME1);
 
         RelationTabSubPage relationTabSubPage = documentBasePage.getRelationTab();
 
         relationTabSubPage = relationTabSubPage.initRelationSetUp();
 
-        relationTabSubPage = relationTabSubPage.setRelationWithDocument(
-                FILE_NAME2, "http://purl.org/dc/terms/ConformsTo");
+        relationTabSubPage = relationTabSubPage.setRelationWithDocument(FILE_NAME2,
+                "http://purl.org/dc/terms/ConformsTo");
 
         List<WebElement> existingRelations = relationTabSubPage.getExistingRelations();
         assertNotNull(existingRelations);
@@ -112,8 +103,7 @@ public class ITDocumentRelationTest extends AbstractTest {
 
         WebElement newRelation = existingRelations.get(0);
 
-        assertEquals("Conforms to",
-                newRelation.findElement(By.xpath("td[1]")).getText());
+        assertEquals("Conforms to", newRelation.findElement(By.xpath("td[1]")).getText());
 
         assertNotNull(newRelation.findElement(By.linkText(FILE_NAME2)));
 

@@ -20,8 +20,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /**
- * Represents a simple widget element, with helper methods to set/get values on
- * it, depending on the mode.
+ * Represents a simple widget element, with helper methods to set/get values on it, depending on the mode.
  *
  * @since 5.7
  */

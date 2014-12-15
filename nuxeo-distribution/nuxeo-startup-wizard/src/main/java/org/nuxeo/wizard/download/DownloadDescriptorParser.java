@@ -29,11 +29,9 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 /**
- * Simple DOM4J parser to read the {@link DownloadPackage} list from an XML
- * stream
+ * Simple DOM4J parser to read the {@link DownloadPackage} list from an XML stream
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public class DownloadDescriptorParser {
 
@@ -58,14 +56,11 @@ public class DownloadDescriptorParser {
         Document document = parse(in);
         if (document != null) {
 
-            String baseUrl = document.getRootElement().element(
-                    "packageDefinitions").attributeValue("baseUrl");
+            String baseUrl = document.getRootElement().element("packageDefinitions").attributeValue("baseUrl");
 
             // parse package definition
-            for (Object el : document.getRootElement().element(
-                    "packageDefinitions").elements("package")) {
-                DownloadPackage pkg = readPackageDefinition((Element) el,
-                        baseUrl);
+            for (Object el : document.getRootElement().element("packageDefinitions").elements("package")) {
+                DownloadPackage pkg = readPackageDefinition((Element) el, baseUrl);
                 if (pkg != null) {
                     pkgs.add(pkg);
                 }
@@ -87,10 +82,8 @@ public class DownloadDescriptorParser {
 
             nodeCounter = 0;
             // get package Options
-            for (Object el : install.element("packageOptions").elements(
-                    "package")) {
-                DownloadablePackageOption pkg = readPackageOptions(
-                        (Element) el, pkgs);
+            for (Object el : install.element("packageOptions").elements("package")) {
+                DownloadablePackageOption pkg = readPackageOptions((Element) el, pkgs);
                 if (pkg != null) {
                     options.addOptions(pkg);
                 }
@@ -98,8 +91,7 @@ public class DownloadDescriptorParser {
 
             // get presets
             if (document.getRootElement().element("presets") != null) {
-                for (Object el : document.getRootElement().element("presets").elements(
-                        "preset")) {
+                for (Object el : document.getRootElement().element("presets").elements("preset")) {
                     Element preset = (Element) el;
                     String presetId = preset.attribute("id").getValue();
                     String presetLabel = preset.attribute("label").getValue();
@@ -114,8 +106,7 @@ public class DownloadDescriptorParser {
 
     protected static int nodeCounter = 0;
 
-    protected static DownloadPackage readPackageDefinition(Element el,
-            String baseUrl) {
+    protected static DownloadPackage readPackageDefinition(Element el, String baseUrl) {
         String id = el.attribute("id").getValue();
         if (id != null) {
             DownloadPackage pkg = new DownloadPackage(id);
@@ -146,8 +137,7 @@ public class DownloadDescriptorParser {
         return null;
     }
 
-    protected static DownloadPackage readCommonPackage(Element el,
-            List<DownloadPackage> pkgs) {
+    protected static DownloadPackage readCommonPackage(Element el, List<DownloadPackage> pkgs) {
         String ref = el.attributeValue("ref");
         for (DownloadPackage pkg : pkgs) {
             if (pkg.getId().equals(ref)) {
@@ -158,8 +148,7 @@ public class DownloadDescriptorParser {
         return null;
     }
 
-    protected static DownloadablePackageOption readPackageOptions(Element el,
-            List<DownloadPackage> pkgs) {
+    protected static DownloadablePackageOption readPackageOptions(Element el, List<DownloadPackage> pkgs) {
 
         String ref = el.attributeValue("ref");
         DownloadPackage targetPkg = null;
@@ -197,8 +186,7 @@ public class DownloadDescriptorParser {
         pkgOption.setExclusive(el.attributeValue("exclusive"));
 
         for (Object child : el.elements()) {
-            DownloadablePackageOption childPkg = readPackageOptions(
-                    (Element) child, pkgs);
+            DownloadablePackageOption childPkg = readPackageOptions((Element) child, pkgs);
             if (childPkg != null) {
                 pkgOption.addChildPackage(childPkg);
             }

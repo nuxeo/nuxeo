@@ -137,6 +137,7 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
         assert (path != null && !path.isEmpty() && path.charAt(0) == '/');
         openPathPopupButton.click();
         Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
+            @Override
             public Boolean apply(WebDriver driver) {
                 try {
                     WebElement tree = driver.findElement(By.id(TREE_PATH_ID));
@@ -149,15 +150,13 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
         if (path.length() == 1) {
             AjaxRequestManager a = new AjaxRequestManager(driver);
             a.watchAjaxRequests();
-            driver.findElement(By.id(TREE_PATH_ID)).findElement(
-                    By.linkText("/")).click();
+            driver.findElement(By.id(TREE_PATH_ID)).findElement(By.linkText("/")).click();
             a.waitForAjaxRequests();
             return;
         } else {
             AjaxRequestManager a = new AjaxRequestManager(driver);
             a.watchAjaxRequests();
-            driver.findElement(By.id(TREE_PATH_ID)).findElement(
-                    By.linkText("/")).findElement(By.xpath(EXPAND_XPATH)).click();
+            driver.findElement(By.id(TREE_PATH_ID)).findElement(By.linkText("/")).findElement(By.xpath(EXPAND_XPATH)).click();
             a.waitForAjaxRequests();
         }
         String[] pathArray = path.substring(1).split("/");
@@ -165,18 +164,17 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
         for (; i < pathArray.length - 1; i++) {
             AjaxRequestManager a = new AjaxRequestManager(driver);
             a.watchAjaxRequests();
-            driver.findElement(By.id(TREE_PATH_ID)).findElement(
-                    By.linkText(pathArray[i])).findElement(
+            driver.findElement(By.id(TREE_PATH_ID)).findElement(By.linkText(pathArray[i])).findElement(
                     By.xpath(EXPAND_XPATH)).click();
             a.waitForAjaxRequests();
         }
         AjaxRequestManager a = new AjaxRequestManager(driver);
         a.watchAjaxRequests();
-        driver.findElement(By.id(TREE_PATH_ID)).findElement(
-                By.linkText(pathArray[i])).click();
+        driver.findElement(By.id(TREE_PATH_ID)).findElement(By.linkText(pathArray[i])).click();
         a.waitForAjaxRequests();
         driver.findElement(By.id("fancybox-close")).click();
         Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
+            @Override
             public Boolean apply(WebDriver driver) {
                 try {
                     WebElement tree = driver.findElement(By.id(TREE_PATH_ID));
@@ -192,8 +190,8 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
         assert (path != null && !path.isEmpty());
         int lastPartIndex = path.lastIndexOf('/');
         String folderName = path.substring(lastPartIndex + 1);
-        WebElement e = selectPathDiv.findElement(By.xpath("descendant::label[contains(text(),'"
-                + folderName + "')]/ancestor::span[@class='sticker']/a"));
+        WebElement e = selectPathDiv.findElement(By.xpath("descendant::label[contains(text(),'" + folderName
+                + "')]/ancestor::span[@class='sticker']/a"));
         AjaxRequestManager a = new AjaxRequestManager(driver);
         a.watchAjaxRequests();
         e.click();

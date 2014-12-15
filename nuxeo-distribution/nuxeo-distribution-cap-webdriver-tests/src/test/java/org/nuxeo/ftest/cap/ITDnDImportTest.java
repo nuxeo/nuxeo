@@ -40,8 +40,7 @@ import org.openqa.selenium.support.FindBy;
  */
 public class ITDnDImportTest extends AbstractTest {
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_"
-            + new Date().getTime();
+    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
 
     private final static String CVDZ_ID = "CVDZ";
 
@@ -59,13 +58,13 @@ public class ITDnDImportTest extends AbstractTest {
         js.executeScript(String.format(
                 "var dragoverEvent = window.document.createEvent('DragEvents');"
                         + "dragoverEvent.initDragEvent('dragover', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null, null);"
-                        + "var target = document.getElementById('%s');"
-                        + "target.dispatchEvent(dragoverEvent);", CVDZ_ID));
+                        + "var target = document.getElementById('%s');" + "target.dispatchEvent(dragoverEvent);",
+                CVDZ_ID));
         js.executeScript(String.format(
                 "var dragenterEvent = window.document.createEvent('DragEvents');"
                         + "dragenterEvent.initDragEvent('dragenter', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null, null);"
-                        + "var target = document.getElementById('%s');"
-                        + "target.dispatchEvent(dragenterEvent);", CVDZ_ID));
+                        + "var target = document.getElementById('%s');" + "target.dispatchEvent(dragenterEvent);",
+                CVDZ_ID));
 
     }
 
@@ -76,25 +75,22 @@ public class ITDnDImportTest extends AbstractTest {
                         + "\"files\":{\"0\":{\"webkitRelativePath\":\"\",\"lastModifiedDate\":\"\'2013-10-29T11:05:01Z\'\",\"name\":\"messages_en.properties\",\"type\":\"\",\"size\":88073},\"length\":1},\"types\":[\"Files\"],\"effectAllowed\":\"all\",\"dropEffect\":\"none\"};"
                         + "var dropEvent = window.document.createEvent('DragEvents');"
                         + "dropEvent.initDragEvent('drop', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null, dataTransfer);"
-                        + "var target = document.getElementById('%s');"
-                        + "target.dispatchEvent(dropEvent);", CVDZ_ID));
+                        + "var target = document.getElementById('%s');" + "target.dispatchEvent(dropEvent);", CVDZ_ID));
     }
 
     /**
      * Test that the drop zone is reactive.
      *
      * @throws UserNotConnectedException
-     *
      * @since 5.9.1
      */
     @Test
     public void testDropZone() throws UserNotConnectedException {
-        this.js = driver;
+        js = driver;
 
         DocumentBasePage documentBasePage = login();
 
-        documentBasePage = documentBasePage.getNavigationSubPage().goToDocument(
-                "Workspaces");
+        documentBasePage = documentBasePage.getNavigationSubPage().goToDocument("Workspaces");
 
         createWorkspace(documentBasePage, WORKSPACE_TITLE, null);
 

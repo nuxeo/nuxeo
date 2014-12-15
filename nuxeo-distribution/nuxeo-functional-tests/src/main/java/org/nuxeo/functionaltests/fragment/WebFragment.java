@@ -47,8 +47,7 @@ public interface WebFragment {
 
     <T extends WebFragment> T getWebFragment(By by, Class<T> webFragmentClass);
 
-    <T extends WebFragment> T getWebFragment(WebElement element,
-            Class<T> webFragmentClass);
+    <T extends WebFragment> T getWebFragment(WebElement element, Class<T> webFragmentClass);
 
     // WebElement API
 

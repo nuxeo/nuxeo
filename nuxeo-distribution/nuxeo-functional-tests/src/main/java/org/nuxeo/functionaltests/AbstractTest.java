@@ -129,9 +129,7 @@ public abstract class AbstractTest {
     public static final String CHROME_DRIVER_DEFAULT_PATH_LINUX = "/usr/bin/chromedriver";
 
     /**
-     * @since 5.7
-     *        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-     *        doesn't work
+     * @since 5.7 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" doesn't work
      */
     public static final String CHROME_DRIVER_DEFAULT_PATH_MAC = "/Applications/chromedriver";
 
@@ -159,8 +157,8 @@ public abstract class AbstractTest {
 
     static final Log log = LogFactory.getLog(AbstractTest.class);
 
-    public static final String NUXEO_URL = System.getProperty("nuxeoURL",
-            "http://localhost:8080/nuxeo").replaceAll("/$", "");
+    public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo").replaceAll(
+            "/$", "");
 
     public static final int LOAD_TIMEOUT_SECONDS = 30;
 
@@ -191,15 +189,13 @@ public abstract class AbstractTest {
     protected static ProxyServer proxyServer = null;
 
     /**
-     * Logger method to follow what's being run on server logs and take a
-     * screenshot of the last page in case of failure
+     * Logger method to follow what's being run on server logs and take a screenshot of the last page in case of failure
      */
     @Rule
     public MethodRule watchman = new LogTestWatchman(driver, NUXEO_URL);
 
     /**
-     * This method will be executed before any method registered with JUnit
-     * After annotation.
+     * This method will be executed before any method registered with JUnit After annotation.
      *
      * @since 5.8
      */
@@ -218,8 +214,7 @@ public abstract class AbstractTest {
         } else {
             throw new RuntimeException("Browser not supported: " + browser);
         }
-        driver.manage().timeouts().pageLoadTimeout(PAGE_LOAD_TIME_OUT_SECONDS,
-                TimeUnit.SECONDS);
+        driver.manage().timeouts().pageLoadTimeout(PAGE_LOAD_TIME_OUT_SECONDS, TimeUnit.SECONDS);
     }
 
     protected static void initFirefoxDriver() throws Exception {
@@ -268,27 +263,20 @@ public abstract class AbstractTest {
         profile.setPreference("toolkit.networkmanager.disable", true);
 
         // prevent FF from giving health reports
-        profile.setPreference("datareporting.policy.dataSubmissionEnabled",
-                false);
+        profile.setPreference("datareporting.policy.dataSubmissionEnabled", false);
         profile.setPreference("datareporting.healthreport.uploadEnabled", false);
-        profile.setPreference("datareporting.healthreport.service.firstRun",
-                false);
-        profile.setPreference("datareporting.healthreport.service.enabled",
-                false);
-        profile.setPreference(
-                "datareporting.healthreport.logging.consoleEnabled", false);
+        profile.setPreference("datareporting.healthreport.service.firstRun", false);
+        profile.setPreference("datareporting.healthreport.service.enabled", false);
+        profile.setPreference("datareporting.healthreport.logging.consoleEnabled", false);
 
         // start page conf to speed up FF
         profile.setPreference("browser.startup.homepage", "about:blank");
-        profile.setPreference(
-                "pref.browser.homepage.disable_button.bookmark_page", false);
-        profile.setPreference(
-                "pref.browser.homepage.disable_button.restore_default", false);
+        profile.setPreference("pref.browser.homepage.disable_button.bookmark_page", false);
+        profile.setPreference("pref.browser.homepage.disable_button.restore_default", false);
 
         // misc confs to avoid useless updates
         profile.setPreference("browser.search.update", false);
-        profile.setPreference("browser.bookmarks.restore_default_bookmarks",
-                false);
+        profile.setPreference("browser.bookmarks.restore_default_bookmarks", false);
 
         // misc confs to speed up FF
         profile.setPreference("extensions.ui.dictionary.hidden", true);
@@ -296,16 +284,13 @@ public abstract class AbstractTest {
 
         // webdriver logging
         if (Boolean.TRUE.equals(Boolean.valueOf(System.getenv("nuxeo.log.webriver")))) {
-            String location = System.getProperty("basedir") + File.separator
-                    + "target";
+            String location = System.getProperty("basedir") + File.separator + "target";
             File outputFolder = new File(location);
             if (!outputFolder.exists() || !outputFolder.isDirectory()) {
                 outputFolder = null;
             }
-            File webdriverlogFile = File.createTempFile("webdriver", ".log",
-                    outputFolder);
-            profile.setPreference("webdriver.log.file",
-                    webdriverlogFile.getAbsolutePath());
+            File webdriverlogFile = File.createTempFile("webdriver", ".log", outputFolder);
+            profile.setPreference("webdriver.log.file", webdriverlogFile.getAbsolutePath());
             log.warn("Webdriver logs saved in " + webdriverlogFile);
         }
 
@@ -343,32 +328,22 @@ public abstract class AbstractTest {
                 chromeDriverExecutableName = CHROME_DRIVER_WINDOWS_EXECUTABLE_NAME;
             }
 
-            if (chromeDriverDefaultPath != null
-                    && new File(chromeDriverDefaultPath).exists()) {
-                log.warn(String.format(
-                        "Missing property %s but found %s. Using it...",
-                        SYSPROP_CHROME_DRIVER_PATH, chromeDriverDefaultPath));
-                System.setProperty(SYSPROP_CHROME_DRIVER_PATH,
-                        chromeDriverDefaultPath);
+            if (chromeDriverDefaultPath != null && new File(chromeDriverDefaultPath).exists()) {
+                log.warn(String.format("Missing property %s but found %s. Using it...", SYSPROP_CHROME_DRIVER_PATH,
+                        chromeDriverDefaultPath));
+                System.setProperty(SYSPROP_CHROME_DRIVER_PATH, chromeDriverDefaultPath);
             } else {
                 // Can't find chromedriver in default location, check system
                 // path
                 File chromeDriverExecutable = findExecutableOnPath(chromeDriverExecutableName);
-                if ((chromeDriverExecutable != null)
-                        && (chromeDriverExecutable.exists())) {
-                    log.warn(String.format(
-                            "Missing property %s but found %s. Using it...",
-                            SYSPROP_CHROME_DRIVER_PATH,
+                if ((chromeDriverExecutable != null) && (chromeDriverExecutable.exists())) {
+                    log.warn(String.format("Missing property %s but found %s. Using it...", SYSPROP_CHROME_DRIVER_PATH,
                             chromeDriverExecutable.getCanonicalPath()));
-                    System.setProperty(SYSPROP_CHROME_DRIVER_PATH,
-                            chromeDriverExecutable.getCanonicalPath());
+                    System.setProperty(SYSPROP_CHROME_DRIVER_PATH, chromeDriverExecutable.getCanonicalPath());
                 } else {
-                    log.error(String.format(
-                            "Could not find the Chrome driver looking at %s or system path."
-                                    + " Download it from %s and set its path with "
-                                    + "the System property %s.",
-                            chromeDriverDefaultPath,
-                            "http://code.google.com/p/chromedriver/downloads/list",
+                    log.error(String.format("Could not find the Chrome driver looking at %s or system path."
+                            + " Download it from %s and set its path with " + "the System property %s.",
+                            chromeDriverDefaultPath, "http://code.google.com/p/chromedriver/downloads/list",
                             SYSPROP_CHROME_DRIVER_PATH));
                 }
             }
@@ -434,9 +409,8 @@ public abstract class AbstractTest {
     }
 
     /**
-     * Introspects the classpath and returns the list of files in it. FIXME:
-     * should use HarnessRuntime#getClassLoaderFiles that returns the same
-     * thing
+     * Introspects the classpath and returns the list of files in it. FIXME: should use
+     * HarnessRuntime#getClassLoaderFiles that returns the same thing
      *
      * @return
      * @throws Exception
@@ -446,8 +420,7 @@ public abstract class AbstractTest {
         URL[] urls = null;
         if (cl instanceof URLClassLoader) {
             urls = ((URLClassLoader) cl).getURLs();
-        } else if (cl.getClass().getName().equals(
-                "org.apache.tools.ant.AntClassLoader")) {
+        } else if (cl.getClass().getName().equals("org.apache.tools.ant.AntClassLoader")) {
             Method method = cl.getClass().getMethod("getClasspath");
             String cp = (String) method.invoke(cl);
             String[] paths = cp.split(File.pathSeparator);
@@ -456,8 +429,7 @@ public abstract class AbstractTest {
                 urls[i] = new URL("file:" + paths[i]);
             }
         } else {
-            System.err.println("Unknown classloader type: "
-                    + cl.getClass().getName());
+            System.err.println("Unknown classloader type: " + cl.getClass().getName());
             return null;
         }
 
@@ -466,8 +438,7 @@ public abstract class AbstractTest {
             URI uri = url.toURI();
             if (uri.getPath().matches(".*/nuxeo-runtime-[^/]*\\.jar")) {
                 break;
-            } else if (uri.getScheme().equals("file")
-                    && uri.getPath().contains("surefirebooter")) {
+            } else if (uri.getScheme().equals("file") && uri.getPath().contains("surefirebooter")) {
                 surefirebooterJar = new JarFile(new File(uri));
             }
         }
@@ -476,16 +447,14 @@ public abstract class AbstractTest {
         if (surefirebooterJar != null) {
             try {
                 try {
-                    String cp = surefirebooterJar.getManifest().getMainAttributes().getValue(
-                            Attributes.Name.CLASS_PATH);
+                    String cp = surefirebooterJar.getManifest().getMainAttributes().getValue(Attributes.Name.CLASS_PATH);
                     if (cp != null) {
                         String[] cpe = cp.split(" ");
                         URL[] newUrls = new URL[cpe.length];
                         for (int i = 0; i < cpe.length; i++) {
                             // Don't need to add 'file:' with maven
                             // surefire >= 2.4.2
-                            String newUrl = cpe[i].startsWith("file:") ? cpe[i]
-                                    : "file:" + cpe[i];
+                            String newUrl = cpe[i].startsWith("file:") ? cpe[i] : "file:" + cpe[i];
                             newUrls[i] = new URL(newUrl);
                         }
                         urls = newUrls;
@@ -519,28 +488,24 @@ public abstract class AbstractTest {
             }
         }
         if (xpi == null) {
-            String customM2Repo = System.getProperty("M2_REPO", M2_REPO).replaceAll(
-                    "/$", "");
+            String customM2Repo = System.getProperty("M2_REPO", M2_REPO).replaceAll("/$", "");
             // try to guess the location in the M2 repo
             for (String f : clf) {
                 if (f.contains(customM2Repo)) {
-                    String m2 = f.substring(0, f.indexOf(customM2Repo)
-                            + customM2Repo.length());
+                    String m2 = f.substring(0, f.indexOf(customM2Repo) + customM2Repo.length());
                     xpi = new File(m2 + "/" + FIREBUG_M2 + "/" + FIREBUG_XPI);
                     break;
                 }
             }
         }
         if (xpi == null || !xpi.exists()) {
-            log.warn(FIREBUG_XPI
-                    + " not found in classloader or local M2 repository");
+            log.warn(FIREBUG_XPI + " not found in classloader or local M2 repository");
             return;
         }
         profile.addExtension(xpi);
 
         // avoid "first run" page
-        profile.setPreference("extensions.firebug.currentVersion",
-                FIREBUG_VERSION);
+        profile.setPreference("extensions.firebug.currentVersion", FIREBUG_VERSION);
     }
 
     protected static void removeFireBug() {
@@ -551,19 +516,15 @@ public abstract class AbstractTest {
     }
 
     protected static Proxy startProxy() throws Exception {
-        if (Boolean.TRUE.equals(Boolean.valueOf(System.getProperty("useProxy",
-                "false")))) {
+        if (Boolean.TRUE.equals(Boolean.valueOf(System.getProperty("useProxy", "false")))) {
             proxyServer = new ProxyServer(PROXY_PORT);
             proxyServer.start();
             proxyServer.setCaptureHeaders(true);
             // Block access to tracking sites
-            proxyServer.blacklistRequests(
-                    "https?://www\\.nuxeo\\.com/embedded/wizard.*", 410);
-            proxyServer.blacklistRequests("https?://.*\\.mktoresp\\.com/.*",
-                    410);
+            proxyServer.blacklistRequests("https?://www\\.nuxeo\\.com/embedded/wizard.*", 410);
+            proxyServer.blacklistRequests("https?://.*\\.mktoresp\\.com/.*", 410);
             proxyServer.blacklistRequests(".*_mchId.*", 410);
-            proxyServer.blacklistRequests(
-                    "https?://.*\\.google-analytics\\.com/.*", 410);
+            proxyServer.blacklistRequests("https?://.*\\.google-analytics\\.com/.*", 410);
             proxyServer.newHar("webdriver-test");
             Proxy proxy = proxyServer.seleniumProxy();
             return proxy;
@@ -592,15 +553,14 @@ public abstract class AbstractTest {
     }
 
     /**
-     * Do not wait for page load. Do not handle error. Do not give explicit
-     * error in case of failure. This is a very raw get.
+     * Do not wait for page load. Do not handle error. Do not give explicit error in case of failure. This is a very raw
+     * get.
      *
      * @since 6.0
      */
-    public static <T> T getWithoutErrorHandler(String url,
-            Class<T> pageClassToProxy) throws IOException {
-        Command command = new Command(AbstractTest.driver.getSessionId(),
-                DriverCommand.GET, ImmutableMap.of("url", url));
+    public static <T> T getWithoutErrorHandler(String url, Class<T> pageClassToProxy) throws IOException {
+        Command command = new Command(AbstractTest.driver.getSessionId(), DriverCommand.GET,
+                ImmutableMap.of("url", url));
         AbstractTest.driver.getCommandExecutor().execute(command);
         return asPage(pageClassToProxy);
     }
@@ -621,14 +581,12 @@ public abstract class AbstractTest {
         return fillElement(pageClassToProxy, page);
     }
 
-    public static <T extends WebFragment> T getWebFragment(By by,
-            Class<T> webFragmentClass) {
+    public static <T extends WebFragment> T getWebFragment(By by, Class<T> webFragmentClass) {
         WebElement element = Locator.findElementWithTimeout(by);
         return getWebFragment(element, webFragmentClass);
     }
 
-    public static <T extends WebFragment> T getWebFragment(WebElement element,
-            Class<T> webFragmentClass) {
+    public static <T extends WebFragment> T getWebFragment(WebElement element, Class<T> webFragmentClass) {
         T webFragment = instantiateWebFragment(element, webFragmentClass);
         webFragment = fillElement(webFragmentClass, webFragment);
         // fillElement somehow overwrite the 'element' field, reset it.
@@ -642,8 +600,7 @@ public abstract class AbstractTest {
      * @since 5.7
      */
     public static <T> T fillElement(Class<T> pageClassToProxy, T page) {
-        PageFactory.initElements(new VariableElementLocatorFactory(driver,
-                AJAX_TIMEOUT_SECONDS), page);
+        PageFactory.initElements(new VariableElementLocatorFactory(driver, AJAX_TIMEOUT_SECONDS), page);
         // check all required WebElements on the page and wait for their
         // loading
         final List<String> fieldNames = new ArrayList<>();
@@ -660,9 +617,8 @@ public abstract class AbstractTest {
             }
         }
 
-        Wait<T> wait = new FluentWait<>(page).withTimeout(LOAD_TIMEOUT_SECONDS,
-                TimeUnit.SECONDS).pollingEvery(POLLING_FREQUENCY_MILLISECONDS,
-                TimeUnit.MILLISECONDS);
+        Wait<T> wait = new FluentWait<>(page).withTimeout(LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
+                POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
 
         return wait.until(new Function<T, T>() {
             @Override
@@ -678,8 +634,7 @@ public abstract class AbstractTest {
         });
     }
 
-    protected static String anyElementNotLoaded(List<WrapsElement> proxies,
-            List<String> fieldNames) {
+    protected static String anyElementNotLoaded(List<WrapsElement> proxies, List<String> fieldNames) {
         for (int i = 0; i < proxies.size(); i++) {
             WrapsElement proxy = proxies.get(i);
             try {
@@ -708,12 +663,10 @@ public abstract class AbstractTest {
         }
     }
 
-    protected static <T extends WebFragment> T instantiateWebFragment(
-            WebElement element, Class<T> webFragmentClass) {
+    protected static <T extends WebFragment> T instantiateWebFragment(WebElement element, Class<T> webFragmentClass) {
         try {
             try {
-                Constructor<T> constructor = webFragmentClass.getConstructor(
-                        WebDriver.class, WebElement.class);
+                Constructor<T> constructor = webFragmentClass.getConstructor(WebDriver.class, WebElement.class);
                 return constructor.newInstance(driver, element);
             } catch (NoSuchMethodException e) {
                 return webFragmentClass.newInstance();
@@ -734,8 +687,7 @@ public abstract class AbstractTest {
     }
 
     /**
-     * navigate to a link text. wait until the link is available and click on
-     * it.
+     * navigate to a link text. wait until the link is available and click on it.
      */
     public <T extends AbstractPage> T nav(Class<T> pageClass, String linkText) {
         WebElement link = Locator.findElementWithTimeout(By.linkText(linkText));
@@ -767,10 +719,8 @@ public abstract class AbstractTest {
         return login("Administrator", "Administrator");
     }
 
-    public DocumentBasePage login(String username, String password)
-            throws UserNotConnectedException {
-        DocumentBasePage documentBasePage = getLoginPage().login(username,
-                password, DocumentBasePage.class);
+    public DocumentBasePage login(String username, String password) throws UserNotConnectedException {
+        DocumentBasePage documentBasePage = getLoginPage().login(username, password, DocumentBasePage.class);
         documentBasePage.checkUserConnected(username);
         return documentBasePage;
     }
@@ -791,8 +741,7 @@ public abstract class AbstractTest {
      * @param password
      */
     public LoginPage loginInvalid(String username, String password) {
-        LoginPage loginPage = getLoginPage().login(username, password,
-                LoginPage.class);
+        LoginPage loginPage = getLoginPage().login(username, password, LoginPage.class);
         return loginPage;
     }
 
@@ -803,22 +752,18 @@ public abstract class AbstractTest {
      * @return the created Workspace page
      * @throws Exception if initializing repository fails
      */
-    protected DocumentBasePage initRepository(DocumentBasePage currentPage)
-            throws Exception {
+    protected DocumentBasePage initRepository(DocumentBasePage currentPage) throws Exception {
 
-        return createWorkspace(currentPage, "Test Workspace",
-                "Test Workspace for my dear WebDriver.");
+        return createWorkspace(currentPage, "Test Workspace", "Test Workspace for my dear WebDriver.");
     }
 
     /**
-     * Cleans the repository (delete the test Workspace) from the
-     * {@code currentPage}.
+     * Cleans the repository (delete the test Workspace) from the {@code currentPage}.
      *
      * @param currentPage the current page
      * @throws Exception if cleaning repository fails
      */
-    protected void cleanRepository(DocumentBasePage currentPage)
-            throws Exception {
+    protected void cleanRepository(DocumentBasePage currentPage) throws Exception {
 
         deleteWorkspace(currentPage, "Test Workspace");
     }
@@ -831,35 +776,31 @@ public abstract class AbstractTest {
      * @param workspaceDescription the workspace description
      * @return the created Workspace page
      */
-    protected DocumentBasePage createWorkspace(DocumentBasePage currentPage,
-            String workspaceTitle, String workspaceDescription) {
+    protected DocumentBasePage createWorkspace(DocumentBasePage currentPage, String workspaceTitle,
+            String workspaceDescription) {
 
         // Go to Workspaces
-        DocumentBasePage workspacesPage = currentPage.getNavigationSubPage().goToDocument(
-                "Workspaces");
+        DocumentBasePage workspacesPage = currentPage.getNavigationSubPage().goToDocument("Workspaces");
 
         // Get Workspace creation form page
         WorkspaceFormPage workspaceCreationFormPage = workspacesPage.getWorkspacesContentTab().getWorkspaceCreatePage();
 
         // Create Workspace
-        DocumentBasePage workspacePage = workspaceCreationFormPage.createNewWorkspace(
-                workspaceTitle, workspaceDescription);
+        DocumentBasePage workspacePage = workspaceCreationFormPage.createNewWorkspace(workspaceTitle,
+                workspaceDescription);
         return workspacePage;
     }
 
     /**
-     * Deletes the Workspace with title {@code workspaceTitle} from the
-     * {@code currentPage}.
+     * Deletes the Workspace with title {@code workspaceTitle} from the {@code currentPage}.
      *
      * @param currentPage the current page
      * @param workspaceTitle the workspace title
      */
-    protected void deleteWorkspace(DocumentBasePage currentPage,
-            String workspaceTitle) {
+    protected void deleteWorkspace(DocumentBasePage currentPage, String workspaceTitle) {
 
         // Go to Workspaces
-        DocumentBasePage workspacesPage = currentPage.getNavigationSubPage().goToDocument(
-                "Workspaces");
+        DocumentBasePage workspacesPage = currentPage.getNavigationSubPage().goToDocument("Workspaces");
 
         // Delete the Workspace
         workspacesPage.getContentTab().removeDocument(workspaceTitle);
@@ -871,27 +812,23 @@ public abstract class AbstractTest {
      * @param currentPage the current page
      * @param fileTitle the file title
      * @param fileDescription the file description
-     * @param uploadBlob true if a blob needs to be uploaded (temporary file
-     *            created for this purpose)
+     * @param uploadBlob true if a blob needs to be uploaded (temporary file created for this purpose)
      * @param filePrefix the file prefix
      * @param fileSuffix the file suffix
      * @param fileContent the file content
      * @return the created File page
      * @throws IOException if temporary file creation fails
      */
-    protected FileDocumentBasePage createFile(DocumentBasePage currentPage,
-            String fileTitle, String fileDescription, boolean uploadBlob,
-            String filePrefix, String fileSuffix, String fileContent)
-            throws IOException {
+    protected FileDocumentBasePage createFile(DocumentBasePage currentPage, String fileTitle, String fileDescription,
+            boolean uploadBlob, String filePrefix, String fileSuffix, String fileContent) throws IOException {
 
         // Get File creation form page
-        FileCreationFormPage fileCreationFormPage = currentPage.getContentTab().getDocumentCreatePage(
-                "File", FileCreationFormPage.class);
+        FileCreationFormPage fileCreationFormPage = currentPage.getContentTab().getDocumentCreatePage("File",
+                FileCreationFormPage.class);
 
         // Create File
-        FileDocumentBasePage filePage = fileCreationFormPage.createFileDocument(
-                fileTitle, fileDescription, uploadBlob, filePrefix, fileSuffix,
-                fileDescription);
+        FileDocumentBasePage filePage = fileCreationFormPage.createFileDocument(fileTitle, fileDescription, uploadBlob,
+                filePrefix, fileSuffix, fileDescription);
         return filePage;
     }
 
@@ -904,14 +841,13 @@ public abstract class AbstractTest {
      * @return the created Collections page
      * @throws IOException if temporary file creation fails
      */
-    protected DocumentBasePage createCollections(DocumentBasePage currentPage,
-            String collectionsTitle, String fileDescription) {
+    protected DocumentBasePage createCollections(DocumentBasePage currentPage, String collectionsTitle,
+            String fileDescription) {
         DublinCoreCreationDocumentFormPage dublinCoreDocumentFormPage = currentPage.getContentTab().getDocumentCreatePage(
                 "Collections", DublinCoreCreationDocumentFormPage.class);
 
         // Create File
-        DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(
-                collectionsTitle, fileDescription);
+        DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(collectionsTitle, fileDescription);
         return documentBasePage;
     }
 
@@ -924,16 +860,15 @@ public abstract class AbstractTest {
      * @return the created Collections page
      * @throws IOException if temporary file creation fails
      */
-    protected CollectionContentTabSubPage createCollection(
-            DocumentBasePage currentPage, String collectionsTitle,
+    protected CollectionContentTabSubPage createCollection(DocumentBasePage currentPage, String collectionsTitle,
             String fileDescription) {
 
         CollectionCreationFormPage collectionCreationFormPage = currentPage.getContentTab().getDocumentCreatePage(
                 "Collection", CollectionCreationFormPage.class);
 
         // Create File
-        CollectionContentTabSubPage documentBasePage = collectionCreationFormPage.createDocument(
-                collectionsTitle, fileDescription);
+        CollectionContentTabSubPage documentBasePage = collectionCreationFormPage.createDocument(collectionsTitle,
+                fileDescription);
         return documentBasePage;
     }
 
@@ -947,8 +882,8 @@ public abstract class AbstractTest {
      * @throws IOException if temporary file creation fails
      * @since 5.9.3
      */
-    public static String getTmpFileToUploadPath(String filePrefix,
-            String fileSuffix, String fileContent) throws IOException {
+    public static String getTmpFileToUploadPath(String filePrefix, String fileSuffix, String fileContent)
+            throws IOException {
 
         // Create tmp file, deleted on exit
         File tmpFile = File.createTempFile(filePrefix, fileSuffix);
@@ -964,8 +899,7 @@ public abstract class AbstractTest {
     }
 
     /**
-     * Get the current document id stored in the javascript ctx.currentDocument
-     * variable of the current page.
+     * Get the current document id stored in the javascript ctx.currentDocument variable of the current page.
      *
      * @return the current document id
      * @since 5.7
@@ -986,17 +920,16 @@ public abstract class AbstractTest {
      * @throws IOException
      * @since 5.9.4
      */
-    protected NoteDocumentBasePage createNote(DocumentBasePage currentPage,
-            String noteTitle, String noteDescription, boolean defineNote,
-            String noteContent) throws IOException {
+    protected NoteDocumentBasePage createNote(DocumentBasePage currentPage, String noteTitle, String noteDescription,
+            boolean defineNote, String noteContent) throws IOException {
 
         // Get the Note creation form
-        NoteCreationFormPage noteCreationPage = currentPage.getContentTab().getDocumentCreatePage(
-                "Note", NoteCreationFormPage.class);
+        NoteCreationFormPage noteCreationPage = currentPage.getContentTab().getDocumentCreatePage("Note",
+                NoteCreationFormPage.class);
 
         // Create a Note
-        NoteDocumentBasePage notePage = noteCreationPage.createNoteDocument(
-                noteTitle, noteDescription, defineNote, noteContent);
+        NoteDocumentBasePage notePage = noteCreationPage.createNoteDocument(noteTitle, noteDescription, defineNote,
+                noteContent);
 
         return notePage;
     }

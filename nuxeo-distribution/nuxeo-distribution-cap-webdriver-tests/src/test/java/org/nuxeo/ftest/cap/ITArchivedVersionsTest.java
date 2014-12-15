@@ -62,23 +62,20 @@ public class ITArchivedVersionsTest extends AbstractTest {
      * @throws Exception if initializing repository fails
      */
     @Override
-    protected DocumentBasePage initRepository(DocumentBasePage currentPage)
-            throws Exception {
+    protected DocumentBasePage initRepository(DocumentBasePage currentPage) throws Exception {
 
         // Create test Workspace
         DocumentBasePage workspacePage = super.initRepository(currentPage);
 
         // Create test File
-        FileDocumentBasePage filePage = createFile(workspacePage, "Test file",
-                "Test File description", false, null, null, null);
+        FileDocumentBasePage filePage = createFile(workspacePage, "Test file", "Test File description", false, null,
+                null, null);
 
         // Create version 1.0 of the File
-        filePage.getEditTab().edit("Test file: modif 1", null,
-                EditTabSubPage.MAJOR_VERSION_INCREMENT_VALUE);
+        filePage.getEditTab().edit("Test file: modif 1", null, EditTabSubPage.MAJOR_VERSION_INCREMENT_VALUE);
 
         // Create version 2.0 of the File
-        filePage.getEditTab().edit("Test file: modif 2", null,
-                EditTabSubPage.MAJOR_VERSION_INCREMENT_VALUE);
+        filePage.getEditTab().edit("Test file: modif 2", null, EditTabSubPage.MAJOR_VERSION_INCREMENT_VALUE);
 
         return filePage;
     }

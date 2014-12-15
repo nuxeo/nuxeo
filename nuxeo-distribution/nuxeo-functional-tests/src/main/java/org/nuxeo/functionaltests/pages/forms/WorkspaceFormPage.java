@@ -25,9 +25,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- *
  * @author Sun Seng David TAN <stan@nuxeo.com>
- *
  */
 public class WorkspaceFormPage extends AbstractPage {
 
@@ -47,8 +45,7 @@ public class WorkspaceFormPage extends AbstractPage {
         super(driver);
     }
 
-    public DocumentBasePage createNewWorkspace(String workspaceTitle,
-            String workspaceDescription) {
+    public DocumentBasePage createNewWorkspace(String workspaceTitle, String workspaceDescription) {
         titleTextInput.sendKeys(workspaceTitle);
         descriptionTextInput.sendKeys(workspaceDescription);
         createButton.click();

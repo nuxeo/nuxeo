@@ -45,11 +45,9 @@ import org.openqa.selenium.WebElement;
  */
 public class ITCopyPasteTest extends AbstractTest {
 
-    private final static String WORKSPACE1_TITLE = "WorkspaceTitle_"
-            + new Date().getTime();
+    private final static String WORKSPACE1_TITLE = "WorkspaceTitle_" + new Date().getTime();
 
-    private final static String WORKSPACE2_TITLE = "WorkspaceTitle_"
-            + new Date().getTime() + "a";
+    private final static String WORKSPACE2_TITLE = "WorkspaceTitle_" + new Date().getTime() + "a";
 
     private final String FILE1_NAME = "testFile1";
 
@@ -62,18 +60,16 @@ public class ITCopyPasteTest extends AbstractTest {
         UsersTabSubPage usersTab = s.getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(TEST_USERNAME);
         if (!usersTab.isUserFound(TEST_USERNAME)) {
-            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, TEST_USERNAME,
-                    null, null, TEST_USERNAME, TEST_PASSWORD, "members");
+            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, TEST_USERNAME, null, null, TEST_USERNAME,
+                    TEST_PASSWORD, "members");
             usersTab = page.getUsersTab(true);
         } // search user usersTab =
         usersTab.searchUser(TEST_USERNAME);
         assertTrue(usersTab.isUserFound(TEST_USERNAME));
 
         // create a wokspace1 and grant all rights to the test user
-        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                "Workspaces");
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage,
-                WORKSPACE1_TITLE, null);
+        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument("Workspaces");
+        DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE1_TITLE, null);
         AccessRightsSubPage accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
         // Need Read
         if (!accessRightSubTab.hasPermissionForUser("Read", TEST_USERNAME)) {
@@ -82,15 +78,11 @@ public class ITCopyPasteTest extends AbstractTest {
         // Create test File 1
         createFile(workspacePage, FILE1_NAME, null, false, null, null, null);
 
-        workspacePage.getHeaderLinks().getNavigationSubPage().goToDocument(
-                "Workspaces");
-        workspacePage = createWorkspace(documentBasePage, WORKSPACE2_TITLE,
-                null);
+        workspacePage.getHeaderLinks().getNavigationSubPage().goToDocument("Workspaces");
+        workspacePage = createWorkspace(documentBasePage, WORKSPACE2_TITLE, null);
         accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
-        if (!accessRightSubTab.hasPermissionForUser("Manage everything",
-                TEST_USERNAME)) {
-            accessRightSubTab.grantPermissionForUser("Manage everything",
-                TEST_USERNAME);
+        if (!accessRightSubTab.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
+            accessRightSubTab.grantPermissionForUser("Manage everything", TEST_USERNAME);
         }
 
         logout();
@@ -102,22 +94,20 @@ public class ITCopyPasteTest extends AbstractTest {
      * @since 5.8
      */
     @Test
-    public void testSimpleCopyAndPaste() throws UserNotConnectedException,
-            IOException, ParseException {
+    public void testSimpleCopyAndPaste() throws UserNotConnectedException, IOException, ParseException {
         prepare();
 
         DocumentBasePage documentBasePage;
 
         // Log as test user and edit the created workspace
-        documentBasePage = loginAsTestUser().getContentTab().goToDocument(
-                "Workspaces").getContentTab().goToDocument(WORKSPACE1_TITLE);
+        documentBasePage = loginAsTestUser().getContentTab().goToDocument("Workspaces").getContentTab().goToDocument(
+                WORKSPACE1_TITLE);
 
         ContentTabSubPage contentTabSubPage = documentBasePage.getContentTab();
 
         contentTabSubPage.copyByTitle(FILE1_NAME);
 
-        documentBasePage = contentTabSubPage.getHeaderLinks().getNavigationSubPage().goToDocument(
-                WORKSPACE2_TITLE);
+        documentBasePage = contentTabSubPage.getHeaderLinks().getNavigationSubPage().goToDocument(WORKSPACE2_TITLE);
 
         contentTabSubPage = documentBasePage.getContentTab();
 

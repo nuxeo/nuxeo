@@ -45,14 +45,11 @@ import org.openqa.selenium.By;
  */
 public class ITSearchTabTest extends AbstractTest {
 
-    private final static String WORKSPACE1_TITLE = "WorkspaceTitle1_"
-            + new Date().getTime();
+    private final static String WORKSPACE1_TITLE = "WorkspaceTitle1_" + new Date().getTime();
 
-    private final static String WORKSPACE2_TITLE = "WorkspaceTitle2_"
-            + new Date().getTime();
+    private final static String WORKSPACE2_TITLE = "WorkspaceTitle2_" + new Date().getTime();
 
-    private static final String SEARCH_PATH = "/Default domain/Workspaces/"
-            + WORKSPACE2_TITLE;
+    private static final String SEARCH_PATH = "/Default domain/Workspaces/" + WORKSPACE2_TITLE;
 
     public final static String[] SUBJECTS = { "Comics", "Religion", "Education" };
 
@@ -69,39 +66,33 @@ public class ITSearchTabTest extends AbstractTest {
         UsersTabSubPage usersTab = s.getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(TEST_USERNAME);
         if (!usersTab.isUserFound(TEST_USERNAME)) {
-            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME,
-                    TEST_USERNAME, "lastname1", "company1", "email1",
-                    TEST_PASSWORD, "members");
+            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, TEST_USERNAME, "lastname1", "company1",
+                    "email1", TEST_PASSWORD, "members");
             usersTab = page.getUsersTab(true);
         } // search user usersTab =
         usersTab.searchUser(TEST_USERNAME);
         assertTrue(usersTab.isUserFound(TEST_USERNAME));
 
         // create 2 workspaces and grant all rights to the test user
-        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                "Workspaces");
+        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument("Workspaces");
         createTestWorkspace(documentBasePage, WORKSPACE1_TITLE, true);
         createTestWorkspace(documentBasePage, WORKSPACE2_TITLE, false);
         logout();
     }
 
-    protected void createTestWorkspace(DocumentBasePage documentBasePage,
-            String title, boolean createTestFile) throws IOException {
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage,
-                title, null);
+    protected void createTestWorkspace(DocumentBasePage documentBasePage, String title, boolean createTestFile)
+            throws IOException {
+        DocumentBasePage workspacePage = createWorkspace(documentBasePage, title, null);
         if (createTestFile) {
             AccessRightsSubPage accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
             // Need WriteSecurity (so in practice Manage everything) to edit a
             // Workspace
-            if (!accessRightSubTab.hasPermissionForUser("Manage everything",
-                    TEST_USERNAME)) {
-                accessRightSubTab.grantPermissionForUser("Manage everything",
-                        TEST_USERNAME);
+            if (!accessRightSubTab.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
+                accessRightSubTab.grantPermissionForUser("Manage everything", TEST_USERNAME);
             }
             // Create test File
-            FileDocumentBasePage filePage = createFile(workspacePage,
-                    "Test file", "Test File description", false, null, null,
-                    null);
+            FileDocumentBasePage filePage = createFile(workspacePage, "Test file", "Test File description", false,
+                    null, null, null);
             EditTabSubPage editTabSubPage = filePage.getEditTab();
 
             Select2WidgetElement subjectsWidget = new Select2WidgetElement(
@@ -142,8 +133,7 @@ public class ITSearchTabTest extends AbstractTest {
         resultPanelSubPage = searchPage.getSearchResultsSubPage();
         assertEquals(1, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
         searchPage = searchLayoutSubPage.selectCoverageAggregate(COVERAGE);
-        assertEquals(nbCurrentDoc,
-                resultPanelSubPage.getNumberOfDocumentInCurrentPage());
+        assertEquals(nbCurrentDoc, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
 
         // Test select path widget
         resultPanelSubPage = searchPage.getSearchResultsSubPage();
@@ -156,8 +146,7 @@ public class ITSearchTabTest extends AbstractTest {
         searchLayoutSubPage.deselectPath(SEARCH_PATH);
         searchPage = searchLayoutSubPage.filter();
         resultPanelSubPage = searchPage.getSearchResultsSubPage();
-        assertEquals(nbCurrentDoc,
-                resultPanelSubPage.getNumberOfDocumentInCurrentPage());
+        assertEquals(nbCurrentDoc, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
 
         logout();
     }

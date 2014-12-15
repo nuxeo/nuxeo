@@ -28,7 +28,6 @@ import org.openqa.selenium.WebElement;
  */
 public class RichEditorElement extends AbstractWidgetElement {
 
-
     /**
      * @param driver
      * @param id
@@ -44,8 +43,7 @@ public class RichEditorElement extends AbstractWidgetElement {
      */
     public void insertContent(String content) {
         // Define the script which sets the content of the editor
-        String scriptToExecute = String.format("tinyMCE.editors['%s'].insertContent('%s')",
-                id, content);
+        String scriptToExecute = String.format("tinyMCE.editors['%s'].insertContent('%s')", id, content);
         // Set the content of the editor
         ((JavascriptExecutor) driver).executeScript(scriptToExecute);
     }
@@ -69,8 +67,7 @@ public class RichEditorElement extends AbstractWidgetElement {
      * @since 7.1
      */
     public String getRawContent() {
-        String scriptToExecute = String.format("return tinyMCE.editors['%s'].getBody().textContent",
-                id);
+        String scriptToExecute = String.format("return tinyMCE.editors['%s'].getBody().textContent", id);
         String result = (String) ((JavascriptExecutor) driver).executeScript(scriptToExecute);
         if (result == null) {
             return "";
@@ -82,8 +79,7 @@ public class RichEditorElement extends AbstractWidgetElement {
      * @since 7.1
      */
     public String getHtmlContent() {
-        String scriptToExecute = String.format("return tinyMCE.editors['%s'].getContent()",
-                id);
+        String scriptToExecute = String.format("return tinyMCE.editors['%s'].getContent()", id);
         String result = (String) ((JavascriptExecutor) driver).executeScript(scriptToExecute);
         return result;
     }

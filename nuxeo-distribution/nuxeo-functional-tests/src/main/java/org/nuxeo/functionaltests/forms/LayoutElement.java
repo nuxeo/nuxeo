@@ -28,8 +28,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /**
- * Represents a layout on the page, with helper methods to retrieve its
- * widgets.
+ * Represents a layout on the page, with helper methods to retrieve its widgets.
  *
  * @since 5.7
  */
@@ -57,10 +56,10 @@ public class LayoutElement implements LayoutFragment {
     }
 
     /**
-     * Returns a sub element, concatenating the layout id with the sub element
-     * id (and using the standard charcater ':' as JSF UINamingContainer
-     * separator).
+     * Returns a sub element, concatenating the layout id with the sub element id (and using the standard charcater ':'
+     * as JSF UINamingContainer separator).
      */
+    @Override
     public String getSubElementId(String id) {
         String finalId = id;
         if (this.id != null) {
@@ -72,8 +71,7 @@ public class LayoutElement implements LayoutFragment {
     protected <T> T instantiateWidget(String id, Class<T> pageClassToProxy) {
         try {
             try {
-                Constructor<T> constructor = pageClassToProxy.getConstructor(
-                        WebDriver.class, String.class);
+                Constructor<T> constructor = pageClassToProxy.getConstructor(WebDriver.class, String.class);
                 return constructor.newInstance(driver, getSubElementId(id));
             } catch (NoSuchMethodException e) {
                 return pageClassToProxy.newInstance();
@@ -86,9 +84,9 @@ public class LayoutElement implements LayoutFragment {
     }
 
     /**
-     * Returns a {@link WidgetElement} with given id, after having injected its
-     * fields.
+     * Returns a {@link WidgetElement} with given id, after having injected its fields.
      */
+    @Override
     public WidgetElement getWidget(String id) {
         return getWidget(id, WidgetElement.class);
     }
@@ -96,6 +94,7 @@ public class LayoutElement implements LayoutFragment {
     /**
      * Returns a widget with given id , after having injected its fields.
      */
+    @Override
     public <T> T getWidget(String id, Class<T> widgetClassToProxy) {
         T res = instantiateWidget(id, widgetClassToProxy);
         res = AbstractTest.fillElement(widgetClassToProxy, res);
@@ -119,8 +118,7 @@ public class LayoutElement implements LayoutFragment {
     /**
      * Returns the element with given id in the page.
      *
-     * @param wait if true, waits for a default timeout (useful when element is
-     *            added to the page after an ajax call).
+     * @param wait if true, waits for a default timeout (useful when element is added to the page after an ajax call).
      */
     public WebElement getElement(String id, boolean wait) {
         return Locator.findElementWithTimeout(By.id(id));
@@ -131,6 +129,7 @@ public class LayoutElement implements LayoutFragment {
      * <p>
      * The layout id is concatenated to the sub element id for retrieval.
      */
+    @Override
     public WebElement getSubElement(String id) {
         return getElement(getSubElementId(id));
     }
@@ -140,9 +139,9 @@ public class LayoutElement implements LayoutFragment {
      * <p>
      * The layout id is concatenated to the sub element id for retrieval.
      *
-     * @param wait if true, waits for a default timeout (useful when element is
-     *            added to the page after an ajax call).
+     * @param wait if true, waits for a default timeout (useful when element is added to the page after an ajax call).
      */
+    @Override
     public WebElement getSubElement(String id, boolean wait) {
         return getElement(getSubElementId(id), wait);
     }
@@ -169,8 +168,7 @@ public class LayoutElement implements LayoutFragment {
     }
 
     /**
-     * Retrieves sub input elements with given ids and sets corresponding
-     * values.
+     * Retrieves sub input elements with given ids and sets corresponding values.
      *
      * @see #setInput(String, String)
      */
@@ -186,8 +184,7 @@ public class LayoutElement implements LayoutFragment {
     /**
      * @since 5.9.2
      */
-    public <T extends WebFragment> T getWebFragment(String id,
-            Class<T> webFragmentClass) {
+    public <T extends WebFragment> T getWebFragment(String id, Class<T> webFragmentClass) {
         return AbstractTest.getWebFragment(By.id(getSubElementId(id)), webFragmentClass);
     }
 

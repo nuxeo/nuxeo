@@ -19,8 +19,7 @@ package org.nuxeo.ftest.cap;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.DocumentBasePage
-        .UserNotConnectedException;
+import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.tabs.TrashSubPage;
 import org.openqa.selenium.WebElement;
 
@@ -29,7 +28,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 /**
  * Tests for the manage tab.
@@ -48,35 +46,22 @@ public class ITManageTest extends AbstractTest {
      * @since 7.1
      */
     @Test
-    public void testTrashPurge() throws UserNotConnectedException,
-            IOException {
+    public void testTrashPurge() throws UserNotConnectedException, IOException {
         DocumentBasePage documentBasePage = login();
 
         // Create five files under workspace.
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage,
-                WORKSPACE_TITLE, null);
-        createFile(workspacePage, TEST_FILE_NAME, "Test File description",
-                false, null, null, null);
-        workspacePage.getHeaderLinks().getNavigationSubPage().goToDocument(
-                "workspace");
-        createFile(workspacePage, TEST_FILE_NAME, "Test File description",
-                false, null, null, null);
-        workspacePage.getHeaderLinks().getNavigationSubPage().goToDocument(
-                "workspace");
-        createFile(workspacePage, TEST_FILE_NAME, "Test File description",
-                false, null, null, null);
-        workspacePage.getHeaderLinks().getNavigationSubPage().goToDocument(
-                "workspace");
-        createFile(workspacePage, TEST_FILE_NAME, "Test File description",
-                false, null, null, null);
-        workspacePage.getHeaderLinks().getNavigationSubPage().goToDocument(
-                "workspace");
-        createFile(workspacePage, TEST_FILE_NAME, "Test File description",
-                false, null, null, null);
-        workspacePage.getHeaderLinks().getNavigationSubPage().goToDocument(
-                "workspace");
-        List<WebElement> docs = workspacePage.getContentTab()
-                .getChildDocumentRows();
+        DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, null);
+        createFile(workspacePage, TEST_FILE_NAME, "Test File description", false, null, null, null);
+        workspacePage.getHeaderLinks().getNavigationSubPage().goToDocument("workspace");
+        createFile(workspacePage, TEST_FILE_NAME, "Test File description", false, null, null, null);
+        workspacePage.getHeaderLinks().getNavigationSubPage().goToDocument("workspace");
+        createFile(workspacePage, TEST_FILE_NAME, "Test File description", false, null, null, null);
+        workspacePage.getHeaderLinks().getNavigationSubPage().goToDocument("workspace");
+        createFile(workspacePage, TEST_FILE_NAME, "Test File description", false, null, null, null);
+        workspacePage.getHeaderLinks().getNavigationSubPage().goToDocument("workspace");
+        createFile(workspacePage, TEST_FILE_NAME, "Test File description", false, null, null, null);
+        workspacePage.getHeaderLinks().getNavigationSubPage().goToDocument("workspace");
+        List<WebElement> docs = workspacePage.getContentTab().getChildDocumentRows();
         assertNotNull(docs);
         assertEquals(docs.size(), 5);
         // Select every files and remove them.
@@ -85,8 +70,7 @@ public class ITManageTest extends AbstractTest {
         assertNotNull(docs);
         assertEquals(docs.size(), 0);
         // Go to trash page.
-        TrashSubPage trashSubPage = workspacePage.getManageTab()
-                .getTrashSubTab();
+        TrashSubPage trashSubPage = workspacePage.getManageTab().getTrashSubTab();
         docs = trashSubPage.getChildDocumentRows();
         assertNotNull(docs);
         assertEquals(docs.size(), 5);
