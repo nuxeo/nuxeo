@@ -46,6 +46,10 @@ public class VocabulariesPage extends AdminCenterBasePage {
     @Required
     WebElement directoryEntriesForm;
 
+    @FindBy(xpath = "//form[@id='viewDirectoryEntries']//thead")
+    @Required
+    WebElement directoryEntriesHeader;
+
     public VocabulariesPage(WebDriver driver) {
         super(driver);
     }
@@ -140,6 +144,15 @@ public class VocabulariesPage extends AdminCenterBasePage {
             }
         }
         throw new NoSuchElementException(String.format("directoryName %s not available", directoryName));
+    }
+
+    /**
+     * Returns true if the directory entries table contains given string in its header.
+     *
+     * @since 7.1
+     */
+    public boolean hasHeaderLabel(String headerLabel) {
+        return directoryEntriesHeader.getText().contains(headerLabel);
     }
 
 }
