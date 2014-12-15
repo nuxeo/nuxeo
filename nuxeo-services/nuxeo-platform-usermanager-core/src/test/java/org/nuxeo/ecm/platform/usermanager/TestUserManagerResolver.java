@@ -20,6 +20,7 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
+import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.runtime.api.Framework;
 
 public class TestUserManagerResolver extends UserManagerTestCase {
@@ -370,6 +371,19 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     }
 
     @Test
+    public void testConfigurationIsLoaded() {
+        UserManagerResolver userResolver = (UserManagerResolver) ((SimpleType) doc.getProperty(USER_XPATH).getType()).getResolver();
+        assertTrue(userResolver.isIncludingUsers());
+        assertFalse(userResolver.isIncludingGroups());
+        UserManagerResolver groupResolver = (UserManagerResolver) ((SimpleType) doc.getProperty(GROUP_XPATH).getType()).getResolver();
+        assertFalse(groupResolver.isIncludingUsers());
+        assertTrue(groupResolver.isIncludingGroups());
+        UserManagerResolver anyResolver = (UserManagerResolver) ((SimpleType) doc.getProperty(USER_GROUP_XPATH).getType()).getResolver();
+        assertTrue(anyResolver.isIncludingUsers());
+        assertTrue(anyResolver.isIncludingGroups());
+    }
+
+    @Test
     public void testNullValueReturnNullPrincipal() {
         assertNull(doc.getProperty(USER_XPATH).getReferencedEntity());
         assertNull(doc.getProperty(USER_XPATH).getValue(NuxeoPrincipal.class));
@@ -402,6 +416,12 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     }
 
     @Test
+    public void testUserDoesntSupportGroup() {
+        doc.setPropertyValue(USER_XPATH, "group:members");
+        assertNull(doc.getProperty(USER_XPATH).getReferencedEntity());
+    }
+
+    @Test
     public void testUserWrongPrefixReturnNull() {
         doc.setPropertyValue(USER_XPATH, "Administrator");
         NuxeoPrincipal principal = (NuxeoPrincipal) doc.getProperty(USER_XPATH).getReferencedEntity();
@@ -424,6 +444,12 @@ public class TestUserManagerResolver extends UserManagerTestCase {
         group = doc.getProperty(GROUP_XPATH).getValue(NuxeoGroup.class);
         assertNotNull(group);
         assertEquals("members", group.getName());
+    }
+
+    @Test
+    public void testGroupFieldDoesntSupportUser() {
+        doc.setPropertyValue(GROUP_XPATH, "user:Administrator");
+        assertNull(doc.getProperty(GROUP_XPATH).getReferencedEntity());
     }
 
     @Test

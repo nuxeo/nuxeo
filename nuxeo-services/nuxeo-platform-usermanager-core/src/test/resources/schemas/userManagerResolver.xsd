@@ -5,13 +5,13 @@
 
   <xs:element name="user">
     <xs:simpleType>
-      <xs:restriction base="xs:string" ref:resolver="userManagerResolver" ref:filter="user" />
+      <xs:restriction base="xs:string" ref:resolver="userManagerResolver" ref:type="user" />
     </xs:simpleType>
   </xs:element>
 
   <xs:element name="group">
     <xs:simpleType>
-      <xs:restriction base="xs:string" ref:resolver="userManagerResolver" ref:filter="group" />
+      <xs:restriction base="xs:string" ref:resolver="userManagerResolver" ref:type="group" />
     </xs:simpleType>
   </xs:element>
 
