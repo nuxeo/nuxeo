@@ -124,6 +124,9 @@ public class VocabularyTreeNode {
             DocumentModelList results = getChildrenEntries();
             Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
             for (DocumentModel result : results) {
+                if (result == null) {
+                    continue;
+                }
                 String childIdendifier = result.getId();
                 String childLabel = computeLabel(locale, result, schemaName);
                 String childPath;
@@ -157,6 +160,9 @@ public class VocabularyTreeNode {
     }
 
     public static String computeLabel(Locale locale, DocumentModel entry, String schemaName) {
+        if (entry == null) {
+            return null;
+        }
         String fieldName = LABEL_FIELD_PREFIX + locale.toString();
         String label = null;
         try {
