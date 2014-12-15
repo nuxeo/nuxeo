@@ -68,7 +68,7 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIO
 @Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
         "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.rendition.api",
         "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.platform.commandline.executor" })
+        "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.mimetype.core" })
 @LocalDeploy("org.nuxeo.ecm.platform.rendition.core:test-rendition-contrib.xml")
 public class TestRenditionService {
 
@@ -156,6 +156,8 @@ public class TestRenditionService {
         assertNotNull(rendition);
         assertTrue(rendition.isStored());
         assertEquals(renditionDocument.getRef(), rendition.getHostDocument().getRef());
+        assertEquals("/icons/pdf.png", renditionDocument.getPropertyValue("common:icon"));
+        assertEquals(renditionBlob.getLength(), renditionDocument.getPropertyValue("common:size"));
 
         // now update the document
         file.setPropertyValue("dc:description", "I have been updated");
