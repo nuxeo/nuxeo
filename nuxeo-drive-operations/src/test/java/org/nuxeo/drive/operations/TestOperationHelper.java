@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 /**
  * Tests the {@link NuxeoDriveOperationHelper}.
- *
+ * 
  * @author Antoine Taillefer
  */
 public class TestOperationHelper {

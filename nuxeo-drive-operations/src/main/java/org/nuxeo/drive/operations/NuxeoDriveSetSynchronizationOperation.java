@@ -31,15 +31,12 @@ public class NuxeoDriveSetSynchronizationOperation {
     protected boolean enable;
 
     @OperationMethod
-    public void run(DocumentModel doc) throws ClientException,
-            SecurityException {
+    public void run(DocumentModel doc) throws ClientException, SecurityException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         if (enable) {
-            driveManager.registerSynchronizationRoot(session.getPrincipal(),
-                    doc, session);
+            driveManager.registerSynchronizationRoot(session.getPrincipal(), doc, session);
         } else {
-            driveManager.unregisterSynchronizationRoot(session.getPrincipal(),
-                    doc, session);
+            driveManager.unregisterSynchronizationRoot(session.getPrincipal(), doc, session);
         }
 
         // Commit transaction explicitly to ensure client-side consistency

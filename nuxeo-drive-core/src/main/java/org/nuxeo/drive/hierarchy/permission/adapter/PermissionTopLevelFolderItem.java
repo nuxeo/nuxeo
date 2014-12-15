@@ -27,11 +27,10 @@ import org.nuxeo.drive.service.VirtualFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * User workspace and permission based implementation of the top level
- * {@link FolderItem}.
+ * User workspace and permission based implementation of the top level {@link FolderItem}.
  * <p>
  * Implements the following tree:
- *
+ * 
  * <pre>
  * Nuxeo Drive
  *  |-- My Docs (= user workspace if synchronized else user synchronization roots)
@@ -43,7 +42,7 @@ import org.nuxeo.ecm.core.api.ClientException;
  *  |      |-- Other folder 2
  *  |      |-- ...
  * </pre>
- *
+ * 
  * @author Antoine Taillefer
  */
 public class PermissionTopLevelFolderItem extends AbstractVirtualFolderItem {
@@ -52,8 +51,7 @@ public class PermissionTopLevelFolderItem extends AbstractVirtualFolderItem {
 
     protected List<String> childrenFactoryNames;
 
-    public PermissionTopLevelFolderItem(String factoryName,
-            Principal principal, String folderName,
+    public PermissionTopLevelFolderItem(String factoryName, Principal principal, String folderName,
             List<String> childrenFactoryNames) throws ClientException {
         super(factoryName, principal, null, null, folderName);
         this.childrenFactoryNames = childrenFactoryNames;

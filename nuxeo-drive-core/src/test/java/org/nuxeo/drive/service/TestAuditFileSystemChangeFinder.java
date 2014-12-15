@@ -120,13 +120,11 @@ public class TestAuditFileSystemChangeFinder {
     @Before
     public void init() throws Exception {
         // Enable deletion listener because the tear down disables it
-        eventServiceAdmin.setListenerEnabledFlag(
-                "nuxeoDriveFileSystemDeletionListener", true);
+        eventServiceAdmin.setListenerEnabledFlag("nuxeoDriveFileSystemDeletionListener", true);
 
         lastEventLogId = nuxeoDriveManager.getChangeFinder().getUpperBound();
         lastSyncActiveRootDefinitions = "";
-        Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
-                "10");
+        Framework.getProperties().put("org.nuxeo.drive.document.change.limit", "10");
 
         // Create test users
         Session userDir = directoryService.getDirectory("userDirectory").getSession();
@@ -144,12 +142,9 @@ public class TestAuditFileSystemChangeFinder {
         dispose(user1Session);
         TransactionHelper.startTransaction();
         try {
-            folder1 = session.createDocument(session.createDocumentModel("/",
-                    "folder1", "Folder"));
-            folder2 = session.createDocument(session.createDocumentModel("/",
-                    "folder2", "Folder"));
-            folder3 = session.createDocument(session.createDocumentModel("/",
-                    "folder3", "Folder"));
+            folder1 = session.createDocument(session.createDocumentModel("/", "folder1", "Folder"));
+            folder2 = session.createDocument(session.createDocumentModel("/", "folder2", "Folder"));
+            folder3 = session.createDocument(session.createDocumentModel("/", "folder3", "Folder"));
             Map<String, Boolean> permissions = new HashMap<String, Boolean>();
             permissions.put(SecurityConstants.READ_WRITE, true);
             setPermissions(folder1, "user1", permissions);
@@ -174,8 +169,7 @@ public class TestAuditFileSystemChangeFinder {
         // Disable deletion listener for the repository cleanup phase done in
         // CoreFeature#afterTeardown to avoid exception due to no active
         // transaction in FileSystemItemManagerImpl#getSession
-        eventServiceAdmin.setListenerEnabledFlag(
-                "nuxeoDriveFileSystemDeletionListener", false);
+        eventServiceAdmin.setListenerEnabledFlag("nuxeoDriveFileSystemDeletionListener", false);
 
         // Clean up audit log
         cleanUpAuditLog();
@@ -200,10 +194,8 @@ public class TestAuditFileSystemChangeFinder {
             assertTrue(changes.isEmpty());
 
             // Sync roots for Administrator
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    session.getPrincipal(), folder1, session);
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    session.getPrincipal(), folder2, session);
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder1, session);
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder2, session);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -217,16 +209,13 @@ public class TestAuditFileSystemChangeFinder {
 
             // Create 3 documents, only 2 in sync roots
             doc1 = session.createDocumentModel("/folder1", "doc1", "File");
-            doc1.setPropertyValue("file:content", new StringBlob(
-                    "The content of file 1."));
+            doc1.setPropertyValue("file:content", new StringBlob("The content of file 1."));
             doc1 = session.createDocument(doc1);
             doc2 = session.createDocumentModel("/folder2", "doc2", "File");
-            doc2.setPropertyValue("file:content", new StringBlob(
-                    "The content of file 2."));
+            doc2.setPropertyValue("file:content", new StringBlob("The content of file 2."));
             doc2 = session.createDocument(doc2);
             doc3 = session.createDocumentModel("/folder3", "doc3", "File");
-            doc3.setPropertyValue("file:content", new StringBlob(
-                    "The content of file 3."));
+            doc3.setPropertyValue("file:content", new StringBlob("The content of file 3."));
             doc3 = session.createDocument(doc3);
         } finally {
             commitAndWaitForAsyncCompletion();
@@ -250,14 +239,11 @@ public class TestAuditFileSystemChangeFinder {
             assertTrue(changes.isEmpty());
 
             // Update both synchronized documents and unsynchronize a root
-            doc1.setPropertyValue("file:content", new StringBlob(
-                    "The content of file 1, updated."));
+            doc1.setPropertyValue("file:content", new StringBlob("The content of file 1, updated."));
             session.saveDocument(doc1);
-            doc2.setPropertyValue("file:content", new StringBlob(
-                    "The content of file 2, updated."));
+            doc2.setPropertyValue("file:content", new StringBlob("The content of file 2, updated."));
             session.saveDocument(doc2);
-            nuxeoDriveManager.unregisterSynchronizationRoot(
-                    session.getPrincipal(), folder2, session);
+            nuxeoDriveManager.unregisterSynchronizationRoot(session.getPrincipal(), folder2, session);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -298,8 +284,7 @@ public class TestAuditFileSystemChangeFinder {
             // synchronized root
             session.followTransition(doc1.getRef(), "undelete");
             session.move(doc3.getRef(), folder2.getRef(), null);
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    session.getPrincipal(), folder2, session);
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder2, session);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -312,9 +297,7 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals("test", change.getRepositoryId());
             assertEquals("rootRegistered", change.getEventId());
             assertEquals(folder2.getId(), change.getDocUuid());
-            assertEquals(
-                    "defaultSyncRootFolderItemFactory#test#" + folder2.getId(),
-                    change.getFileSystemItemId());
+            assertEquals("defaultSyncRootFolderItemFactory#test#" + folder2.getId(), change.getFileSystemItemId());
             change = changes.get(1);
             assertEquals("test", change.getRepositoryId());
             assertEquals("documentMoved", change.getEventId());
@@ -341,10 +324,8 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals("test#" + doc3.getId(), change.getFileSystemItemId());
 
             // Create a doc and copy it from a sync root to another one
-            docToCopy = session.createDocumentModel("/folder1", "docToCopy",
-                    "File");
-            docToCopy.setPropertyValue("file:content", new StringBlob(
-                    "The content of file to copy."));
+            docToCopy = session.createDocumentModel("/folder1", "docToCopy", "File");
+            docToCopy.setPropertyValue("file:content", new StringBlob("The content of file to copy."));
             docToCopy = session.createDocument(docToCopy);
             copiedDoc = session.copy(docToCopy.getRef(), folder2.getRef(), null);
         } finally {
@@ -359,18 +340,14 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals("test", change.getRepositoryId());
             assertEquals("documentCreatedByCopy", change.getEventId());
             assertEquals(copiedDoc.getId(), change.getDocUuid());
-            assertEquals(
-                    "defaultFileSystemItemFactory#test#" + copiedDoc.getId(),
-                    change.getFileSystemItemId());
+            assertEquals("defaultFileSystemItemFactory#test#" + copiedDoc.getId(), change.getFileSystemItemId());
             assertEquals("docToCopy", change.getFileSystemItemName());
 
             change = changes.get(1);
             assertEquals("test", change.getRepositoryId());
             assertEquals("documentCreated", change.getEventId());
             assertEquals(docToCopy.getId(), change.getDocUuid());
-            assertEquals(
-                    "defaultFileSystemItemFactory#test#" + docToCopy.getId(),
-                    change.getFileSystemItemId());
+            assertEquals("defaultFileSystemItemFactory#test#" + docToCopy.getId(), change.getFileSystemItemId());
             assertEquals("docToCopy", change.getFileSystemItemName());
 
             // Remove file from a document, mapped to a fake deletion from the
@@ -407,16 +384,12 @@ public class TestAuditFileSystemChangeFinder {
 
             // Create a doc, create a version of it, update doc and restore the
             // version
-            docToVersion = session.createDocumentModel("/folder1",
-                    "docToVersion", "File");
-            docToVersion.setPropertyValue("file:content", new StringBlob(
-                    "The content of file to version."));
+            docToVersion = session.createDocumentModel("/folder1", "docToVersion", "File");
+            docToVersion.setPropertyValue("file:content", new StringBlob("The content of file to version."));
             docToVersion = session.createDocument(docToVersion);
-            docToVersion.putContextData(VersioningService.VERSIONING_OPTION,
-                    VersioningOption.MAJOR);
+            docToVersion.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
             session.saveDocument(docToVersion);
-            docToVersion.setPropertyValue("file:content", new StringBlob(
-                    "Updated content of the versioned file."));
+            docToVersion.setPropertyValue("file:content", new StringBlob("Updated content of the versioned file."));
             session.saveDocument(docToVersion);
             List<DocumentModel> versions = session.getVersions(docToVersion.getRef());
             assertEquals(1, versions.size());
@@ -456,8 +429,7 @@ public class TestAuditFileSystemChangeFinder {
 
         TransactionHelper.startTransaction();
         try {
-            Framework.getProperties().put(
-                    "org.nuxeo.drive.document.change.limit", "1");
+            Framework.getProperties().put("org.nuxeo.drive.document.change.limit", "1");
             FileSystemChangeSummary changeSummary = getChangeSummary(session.getPrincipal());
             assertEquals(true, changeSummary.getHasTooManyChanges());
         } finally {
@@ -478,15 +450,12 @@ public class TestAuditFileSystemChangeFinder {
             assertTrue(changes.isEmpty());
 
             // Create a folder in a sync root
-            subFolder = user1Session.createDocumentModel("/folder1",
-                    "subFolder", "Folder");
+            subFolder = user1Session.createDocumentModel("/folder1", "subFolder", "Folder");
             subFolder = user1Session.createDocument(subFolder);
 
             // Sync roots for user1
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    user1Session.getPrincipal(), folder1, user1Session);
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    user1Session.getPrincipal(), folder2, user1Session);
+            nuxeoDriveManager.registerSynchronizationRoot(user1Session.getPrincipal(), folder1, user1Session);
+            nuxeoDriveManager.registerSynchronizationRoot(user1Session.getPrincipal(), folder2, user1Session);
         } finally {
             commitAndWaitForAsyncCompletion(user1Session);
         }
@@ -518,8 +487,7 @@ public class TestAuditFileSystemChangeFinder {
             change = changes.get(0);
             assertEquals("securityUpdated", change.getEventId());
             assertEquals(folder2.getId(), change.getDocUuid());
-            assertEquals("test#" + folder2.getId(),
-                    change.getFileSystemItemId());
+            assertEquals("test#" + folder2.getId(), change.getFileSystemItemId());
             assertEquals("folder2", change.getFileSystemItemName());
             // Not adaptable as a FileSystemItem since no Read permission
             assertNull(change.getFileSystemItem());
@@ -527,8 +495,7 @@ public class TestAuditFileSystemChangeFinder {
             change = changes.get(1);
             assertEquals("securityUpdated", change.getEventId());
             assertEquals(subFolder.getId(), change.getDocUuid());
-            assertEquals("test#" + subFolder.getId(),
-                    change.getFileSystemItemId());
+            assertEquals("test#" + subFolder.getId(), change.getFileSystemItemId());
             assertEquals("subFolder", change.getFileSystemItemName());
             // Not adaptable as a FileSystemItem since no Read permission
             assertNull(change.getFileSystemItem());
@@ -552,9 +519,7 @@ public class TestAuditFileSystemChangeFinder {
             change = changes.get(0);
             assertEquals("securityUpdated", change.getEventId());
             assertEquals(folder2.getId(), change.getDocUuid());
-            assertEquals(
-                    "defaultSyncRootFolderItemFactory#test#" + folder2.getId(),
-                    change.getFileSystemItemId());
+            assertEquals("defaultSyncRootFolderItemFactory#test#" + folder2.getId(), change.getFileSystemItemId());
             assertEquals("folder2", change.getFileSystemItemName());
             // Adaptable as a FileSystemItem since Read permission
             assertNotNull(change.getFileSystemItem());
@@ -562,9 +527,7 @@ public class TestAuditFileSystemChangeFinder {
             change = changes.get(1);
             assertEquals("securityUpdated", change.getEventId());
             assertEquals(subFolder.getId(), change.getDocUuid());
-            assertEquals(
-                    "defaultFileSystemItemFactory#test#" + subFolder.getId(),
-                    change.getFileSystemItemId());
+            assertEquals("defaultFileSystemItemFactory#test#" + subFolder.getId(), change.getFileSystemItemId());
             assertEquals("subFolder", change.getFileSystemItemName());
             // Adaptable as a FileSystemItem since Read permission
             assertNotNull(change.getFileSystemItem());
@@ -592,10 +555,8 @@ public class TestAuditFileSystemChangeFinder {
             // synchronized root folders as they are updated by the
             // synchronization
             // registration process
-            nuxeoDriveManager.registerSynchronizationRoot(admin, folder1,
-                    session);
-            nuxeoDriveManager.registerSynchronizationRoot(admin, folder2,
-                    session);
+            nuxeoDriveManager.registerSynchronizationRoot(admin, folder1, session);
+            nuxeoDriveManager.registerSynchronizationRoot(admin, folder2, session);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -613,15 +574,12 @@ public class TestAuditFileSystemChangeFinder {
         TransactionHelper.startTransaction();
         try {
             doc1 = session.createDocumentModel("/folder1", "doc1", "File");
-            doc1.setPropertyValue("file:content", new StringBlob(
-                    "The content of file 1."));
+            doc1.setPropertyValue("file:content", new StringBlob("The content of file 1."));
             doc1 = session.createDocument(doc1);
             doc2 = session.createDocumentModel("/folder2", "doc2", "File");
-            doc2.setPropertyValue("file:content", new StringBlob(
-                    "The content of file 2."));
+            doc2.setPropertyValue("file:content", new StringBlob("The content of file 2."));
             doc2 = session.createDocument(doc2);
-            session.createDocument(session.createDocumentModel("/folder3",
-                    "doc3", "File"));
+            session.createDocument(session.createDocumentModel("/folder3", "doc3", "File"));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -635,16 +593,12 @@ public class TestAuditFileSystemChangeFinder {
             FileSystemItemChange docChange = changes.get(0);
             assertEquals("test", docChange.getRepositoryId());
             assertEquals("documentCreated", docChange.getEventId());
-            assertEquals(
-                    "project",
-                    session.getDocument(new IdRef(docChange.getDocUuid())).getCurrentLifeCycleState());
+            assertEquals("project", session.getDocument(new IdRef(docChange.getDocUuid())).getCurrentLifeCycleState());
             assertEquals(doc2.getId(), docChange.getDocUuid());
             docChange = changes.get(1);
             assertEquals("test", docChange.getRepositoryId());
             assertEquals("documentCreated", docChange.getEventId());
-            assertEquals(
-                    "project",
-                    session.getDocument(new IdRef(docChange.getDocUuid())).getCurrentLifeCycleState());
+            assertEquals("project", session.getDocument(new IdRef(docChange.getDocUuid())).getCurrentLifeCycleState());
             assertEquals(doc1.getId(), docChange.getDocUuid());
 
             assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
@@ -653,8 +607,7 @@ public class TestAuditFileSystemChangeFinder {
             // adaptable as a FileSystemItem (not Folderish nor a BlobHolder
             // with a
             // blob) => should not be considered as a change
-            session.createDocument(session.createDocumentModel("/folder1",
-                    "notSynchronizableDoc", "NotSynchronizable"));
+            session.createDocument(session.createDocumentModel("/folder1", "notSynchronizableDoc", "NotSynchronizable"));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -668,20 +621,14 @@ public class TestAuditFileSystemChangeFinder {
             // Create 2 documents in the same sync root: "/folder1" and 1
             // document
             // in another sync root => should find 2 changes for "/folder1"
-            DocumentModel doc3 = session.createDocumentModel("/folder1",
-                    "doc3", "File");
-            doc3.setPropertyValue("file:content", new StringBlob(
-                    "The content of file 3."));
+            DocumentModel doc3 = session.createDocumentModel("/folder1", "doc3", "File");
+            doc3.setPropertyValue("file:content", new StringBlob("The content of file 3."));
             doc3 = session.createDocument(doc3);
-            DocumentModel doc4 = session.createDocumentModel("/folder1",
-                    "doc4", "File");
-            doc4.setPropertyValue("file:content", new StringBlob(
-                    "The content of file 4."));
+            DocumentModel doc4 = session.createDocumentModel("/folder1", "doc4", "File");
+            doc4.setPropertyValue("file:content", new StringBlob("The content of file 4."));
             doc4 = session.createDocument(doc4);
-            DocumentModel doc5 = session.createDocumentModel("/folder2",
-                    "doc5", "File");
-            doc5.setPropertyValue("file:content", new StringBlob(
-                    "The content of file 5."));
+            DocumentModel doc5 = session.createDocumentModel("/folder2", "doc5", "File");
+            doc5.setPropertyValue("file:content", new StringBlob("The content of file 5."));
             doc5 = session.createDocument(doc5);
         } finally {
             commitAndWaitForAsyncCompletion();
@@ -707,8 +654,7 @@ public class TestAuditFileSystemChangeFinder {
 
         TransactionHelper.startTransaction();
         try {
-            Framework.getProperties().put(
-                    "org.nuxeo.drive.document.change.limit", "1");
+            Framework.getProperties().put("org.nuxeo.drive.document.change.limit", "1");
             changeSummary = getChangeSummary(admin);
             assertTrue(changeSummary.getFileSystemChanges().isEmpty());
             assertEquals(Boolean.TRUE, changeSummary.getHasTooManyChanges());
@@ -739,8 +685,7 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
             // Register a root for someone else
-            nuxeoDriveManager.registerSynchronizationRoot(otherUser, folder1,
-                    session);
+            nuxeoDriveManager.registerSynchronizationRoot(otherUser, folder1, session);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -758,8 +703,7 @@ public class TestAuditFileSystemChangeFinder {
             assertFalse(changeSummary.getHasTooManyChanges());
 
             // Register a new sync root
-            nuxeoDriveManager.registerSynchronizationRoot(admin, folder1,
-                    session);
+            nuxeoDriveManager.registerSynchronizationRoot(admin, folder1, session);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -779,13 +723,11 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals(1, changes.size());
             fsItemChange = changes.get(0);
             assertEquals("rootRegistered", fsItemChange.getEventId());
-            assertEquals(
-                    "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
+            assertEquals("defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
                     fsItemChange.getFileSystemItem().getId());
 
             // Check that root unregistration is detected as a deletion
-            nuxeoDriveManager.unregisterSynchronizationRoot(admin, folder1,
-                    session);
+            nuxeoDriveManager.unregisterSynchronizationRoot(admin, folder1, session);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -800,13 +742,11 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals(1, changes.size());
             fsItemChange = changes.get(0);
             assertEquals("deleted", fsItemChange.getEventId());
-            assertEquals("test#" + folder1.getId(),
-                    fsItemChange.getFileSystemItemId());
+            assertEquals("test#" + folder1.getId(), fsItemChange.getFileSystemItemId());
 
             // Register back the root, it's activity is again detected by the
             // client
-            nuxeoDriveManager.registerSynchronizationRoot(admin, folder1,
-                    session);
+            nuxeoDriveManager.registerSynchronizationRoot(admin, folder1, session);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -822,8 +762,7 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals(1, changes.size());
             fsItemChange = changes.get(0);
             assertEquals("rootRegistered", fsItemChange.getEventId());
-            assertEquals(
-                    "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
+            assertEquals("defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
                     fsItemChange.getFileSystemItem().getId());
 
             // Test deletion of a root
@@ -850,8 +789,7 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals(1, changes.size());
             fsItemChange = changes.get(0);
             assertEquals("deleted", fsItemChange.getEventId());
-            assertEquals("test#" + folder1.getId(),
-                    fsItemChange.getFileSystemItemId());
+            assertEquals("test#" + folder1.getId(), fsItemChange.getFileSystemItemId());
 
         } finally {
             commitAndWaitForAsyncCompletion();
@@ -872,10 +810,8 @@ public class TestAuditFileSystemChangeFinder {
             assertTrue(changes.isEmpty());
 
             // Register sync roots for user1 as Administrator
-            nuxeoDriveManager.registerSynchronizationRoot(user1Principal,
-                    folder1, session);
-            nuxeoDriveManager.registerSynchronizationRoot(user1Principal,
-                    folder2, session);
+            nuxeoDriveManager.registerSynchronizationRoot(user1Principal, folder1, session);
+            nuxeoDriveManager.registerSynchronizationRoot(user1Principal, folder2, session);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -896,26 +832,20 @@ public class TestAuditFileSystemChangeFinder {
             change = changes.get(0);
             assertEquals("rootRegistered", change.getEventId());
             assertEquals(folder2.getId(), change.getDocUuid());
-            assertEquals(
-                    "defaultSyncRootFolderItemFactory#test#" + folder2.getId(),
-                    change.getFileSystemItemId());
+            assertEquals("defaultSyncRootFolderItemFactory#test#" + folder2.getId(), change.getFileSystemItemId());
             assertEquals("folder2", change.getFileSystemItemName());
             assertNotNull(change.getFileSystemItem());
 
             change = changes.get(1);
             assertEquals("rootRegistered", change.getEventId());
             assertEquals(folder1.getId(), change.getDocUuid());
-            assertEquals(
-                    "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
-                    change.getFileSystemItemId());
+            assertEquals("defaultSyncRootFolderItemFactory#test#" + folder1.getId(), change.getFileSystemItemId());
             assertEquals("folder1", change.getFileSystemItemName());
             assertNotNull(change.getFileSystemItem());
 
             // Unregister sync roots for user1 as Administrator
-            nuxeoDriveManager.unregisterSynchronizationRoot(user1Principal,
-                    folder1, session);
-            nuxeoDriveManager.unregisterSynchronizationRoot(user1Principal,
-                    folder2, session);
+            nuxeoDriveManager.unregisterSynchronizationRoot(user1Principal, folder1, session);
+            nuxeoDriveManager.unregisterSynchronizationRoot(user1Principal, folder2, session);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -934,8 +864,7 @@ public class TestAuditFileSystemChangeFinder {
             change = changes.get(0);
             assertEquals("deleted", change.getEventId());
             assertEquals(folder2.getId(), change.getDocUuid());
-            assertEquals("test#" + folder2.getId(),
-                    change.getFileSystemItemId());
+            assertEquals("test#" + folder2.getId(), change.getFileSystemItemId());
             assertEquals("folder2", change.getFileSystemItemName());
             // Not adaptable as a FileSystemItem since unregistered
             assertNull(change.getFileSystemItem());
@@ -943,8 +872,7 @@ public class TestAuditFileSystemChangeFinder {
             change = changes.get(1);
             assertEquals("deleted", change.getEventId());
             assertEquals(folder1.getId(), change.getDocUuid());
-            assertEquals("test#" + folder1.getId(),
-                    change.getFileSystemItemId());
+            assertEquals("test#" + folder1.getId(), change.getFileSystemItemId());
             assertEquals("folder1", change.getFileSystemItemName());
             // Not adaptable as a FileSystemItem since unregistered
             assertNull(change.getFileSystemItem());
@@ -959,8 +887,7 @@ public class TestAuditFileSystemChangeFinder {
         TransactionHelper.startTransaction();
         try {
             // Register folder1 as a sync root for Administrator
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    session.getPrincipal(), folder1, session);
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder1, session);
 
             // Update folder1 title
             folder1.setPropertyValue("dc:title", "folder1 updated");
@@ -985,8 +912,7 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals("documentCreated", change.getEventId());
 
             // Unregister folder1 as a sync root for Administrator
-            nuxeoDriveManager.unregisterSynchronizationRoot(
-                    session.getPrincipal(), folder1, session);
+            nuxeoDriveManager.unregisterSynchronizationRoot(session.getPrincipal(), folder1, session);
 
             // Update folder1 title
             folder1.setPropertyValue("dc:title", "folder1 updated twice");
@@ -1016,14 +942,12 @@ public class TestAuditFileSystemChangeFinder {
         TransactionHelper.startTransaction();
         try {
             // Create a subfolder in folder1 as Administrator
-            subFolder = session.createDocument(session.createDocumentModel(
-                    folder1.getPathAsString(), "subFolder", "Folder"));
+            subFolder = session.createDocument(session.createDocumentModel(folder1.getPathAsString(), "subFolder",
+                    "Folder"));
             // Register folder1 as a sync root for user1
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    user1Session.getPrincipal(), folder1, user1Session);
+            nuxeoDriveManager.registerSynchronizationRoot(user1Session.getPrincipal(), folder1, user1Session);
             // Register folder2 as a sync root for Administrator
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    session.getPrincipal(), folder2, session);
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder2, session);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -1068,42 +992,38 @@ public class TestAuditFileSystemChangeFinder {
     }
 
     /**
-     * Gets the document changes for the given user's synchronization roots
-     * using the {@link AuditChangeFinder} and updates {@link #lastEventLogId}.
-     *
+     * Gets the document changes for the given user's synchronization roots using the {@link AuditChangeFinder} and
+     * updates {@link #lastEventLogId}.
+     * 
      * @throws ClientException
      */
-    protected List<FileSystemItemChange> getChanges(Principal principal)
-            throws InterruptedException, ClientException {
+    protected List<FileSystemItemChange> getChanges(Principal principal) throws InterruptedException, ClientException {
         return getChangeSummary(principal).getFileSystemChanges();
     }
 
     /**
      * Gets the document changes for the Administrator user.
      */
-    protected List<FileSystemItemChange> getChanges()
-            throws InterruptedException, ClientException {
+    protected List<FileSystemItemChange> getChanges() throws InterruptedException, ClientException {
         return getChanges(session.getPrincipal());
     }
 
     /**
-     * Gets the document changes summary for the given user's synchronization
-     * roots using the {@link NuxeoDriveManager} and updates
-     * {@link #lastEventLogId}.
+     * Gets the document changes summary for the given user's synchronization roots using the {@link NuxeoDriveManager}
+     * and updates {@link #lastEventLogId}.
      */
-    protected FileSystemChangeSummary getChangeSummary(Principal principal)
-            throws ClientException, InterruptedException {
+    protected FileSystemChangeSummary getChangeSummary(Principal principal) throws ClientException,
+            InterruptedException {
         Map<String, Set<IdRef>> lastSyncActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(lastSyncActiveRootDefinitions);
-        FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummaryIntegerBounds(
-                principal, lastSyncActiveRootRefs, lastEventLogId);
+        FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummaryIntegerBounds(principal,
+                lastSyncActiveRootRefs, lastEventLogId);
         assertNotNull(changeSummary);
         lastEventLogId = changeSummary.getUpperBound();
         lastSyncActiveRootDefinitions = changeSummary.getActiveSynchronizationRootDefinitions();
         return changeSummary;
     }
 
-    protected void commitAndWaitForAsyncCompletion(CoreSession session)
-            throws Exception {
+    protected void commitAndWaitForAsyncCompletion(CoreSession session) throws Exception {
         TransactionHelper.commitOrRollbackTransaction();
         dispose(session);
         eventService.waitForAsyncCompletion();
@@ -1123,26 +1043,23 @@ public class TestAuditFileSystemChangeFinder {
             }
         }
         if (!(session instanceof LocalSession)) {
-            throw new UnsupportedOperationException(
-                    "Cannot dispose session of class " + session.getClass());
+            throw new UnsupportedOperationException("Cannot dispose session of class " + session.getClass());
         }
         ((LocalSession) session).getSession().dispose();
     }
 
-    protected void setPermissions(DocumentModel doc, String userName,
-            Map<String, Boolean> permissions) throws ClientException {
+    protected void setPermissions(DocumentModel doc, String userName, Map<String, Boolean> permissions)
+            throws ClientException {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         for (String permission : permissions.keySet()) {
-            localACL.add(0,
-                    new ACE(userName, permission, permissions.get(permission)));
+            localACL.add(0, new ACE(userName, permission, permissions.get(permission)));
         }
         session.setACP(doc.getRef(), acp, true);
         session.save();
     }
 
-    protected void resetPermissions(DocumentModel doc, String userName)
-            throws ClientException {
+    protected void resetPermissions(DocumentModel doc, String userName) throws ClientException {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         Iterator<ACE> localACLIt = localACL.iterator();

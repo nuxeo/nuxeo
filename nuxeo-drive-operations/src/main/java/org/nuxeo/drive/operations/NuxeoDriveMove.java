@@ -32,10 +32,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Moves the {@link FileSystemItem} with the given source id to the
- * {@link FileSystemItem} with the given destination id for the currently
- * authenticated user.
- *
+ * Moves the {@link FileSystemItem} with the given source id to the {@link FileSystemItem} with the given destination id
+ * for the currently authenticated user.
+ * 
  * @author Antoine Taillefer
  */
 @Operation(id = NuxeoDriveMove.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Move")
@@ -53,13 +52,11 @@ public class NuxeoDriveMove {
     protected String destId;
 
     @OperationMethod
-    public Blob run() throws ClientException, InvalidOperationException,
-            IOException {
+    public Blob run() throws ClientException, InvalidOperationException, IOException {
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         FileSystemItem fsItem;
         try {
-            fsItem = fileSystemItemManager.move(srcId, destId,
-                    ctx.getPrincipal());
+            fsItem = fileSystemItemManager.move(srcId, destId, ctx.getPrincipal());
         } catch (UnsupportedOperationException e) {
             throw new InvalidOperationException(e);
         }

@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default implementation of the top level {@link FolderItem}.
- *
+ * 
  * @author Antoine Taillefer
  */
 public class DefaultTopLevelFolderItem extends AbstractVirtualFolderItem {
@@ -48,8 +48,7 @@ public class DefaultTopLevelFolderItem extends AbstractVirtualFolderItem {
 
     private static final Log log = LogFactory.getLog(DefaultTopLevelFolderItem.class);
 
-    public DefaultTopLevelFolderItem(String factoryName, Principal principal,
-            String folderName) throws ClientException {
+    public DefaultTopLevelFolderItem(String factoryName, Principal principal, String folderName) throws ClientException {
         super(factoryName, principal, null, null, folderName);
     }
 
@@ -62,8 +61,8 @@ public class DefaultTopLevelFolderItem extends AbstractVirtualFolderItem {
     public List<FileSystemItem> getChildren() throws ClientException {
 
         List<FileSystemItem> children = new ArrayList<FileSystemItem>();
-        Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getLocalService(
-                NuxeoDriveManager.class).getSynchronizationRoots(principal);
+        Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getLocalService(NuxeoDriveManager.class).getSynchronizationRoots(
+                principal);
         for (String repositoryName : syncRootsByRepo.keySet()) {
             CoreSession session = getSession(repositoryName);
             Set<IdRef> syncRootRefs = syncRootsByRepo.get(repositoryName).getRefs();
@@ -80,16 +79,14 @@ public class DefaultTopLevelFolderItem extends AbstractVirtualFolderItem {
                     continue;
                 }
                 DocumentModel doc = session.getDocument(idRef);
-                FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(
-                        doc, this);
+                FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(doc, this);
                 if (child == null) {
                     log.debug(String.format(
                             "Synchronization root %s cannot be adapted as a FileSystemItem, not including it in children.",
                             idRef));
                     continue;
                 }
-                log.debug(String.format(
-                        "Including synchronization root %s in children.", idRef));
+                log.debug(String.format("Including synchronization root %s in children.", idRef));
                 children.add(child);
             }
         }

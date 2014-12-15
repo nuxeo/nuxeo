@@ -32,9 +32,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Renames the {@link FileSystemItem} with the given id with the given name for
- * the currently authenticated user.
- *
+ * Renames the {@link FileSystemItem} with the given id with the given name for the currently authenticated user.
+ * 
  * @author Antoine Taillefer
  */
 @Operation(id = NuxeoDriveRename.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Rename")
@@ -52,8 +51,7 @@ public class NuxeoDriveRename {
     protected String name;
 
     @OperationMethod
-    public Blob run() throws ClientException, InvalidOperationException,
-            IOException {
+    public Blob run() throws ClientException, InvalidOperationException, IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         FileSystemItem fsItem;

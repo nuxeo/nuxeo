@@ -28,10 +28,9 @@ import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * XMap descriptor for factories contributed to the
- * {@code topLevelFolderItemFactory} extension point of the
+ * XMap descriptor for factories contributed to the {@code topLevelFolderItemFactory} extension point of the
  * {@link FileSystemItemAdapterService}.
- *
+ * 
  * @author Antoine Taillefer
  */
 @XObject("topLevelFolderItemFactory")
@@ -45,8 +44,7 @@ public class TopLevelFolderItemFactoryDescriptor implements Serializable {
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     protected Map<String, String> parameters = new HashMap<String, String>();
 
-    public TopLevelFolderItemFactory getFactory()
-            throws InstantiationException, IllegalAccessException,
+    public TopLevelFolderItemFactory getFactory() throws InstantiationException, IllegalAccessException,
             ClientException {
         TopLevelFolderItemFactory factory = factoryClass.newInstance();
         factory.setName(factory.getClass().getName());
@@ -58,8 +56,7 @@ public class TopLevelFolderItemFactoryDescriptor implements Serializable {
         return factoryClass;
     }
 
-    public void setFactoryClass(
-            Class<? extends TopLevelFolderItemFactory> factoryClass) {
+    public void setFactoryClass(Class<? extends TopLevelFolderItemFactory> factoryClass) {
         this.factoryClass = factoryClass;
     }
 
@@ -91,8 +88,7 @@ public class TopLevelFolderItemFactoryDescriptor implements Serializable {
         if (!(obj instanceof TopLevelFolderItemFactoryDescriptor)) {
             return false;
         }
-        return this.factoryClass.getName().equals(
-                ((TopLevelFolderItemFactoryDescriptor) obj).factoryClass.getName());
+        return this.factoryClass.getName().equals(((TopLevelFolderItemFactoryDescriptor) obj).factoryClass.getName());
     }
 
     @Override

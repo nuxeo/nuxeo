@@ -27,18 +27,16 @@ import org.nuxeo.drive.service.FileSystemItemChange;
 
 /**
  * {@link JsonDeserializer} for a {@link List<FileSystemItemChange>}.
- *
+ * 
  * @author Antoine Taillefer
  */
-public class FileSystemItemChangeListDeserializer extends
-        JsonDeserializer<List<FileSystemItemChange>> {
+public class FileSystemItemChangeListDeserializer extends JsonDeserializer<List<FileSystemItemChange>> {
 
     static final TypeReference<List<FileSystemItemChangeImpl>> LIST_TYPE = new TypeReference<List<FileSystemItemChangeImpl>>() {
     };
 
     @Override
-    public List<FileSystemItemChange> deserialize(JsonParser jp,
-            DeserializationContext dc) throws IOException {
+    public List<FileSystemItemChange> deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
         return jp.readValueAs(LIST_TYPE);
     }
 

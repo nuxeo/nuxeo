@@ -38,13 +38,12 @@ import com.google.inject.Inject;
 
 /**
  * Tests the {@link NuxeoDriveSetActiveFactories} operation.
- *
+ * 
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
 @Features(EmbeddedAutomationServerFeature.class)
-@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations",
-        "org.nuxeo.runtime.reload" })
+@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations", "org.nuxeo.runtime.reload" })
 @Jetty(port = 18080)
 public class TestActivateFactories {
 
@@ -61,31 +60,28 @@ public class TestActivateFactories {
         checkDefaultProfile();
 
         // Check unknown profile
-        Object result = clientSession.newRequest(
-                NuxeoDriveSetActiveFactories.ID).set("profile", "unknown").execute();
+        Object result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set("profile", "unknown").execute();
         assertFalse((Boolean) result);
 
         // Activate userworkspace factories
-        result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set(
-                "profile", "userworkspace").execute();
+        result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set("profile", "userworkspace").execute();
         assertTrue((Boolean) result);
         checkUserworkspaceProfile();
 
         // Deactivate userworkspace factories
-        result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set(
-                "profile", "userworkspace").set("enable", false).execute();
+        result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set("profile", "userworkspace").set(
+                "enable", false).execute();
         assertTrue((Boolean) result);
         checkDefaultProfile();
 
         // Activate permission factories
-        result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set(
-                "profile", "permission").execute();
+        result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set("profile", "permission").execute();
         assertTrue((Boolean) result);
         checkPermissionProfile();
 
         // Deactivate permission factories
-        result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set(
-                "profile", "permission").set("enable", false).execute();
+        result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set("profile", "permission").set("enable",
+                false).execute();
         assertTrue((Boolean) result);
         checkDefaultProfile();
 

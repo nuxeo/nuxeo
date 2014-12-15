@@ -28,27 +28,22 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Default {@link FileSystemItemFactory} for a synchronization root
- * {@link FolderItem}.
- *
+ * Default {@link FileSystemItemFactory} for a synchronization root {@link FolderItem}.
+ * 
  * @author Antoine Taillefer
  */
-public class DefaultSyncRootFolderItemFactory extends
-        AbstractSyncRootFolderItemFactory {
+public class DefaultSyncRootFolderItemFactory extends AbstractSyncRootFolderItemFactory {
 
     /*------------------- AbstractFileSystemItemFactory ---------------------*/
     @Override
-    protected FileSystemItem adaptDocument(DocumentModel doc,
-            boolean forceParentItem, FolderItem parentItem,
+    protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
             boolean relaxSyncRootConstraint) throws ClientException {
-        return new DefaultSyncRootFolderItem(name, parentItem, doc,
-                relaxSyncRootConstraint);
+        return new DefaultSyncRootFolderItem(name, parentItem, doc, relaxSyncRootConstraint);
     }
 
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/
     @Override
-    protected FolderItem getParentItem(DocumentModel doc)
-            throws ClientException {
+    protected FolderItem getParentItem(DocumentModel doc) throws ClientException {
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         Principal principal = doc.getCoreSession().getPrincipal();
         return fileSystemItemManager.getTopLevelFolder(principal);

@@ -25,42 +25,36 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 
 /**
  * A {@link FileSystemItemFactory} able to handle versioning.
- *
+ * 
  * @author Antoine Taillefer
  * @see DefaultFileSystemItemFactory
  */
 public interface VersioningFileSystemItemFactory extends FileSystemItemFactory {
 
     /**
-     * Returns true if the given {@link DocumentModel} needs to be versioned. An
-     * example of policy could be to version the document if the last
-     * modification was done more than {@link #getVersioningDelay()} seconds
-     * ago.
-     *
-     * @see DocumentBackedFileItem#versionIfNeeded(DocumentModel doc,
-     *      CoreSession session)
+     * Returns true if the given {@link DocumentModel} needs to be versioned. An example of policy could be to version
+     * the document if the last modification was done more than {@link #getVersioningDelay()} seconds ago.
+     * 
+     * @see DocumentBackedFileItem#versionIfNeeded(DocumentModel doc, CoreSession session)
      */
     boolean needsVersioning(DocumentModel doc) throws ClientException;
 
     /**
-     * Gets the delay passed which a document needs to be versioned since its
-     * last modification.
-     *
+     * Gets the delay passed which a document needs to be versioned since its last modification.
+     * 
      * @see DefaultFileSystemItemFactory#needsVersioning(DocumentModel)
      */
     double getVersioningDelay();
 
     /**
-     * Sets the delay passed which a document needs to be versioned since its
-     * last modification.
+     * Sets the delay passed which a document needs to be versioned since its last modification.
      */
     void setVersioningDelay(double versioningDelay);
 
     /**
      * Gets the increment option used when versioning a document.
-     *
-     * @see DocumentBackedFileItem#versionIfNeeded(DocumentModel doc,
-     *      CoreSession session)
+     * 
+     * @see DocumentBackedFileItem#versionIfNeeded(DocumentModel doc, CoreSession session)
      */
     VersioningOption getVersioningOption();
 

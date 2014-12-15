@@ -23,18 +23,16 @@ import org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * Interface for the classes contributed to the
- * {@code topLevelFolderItemFactory} extension point of the
+ * Interface for the classes contributed to the {@code topLevelFolderItemFactory} extension point of the
  * {@link FileSystemItemAdapterService}.
  * <p>
  * Allows to get the top level {@link FolderItem} for a given user.
- *
+ * 
  * @author Antoine Taillefer
  * @see DefaultTopLevelFolderItemFactory
  */
 public interface TopLevelFolderItemFactory extends VirtualFolderItemFactory {
 
-    FolderItem getTopLevelFolderItem(Principal principal)
-            throws ClientException;
+    FolderItem getTopLevelFolderItem(Principal principal) throws ClientException;
 
 }

@@ -31,7 +31,7 @@ import org.nuxeo.runtime.api.Framework;
  * <li>Server version</li>
  * <li>Nuxeo Drive update site URL</li>
  * </ul>
- *
+ * 
  * @author Antoine Taillefer
  */
 @Operation(id = NuxeoDriveGetClientUpdateInfo.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get client update information")
@@ -44,8 +44,7 @@ public class NuxeoDriveGetClientUpdateInfo {
 
         String serverVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
         String updateSiteURL = Framework.getProperty("org.nuxeo.drive.update.site.url");
-        NuxeoDriveClientUpdateInfo info = new NuxeoDriveClientUpdateInfo(
-                serverVersion, updateSiteURL);
+        NuxeoDriveClientUpdateInfo info = new NuxeoDriveClientUpdateInfo(serverVersion, updateSiteURL);
         return NuxeoDriveOperationHelper.asJSONBlob(info);
     }
 

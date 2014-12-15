@@ -25,15 +25,14 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Representation of a file system item, typically a file or a folder.
- *
+ * 
  * @author Antoine Taillefer
  * @see AbstractFileSystemItem
  * @see AbstractDocumentBackedFileSystemItem
  * @see FileItem
  * @see FolderItem
  */
-public interface FileSystemItem extends Comparable<FileSystemItem>,
-        Serializable {
+public interface FileSystemItem extends Comparable<FileSystemItem>, Serializable {
 
     /**
      * Gets a unique id generated server-side.
@@ -46,8 +45,7 @@ public interface FileSystemItem extends Comparable<FileSystemItem>,
     String getParentId();
 
     /**
-     * A concatenation of ancestor ids with '/' as prefix
-     * and separator.
+     * A concatenation of ancestor ids with '/' as prefix and separator.
      */
     String getPath();
 

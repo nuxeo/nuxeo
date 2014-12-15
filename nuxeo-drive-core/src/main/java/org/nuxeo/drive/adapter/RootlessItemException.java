@@ -19,8 +19,7 @@ package org.nuxeo.drive.adapter;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * Exception raised when recursive factory calls failed to find the ancestry to
- * a the top level folder.
+ * Exception raised when recursive factory calls failed to find the ancestry to a the top level folder.
  */
 public class RootlessItemException extends ClientException {
 

@@ -17,9 +17,8 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 
 /**
- * Fetch the list of the repositories registered on the server.
- *
- * TODO: move this to the list of default operations in 5.7.
+ * Fetch the list of the repositories registered on the server. TODO: move this to the list of default operations in
+ * 5.7.
  */
 @Operation(id = GetRepositoriesOperation.ID, category = Constants.CAT_FETCH, label = "List repository names on the server")
 public class GetRepositoriesOperation {

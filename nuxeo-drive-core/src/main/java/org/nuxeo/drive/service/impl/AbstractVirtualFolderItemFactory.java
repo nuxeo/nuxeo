@@ -32,11 +32,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Base {@link FileSystemItemFactory} for a virtual {@link FolderItem}.
- *
+ * 
  * @author Antoine Taillefer
  */
-public abstract class AbstractVirtualFolderItemFactory implements
-        VirtualFolderItemFactory {
+public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderItemFactory {
 
     private static final Log log = LogFactory.getLog(AbstractVirtualFolderItemFactory.class);
 
@@ -49,8 +48,7 @@ public abstract class AbstractVirtualFolderItemFactory implements
     protected String folderName = DEFAULT_FOLDER_NAME;
 
     @Override
-    public abstract FolderItem getVirtualFolderItem(Principal principal)
-            throws ClientException;
+    public abstract FolderItem getVirtualFolderItem(Principal principal) throws ClientException;
 
     @Override
     public String getName() {
@@ -63,8 +61,7 @@ public abstract class AbstractVirtualFolderItemFactory implements
     }
 
     @Override
-    public void handleParameters(Map<String, String> parameters)
-            throws ClientException {
+    public void handleParameters(Map<String, String> parameters) throws ClientException {
         // Look for the "folderName" parameter
         String folderNameParam = parameters.get(FOLDER_NAME_PARAM);
         if (!StringUtils.isEmpty(folderNameParam)) {
@@ -82,52 +79,45 @@ public abstract class AbstractVirtualFolderItemFactory implements
     }
 
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted)
-            throws ClientException {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException {
         return isFileSystemItem(doc, false, false);
     }
 
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted,
-            boolean relaxSyncRootConstraint) throws ClientException {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
+            throws ClientException {
         return false;
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc)
-            throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException {
         return getFileSystemItem(doc, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean includeDeleted) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException {
         return getFileSystemItem(doc, false, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean includeDeleted, boolean relaxSyncRootConstraint)
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
             throws ClientException {
         return null;
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            FolderItem parentItem) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem) throws ClientException {
         return getFileSystemItem(doc, parentItem, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            FolderItem parentItem, boolean includeDeleted)
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted)
             throws ClientException {
         return getFileSystemItem(doc, parentItem, false, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            FolderItem parentItem, boolean includeDeleted,
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
             boolean relaxSyncRootConstraint) throws ClientException {
         return null;
     }
@@ -138,25 +128,20 @@ public abstract class AbstractVirtualFolderItemFactory implements
     }
 
     @Override
-    public boolean exists(String id, Principal principal)
-            throws ClientException {
+    public boolean exists(String id, Principal principal) throws ClientException {
         if (!canHandleFileSystemItemId(id)) {
-            throw new UnsupportedOperationException(
-                    String.format(
-                            "Cannot check if a file system item exists for an id that cannot be handled from factory %s.",
-                            getName()));
+            throw new UnsupportedOperationException(String.format(
+                    "Cannot check if a file system item exists for an id that cannot be handled from factory %s.",
+                    getName()));
         }
         return true;
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, Principal principal)
-            throws ClientException {
+    public FileSystemItem getFileSystemItemById(String id, Principal principal) throws ClientException {
         if (!canHandleFileSystemItemId(id)) {
-            throw new UnsupportedOperationException(
-                    String.format(
-                            "Cannot get the file system item for an id that cannot be handled from factory %s.",
-                            getName()));
+            throw new UnsupportedOperationException(String.format(
+                    "Cannot get the file system item for an id that cannot be handled from factory %s.", getName()));
         }
         return getVirtualFolderItem(principal);
     }
