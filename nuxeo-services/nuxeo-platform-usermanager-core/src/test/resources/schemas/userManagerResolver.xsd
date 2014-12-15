@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://nuxeo.com/schemas/externalReferenceSample"
+  xmlns:nxs="http://nuxeo.com/schemas/resolver" xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/">
+
+  <xs:element name="user">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="userManagerResolver" ref:filter="user" />
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="group">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="userManagerResolver" ref:filter="group" />
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="userOrGroup">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="userManagerResolver" />
+    </xs:simpleType>
+  </xs:element>
+
+</xs:schema>
