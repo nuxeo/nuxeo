@@ -71,7 +71,8 @@ public class NuxeoLauncherGUI {
      * @since 5.6
      */
     protected ExecutorService newExecutor() {
-        return Executors.newCachedThreadPool(new DaemonThreadFactory("NuxeoLauncherGUITask"));
+        return Executors.newCachedThreadPool(new DaemonThreadFactory(
+                "NuxeoLauncherGUITask"));
     }
 
     protected NuxeoLauncher launcher;
@@ -99,7 +100,8 @@ public class NuxeoLauncherGUI {
         // Set OS-specific decorations
         if (PlatformUtils.isMac()) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
-            System.setProperty("com.apple.mrj.application.growbox.intrudes", "false");
+            System.setProperty("com.apple.mrj.application.growbox.intrudes",
+                    "false");
             System.setProperty("com.apple.mrj.application.live-resize", "true");
             System.setProperty("com.apple.macos.smallTabs", "true");
         }
@@ -127,7 +129,8 @@ public class NuxeoLauncherGUI {
                 updateServerStatus();
                 try {
                     Properties props = new Properties();
-                    props.load(new FileReader(getConfigurationGenerator().getDumpedConfig()));
+                    props.load(new FileReader(
+                            getConfigurationGenerator().getDumpedConfig()));
                     nuxeoFrame.updateLogsTab(props.getProperty("log.id"));
                 } catch (IOException e) {
                     log.error(e);
@@ -141,7 +144,8 @@ public class NuxeoLauncherGUI {
             dumpedConfigMonitor.addFile(dumpedConfig);
             dumpedConfigMonitor.start();
         } catch (FileSystemException e) {
-            throw new RuntimeException("Couldn't find " + getConfigurationGenerator().getNuxeoConf(), e);
+            throw new RuntimeException("Couldn't find "
+                    + getConfigurationGenerator().getNuxeoConf(), e);
         }
     }
 
@@ -160,8 +164,10 @@ public class NuxeoLauncherGUI {
                     nuxeoFrame.pack();
                     // Center frame
                     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                    nuxeoFrame.setLocation(screenSize.width / 2 - (nuxeoFrame.getWidth() / 2), screenSize.height / 2
-                            - (nuxeoFrame.getHeight() / 2));
+                    nuxeoFrame.setLocation(
+                            screenSize.width / 2 - (nuxeoFrame.getWidth() / 2),
+                            screenSize.height / 2
+                                    - (nuxeoFrame.getHeight() / 2));
                     nuxeoFrame.setVisible(true);
                 } catch (HeadlessException e) {
                     log.error(e);
@@ -230,7 +236,8 @@ public class NuxeoLauncherGUI {
     /**
      * Update interface information with current server status.
      *
-     * @see {@link NuxeoFrame#updateMainButton()} {@link NuxeoFrame#updateSummary()}
+     * @see {@link NuxeoFrame#updateMainButton()}
+     *      {@link NuxeoFrame#updateSummary()}
      */
     public void updateServerStatus() {
         waitForFrameLoaded();
@@ -240,8 +247,8 @@ public class NuxeoLauncherGUI {
     }
 
     /**
-     * Waits for the Launcher GUI frame being initialized. Should be called before any access to {@link NuxeoFrame} from
-     * this controller.
+     * Waits for the Launcher GUI frame being initialized. Should be called
+     * before any access to {@link NuxeoFrame} from this controller.
      */
     public void waitForFrameLoaded() {
         while (nuxeoFrame == null) {
@@ -309,7 +316,8 @@ public class NuxeoLauncherGUI {
             message = ResourceBundle.getBundle("i18n/messages").getString(key);
         } catch (MissingResourceException e) {
             log.debug(getMessage("missing.translation") + key);
-            message = ResourceBundle.getBundle("i18n/messages", Locale.ENGLISH).getString(key);
+            message = ResourceBundle.getBundle("i18n/messages", Locale.ENGLISH).getString(
+                    key);
         }
         return message;
     }
@@ -320,6 +328,7 @@ public class NuxeoLauncherGUI {
      * @param key Message key
      * @param params
      * @return Localized message value
+     *
      * @since 5.9.2
      */
     public static String getMessage(String key, Object... params) {

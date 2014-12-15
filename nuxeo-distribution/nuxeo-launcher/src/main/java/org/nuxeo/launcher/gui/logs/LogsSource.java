@@ -102,14 +102,14 @@ public class LogsSource extends Observable implements Runnable {
      * Ask thread to pause until {@link #resume()}
      */
     public synchronized void pause() {
-        pause = true;
+        this.pause = true;
     }
 
     /**
      * Resume thread after call to {@link #pause()}
      */
     public void resume() {
-        pause = false;
+        this.pause = false;
         synchronized (this) {
             notify();
         }

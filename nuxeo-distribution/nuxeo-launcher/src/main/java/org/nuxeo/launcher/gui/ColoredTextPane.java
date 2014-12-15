@@ -80,13 +80,14 @@ public class ColoredTextPane extends JTextPane {
 
     public ColoredTextPane() {
         style = new SimpleAttributeSet();
-        setContentType("text/rtf");
-        setEditorKit(new RTFEditorKit());
-        doc = getDocument();
+        this.setContentType("text/rtf");
+        this.setEditorKit(new RTFEditorKit());
+        doc = this.getDocument();
     }
 
     /**
-     * Append text at the end of document, choosing foreground and background colors, and bold attribute.
+     * Append text at the end of document, choosing foreground and background
+     * colors, and bold attribute.
      *
      * @param text Text to append
      * @param color Foreground color
@@ -121,8 +122,9 @@ public class ColoredTextPane extends JTextPane {
     }
 
     /**
-     * Calls {@link #append(String, Color, Color, Boolean)} with foreground color given as parameter, background color
-     * equal to component background and isBold equal to false.
+     * Calls {@link #append(String, Color, Color, Boolean)} with foreground
+     * color given as parameter, background color equal to component background
+     * and isBold equal to false.
      *
      * @see #append(String, Color, Color, boolean)
      */
@@ -131,7 +133,8 @@ public class ColoredTextPane extends JTextPane {
     }
 
     /**
-     * Calls {@link #append(String, Color, Color, Boolean)} with background color equal to component background.
+     * Calls {@link #append(String, Color, Color, Boolean)} with background
+     * color equal to component background.
      *
      * @see #append(String, Color, Color, boolean)
      */

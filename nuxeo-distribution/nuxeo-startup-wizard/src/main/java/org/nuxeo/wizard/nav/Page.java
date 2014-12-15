@@ -94,12 +94,13 @@ public class Page {
         }
     }
 
-    public void dispatchToJSP(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void dispatchToJSP(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         dispatchToJSP(req, resp, false);
     }
 
-    public void dispatchToJSP(HttpServletRequest req, HttpServletResponse resp, boolean postBack)
-            throws ServletException, IOException {
+    public void dispatchToJSP(HttpServletRequest req, HttpServletResponse resp,
+            boolean postBack) throws ServletException, IOException {
 
         // be sure to bind context
         Context.instance(req);
@@ -122,7 +123,6 @@ public class Page {
 
     }
 
-    @Override
     public String toString() {
         return action + ":" + jsp;
     }

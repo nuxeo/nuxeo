@@ -37,7 +37,8 @@ public class TestParser {
     @Test
     public void testParser1() {
 
-        InputStream stream = this.getClass().getResourceAsStream("/packages_old.xml");
+        InputStream stream = this.getClass().getResourceAsStream(
+                "/packages_old.xml");
         assertNotNull(stream);
 
         DownloadablePackageOptions pkgs = DownloadDescriptorParser.parsePackages(stream);
@@ -53,8 +54,10 @@ public class TestParser {
         assertEquals(true, pkgs.get(0).isExclusive());
         assertEquals(true, pkgs.get(1).isExclusive());
         assertEquals(true, pkgs.get(2).isExclusive());
-        assertEquals(false, pkgs.get(1).getChildrenPackages().get(0).isExclusive());
-        assertEquals(false, pkgs.get(1).getChildrenPackages().get(1).isExclusive());
+        assertEquals(false,
+                pkgs.get(1).getChildrenPackages().get(0).isExclusive());
+        assertEquals(false,
+                pkgs.get(1).getChildrenPackages().get(1).isExclusive());
 
         assertNull(pkgs.get(0).getPackage()); // Fake package
         assertNotNull(pkgs.get(1).getPackage());
@@ -88,7 +91,8 @@ public class TestParser {
     @Test
     public void testParserAndSelection() {
 
-        InputStream stream = this.getClass().getResourceAsStream("/packages.xml");
+        InputStream stream = this.getClass().getResourceAsStream(
+                "/packages.xml");
         assertNotNull(stream);
 
         DownloadablePackageOptions pkgs = DownloadDescriptorParser.parsePackages(stream);
@@ -114,7 +118,8 @@ public class TestParser {
         assertTrue(pkgs.getPkg4Install().get(0).isVirtual());
         assertEquals("nuxeo-dm", pkgs.getPkg4Install().get(1).getId());
         assertEquals("DM", pkgs.getPkg4Install().get(1).getShortLabel());
-        assertEquals("nuxeo-social-collaboration", pkgs.getPkg4Install().get(2).getId());
+        assertEquals("nuxeo-social-collaboration",
+                pkgs.getPkg4Install().get(2).getId());
         assertEquals("SC", pkgs.getPkg4Install().get(2).getShortLabel());
 
         selectedIds.clear();

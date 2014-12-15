@@ -62,7 +62,8 @@ public class PendingDownload {
     }
 
     public int getProgress() {
-        if (expectedLength == 0 || dowloadingFile == null || dowloadingFile.length() == 0) {
+        if (expectedLength == 0 || dowloadingFile == null
+                || dowloadingFile.length() == 0) {
             return 0;
         } else {
             return new Float((dowloadingFile.length() / expectedLength) * 100).intValue();
@@ -72,7 +73,8 @@ public class PendingDownload {
     @Override
     public boolean equals(Object other) {
         if (other instanceof PendingDownload) {
-            return ((PendingDownload) other).getPkg().getId().equals(pkg.getId());
+            return ((PendingDownload) other).getPkg().getId().equals(
+                    pkg.getId());
         }
         return false;
     }

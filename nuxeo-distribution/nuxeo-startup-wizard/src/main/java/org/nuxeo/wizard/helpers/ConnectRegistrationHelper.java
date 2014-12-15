@@ -46,7 +46,8 @@ public class ConnectRegistrationHelper {
         return connectRegistrationFilePath;
     }
 
-    public static void saveConnectRegistrationFile(Context ctx) throws IOException {
+    public static void saveConnectRegistrationFile(Context ctx)
+            throws IOException {
 
         String connectRegistrationFilePath = getConnectRegistrationFile(ctx);
 

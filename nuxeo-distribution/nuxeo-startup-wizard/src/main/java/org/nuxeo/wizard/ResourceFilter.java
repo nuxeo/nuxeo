@@ -29,14 +29,16 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Filter that let the default servlet handle the resources and forward processing calls to the servlet
+ * Filter that let the default servlet handle the resources and forward
+ * processing calls to the servlet
  *
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.4.2
  */
 public class ResourceFilter implements Filter {
 
-    protected String[] resourcesPrefix = { "/css/", "/images/", "/scripts/", "/jsp/" };
+    protected String[] resourcesPrefix = { "/css/", "/images/", "/scripts/",
+            "/jsp/" };
 
     protected boolean isResourceCall(String uri) {
         for (String prefix : resourcesPrefix) {
@@ -48,8 +50,8 @@ public class ResourceFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response,
+            FilterChain chain) throws IOException, ServletException {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
@@ -57,7 +59,8 @@ public class ResourceFilter implements Filter {
         uri = uri.replaceFirst(httpRequest.getContextPath(), "");
 
         if (!isResourceCall(uri)) {
-            request.getRequestDispatcher("/router" + uri).forward(request, response);
+            request.getRequestDispatcher("/router" + uri).forward(request,
+                    response);
         } else {
             chain.doFilter(httpRequest, response);
         }

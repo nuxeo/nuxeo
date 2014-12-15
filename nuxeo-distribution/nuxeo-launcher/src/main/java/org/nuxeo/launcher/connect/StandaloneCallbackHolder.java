@@ -48,12 +48,10 @@ public class StandaloneCallbackHolder implements CallbackHolder {
         this.pus = pus;
     }
 
-    @Override
     public PackageUpdateService getUpdateService() {
         return pus;
     }
 
-    @Override
     public boolean isTestModeSet() {
         return testMode;
     }
@@ -62,12 +60,10 @@ public class StandaloneCallbackHolder implements CallbackHolder {
         this.testMode = testMode;
     }
 
-    @Override
     public String getProperty(String key, String defaultValue) {
         return env.getProperty(key, defaultValue);
     }
 
-    @Override
     public String getHomePath() {
         try {
             return env.getServerHome().getCanonicalPath();

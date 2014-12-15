@@ -128,7 +128,7 @@ public class DownloadPackage {
     }
 
     public void setDownloadUrl(String url) {
-        downloadUrl = url;
+        this.downloadUrl = url;
     }
 
     public boolean isEnabled() {

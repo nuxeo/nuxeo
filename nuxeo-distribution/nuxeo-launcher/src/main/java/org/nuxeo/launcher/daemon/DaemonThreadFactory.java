@@ -23,10 +23,12 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * A factory to create daemon thread, this prevents the JVM to hang on exit waiting for non-daemon threads to finish.
+ * A factory to create daemon thread, this prevents the JVM to hang on exit
+ * waiting for non-daemon threads to finish.
  *
  * @author ben
  * @since 5.4.2
+ *
  */
 public class DaemonThreadFactory implements ThreadFactory {
 
@@ -57,7 +59,8 @@ public class DaemonThreadFactory implements ThreadFactory {
      */
     @Override
     public Thread newThread(final Runnable runnable) {
-        final Thread thread = new Thread(runnable, basename + "-" + count.getAndIncrement());
+        final Thread thread = new Thread(runnable, basename + "-"
+                + count.getAndIncrement());
         thread.setDaemon(isDaemon);
         return thread;
     }

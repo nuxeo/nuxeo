@@ -22,6 +22,7 @@ package org.nuxeo.launcher.gui.logs;
  * Thread wrapping {@link LogsSource}
  *
  * @author jcarsique
+ *
  */
 public class LogsSourceThread extends Thread {
     private LogsSource source;
@@ -35,7 +36,7 @@ public class LogsSourceThread extends Thread {
      */
     public LogsSourceThread(LogsSource logsSource) {
         super(logsSource);
-        source = logsSource;
+        this.source = logsSource;
     }
 
 }
