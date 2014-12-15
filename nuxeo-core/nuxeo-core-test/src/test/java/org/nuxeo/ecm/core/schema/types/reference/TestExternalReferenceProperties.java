@@ -7,7 +7,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.validation.DocumentValidationService.CTX_MAP_KEY;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -176,7 +178,7 @@ public class TestExternalReferenceProperties {
     }
 
     @Test
-    public void testDocumentCastAccessor1() {
+    public void testPropertyCastAccessor1() {
         prop().setReferencedEntity(PrimaryColor.BLUE);
         Color color = prop().getValue(Color.class);
         assertNotNull(color);
@@ -184,7 +186,7 @@ public class TestExternalReferenceProperties {
     }
 
     @Test
-    public void testDocumentCastAccessor2() {
+    public void testPropertyCastAccessor2() {
         prop().setReferencedEntity(PrimaryColor.BLUE);
         Color color = prop().getValue(PrimaryColor.class);
         assertNotNull(color);
@@ -192,22 +194,50 @@ public class TestExternalReferenceProperties {
     }
 
     @Test
-    public void testDocumentCastAccessorReturnNullWithNullValue() {
+    public void testPropertyCastAccessorReturnNullWithNullValue() {
         prop().setValue(null);
         assertNull(prop().getValue(Color.class));
     }
 
     @Test(expected = PropertyConversionException.class)
-    public void testDocumentCastAccessorReturnNullWithWrongType() {
+    public void testPropertyCastAccessorReturnNullWithWrongType() {
         prop().setReferencedEntity(PrimaryColor.BLUE);
         Color color = prop().getValue(SecondaryColor.class);
         assertNull(color);
     }
 
     @Test(expected = PropertyConversionException.class)
-    public void testDocumentCastAccessorWithInvalidValue() {
+    public void testPropertyCastAccessorWithInvalidValue() {
         prop().setValue("nimps");
         prop().getValue(Color.class);
+    }
+
+    @Test
+    public void testListOfReferences() {
+        Property list = doc.getProperty("ers:colorList");
+        assertFalse(list.isReference());
+        list.addValue(PrimaryColor.RED.name());
+        Property childProperty = list.get(0);
+        assertTrue(childProperty.isReference());
+        assertTrue(childProperty.getReferencedEntity() == PrimaryColor.RED);
+    }
+
+    @Test
+    public void testComplexReferenceList() {
+        Property list = doc.getProperty("ers:colorComplexList");
+        assertFalse(list.isReference());
+        Map<String, String> element = new HashMap<String, String>();
+        element.put("color1", PrimaryColor.RED.name());
+        element.put("color2", SecondaryColor.ORANGE.name());
+        list.addValue(element);
+        Property childProperty = list.get(0);
+        assertFalse(childProperty.isReference());
+        Property color1 = childProperty.get("color1");
+        assertTrue(color1.isReference());
+        assertTrue(color1.getReferencedEntity() == PrimaryColor.RED);
+        Property color2 = childProperty.get("color2");
+        assertTrue(color2.isReference());
+        assertTrue(color2.getReferencedEntity() == SecondaryColor.ORANGE);
     }
 
     private Property prop() {

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.storage.sql.tests.repo.core-types">
+<component name="org.nuxeo.ecm.core.tests.resolver">
 
   <extension target="org.nuxeo.ecm.core.schema.ExternalReferenceService" point="resolvers">
     <resolver type="colorReference" class="org.nuxeo.ecm.core.schema.types.reference.TestingColorDummyReferenceResolver" />

@@ -53,4 +53,39 @@
     </xs:simpleType>
   </xs:element>
 
+  <xs:element name="colorList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="color" minOccurs="0" maxOccurs="unbounded">
+          <xs:simpleType>
+            <xs:restriction base="xs:string" ref:resolver="colorReference" ref:mode="PRIMARY" />
+          </xs:simpleType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="colorComplexList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="association" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="color1">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string" ref:resolver="colorReference" ref:mode="PRIMARY" />
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="color2">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string" ref:resolver="colorReference" ref:mode="SECONDARY" />
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
 </xs:schema>
