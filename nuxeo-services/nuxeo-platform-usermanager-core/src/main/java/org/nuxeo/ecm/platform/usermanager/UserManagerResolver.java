@@ -13,7 +13,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class UserManagerResolver implements ExternalReferenceResolver {
 
-    public static final String INPUT_PARAM_FILTER = "filter";
+    public static final String INPUT_PARAM_FILTER = "type";
 
     public static final String FILTER_GROUP = "group";
 
