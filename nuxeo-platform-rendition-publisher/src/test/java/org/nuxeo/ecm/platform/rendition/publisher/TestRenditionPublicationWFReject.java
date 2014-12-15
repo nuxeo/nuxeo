@@ -73,8 +73,8 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.versioning.api", "org.nuxeo.ecm.platform.versioning", "org.nuxeo.ecm.relations",
         "org.nuxeo.ecm.relations.jena", "org.nuxeo.ecm.platform.publisher.core.contrib",
         "org.nuxeo.ecm.platform.publisher.core", "org.nuxeo.ecm.platform.publisher.task",
-        TaskUTConstants.CORE_BUNDLE_NAME, TaskUTConstants.TESTING_BUNDLE_NAME,
-        "org.nuxeo.ecm.platform.rendition.publisher" })
+        "org.nuxeo.ecm.platform.usermanager", TaskUTConstants.CORE_BUNDLE_NAME, TaskUTConstants.TESTING_BUNDLE_NAME,
+        "org.nuxeo.ecm.platform.rendition.publisher", "org.nuxeo.ecm.platform.mimetype.core" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.rendition.publisher:relations-default-jena-contrib.xml",
         "org.nuxeo.ecm.platform.rendition.publisher:test-sql-directories-contrib.xml" })
 public class TestRenditionPublicationWFReject {
