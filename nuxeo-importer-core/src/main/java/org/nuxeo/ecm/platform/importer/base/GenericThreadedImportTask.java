@@ -101,6 +101,12 @@ public class GenericThreadedImportTask implements Runnable {
 
     protected ImporterLogger rsLogger = null;
 
+    protected GenericThreadedImportTask(CoreSession session) {
+        this.session = session;
+        uploadedFiles = 0;
+        taskId = "T" + getNextTaskId();
+    }
+    
     protected GenericThreadedImportTask(CoreSession session, SourceNode rootSource, DocumentModel rootDoc,
             boolean skipContainerCreation, ImporterLogger rsLogger, int batchSize,
             ImporterDocumentModelFactory factory, ImporterThreadingPolicy threadPolicy) {
@@ -119,7 +125,6 @@ public class GenericThreadedImportTask implements Runnable {
         if (rootSource == null) {
             throw new IllegalArgumentException("source node must be specified");
         }
-
     }
 
     public GenericThreadedImportTask(String repositoryName, SourceNode rootSource, DocumentModel rootDoc,
