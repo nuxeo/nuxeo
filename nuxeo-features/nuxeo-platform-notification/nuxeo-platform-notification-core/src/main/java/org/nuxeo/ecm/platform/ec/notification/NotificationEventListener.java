@@ -220,7 +220,7 @@ public class NotificationEventListener implements
         return getUserManager().getUsersInGroupAndSubGroups(groupId);
     }
 
-    private void sendNotificationSignalForUser(Notification notification,
+    protected void sendNotificationSignalForUser(Notification notification,
             String subscriptor, Event event, DocumentEventContext ctx)
             throws ClientException {
 
