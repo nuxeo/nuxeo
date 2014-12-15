@@ -202,6 +202,7 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("Joe.odt", fsItem.getName());
         assertFalse(fsItem.isFolder());
         assertEquals("Administrator", fsItem.getCreator());
+        assertEquals("Administrator", fsItem.getLastContributor());
         Blob fileItemBlob = ((FileItem) fsItem).getBlob();
         assertEquals("Joe.odt", fileItemBlob.getFilename());
         assertEquals("Content of Joe's file.", fileItemBlob.getString());
@@ -216,6 +217,7 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("aNote.txt", fsItem.getName());
         assertFalse(fsItem.isFolder());
         assertEquals("Administrator", fsItem.getCreator());
+        assertEquals("Administrator", fsItem.getLastContributor());
         fileItemBlob = ((FileItem) fsItem).getBlob();
         assertEquals("aNote.txt", fileItemBlob.getFilename());
         assertEquals("Content of Bob's note.", fileItemBlob.getString());
@@ -230,6 +232,7 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("Bonnie's file.odt", fsItem.getName());
         assertFalse(fsItem.isFolder());
         assertEquals("Administrator", fsItem.getCreator());
+        assertEquals("Administrator", fsItem.getLastContributor());
         fileItemBlob = ((FileItem) fsItem).getBlob();
         assertEquals("Bonnie's file.odt", fileItemBlob.getFilename());
         assertEquals("Content of Bonnie's file.", fileItemBlob.getString());
@@ -281,6 +284,7 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("Jack's folder", fsItem.getName());
         assertTrue(fsItem.isFolder());
         assertEquals("Administrator", fsItem.getCreator());
+        assertEquals("Administrator", fsItem.getLastContributor());
         List<FileSystemItem> children = ((FolderItem) fsItem).getChildren();
         assertNotNull(children);
         assertEquals(0, children.size());
@@ -296,6 +300,7 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("Sarah's folderish file", fsItem.getName());
         assertTrue(fsItem.isFolder());
         assertEquals("Administrator", fsItem.getCreator());
+        assertEquals("Administrator", fsItem.getLastContributor());
 
         // ------------------------------------------------------
         // Check not downloadable nor folderish
