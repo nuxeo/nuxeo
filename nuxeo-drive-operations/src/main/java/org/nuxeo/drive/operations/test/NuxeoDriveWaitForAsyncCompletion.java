@@ -24,7 +24,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Waits for asynchronous event listener completion.
- *
+ * 
  * @author Antoine Taillefer
  */
 @Operation(id = NuxeoDriveWaitForAsyncCompletion.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Wait for async completion")

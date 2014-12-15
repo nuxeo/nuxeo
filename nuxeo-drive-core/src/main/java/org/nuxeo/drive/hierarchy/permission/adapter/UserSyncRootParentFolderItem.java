@@ -38,9 +38,8 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * User workspace based implementation of the parent {@link FolderItem} of the
- * user's synchronization roots.
- *
+ * User workspace based implementation of the parent {@link FolderItem} of the user's synchronization roots.
+ * 
  * @author Antoine Taillefer
  */
 public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
@@ -51,14 +50,13 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
 
     protected boolean isUserWorkspaceSyncRoot = false;
 
-    public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc,
-            FolderItem parentItem, String folderName) throws ClientException {
+    public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc, FolderItem parentItem, String folderName)
+            throws ClientException {
         this(factoryName, doc, parentItem, folderName, false);
     }
 
-    public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc,
-            FolderItem parentItem, String folderName,
-            boolean relaxSyncRootConstraint) throws ClientException {
+    public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc, FolderItem parentItem,
+            String folderName, boolean relaxSyncRootConstraint) throws ClientException {
         super(factoryName, parentItem, doc, relaxSyncRootConstraint);
         name = folderName;
         canRename = false;
@@ -73,20 +71,17 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
 
     @Override
     public void rename(String name) throws ClientException {
-        throw new UnsupportedOperationException(
-                "Cannot rename a virtual folder item.");
+        throw new UnsupportedOperationException("Cannot rename a virtual folder item.");
     }
 
     @Override
     public void delete() throws ClientException {
-        throw new UnsupportedOperationException(
-                "Cannot delete a virtual folder item.");
+        throw new UnsupportedOperationException("Cannot delete a virtual folder item.");
     }
 
     @Override
     public FileSystemItem move(FolderItem dest) throws ClientException {
-        throw new UnsupportedOperationException(
-                "Cannot move a virtual folder item.");
+        throw new UnsupportedOperationException("Cannot move a virtual folder item.");
     }
 
     @Override
@@ -96,8 +91,8 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
             return super.getChildren();
         } else {
             List<FileSystemItem> children = new ArrayList<FileSystemItem>();
-            Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getLocalService(
-                    NuxeoDriveManager.class).getSynchronizationRoots(principal);
+            Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getLocalService(NuxeoDriveManager.class).getSynchronizationRoots(
+                    principal);
             for (String repositoryName : syncRootsByRepo.keySet()) {
                 CoreSession session = getSession(repositoryName);
                 Set<IdRef> syncRootRefs = syncRootsByRepo.get(repositoryName).getRefs();
@@ -120,10 +115,8 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
                     // TODO: allow filtering by dc:creator in
                     // NuxeoDriveManager#getSynchronizationRoots(Principal
                     // principal)
-                    if (session.getPrincipal().getName().equals(
-                            doc.getPropertyValue("dc:creator"))) {
-                        FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(
-                                doc, this);
+                    if (session.getPrincipal().getName().equals(doc.getPropertyValue("dc:creator"))) {
+                        FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(doc, this);
                         if (child == null) {
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format(
@@ -133,9 +126,7 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
                             continue;
                         }
                         if (log.isDebugEnabled()) {
-                            log.debug(String.format(
-                                    "Including synchronization root %s in children.",
-                                    idRef));
+                            log.debug(String.format("Including synchronization root %s in children.", idRef));
                         }
                         children.add(child);
                     }
@@ -146,8 +137,7 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
         }
     }
 
-    private boolean isUserWorkspaceSyncRoot(DocumentModel doc)
-            throws ClientException {
+    private boolean isUserWorkspaceSyncRoot(DocumentModel doc) throws ClientException {
         NuxeoDriveManager nuxeoDriveManager = Framework.getLocalService(NuxeoDriveManager.class);
         return nuxeoDriveManager.isSynchronizationRoot(principal, doc);
     }

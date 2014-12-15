@@ -41,11 +41,10 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Default implementation of the {@link FileSystemItemAdapterService}.
- *
+ * 
  * @author Antoine Taillefer
  */
-public class FileSystemItemAdapterServiceImpl extends DefaultComponent
-        implements FileSystemItemAdapterService {
+public class FileSystemItemAdapterServiceImpl extends DefaultComponent implements FileSystemItemAdapterService {
 
     private static final Log log = LogFactory.getLog(FileSystemItemAdapterServiceImpl.class);
 
@@ -69,8 +68,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
 
     /*------------------------ DefaultComponent -----------------------------*/
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (FILE_SYSTEM_ITEM_FACTORY_EP.equals(extensionPoint)) {
             fileSystemItemFactoryRegistry.addContribution((FileSystemItemFactoryDescriptor) contribution);
         } else if (TOP_LEVEL_FOLDER_ITEM_FACTORY_EP.equals(extensionPoint)) {
@@ -87,8 +85,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (FILE_SYSTEM_ITEM_FACTORY_EP.equals(extensionPoint)) {
             fileSystemItemFactoryRegistry.removeContribution((FileSystemItemFactoryDescriptor) contribution);
         } else if (TOP_LEVEL_FOLDER_ITEM_FACTORY_EP.equals(extensionPoint)) {
@@ -127,61 +124,51 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
      * Sorts the contributed factories according to their order.
      */
     @Override
-    public void applicationStarted(ComponentContext context)
-            throws InstantiationException, IllegalAccessException,
+    public void applicationStarted(ComponentContext context) throws InstantiationException, IllegalAccessException,
             ClientException {
         setActiveFactories();
     }
 
     /*------------------------ FileSystemItemAdapterService -----------------------*/
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc)
-            throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException {
         return getFileSystemItem(doc, false, null, false, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean includeDeleted) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException {
         return getFileSystemItem(doc, false, null, includeDeleted, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean includeDeleted, boolean relaxSyncRootConstraint)
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
             throws ClientException {
-        return getFileSystemItem(doc, false, null, includeDeleted,
-                relaxSyncRootConstraint);
+        return getFileSystemItem(doc, false, null, includeDeleted, relaxSyncRootConstraint);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            FolderItem parentItem) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem) throws ClientException {
         return getFileSystemItem(doc, true, parentItem, false, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            FolderItem parentItem, boolean includeDeleted)
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted)
             throws ClientException {
         return getFileSystemItem(doc, true, parentItem, includeDeleted, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            FolderItem parentItem, boolean includeDeleted,
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
             boolean relaxSyncRootConstraint) throws ClientException {
-        return getFileSystemItem(doc, true, parentItem, includeDeleted,
-                relaxSyncRootConstraint);
+        return getFileSystemItem(doc, true, parentItem, includeDeleted, relaxSyncRootConstraint);
     }
 
     /**
-     * Iterates on the ordered contributed file system item factories until if
-     * finds one that can handle the given {@link FileSystemItem} id.
+     * Iterates on the ordered contributed file system item factories until if finds one that can handle the given
+     * {@link FileSystemItem} id.
      */
     @Override
-    public FileSystemItemFactory getFileSystemItemFactoryForId(String id)
-            throws ClientException {
+    public FileSystemItemFactory getFileSystemItemFactoryForId(String id) throws ClientException {
         Iterator<FileSystemItemFactoryWrapper> factoriesIt = fileSystemItemFactories.iterator();
         while (factoriesIt.hasNext()) {
             FileSystemItemFactoryWrapper factoryWrapper = factoriesIt.next();
@@ -201,8 +188,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     @Override
-    public TopLevelFolderItemFactory getTopLevelFolderItemFactory()
-            throws ClientException {
+    public TopLevelFolderItemFactory getTopLevelFolderItemFactory() throws ClientException {
         if (topLevelFolderItemFactory == null) {
             throw new NuxeoDriveContribException(
                     "Found no active top level folder item factory. Please check there is a contribution to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"topLevelFolderItemFactory\"> and to <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"activeTopLevelFolderItemFactory\">.");
@@ -211,8 +197,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     @Override
-    public VirtualFolderItemFactory getVirtualFolderItemFactory(
-            String factoryName) throws ClientException {
+    public VirtualFolderItemFactory getVirtualFolderItemFactory(String factoryName) throws ClientException {
         FileSystemItemFactory factory = getFileSystemItemFactory(factoryName);
         if (factory == null) {
             throw new NuxeoDriveContribException(
@@ -221,17 +206,15 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
                             factoryName));
         }
         if (!(factory instanceof VirtualFolderItemFactory)) {
-            throw new NuxeoDriveContribException(
-                    String.format(
-                            "Factory class %s for factory %s is not a VirtualFolderItemFactory.",
-                            factory.getClass().getName(), factory.getName()));
+            throw new NuxeoDriveContribException(String.format(
+                    "Factory class %s for factory %s is not a VirtualFolderItemFactory.", factory.getClass().getName(),
+                    factory.getName()));
         }
         return (VirtualFolderItemFactory) factory;
     }
 
     @Override
-    public Set<String> getActiveFileSystemItemFactories()
-            throws ClientException {
+    public Set<String> getActiveFileSystemItemFactories() throws ClientException {
         if (activeFileSystemItemFactoryRegistry.activeFactories.isEmpty()) {
             throw new NuxeoDriveContribException(
                     "Found no active file system item factories. Please check there is a contribution to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"activeFileSystemItemFactories\"> declaring at least one factory.");
@@ -256,47 +239,38 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
             }
         }
         if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "No fileSystemItemFactory named %s, returning null.", name));
+            log.debug(String.format("No fileSystemItemFactory named %s, returning null.", name));
         }
         return null;
     }
 
     /*--------------------------- Protected ---------------------------------------*/
-    protected void setActiveFactories() throws InstantiationException,
-            IllegalAccessException, ClientException {
+    protected void setActiveFactories() throws InstantiationException, IllegalAccessException, ClientException {
         topLevelFolderItemFactory = topLevelFolderItemFactoryRegistry.getActiveFactory(activeTopLevelFolderItemFactoryRegistry.activeFactory);
         fileSystemItemFactories = fileSystemItemFactoryRegistry.getOrderedActiveFactories(activeFileSystemItemFactoryRegistry.activeFactories);
     }
 
     /**
-     * Tries to adapt the given document as the top level {@link FolderItem}. If
-     * it doesn't match, iterates on the ordered contributed file system item
-     * factories until it finds one that matches and retrieves a non null
-     * {@link FileSystemItem} for the given document. A file system item factory
-     * matches if:
+     * Tries to adapt the given document as the top level {@link FolderItem}. If it doesn't match, iterates on the
+     * ordered contributed file system item factories until it finds one that matches and retrieves a non null
+     * {@link FileSystemItem} for the given document. A file system item factory matches if:
      * <ul>
-     * <li>It is not bound to any docType nor facet (this is the case for the
-     * default factory contribution {@code defaultFileSystemItemFactory} bound
-     * to {@link DefaultFileSystemItemFactory})</li>
+     * <li>It is not bound to any docType nor facet (this is the case for the default factory contribution
+     * {@code defaultFileSystemItemFactory} bound to {@link DefaultFileSystemItemFactory})</li>
      * <li>It is bound to a docType that matches the given doc's type</li>
      * <li>It is bound to a facet that matches one of the given doc's facets</li>
      * </ul>
      */
-    protected FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean forceParentItem, FolderItem parentItem,
-            boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException {
+    protected FileSystemItem getFileSystemItem(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
+            boolean includeDeleted, boolean relaxSyncRootConstraint) throws ClientException {
 
         FileSystemItem fileSystemItem = null;
 
         // Try the topLevelFolderItemFactory
         if (forceParentItem) {
-            fileSystemItem = getTopLevelFolderItemFactory().getFileSystemItem(
-                    doc, parentItem, includeDeleted);
+            fileSystemItem = getTopLevelFolderItemFactory().getFileSystemItem(doc, parentItem, includeDeleted);
         } else {
-            fileSystemItem = getTopLevelFolderItemFactory().getFileSystemItem(
-                    doc, includeDeleted);
+            fileSystemItem = getTopLevelFolderItemFactory().getFileSystemItem(doc, includeDeleted);
         }
         if (fileSystemItem != null) {
             return fileSystemItem;
@@ -313,37 +287,30 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         Iterator<FileSystemItemFactoryWrapper> factoriesIt = fileSystemItemFactories.iterator();
         while (factoriesIt.hasNext()) {
             FileSystemItemFactoryWrapper factory = factoriesIt.next();
-            if (generalFactoryMatches(factory)
-                    || docTypeFactoryMatches(factory, doc)
-                    || facetFactoryMatches(factory, doc,
-                            relaxSyncRootConstraint)) {
+            if (generalFactoryMatches(factory) || docTypeFactoryMatches(factory, doc)
+                    || facetFactoryMatches(factory, doc, relaxSyncRootConstraint)) {
                 matchingFactory = factory;
                 try {
                     if (forceParentItem) {
-                        fileSystemItem = factory.getFactory().getFileSystemItem(
-                                doc, parentItem, includeDeleted,
+                        fileSystemItem = factory.getFactory().getFileSystemItem(doc, parentItem, includeDeleted,
                                 relaxSyncRootConstraint);
                     } else {
-                        fileSystemItem = factory.getFactory().getFileSystemItem(
-                                doc, includeDeleted, relaxSyncRootConstraint);
+                        fileSystemItem = factory.getFactory().getFileSystemItem(doc, includeDeleted,
+                                relaxSyncRootConstraint);
                     }
                 } catch (RootlessItemException e) {
                     // Give more information in the exception message on the
                     // document whose adaption failed to recursively find the
                     // top level item.
-                    throw new RootlessItemException(String.format(
-                            "Cannot find path to registered top"
-                                    + " level when adapting document "
-                                    + " '%s' (path: %s) with factory %s",
-                            doc.getTitle(), doc.getPathAsString(),
-                            factory.getFactory().getName()), e);
+                    throw new RootlessItemException(String.format("Cannot find path to registered top"
+                            + " level when adapting document " + " '%s' (path: %s) with factory %s", doc.getTitle(),
+                            doc.getPathAsString(), factory.getFactory().getName()), e);
                 }
                 if (fileSystemItem != null) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format(
                                 "Adapted document '%s' (path: %s) to item with path %s with factory %s",
-                                doc.getTitle(), doc.getPathAsString(),
-                                fileSystemItem.getPath(),
+                                doc.getTitle(), doc.getPathAsString(), fileSystemItem.getPath(),
                                 factory.getFactory().getName()));
                     }
                     return fileSystemItem;
@@ -368,26 +335,21 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     protected boolean generalFactoryMatches(FileSystemItemFactoryWrapper factory) {
-        return StringUtils.isEmpty(factory.getDocType())
-                && StringUtils.isEmpty(factory.getFacet());
+        return StringUtils.isEmpty(factory.getDocType()) && StringUtils.isEmpty(factory.getFacet());
     }
 
-    protected boolean docTypeFactoryMatches(
-            FileSystemItemFactoryWrapper factory, DocumentModel doc) {
-        return !StringUtils.isEmpty(factory.getDocType())
-                && factory.getDocType().equals(doc.getType());
+    protected boolean docTypeFactoryMatches(FileSystemItemFactoryWrapper factory, DocumentModel doc) {
+        return !StringUtils.isEmpty(factory.getDocType()) && factory.getDocType().equals(doc.getType());
     }
 
-    protected boolean facetFactoryMatches(FileSystemItemFactoryWrapper factory,
-            DocumentModel doc, boolean relaxSyncRootConstraint)
-            throws ClientException {
+    protected boolean facetFactoryMatches(FileSystemItemFactoryWrapper factory, DocumentModel doc,
+            boolean relaxSyncRootConstraint) throws ClientException {
         if (!StringUtils.isEmpty(factory.getFacet())) {
             for (String docFacet : doc.getFacets()) {
                 if (factory.getFacet().equals(docFacet)) {
                     // Handle synchronization root case
                     if (NuxeoDriveManagerImpl.NUXEO_DRIVE_FACET.equals(docFacet)) {
-                        return syncRootFactoryMatches(doc,
-                                relaxSyncRootConstraint);
+                        return syncRootFactoryMatches(doc, relaxSyncRootConstraint);
                     } else {
                         return true;
                     }
@@ -398,8 +360,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     @SuppressWarnings("unchecked")
-    protected boolean syncRootFactoryMatches(DocumentModel doc,
-            boolean relaxSyncRootConstraint) throws ClientException {
+    protected boolean syncRootFactoryMatches(DocumentModel doc, boolean relaxSyncRootConstraint) throws ClientException {
         String userName = doc.getCoreSession().getPrincipal().getName();
         List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) doc.getPropertyValue(NuxeoDriveManagerImpl.DRIVE_SUBSCRIPTIONS_PROPERTY);
         for (Map<String, Object> subscription : subscriptions) {

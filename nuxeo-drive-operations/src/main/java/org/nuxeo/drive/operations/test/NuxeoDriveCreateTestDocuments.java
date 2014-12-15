@@ -31,7 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Create batch of test documents in a single automation query
- *
+ * 
  * @author Olivier Grisel
  */
 @Operation(id = NuxeoDriveCreateTestDocuments.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Create test documents")
@@ -63,11 +63,9 @@ public class NuxeoDriveCreateTestDocuments {
         FileManager fileManager = Framework.getLocalService(FileManager.class);
         for (int i = 0; i < number; i++) {
             String name = String.format(namePattern, i);
-            StreamingBlob content = StreamingBlob.createFromString(String.format(
-                    contentPattern, i));
+            StreamingBlob content = StreamingBlob.createFromString(String.format(contentPattern, i));
             content.setFilename(name);
-            fileManager.createDocumentFromBlob(session, content,
-                    parent.getPathAsString(), true, name);
+            fileManager.createDocumentFromBlob(session, content, parent.getPathAsString(), true, name);
             if (delay > 0) {
                 Thread.sleep(delay);
             }

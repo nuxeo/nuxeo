@@ -34,9 +34,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Updates the {@link FileSystemItem} with the given id with the given blob for
- * the currently authenticated user.
- *
+ * Updates the {@link FileSystemItem} with the given id with the given blob for the currently authenticated user.
+ * 
  * @author Antoine Taillefer
  */
 @Operation(id = NuxeoDriveUpdateFile.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Update file")
@@ -57,18 +56,15 @@ public class NuxeoDriveUpdateFile {
     protected String parentId;
 
     @OperationMethod
-    public Blob run(Blob blob) throws ClientException, ParseException,
-            IOException {
+    public Blob run(Blob blob) throws ClientException, ParseException, IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         NuxeoDriveOperationHelper.normalizeMimeTypeAndEncoding(blob);
         FileItem fileItem;
         if (parentId == null) {
-            fileItem = fileSystemItemManager.updateFile(id, blob,
-                    ctx.getPrincipal());
+            fileItem = fileSystemItemManager.updateFile(id, blob, ctx.getPrincipal());
         } else {
-            fileItem = fileSystemItemManager.updateFile(id, parentId, blob,
-                    ctx.getPrincipal());
+            fileItem = fileSystemItemManager.updateFile(id, parentId, blob, ctx.getPrincipal());
         }
 
         // Commit transaction explicitly to ensure client-side consistency

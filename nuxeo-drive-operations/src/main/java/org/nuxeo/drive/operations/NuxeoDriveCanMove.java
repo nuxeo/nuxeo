@@ -34,10 +34,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Checks if the {@link FileSystemItem} with the given source id can be moved to
- * the {@link FileSystemItem} with the given destination id for the currently
- * authenticated user.
- *
+ * Checks if the {@link FileSystemItem} with the given source id can be moved to the {@link FileSystemItem} with the
+ * given destination id for the currently authenticated user.
+ * 
  * @author Antoine Taillefer
  */
 @Operation(id = NuxeoDriveCanMove.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Can move")
@@ -61,14 +60,12 @@ public class NuxeoDriveCanMove {
         boolean canMove = false;
         try {
             FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
-            canMove = fileSystemItemManager.canMove(srcId, destId,
-                    ctx.getPrincipal());
+            canMove = fileSystemItemManager.canMove(srcId, destId, ctx.getPrincipal());
         } catch (RootlessItemException e) {
             // can happen if srcId or destId no longer match a document under an
             // active sync root: just return false in that case.
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Cannot move %s to %s: %s", srcId,
-                        destId, e.getMessage()), e);
+                log.debug(String.format("Cannot move %s to %s: %s", srcId, destId, e.getMessage()), e);
             }
         }
         return NuxeoDriveOperationHelper.asJSONBlob(canMove);

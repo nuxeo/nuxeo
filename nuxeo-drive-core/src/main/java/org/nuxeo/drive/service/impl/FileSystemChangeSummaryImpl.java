@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 
 /**
  * Default implementation of a {@link FileSystemChangeSummary}.
- *
+ * 
  * @author Antoine Taillefer
  */
 public class FileSystemChangeSummaryImpl implements FileSystemChangeSummary {
@@ -50,10 +50,8 @@ public class FileSystemChangeSummaryImpl implements FileSystemChangeSummary {
         // Needed for JSON deserialization
     }
 
-    public FileSystemChangeSummaryImpl(
-            List<FileSystemItemChange> fileSystemChanges,
-            Map<String, Set<IdRef>> activeRootRefs, Long syncDate,
-            Long upperBound, Boolean tooManyChanges) {
+    public FileSystemChangeSummaryImpl(List<FileSystemItemChange> fileSystemChanges,
+            Map<String, Set<IdRef>> activeRootRefs, Long syncDate, Long upperBound, Boolean tooManyChanges) {
         this.fileSystemChanges = fileSystemChanges;
         this.syncDate = syncDate;
         this.upperBound = upperBound;
@@ -61,12 +59,10 @@ public class FileSystemChangeSummaryImpl implements FileSystemChangeSummary {
         List<String> rootDefinitions = new ArrayList<String>();
         for (Map.Entry<String, Set<IdRef>> entry : activeRootRefs.entrySet()) {
             for (IdRef ref : entry.getValue()) {
-                rootDefinitions.add(String.format("%s:%s", entry.getKey(),
-                        ref.toString()));
+                rootDefinitions.add(String.format("%s:%s", entry.getKey(), ref.toString()));
             }
         }
-        this.activeSynchronizationRootDefinitions = StringUtils.join(
-                rootDefinitions, ",");
+        this.activeSynchronizationRootDefinitions = StringUtils.join(rootDefinitions, ",");
     }
 
     @Override
@@ -81,9 +77,8 @@ public class FileSystemChangeSummaryImpl implements FileSystemChangeSummary {
     }
 
     /**
-     * @return the time code of current sync operation in milliseconds since
-     *         1970-01-01 UTC rounded to the second as measured on the server
-     *         clock.
+     * @return the time code of current sync operation in milliseconds since 1970-01-01 UTC rounded to the second as
+     *         measured on the server clock.
      */
     @Override
     public Long getSyncDate() {
@@ -92,7 +87,7 @@ public class FileSystemChangeSummaryImpl implements FileSystemChangeSummary {
 
     /**
      * @return the last available log id in the audit log table
-     * */
+     */
     @Override
     public Long getUpperBound() {
         return upperBound;
@@ -104,8 +99,7 @@ public class FileSystemChangeSummaryImpl implements FileSystemChangeSummary {
     }
 
     @Override
-    public void setActiveSynchronizationRootDefinitions(
-            String activeSynchronizationRootDefinitions) {
+    public void setActiveSynchronizationRootDefinitions(String activeSynchronizationRootDefinitions) {
         this.activeSynchronizationRootDefinitions = activeSynchronizationRootDefinitions;
     }
 
@@ -138,8 +132,7 @@ public class FileSystemChangeSummaryImpl implements FileSystemChangeSummary {
         if (hasTooManyChanges) {
             sb.append("hasTooManyChanges=true");
         } else {
-            sb.append(String.format("items=[%s]",
-                    StringUtils.join(fileSystemChanges, ", ")));
+            sb.append(String.format("items=[%s]", StringUtils.join(fileSystemChanges, ", ")));
         }
         sb.append(")");
         return sb.toString();

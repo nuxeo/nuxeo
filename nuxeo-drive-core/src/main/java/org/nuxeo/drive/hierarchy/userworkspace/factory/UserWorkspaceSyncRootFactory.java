@@ -31,13 +31,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * User workspace based implementation of {@link FileSystemItemFactory} for a
- * synchronization root {@link FolderItem}.
- *
+ * User workspace based implementation of {@link FileSystemItemFactory} for a synchronization root {@link FolderItem}.
+ * 
  * @author Antoine Taillefer
  */
-public class UserWorkspaceSyncRootFactory extends
-        AbstractSyncRootFolderItemFactory {
+public class UserWorkspaceSyncRootFactory extends AbstractSyncRootFolderItemFactory {
 
     protected static final String SYNC_ROOT_PARENT_FACTORY_PARAM = "syncRootParentFactory";
 
@@ -45,8 +43,7 @@ public class UserWorkspaceSyncRootFactory extends
 
     /*------------------- AbstractFileSystemItemFactory ---------------------*/
     @Override
-    public void handleParameters(Map<String, String> parameters)
-            throws ClientException {
+    public void handleParameters(Map<String, String> parameters) throws ClientException {
         String syncRootParentFactoryParam = parameters.get(SYNC_ROOT_PARENT_FACTORY_PARAM);
         if (StringUtils.isEmpty(syncRootParentFactoryParam)) {
             throw new ClientException(
@@ -58,25 +55,21 @@ public class UserWorkspaceSyncRootFactory extends
     }
 
     @Override
-    protected FileSystemItem adaptDocument(DocumentModel doc,
-            boolean forceParentItem, FolderItem parentItem,
+    protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
             boolean relaxSyncRootConstraint) throws ClientException {
-        return new DefaultSyncRootFolderItem(name, parentItem, doc,
-                relaxSyncRootConstraint);
+        return new DefaultSyncRootFolderItem(name, parentItem, doc, relaxSyncRootConstraint);
     }
 
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/
     @Override
-    protected FolderItem getParentItem(DocumentModel doc)
-            throws ClientException {
+    protected FolderItem getParentItem(DocumentModel doc) throws ClientException {
         Principal principal = doc.getCoreSession().getPrincipal();
-        FolderItem parent = getFileSystemAdapterService().getVirtualFolderItemFactory(
-                syncRootParentFactoryName).getVirtualFolderItem(principal);
+        FolderItem parent = getFileSystemAdapterService().getVirtualFolderItemFactory(syncRootParentFactoryName).getVirtualFolderItem(
+                principal);
         if (parent == null) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot find the parent of document %s: virtual folder from factory %s.",
-                            doc.getId(), syncRootParentFactoryName));
+            throw new ClientException(String.format(
+                    "Cannot find the parent of document %s: virtual folder from factory %s.", doc.getId(),
+                    syncRootParentFactoryName));
         }
         return parent;
     }

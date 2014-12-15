@@ -29,9 +29,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
 
 /**
- * Activates / deactivates the {@link FileSystemItem} factories of the given
- * profile.
- *
+ * Activates / deactivates the {@link FileSystemItem} factories of the given profile.
+ * 
  * @author Antoine Taillefer
  */
 @Operation(id = NuxeoDriveSetActiveFactories.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Activate or deactivate file system item factories")
@@ -56,9 +55,7 @@ public class NuxeoDriveSetActiveFactories {
         } else if ("permission".equals(profile)) {
             contrib = "/OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml";
         } else {
-            log.warn(String.format(
-                    "No active file system item factory contribution for profile '%s'.",
-                    profile));
+            log.warn(String.format("No active file system item factory contribution for profile '%s'.", profile));
             return false;
         }
         URL url = NuxeoDriveSetActiveFactories.class.getResource(contrib);

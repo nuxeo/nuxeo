@@ -16,9 +16,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 
 /**
- * Fetch the list of the repositories registered on the server.
- *
- * TODO: move this to the list of default operations in 5.7.
+ * Fetch the list of the repositories registered on the server. TODO: move this to the list of default operations in
+ * 5.7.
  */
 @Operation(id = GetRepositoriesOperation.ID, category = Constants.CAT_FETCH, label = "List repository names on the server")
 public class GetRepositoriesOperation {
@@ -30,8 +29,7 @@ public class GetRepositoriesOperation {
 
     @OperationMethod
     public List<String> run() throws ClientException {
-        List<String> repositoryNames = new ArrayList<String>(
-                repositoryManager.getRepositoryNames());
+        List<String> repositoryNames = new ArrayList<String>(repositoryManager.getRepositoryNames());
         // Make order deterministic to make it simpler to write tests.
         Collections.sort(repositoryNames);
         return repositoryNames;

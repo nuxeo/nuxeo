@@ -32,40 +32,35 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * {@link FileSystemItemFactory} for a collection synchronization root
- * {@link FolderItem}.
- *
+ * {@link FileSystemItemFactory} for a collection synchronization root {@link FolderItem}.
+ * 
  * @author Antoine Taillefer
  * @since 6.0
  */
-public class CollectionSyncRootFolderItemFactory extends
-        DefaultSyncRootFolderItemFactory {
+public class CollectionSyncRootFolderItemFactory extends DefaultSyncRootFolderItemFactory {
 
     private static final Log log = LogFactory.getLog(CollectionSyncRootFolderItemFactory.class);
 
     public static final String FACTORY_NAME = "collectionSyncRootFolderItemFactory";
 
     /**
-     * The factory considers that a {@link DocumentModel} is adaptable as a
-     * {@link FileSystemItem} if:
+     * The factory considers that a {@link DocumentModel} is adaptable as a {@link FileSystemItem} if:
      * <ul>
      * <li>It is a Collection</li>
      * <li>AND it is not HiddenInNavigation</li>
-     * <li>AND it is not in the "deleted" life cycle state, unless
-     * {@code includeDeleted} is true</li>
-     * <li>AND it is a synchronization root registered for the current user,
-     * unless {@code relaxSyncRootConstraint} is true</li>
+     * <li>AND it is not in the "deleted" life cycle state, unless {@code includeDeleted} is true</li>
+     * <li>AND it is a synchronization root registered for the current user, unless {@code relaxSyncRootConstraint} is
+     * true</li>
      * </ul>
      */
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted,
-            boolean relaxSyncRootConstraint) throws ClientException {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
+            throws ClientException {
 
         // Check Collection
         if (!Framework.getService(CollectionManager.class).isCollection(doc)) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Document %s is not a Collection, it cannot be adapted as a FileSystemItem.",
+                log.debug(String.format("Document %s is not a Collection, it cannot be adapted as a FileSystemItem.",
                         doc.getId()));
             }
             return false;
@@ -73,15 +68,13 @@ public class CollectionSyncRootFolderItemFactory extends
         // Check HiddenInNavigation
         if (doc.hasFacet("HiddenInNavigation")) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Document %s is HiddenInNavigation, it cannot be adapted as a FileSystemItem.",
+                log.debug(String.format("Document %s is HiddenInNavigation, it cannot be adapted as a FileSystemItem.",
                         doc.getId()));
             }
             return false;
         }
         // Check "deleted" life cycle state
-        if (!includeDeleted
-                && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+        if (!includeDeleted && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "Document %s is in the '%s' life cycle state, it cannot be adapted as a FileSystemItem.",
@@ -93,8 +86,7 @@ public class CollectionSyncRootFolderItemFactory extends
             // Check synchronization root registered for the current user
             NuxeoDriveManager nuxeoDriveManager = Framework.getLocalService(NuxeoDriveManager.class);
             Principal principal = doc.getCoreSession().getPrincipal();
-            boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(
-                    principal, doc);
+            boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(principal, doc);
             if (!isSyncRoot) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
@@ -108,11 +100,9 @@ public class CollectionSyncRootFolderItemFactory extends
     }
 
     @Override
-    protected FileSystemItem adaptDocument(DocumentModel doc,
-            boolean forceParentItem, FolderItem parentItem,
+    protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
             boolean relaxSyncRootConstraint) throws ClientException {
-        return new CollectionSyncRootFolderItem(name, parentItem, doc,
-                relaxSyncRootConstraint);
+        return new CollectionSyncRootFolderItem(name, parentItem, doc, relaxSyncRootConstraint);
     }
 
 }

@@ -55,17 +55,14 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import com.google.inject.Inject;
 
 /**
- * Tests the {@link NuxeoDriveGetChangeSummary} operation on multiple
- * repositories.
- *
+ * Tests the {@link NuxeoDriveGetChangeSummary} operation on multiple repositories.
+ * 
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features({ H2OnlyFeature.class, TransactionalFeature.class,
-        EmbeddedAutomationServerFeature.class })
+@Features({ H2OnlyFeature.class, TransactionalFeature.class, EmbeddedAutomationServerFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.drive.core",
-        "org.nuxeo.drive.operations" })
+@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.drive.core", "org.nuxeo.drive.operations" })
 @LocalDeploy({ "org.nuxeo.drive.operations:drive-repo-ds.xml",
         "org.nuxeo.drive.operations:test-other-repository-config.xml" })
 @Jetty(port = 18080)
@@ -103,12 +100,9 @@ public class TestGetChangeSummaryMultiRepo {
         lastSyncDate = Calendar.getInstance().getTimeInMillis();
         lastSyncActiveRoots = "";
 
-        folder1 = session.createDocument(session.createDocumentModel("/",
-                "folder1", "Folder"));
-        folder2 = session.createDocument(session.createDocumentModel("/",
-                "folder2", "Folder"));
-        folder3 = otherSession.createDocument(otherSession.createDocumentModel(
-                "/", "folder3", "Folder"));
+        folder1 = session.createDocument(session.createDocumentModel("/", "folder1", "Folder"));
+        folder2 = session.createDocument(session.createDocumentModel("/", "folder2", "Folder"));
+        folder3 = otherSession.createDocument(otherSession.createDocumentModel("/", "folder3", "Folder"));
 
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
@@ -137,26 +131,20 @@ public class TestGetChangeSummaryMultiRepo {
         DocumentModel doc3;
 
         Principal administrator = session.getPrincipal();
-        nuxeoDriveManager.registerSynchronizationRoot(administrator, folder1,
-                session);
-        nuxeoDriveManager.registerSynchronizationRoot(administrator, folder2,
-                session);
-        nuxeoDriveManager.registerSynchronizationRoot(administrator, folder3,
-                otherSession);
+        nuxeoDriveManager.registerSynchronizationRoot(administrator, folder1, session);
+        nuxeoDriveManager.registerSynchronizationRoot(administrator, folder2, session);
+        nuxeoDriveManager.registerSynchronizationRoot(administrator, folder3, otherSession);
 
         doc1 = session.createDocumentModel("/folder1", "doc1", "File");
-        doc1.setPropertyValue("file:content", new StringBlob(
-                "The content of file 1."));
+        doc1.setPropertyValue("file:content", new StringBlob("The content of file 1."));
         doc1 = session.createDocument(doc1);
         Thread.sleep(1000);
         doc2 = session.createDocumentModel("/folder2", "doc2", "File");
-        doc2.setPropertyValue("file:content", new StringBlob(
-                "The content of file 2."));
+        doc2.setPropertyValue("file:content", new StringBlob("The content of file 2."));
         doc2 = session.createDocument(doc2);
         Thread.sleep(1000);
         doc3 = otherSession.createDocumentModel("/folder3", "doc3", "File");
-        doc3.setPropertyValue("file:content", new StringBlob(
-                "The content of file 3."));
+        doc3.setPropertyValue("file:content", new StringBlob("The content of file 3."));
         doc3 = otherSession.createDocument(doc3);
 
         TransactionHelper.commitOrRollbackTransaction();
@@ -201,13 +189,11 @@ public class TestGetChangeSummaryMultiRepo {
     protected FileSystemChangeSummary getChangeSummary() throws Exception {
         // Wait 1 second as the mock change finder relies on steps of 1 second
         Thread.sleep(1000);
-        Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(
-                NuxeoDriveGetChangeSummary.ID).set("lastSyncDate", lastSyncDate).set(
-                "lastSyncActiveRootDefinitions", lastSyncActiveRoots).execute();
+        Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(NuxeoDriveGetChangeSummary.ID).set("lastSyncDate",
+                lastSyncDate).set("lastSyncActiveRootDefinitions", lastSyncActiveRoots).execute();
         assertNotNull(docChangeSummaryJSON);
 
-        FileSystemChangeSummary changeSummary = mapper.readValue(
-                docChangeSummaryJSON.getStream(),
+        FileSystemChangeSummary changeSummary = mapper.readValue(docChangeSummaryJSON.getStream(),
                 FileSystemChangeSummaryImpl.class);
         assertNotNull(changeSummary);
 

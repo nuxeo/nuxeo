@@ -27,9 +27,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * Representation of a folder.
  * <p>
- * In the case of a {@link DocumentModel} backed implementation, the backing
- * document is Folderish. Typically a Folder or a Workspace.
- *
+ * In the case of a {@link DocumentModel} backed implementation, the backing document is Folderish. Typically a Folder
+ * or a Workspace.
+ * 
  * @author Antoine Taillefer
  * @see DocumentBackedFolderItem
  */

@@ -75,8 +75,7 @@ public class NuxeoDriveGetRootsOperation {
             } else {
                 if (allRepositories) {
                     // XXX: do we really need to implement this now?
-                    throw new RuntimeException(
-                            "Multi repo roots not yet implemented");
+                    throw new RuntimeException("Multi repo roots not yet implemented");
                 }
             }
         }

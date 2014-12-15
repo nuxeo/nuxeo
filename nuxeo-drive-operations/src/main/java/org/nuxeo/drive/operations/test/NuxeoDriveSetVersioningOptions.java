@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
  * <li>delay (default: 1 hour)</li>
  * <li>option (default: MINOR)</li>
  * </ul>
- *
+ * 
  * @author Antoine Taillefer
  */
 @Operation(id = NuxeoDriveSetVersioningOptions.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Set versioning options")

@@ -147,8 +147,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         if (doc.isFolder()) {
             return false;
         }
-        if (!documentManager.hasPermission(doc.getRef(),
-                SecurityConstants.WRITE)) {
+        if (!documentManager.hasPermission(doc.getRef(), SecurityConstants.WRITE)) {
             return false;
         }
         // Check if current document can be adapted as a FileSystemItem
@@ -166,31 +165,24 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     }
 
     /**
-     * {@link #NXDRIVE_PROTOCOL} must be handled by a protocol handler
-     * configured on the client side (either on the browser, or on the OS).
-     *
-     * @return Drive edit URL in the form "{@link #NXDRIVE_PROTOCOL}://
-     *         {@link #PROTOCOL_COMMAND_EDIT}
-     *         /protocol/server[:port]/webappName/repo/repoName/nxdocid/docId/
-     *         filename/fileName"
+     * {@link #NXDRIVE_PROTOCOL} must be handled by a protocol handler configured on the client side (either on the
+     * browser, or on the OS).
+     * 
+     * @return Drive edit URL in the form "{@link #NXDRIVE_PROTOCOL}:// {@link #PROTOCOL_COMMAND_EDIT}
+     *         /protocol/server[:port]/webappName/repo/repoName/nxdocid/docId/ filename/fileName"
      * @throws ClientException
-     *
      */
     public String getDriveEditURL() throws ClientException {
         // TODO NXP-15397: handle Drive not started exception
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         BlobHolder bh = currentDocument.getAdapter(BlobHolder.class);
         if (bh == null) {
-            throw new ClientException(
-                    String.format(
-                            "Document %s (%s) is not a BlobHolder, cannot get Drive Edit URL.",
-                            currentDocument.getPathAsString(),
-                            currentDocument.getId()));
+            throw new ClientException(String.format("Document %s (%s) is not a BlobHolder, cannot get Drive Edit URL.",
+                    currentDocument.getPathAsString(), currentDocument.getId()));
         }
         Blob blob = bh.getBlob();
         if (blob == null) {
-            throw new ClientException(String.format(
-                    "Document %s (%s) has no blob, cannot get Drive Edit URL.",
+            throw new ClientException(String.format("Document %s (%s) has no blob, cannot get Drive Edit URL.",
                     currentDocument.getPathAsString(), currentDocument.getId()));
         }
         String fileName = blob.getFilename();
@@ -205,8 +197,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         sb.append("/nxdocid/");
         sb.append(currentDocument.getId());
         sb.append("/filename/");
-        String escapedFilename = fileName.replaceAll(
-                "(/|\\\\|\\*|<|>|\\?|\"|:|\\|)", "-");
+        String escapedFilename = fileName.replaceAll("(/|\\\\|\\*|<|>|\\?|\"|:|\\|)", "-");
         sb.append(URIUtils.quoteURIPathComponent(escapedFilename, true));
         return sb.toString();
     }
@@ -221,8 +212,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         if (currentDocument == null) {
             return false;
         }
-        return isSyncRootCandidate(currentDocument)
-                && getCurrentSynchronizationRoot() == null;
+        return isSyncRootCandidate(currentDocument) && getCurrentSynchronizationRoot() == null;
     }
 
     @Factory(value = "canUnSynchronizeCurrentDocument")
@@ -243,8 +233,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     }
 
     @Factory(value = "canNavigateToCurrentSynchronizationRoot")
-    public boolean canNavigateToCurrentSynchronizationRoot()
-            throws ClientException {
+    public boolean canNavigateToCurrentSynchronizationRoot() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return false;
@@ -269,13 +258,11 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return UserWorkspaceHelper.isUserWorkspace(currentDocument);
     }
 
-    public String synchronizeCurrentDocument() throws ClientException,
-            SecurityException {
+    public String synchronizeCurrentDocument() throws ClientException, SecurityException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         Principal principal = documentManager.getPrincipal();
         DocumentModel newSyncRoot = navigationContext.getCurrentDocument();
-        driveManager.registerSynchronizationRoot(principal, newSyncRoot,
-                documentManager);
+        driveManager.registerSynchronizationRoot(principal, newSyncRoot, documentManager);
         boolean hasOneNuxeoDriveToken = hasOneDriveToken(principal);
         if (hasOneNuxeoDriveToken) {
             return null;
@@ -289,8 +276,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         Principal principal = documentManager.getPrincipal();
         DocumentModel syncRoot = navigationContext.getCurrentDocument();
-        driveManager.unregisterSynchronizationRoot(principal, syncRoot,
-                documentManager);
+        driveManager.unregisterSynchronizationRoot(principal, syncRoot, documentManager);
     }
 
     public String navigateToCurrentSynchronizationRoot() throws ClientException {
@@ -311,40 +297,31 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return syncRoots;
     }
 
-    public void unsynchronizeRoot(DocumentModel syncRoot)
-            throws ClientException {
+    public void unsynchronizeRoot(DocumentModel syncRoot) throws ClientException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         Principal principal = documentManager.getPrincipal();
-        driveManager.unregisterSynchronizationRoot(principal, syncRoot,
-                documentManager);
+        driveManager.unregisterSynchronizationRoot(principal, syncRoot, documentManager);
     }
 
     @Factory(value = "nuxeoDriveClientPackages", scope = ScopeType.CONVERSATION)
     public List<DesktopPackageDefinition> getClientPackages() {
         List<DesktopPackageDefinition> packages = new ArrayList<DesktopPackageDefinition>();
-        Object desktopPackageBaseURL = Component.getInstance(
-                "desktopPackageBaseURL", ScopeType.APPLICATION);
+        Object desktopPackageBaseURL = Component.getInstance("desktopPackageBaseURL", ScopeType.APPLICATION);
         // Add link to packages from the update site
         if (desktopPackageBaseURL != ObjectUtils.NULL) {
             // Mac OS X
             String packageName = DESKTOP_PACKAGE_PREFIX + DMG_EXTENSION;
             String packageURL = desktopPackageBaseURL + packageName;
-            packages.add(new DesktopPackageDefinition(packageURL, packageName,
-                    OSX_PLATFORM));
+            packages.add(new DesktopPackageDefinition(packageURL, packageName, OSX_PLATFORM));
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Added %s to the list of desktop packages available for download.",
-                        packageURL));
+                log.debug(String.format("Added %s to the list of desktop packages available for download.", packageURL));
             }
             // Windows
             packageName = DESKTOP_PACKAGE_PREFIX + MSI_EXTENSION;
             packageURL = desktopPackageBaseURL + packageName;
-            packages.add(new DesktopPackageDefinition(packageURL, packageName,
-                    WINDOWS_PLATFORM));
+            packages.add(new DesktopPackageDefinition(packageURL, packageName, WINDOWS_PLATFORM));
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Added %s to the list of desktop packages available for download.",
-                        packageURL));
+                log.debug(String.format("Added %s to the list of desktop packages available for download.", packageURL));
             }
         }
         // Debian / Ubuntu
@@ -377,8 +354,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return ComponentUtils.downloadFile(facesCtx, name, file);
     }
 
-    protected boolean isSyncRootCandidate(DocumentModel doc)
-            throws ClientException {
+    protected boolean isSyncRootCandidate(DocumentModel doc) throws ClientException {
         if (!doc.isFolder()) {
             return false;
         }
@@ -388,15 +364,13 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return true;
     }
 
-    protected FileSystemItem getFileSystemItem(DocumentModel doc)
-            throws ClientException {
+    protected FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException {
         // Force parentItem to null to avoid computing ancestors
-        FileSystemItem fileSystemItem = Framework.getLocalService(
-                FileSystemItemAdapterService.class).getFileSystemItem(doc, null);
+        FileSystemItem fileSystemItem = Framework.getLocalService(FileSystemItemAdapterService.class).getFileSystemItem(
+                doc, null);
         if (fileSystemItem == null) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Document %s (%s) is not adaptable as a FileSystemItem.",
+                log.debug(String.format("Document %s (%s) is not adaptable as a FileSystemItem.",
                         doc.getPathAsString(), doc.getId()));
             }
         }

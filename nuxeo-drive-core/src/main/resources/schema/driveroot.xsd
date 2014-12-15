@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
-<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/driveroot/"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/driveroot/">
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/driveroot/" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/driveroot/">
 
   <xs:complexType name="subscriptionsList">
     <xs:sequence>
-      <xs:element name="item" type="nxs:subscriptionItem" minOccurs="0"
-        maxOccurs="unbounded" />
+      <xs:element name="item" type="nxs:subscriptionItem" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 

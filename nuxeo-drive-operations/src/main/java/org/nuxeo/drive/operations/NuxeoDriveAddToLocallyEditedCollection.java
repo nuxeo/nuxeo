@@ -27,9 +27,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Adds the given {@link DocumentModel} to the
- * {@link NuxeoDriveManager#LOCALLY_EDITED_COLLECTION_NAME} collection.
- *
+ * Adds the given {@link DocumentModel} to the {@link NuxeoDriveManager#LOCALLY_EDITED_COLLECTION_NAME} collection.
+ * 
  * @author Antoine Taillefer
  * @since 6.0
  */

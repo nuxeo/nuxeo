@@ -31,9 +31,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Get the {@link FileSystemItem} with the given id for the currently
- * authenticated user.
- *
+ * Get the {@link FileSystemItem} with the given id for the currently authenticated user.
+ * 
  * @author Antoine Taillefer
  */
 @Operation(id = NuxeoDriveGetFileSystemItem.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get file system item")
@@ -59,11 +58,9 @@ public class NuxeoDriveGetFileSystemItem {
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         FileSystemItem fsItem;
         if (parentId == null) {
-            fsItem = fileSystemItemManager.getFileSystemItemById(id,
-                    ctx.getPrincipal());
+            fsItem = fileSystemItemManager.getFileSystemItemById(id, ctx.getPrincipal());
         } else {
-            fsItem = fileSystemItemManager.getFileSystemItemById(id, parentId,
-                    ctx.getPrincipal());
+            fsItem = fileSystemItemManager.getFileSystemItemById(id, parentId, ctx.getPrincipal());
         }
         return NuxeoDriveOperationHelper.asJSONBlob(fsItem);
     }

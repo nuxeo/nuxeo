@@ -21,9 +21,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RegistrationInfo;
 
 /**
- * Component used to deploy the Nuxeo Drive theme contribution only when not
- * using hot-reload to avoid the Nuxeo IDE crash at login. Uses the
- * {@link #activate(ComponentContext)} method.
+ * Component used to deploy the Nuxeo Drive theme contribution only when not using hot-reload to avoid the Nuxeo IDE
+ * crash at login. Uses the {@link #activate(ComponentContext)} method.
  */
 public class NuxeoDriveThemeActivationComponent extends DefaultComponent {
 

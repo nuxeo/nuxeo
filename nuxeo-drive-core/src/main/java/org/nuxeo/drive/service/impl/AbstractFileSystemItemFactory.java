@@ -35,14 +35,12 @@ import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Base class for {@link FileSystemItemFactory} implementers. It is
- * {@link DocumentModel} backed.
- *
+ * Base class for {@link FileSystemItemFactory} implementers. It is {@link DocumentModel} backed.
+ * 
  * @author Antoine Taillefer
  * @see DefaultFileSystemItemFactory
  */
-public abstract class AbstractFileSystemItemFactory implements
-        FileSystemItemFactory {
+public abstract class AbstractFileSystemItemFactory implements FileSystemItemFactory {
 
     private static final Log log = LogFactory.getLog(AbstractFileSystemItemFactory.class);
 
@@ -50,21 +48,18 @@ public abstract class AbstractFileSystemItemFactory implements
 
     /*--------------------------- FileSystemItemFactory ---------------------*/
     @Override
-    public abstract void handleParameters(Map<String, String> parameters)
-            throws ClientException;
+    public abstract void handleParameters(Map<String, String> parameters) throws ClientException;
 
     @Override
-    public abstract boolean isFileSystemItem(DocumentModel doc,
-            boolean includeDeleted, boolean relaxSyncRootConstraint)
+    public abstract boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
             throws ClientException;
 
     /**
      * Adapts the given {@link DocumentModel} to a {@link FileSystemItem}.
-     *
+     * 
      * @see #getFileSystemItem(DocumentModel, boolean, String, boolean)
      */
-    protected abstract FileSystemItem adaptDocument(DocumentModel doc,
-            boolean forceParentItem, FolderItem parentItem,
+    protected abstract FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
             boolean relaxSyncRootConstraint) throws ClientException;
 
     @Override
@@ -83,50 +78,41 @@ public abstract class AbstractFileSystemItemFactory implements
     }
 
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted)
-            throws ClientException {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException {
         return isFileSystemItem(doc, includeDeleted, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc)
-            throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException {
         return getFileSystemItem(doc, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean includeDeleted) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException {
         return getFileSystemItem(doc, false, null, includeDeleted, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean includeDeleted, boolean relaxSyncRootConstraint)
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
             throws ClientException {
-        return getFileSystemItem(doc, false, null, includeDeleted,
-                relaxSyncRootConstraint);
+        return getFileSystemItem(doc, false, null, includeDeleted, relaxSyncRootConstraint);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            FolderItem parentItem) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem) throws ClientException {
         return getFileSystemItem(doc, parentItem, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            FolderItem parentItem, boolean includeDeleted)
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted)
             throws ClientException {
         return getFileSystemItem(doc, true, parentItem, includeDeleted, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            FolderItem parentItem, boolean includeDeleted,
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
             boolean relaxSyncRootConstraint) throws ClientException {
-        return getFileSystemItem(doc, true, parentItem, includeDeleted,
-                relaxSyncRootConstraint);
+        return getFileSystemItem(doc, true, parentItem, includeDeleted, relaxSyncRootConstraint);
     }
 
     @Override
@@ -141,23 +127,20 @@ public abstract class AbstractFileSystemItemFactory implements
     }
 
     /**
-     * The default factory considers that a {@link FileSystemItem} with the
-     * given id exists if the backing {@link DocumentModel} can be fetched and
-     * {@link #isFileSystemItem(DocumentModel)} returns true.
-     *
+     * The default factory considers that a {@link FileSystemItem} with the given id exists if the backing
+     * {@link DocumentModel} can be fetched and {@link #isFileSystemItem(DocumentModel)} returns true.
+     * 
      * @see #isFileSystemItem(DocumentModel)
      */
     @Override
-    public boolean exists(String id, Principal principal)
-            throws ClientException {
+    public boolean exists(String id, Principal principal) throws ClientException {
         try {
             DocumentModel doc = getDocumentByFileSystemId(id, principal);
             return isFileSystemItem(doc);
         } catch (ClientException e) {
             if (e.getCause() instanceof NoSuchDocumentException) {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "No doc related to id %s, returning false.", id));
+                    log.debug(String.format("No doc related to id %s, returning false.", id));
                 }
                 return false;
             } else {
@@ -167,16 +150,14 @@ public abstract class AbstractFileSystemItemFactory implements
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, Principal principal)
-            throws ClientException {
+    public FileSystemItem getFileSystemItemById(String id, Principal principal) throws ClientException {
         try {
             DocumentModel doc = getDocumentByFileSystemId(id, principal);
             return getFileSystemItem(doc);
         } catch (ClientException e) {
             if (e.getCause() instanceof NoSuchDocumentException) {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "No doc related to id %s, returning null.", id));
+                    log.debug(String.format("No doc related to id %s, returning null.", id));
                 }
                 return null;
             } else {
@@ -187,24 +168,19 @@ public abstract class AbstractFileSystemItemFactory implements
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, String parentId,
-            Principal principal) throws ClientException {
+    public FileSystemItem getFileSystemItemById(String id, String parentId, Principal principal) throws ClientException {
         try {
-            FileSystemItem parentItem = Framework.getService(
-                    FileSystemItemAdapterService.class).getFileSystemItemFactoryForId(
+            FileSystemItem parentItem = Framework.getService(FileSystemItemAdapterService.class).getFileSystemItemFactoryForId(
                     parentId).getFileSystemItemById(parentId, principal);
             if (!(parentItem instanceof FolderItem)) {
-                throw new ClientException(String.format(
-                        "FileSystemItem with id %s should be a FolderItem",
-                        parentId));
+                throw new ClientException(String.format("FileSystemItem with id %s should be a FolderItem", parentId));
             }
             DocumentModel doc = getDocumentByFileSystemId(id, principal);
             return getFileSystemItem(doc, (FolderItem) parentItem);
         } catch (ClientException e) {
             if (e.getCause() instanceof NoSuchDocumentException) {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "No doc related to id %s, returning null.", id));
+                    log.debug(String.format("No doc related to id %s, returning null.", id));
                 }
                 return null;
             } else {
@@ -215,42 +191,35 @@ public abstract class AbstractFileSystemItemFactory implements
     }
 
     @Override
-    public DocumentModel getDocumentByFileSystemId(String id,
-            Principal principal) throws ClientException {
+    public DocumentModel getDocumentByFileSystemId(String id, Principal principal) throws ClientException {
         // Parse id, expecting
         // pattern:fileSystemItemFactoryName#repositoryName#docId
         String[] idFragments = parseFileSystemId(id);
         String repositoryName = idFragments[1];
         String docId = idFragments[2];
-        CoreSession session = Framework.getLocalService(
-                FileSystemItemManager.class).getSession(repositoryName,
+        CoreSession session = Framework.getLocalService(FileSystemItemManager.class).getSession(repositoryName,
                 principal);
         return getDocumentById(docId, session);
     }
 
     /*--------------------------- Protected ---------------------------------*/
-    protected FileSystemItem adaptDocument(DocumentModel doc,
-            boolean forceParentItem, FolderItem parentItem)
+    protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem)
             throws ClientException {
         return adaptDocument(doc, forceParentItem, parentItem, false);
     }
 
-    protected FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean forceParentItem, FolderItem parentItem,
-            boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException {
+    protected FileSystemItem getFileSystemItem(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
+            boolean includeDeleted, boolean relaxSyncRootConstraint) throws ClientException {
 
         // If the doc is not adaptable as a FileSystemItem return null
         if (!isFileSystemItem(doc, includeDeleted, relaxSyncRootConstraint)) {
             if (log.isTraceEnabled()) {
-                log.trace(String.format(
-                        "Document %s cannot be adapted as a FileSystemItem => returning null.",
+                log.trace(String.format("Document %s cannot be adapted as a FileSystemItem => returning null.",
                         doc.getId()));
             }
             return null;
         }
-        return adaptDocument(doc, forceParentItem, parentItem,
-                relaxSyncRootConstraint);
+        return adaptDocument(doc, forceParentItem, parentItem, relaxSyncRootConstraint);
     }
 
     protected String[] parseFileSystemId(String id) throws ClientException {
@@ -268,16 +237,14 @@ public abstract class AbstractFileSystemItemFactory implements
         // Check if factory name matches
         String factoryName = idFragments[0];
         if (!name.equals(factoryName)) {
-            throw new ClientException(
-                    String.format(
-                            "Factoy name [%s] parsed from id %s does not match the actual factory name [%s].",
-                            factoryName, id, name));
+            throw new ClientException(String.format(
+                    "Factoy name [%s] parsed from id %s does not match the actual factory name [%s].", factoryName, id,
+                    name));
         }
         return idFragments;
     }
 
-    protected DocumentModel getDocumentById(String docId, CoreSession session)
-            throws ClientException {
+    protected DocumentModel getDocumentById(String docId, CoreSession session) throws ClientException {
         return session.getDocument(new IdRef(docId));
     }
 

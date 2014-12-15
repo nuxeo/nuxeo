@@ -31,7 +31,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
  * Registry for the {@code activeFileSystemItemFactories} contributions.
- *
+ * 
  * @author Antoine Taillefer
  * @see FileSystemItemAdapterServiceImpl
  */
@@ -45,38 +45,28 @@ public class ActiveFileSystemItemFactoryRegistry extends
     protected Set<String> activeFactories = new HashSet<String>();
 
     @Override
-    public String getContributionId(
-            ActiveFileSystemItemFactoriesDescriptor contrib) {
+    public String getContributionId(ActiveFileSystemItemFactoriesDescriptor contrib) {
         return CONTRIBUTION_ID;
     }
 
     @Override
-    public void contributionUpdated(String id,
-            ActiveFileSystemItemFactoriesDescriptor contrib,
+    public void contributionUpdated(String id, ActiveFileSystemItemFactoriesDescriptor contrib,
             ActiveFileSystemItemFactoriesDescriptor newOrigContrib) {
         if (log.isTraceEnabled()) {
-            log.trace(String.format(
-                    "Updating activeFileSystemItemFactories contribution %s.",
-                    contrib));
+            log.trace(String.format("Updating activeFileSystemItemFactories contribution %s.", contrib));
         }
         if (contrib.isMerge()) {
             // Merge active factories
             for (ActiveFileSystemItemFactoryDescriptor factory : contrib.getFactories()) {
-                if (activeFactories.contains(factory.getName())
-                        && !factory.isEnabled()) {
+                if (activeFactories.contains(factory.getName()) && !factory.isEnabled()) {
                     if (log.isTraceEnabled()) {
-                        log.trace(String.format(
-                                "Removing factory %s from active factories.",
-                                factory.getName()));
+                        log.trace(String.format("Removing factory %s from active factories.", factory.getName()));
                     }
                     activeFactories.remove(factory.getName());
                 }
-                if (!activeFactories.contains(factory.getName())
-                        && factory.isEnabled()) {
+                if (!activeFactories.contains(factory.getName()) && factory.isEnabled()) {
                     if (log.isTraceEnabled()) {
-                        log.trace(String.format(
-                                "Adding factory %s to active factories.",
-                                factory.getName()));
+                        log.trace(String.format("Adding factory %s to active factories.", factory.getName()));
                     }
                     activeFactories.add(factory.getName());
                 }
@@ -84,17 +74,13 @@ public class ActiveFileSystemItemFactoryRegistry extends
         } else {
             // No merge, reset active factories
             if (log.isTraceEnabled()) {
-                log.trace(String.format(
-                        "Clearing active factories as contribution %s doesn't merge.",
-                        contrib));
+                log.trace(String.format("Clearing active factories as contribution %s doesn't merge.", contrib));
             }
             activeFactories.clear();
             for (ActiveFileSystemItemFactoryDescriptor factory : contrib.getFactories()) {
                 if (factory.isEnabled()) {
                     if (log.isTraceEnabled()) {
-                        log.trace(String.format(
-                                "Adding factory %s to active factories.",
-                                factory.getName()));
+                        log.trace(String.format("Adding factory %s to active factories.", factory.getName()));
                     }
                     activeFactories.add(factory.getName());
                 }
@@ -103,15 +89,13 @@ public class ActiveFileSystemItemFactoryRegistry extends
     }
 
     @Override
-    public void contributionRemoved(String id,
-            ActiveFileSystemItemFactoriesDescriptor origContrib) {
+    public void contributionRemoved(String id, ActiveFileSystemItemFactoriesDescriptor origContrib) {
         log.trace("Clearing active factories.");
         activeFactories.clear();
     }
 
     @Override
-    public ActiveFileSystemItemFactoriesDescriptor clone(
-            ActiveFileSystemItemFactoriesDescriptor orig) {
+    public ActiveFileSystemItemFactoriesDescriptor clone(ActiveFileSystemItemFactoriesDescriptor orig) {
         if (log.isTraceEnabled()) {
             log.trace(String.format("Cloning contribution %s.", orig));
         }
@@ -119,22 +103,18 @@ public class ActiveFileSystemItemFactoryRegistry extends
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(bos);
             oos.writeObject(orig);
-            ByteArrayInputStream bis = new ByteArrayInputStream(
-                    bos.toByteArray());
+            ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
             ObjectInputStream ois = new ObjectInputStream(bis);
             return (ActiveFileSystemItemFactoriesDescriptor) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            throw new ClientRuntimeException(String.format(
-                    "Cannot clone contribution %s.", orig), e);
+            throw new ClientRuntimeException(String.format("Cannot clone contribution %s.", orig), e);
         }
     }
 
     @Override
-    public void merge(ActiveFileSystemItemFactoriesDescriptor src,
-            ActiveFileSystemItemFactoriesDescriptor dst) {
+    public void merge(ActiveFileSystemItemFactoriesDescriptor src, ActiveFileSystemItemFactoriesDescriptor dst) {
         if (log.isTraceEnabled()) {
-            log.trace(String.format(
-                    "Merging contribution %s to contribution %s.", src, dst));
+            log.trace(String.format("Merging contribution %s to contribution %s.", src, dst));
         }
         // Merge
         if (src.isMerge() != dst.isMerge()) {
@@ -144,8 +124,7 @@ public class ActiveFileSystemItemFactoryRegistry extends
         for (ActiveFileSystemItemFactoryDescriptor factory : src.getFactories()) {
             int indexOfFactory = dst.getFactories().indexOf(factory);
             if (indexOfFactory > -1) {
-                dst.getFactories().get(indexOfFactory).setEnabled(
-                        factory.isEnabled());
+                dst.getFactories().get(indexOfFactory).setEnabled(factory.isEnabled());
             } else {
                 dst.getFactories().add(factory);
             }

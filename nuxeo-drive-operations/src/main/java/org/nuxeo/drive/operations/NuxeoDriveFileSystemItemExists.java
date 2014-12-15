@@ -31,9 +31,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Check if the {@link FileSystemItem} with the given id exists for the
- * currently authenticated user.
- *
+ * Check if the {@link FileSystemItem} with the given id exists for the currently authenticated user.
+ * 
  * @author Antoine Taillefer
  */
 @Operation(id = NuxeoDriveFileSystemItemExists.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: File system item exists")

@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
  * User workspace based implementation of the top level {@link FolderItem}.
  * <p>
  * Implements the following tree:
- *
+ * 
  * <pre>
  * Nuxeo Drive
  *  |-- User workspace child 1
@@ -45,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
  *         |-- Synchronized folder 2
  *         |-- ...
  * </pre>
- *
+ * 
  * @author Antoine Taillefer
  */
 public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
@@ -58,17 +58,13 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
 
     protected String syncRootParentFactoryName;
 
-    public UserWorkspaceTopLevelFolderItem(String factoryName,
-            DocumentModel userWorkspace, String folderName,
+    public UserWorkspaceTopLevelFolderItem(String factoryName, DocumentModel userWorkspace, String folderName,
             String syncRootParentFactoryName) throws ClientException {
-        this(factoryName, userWorkspace, folderName, syncRootParentFactoryName,
-                false);
+        this(factoryName, userWorkspace, folderName, syncRootParentFactoryName, false);
     }
 
-    public UserWorkspaceTopLevelFolderItem(String factoryName,
-            DocumentModel userWorkspace, String folderName,
-            String syncRootParentFactoryName, boolean relaxSyncRootConstraint)
-            throws ClientException {
+    public UserWorkspaceTopLevelFolderItem(String factoryName, DocumentModel userWorkspace, String folderName,
+            String syncRootParentFactoryName, boolean relaxSyncRootConstraint) throws ClientException {
         super(factoryName, null, userWorkspace, relaxSyncRootConstraint);
         name = folderName;
         canRename = false;
@@ -84,20 +80,17 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
     /*--------------------- AbstractFileSystemItem ---------------------*/
     @Override
     public void rename(String name) throws ClientException {
-        throw new UnsupportedOperationException(
-                "Cannot rename the top level folder item.");
+        throw new UnsupportedOperationException("Cannot rename the top level folder item.");
     }
 
     @Override
     public void delete() throws ClientException {
-        throw new UnsupportedOperationException(
-                "Cannot delete the top level folder item.");
+        throw new UnsupportedOperationException("Cannot delete the top level folder item.");
     }
 
     @Override
     public FileSystemItem move(FolderItem dest) throws ClientException {
-        throw new UnsupportedOperationException(
-                "Cannot move the top level folder item.");
+        throw new UnsupportedOperationException("Cannot move the top level folder item.");
     }
 
     /*--------------------- FolderItem -----------------*/
@@ -106,10 +99,8 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
 
         // Register user workspace as a synchronization root if it is not
         // already the case
-        if (!getNuxeoDriveManager().isSynchronizationRoot(principal,
-                userWorkspace)) {
-            getNuxeoDriveManager().registerSynchronizationRoot(principal,
-                    userWorkspace, getSession());
+        if (!getNuxeoDriveManager().isSynchronizationRoot(principal, userWorkspace)) {
+            getNuxeoDriveManager().registerSynchronizationRoot(principal, userWorkspace, getSession());
         }
 
         List<FileSystemItem> children = new ArrayList<FileSystemItem>();

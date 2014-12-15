@@ -22,7 +22,7 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 
 /**
  * Representation of a file system item change.
- *
+ * 
  * @author Antoine Taillefer
  */
 public interface FileSystemItemChange extends Serializable {

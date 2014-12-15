@@ -74,11 +74,9 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 /**
- * Manage list of NuxeoDrive synchronization roots and devices for a given nuxeo
- * user.
+ * Manage list of NuxeoDrive synchronization roots and devices for a given nuxeo user.
  */
-public class NuxeoDriveManagerImpl extends DefaultComponent implements
-        NuxeoDriveManager {
+public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriveManager {
 
     private static final Log log = LogFactory.getLog(NuxeoDriveManagerImpl.class);
 
@@ -93,14 +91,13 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     protected static final long COLLECTION_CONTENT_PAGE_SIZE = 1000L;
 
     /**
-     * Cache holding the synchronization roots for a given user (first map key)
-     * and repository (second map key).
+     * Cache holding the synchronization roots for a given user (first map key) and repository (second map key).
      */
     protected Cache<String, Map<String, SynchronizationRoots>> syncRootCache;
 
     /**
-     * Cache holding the collection sync root member ids for a given user (first
-     * map key) and repository (second map key).
+     * Cache holding the collection sync root member ids for a given user (first map key) and repository (second map
+     * key).
      */
     protected Cache<String, Map<String, Set<String>>> collectionSyncRootMemberCache;
 
@@ -108,10 +105,10 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     protected FileSystemChangeFinder changeFinder = new AuditChangeFinder();
 
     public NuxeoDriveManagerImpl() {
-        syncRootCache = CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(
-                10000).expireAfterWrite(1, TimeUnit.MINUTES).build();
-        collectionSyncRootMemberCache = CacheBuilder.newBuilder().concurrencyLevel(
-                4).maximumSize(10000).expireAfterWrite(1, TimeUnit.MINUTES).build();
+        syncRootCache = CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(10000).expireAfterWrite(1,
+                TimeUnit.MINUTES).build();
+        collectionSyncRootMemberCache = CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(10000).expireAfterWrite(
+                1, TimeUnit.MINUTES).build();
     }
 
     protected void clearCache() {
@@ -123,8 +120,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     @Override
     public void invalidateSynchronizationRootsCache(String userName) {
         if (log.isDebugEnabled()) {
-            log.debug("Invalidating synchronization root cache for user: "
-                    + userName);
+            log.debug("Invalidating synchronization root cache for user: " + userName);
         }
         syncRootCache.invalidate(userName);
     }
@@ -132,8 +128,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     @Override
     public void invalidateCollectionSyncRootMemberCache(String userName) {
         if (log.isDebugEnabled()) {
-            log.debug("Invalidating collection sync root member cache for user: "
-                    + userName);
+            log.debug("Invalidating collection sync root member cache for user: " + userName);
         }
         collectionSyncRootMemberCache.invalidate(userName);
     }
@@ -145,9 +140,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public void registerSynchronizationRoot(Principal principal,
-            final DocumentModel newRootContainer, CoreSession session)
-            throws ClientException {
+    public void registerSynchronizationRoot(Principal principal, final DocumentModel newRootContainer,
+            CoreSession session) throws ClientException {
         final String userName = principal.getName();
         // If new root is child of a sync root, ignore registration, except for
         // the 'Locally Edited' collection: it is under the personal workspace
@@ -159,24 +153,21 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             for (String syncRootPath : synchronizationRoots.getPaths()) {
                 String syncRootPrefixedPath = syncRootPath + "/";
 
-                if (newRootContainer.getPathAsString().startsWith(
-                        syncRootPrefixedPath)) {
+                if (newRootContainer.getPathAsString().startsWith(syncRootPrefixedPath)) {
                     // the only exception is when the right inheritance is
                     // blocked
                     // in the hierarchy
                     boolean rightInheritanceBlockedInTheHierarchy = false;
                     // should get only parents up to the sync root
 
-                    Path parentPath = newRootContainer.getPath().removeLastSegments(
-                            1);
+                    Path parentPath = newRootContainer.getPath().removeLastSegments(1);
                     while (!"/".equals(parentPath.toString())) {
                         String parentPathAsString = parentPath.toString() + "/";
                         if (!parentPathAsString.startsWith(syncRootPrefixedPath)) {
                             break;
                         }
                         PathRef parentRef = new PathRef(parentPathAsString);
-                        if (!session.hasPermission(principal, parentRef,
-                                SecurityConstants.READ)) {
+                        if (!session.hasPermission(principal, parentRef, SecurityConstants.READ)) {
                             rightInheritanceBlockedInTheHierarchy = true;
                             break;
                         }
@@ -201,23 +192,20 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                     PathRef ref = new PathRef(existingRootPath);
                     if (session.exists(ref)) {
                         DocumentModel subFolder = session.getDocument(ref);
-                        unregisterSynchronizationRoot(principal, subFolder,
-                                session);
+                        unregisterSynchronizationRoot(principal, subFolder, session);
                     }
                 }
             }
         }
 
-        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(
-                session) {
+        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(session) {
             @Override
             public void run() throws ClientException {
                 if (!newRootContainer.hasFacet(NUXEO_DRIVE_FACET)) {
                     newRootContainer.addFacet(NUXEO_DRIVE_FACET);
                 }
 
-                fireEvent(newRootContainer, session,
-                        NuxeoDriveEvents.ABOUT_TO_REGISTER_ROOT, userName);
+                fireEvent(newRootContainer, session, NuxeoDriveEvents.ABOUT_TO_REGISTER_ROOT, userName);
 
                 @SuppressWarnings("unchecked")
                 List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) newRootContainer.getPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY);
@@ -225,8 +213,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 for (Map<String, Object> subscription : subscriptions) {
                     if (userName.equals(subscription.get("username"))) {
                         subscription.put("enabled", Boolean.TRUE);
-                        subscription.put("lastChangeDate",
-                                Calendar.getInstance(UTC));
+                        subscription.put("lastChangeDate", Calendar.getInstance(UTC));
                         updated = true;
                         break;
                     }
@@ -235,25 +222,16 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                     Map<String, Object> subscription = new HashMap<String, Object>();
                     subscription.put("username", userName);
                     subscription.put("enabled", Boolean.TRUE);
-                    subscription.put("lastChangeDate",
-                            Calendar.getInstance(UTC));
+                    subscription.put("lastChangeDate", Calendar.getInstance(UTC));
                     subscriptions.add(subscription);
                 }
-                newRootContainer.setPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY,
-                        (Serializable) subscriptions);
-                newRootContainer.putContextData(
-                        NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
-                newRootContainer.putContextData(
-                        NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
-                        true);
+                newRootContainer.setPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY, (Serializable) subscriptions);
+                newRootContainer.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
+                newRootContainer.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
                 DocumentModel savedNewRootContainer = session.saveDocument(newRootContainer);
-                newRootContainer.putContextData(
-                        NXAuditEventsService.DISABLE_AUDIT_LOGGER, false);
-                newRootContainer.putContextData(
-                        NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
-                        false);
-                fireEvent(savedNewRootContainer, session,
-                        NuxeoDriveEvents.ROOT_REGISTERED, userName);
+                newRootContainer.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, false);
+                newRootContainer.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, false);
+                fireEvent(savedNewRootContainer, session, NuxeoDriveEvents.ROOT_REGISTERED, userName);
                 session.save();
             }
         };
@@ -264,45 +242,33 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterSynchronizationRoot(Principal principal,
-            final DocumentModel rootContainer, CoreSession session)
-            throws ClientException {
+    public void unregisterSynchronizationRoot(Principal principal, final DocumentModel rootContainer,
+            CoreSession session) throws ClientException {
         final String userName = principal.getName();
         checkCanUpdateSynchronizationRoot(rootContainer, session);
-        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(
-                session) {
+        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(session) {
             @Override
             public void run() throws ClientException {
                 if (!rootContainer.hasFacet(NUXEO_DRIVE_FACET)) {
                     rootContainer.addFacet(NUXEO_DRIVE_FACET);
                 }
-                fireEvent(rootContainer, session,
-                        NuxeoDriveEvents.ABOUT_TO_UNREGISTER_ROOT, userName);
+                fireEvent(rootContainer, session, NuxeoDriveEvents.ABOUT_TO_UNREGISTER_ROOT, userName);
                 @SuppressWarnings("unchecked")
                 List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) rootContainer.getPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY);
                 for (Map<String, Object> subscription : subscriptions) {
                     if (userName.equals(subscription.get("username"))) {
                         subscription.put("enabled", Boolean.FALSE);
-                        subscription.put("lastChangeDate",
-                                Calendar.getInstance(UTC));
+                        subscription.put("lastChangeDate", Calendar.getInstance(UTC));
                         break;
                     }
                 }
-                rootContainer.setPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY,
-                        (Serializable) subscriptions);
-                rootContainer.putContextData(
-                        NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
-                rootContainer.putContextData(
-                        NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
-                        true);
+                rootContainer.setPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY, (Serializable) subscriptions);
+                rootContainer.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
+                rootContainer.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
                 session.saveDocument(rootContainer);
-                rootContainer.putContextData(
-                        NXAuditEventsService.DISABLE_AUDIT_LOGGER, false);
-                rootContainer.putContextData(
-                        NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
-                        false);
-                fireEvent(rootContainer, session,
-                        NuxeoDriveEvents.ROOT_UNREGISTERED, userName);
+                rootContainer.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, false);
+                rootContainer.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, false);
+                fireEvent(rootContainer, session, NuxeoDriveEvents.ROOT_UNREGISTERED, userName);
                 session.save();
             }
         };
@@ -312,8 +278,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public Set<IdRef> getSynchronizationRootReferences(CoreSession session)
-            throws ClientException {
+    public Set<IdRef> getSynchronizationRootReferences(CoreSession session) throws ClientException {
         Map<String, SynchronizationRoots> syncRoots = getSynchronizationRoots(session.getPrincipal());
         return syncRoots.get(session.getRepositoryName()).getRefs();
     }
@@ -323,70 +288,53 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         clearCache();
     }
 
-    protected void fireEvent(DocumentModel sourceDocument, CoreSession session,
-            String eventName, String impactedUserName) throws ClientException {
+    protected void fireEvent(DocumentModel sourceDocument, CoreSession session, String eventName,
+            String impactedUserName) throws ClientException {
         EventService eventService = Framework.getLocalService(EventService.class);
-        DocumentEventContext ctx = new DocumentEventContext(session,
-                session.getPrincipal(), sourceDocument);
-        ctx.setProperty(CoreEventConstants.REPOSITORY_NAME,
-                session.getRepositoryName());
+        DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), sourceDocument);
+        ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());
         ctx.setProperty(CoreEventConstants.SESSION_ID, session.getSessionId());
         ctx.setProperty("category", NuxeoDriveEvents.EVENT_CATEGORY);
-        ctx.setProperty(NuxeoDriveEvents.IMPACTED_USERNAME_PROPERTY,
-                impactedUserName);
+        ctx.setProperty(NuxeoDriveEvents.IMPACTED_USERNAME_PROPERTY, impactedUserName);
         Event event = ctx.newEvent(eventName);
         eventService.fireEvent(event);
     }
 
     /**
-     * Uses the {@link AuditChangeFinder} to get the summary of document changes
-     * for the given user and last successful synchronization date.
+     * Uses the {@link AuditChangeFinder} to get the summary of document changes for the given user and last successful
+     * synchronization date.
      * <p>
-     * The {@link #DOCUMENT_CHANGE_LIMIT_PROPERTY} Framework property is used as
-     * a limit of document changes to fetch from the audit logs. Default value
-     * is 1000.
-     *
-     * If {@code lastSuccessfulSync} is missing (i.e. set to a negative value),
-     * the filesystem change summary is empty but the returned sync date is set
-     * to the actual server timestamp so that the client can reuse it as a
-     * starting timestamp for a future incremental diff request.
+     * The {@link #DOCUMENT_CHANGE_LIMIT_PROPERTY} Framework property is used as a limit of document changes to fetch
+     * from the audit logs. Default value is 1000. If {@code lastSuccessfulSync} is missing (i.e. set to a negative
+     * value), the filesystem change summary is empty but the returned sync date is set to the actual server timestamp
+     * so that the client can reuse it as a starting timestamp for a future incremental diff request.
      */
     @Override
-    public FileSystemChangeSummary getChangeSummary(Principal principal,
-            Map<String, Set<IdRef>> lastSyncRootRefs, long lastSuccessfulSync)
-            throws ClientException {
+    public FileSystemChangeSummary getChangeSummary(Principal principal, Map<String, Set<IdRef>> lastSyncRootRefs,
+            long lastSuccessfulSync) throws ClientException {
         Map<String, SynchronizationRoots> roots = getSynchronizationRoots(principal);
-        return getChangeSummary(principal, lastSyncRootRefs, roots,
-                new HashMap<String, Set<String>>(), lastSuccessfulSync, false);
+        return getChangeSummary(principal, lastSyncRootRefs, roots, new HashMap<String, Set<String>>(),
+                lastSuccessfulSync, false);
     }
 
     /**
-     * Uses the {@link AuditChangeFinder} to get the summary of document changes
-     * for the given user and lower bound.
+     * Uses the {@link AuditChangeFinder} to get the summary of document changes for the given user and lower bound.
      * <p>
-     * The {@link #DOCUMENT_CHANGE_LIMIT_PROPERTY} Framework property is used as
-     * a limit of document changes to fetch from the audit logs. Default value
-     * is 1000.
-     *
-     * If {@code lowerBound} is missing (i.e. set to a negative value), the
-     * filesystem change summary is empty but the returned upper bound is set to
-     * the greater event log id so that the client can reuse it as a starting id
-     * for a future incremental diff request.
+     * The {@link #DOCUMENT_CHANGE_LIMIT_PROPERTY} Framework property is used as a limit of document changes to fetch
+     * from the audit logs. Default value is 1000. If {@code lowerBound} is missing (i.e. set to a negative value), the
+     * filesystem change summary is empty but the returned upper bound is set to the greater event log id so that the
+     * client can reuse it as a starting id for a future incremental diff request.
      */
     @Override
-    public FileSystemChangeSummary getChangeSummaryIntegerBounds(
-            Principal principal, Map<String, Set<IdRef>> lastSyncRootRefs,
-            long lowerBound) throws ClientException {
+    public FileSystemChangeSummary getChangeSummaryIntegerBounds(Principal principal,
+            Map<String, Set<IdRef>> lastSyncRootRefs, long lowerBound) throws ClientException {
         Map<String, SynchronizationRoots> roots = getSynchronizationRoots(principal);
         Map<String, Set<String>> collectionSyncRootMemberIds = getCollectionSyncRootMemberIds(principal);
-        return getChangeSummary(principal, lastSyncRootRefs, roots,
-                collectionSyncRootMemberIds, lowerBound, true);
+        return getChangeSummary(principal, lastSyncRootRefs, roots, collectionSyncRootMemberIds, lowerBound, true);
     }
 
-    protected FileSystemChangeSummary getChangeSummary(Principal principal,
-            Map<String, Set<IdRef>> lastActiveRootRefs,
-            Map<String, SynchronizationRoots> roots,
-            Map<String, Set<String>> collectionSyncRootMemberIds,
+    protected FileSystemChangeSummary getChangeSummary(Principal principal, Map<String, Set<IdRef>> lastActiveRootRefs,
+            Map<String, SynchronizationRoots> roots, Map<String, Set<String>> collectionSyncRootMemberIds,
             long lowerBound, boolean integerBounds) throws ClientException {
         FileSystemItemManager fsManager = Framework.getLocalService(FileSystemItemManager.class);
         List<FileSystemItemChange> allChanges = new ArrayList<FileSystemItemChange>();
@@ -402,8 +350,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             syncDate = upperBound;
         }
         Boolean hasTooManyChanges = Boolean.FALSE;
-        int limit = Integer.parseInt(Framework.getProperty(
-                DOCUMENT_CHANGE_LIMIT_PROPERTY, "1000"));
+        int limit = Integer.parseInt(Framework.getProperty(DOCUMENT_CHANGE_LIMIT_PROPERTY, "1000"));
 
         // Compute the list of all repositories to consider for the aggregate
         // summary
@@ -412,13 +359,11 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         allRepositories.addAll(lastActiveRootRefs.keySet());
         allRepositories.addAll(collectionSyncRootMemberIds.keySet());
 
-        if (!allRepositories.isEmpty() && lowerBound >= 0
-                && upperBound > lowerBound) {
+        if (!allRepositories.isEmpty() && lowerBound >= 0 && upperBound > lowerBound) {
             for (String repositoryName : allRepositories) {
                 try {
                     // Get document changes
-                    CoreSession session = fsManager.getSession(repositoryName,
-                            principal);
+                    CoreSession session = fsManager.getSession(repositoryName, principal);
                     Set<IdRef> lastRefs = lastActiveRootRefs.get(repositoryName);
                     if (lastRefs == null) {
                         lastRefs = Collections.emptySet();
@@ -433,14 +378,11 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                     }
                     List<FileSystemItemChange> changes;
                     if (integerBounds) {
-                        changes = changeFinder.getFileSystemChangesIntegerBounds(
-                                session, lastRefs, activeRoots,
-                                repoCollectionSyncRootMemberIds, lowerBound,
-                                upperBound, limit);
+                        changes = changeFinder.getFileSystemChangesIntegerBounds(session, lastRefs, activeRoots,
+                                repoCollectionSyncRootMemberIds, lowerBound, upperBound, limit);
                     } else {
-                        changes = changeFinder.getFileSystemChanges(session,
-                                lastRefs, activeRoots, lowerBound, upperBound,
-                                limit);
+                        changes = changeFinder.getFileSystemChanges(session, lastRefs, activeRoots, lowerBound,
+                                upperBound, limit);
                     }
                     allChanges.addAll(changes);
                 } catch (TooManyChangesException e) {
@@ -456,29 +398,24 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         // incremental change summary
         Map<String, Set<IdRef>> activeRootRefs = new HashMap<String, Set<IdRef>>();
         for (Map.Entry<String, SynchronizationRoots> rootsEntry : roots.entrySet()) {
-            activeRootRefs.put(rootsEntry.getKey(),
-                    rootsEntry.getValue().getRefs());
+            activeRootRefs.put(rootsEntry.getKey(), rootsEntry.getValue().getRefs());
         }
-        return new FileSystemChangeSummaryImpl(allChanges, activeRootRefs,
-                syncDate, upperBound, hasTooManyChanges);
+        return new FileSystemChangeSummaryImpl(allChanges, activeRootRefs, syncDate, upperBound, hasTooManyChanges);
     }
 
     @Override
-    public Map<String, SynchronizationRoots> getSynchronizationRoots(
-            Principal principal) throws ClientException {
+    public Map<String, SynchronizationRoots> getSynchronizationRoots(Principal principal) throws ClientException {
         String userName = principal.getName();
         Map<String, SynchronizationRoots> syncRoots = syncRootCache.getIfPresent(userName);
         if (syncRoots == null) {
-            syncRoots = computeSynchronizationRoots(
-                    computeSyncRootsQuery(userName), principal);
+            syncRoots = computeSynchronizationRoots(computeSyncRootsQuery(userName), principal);
             syncRootCache.put(userName, syncRoots);
         }
         return syncRoots;
     }
 
     @Override
-    public Map<String, Set<String>> getCollectionSyncRootMemberIds(
-            Principal principal) throws ClientException {
+    public Map<String, Set<String>> getCollectionSyncRootMemberIds(Principal principal) throws ClientException {
         String userName = principal.getName();
         Map<String, Set<String>> collSyncRootMemberIds = collectionSyncRootMemberCache.getIfPresent(userName);
         if (collSyncRootMemberIds == null) {
@@ -489,29 +426,26 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public boolean isSynchronizationRoot(Principal principal, DocumentModel doc)
-            throws ClientException {
+    public boolean isSynchronizationRoot(Principal principal, DocumentModel doc) throws ClientException {
         String repoName = doc.getRepositoryName();
-        SynchronizationRoots syncRoots = getSynchronizationRoots(principal).get(
-                repoName);
+        SynchronizationRoots syncRoots = getSynchronizationRoots(principal).get(repoName);
         return syncRoots.getRefs().contains(doc.getRef());
     }
 
-    protected Map<String, SynchronizationRoots> computeSynchronizationRoots(
-            String query, Principal principal) throws ClientException {
+    protected Map<String, SynchronizationRoots> computeSynchronizationRoots(String query, Principal principal)
+            throws ClientException {
         Map<String, SynchronizationRoots> syncRoots = new HashMap<String, SynchronizationRoots>();
         FileSystemItemManager fsManager = Framework.getLocalService(FileSystemItemManager.class);
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
-            CoreSession session = fsManager.getSession(repositoryName,
-                    principal);
+            CoreSession session = fsManager.getSession(repositoryName, principal);
             syncRoots.putAll(queryAndFecthSynchronizationRoots(session, query));
         }
         return syncRoots;
     }
 
-    protected Map<String, SynchronizationRoots> queryAndFecthSynchronizationRoots(
-            CoreSession session, String query) throws ClientException {
+    protected Map<String, SynchronizationRoots> queryAndFecthSynchronizationRoots(CoreSession session, String query)
+            throws ClientException {
         Map<String, SynchronizationRoots> syncRoots = new HashMap<String, SynchronizationRoots>();
         Set<IdRef> references = new LinkedHashSet<IdRef>();
         Set<String> paths = new LinkedHashSet<String>();
@@ -522,35 +456,30 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             paths.add(session.getDocument(docRef).getPathAsString());
         }
         results.close();
-        SynchronizationRoots repoSyncRoots = new SynchronizationRoots(
-                session.getRepositoryName(), paths, references);
+        SynchronizationRoots repoSyncRoots = new SynchronizationRoots(session.getRepositoryName(), paths, references);
         syncRoots.put(session.getRepositoryName(), repoSyncRoots);
         return syncRoots;
     }
 
     @SuppressWarnings("unchecked")
-    protected Map<String, Set<String>> computeCollectionSyncRootMemberIds(
-            Principal principal) throws ClientException {
+    protected Map<String, Set<String>> computeCollectionSyncRootMemberIds(Principal principal) throws ClientException {
         Map<String, Set<String>> collectionSyncRootMemberIds = new HashMap<String, Set<String>>();
         PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
         FileSystemItemManager fsManager = Framework.getLocalService(FileSystemItemManager.class);
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
             Set<String> collectionMemberIds = new HashSet<String>();
-            CoreSession session = fsManager.getSession(repositoryName,
-                    principal);
+            CoreSession session = fsManager.getSession(repositoryName, principal);
             Map<String, Serializable> props = new HashMap<String, Serializable>();
             props.put(CORE_SESSION_PROPERTY, (Serializable) session);
             PageProvider<DocumentModel> collectionPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                    CollectionConstants.ALL_COLLECTIONS_PAGE_PROVIDER, null,
-                    null, 0L, props);
+                    CollectionConstants.ALL_COLLECTIONS_PAGE_PROVIDER, null, null, 0L, props);
             List<DocumentModel> collections = collectionPageProvider.getCurrentPage();
             for (DocumentModel collection : collections) {
                 if (isSynchronizationRoot(principal, collection)) {
                     PageProvider<DocumentModel> collectionMemberPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                            CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER,
-                            null, COLLECTION_CONTENT_PAGE_SIZE, 0L, props,
-                            collection.getId());
+                            CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER, null, COLLECTION_CONTENT_PAGE_SIZE,
+                            0L, props, collection.getId());
                     List<DocumentModel> collectionMembers = collectionMemberPageProvider.getCurrentPage();
                     for (DocumentModel collectionMember : collectionMembers) {
                         collectionMemberIds.add(collectionMember.getId());
@@ -562,17 +491,13 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         return collectionSyncRootMemberIds;
     }
 
-    protected void checkCanUpdateSynchronizationRoot(
-            DocumentModel newRootContainer, CoreSession session)
+    protected void checkCanUpdateSynchronizationRoot(DocumentModel newRootContainer, CoreSession session)
             throws ClientException {
         // Cannot update a proxy or a version
         if (newRootContainer.isProxy() || newRootContainer.isVersion()) {
-            throw new ClientException(
-                    String.format(
-                            "Document '%s' (%s) is not a suitable synchronization root"
-                                    + " as it is either a readonly proxy or an archived version.",
-                            newRootContainer.getTitle(),
-                            newRootContainer.getRef()));
+            throw new ClientException(String.format("Document '%s' (%s) is not a suitable synchronization root"
+                    + " as it is either a readonly proxy or an archived version.", newRootContainer.getTitle(),
+                    newRootContainer.getRef()));
         }
     }
 
@@ -592,35 +517,28 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
      * @since 5.9.5
      */
     protected String computeSyncRootsQuery(String username) {
-        return String.format(
-                "SELECT ecm:uuid FROM Document WHERE %s/*1/username = %s"
-                        + " AND %s/*1/enabled = 1"
-                        + " AND ecm:currentLifeCycleState <> 'deleted'"
-                        + " ORDER BY dc:title, dc:created DESC",
-                DRIVE_SUBSCRIPTIONS_PROPERTY,
-                NXQLQueryBuilder.prepareStringLiteral(username, true, true),
+        return String.format("SELECT ecm:uuid FROM Document WHERE %s/*1/username = %s" + " AND %s/*1/enabled = 1"
+                + " AND ecm:currentLifeCycleState <> 'deleted'" + " ORDER BY dc:title, dc:created DESC",
+                DRIVE_SUBSCRIPTIONS_PROPERTY, NXQLQueryBuilder.prepareStringLiteral(username, true, true),
                 DRIVE_SUBSCRIPTIONS_PROPERTY);
     }
 
     @Override
-    public void addToLocallyEditedCollection(CoreSession session,
-            DocumentModel doc) throws ClientException {
+    public void addToLocallyEditedCollection(CoreSession session, DocumentModel doc) throws ClientException {
 
         // Add document to "Locally Edited" collection, creating if if not
         // exists
         CollectionManager cm = Framework.getService(CollectionManager.class);
-        DocumentModel userCollections = cm.getUserDefaultCollections(doc,
-                session);
-        DocumentRef locallyEditedCollectionRef = new PathRef(
-                userCollections.getPath().toString(),
+        DocumentModel userCollections = cm.getUserDefaultCollections(doc, session);
+        DocumentRef locallyEditedCollectionRef = new PathRef(userCollections.getPath().toString(),
                 LOCALLY_EDITED_COLLECTION_NAME);
         DocumentModel locallyEditedCollection = null;
         if (session.exists(locallyEditedCollectionRef)) {
             locallyEditedCollection = session.getDocument(locallyEditedCollectionRef);
             cm.addToCollection(locallyEditedCollection, doc, session);
         } else {
-            cm.addToNewCollection(LOCALLY_EDITED_COLLECTION_NAME,
-                    "Documents locally edited with Nuxeo Drive", doc, session);
+            cm.addToNewCollection(LOCALLY_EDITED_COLLECTION_NAME, "Documents locally edited with Nuxeo Drive", doc,
+                    session);
             locallyEditedCollection = session.getDocument(locallyEditedCollectionRef);
         }
 
@@ -628,8 +546,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         // already the case
         Set<IdRef> syncRootRefs = getSynchronizationRootReferences(session);
         if (!syncRootRefs.contains(new IdRef(locallyEditedCollection.getId()))) {
-            registerSynchronizationRoot(session.getPrincipal(),
-                    locallyEditedCollection, session);
+            registerSynchronizationRoot(session.getPrincipal(), locallyEditedCollection, session);
         }
     }
 

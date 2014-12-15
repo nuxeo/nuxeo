@@ -25,128 +25,108 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Service for creating the right {@link FileSystemItem} adapter depending on
- * the {@link DocumentModel} type or facet.
+ * Service for creating the right {@link FileSystemItem} adapter depending on the {@link DocumentModel} type or facet.
  * <p>
- * Factories can be contributed to implement a specific behavior for the
- * {@link FileSystemItem} adapter creation.
- *
+ * Factories can be contributed to implement a specific behavior for the {@link FileSystemItem} adapter creation.
+ * 
  * @author Antoine Taillefer
  * @see FileSystemItemAdapterServiceImpl
  */
 public interface FileSystemItemAdapterService {
 
     /**
-     * Gets the {@link FileSystemItem} for the given {@link DocumentModel}. If
-     * the document is in the "deleted" life cycle state it is not considered as
-     * adaptable as a {@link FileSystemItem}, thus the method returns null.
-     *
-     * @return the {@link FileSystemItem} or null if the {@link DocumentModel}
-     *         is not adaptable as a {@link FileSystemItem}
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel}. If the document is in the "deleted" life
+     * cycle state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns null.
+     * 
+     * @return the {@link FileSystemItem} or null if the {@link DocumentModel} is not adaptable as a
+     *         {@link FileSystemItem}
      * @see FileSystemItemFactory#getFileSystemItem(DocumentModel)
      */
     FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException;
 
     /**
-     * Gets the {@link FileSystemItem} for the given {@link DocumentModel}. If
-     * {@code includeDeleted} is true no filter is applied on the "deleted" life
-     * cycle state, else if the document is in this state it is not considered
-     * as adaptable as a {@link FileSystemItem}, thus the method returns null.
-     *
-     * @return the {@link FileSystemItem} or null if the {@link DocumentModel}
-     *         is not adaptable as a {@link FileSystemItem}
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel}. If {@code includeDeleted} is true no filter
+     * is applied on the "deleted" life cycle state, else if the document is in this state it is not considered as
+     * adaptable as a {@link FileSystemItem}, thus the method returns null.
+     * 
+     * @return the {@link FileSystemItem} or null if the {@link DocumentModel} is not adaptable as a
+     *         {@link FileSystemItem}
      * @see FileSystemItemFactory#getFileSystemItem(DocumentModel)
      */
-    FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted)
-            throws ClientException;
+    FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException;
 
     /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel}.
      * <p>
-     * If {@code includeDeleted} is true no filter is applied on the "deleted"
-     * life cycle state, else if the document is in this state it is not
-     * considered as adaptable as a {@link FileSystemItem}, thus the method
-     * returns null.
+     * If {@code includeDeleted} is true no filter is applied on the "deleted" life cycle state, else if the document is
+     * in this state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns null.
      * <p>
-     * If {@code relaxSyncRootConstraint} is true no filter is applied on the
-     * synchronization root aspect for the current user.
-     *
-     * @return the {@link FileSystemItem} or null if the {@link DocumentModel}
-     *         is not adaptable as a {@link FileSystemItem}
+     * If {@code relaxSyncRootConstraint} is true no filter is applied on the synchronization root aspect for the
+     * current user.
+     * 
+     * @return the {@link FileSystemItem} or null if the {@link DocumentModel} is not adaptable as a
+     *         {@link FileSystemItem}
      * @see FileSystemItemFactory#getFileSystemItem(DocumentModel)
      */
-    FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted,
+    FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
+            throws ClientException;
+
+    /**
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent id with the given id. If
+     * the document is in the "deleted" life cycle state it is not considered as adaptable as a {@link FileSystemItem},
+     * thus the method returns null.
+     * 
+     * @return the {@link FileSystemItem} or null if the {@link DocumentModel} is not adaptable as a
+     *         {@link FileSystemItem}
+     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, String)
+     */
+    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem) throws ClientException;
+
+    /**
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent id with the given id. If
+     * {@code includeDeleted} is true no filter is applied on the "deleted" life cycle state, else if the document is in
+     * this state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns null.
+     * 
+     * @return the {@link FileSystemItem} or null if the {@link DocumentModel} is not adaptable as a
+     *         {@link FileSystemItem}
+     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, String)
+     */
+    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted)
+            throws ClientException;
+
+    /**
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent id with the given id.
+     * <p>
+     * If {@code includeDeleted} is true no filter is applied on the "deleted" life cycle state, else if the document is
+     * in this state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns null.
+     * <p>
+     * If {@code relaxSyncRootConstraint} is true no filter is applied on the synchronization root aspect for the
+     * current user.
+     * 
+     * @return the {@link FileSystemItem} or null if the {@link DocumentModel} is not adaptable as a
+     *         {@link FileSystemItem}
+     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, String)
+     */
+    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
             boolean relaxSyncRootConstraint) throws ClientException;
 
     /**
-     * Gets the {@link FileSystemItem} for the given {@link DocumentModel}
-     * forcing its parent id with the given id. If the document is in the
-     * "deleted" life cycle state it is not considered as adaptable as a
-     * {@link FileSystemItem}, thus the method returns null.
-     *
-     * @return the {@link FileSystemItem} or null if the {@link DocumentModel}
-     *         is not adaptable as a {@link FileSystemItem}
-     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, String)
-     */
-    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem)
-            throws ClientException;
-
-    /**
-     * Gets the {@link FileSystemItem} for the given {@link DocumentModel}
-     * forcing its parent id with the given id. If {@code includeDeleted} is
-     * true no filter is applied on the "deleted" life cycle state, else if the
-     * document is in this state it is not considered as adaptable as a
-     * {@link FileSystemItem}, thus the method returns null.
-     *
-     * @return the {@link FileSystemItem} or null if the {@link DocumentModel}
-     *         is not adaptable as a {@link FileSystemItem}
-     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, String)
-     */
-    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem,
-            boolean includeDeleted) throws ClientException;
-
-    /**
-     * Gets the {@link FileSystemItem} for the given {@link DocumentModel}
-     * forcing its parent id with the given id.
-     * <p>
-     * If {@code includeDeleted} is true no filter is applied on the "deleted"
-     * life cycle state, else if the document is in this state it is not
-     * considered as adaptable as a {@link FileSystemItem}, thus the method
-     * returns null.
-     * <p>
-     * If {@code relaxSyncRootConstraint} is true no filter is applied on the
-     * synchronization root aspect for the current user.
-     *
-     * @return the {@link FileSystemItem} or null if the {@link DocumentModel}
-     *         is not adaptable as a {@link FileSystemItem}
-     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, String)
-     */
-    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem,
-            boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException;
-
-    /**
-     * Gets the {@link FileSystemItemFactory} that can handle the the given
-     * {@link FileSystemItem} id.
-     *
-     * @throws ClientException if no {@link FileSystemItemFactory} can handle
-     *             the given {@link FileSystemItem} id
+     * Gets the {@link FileSystemItemFactory} that can handle the the given {@link FileSystemItem} id.
+     * 
+     * @throws ClientException if no {@link FileSystemItemFactory} can handle the given {@link FileSystemItem} id
      * @see FileSystemItemFactory#canHandleFileSystemItemId(String)
      */
-    FileSystemItemFactory getFileSystemItemFactoryForId(String id)
-            throws ClientException;
+    FileSystemItemFactory getFileSystemItemFactoryForId(String id) throws ClientException;
 
     /**
      * Gets the {@link TopLevelFolderItemFactory}.
      */
-    TopLevelFolderItemFactory getTopLevelFolderItemFactory()
-            throws ClientException;
+    TopLevelFolderItemFactory getTopLevelFolderItemFactory() throws ClientException;
 
     /**
      * Gets the {@link VirtualFolderItemFactory} for the given factory name.
      */
-    VirtualFolderItemFactory getVirtualFolderItemFactory(String factoryName)
-            throws ClientException;
+    VirtualFolderItemFactory getVirtualFolderItemFactory(String factoryName) throws ClientException;
 
     /**
      * Gets the active {@link FileSystemItem} factory names.

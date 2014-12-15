@@ -36,24 +36,21 @@ import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Default implementation of a collection synchronization root
- * {@link FolderItem}.
- *
+ * Default implementation of a collection synchronization root {@link FolderItem}.
+ * 
  * @author Antoine Taillefer
  * @since 6.0
  */
-public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem
-        implements FolderItem {
+public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem implements FolderItem {
 
     private static final long serialVersionUID = 1L;
 
-    public CollectionSyncRootFolderItem(String factoryName,
-            FolderItem parentItem, DocumentModel doc) throws ClientException {
+    public CollectionSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc)
+            throws ClientException {
         this(factoryName, parentItem, doc, false);
     }
 
-    public CollectionSyncRootFolderItem(String factoryName,
-            FolderItem parentItem, DocumentModel doc,
+    public CollectionSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc,
             boolean relaxSyncRootConstraint) throws ClientException {
         super(factoryName, parentItem, doc, relaxSyncRootConstraint);
     }
@@ -70,15 +67,12 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CORE_SESSION_PROPERTY, (Serializable) getSession());
         PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER, null,
-                null, 0L, props, docId);
+                CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER, null, null, 0L, props, docId);
         List<DocumentModel> dmChildren = childrenPageProvider.getCurrentPage();
 
-        List<FileSystemItem> children = new ArrayList<FileSystemItem>(
-                dmChildren.size());
+        List<FileSystemItem> children = new ArrayList<FileSystemItem>(dmChildren.size());
         for (DocumentModel dmChild : dmChildren) {
-            FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(
-                    dmChild, this);
+            FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(dmChild, this);
             if (child != null) {
                 children.add(child);
             }
@@ -88,14 +82,12 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem
 
     @Override
     public FolderItem createFolder(String name) throws ClientException {
-        throw new UnsupportedOperationException(
-                "Cannot create a folder in a collection synchronization root.");
+        throw new UnsupportedOperationException("Cannot create a folder in a collection synchronization root.");
     }
 
     @Override
     public FileItem createFile(Blob blob) throws ClientException {
-        throw new UnsupportedOperationException(
-                "Cannot create a file in a collection synchronization root.");
+        throw new UnsupportedOperationException("Cannot create a file in a collection synchronization root.");
     }
 
     @Override

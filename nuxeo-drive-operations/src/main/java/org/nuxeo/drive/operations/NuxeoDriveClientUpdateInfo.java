@@ -22,7 +22,7 @@ package org.nuxeo.drive.operations;
  * <li>Server version</li>
  * <li>Nuxeo Drive update site URL</li>
  * </ul>
- *
+ * 
  * @author Antoine Taillefer
  */
 public class NuxeoDriveClientUpdateInfo {

@@ -43,13 +43,12 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * {@link DocumentModel} backed implementation of a {@link FileSystemItem}.
- *
+ * 
  * @author Antoine Taillefer
  * @see DocumentBackedFileItem
  * @see DocumentBackedFolderItem
  */
-public abstract class AbstractDocumentBackedFileSystemItem extends
-        AbstractFileSystemItem {
+public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileSystemItem {
 
     private static final long serialVersionUID = 1L;
 
@@ -64,14 +63,12 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
 
     protected String docTitle;
 
-    protected AbstractDocumentBackedFileSystemItem(String factoryName,
-            DocumentModel doc) throws ClientException {
+    protected AbstractDocumentBackedFileSystemItem(String factoryName, DocumentModel doc) throws ClientException {
         this(factoryName, doc, false);
     }
 
-    protected AbstractDocumentBackedFileSystemItem(String factoryName,
-            DocumentModel doc, boolean relaxSyncRootConstraint)
-            throws ClientException {
+    protected AbstractDocumentBackedFileSystemItem(String factoryName, DocumentModel doc,
+            boolean relaxSyncRootConstraint) throws ClientException {
         this(factoryName, null, doc, relaxSyncRootConstraint);
         CoreSession docSession = doc.getCoreSession();
         DocumentModel parentDoc = null;
@@ -94,8 +91,8 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
                         + " Let's raise a marker exception and let the caller give more information on the source document.");
                 throw new RootlessItemException();
             } else {
-                FileSystemItem parent = getFileSystemItemAdapterService().getFileSystemItem(
-                        parentDoc, true, relaxSyncRootConstraint);
+                FileSystemItem parent = getFileSystemItemAdapterService().getFileSystemItem(parentDoc, true,
+                        relaxSyncRootConstraint);
                 if (parent == null) {
                     log.trace("We reached a document for which the parent document cannot be  adapted to a (possibly virtual) descendant of the top level folder item."
                             + " Let's raise a marker exception and let the caller give more information on the source document.");
@@ -106,26 +103,22 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
             }
         } catch (RootlessItemException e) {
             log.trace("Let's try to adapt the document as a member of a collection sync root, if not the case let's raise a marker exception and let the caller give more information on the source document.");
-            if (!handleCollectionMember(doc, docSession,
-                    relaxSyncRootConstraint)) {
+            if (!handleCollectionMember(doc, docSession, relaxSyncRootConstraint)) {
                 throw new RootlessItemException();
             }
         }
     }
 
-    protected boolean handleCollectionMember(DocumentModel doc,
-            CoreSession session, boolean relaxSyncRootConstraint) {
+    protected boolean handleCollectionMember(DocumentModel doc, CoreSession session, boolean relaxSyncRootConstraint) {
         if (!doc.hasSchema(CollectionConstants.COLLECTION_MEMBER_SCHEMA_NAME)) {
             return false;
         }
         CollectionManager cm = Framework.getService(CollectionManager.class);
-        List<DocumentModel> docCollections = cm.getVisibleCollection(doc,
-                session);
+        List<DocumentModel> docCollections = cm.getVisibleCollection(doc, session);
         if (docCollections.isEmpty()) {
             if (log.isTraceEnabled()) {
-                log.trace(String.format(
-                        "Doc %s (%s) is not member of any collection",
-                        doc.getPathAsString(), doc.getId()));
+                log.trace(String.format("Doc %s (%s) is not member of any collection", doc.getPathAsString(),
+                        doc.getId()));
             }
             return false;
         } else {
@@ -134,8 +127,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
             Iterator<DocumentModel> it = docCollections.iterator();
             while (it.hasNext() && parent == null) {
                 collection = it.next();
-                parent = getFileSystemItemAdapterService().getFileSystemItem(
-                        collection, true, relaxSyncRootConstraint);
+                parent = getFileSystemItemAdapterService().getFileSystemItem(collection, true, relaxSyncRootConstraint);
             }
             if (parent == null) {
                 if (log.isTraceEnabled()) {
@@ -148,8 +140,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
             if (log.isTraceEnabled()) {
                 log.trace(String.format(
                         "Using first collection %s (%s) of which doc %s (%s) is a member and that is adaptable as a FileSystemItem as a parent FileSystemItem.",
-                        collection.getPathAsString(), collection.getId(),
-                        doc.getPathAsString(), doc.getId()));
+                        collection.getPathAsString(), collection.getId(), doc.getPathAsString(), doc.getId()));
             }
 
             parentId = parent.getId();
@@ -158,12 +149,10 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         }
     }
 
-    protected AbstractDocumentBackedFileSystemItem(String factoryName,
-            FolderItem parentItem, DocumentModel doc,
+    protected AbstractDocumentBackedFileSystemItem(String factoryName, FolderItem parentItem, DocumentModel doc,
             boolean relaxSyncRootConstraint) throws ClientException {
 
-        super(factoryName, doc.getCoreSession().getPrincipal(),
-                relaxSyncRootConstraint);
+        super(factoryName, doc.getCoreSession().getPrincipal(), relaxSyncRootConstraint);
 
         // Backing DocumentModel attributes
         repositoryName = doc.getRepositoryName();
@@ -177,13 +166,10 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         creationDate = (Calendar) doc.getPropertyValue("dc:created");
         lastModificationDate = (Calendar) doc.getPropertyValue("dc:modified");
         CoreSession docSession = doc.getCoreSession();
-        canRename = docSession.hasPermission(doc.getRef(),
-                SecurityConstants.WRITE_PROPERTIES);
+        canRename = docSession.hasPermission(doc.getRef(), SecurityConstants.WRITE_PROPERTIES);
         DocumentRef parentRef = doc.getParentRef();
-        canDelete = docSession.hasPermission(doc.getRef(),
-                SecurityConstants.REMOVE)
-                && (parentRef == null || docSession.hasPermission(parentRef,
-                        SecurityConstants.REMOVE_CHILDREN));
+        canDelete = docSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE)
+                && (parentRef == null || docSession.hasPermission(parentRef, SecurityConstants.REMOVE_CHILDREN));
 
         String parentPath;
         if (parentItem != null) {
@@ -204,14 +190,11 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
     @Override
     public void delete() throws ClientException {
         DocumentModel doc = getDocument(getSession());
-        FileSystemItemFactory parentFactory = getFileSystemItemAdapterService().getFileSystemItemFactoryForId(
-                parentId);
+        FileSystemItemFactory parentFactory = getFileSystemItemAdapterService().getFileSystemItemFactoryForId(parentId);
         // Handle removal from a collection sync root
         if (CollectionSyncRootFolderItemFactory.FACTORY_NAME.equals(parentFactory.getName())) {
-            DocumentModel collection = parentFactory.getDocumentByFileSystemId(
-                    parentId, principal);
-            Framework.getService(CollectionManager.class).removeFromCollection(
-                    collection, doc, getSession());
+            DocumentModel collection = parentFactory.getDocumentByFileSystemId(parentId, principal);
+            Framework.getService(CollectionManager.class).removeFromCollection(collection, doc, getSession());
         } else {
             List<DocumentModel> docs = new ArrayList<DocumentModel>();
             docs.add(doc);
@@ -253,15 +236,12 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         // create doc in destination
         if (repositoryName.equals(destRepoName)) {
             CoreSession session = getSession();
-            DocumentModel movedDoc = session.move(sourceDocRef, destDocRef,
-                    null);
+            DocumentModel movedDoc = session.move(sourceDocRef, destDocRef, null);
             session.save();
-            return getFileSystemItemAdapterService().getFileSystemItem(
-                    movedDoc, dest);
+            return getFileSystemItemAdapterService().getFileSystemItem(movedDoc, dest);
         } else {
             // TODO: implement move to another repository
-            throw new UnsupportedOperationException(
-                    "Multi repository move is not supported yet.");
+            throw new UnsupportedOperationException("Multi repository move is not supported yet.");
         }
     }
 
@@ -291,13 +271,11 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         return docPath;
     }
 
-    protected DocumentModel getDocument(CoreSession session)
-            throws ClientException {
+    protected DocumentModel getDocument(CoreSession session) throws ClientException {
         return session.getDocument(new IdRef(docId));
     }
 
-    protected void updateLastModificationDate(DocumentModel doc)
-            throws ClientException {
+    protected void updateLastModificationDate(DocumentModel doc) throws ClientException {
         lastModificationDate = (Calendar) doc.getPropertyValue("dc:modified");
     }
 
@@ -316,8 +294,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
             this.docId = idFragments[2];
 
         } catch (ClientException e) {
-            throw new ClientRuntimeException(
-                    "Cannot set id as it cannot be parsed.", e);
+            throw new ClientRuntimeException("Cannot set id as it cannot be parsed.", e);
         }
 
     }

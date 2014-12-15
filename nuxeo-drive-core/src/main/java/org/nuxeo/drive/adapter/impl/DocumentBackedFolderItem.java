@@ -39,11 +39,10 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * {@link DocumentModel} backed implementation of a {@link FolderItem}.
- *
+ * 
  * @author Antoine Taillefer
  */
-public class DocumentBackedFolderItem extends
-        AbstractDocumentBackedFileSystemItem implements FolderItem {
+public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemItem implements FolderItem {
 
     private static final long serialVersionUID = 1L;
 
@@ -51,25 +50,23 @@ public class DocumentBackedFolderItem extends
 
     protected boolean canCreateChild;
 
-    public DocumentBackedFolderItem(String factoryName, DocumentModel doc)
-            throws ClientException {
+    public DocumentBackedFolderItem(String factoryName, DocumentModel doc) throws ClientException {
         this(factoryName, doc, false);
     }
 
-    public DocumentBackedFolderItem(String factoryName, DocumentModel doc,
-            boolean relaxSyncRootConstraint) throws ClientException {
+    public DocumentBackedFolderItem(String factoryName, DocumentModel doc, boolean relaxSyncRootConstraint)
+            throws ClientException {
         super(factoryName, doc, relaxSyncRootConstraint);
         initialize(doc);
     }
 
-    public DocumentBackedFolderItem(String factoryName, FolderItem parentItem,
-            DocumentModel doc) throws ClientException {
+    public DocumentBackedFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc)
+            throws ClientException {
         this(factoryName, parentItem, doc, false);
     }
 
-    public DocumentBackedFolderItem(String factoryName, FolderItem parentItem,
-            DocumentModel doc, boolean relaxSyncRootConstraint)
-            throws ClientException {
+    public DocumentBackedFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc,
+            boolean relaxSyncRootConstraint) throws ClientException {
         super(factoryName, parentItem, doc, relaxSyncRootConstraint);
         initialize(doc);
     }
@@ -142,21 +139,17 @@ public class DocumentBackedFolderItem extends
     @Override
     public FolderItem createFolder(String name) throws ClientException {
         try {
-            DocumentModel folder = getFileManager().createFolder(getSession(),
-                    name, docPath);
+            DocumentModel folder = getFileManager().createFolder(getSession(), name, docPath);
             if (folder == null) {
                 throw new ClientException(
                         String.format(
                                 "Cannot create folder named '%s' as a child of doc %s. Probably because of the allowed sub-types for this doc type, please check them.",
                                 name, docPath));
             }
-            return (FolderItem) getFileSystemItemAdapterService().getFileSystemItem(
-                    folder, this);
+            return (FolderItem) getFileSystemItemAdapterService().getFileSystemItem(folder, this);
         } catch (Exception e) {
-            throw new ClientException(
-                    String.format(
-                            "Error while trying to create folder %s as a child of doc %s",
-                            name, docPath), e);
+            throw new ClientException(String.format("Error while trying to create folder %s as a child of doc %s",
+                    name, docPath), e);
         }
     }
 
@@ -165,21 +158,17 @@ public class DocumentBackedFolderItem extends
         String fileName = blob.getFilename();
         try {
             // TODO: manage conflict (overwrite should not necessarily be true)
-            DocumentModel file = getFileManager().createDocumentFromBlob(
-                    getSession(), blob, docPath, true, fileName);
+            DocumentModel file = getFileManager().createDocumentFromBlob(getSession(), blob, docPath, true, fileName);
             if (file == null) {
                 throw new ClientException(
                         String.format(
                                 "Cannot create file '%s' as a child of doc %s. Probably because there are no file importers registered, please check the contributions to the <extension target=\"org.nuxeo.ecm.platform.filemanager.service.FileManagerService\" point=\"plugins\"> extension point.",
                                 fileName, docPath));
             }
-            return (FileItem) getFileSystemItemAdapterService().getFileSystemItem(
-                    file, this);
+            return (FileItem) getFileSystemItemAdapterService().getFileSystemItem(file, this);
         } catch (Exception e) {
-            throw new ClientException(
-                    String.format(
-                            "Error while trying to create file %s as a child of doc %s",
-                            fileName, docPath), e);
+            throw new ClientException(String.format("Error while trying to create file %s as a child of doc %s",
+                    fileName, docPath), e);
         }
     }
 
@@ -187,8 +176,7 @@ public class DocumentBackedFolderItem extends
     protected void initialize(DocumentModel doc) throws ClientException {
         this.name = docTitle;
         this.folder = true;
-        this.canCreateChild = doc.getCoreSession().hasPermission(doc.getRef(),
-                SecurityConstants.ADD_CHILDREN);
+        this.canCreateChild = doc.getCoreSession().hasPermission(doc.getRef(), SecurityConstants.ADD_CHILDREN);
     }
 
     protected FileManager getFileManager() {

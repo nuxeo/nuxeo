@@ -52,7 +52,7 @@ import com.google.inject.Inject;
 
 /**
  * Tests the {@link NuxeoDriveGetChangeSummary} operation.
- *
+ * 
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
@@ -88,10 +88,8 @@ public class TestGetChangeSummary {
         lastSyncDate = Calendar.getInstance().getTimeInMillis();
         lastSyncActiveRoots = "";
 
-        folder1 = session.createDocument(session.createDocumentModel("/",
-                "folder1", "Folder"));
-        folder2 = session.createDocument(session.createDocumentModel("/",
-                "folder2", "Folder"));
+        folder1 = session.createDocument(session.createDocumentModel("/", "folder1", "Folder"));
+        folder2 = session.createDocument(session.createDocumentModel("/", "folder2", "Folder"));
 
         mapper = new ObjectMapper();
     }
@@ -109,19 +107,15 @@ public class TestGetChangeSummary {
         DocumentModel doc2;
         try {
             Principal administrator = session.getPrincipal();
-            nuxeoDriveManager.registerSynchronizationRoot(administrator,
-                    folder1, session);
-            nuxeoDriveManager.registerSynchronizationRoot(administrator,
-                    folder2, session);
+            nuxeoDriveManager.registerSynchronizationRoot(administrator, folder1, session);
+            nuxeoDriveManager.registerSynchronizationRoot(administrator, folder2, session);
 
             doc1 = session.createDocumentModel("/folder1", "doc1", "File");
-            doc1.setPropertyValue("file:content", new StringBlob(
-                    "The content of file 1."));
+            doc1.setPropertyValue("file:content", new StringBlob("The content of file 1."));
             doc1 = session.createDocument(doc1);
             Thread.sleep(1000);
             doc2 = session.createDocumentModel("/folder2", "doc2", "File");
-            doc2.setPropertyValue("file:content", new StringBlob(
-                    "The content of file 2."));
+            doc2.setPropertyValue("file:content", new StringBlob("The content of file 2."));
             doc2 = session.createDocument(doc2);
 
             session.save();
@@ -145,20 +139,14 @@ public class TestGetChangeSummary {
 
         // Create 2 documents in the same sync root: "/folder1" and 1 document
         // in another sync root => should find 2 changes for "/folder1"
-        DocumentModel doc3 = session.createDocumentModel("/folder1", "doc3",
-                "File");
-        doc3.setPropertyValue("file:content", new StringBlob(
-                "The content of file 3."));
+        DocumentModel doc3 = session.createDocumentModel("/folder1", "doc3", "File");
+        doc3.setPropertyValue("file:content", new StringBlob("The content of file 3."));
         doc3 = session.createDocument(doc3);
-        DocumentModel doc4 = session.createDocumentModel("/folder1", "doc4",
-                "File");
-        doc4.setPropertyValue("file:content", new StringBlob(
-                "The content of file 4."));
+        DocumentModel doc4 = session.createDocumentModel("/folder1", "doc4", "File");
+        doc4.setPropertyValue("file:content", new StringBlob("The content of file 4."));
         doc4 = session.createDocument(doc4);
-        DocumentModel doc5 = session.createDocumentModel("/folder2", "doc5",
-                "File");
-        doc5.setPropertyValue("file:content", new StringBlob(
-                "The content of file 5."));
+        DocumentModel doc5 = session.createDocumentModel("/folder2", "doc5", "File");
+        doc5.setPropertyValue("file:content", new StringBlob("The content of file 5."));
         doc5 = session.createDocument(doc5);
 
         TransactionHelper.commitOrRollbackTransaction();
@@ -166,20 +154,17 @@ public class TestGetChangeSummary {
     }
 
     /**
-     * Gets the changes summary for the user bound to the {@link #session} using
-     * the {@link NuxeoDriveGetChangeSummary} automation operation and updates
-     * the {@link #lastSyncDate} date.
+     * Gets the changes summary for the user bound to the {@link #session} using the {@link NuxeoDriveGetChangeSummary}
+     * automation operation and updates the {@link #lastSyncDate} date.
      */
     protected FileSystemChangeSummary getChangeSummary() throws Exception {
         // Wait 1 second as the mock change finder relies on steps of 1 second
         Thread.sleep(1000);
-        Blob changeSummaryJSON = (Blob) clientSession.newRequest(
-                NuxeoDriveGetChangeSummary.ID).set("lastSyncDate", lastSyncDate).set(
-                "lastSyncActiveRootDefinitions", lastSyncActiveRoots).execute();
+        Blob changeSummaryJSON = (Blob) clientSession.newRequest(NuxeoDriveGetChangeSummary.ID).set("lastSyncDate",
+                lastSyncDate).set("lastSyncActiveRootDefinitions", lastSyncActiveRoots).execute();
         assertNotNull(changeSummaryJSON);
 
-        FileSystemChangeSummary changeSummary = mapper.readValue(
-                changeSummaryJSON.getStream(),
+        FileSystemChangeSummary changeSummary = mapper.readValue(changeSummaryJSON.getStream(),
                 FileSystemChangeSummaryImpl.class);
         assertNotNull(changeSummary);
 

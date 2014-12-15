@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Helper for {@link FileSystemItem} manipulation.
- *
+ * 
  * @author Antoine Taillefer
  */
 public final class FileSystemItemHelper {
@@ -38,29 +38,25 @@ public final class FileSystemItemHelper {
     }
 
     /**
-     * Gets the digest of the given blob. If null, computes it using the given
-     * digest algorithm. For now only md5 is supported.
-     *
-     * @throws UnsupportedOperationException if the digest algorithm is not
-     *             supported
-     * @throws ClientException if the digest computation fails with an
-     *             {@link IOException}
+     * Gets the digest of the given blob. If null, computes it using the given digest algorithm. For now only md5 is
+     * supported.
+     * 
+     * @throws UnsupportedOperationException if the digest algorithm is not supported
+     * @throws ClientException if the digest computation fails with an {@link IOException}
      */
-    public static String getDigest(Blob blob, String digestAlgorithm)
-            throws ClientException {
+    public static String getDigest(Blob blob, String digestAlgorithm) throws ClientException {
         String digest = blob.getDigest();
         if (StringUtils.isEmpty(digest)) {
             if (MD5_DIGEST_ALGORITHM.equals(digestAlgorithm)) {
                 try {
                     digest = DigestUtils.md5Hex(blob.getStream());
                 } catch (IOException e) {
-                    throw new ClientException(String.format(
-                            "Error while computing digest for blob %s.",
+                    throw new ClientException(String.format("Error while computing digest for blob %s.",
                             blob.getFilename()), e);
                 }
             } else {
-                throw new UnsupportedOperationException(String.format(
-                        "Unsupported digest algorithm %s.", digestAlgorithm));
+                throw new UnsupportedOperationException(String.format("Unsupported digest algorithm %s.",
+                        digestAlgorithm));
             }
         }
         return digest;

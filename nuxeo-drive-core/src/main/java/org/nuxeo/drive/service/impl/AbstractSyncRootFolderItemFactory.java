@@ -31,61 +31,53 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Base {@link FileSystemItemFactory} for a synchronization root
- * {@link FolderItem}.
- *
+ * Base {@link FileSystemItemFactory} for a synchronization root {@link FolderItem}.
+ * 
  * @author Antoine Taillefer
  */
-public abstract class AbstractSyncRootFolderItemFactory extends
-        AbstractFileSystemItemFactory {
+public abstract class AbstractSyncRootFolderItemFactory extends AbstractFileSystemItemFactory {
 
     private static final Log log = LogFactory.getLog(AbstractSyncRootFolderItemFactory.class);
 
     /**
      * Returns the parent {@link FileSystemItem}.
      */
-    protected abstract FolderItem getParentItem(DocumentModel doc)
-            throws ClientException;
+    protected abstract FolderItem getParentItem(DocumentModel doc) throws ClientException;
 
     /**
      * No parameters by default.
      */
     @Override
-    public void handleParameters(Map<String, String> parameters)
-            throws ClientException {
+    public void handleParameters(Map<String, String> parameters) throws ClientException {
         // Nothing to do as no parameters are contributed to the factory
         if (!parameters.isEmpty()) {
             throw new IllegalArgumentException(
                     "Parameter map is not empty whereas no parameters are contributed to the factory.");
         }
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Factory %s has no parameters to handle.",
-                    getName()));
+            log.debug(String.format("Factory %s has no parameters to handle.", getName()));
         }
     }
 
     /**
-     * The factory considers that a {@link DocumentModel} is adaptable as a
-     * {@link FileSystemItem} if:
+     * The factory considers that a {@link DocumentModel} is adaptable as a {@link FileSystemItem} if:
      * <ul>
      * <li>It is Folderish</li>
      * <li>AND it is not a version nor a proxy</li>
      * <li>AND it is not HiddenInNavigation</li>
-     * <li>AND it is not in the "deleted" life cycle state, unless
-     * {@code includeDeleted} is true</li>
-     * <li>AND it is a synchronization root registered for the current user,
-     * unless {@code relaxSyncRootConstraint} is true</li>
+     * <li>AND it is not in the "deleted" life cycle state, unless {@code includeDeleted} is true</li>
+     * <li>AND it is a synchronization root registered for the current user, unless {@code relaxSyncRootConstraint} is
+     * true</li>
      * </ul>
      */
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted,
-            boolean relaxSyncRootConstraint) throws ClientException {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
+            throws ClientException {
 
         // Check Folderish
         if (!doc.isFolder()) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Document %s is not Folderish, it cannot be adapted as a FileSystemItem.",
+                log.debug(String.format("Document %s is not Folderish, it cannot be adapted as a FileSystemItem.",
                         doc.getId()));
             }
             return false;
@@ -93,8 +85,7 @@ public abstract class AbstractSyncRootFolderItemFactory extends
         // Check version
         if (doc.isVersion()) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Document %s is a version, it cannot be adapted as a FileSystemItem.",
+                log.debug(String.format("Document %s is a version, it cannot be adapted as a FileSystemItem.",
                         doc.getId()));
             }
             return false;
@@ -102,8 +93,7 @@ public abstract class AbstractSyncRootFolderItemFactory extends
         // Check proxy
         if (doc.isProxy()) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Document %s is a proxy, it cannot be adapted as a FileSystemItem.",
+                log.debug(String.format("Document %s is a proxy, it cannot be adapted as a FileSystemItem.",
                         doc.getId()));
             }
             return false;
@@ -111,15 +101,13 @@ public abstract class AbstractSyncRootFolderItemFactory extends
         // Check HiddenInNavigation
         if (doc.hasFacet("HiddenInNavigation")) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Document %s is HiddenInNavigation, it cannot be adapted as a FileSystemItem.",
+                log.debug(String.format("Document %s is HiddenInNavigation, it cannot be adapted as a FileSystemItem.",
                         doc.getId()));
             }
             return false;
         }
         // Check "deleted" life cycle state
-        if (!includeDeleted
-                && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+        if (!includeDeleted && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "Document %s is in the '%s' life cycle state, it cannot be adapted as a FileSystemItem.",
@@ -131,8 +119,7 @@ public abstract class AbstractSyncRootFolderItemFactory extends
             // Check synchronization root registered for the current user
             NuxeoDriveManager nuxeoDriveManager = Framework.getLocalService(NuxeoDriveManager.class);
             Principal principal = doc.getCoreSession().getPrincipal();
-            boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(
-                    principal, doc);
+            boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(principal, doc);
             if (!isSyncRoot) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
@@ -149,8 +136,7 @@ public abstract class AbstractSyncRootFolderItemFactory extends
      * Force parent id using {@link #getParentId(String)}.
      */
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean includeDeleted) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException {
         return getFileSystemItem(doc, getParentItem(doc), includeDeleted);
     }
 
@@ -158,11 +144,9 @@ public abstract class AbstractSyncRootFolderItemFactory extends
      * Force parent id using {@link #getParentId(String)}.
      */
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean includeDeleted, boolean relaxSyncRootConstraint)
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
             throws ClientException {
-        return getFileSystemItem(doc, getParentItem(doc), includeDeleted,
-                relaxSyncRootConstraint);
+        return getFileSystemItem(doc, getParentItem(doc), includeDeleted, relaxSyncRootConstraint);
     }
 
 }

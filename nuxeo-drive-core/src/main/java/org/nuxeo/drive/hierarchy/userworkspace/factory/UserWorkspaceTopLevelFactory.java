@@ -38,11 +38,10 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * User workspace based implementation of the {@link TopLevelFolderItemFactory}.
- *
+ * 
  * @author Antoine Taillefer
  */
-public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory
-        implements TopLevelFolderItemFactory {
+public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory implements TopLevelFolderItemFactory {
 
     private static final Log log = LogFactory.getLog(UserWorkspaceTopLevelFactory.class);
 
@@ -58,8 +57,7 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory
 
     /*---------------------- AbstractFileSystemItemFactory ---------------*/
     @Override
-    public void handleParameters(Map<String, String> parameters)
-            throws ClientException {
+    public void handleParameters(Map<String, String> parameters) throws ClientException {
         // Look for the "folderName" parameter
         String folderNameParam = parameters.get(FOLDER_NAME_PARAM);
         if (!StringUtils.isEmpty(folderNameParam)) {
@@ -81,15 +79,14 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory
     }
 
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted,
-            boolean relaxSyncRootConstraint) throws ClientException {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
+            throws ClientException {
         // Check user workspace
         boolean isUserWorkspace = UserWorkspaceHelper.isUserWorkspace(doc);
         if (!isUserWorkspace) {
             if (log.isTraceEnabled()) {
                 log.trace(String.format(
-                        "Document %s is not a user workspace, it cannot be adapted as a FileSystemItem.",
-                        doc.getId()));
+                        "Document %s is not a user workspace, it cannot be adapted as a FileSystemItem.", doc.getId()));
             }
             return false;
         }
@@ -97,17 +94,15 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory
     }
 
     @Override
-    protected FileSystemItem adaptDocument(DocumentModel doc,
-            boolean forceParentItem, FolderItem parentItem,
+    protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
             boolean relaxSyncRootConstraint) throws ClientException {
-        return new UserWorkspaceTopLevelFolderItem(getName(), doc, folderName,
-                syncRootParentFactoryName, relaxSyncRootConstraint);
+        return new UserWorkspaceTopLevelFolderItem(getName(), doc, folderName, syncRootParentFactoryName,
+                relaxSyncRootConstraint);
     }
 
     /*---------------------- VirtualFolderItemFactory ---------------*/
     @Override
-    public FolderItem getVirtualFolderItem(Principal principal)
-            throws ClientException {
+    public FolderItem getVirtualFolderItem(Principal principal) throws ClientException {
         return getTopLevelFolderItem(principal);
     }
 
@@ -123,32 +118,25 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory
 
     /*----------------------- TopLevelFolderItemFactory ---------------------*/
     @Override
-    public FolderItem getTopLevelFolderItem(Principal principal)
-            throws ClientException {
+    public FolderItem getTopLevelFolderItem(Principal principal) throws ClientException {
         DocumentModel userWorkspace = getUserPersonalWorkspace(principal);
         return (FolderItem) getFileSystemItem(userWorkspace);
     }
 
     /*------------------- Protected ------------------- */
-    protected DocumentModel getUserPersonalWorkspace(Principal principal)
-            throws ClientException {
+    protected DocumentModel getUserPersonalWorkspace(Principal principal) throws ClientException {
         UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         // TODO: handle multiple repositories
-        CoreSession session = getSession(
-                repositoryManager.getDefaultRepositoryName(), principal);
-        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                session, null);
+        CoreSession session = getSession(repositoryManager.getDefaultRepositoryName(), principal);
+        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
         if (userWorkspace == null) {
-            throw new ClientException(String.format(
-                    "No personal workspace found for user %s.",
-                    principal.getName()));
+            throw new ClientException(String.format("No personal workspace found for user %s.", principal.getName()));
         }
         return userWorkspace;
     }
 
-    protected CoreSession getSession(String repositoryName, Principal principal)
-            throws ClientException {
+    protected CoreSession getSession(String repositoryName, Principal principal) throws ClientException {
         return getFileSystemItemManager().getSession(repositoryName, principal);
     }
 

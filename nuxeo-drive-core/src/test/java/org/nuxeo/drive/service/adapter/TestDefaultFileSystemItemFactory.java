@@ -73,19 +73,15 @@ import com.google.inject.Inject;
 
 /**
  * Tests the {@link DefaultFileSystemItemFactory}.
- *
+ * 
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.dublincore",
-        "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.platform.filemanager.core",
-        "org.nuxeo.ecm.platform.mimetype.api",
-        "org.nuxeo.ecm.platform.mimetype.core",
-        "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.platform.collections.core",
-        "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml" })
+@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.ecm.platform.query.api",
+        "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.mimetype.api",
+        "org.nuxeo.ecm.platform.mimetype.core", "org.nuxeo.ecm.platform.types.core",
+        "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml" })
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 public class TestDefaultFileSystemItemFactory {
 
@@ -134,8 +130,7 @@ public class TestDefaultFileSystemItemFactory {
     protected VersioningFileSystemItemFactory defaultFileSystemItemFactory;
 
     /**
-     * For databases that don't have sub-second resolution, sleep a bit to get
-     * to the next second.
+     * For databases that don't have sub-second resolution, sleep a bit to get to the next second.
      */
     protected void maybeSleepToNextSecond() {
         DatabaseHelper.DATABASE.maybeSleepToNextSecond();
@@ -146,53 +141,44 @@ public class TestDefaultFileSystemItemFactory {
         principal = session.getPrincipal();
         syncRootFolder = session.createDocumentModel("/", "syncRoot", "Folder");
         syncRootFolder = session.createDocument(syncRootFolder);
-        nuxeoDriveManager.registerSynchronizationRoot(principal,
-                syncRootFolder, session);
+        nuxeoDriveManager.registerSynchronizationRoot(principal, syncRootFolder, session);
 
         // Expected sync root FS item id
-        syncRootItemId = DEFAULT_SYNC_ROOT_ITEM_ID_PREFIX
-                + syncRootFolder.getId();
+        syncRootItemId = DEFAULT_SYNC_ROOT_ITEM_ID_PREFIX + syncRootFolder.getId();
 
         // File
-        file = session.createDocumentModel(syncRootFolder.getPathAsString(),
-                "aFile", "File");
+        file = session.createDocumentModel(syncRootFolder.getPathAsString(), "aFile", "File");
         Blob blob = new StringBlob("Content of Joe's file.");
         blob.setFilename("Joe.odt");
         file.setPropertyValue("file:content", (Serializable) blob);
         file = session.createDocument(file);
 
         // Note
-        note = session.createDocumentModel(syncRootFolder.getPathAsString(),
-                "aNote", "Note");
+        note = session.createDocumentModel(syncRootFolder.getPathAsString(), "aNote", "Note");
         note.setPropertyValue("note:note", "Content of Bob's note.");
         note = session.createDocument(note);
 
         // Custom doc type with the "file" schema
-        custom = session.createDocumentModel(syncRootFolder.getPathAsString(),
-                "aCustomDoc", "Custom");
+        custom = session.createDocumentModel(syncRootFolder.getPathAsString(), "aCustomDoc", "Custom");
         blob = new StringBlob("Content of Bonnie's file.");
         blob.setFilename("Bonnie's file.odt");
         custom.setPropertyValue("file:content", (Serializable) blob);
         custom = session.createDocument(custom);
 
         // Folder
-        folder = session.createDocumentModel(syncRootFolder.getPathAsString(),
-                "aFolder", "Folder");
+        folder = session.createDocumentModel(syncRootFolder.getPathAsString(), "aFolder", "Folder");
         folder.setPropertyValue("dc:title", "Jack's folder");
         folder = session.createDocument(folder);
 
         // FolderishFile: doc type with the "file" schema and the "Folderish"
         // facet
-        folderishFile = session.createDocumentModel(
-                syncRootFolder.getPathAsString(), "aFolderishFile",
-                "FolderishFile");
+        folderishFile = session.createDocumentModel(syncRootFolder.getPathAsString(), "aFolderishFile", "FolderishFile");
         folderishFile.setPropertyValue("dc:title", "Sarah's folderish file");
         folderishFile = session.createDocument(folderishFile);
 
         // Doc not adaptable as a FileSystemItem (not Folderish nor a
         // BlobHolder)
-        notAFileSystemItem = session.createDocumentModel(
-                syncRootFolder.getPathAsString(), "notAFileSystemItem",
+        notAFileSystemItem = session.createDocumentModel(syncRootFolder.getPathAsString(), "notAFileSystemItem",
                 "NotSynchronizable");
         notAFileSystemItem = session.createDocument(notAFileSystemItem);
 
@@ -204,10 +190,8 @@ public class TestDefaultFileSystemItemFactory {
 
         // Set versioning delay to 1 second
         defaultFileSystemItemFactory.setVersioningDelay(VERSIONING_DELAY / 1000.0);
-        assertEquals(VERSIONING_DELAY / 1000.0,
-                defaultFileSystemItemFactory.getVersioningDelay(), .01);
-        assertEquals(VersioningOption.MINOR,
-                defaultFileSystemItemFactory.getVersioningOption());
+        assertEquals(VERSIONING_DELAY / 1000.0, defaultFileSystemItemFactory.getVersioningDelay(), .01);
+        assertEquals(VersioningOption.MINOR, defaultFileSystemItemFactory.getVersioningOption());
     }
 
     @Test
@@ -221,8 +205,7 @@ public class TestDefaultFileSystemItemFactory {
         FileSystemItem fsItem = defaultFileSystemItemFactory.getFileSystemItem(file);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(),
-                fsItem.getId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(), fsItem.getId());
         assertEquals(syncRootItemId, fsItem.getParentId());
         assertEquals("Joe.odt", fsItem.getName());
         assertFalse(fsItem.isFolder());
@@ -236,8 +219,7 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(note);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(),
-                fsItem.getId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(), fsItem.getId());
         assertEquals(syncRootItemId, fsItem.getParentId());
         assertEquals("aNote.txt", fsItem.getName());
         assertFalse(fsItem.isFolder());
@@ -251,8 +233,7 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(custom);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(),
-                fsItem.getId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(), fsItem.getId());
         assertEquals(syncRootItemId, fsItem.getParentId());
         assertEquals("Bonnie's file.odt", fsItem.getName());
         assertFalse(fsItem.isFolder());
@@ -278,19 +259,16 @@ public class TestDefaultFileSystemItemFactory {
         assertTrue(defaultFileSystemItemFactory.isFileSystemItem(custom, true));
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(custom, true);
         assertNotNull(fsItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(),
-                fsItem.getId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(), fsItem.getId());
         assertEquals("Bonnie's file.odt", fsItem.getName());
 
         // Version
-        DocumentRef versionRef = session.checkIn(note.getRef(),
-                VersioningOption.MINOR, null);
+        DocumentRef versionRef = session.checkIn(note.getRef(), VersioningOption.MINOR, null);
         DocumentModel version = session.getDocument(versionRef);
         assertFalse(defaultFileSystemItemFactory.isFileSystemItem(version));
 
         // Proxy
-        DocumentModel proxy = session.createProxy(note.getRef(),
-                folder.getRef());
+        DocumentModel proxy = session.createProxy(note.getRef(), folder.getRef());
         assertFalse(defaultFileSystemItemFactory.isFileSystemItem(proxy));
 
         // HiddenInNavigation
@@ -306,8 +284,7 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(folder);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
-                fsItem.getId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), fsItem.getId());
         assertEquals(syncRootItemId, fsItem.getParentId());
         assertEquals("Jack's folder", fsItem.getName());
         assertTrue(fsItem.isFolder());
@@ -322,9 +299,7 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(folderishFile);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
-        assertEquals(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderishFile.getId(),
-                fsItem.getId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderishFile.getId(), fsItem.getId());
         assertEquals(syncRootItemId, fsItem.getParentId());
         assertEquals("Sarah's folderish file", fsItem.getName());
         assertTrue(fsItem.isFolder());
@@ -342,8 +317,7 @@ public class TestDefaultFileSystemItemFactory {
         // -------------------------------------------------------------
         FolderItem syncRootSystemItem = (FolderItem) fileSystemItemAdapterService.getFileSystemItemFactoryForId(
                 syncRootItemId).getFileSystemItemById(syncRootItemId, principal);
-        fsItem = defaultFileSystemItemFactory.getFileSystemItem(note,
-                syncRootSystemItem);
+        fsItem = defaultFileSystemItemFactory.getFileSystemItem(note, syncRootSystemItem);
         assertEquals(syncRootItemId, fsItem.getParentId());
 
         // Passing a null parent will force a null parentId
@@ -363,8 +337,7 @@ public class TestDefaultFileSystemItemFactory {
         setPermission(rootDoc, "joe", SecurityConstants.READ, true);
         try (CoreSession joeSession = repository.openSessionAs("joe")) {
 
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    joeSession.getPrincipal(), syncRootFolder, session);
+            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
 
             // Under Oracle, the READ ACL optims are not visible from the joe
             // session while the transaction has not been committed.
@@ -402,46 +375,39 @@ public class TestDefaultFileSystemItemFactory {
                     e.getMessage());
         }
         // Non existent doc id
-        assertFalse(defaultFileSystemItemFactory.exists(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + "nonExistentDocId",
+        assertFalse(defaultFileSystemItemFactory.exists(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + "nonExistentDocId",
                 principal));
         // File
-        assertTrue(defaultFileSystemItemFactory.exists(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(), principal));
+        assertTrue(defaultFileSystemItemFactory.exists(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(), principal));
         // Note
-        assertTrue(defaultFileSystemItemFactory.exists(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(), principal));
+        assertTrue(defaultFileSystemItemFactory.exists(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(), principal));
         // Not adaptable as a FileSystemItem
         assertFalse(defaultFileSystemItemFactory.exists(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(),
-                principal));
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(), principal));
         // Deleted
         file.followTransition("delete");
-        assertFalse(defaultFileSystemItemFactory.exists(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(), principal));
+        assertFalse(defaultFileSystemItemFactory.exists(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(), principal));
     }
 
     @Test
     public void testGetFileSystemItemById() throws Exception {
 
         // Non existent doc id, must return null
-        assertNull(defaultFileSystemItemFactory.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + "nonExistentDocId",
-                principal));
+        assertNull(defaultFileSystemItemFactory.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
+                + "nonExistentDocId", principal));
         // File without a blob
         file.setPropertyValue("file:content", null);
         file = session.saveDocument(file);
         session.save();
-        FileSystemItem fsItem = defaultFileSystemItemFactory.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(), principal);
+        FileSystemItem fsItem = defaultFileSystemItemFactory.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
+                + file.getId(), principal);
         assertNull(fsItem);
         // Note
-        fsItem = defaultFileSystemItemFactory.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(), principal);
+        fsItem = defaultFileSystemItemFactory.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(),
+                principal);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(),
-                fsItem.getId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(), fsItem.getId());
         assertEquals(syncRootItemId, fsItem.getParentId());
         assertEquals("aNote.txt", fsItem.getName());
         assertFalse(fsItem.isFolder());
@@ -453,16 +419,14 @@ public class TestDefaultFileSystemItemFactory {
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
-                fsItem.getId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), fsItem.getId());
         assertEquals(syncRootItemId, fsItem.getParentId());
         assertEquals("Jack's folder", fsItem.getName());
         assertTrue(fsItem.isFolder());
         assertTrue(((FolderItem) fsItem).getChildren().isEmpty());
         // Not adaptable as a FileSystemItem
-        fsItem = defaultFileSystemItemFactory.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(),
-                principal);
+        fsItem = defaultFileSystemItemFactory.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
+                + notAFileSystemItem.getId(), principal);
         assertNull(fsItem);
         // Deleted
         custom.followTransition("delete");
@@ -470,12 +434,10 @@ public class TestDefaultFileSystemItemFactory {
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(), principal);
         assertNull(fsItem);
         // Use parent id
-        fsItem = defaultFileSystemItemFactory.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(),
+        fsItem = defaultFileSystemItemFactory.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(),
                 syncRootItemId, principal);
         assertTrue(fsItem instanceof FileItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(),
-                fsItem.getId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(), fsItem.getId());
         assertEquals(syncRootItemId, fsItem.getParentId());
     }
 
@@ -487,9 +449,7 @@ public class TestDefaultFileSystemItemFactory {
         // ------------------------------------------------------
         FileItem fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
         String downloadURL = fileItem.getDownloadURL();
-        assertEquals(
-                "nxbigfile/test/" + file.getId() + "/blobholder:0/Joe.odt",
-                downloadURL);
+        assertEquals("nxbigfile/test/" + file.getId() + "/blobholder:0/Joe.odt", downloadURL);
 
         // ------------------------------------------------------------
         // FileItem#getDigestAlgorithm
@@ -501,13 +461,10 @@ public class TestDefaultFileSystemItemFactory {
         // ------------------------------------------------------------
         // FileItem#getDigest
         // ------------------------------------------------------------
-        assertEquals(file.getAdapter(BlobHolder.class).getBlob().getDigest(),
-                fileItem.getDigest());
-        String noteDigest = FileSystemItemHelper.getDigest(
-                note.getAdapter(BlobHolder.class).getBlob(), "md5");
+        assertEquals(file.getAdapter(BlobHolder.class).getBlob().getDigest(), fileItem.getDigest());
+        String noteDigest = FileSystemItemHelper.getDigest(note.getAdapter(BlobHolder.class).getBlob(), "md5");
         assertEquals(noteDigest, noteItem.getDigest());
-        assertEquals(
-                custom.getAdapter(BlobHolder.class).getBlob().getDigest(),
+        assertEquals(custom.getAdapter(BlobHolder.class).getBlob().getDigest(),
                 ((FileItem) defaultFileSystemItemFactory.getFileSystemItem(custom)).getDigest());
 
         // ------------------------------------------------------------
@@ -521,8 +478,7 @@ public class TestDefaultFileSystemItemFactory {
         setPermission(rootDoc, "joe", SecurityConstants.READ, true);
 
         try (CoreSession joeSession = repository.openSessionAs("joe")) {
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    joeSession.getPrincipal(), syncRootFolder, session);
+            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
             // Under Oracle, the READ ACL optims are not visible from the
             // joe session while the transaction has not been committed.
         }
@@ -594,8 +550,7 @@ public class TestDefaultFileSystemItemFactory {
             // Re-fetch file with Administrator session
             file = session.getDocument(file.getRef());
             updatedBlob = (Blob) file.getPropertyValue("file:content");
-            assertEquals("File name modified by Joe.txt",
-                    updatedBlob.getFilename());
+            assertEquals("File name modified by Joe.txt", updatedBlob.getFilename());
             // Check versioning => should be versioned since updated by a
             // different contributor
             assertVersion("0.2", file);
@@ -690,8 +645,7 @@ public class TestDefaultFileSystemItemFactory {
             }
 
             // Register the sync root for Joe's account
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    joeSession.getPrincipal(), syncRootFolder, session);
+            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
 
             folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
             assertFalse(folderItem.getCanCreateChild());
@@ -721,8 +675,7 @@ public class TestDefaultFileSystemItemFactory {
         folderItem.createFolder("Sub-folder");
 
         DocumentModelList children = session.query(String.format(
-                "select * from Document where ecm:parentId = '%s' order by ecm:primaryType asc",
-                folder.getId()));
+                "select * from Document where ecm:parentId = '%s' order by ecm:primaryType asc", folder.getId()));
         assertEquals(3, children.size());
         // Check File
         DocumentModel file = children.get(0);
@@ -748,18 +701,16 @@ public class TestDefaultFileSystemItemFactory {
         // ------------------------------------------------------
         // Create another child adaptable as a FileSystemItem => should be
         // retrieved
-        DocumentModel adaptableChild = session.createDocumentModel(
-                "/syncRoot/aFolder", "adaptableChild", "File");
+        DocumentModel adaptableChild = session.createDocumentModel("/syncRoot/aFolder", "adaptableChild", "File");
         Blob adaptableChildBlob = new StringBlob("Content of another file.");
         adaptableChildBlob.setFilename("Another file.odt");
-        adaptableChild.setPropertyValue("file:content",
-                (Serializable) adaptableChildBlob);
+        adaptableChild.setPropertyValue("file:content", (Serializable) adaptableChildBlob);
         adaptableChild = session.createDocument(adaptableChild);
         // Create another child not adaptable as a FileSystemItem => should
         // not
         // be retrieved
-        session.createDocument(session.createDocumentModel("/syncRoot/aFolder",
-                "notAdaptableChild", "NotSynchronizable"));
+        session.createDocument(session.createDocumentModel("/syncRoot/aFolder", "notAdaptableChild",
+                "NotSynchronizable"));
         session.save();
 
         List<FileSystemItem> folderChildren = folderItem.getChildren();
@@ -767,15 +718,13 @@ public class TestDefaultFileSystemItemFactory {
         // Don't check children order against MySQL database because of the
         // milliseconds limitation
         boolean ordered = !(DatabaseHelper.DATABASE instanceof DatabaseMySQL);
-        checkChildren(folderChildren, folder.getId(), note.getId(),
-                file.getId(), subFolder.getId(), adaptableChild.getId(),
-                ordered);
+        checkChildren(folderChildren, folder.getId(), note.getId(), file.getId(), subFolder.getId(),
+                adaptableChild.getId(), ordered);
     }
 
     @Test
     public void testCollectionMembership() {
-        DocumentModel doc = session.createDocumentModel(
-                session.getRootDocument().getPathAsString(), "testDoc", "File");
+        DocumentModel doc = session.createDocumentModel(session.getRootDocument().getPathAsString(), "testDoc", "File");
         Blob blob = new StringBlob("Content of Joe's file.");
         blob.setFilename("Joe.odt");
         doc.setPropertyValue("file:content", (Serializable) blob);
@@ -790,9 +739,8 @@ public class TestDefaultFileSystemItemFactory {
         }
 
         log.trace("Try to adapt a document member of a non sync root collection");
-        DocumentModel nonSyncrootCollection = collectionManager.createCollection(
-                session, "Non sync root collection", "",
-                session.getRootDocument().getPathAsString());
+        DocumentModel nonSyncrootCollection = collectionManager.createCollection(session, "Non sync root collection",
+                "", session.getRootDocument().getPathAsString());
         collectionManager.addToCollection(nonSyncrootCollection, doc, session);
         doc = session.getDocument(doc.getRef());
         try {
@@ -803,26 +751,22 @@ public class TestDefaultFileSystemItemFactory {
         }
 
         log.trace("Adapt a document member of a non sync root colllection and a sync root collection");
-        DocumentModel syncRootCollection = collectionManager.createCollection(
-                session, "Sync root collection", "",
+        DocumentModel syncRootCollection = collectionManager.createCollection(session, "Sync root collection", "",
                 session.getRootDocument().getPathAsString());
-        nuxeoDriveManager.registerSynchronizationRoot(principal,
-                syncRootCollection, session);
+        nuxeoDriveManager.registerSynchronizationRoot(principal, syncRootCollection, session);
         collectionManager.addToCollection(syncRootCollection, doc, session);
         doc = session.getDocument(doc.getRef());
         FileSystemItem fsItem = defaultFileSystemItemFactory.getFileSystemItem(doc);
         assertNotNull(fsItem);
 
         log.trace("Adapt a document member of a sync root collection only");
-        collectionManager.removeFromCollection(nonSyncrootCollection, doc,
-                session);
+        collectionManager.removeFromCollection(nonSyncrootCollection, doc, session);
         doc = session.getDocument(doc.getRef());
-        assertEquals(fsItem,
-                defaultFileSystemItemFactory.getFileSystemItem(doc));
+        assertEquals(fsItem, defaultFileSystemItemFactory.getFileSystemItem(doc));
     }
 
-    protected void setPermission(DocumentModel doc, String userName,
-            String permission, boolean isGranted) throws ClientException {
+    protected void setPermission(DocumentModel doc, String userName, String permission, boolean isGranted)
+            throws ClientException {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         localACL.add(new ACE(userName, permission, isGranted));
@@ -830,8 +774,7 @@ public class TestDefaultFileSystemItemFactory {
         session.save();
     }
 
-    protected void resetPermissions(DocumentModel doc, String userName)
-            throws ClientException {
+    protected void resetPermissions(DocumentModel doc, String userName) throws ClientException {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         Iterator<ACE> localACLIt = localACL.iterator();
@@ -845,8 +788,7 @@ public class TestDefaultFileSystemItemFactory {
         session.save();
     }
 
-    protected void assertVersion(String expected, DocumentModel doc)
-            throws Exception {
+    protected void assertVersion(String expected, DocumentModel doc) throws Exception {
         assertEquals(expected, getMajor(doc) + "." + getMinor(doc));
     }
 
@@ -858,8 +800,7 @@ public class TestDefaultFileSystemItemFactory {
         return getVersion(doc, VersioningService.MINOR_VERSION_PROP);
     }
 
-    protected long getVersion(DocumentModel doc, String prop)
-            throws ClientException {
+    protected long getVersion(DocumentModel doc, String prop) throws ClientException {
         Object propVal = doc.getPropertyValue(prop);
         if (propVal == null || !(propVal instanceof Long)) {
             return -1;
@@ -868,9 +809,8 @@ public class TestDefaultFileSystemItemFactory {
         }
     }
 
-    protected void checkChildren(List<FileSystemItem> folderChildren,
-            String folderId, String noteId, String fileId, String subFolderId,
-            String otherFileId, boolean ordered) throws Exception {
+    protected void checkChildren(List<FileSystemItem> folderChildren, String folderId, String noteId, String fileId,
+            String subFolderId, String otherFileId, boolean ordered) throws Exception {
 
         boolean isNoteFound = false;
         boolean isFileFound = false;
@@ -880,46 +820,38 @@ public class TestDefaultFileSystemItemFactory {
 
         for (FileSystemItem fsItem : folderChildren) {
             // Check Note
-            if (!isNoteFound
-                    && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + noteId).equals(fsItem.getId())) {
+            if (!isNoteFound && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + noteId).equals(fsItem.getId())) {
                 if (!ordered || ordered && childrenCount == 0) {
                     assertTrue(fsItem instanceof FileItem);
-                    assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId,
-                            fsItem.getParentId());
+                    assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId, fsItem.getParentId());
                     assertEquals("Note child.txt", fsItem.getName());
                     assertFalse(fsItem.isFolder());
                     Blob fileItemBlob = ((FileItem) fsItem).getBlob();
                     assertEquals("Note child.txt", fileItemBlob.getFilename());
-                    assertEquals("This is the Note child.",
-                            fileItemBlob.getString());
+                    assertEquals("This is the Note child.", fileItemBlob.getString());
                     isNoteFound = true;
                     childrenCount++;
                 }
             }
             // Check File
-            else if (!isFileFound
-                    && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + fileId).equals(fsItem.getId())) {
+            else if (!isFileFound && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + fileId).equals(fsItem.getId())) {
                 if (!ordered || ordered && childrenCount == 1) {
                     assertTrue(fsItem instanceof FileItem);
-                    assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId,
-                            fsItem.getParentId());
+                    assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId, fsItem.getParentId());
                     assertEquals("File child.odt", fsItem.getName());
                     assertFalse(fsItem.isFolder());
                     Blob fileItemBlob = ((FileItem) fsItem).getBlob();
                     assertEquals("File child.odt", fileItemBlob.getFilename());
-                    assertEquals("This is the File child.",
-                            fileItemBlob.getString());
+                    assertEquals("This is the File child.", fileItemBlob.getString());
                     isFileFound = true;
                     childrenCount++;
                 }
             }
             // Check sub-Folder
-            else if (!isSubFolderFound
-                    && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolderId).equals(fsItem.getId())) {
+            else if (!isSubFolderFound && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolderId).equals(fsItem.getId())) {
                 if (!ordered || ordered && childrenCount == 2) {
                     assertTrue(fsItem instanceof FolderItem);
-                    assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId,
-                            fsItem.getParentId());
+                    assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId, fsItem.getParentId());
                     assertEquals("Sub-folder", fsItem.getName());
                     assertTrue(fsItem.isFolder());
                     List<FileSystemItem> childFolderChildren = ((FolderItem) fsItem).getChildren();
@@ -930,25 +862,20 @@ public class TestDefaultFileSystemItemFactory {
                 }
             }
             // Check other File
-            else if (!isOtherFileFound
-                    && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + otherFileId).equals(fsItem.getId())) {
+            else if (!isOtherFileFound && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + otherFileId).equals(fsItem.getId())) {
                 if (!ordered || ordered && childrenCount == 3) {
                     assertTrue(fsItem instanceof FileItem);
-                    assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId,
-                            fsItem.getParentId());
+                    assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId, fsItem.getParentId());
                     assertEquals("Another file.odt", fsItem.getName());
                     assertFalse(fsItem.isFolder());
                     Blob fileItemBlob = ((FileItem) fsItem).getBlob();
                     assertEquals("Another file.odt", fileItemBlob.getFilename());
-                    assertEquals("Content of another file.",
-                            fileItemBlob.getString());
+                    assertEquals("Content of another file.", fileItemBlob.getString());
                     isOtherFileFound = true;
                     childrenCount++;
                 }
             } else {
-                fail(String.format(
-                        "FileSystemItem %s doesn't match any expected.",
-                        fsItem.getId()));
+                fail(String.format("FileSystemItem %s doesn't match any expected.", fsItem.getId()));
             }
         }
     }

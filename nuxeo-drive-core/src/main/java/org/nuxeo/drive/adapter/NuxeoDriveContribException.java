@@ -20,9 +20,8 @@ import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * Exception raised when no contributions to the
- * {@link FileSystemItemAdapterService} are found or the component is not ready,
- * ie. application has not started yet.
+ * Exception raised when no contributions to the {@link FileSystemItemAdapterService} are found or the component is not
+ * ready, ie. application has not started yet.
  */
 public class NuxeoDriveContribException extends ClientException {
 
