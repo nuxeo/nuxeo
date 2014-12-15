@@ -161,6 +161,7 @@ public class Selection {
             return;
         }
         existing.add(id);
+        warnIfBig(1);
     }
 
     /**
@@ -241,12 +242,23 @@ public class Selection {
                 existing = new HashSet<Serializable>();
             }
             existing.addAll(created);
+            warnIfBig(created.size());
             created = null;
         }
         deleted = null;
         // move to soft map
         // caller responsible for removing from hard map
         softMap.put(selId, this);
+    }
+
+    protected void warnIfBig(int added) {
+        if (context.bigSelWarnThreshold != 0) {
+            int size = existing.size();
+            if (size / context.bigSelWarnThreshold != (size - added) / context.bigSelWarnThreshold) {
+                log.warn("Selection " + tableName + "." + filterKey + " for id=" + selId
+                        + " is getting big and now has size: " + size, new RuntimeException("Debug stack trace"));
+            }
+        }
     }
 
     public boolean isFlushed() {
