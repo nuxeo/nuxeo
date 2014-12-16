@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
 import org.nuxeo.binary.metadata.api.BinaryMetadataException;
 import org.nuxeo.binary.metadata.contribution.MetadataMappingDescriptor;
 import org.nuxeo.binary.metadata.contribution.MetadataMappingRegistry;
@@ -87,19 +88,15 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService, BinaryM
     }
 
     @Override
-    public Map<String, String> readMetadata(Blob blob) {
+    public Map<String, Object> readMetadata(Blob blob) {
         try {
             Class[] paramBlob = new Class[1];
             paramBlob[0] = Blob.class;
-            Class<BinaryMetadataProcessor> binaryMetadataProcessor = processorRegistry.getProcessorDescriptorMap().get("exifTool").getProcessorClass();
-            Method method = binaryMetadataProcessor.getDeclaredMethod
-                    ("readMetadata", paramBlob);
-            return (Map<String, String>) method.invoke(binaryMetadataProcessor,blob);
-        } catch (NoSuchMethodException e) {
-            throw new BinaryMetadataException(e);
-        } catch (InvocationTargetException e) {
-            throw new BinaryMetadataException(e);
-        } catch (IllegalAccessException e) {
+            BinaryMetadataProcessor binaryMetadataProcessor = processorRegistry.getProcessorDescriptorMap().get(
+                    BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID).getProcessorClass().newInstance();
+            Method method = binaryMetadataProcessor.getClass().getDeclaredMethod("readMetadata", paramBlob);
+            return (Map<String, Object>) method.invoke(binaryMetadataProcessor, blob);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
             throw new BinaryMetadataException(e);
         }
     }
@@ -128,23 +125,22 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService, BinaryM
     /*--------------------- Registry Service -----------------------*/
 
     @Override
-    public void addMappingContribution(MetadataMappingDescriptor contribution){
+    public void addMappingContribution(MetadataMappingDescriptor contribution) {
         this.mappingRegistry.addContribution(contribution);
     }
 
     @Override
-    public void addRuleContribution(MetadataRuleDescriptor contribution){
+    public void addRuleContribution(MetadataRuleDescriptor contribution) {
         this.ruleRegistry.addContribution(contribution);
     }
 
     @Override
-    public void addProcessorContribution(MetadataProcessorDescriptor contribution){
+    public void addProcessorContribution(MetadataProcessorDescriptor contribution) {
         this.processorRegistry.addContribution(contribution);
     }
 
     @Override
-    public void removeMappingContribution(MetadataMappingDescriptor
-            contribution) {
+    public void removeMappingContribution(MetadataMappingDescriptor contribution) {
         this.mappingRegistry.removeContribution(contribution);
     }
 

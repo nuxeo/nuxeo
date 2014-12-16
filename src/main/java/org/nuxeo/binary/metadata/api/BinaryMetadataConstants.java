@@ -30,4 +30,6 @@ public class BinaryMetadataConstants {
     public static final String METADATA_PROCESSORS_EP = "metadataProcessors";
 
     public static final String METADATA_RULES_EP = "metadataRules";
+
+    public static final String EXIF_TOOL_CONTRIBUTION_ID = "exifTool";
 }

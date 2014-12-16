@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
@@ -66,8 +67,9 @@ public class TestBinaryMetadataService {
     public void itShouldExtractAllMetadataFromBinary() {
         DocumentModel musicFile = BinaryMetadataServerInit.getFile(0, session);
         BlobHolder musicBlobHolder = musicFile.getAdapter(BlobHolder.class);
-        Map<String, String> blobProperties = binaryMetadataService.readMetadata(musicBlobHolder.getBlob(), musicMetadata);
+        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(musicBlobHolder.getBlob());
         assertNotNull(blobProperties);
-        assertEquals("", blobProperties.get(""));
+        assertEquals("Twist", blobProperties.get("Title").toString());
+        assertEquals("Divine Recordings", blobProperties.get("Publisher").toString());
     }
 }

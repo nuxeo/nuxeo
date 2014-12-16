@@ -68,7 +68,7 @@ public interface BinaryMetadataService {
      * @param blob Binary which metadata are read.
      * @return Extracted metadata.
      */
-    public Map<String, String> readMetadata(Blob blob);
+    public Map<String, Object> readMetadata(Blob blob);
 
     /**
      * Read and return metadata from a given binary with a given processor.

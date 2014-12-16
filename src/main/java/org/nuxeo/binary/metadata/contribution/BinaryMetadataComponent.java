@@ -41,7 +41,7 @@ public class BinaryMetadataComponent extends DefaultComponent {
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        this.metadataService = (BinaryMetadataServiceImpl) Framework.getLocalService(BinaryMetadataRegistryService.class);
+        this.metadataService = new BinaryMetadataServiceImpl();
     }
 
     @Override

@@ -16,10 +16,12 @@
  */
 package org.nuxeo.binary.metadata.contribution;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
@@ -31,7 +33,7 @@ public class MetadataProcessorRegistry extends ContributionFragmentRegistry<Meta
 
     private static final Log log = LogFactory.getLog(MetadataProcessorRegistry.class);
 
-    protected Map<String, MetadataProcessorDescriptor> processorDescriptorMap;
+    protected Map<String, MetadataProcessorDescriptor> processorDescriptorMap = new HashMap<>();
 
     @Override
     public String getContributionId(MetadataProcessorDescriptor metadataProcessorDescriptor) {
@@ -50,7 +52,7 @@ public class MetadataProcessorRegistry extends ContributionFragmentRegistry<Meta
     }
 
     @Override
-    public synchronized void addContribution(MetadataProcessorDescriptor metadataProcessorDescriptor) {
+    public void addContribution(MetadataProcessorDescriptor metadataProcessorDescriptor) {
         processorDescriptorMap.put(metadataProcessorDescriptor.getId(), metadataProcessorDescriptor);
     }
 

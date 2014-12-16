@@ -20,6 +20,9 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @since 7.1
  */
@@ -35,10 +38,10 @@ public class MetadataMappingDescriptor {
     @XNode("@blobXPath")
     protected String blobXPath;
 
-    @XNodeList(value = "metadata", componentType = MetadataDescriptor.class, type = MetadataDescriptor[].class)
-    protected MetadataDescriptor[] metadataDescriptors;
+    @XNodeList(value = "metadata", componentType = MetadataDescriptor.class, type = ArrayList.class)
+    protected List<MetadataDescriptor> metadataDescriptors;
 
-    public MetadataDescriptor[] getMetadataDescriptors() {
+    public List<MetadataDescriptor> getMetadataDescriptors() {
         return metadataDescriptors;
     }
 
@@ -46,7 +49,7 @@ public class MetadataMappingDescriptor {
     public class MetadataDescriptor {
 
         @XNode("@name")
-        protected String id;
+        protected String name;
 
         @XNode("@xpath")
         protected String xpath;
@@ -55,8 +58,8 @@ public class MetadataMappingDescriptor {
             return xpath;
         }
 
-        public String getId() {
-            return id;
+        public String getName() {
+            return name;
         }
 
     }

@@ -16,6 +16,7 @@
  */
 package org.nuxeo.binary.metadata.contribution;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -39,7 +40,7 @@ public class MetadataRuleRegistry extends ContributionFragmentRegistry<MetadataR
         this.metadataRuleDescriptorMap = metadataRuleDescriptorMap;
     }
 
-    protected Map<String, MetadataRuleDescriptor> metadataRuleDescriptorMap;
+    protected Map<String, MetadataRuleDescriptor> metadataRuleDescriptorMap = new HashMap<>();
 
     @Override
     public String getContributionId(MetadataRuleDescriptor metadataRuleDescriptor) {

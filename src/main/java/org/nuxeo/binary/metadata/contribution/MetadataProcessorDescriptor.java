@@ -26,7 +26,7 @@ public class MetadataProcessorDescriptor {
     @XNode("@id")
     protected String id;
 
-    @XNode("class")
+    @XNode("@class")
     private Class<BinaryMetadataProcessor> processorClass;
 
     public String getId() {
