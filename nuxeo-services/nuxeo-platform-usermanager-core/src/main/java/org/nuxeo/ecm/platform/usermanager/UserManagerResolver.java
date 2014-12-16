@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
+ */
+
 package org.nuxeo.ecm.platform.usermanager;
 
 import java.io.Serializable;
@@ -11,6 +28,36 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * This {@link ExternalReferenceResolver} allows to manage integrity for fields containing group or user references.
+ * <p>
+ * References must have a prefix. NuxeoPrincipal.PREFIX for users, NuxeoGroup.PREFIX for groups.
+ * </p>
+ * <p>
+ * To use it, put the following code in your schema XSD :
+ * </p>
+ *
+ * <pre>
+ * {@code
+ * <!-- user or group resolver -->
+ * <xs:simpleType name="userOrGroupReference">
+ *   <xs:restriction base="xs:string" ref:resolver="userManagerResolver" />
+ * </xs:simpleType>
+ *
+ * <!-- user resolver -->
+ * <xs:simpleType name="userReference">
+ *   <xs:restriction base="xs:string" ref:resolver="userManagerResolver" ref:type="user" />
+ * </xs:simpleType>
+ *
+ * <!-- group resolver -->
+ * <xs:simpleType name="groupReference">
+ *   <xs:restriction base="xs:string" ref:resolver="userManagerResolver" ref:type="group" />
+ * </xs:simpleType>
+ * }
+ * </pre>
+ *
+ * @since 7.1
+ */
 public class UserManagerResolver implements ExternalReferenceResolver {
 
     public static final String INPUT_PARAM_FILTER = "type";

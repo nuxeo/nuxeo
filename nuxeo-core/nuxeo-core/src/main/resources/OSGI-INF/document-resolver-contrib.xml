@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.usermanager.resolver">
+  <documentation>
+    Resolver for document properties containing DocumentModel reference. Can manage PATH reference or ID
+    reference.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.core.schema.ExternalReferenceService" point="resolvers">
+    <resolver type="documentResolver" class="org.nuxeo.ecm.core.model.DocumentModelReferenceResolver" />
+  </extension>
+
+</component>

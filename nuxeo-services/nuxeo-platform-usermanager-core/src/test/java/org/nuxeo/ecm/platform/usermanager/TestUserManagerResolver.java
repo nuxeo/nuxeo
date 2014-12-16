@@ -285,7 +285,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     }
 
     @Test
-    public void testFetchGroupFailedWithFilterGroup() {
+    public void testFetchGroupFailedWithFilterUser() {
         UserManagerResolver umr = new UserManagerResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_USER);
