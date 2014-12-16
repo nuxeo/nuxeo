@@ -20,8 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Main interface for target platform instance, holding resources that need to
- * be available on client sides.
+ * Main interface for target platform instance, holding resources that need to be available on client sides.
  *
  * @author Anahide Tchertchian
  * @since 5.7.1

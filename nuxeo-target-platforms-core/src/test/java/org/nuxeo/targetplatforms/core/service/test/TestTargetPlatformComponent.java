@@ -47,6 +47,7 @@ public class TestTargetPlatformComponent extends NXRuntimeTestCase {
 
     protected TargetPlatformService service;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.runtime.jtajca");
@@ -67,8 +68,8 @@ public class TestTargetPlatformComponent extends NXRuntimeTestCase {
     }
 
     public void setUpContextFactory() throws NamingException {
-        DataSource datasourceAutocommit = new SimpleDataSource(
-                "jdbc:hsqldb:mem:memid", jdbcDriver.class.getName(), "SA", "") {
+        DataSource datasourceAutocommit = new SimpleDataSource("jdbc:hsqldb:mem:memid", jdbcDriver.class.getName(),
+                "SA", "") {
             @Override
             public Connection getConnection() throws SQLException {
                 Connection con = super.getConnection();
@@ -76,8 +77,7 @@ public class TestTargetPlatformComponent extends NXRuntimeTestCase {
                 return con;
             }
         };
-        NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxsqldirectory",
-                datasourceAutocommit);
+        NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxsqldirectory", datasourceAutocommit);
     }
 
     @Override
@@ -101,8 +101,7 @@ public class TestTargetPlatformComponent extends NXRuntimeTestCase {
 
     @Test
     public void testOverrideDirectoryRegistration() throws Exception {
-        assertEquals(DirectoryUpdater.DEFAULT_DIR,
-                service.getOverrideDirectory());
+        assertEquals(DirectoryUpdater.DEFAULT_DIR, service.getOverrideDirectory());
         String contrib = "OSGI-INF/test-targetplatforms-dir-override-contrib.xml";
         URL url = getClass().getClassLoader().getResource(contrib);
         deployTestContrib("org.nuxeo.targetplatforms.core", url);

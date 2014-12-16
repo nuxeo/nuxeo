@@ -25,8 +25,7 @@ import org.nuxeo.targetplatforms.api.TargetPackageInfo;
  *
  * @since 5.7.1
  */
-public class TargetPackageInfoImpl extends TargetInfoImpl implements
-        TargetPackageInfo {
+public class TargetPackageInfoImpl extends TargetInfoImpl implements TargetPackageInfo {
 
     private static final long serialVersionUID = 1L;
 
@@ -36,11 +35,11 @@ public class TargetPackageInfoImpl extends TargetInfoImpl implements
     protected TargetPackageInfoImpl() {
     }
 
-    public TargetPackageInfoImpl(String id, String name, String version,
-            String refVersion, String label) {
+    public TargetPackageInfoImpl(String id, String name, String version, String refVersion, String label) {
         super(id, name, version, refVersion, label);
     }
 
+    @Override
     public List<String> getDependencies() {
         return dependencies;
     }

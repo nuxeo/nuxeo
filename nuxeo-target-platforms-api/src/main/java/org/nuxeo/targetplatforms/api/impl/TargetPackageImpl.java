@@ -24,8 +24,7 @@ import org.nuxeo.targetplatforms.api.TargetPackage;
 /**
  * @since 5.7.1
  */
-public class TargetPackageImpl extends TargetImpl implements TargetPackage,
-        Comparable<TargetPackage> {
+public class TargetPackageImpl extends TargetImpl implements TargetPackage, Comparable<TargetPackage> {
 
     private static final long serialVersionUID = 1L;
 
@@ -38,16 +37,16 @@ public class TargetPackageImpl extends TargetImpl implements TargetPackage,
         super();
     }
 
-    public TargetPackageImpl(String id, String name, String version,
-            String refVersion, String label) {
+    public TargetPackageImpl(String id, String name, String version, String refVersion, String label) {
         super(id, name, version, refVersion, label);
-        this.dependencies = new ArrayList<String>();
+        dependencies = new ArrayList<String>();
     }
 
     public void addDependency(String dependency) {
         dependencies.add(dependency);
     }
 
+    @Override
     public List<String> getDependencies() {
         return dependencies;
     }
@@ -60,6 +59,7 @@ public class TargetPackageImpl extends TargetImpl implements TargetPackage,
         }
     }
 
+    @Override
     public TargetPackage getParent() {
         return parent;
     }

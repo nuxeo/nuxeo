@@ -46,8 +46,7 @@ public class TargetPlatformImpl extends TargetImpl implements TargetPlatform {
         super(id);
     }
 
-    public TargetPlatformImpl(String id, String name, String version,
-            String refVersion, String label) {
+    public TargetPlatformImpl(String id, String name, String version, String refVersion, String label) {
         super(id, name, version, refVersion, label);
     }
 
@@ -88,6 +87,7 @@ public class TargetPlatformImpl extends TargetImpl implements TargetPlatform {
         }
     }
 
+    @Override
     public TargetPlatform getParent() {
         return parent;
     }
@@ -96,6 +96,7 @@ public class TargetPlatformImpl extends TargetImpl implements TargetPlatform {
         this.parent = parent;
     }
 
+    @Override
     public List<String> getTestVersions() {
         return testVersions;
     }

@@ -22,24 +22,20 @@ import java.util.List;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 import org.nuxeo.targetplatforms.core.descriptors.TargetPlatformDescriptor;
 
-
 /**
- * Registry for target platform contributions, handling merge on "enabled"
- * attribute only.
+ * Registry for target platform contributions, handling merge on "enabled" attribute only.
  *
  * @since 5.7.1
  */
-public class TargetPlatformRegistry extends
-        SimpleContributionRegistry<TargetPlatformDescriptor> {
+public class TargetPlatformRegistry extends SimpleContributionRegistry<TargetPlatformDescriptor> {
 
+    @Override
     public String getContributionId(TargetPlatformDescriptor contrib) {
         return contrib.getId();
     }
 
     @Override
-    public void contributionUpdated(String id,
-            TargetPlatformDescriptor contrib,
-            TargetPlatformDescriptor newOrigContrib) {
+    public void contributionUpdated(String id, TargetPlatformDescriptor contrib, TargetPlatformDescriptor newOrigContrib) {
         if (currentContribs.containsKey(id)) {
             currentContribs.remove(id);
         }

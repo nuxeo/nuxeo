@@ -24,13 +24,12 @@ import org.nuxeo.targetplatforms.api.TargetPlatform;
 import org.nuxeo.targetplatforms.api.TargetPlatformInstance;
 
 /**
- * {@link TargetPlatform} implementation relying on an original implementation,
- * useful for override when adding additional metadata.
+ * {@link TargetPlatform} implementation relying on an original implementation, useful for override when adding
+ * additional metadata.
  *
  * @since 5.7.1
  */
-public class TargetPlatformInstanceExtension extends TargetExtension implements
-        TargetPlatformInstance {
+public class TargetPlatformInstanceExtension extends TargetExtension implements TargetPlatformInstance {
 
     private static final long serialVersionUID = 1L;
 
@@ -43,7 +42,7 @@ public class TargetPlatformInstanceExtension extends TargetExtension implements
 
     public TargetPlatformInstanceExtension(TargetPlatformInstance orig) {
         super(orig);
-        this.origInstance = orig;
+        origInstance = orig;
     }
 
     @Override
@@ -66,6 +65,7 @@ public class TargetPlatformInstanceExtension extends TargetExtension implements
         return origInstance.hasEnabledPackageWithName(packageName);
     }
 
+    @Override
     public TargetPlatform getParent() {
         return origInstance.getParent();
     }

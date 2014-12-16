@@ -41,11 +41,9 @@ public interface TargetPlatformService {
     /**
      * Returns the default target platform.
      * <p>
-     * If several target platforms are found for given filter, the first one is
-     * returned (ordered alphabetically on id).
+     * If several target platforms are found for given filter, the first one is returned (ordered alphabetically on id).
      */
-    TargetPlatform getDefaultTargetPlatform(TargetPlatformFilter filter)
-            throws ClientException;
+    TargetPlatform getDefaultTargetPlatform(TargetPlatformFilter filter) throws ClientException;
 
     /**
      * Returns the target platform with given id, or null if not found.
@@ -68,72 +66,57 @@ public interface TargetPlatformService {
     TargetPackageInfo getTargetPackageInfo(String id);
 
     /**
-     * Returns a target platform instance with given id and given enabled
-     * packages, or null if not found.
+     * Returns a target platform instance with given id and given enabled packages, or null if not found.
      * <p>
      * Ignore target packages that would not be found.
      */
-    TargetPlatformInstance getTargetPlatformInstance(String id,
-            List<String> packages) throws ClientException;
+    TargetPlatformInstance getTargetPlatformInstance(String id, List<String> packages) throws ClientException;
 
     /**
      * Returns all target platforms matching given criteria.
      *
-     * @param filter the filter to apply, can be null if no filtering is
-     *            needed.
+     * @param filter the filter to apply, can be null if no filtering is needed.
      * @see TargetPlatformFilter
      */
-    List<TargetPlatform> getAvailableTargetPlatforms(TargetPlatformFilter filter)
-            throws ClientException;
+    List<TargetPlatform> getAvailableTargetPlatforms(TargetPlatformFilter filter) throws ClientException;
 
     /**
      * Returns all target platforms info matching given criteria.
      *
-     * @param filter the filter to apply, can be null if no filtering is
-     *            needed.
+     * @param filter the filter to apply, can be null if no filtering is needed.
      * @see TargetPlatformFilter
      */
-    List<TargetPlatformInfo> getAvailableTargetPlatformsInfo(
-            TargetPlatformFilter filter) throws ClientException;
+    List<TargetPlatformInfo> getAvailableTargetPlatformsInfo(TargetPlatformFilter filter) throws ClientException;
 
     /**
-     * Deprecates the target platform if given boolean is true (or
-     * un-deprecates it if boolean is false), overriding the default value from
-     * extension points and adding an entry in the override directory.
+     * Deprecates the target platform if given boolean is true (or un-deprecates it if boolean is false), overriding the
+     * default value from extension points and adding an entry in the override directory.
      */
-    void deprecateTargetPlatform(boolean deprecate, String id)
-            throws ClientException;
+    void deprecateTargetPlatform(boolean deprecate, String id) throws ClientException;
 
     /**
-     * Enables the target platform if given boolean is true (or disables it
-     * boolean is false), overriding the default value from extension points
-     * and adding an entry in the override directory.
+     * Enables the target platform if given boolean is true (or disables it boolean is false), overriding the default
+     * value from extension points and adding an entry in the override directory.
      */
     void enableTargetPlatform(boolean enable, String id) throws ClientException;
 
     /**
-     * Restricts the target platform if given boolean is true (or un-restricts
-     * it if boolean is false), overriding the default value from extension
-     * points and adding an entry in the override directory.
+     * Restricts the target platform if given boolean is true (or un-restricts it if boolean is false), overriding the
+     * default value from extension points and adding an entry in the override directory.
      */
-    void restrictTargetPlatform(boolean restrict, String id)
-            throws ClientException;
+    void restrictTargetPlatform(boolean restrict, String id) throws ClientException;
 
     /**
-     * Set the target platform as trial if given boolean is true (or unset it
-     * as trial if boolean is false), overriding the default value from
-     * extension points and adding an entry in the override directory.
+     * Set the target platform as trial if given boolean is true (or unset it as trial if boolean is false), overriding
+     * the default value from extension points and adding an entry in the override directory.
      */
-    void setTrialTargetPlatform(boolean trial, String id)
-            throws ClientException;
+    void setTrialTargetPlatform(boolean trial, String id) throws ClientException;
 
     /**
-     * Set the target platform as default if given boolean is true (or unset it
-     * as default if boolean is false), overriding the default value from
-     * extension points and adding an entry in the override directory.
+     * Set the target platform as default if given boolean is true (or unset it as default if boolean is false),
+     * overriding the default value from extension points and adding an entry in the override directory.
      */
-    void setDefaultTargetPlatform(boolean isDefault, String id)
-            throws ClientException;
+    void setDefaultTargetPlatform(boolean isDefault, String id) throws ClientException;
 
     /**
      * Removes overrides for this target platform.
@@ -147,10 +130,8 @@ public interface TargetPlatformService {
 
     /**
      * @return the default target platform instance and enabled if not found.
-     *
      * @since 5.9.3-NXP-15602
      */
-    TargetPlatformInstance getDefaultTargetPlatformInstance(boolean restricted)
-            throws ClientException;
+    TargetPlatformInstance getDefaultTargetPlatformInstance(boolean restricted) throws ClientException;
 
 }

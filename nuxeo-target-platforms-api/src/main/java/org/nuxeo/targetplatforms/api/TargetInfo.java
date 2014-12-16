@@ -23,16 +23,15 @@ import java.util.List;
 /**
  * Represents a target info (platform or package).
  * <p>
- * This is a lighter version of the target platform or package, useful for
- * listing targets in select inputs for instance.
+ * This is a lighter version of the target platform or package, useful for listing targets in select inputs for
+ * instance.
  *
  * @since 5.7.1
  */
 public interface TargetInfo extends Serializable {
 
     /**
-     * This target unique identifier (usually some kind of concatenation of
-     * name and version).
+     * This target unique identifier (usually some kind of concatenation of name and version).
      */
     String getId();
 
@@ -69,11 +68,9 @@ public interface TargetInfo extends Serializable {
     boolean isEnabled();
 
     /**
-     * Returns true if access to the corresponding target platform is
-     * restricted.
+     * Returns true if access to the corresponding target platform is restricted.
      * <p>
-     * Criteria for which access should be granted or not are left to the
-     * caller.
+     * Criteria for which access should be granted or not are left to the caller.
      */
     boolean isRestricted();
 
@@ -98,8 +95,7 @@ public interface TargetInfo extends Serializable {
     boolean isFastTrack();
 
     /**
-     * Returns true if given target information is overridden by directory
-     * information.
+     * Returns true if given target information is overridden by directory information.
      */
     boolean isOverridden();
 

@@ -16,7 +16,6 @@
  */
 package org.nuxeo.targetplatforms.api;
 
-
 /**
  * Represents a target (platform or package).
  *
@@ -25,14 +24,12 @@ package org.nuxeo.targetplatforms.api;
 public interface Target extends TargetInfo {
 
     /**
-     * Returns true if this target reference version is strictly before given
-     * version.
+     * Returns true if this target reference version is strictly before given version.
      */
     boolean isStrictlyBeforeVersion(String version);
 
     /**
-     * Returns true if this target reference version is or is after given
-     * version.
+     * Returns true if this target reference version is or is after given version.
      */
     boolean isAfterVersion(String version);
 
@@ -42,14 +39,12 @@ public interface Target extends TargetInfo {
     boolean isVersion(String version);
 
     /**
-     * Returns true if this target reference version is strictly before given
-     * version.
+     * Returns true if this target reference version is strictly before given version.
      */
     boolean isStrictlyBeforeVersion(Target version);
 
     /**
-     * Returns true if this target reference version is or is after given
-     * version.
+     * Returns true if this target reference version is or is after given version.
      */
     boolean isAfterVersion(Target version);
 

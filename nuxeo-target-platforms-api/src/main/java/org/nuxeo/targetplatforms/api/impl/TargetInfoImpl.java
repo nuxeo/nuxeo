@@ -74,8 +74,7 @@ public class TargetInfoImpl implements TargetInfo {
         this.id = id;
     }
 
-    public TargetInfoImpl(String id, String name, String version,
-            String refVersion, String label) {
+    public TargetInfoImpl(String id, String name, String version, String refVersion, String label) {
         this(id);
         this.name = name;
         this.version = version;
@@ -131,6 +130,7 @@ public class TargetInfoImpl implements TargetInfo {
         this.status = status;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
@@ -148,6 +148,7 @@ public class TargetInfoImpl implements TargetInfo {
         this.description = description;
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
@@ -156,6 +157,7 @@ public class TargetInfoImpl implements TargetInfo {
         this.enabled = enabled;
     }
 
+    @Override
     public boolean isRestricted() {
         return restricted;
     }
@@ -164,6 +166,7 @@ public class TargetInfoImpl implements TargetInfo {
         this.restricted = restricted;
     }
 
+    @Override
     public Date getReleaseDate() {
         return releaseDate;
     }
@@ -172,6 +175,7 @@ public class TargetInfoImpl implements TargetInfo {
         this.releaseDate = releaseDate;
     }
 
+    @Override
     public Date getEndOfAvailability() {
         return endOfAvailability;
     }
@@ -180,6 +184,7 @@ public class TargetInfoImpl implements TargetInfo {
         this.endOfAvailability = endOfAvailability;
     }
 
+    @Override
     public String getDownloadLink() {
         return downloadLink;
     }
@@ -188,6 +193,7 @@ public class TargetInfoImpl implements TargetInfo {
         this.downloadLink = downloadLink;
     }
 
+    @Override
     public boolean isDeprecated() {
         return deprecated;
     }
@@ -196,6 +202,7 @@ public class TargetInfoImpl implements TargetInfo {
         this.deprecated = deprecated;
     }
 
+    @Override
     public boolean isTrial() {
         return trial;
     }
@@ -204,6 +211,7 @@ public class TargetInfoImpl implements TargetInfo {
         this.trial = trial;
     }
 
+    @Override
     public boolean isDefault() {
         return isDefault;
     }
@@ -221,6 +229,7 @@ public class TargetInfoImpl implements TargetInfo {
         this.fastTrack = fastTrack;
     }
 
+    @Override
     public boolean isOverridden() {
         return overridden;
     }
@@ -255,8 +264,7 @@ public class TargetInfoImpl implements TargetInfo {
 
     // Class#getSimpleName not supported by GWT
     protected String getSimpleName() {
-        return getClass().getName().substring(
-                getClass().getName().lastIndexOf('.') + 1);
+        return getClass().getName().substring(getClass().getName().lastIndexOf('.') + 1);
     }
 
     @Override

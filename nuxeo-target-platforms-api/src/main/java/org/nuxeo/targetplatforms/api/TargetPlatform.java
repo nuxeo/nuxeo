@@ -19,15 +19,14 @@ package org.nuxeo.targetplatforms.api;
 import java.util.List;
 
 /**
- * Main interface for target platform definition of resources that need to be
- * available both on core and client sides.
+ * Main interface for target platform definition of resources that need to be available both on core and client sides.
  *
  * @author Anahide Tchertchian
  * @since 5.7.1
  */
 public interface TargetPlatform extends Target, Comparable<TargetPlatform> {
 
-   /**
+    /**
      * Return the list of ids of packages available on this target platform.
      */
     List<String> getAvailablePackagesIds();
@@ -43,9 +42,8 @@ public interface TargetPlatform extends Target, Comparable<TargetPlatform> {
     TargetPlatform getParent();
 
     /**
-     * Returns the list of test versions, useful for testing of multiple
-     * branches (main target platform branch or release, maintenance branch,
-     * etc...).
+     * Returns the list of test versions, useful for testing of multiple branches (main target platform branch or
+     * release, maintenance branch, etc...).
      */
     List<String> getTestVersions();
 }

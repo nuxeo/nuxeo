@@ -19,7 +19,6 @@ package org.nuxeo.targetplatforms.api.impl;
 
 import org.nuxeo.targetplatforms.api.Target;
 
-
 /**
  * Common class to describe a target platform or package.
  *
@@ -38,8 +37,7 @@ public class TargetImpl extends TargetInfoImpl implements Target {
         super(id);
     }
 
-    public TargetImpl(String id, String name, String version,
-            String refVersion, String label) {
+    public TargetImpl(String id, String name, String version, String refVersion, String label) {
         super(id, name, version, refVersion, label);
     }
 

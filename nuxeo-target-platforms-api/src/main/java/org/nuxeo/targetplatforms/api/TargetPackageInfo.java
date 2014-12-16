@@ -19,8 +19,7 @@ package org.nuxeo.targetplatforms.api;
 import java.util.List;
 
 /**
- * Represents a target package info, useful for listing of available target
- * packages.
+ * Represents a target package info, useful for listing of available target packages.
  *
  * @since 5.7.1
  */

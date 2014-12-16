@@ -21,13 +21,12 @@ import java.util.List;
 import org.nuxeo.targetplatforms.api.TargetPackage;
 
 /**
- * {@link TargetPackage} implementation relying on an original implementation,
- * useful for override when adding additional metadata.
+ * {@link TargetPackage} implementation relying on an original implementation, useful for override when adding
+ * additional metadata.
  *
  * @since 5.7.1
  */
-public class TargetPackageExtension extends TargetExtension implements
-        TargetPackage, Comparable<TargetPackage> {
+public class TargetPackageExtension extends TargetExtension implements TargetPackage, Comparable<TargetPackage> {
 
     private static final long serialVersionUID = 1L;
 
@@ -40,13 +39,15 @@ public class TargetPackageExtension extends TargetExtension implements
 
     public TargetPackageExtension(TargetPackage orig) {
         super(orig);
-        this.origPackage = orig;
+        origPackage = orig;
     }
 
+    @Override
     public List<String> getDependencies() {
         return origPackage.getDependencies();
     }
 
+    @Override
     public TargetPackage getParent() {
         return origPackage.getParent();
     }

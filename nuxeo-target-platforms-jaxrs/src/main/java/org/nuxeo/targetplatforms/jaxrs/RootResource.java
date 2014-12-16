@@ -43,20 +43,17 @@ import org.nuxeo.targetplatforms.api.service.TargetPlatformService;
 public class RootResource {
 
     @GET
-    public Object doGet(@QueryParam("filterDisabled")
-    boolean filterDisabled, @QueryParam("filterRestricted")
-    boolean filterRestricted, @QueryParam("filterDeprecated")
-    boolean filterDeprecated, @QueryParam("filterDefault")
-    Boolean filterDefault, @QueryParam("filterType")
-    String filterType) throws Exception {
-        return getPlatforms(filterDisabled, filterRestricted, filterDeprecated,
-                filterDefault, filterType);
+    public Object doGet(@QueryParam("filterDisabled") boolean filterDisabled,
+            @QueryParam("filterRestricted") boolean filterRestricted,
+            @QueryParam("filterDeprecated") boolean filterDeprecated,
+            @QueryParam("filterDefault") Boolean filterDefault, @QueryParam("filterType") String filterType)
+            throws Exception {
+        return getPlatforms(filterDisabled, filterRestricted, filterDeprecated, filterDefault, filterType);
     }
 
     @GET
     @Path("platform/{id}")
-    public Object getPlatform(@PathParam("id")
-    String id) throws Exception {
+    public Object getPlatform(@PathParam("id") String id) throws Exception {
         TargetPlatformService tps = Framework.getService(TargetPlatformService.class);
         TargetPlatform res = tps.getTargetPlatform(id);
         if (res != null) {
@@ -67,17 +64,15 @@ public class RootResource {
 
     @GET
     @Path("platforms")
-    public Object getPlatforms(@QueryParam("filterDisabled")
-    boolean filterDisabled, @QueryParam("filterRestricted")
-    boolean filterRestricted, @QueryParam("filterDeprecated")
-    boolean filterDeprecated, @QueryParam("filterDefault")
-    Boolean filterDefault, @QueryParam("filterType")
-    String filterType) throws Exception {
+    public Object getPlatforms(@QueryParam("filterDisabled") boolean filterDisabled,
+            @QueryParam("filterRestricted") boolean filterRestricted,
+            @QueryParam("filterDeprecated") boolean filterDeprecated,
+            @QueryParam("filterDefault") Boolean filterDefault, @QueryParam("filterType") String filterType)
+            throws Exception {
         TargetPlatformService tps = Framework.getService(TargetPlatformService.class);
         boolean doFilterDefault = Boolean.TRUE.equals(filterDefault);
-        List<TargetPlatform> res = tps.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
-                filterDisabled, filterRestricted, filterDeprecated,
-                doFilterDefault, filterType));
+        List<TargetPlatform> res = tps.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(filterDisabled,
+                filterRestricted, filterDeprecated, doFilterDefault, filterType));
         if (res == null) {
             return new TargetPlatforms();
         } else {
@@ -87,8 +82,7 @@ public class RootResource {
 
     @GET
     @Path("platform-info/{id}")
-    public Object getPlatformInfo(@PathParam("id")
-    String id) throws Exception {
+    public Object getPlatformInfo(@PathParam("id") String id) throws Exception {
         TargetPlatformService tps = Framework.getService(TargetPlatformService.class);
         TargetPlatformInfo res = tps.getTargetPlatformInfo(id);
         if (res != null) {
@@ -99,17 +93,15 @@ public class RootResource {
 
     @GET
     @Path("platforms-info")
-    public Object getPlatformInfos(@QueryParam("filterDisabled")
-    boolean filterDisabled, @QueryParam("filterRestricted")
-    boolean filterRestricted, @QueryParam("filterDeprecated")
-    boolean filterDeprecated, @QueryParam("filterDefault")
-    Boolean filterDefault, @QueryParam("filterType")
-    String filterType) throws Exception {
+    public Object getPlatformInfos(@QueryParam("filterDisabled") boolean filterDisabled,
+            @QueryParam("filterRestricted") boolean filterRestricted,
+            @QueryParam("filterDeprecated") boolean filterDeprecated,
+            @QueryParam("filterDefault") Boolean filterDefault, @QueryParam("filterType") String filterType)
+            throws Exception {
         TargetPlatformService tps = Framework.getService(TargetPlatformService.class);
         boolean doFilterDefault = Boolean.TRUE.equals(filterDefault);
-        List<TargetPlatformInfo> res = tps.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
-                filterDisabled, filterRestricted, filterDeprecated,
-                doFilterDefault, filterType));
+        List<TargetPlatformInfo> res = tps.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(filterDisabled,
+                filterRestricted, filterDeprecated, doFilterDefault, filterType));
         if (res == null) {
             return new TargetPlatformsInfo();
         } else {
@@ -119,9 +111,8 @@ public class RootResource {
 
     @GET
     @Path("platform-instance/{id}")
-    public Object getPlatformInstance(@PathParam("id")
-    String id, @QueryParam("packages")
-    String packages) throws Exception {
+    public Object getPlatformInstance(@PathParam("id") String id, @QueryParam("packages") String packages)
+            throws Exception {
         TargetPlatformService tps = Framework.getService(TargetPlatformService.class);
         List<String> plist = new ArrayList<>();
         if (packages != null) {
@@ -136,8 +127,7 @@ public class RootResource {
 
     @GET
     @Path("package/{id}")
-    public Object getPackage(@PathParam("id")
-    String id) throws Exception {
+    public Object getPackage(@PathParam("id") String id) throws Exception {
         TargetPlatformService tps = Framework.getService(TargetPlatformService.class);
         TargetPackage res = tps.getTargetPackage(id);
         if (res != null) {
@@ -148,8 +138,7 @@ public class RootResource {
 
     @GET
     @Path("package-info/{id}")
-    public Object getPackageInfo(@PathParam("id")
-    String id) throws Exception {
+    public Object getPackageInfo(@PathParam("id") String id) throws Exception {
         TargetPlatformService tps = Framework.getService(TargetPlatformService.class);
         TargetPackageInfo res = tps.getTargetPackageInfo(id);
         if (res != null) {

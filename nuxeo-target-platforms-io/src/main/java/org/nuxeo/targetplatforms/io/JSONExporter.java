@@ -37,53 +37,44 @@ import org.nuxeo.targetplatforms.api.TargetPlatformInstance;
  */
 public class JSONExporter {
 
-    public static void exportToJson(TargetPlatform tp, OutputStream out,
-            boolean pretty) throws IOException {
+    public static void exportToJson(TargetPlatform tp, OutputStream out, boolean pretty) throws IOException {
         exportToJson((Object) tp, out, pretty);
     }
 
-    public static void exportToJson(List<TargetPlatform> tp, OutputStream out,
-            boolean pretty) throws IOException {
+    public static void exportToJson(List<TargetPlatform> tp, OutputStream out, boolean pretty) throws IOException {
         exportToJson((Object) tp, out, pretty);
     }
 
-    public static void exportToJson(TargetPlatformInfo tpi, OutputStream out,
-            boolean pretty) throws IOException {
+    public static void exportToJson(TargetPlatformInfo tpi, OutputStream out, boolean pretty) throws IOException {
         exportToJson((Object) tpi, out, pretty);
     }
 
-    public static void exportInfosToJson(List<TargetPlatformInfo> tpi,
-            OutputStream out, boolean pretty) throws IOException {
+    public static void exportInfosToJson(List<TargetPlatformInfo> tpi, OutputStream out, boolean pretty)
+            throws IOException {
         exportToJson(tpi, out, pretty);
     }
 
-    public static void exportToJson(TargetPlatformInstance tpi,
-            OutputStream out, boolean pretty) throws IOException {
+    public static void exportToJson(TargetPlatformInstance tpi, OutputStream out, boolean pretty) throws IOException {
         exportToJson((Object) tpi, out, pretty);
     }
 
-    public static void exportToJson(TargetPackage tp, OutputStream out,
-            boolean pretty) throws IOException {
+    public static void exportToJson(TargetPackage tp, OutputStream out, boolean pretty) throws IOException {
         exportToJson((Object) tp, out, pretty);
     }
 
-    public static void exportToJson(TargetPackageInfo tpi, OutputStream out,
-            boolean pretty) throws IOException {
+    public static void exportToJson(TargetPackageInfo tpi, OutputStream out, boolean pretty) throws IOException {
         exportToJson((Object) tpi, out, pretty);
     }
 
     protected static JsonFactory createFactory() {
         JsonFactory factory = new JsonFactory();
         final ObjectMapper oc = new ObjectMapper(factory);
-        oc.configure(
-                SerializationConfig.Feature.SORT_PROPERTIES_ALPHABETICALLY,
-                true);
+        oc.configure(SerializationConfig.Feature.SORT_PROPERTIES_ALPHABETICALLY, true);
         factory.setCodec(oc);
         return factory;
     }
 
-    protected static void exportToJson(Object object, OutputStream out,
-            boolean pretty) throws IOException {
+    protected static void exportToJson(Object object, OutputStream out, boolean pretty) throws IOException {
         JsonFactory factory = createFactory();
         JsonGenerator jg = factory.createJsonGenerator(out);
         if (pretty) {

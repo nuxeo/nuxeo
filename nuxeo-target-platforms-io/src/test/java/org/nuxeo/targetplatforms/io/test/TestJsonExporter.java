@@ -62,10 +62,8 @@ import org.skyscreamer.jsonassert.JSONAssert;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.core.schema",
-        "org.nuxeo.ecm.core", "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.directory.sql", "org.nuxeo.targetplatforms.core",
-        "org.nuxeo.targetplatforms.io" })
+@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core", "org.nuxeo.ecm.directory",
+        "org.nuxeo.ecm.directory.sql", "org.nuxeo.targetplatforms.core", "org.nuxeo.targetplatforms.io" })
 @LocalDeploy("org.nuxeo.targetplatforms.io:OSGI-INF/test-targetplatforms-contrib.xml")
 public class TestJsonExporter {
 
@@ -74,8 +72,8 @@ public class TestJsonExporter {
 
     @Before
     public void setUpContextFactory() throws NamingException {
-        DataSource datasourceAutocommit = new SimpleDataSource(
-                "jdbc:hsqldb:mem:memid", jdbcDriver.class.getName(), "SA", "") {
+        DataSource datasourceAutocommit = new SimpleDataSource("jdbc:hsqldb:mem:memid", jdbcDriver.class.getName(),
+                "SA", "") {
             @Override
             public Connection getConnection() throws SQLException {
                 Connection con = super.getConnection();
@@ -83,8 +81,7 @@ public class TestJsonExporter {
                 return con;
             }
         };
-        NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxsqldirectory",
-                datasourceAutocommit);
+        NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxsqldirectory", datasourceAutocommit);
     }
 
     @After
@@ -92,8 +89,7 @@ public class TestJsonExporter {
         // remove all entries from directory
         new DirectoryUpdater(DirectoryUpdater.DEFAULT_DIR) {
             @Override
-            public void run(DirectoryService service, Session session)
-                    throws ClientException {
+            public void run(DirectoryService service, Session session) throws ClientException {
                 for (DocumentModel doc : session.getEntries()) {
                     session.deleteEntry(doc.getId());
                 }
@@ -101,8 +97,7 @@ public class TestJsonExporter {
         }.run();
     }
 
-    protected void checkJsonEquals(String filepath, ByteArrayOutputStream out)
-            throws Exception {
+    protected void checkJsonEquals(String filepath, ByteArrayOutputStream out) throws Exception {
         String path = FileUtils.getResourcePathFromContext(filepath);
         String expected = IOUtils.toString(new FileInputStream(path), "UTF-8");
         String actual = out.toString();
@@ -134,19 +129,16 @@ public class TestJsonExporter {
 
     @Test
     public void testTargetPlatformInstanceExport() throws Exception {
-        TargetPlatformInstance tpi = service.getTargetPlatformInstance(
-                "cap-5.8", null);
+        TargetPlatformInstance tpi = service.getTargetPlatformInstance("cap-5.8", null);
         assertNotNull(tpi);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JSONExporter.exportToJson(tpi, out, true);
         checkJsonEquals("target-platform-instance-export.json", out);
-        tpi = service.getTargetPlatformInstance("cap-5.8",
-                Arrays.asList(new String[] { "nuxeo-dm-5.8" }));
+        tpi = service.getTargetPlatformInstance("cap-5.8", Arrays.asList(new String[] { "nuxeo-dm-5.8" }));
         assertNotNull(tpi);
         out = new ByteArrayOutputStream();
         JSONExporter.exportToJson(tpi, out, true);
-        checkJsonEquals("target-platform-instance-with-packages-export.json",
-                out);
+        checkJsonEquals("target-platform-instance-with-packages-export.json", out);
     }
 
     @Test

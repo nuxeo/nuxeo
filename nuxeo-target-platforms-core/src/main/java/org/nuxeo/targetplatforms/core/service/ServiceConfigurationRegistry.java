@@ -19,25 +19,23 @@ package org.nuxeo.targetplatforms.core.service;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 import org.nuxeo.targetplatforms.core.descriptors.ServiceConfigurationDescriptor;
 
-
 /**
  * Registry for service configuration, not handling merge.
  *
  * @since 5.7.1
  */
-public class ServiceConfigurationRegistry extends
-        SimpleContributionRegistry<ServiceConfigurationDescriptor> {
+public class ServiceConfigurationRegistry extends SimpleContributionRegistry<ServiceConfigurationDescriptor> {
 
     // only one contrib, use this id
     protected static String CONF_ID = "configuration";
 
+    @Override
     public String getContributionId(ServiceConfigurationDescriptor contrib) {
         return CONF_ID;
     }
 
     @Override
-    public void contributionUpdated(String id,
-            ServiceConfigurationDescriptor contrib,
+    public void contributionUpdated(String id, ServiceConfigurationDescriptor contrib,
             ServiceConfigurationDescriptor newOrigContrib) {
         if (currentContribs.containsKey(id)) {
             currentContribs.remove(id);

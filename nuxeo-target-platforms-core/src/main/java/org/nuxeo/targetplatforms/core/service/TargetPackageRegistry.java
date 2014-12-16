@@ -23,21 +23,19 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
 import org.nuxeo.targetplatforms.core.descriptors.TargetPackageDescriptor;
 
 /**
- * Registry for target package contributions, handling merge on "enabled"
- * attribute only.
+ * Registry for target package contributions, handling merge on "enabled" attribute only.
  *
  * @since 5.7.1
  */
-public class TargetPackageRegistry extends
-        SimpleContributionRegistry<TargetPackageDescriptor> {
+public class TargetPackageRegistry extends SimpleContributionRegistry<TargetPackageDescriptor> {
 
+    @Override
     public String getContributionId(TargetPackageDescriptor contrib) {
         return contrib.getId();
     }
 
     @Override
-    public void contributionUpdated(String id, TargetPackageDescriptor contrib,
-            TargetPackageDescriptor newOrigContrib) {
+    public void contributionUpdated(String id, TargetPackageDescriptor contrib, TargetPackageDescriptor newOrigContrib) {
         if (currentContribs.containsKey(id)) {
             currentContribs.remove(id);
         }

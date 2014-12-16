@@ -21,8 +21,7 @@ import org.nuxeo.targetplatforms.api.TargetInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatformFilter;
 
 /**
- * Filter of target platforms handling enabled, deprecated, restricted and type
- * criteria.
+ * Filter of target platforms handling enabled, deprecated, restricted and type criteria.
  *
  * @since 5.7.1
  */
@@ -46,8 +45,7 @@ public class TargetPlatformFilterImpl implements TargetPlatformFilter {
         super();
     }
 
-    public TargetPlatformFilterImpl(boolean filterDisabled,
-            boolean filterRestricted, boolean filterDeprecated,
+    public TargetPlatformFilterImpl(boolean filterDisabled, boolean filterRestricted, boolean filterDeprecated,
             boolean filterDefault, String filterType) {
         super();
         this.filterDisabled = filterDisabled;
@@ -91,10 +89,8 @@ public class TargetPlatformFilterImpl implements TargetPlatformFilter {
         if (t == null) {
             return false;
         }
-        if ((filterDisabled && !t.isEnabled())
-                || (filterDeprecated && t.isDeprecated())
-                || (filterRestricted && t.isRestricted())
-                || (filterNotTrial && !t.isTrial())
+        if ((filterDisabled && !t.isEnabled()) || (filterDeprecated && t.isDeprecated())
+                || (filterRestricted && t.isRestricted()) || (filterNotTrial && !t.isTrial())
                 || (filterDefault && !t.isDefault())
                 || (!StringUtils.isBlank(filterType) && !t.matchesType(filterType))) {
             return false;

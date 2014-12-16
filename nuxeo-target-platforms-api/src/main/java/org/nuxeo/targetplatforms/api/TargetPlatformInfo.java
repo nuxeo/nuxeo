@@ -20,13 +20,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents a target platform info, useful for listing of available target
- * platforms.
+ * Represents a target platform info, useful for listing of available target platforms.
  *
  * @since 5.7.1
  */
-public interface TargetPlatformInfo extends TargetInfo,
-        Comparable<TargetPlatformInfo> {
+public interface TargetPlatformInfo extends TargetInfo, Comparable<TargetPlatformInfo> {
 
     /**
      * Return the list of ids of packages available on this target platform.

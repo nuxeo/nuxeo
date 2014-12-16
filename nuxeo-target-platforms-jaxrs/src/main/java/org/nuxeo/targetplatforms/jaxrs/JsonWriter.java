@@ -48,51 +48,39 @@ public class JsonWriter implements MessageBodyWriter<Object> {
     protected HttpServletRequest request;
 
     @Override
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
-        return TargetPackageInfo.class.isAssignableFrom(type)
-                || TargetPackage.class.isAssignableFrom(type)
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return TargetPackageInfo.class.isAssignableFrom(type) || TargetPackage.class.isAssignableFrom(type)
                 || TargetPlatformInfo.class.isAssignableFrom(type)
-                || TargetPlatformInstance.class.isAssignableFrom(type)
-                || TargetPlatform.class.isAssignableFrom(type)
-                || TargetPlatformsInfo.class.isAssignableFrom(type)
-                || TargetPlatforms.class.isAssignableFrom(type);
+                || TargetPlatformInstance.class.isAssignableFrom(type) || TargetPlatform.class.isAssignableFrom(type)
+                || TargetPlatformsInfo.class.isAssignableFrom(type) || TargetPlatforms.class.isAssignableFrom(type);
     }
 
     @Override
-    public long getSize(Object t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public long getSize(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
     @Override
-    public void writeTo(Object t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException,
+    public void writeTo(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
             WebApplicationException {
         boolean pretty = Boolean.parseBoolean(request.getParameter("pretty"));
         if (TargetPackage.class.isAssignableFrom(type)) {
             JSONExporter.exportToJson((TargetPackage) t, entityStream, pretty);
         } else if (TargetPackageInfo.class.isAssignableFrom(type)) {
-            JSONExporter.exportToJson((TargetPackageInfo) t, entityStream,
-                    pretty);
+            JSONExporter.exportToJson((TargetPackageInfo) t, entityStream, pretty);
         } else if (TargetPlatform.class.isAssignableFrom(type)) {
             JSONExporter.exportToJson((TargetPlatform) t, entityStream, pretty);
         } else if (TargetPlatformInstance.class.isAssignableFrom(type)) {
-            JSONExporter.exportToJson((TargetPlatformInstance) t, entityStream,
-                    pretty);
+            JSONExporter.exportToJson((TargetPlatformInstance) t, entityStream, pretty);
         } else if (TargetPlatformInfo.class.isAssignableFrom(type)) {
-            JSONExporter.exportToJson((TargetPlatformInfo) t, entityStream,
-                    pretty);
+            JSONExporter.exportToJson((TargetPlatformInfo) t, entityStream, pretty);
         } else if (TargetPlatforms.class.isAssignableFrom(type)) {
             JSONExporter.exportToJson((TargetPlatforms) t, entityStream, pretty);
         } else if (TargetPlatformsInfo.class.isAssignableFrom(type)) {
-            JSONExporter.exportInfosToJson((TargetPlatformsInfo) t,
-                    entityStream, pretty);
+            JSONExporter.exportInfosToJson((TargetPlatformsInfo) t, entityStream, pretty);
         } else {
-            throw new IllegalArgumentException(String.format(
-                    "Unsupported type '%s'", type));
+            throw new IllegalArgumentException(String.format("Unsupported type '%s'", type));
         }
     }
 }

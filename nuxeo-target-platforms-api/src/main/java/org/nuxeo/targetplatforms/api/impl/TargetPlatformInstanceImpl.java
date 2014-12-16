@@ -29,8 +29,7 @@ import org.nuxeo.targetplatforms.api.TargetPlatformInstance;
 /**
  * @since 5.7.1
  */
-public class TargetPlatformInstanceImpl extends TargetImpl implements
-        TargetPlatformInstance {
+public class TargetPlatformInstanceImpl extends TargetImpl implements TargetPlatformInstance {
 
     private static final long serialVersionUID = 1L;
 
@@ -46,8 +45,7 @@ public class TargetPlatformInstanceImpl extends TargetImpl implements
         super(id);
     }
 
-    public TargetPlatformInstanceImpl(String id, String name, String version,
-            String refVersion, String label) {
+    public TargetPlatformInstanceImpl(String id, String name, String version, String refVersion, String label) {
         super(id, name, version, refVersion, label);
     }
 
@@ -101,6 +99,7 @@ public class TargetPlatformInstanceImpl extends TargetImpl implements
         return false;
     }
 
+    @Override
     public TargetPlatform getParent() {
         return parent;
     }

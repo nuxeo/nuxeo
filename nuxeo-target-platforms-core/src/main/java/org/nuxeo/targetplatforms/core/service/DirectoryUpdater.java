@@ -50,8 +50,7 @@ public abstract class DirectoryUpdater {
         this.dirName = dirName;
     }
 
-    public abstract void run(DirectoryService service, Session session)
-            throws ClientException;
+    public abstract void run(DirectoryService service, Session session) throws ClientException;
 
     public void run() throws ClientException {
         Session session = null;

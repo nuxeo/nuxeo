@@ -22,13 +22,12 @@ import org.nuxeo.targetplatforms.api.TargetPackage;
 import org.nuxeo.targetplatforms.api.TargetPlatform;
 
 /**
- * {@link TargetPlatform} implementation relying on an original implementation,
- * useful for override when adding additional metadata.
+ * {@link TargetPlatform} implementation relying on an original implementation, useful for override when adding
+ * additional metadata.
  *
  * @since 5.7.1
  */
-public class TargetPlatformExtension extends TargetExtension implements
-        TargetPlatform, Comparable<TargetPlatform> {
+public class TargetPlatformExtension extends TargetExtension implements TargetPlatform, Comparable<TargetPlatform> {
 
     private static final long serialVersionUID = 1L;
 
@@ -41,7 +40,7 @@ public class TargetPlatformExtension extends TargetExtension implements
 
     public TargetPlatformExtension(TargetPlatform orig) {
         super(orig);
-        this.origPlatform = orig;
+        origPlatform = orig;
     }
 
     @Override
@@ -59,10 +58,12 @@ public class TargetPlatformExtension extends TargetExtension implements
         return origPlatform.getAvailablePackages();
     }
 
+    @Override
     public TargetPlatform getParent() {
         return origPlatform.getParent();
     }
 
+    @Override
     public List<String> getTestVersions() {
         return origPlatform.getTestVersions();
     }

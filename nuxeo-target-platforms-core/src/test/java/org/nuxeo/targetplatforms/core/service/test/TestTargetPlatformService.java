@@ -65,22 +65,20 @@ import org.nuxeo.targetplatforms.core.service.DirectoryUpdater;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.core.schema",
-        "org.nuxeo.ecm.core", "org.nuxeo.ecm.directory",
+@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core", "org.nuxeo.ecm.directory",
         "org.nuxeo.ecm.directory.sql", "org.nuxeo.targetplatforms.core" })
 @LocalDeploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml")
 public class TestTargetPlatformService {
 
-    final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd",
-            Locale.ENGLISH);
+    final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
     @Inject
     protected TargetPlatformService service;
 
     @Before
     public void setUpContextFactory() throws NamingException {
-        DataSource datasourceAutocommit = new SimpleDataSource(
-                "jdbc:hsqldb:mem:memid", jdbcDriver.class.getName(), "SA", "") {
+        DataSource datasourceAutocommit = new SimpleDataSource("jdbc:hsqldb:mem:memid", jdbcDriver.class.getName(),
+                "SA", "") {
             @Override
             public Connection getConnection() throws SQLException {
                 Connection con = super.getConnection();
@@ -88,8 +86,7 @@ public class TestTargetPlatformService {
                 return con;
             }
         };
-        NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxsqldirectory",
-                datasourceAutocommit);
+        NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxsqldirectory", datasourceAutocommit);
     }
 
     @After
@@ -97,8 +94,7 @@ public class TestTargetPlatformService {
         // remove all entries from directory
         new DirectoryUpdater(DirectoryUpdater.DEFAULT_DIR) {
             @Override
-            public void run(DirectoryService service, Session session)
-                    throws ClientException {
+            public void run(DirectoryService service, Session session) throws ClientException {
                 for (DocumentModel doc : session.getEntries()) {
                     session.deleteEntry(doc.getId());
                 }
@@ -126,8 +122,7 @@ public class TestTargetPlatformService {
 
     @Test
     public void testGetOverrideDirectory() {
-        assertEquals(DirectoryUpdater.DEFAULT_DIR,
-                service.getOverrideDirectory());
+        assertEquals(DirectoryUpdater.DEFAULT_DIR, service.getOverrideDirectory());
     }
 
     @Test
@@ -148,10 +143,8 @@ public class TestTargetPlatformService {
         assertEquals(2, tpIds.size());
         assertEquals("nuxeo-dm-5.8", tpIds.get(0));
         assertEquals("nuxeo-dam-5.8", tpIds.get(1));
-        assertEquals("This target platform is the last LTS.",
-                tp.getDescription());
-        assertEquals(
-                "http://community.nuxeo.com/static/releases/nuxeo-5.8/nuxeo-cap-5.8-tomcat.zip",
+        assertEquals("This target platform is the last LTS.", tp.getDescription());
+        assertEquals("http://community.nuxeo.com/static/releases/nuxeo-5.8/nuxeo-cap-5.8-tomcat.zip",
                 tp.getDownloadLink());
         assertNull(tp.getEndOfAvailability());
         assertEquals("cap-5.8", tp.getId());
@@ -184,14 +177,12 @@ public class TestTargetPlatformService {
         assertTrue(tp.isVersion(new TargetImpl("")));
 
         assertTrue(tp.isAfterVersion("5.6"));
-        assertTrue(tp.isAfterVersion(new TargetImpl("nuxeo-cap-5.6", "cap",
-                "5.6", null, "Platform 5.6")));
+        assertTrue(tp.isAfterVersion(new TargetImpl("nuxeo-cap-5.6", "cap", "5.6", null, "Platform 5.6")));
         assertTrue(tp.isStrictlyBeforeVersion(""));
         assertTrue(tp.isStrictlyBeforeVersion(new TargetImpl("")));
         assertTrue(tp.isVersion("5.8"));
         assertFalse(tp.isVersion("5.6"));
-        assertTrue(tp.isVersion(new TargetImpl("nuxeo-cap-5.6", "cap", "5.6",
-                null, null)));
+        assertTrue(tp.isVersion(new TargetImpl("nuxeo-cap-5.6", "cap", "5.6", null, null)));
 
         // check deprecated target platform
         tp = service.getTargetPlatform("cmf-1.8");
@@ -235,8 +226,7 @@ public class TestTargetPlatformService {
         tpIds = tp.getAvailablePackagesIds();
         assertEquals(0, tpIds.size());
         assertNull(tp.getDescription());
-        assertEquals(
-                "http://community.nuxeo.com/static/releases/nuxeo-5.9.2/nuxeo-cap-5.9.2-tomcat.zip",
+        assertEquals("http://community.nuxeo.com/static/releases/nuxeo-5.9.2/nuxeo-cap-5.9.2-tomcat.zip",
                 tp.getDownloadLink());
         Date date = tp.getEndOfAvailability();
         assertNotNull(date);
@@ -436,10 +426,8 @@ public class TestTargetPlatformService {
         List<String> pkgids = tp.getAvailablePackagesIds();
         assertEquals("nuxeo-dm-5.8", pkgids.get(0));
         assertEquals("nuxeo-dam-5.8", pkgids.get(1));
-        assertEquals("This target platform is the last LTS.",
-                tp.getDescription());
-        assertEquals(
-                "http://community.nuxeo.com/static/releases/nuxeo-5.8/nuxeo-cap-5.8-tomcat.zip",
+        assertEquals("This target platform is the last LTS.", tp.getDescription());
+        assertEquals("http://community.nuxeo.com/static/releases/nuxeo-5.8/nuxeo-cap-5.8-tomcat.zip",
                 tp.getDownloadLink());
         assertNull(tp.getEndOfAvailability());
         assertEquals("cap-5.8", tp.getId());
@@ -466,8 +454,7 @@ public class TestTargetPlatformService {
         List<String> deps = tp.getDependencies();
         assertEquals(0, deps.size());
         assertEquals("My desc", tp.getDescription());
-        assertEquals(
-                "https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-dm?version=5.8.0",
+        assertEquals("https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-dm?version=5.8.0",
                 tp.getDownloadLink());
         assertNull(tp.getEndOfAvailability());
         assertEquals("nuxeo-dm-5.8", tp.getId());
@@ -508,8 +495,7 @@ public class TestTargetPlatformService {
         List<String> deps = tp.getDependencies();
         assertEquals(0, deps.size());
         assertEquals("My desc", tp.getDescription());
-        assertEquals(
-                "https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-dm?version=5.8.0",
+        assertEquals("https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-dm?version=5.8.0",
                 tp.getDownloadLink());
         assertNull(tp.getEndOfAvailability());
         assertEquals("nuxeo-dm-5.8", tp.getId());
@@ -532,10 +518,8 @@ public class TestTargetPlatformService {
         assertNotNull(tpi);
         assertEquals(0, tpi.getEnabledPackages().size());
         assertEquals(0, tpi.getEnabledPackagesIds().size());
-        assertEquals("This target platform is the last LTS.",
-                tpi.getDescription());
-        assertEquals(
-                "http://community.nuxeo.com/static/releases/nuxeo-5.8/nuxeo-cap-5.8-tomcat.zip",
+        assertEquals("This target platform is the last LTS.", tpi.getDescription());
+        assertEquals("http://community.nuxeo.com/static/releases/nuxeo-5.8/nuxeo-cap-5.8-tomcat.zip",
                 tpi.getDownloadLink());
         assertNull(tpi.getEndOfAvailability());
         assertEquals("cap-5.8", tpi.getId());
@@ -561,10 +545,8 @@ public class TestTargetPlatformService {
         assertNotNull(tpi);
         assertEquals(1, tpi.getEnabledPackages().size());
         assertEquals(1, tpi.getEnabledPackagesIds().size());
-        assertEquals("This target platform is the last LTS.",
-                tpi.getDescription());
-        assertEquals(
-                "http://community.nuxeo.com/static/releases/nuxeo-5.8/nuxeo-cap-5.8-tomcat.zip",
+        assertEquals("This target platform is the last LTS.", tpi.getDescription());
+        assertEquals("http://community.nuxeo.com/static/releases/nuxeo-5.8/nuxeo-cap-5.8-tomcat.zip",
                 tpi.getDownloadLink());
         assertNull(tpi.getEndOfAvailability());
         assertEquals("cap-5.8", tpi.getId());
@@ -587,8 +569,8 @@ public class TestTargetPlatformService {
     @Test
     public void testGetAvailableTargetPlatforms() throws ClientException {
         // filter all
-        List<TargetPlatform> tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
-                true, true, true, false, null));
+        List<TargetPlatform> tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(true, true, true,
+                false, null));
         assertEquals(4, tps.size());
         // order is registration order
         assertEquals("cap-5.8", tps.get(0).getId());
@@ -597,8 +579,7 @@ public class TestTargetPlatformService {
         assertEquals("cmf-1.8", tps.get(3).getId());
 
         // filter deprecated
-        tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
-                true, true, true, false, null));
+        tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(true, true, true, false, null));
         assertEquals(4, tps.size());
         // order is registration order
         assertEquals("cap-5.8", tps.get(0).getId());
@@ -607,8 +588,7 @@ public class TestTargetPlatformService {
         assertEquals("cmf-1.8", tps.get(3).getId());
 
         // filter restricted
-        tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
-                true, false, true, false, null));
+        tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(true, false, true, false, null));
         assertEquals(6, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.1", tps.get(1).getId());
@@ -618,14 +598,12 @@ public class TestTargetPlatformService {
         assertEquals("cmf-1.8", tps.get(5).getId());
 
         // filter on type
-        tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
-                true, false, false, false, "CMF"));
+        tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(true, false, false, false, "CMF"));
         assertEquals(1, tps.size());
         assertEquals("cmf-1.8", tps.get(0).getId());
 
         // filter on trial
-        tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
-                true));
+        tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(true));
         assertEquals(3, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.2", tps.get(1).getId());
@@ -647,10 +625,9 @@ public class TestTargetPlatformService {
     }
 
     @Test
-    public void testGetAvailableTargetPlatformsOverride()
-            throws ClientException {
-        List<TargetPlatform> tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
-                true, true, true, false, null));
+    public void testGetAvailableTargetPlatformsOverride() throws ClientException {
+        List<TargetPlatform> tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(true, true, true,
+                false, null));
         assertEquals(4, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.1", tps.get(1).getId());
@@ -659,8 +636,7 @@ public class TestTargetPlatformService {
 
         service.restrictTargetPlatform(true, "cap-5.9.2");
 
-        tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
-                true, true, true, false, null));
+        tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(true, true, true, false, null));
         assertEquals(3, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.1", tps.get(1).getId());
@@ -668,8 +644,7 @@ public class TestTargetPlatformService {
 
         service.restrictTargetPlatform(false, "cap-6.0");
 
-        tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
-                true, true, true, false, null));
+        tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(true, true, true, false, null));
         assertEquals(4, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.1", tps.get(1).getId());
@@ -696,8 +671,8 @@ public class TestTargetPlatformService {
     @Test
     public void testGetAvailableTargetPlatformsInfo() throws ClientException {
         // filter all
-        List<TargetPlatformInfo> tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
-                true, true, true, false, null));
+        List<TargetPlatformInfo> tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(true, true,
+                true, false, null));
         assertEquals(4, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.1", tps.get(1).getId());
@@ -705,8 +680,7 @@ public class TestTargetPlatformService {
         assertEquals("cmf-1.8", tps.get(3).getId());
 
         // filter deprecated
-        tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
-                true, false, true, false, null));
+        tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(true, false, true, false, null));
         assertEquals(6, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.1", tps.get(1).getId());
@@ -716,8 +690,7 @@ public class TestTargetPlatformService {
         assertEquals("cmf-1.8", tps.get(5).getId());
 
         // filter restricted
-        tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
-                true, false, true, false, null));
+        tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(true, false, true, false, null));
         assertEquals(6, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.1", tps.get(1).getId());
@@ -727,31 +700,27 @@ public class TestTargetPlatformService {
         assertEquals("cmf-1.8", tps.get(5).getId());
 
         // filter default
-        tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
-                false, false, false, true, null));
+        tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(false, false, false, true, null));
         assertEquals(3, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-6.0", tps.get(1).getId());
         assertEquals("cmf-1.8", tps.get(2).getId());
 
         // filter not trial
-        tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
-                true));
+        tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(true));
         assertEquals(3, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.2", tps.get(1).getId());
         assertEquals("cap-6.0", tps.get(2).getId());
 
         // filter on type
-        tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
-                true, false, false, false, "CMF"));
+        tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(true, false, false, false, "CMF"));
         assertEquals(1, tps.size());
         assertEquals("cmf-1.8", tps.get(0).getId());
 
         // disable target platform
         service.enableTargetPlatform(false, "cmf-1.8");
-        tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
-                true, false, false, false, "CMF"));
+        tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(true, false, false, false, "CMF"));
         assertEquals(0, tps.size());
     }
 

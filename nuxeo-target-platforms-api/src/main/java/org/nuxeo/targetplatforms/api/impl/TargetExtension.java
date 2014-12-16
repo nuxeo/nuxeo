@@ -19,8 +19,8 @@ package org.nuxeo.targetplatforms.api.impl;
 import org.nuxeo.targetplatforms.api.Target;
 
 /**
- * {@link Target} implementation relying on an original implementation, useful
- * for override when adding additional metadata.
+ * {@link Target} implementation relying on an original implementation, useful for override when adding additional
+ * metadata.
  *
  * @since 5.7.1
  */
@@ -37,7 +37,7 @@ public class TargetExtension extends TargetInfoExtension implements Target {
 
     public TargetExtension(Target orig) {
         super(orig);
-        this.origTarget = orig;
+        origTarget = orig;
     }
 
     @Override

@@ -86,7 +86,7 @@ public class TargetDescriptor {
         try {
             OutputFormat of = new OutputFormat();
             of.setOmitXMLDeclaration(true);
-            this.description = DOMSerializer.toString(descriptionDOM, of).trim();
+            description = DOMSerializer.toString(descriptionDOM, of).trim();
         } catch (IOException e) {
             log.error(e, e);
         }

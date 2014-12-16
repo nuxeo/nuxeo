@@ -22,8 +22,8 @@ import java.util.List;
 import org.nuxeo.targetplatforms.api.TargetInfo;
 
 /**
- * {@link TargetInfo} implementation relying on an original implementation,
- * useful for override when adding additional metadata.
+ * {@link TargetInfo} implementation relying on an original implementation, useful for override when adding additional
+ * metadata.
  *
  * @since 5.7.1
  */
@@ -38,7 +38,7 @@ public class TargetInfoExtension implements TargetInfo {
     }
 
     public TargetInfoExtension(TargetInfo orig) {
-        this.origInfo = orig;
+        origInfo = orig;
     }
 
     @Override
@@ -66,6 +66,7 @@ public class TargetInfoExtension implements TargetInfo {
         return origInfo.getStatus();
     }
 
+    @Override
     public String getLabel() {
         return origInfo.getLabel();
     }
@@ -75,34 +76,42 @@ public class TargetInfoExtension implements TargetInfo {
         return origInfo.getDescription();
     }
 
+    @Override
     public boolean isEnabled() {
         return origInfo.isEnabled();
     }
 
+    @Override
     public boolean isRestricted() {
         return origInfo.isRestricted();
     }
 
+    @Override
     public Date getReleaseDate() {
         return origInfo.getReleaseDate();
     }
 
+    @Override
     public Date getEndOfAvailability() {
         return origInfo.getEndOfAvailability();
     }
 
+    @Override
     public String getDownloadLink() {
         return origInfo.getDownloadLink();
     }
 
+    @Override
     public boolean isDeprecated() {
         return origInfo.isDeprecated();
     }
 
+    @Override
     public boolean isTrial() {
         return origInfo.isTrial();
     }
 
+    @Override
     public boolean isDefault() {
         return origInfo.isDefault();
     }
@@ -112,6 +121,7 @@ public class TargetInfoExtension implements TargetInfo {
         return origInfo.isFastTrack();
     }
 
+    @Override
     public boolean isOverridden() {
         return origInfo.isOverridden();
     }
@@ -128,8 +138,7 @@ public class TargetInfoExtension implements TargetInfo {
 
     // Class#getSimpleName not supported by GWT
     protected String getSimpleName() {
-        return getClass().getName().substring(
-                getClass().getName().lastIndexOf('.') + 1);
+        return getClass().getName().substring(getClass().getName().lastIndexOf('.') + 1);
     }
 
     @Override

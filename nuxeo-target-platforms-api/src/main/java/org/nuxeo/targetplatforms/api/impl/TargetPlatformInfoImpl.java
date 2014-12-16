@@ -32,8 +32,7 @@ import org.nuxeo.targetplatforms.api.TargetPlatformInfo;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @since 5.7.1
  */
-public class TargetPlatformInfoImpl extends TargetInfoImpl implements
-        TargetPlatformInfo {
+public class TargetPlatformInfoImpl extends TargetInfoImpl implements TargetPlatformInfo {
 
     private static final long serialVersionUID = 1L;
 
@@ -43,11 +42,11 @@ public class TargetPlatformInfoImpl extends TargetInfoImpl implements
     protected TargetPlatformInfoImpl() {
     }
 
-    public TargetPlatformInfoImpl(String id, String name, String version,
-            String refVersion, String label) {
+    public TargetPlatformInfoImpl(String id, String name, String version, String refVersion, String label) {
         super(id, name, version, refVersion, label);
     }
 
+    @Override
     public List<String> getAvailablePackagesIds() {
         if (availablePackagesInfo == null) {
             return Collections.emptyList();
@@ -61,10 +60,10 @@ public class TargetPlatformInfoImpl extends TargetInfoImpl implements
         if (availablePackagesInfo == null) {
             return Collections.<String, TargetPackageInfo> emptyMap();
         }
-        return new LinkedHashMap<String, TargetPackageInfo>(
-                availablePackagesInfo);
+        return new LinkedHashMap<String, TargetPackageInfo>(availablePackagesInfo);
     }
 
+    @Override
     public void addAvailablePackageInfo(TargetPackageInfo packInfo) {
         if (packInfo == null) {
             return;
@@ -75,6 +74,7 @@ public class TargetPlatformInfoImpl extends TargetInfoImpl implements
         availablePackagesInfo.put(packInfo.getId(), packInfo);
     }
 
+    @Override
     public void setAvailablePackagesInfo(Map<String, TargetPackageInfo> packages) {
         if (availablePackagesInfo != null) {
             availablePackagesInfo.clear();

@@ -60,13 +60,11 @@ import org.nuxeo.targetplatforms.core.descriptors.TargetPackageDescriptor;
 import org.nuxeo.targetplatforms.core.descriptors.TargetPlatformDescriptor;
 
 /**
- * {@link TargetPlatformService} implementation relying on runtime extension
- * points.
+ * {@link TargetPlatformService} implementation relying on runtime extension points.
  *
  * @since 5.7.1
  */
-public class TargetPlatformServiceImpl extends DefaultComponent implements
-        TargetPlatformService {
+public class TargetPlatformServiceImpl extends DefaultComponent implements TargetPlatformService {
 
     private static final Log log = LogFactory.getLog(TargetPlatformServiceImpl.class);
 
@@ -76,8 +74,8 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
 
     public static final String XP_PACKAGES = "packages";
 
-    protected static final DateTimeFormatter dateParser = DateTimeFormat.forPattern(
-            "yyyy/MM/dd").withLocale(Locale.ENGLISH).withZone(DateTimeZone.UTC);
+    protected static final DateTimeFormatter dateParser = DateTimeFormat.forPattern("yyyy/MM/dd").withLocale(
+            Locale.ENGLISH).withZone(DateTimeZone.UTC);
 
     protected ServiceConfigurationRegistry conf;
 
@@ -102,12 +100,10 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_PLATFORMS.equals(extensionPoint)) {
             TargetPlatformDescriptor desc = (TargetPlatformDescriptor) contribution;
-            log.info(String.format("Register target platform '%s'",
-                    desc.getId()));
+            log.info(String.format("Register target platform '%s'", desc.getId()));
             platforms.addContribution(desc);
         } else if (XP_PACKAGES.equals(extensionPoint)) {
             TargetPackageDescriptor desc = (TargetPackageDescriptor) contribution;
@@ -121,17 +117,14 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_PLATFORMS.equals(extensionPoint)) {
             TargetPlatformDescriptor desc = (TargetPlatformDescriptor) contribution;
-            log.info(String.format("Unregister target platform '%s'",
-                    desc.getId()));
+            log.info(String.format("Unregister target platform '%s'", desc.getId()));
             platforms.removeContribution(desc);
         } else if (XP_PACKAGES.equals(extensionPoint)) {
             TargetPackageDescriptor desc = (TargetPackageDescriptor) contribution;
-            log.info(String.format("Unregister target package '%s'",
-                    desc.getId()));
+            log.info(String.format("Unregister target package '%s'", desc.getId()));
             packages.removeContribution(desc);
         } else if (XP_CONF.equals(extensionPoint)) {
             ServiceConfigurationDescriptor desc = (ServiceConfigurationDescriptor) contribution;
@@ -143,8 +136,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
     // Service API
 
     @Override
-    public TargetPlatform getDefaultTargetPlatform(TargetPlatformFilter filter)
-            throws ClientException {
+    public TargetPlatform getDefaultTargetPlatform(TargetPlatformFilter filter) throws ClientException {
         List<TargetPlatform> tps = getAvailableTargetPlatforms(filter);
         if (tps.isEmpty()) {
             return null;
@@ -189,14 +181,13 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         return getTargetPlatform(desc);
     }
 
-    protected TargetPlatform getTargetPlatform(TargetPlatformDescriptor desc)
-            throws ClientException {
+    protected TargetPlatform getTargetPlatform(TargetPlatformDescriptor desc) throws ClientException {
         if (desc == null) {
             return null;
         }
         String id = desc.getId();
-        TargetPlatformImpl tp = new TargetPlatformImpl(id, desc.getName(),
-                desc.getVersion(), desc.getRefVersion(), desc.getLabel());
+        TargetPlatformImpl tp = new TargetPlatformImpl(id, desc.getName(), desc.getVersion(), desc.getRefVersion(),
+                desc.getLabel());
         tp.setDeprecated(desc.isDeprecated());
         tp.setDescription(desc.getDescription());
         tp.setDownloadLink(desc.getDownloadLink());
@@ -218,28 +209,23 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         // check if there's an override
         DocumentModel entry = getDirectoryEntry(id);
         if (entry != null) {
-            Long enabled = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
-                    DirectoryUpdater.ENABLED_PROP);
+            Long enabled = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.ENABLED_PROP);
             if (enabled != null && enabled.intValue() >= 0) {
                 tp.setEnabled(enabled.intValue() == 0 ? false : true);
             }
-            Long restricted = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
-                    DirectoryUpdater.RESTRICTED_PROP);
+            Long restricted = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.RESTRICTED_PROP);
             if (restricted != null && restricted.intValue() >= 0) {
                 tp.setRestricted(restricted.intValue() == 0 ? false : true);
             }
-            Long deprecated = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
-                    DirectoryUpdater.DEPRECATED_PROP);
+            Long deprecated = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.DEPRECATED_PROP);
             if (deprecated != null && deprecated.intValue() >= 0) {
                 tp.setDeprecated(deprecated.intValue() == 0 ? false : true);
             }
-            Long trial = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
-                    DirectoryUpdater.TRIAL_PROP);
+            Long trial = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.TRIAL_PROP);
             if (trial != null && trial.intValue() >= 0) {
                 tp.setTrial(trial.intValue() == 0 ? false : true);
             }
-            Long isDefault = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
-                    DirectoryUpdater.DEFAULT_PROP);
+            Long isDefault = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.DEFAULT_PROP);
             if (isDefault != null && isDefault.intValue() >= 0) {
                 tp.setDefault(isDefault.intValue() == 0 ? false : true);
             }
@@ -266,8 +252,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         return tps;
     }
 
-    protected Map<String, TargetPackageInfo> getTargetPackagesInfo(
-            String targetPlatform) {
+    protected Map<String, TargetPackageInfo> getTargetPackagesInfo(String targetPlatform) {
         Map<String, TargetPackageInfo> tps = new HashMap<>();
         List<TargetPackageDescriptor> pkgs = packages.getTargetPackages(targetPlatform);
         if (pkgs != null) {
@@ -290,8 +275,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public TargetPlatformInfo getTargetPlatformInfo(String id)
-            throws ClientException {
+    public TargetPlatformInfo getTargetPlatformInfo(String id) throws ClientException {
         if (id == null) {
             return null;
         }
@@ -300,15 +284,13 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         return tpi;
     }
 
-    protected TargetPlatformInfo getTargetPlatformInfo(
-            TargetPlatformDescriptor desc) throws ClientException {
+    protected TargetPlatformInfo getTargetPlatformInfo(TargetPlatformDescriptor desc) throws ClientException {
         if (desc == null) {
             return null;
         }
         String id = desc.getId();
-        TargetPlatformInfoImpl tpi = new TargetPlatformInfoImpl(id,
-                desc.getName(), desc.getVersion(), desc.getRefVersion(),
-                desc.getLabel());
+        TargetPlatformInfoImpl tpi = new TargetPlatformInfoImpl(id, desc.getName(), desc.getVersion(),
+                desc.getRefVersion(), desc.getLabel());
         tpi.setDescription(desc.getDescription());
         tpi.setStatus(desc.getStatus());
         tpi.setEnabled(desc.isEnabled());
@@ -325,28 +307,23 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
 
         DocumentModel entry = getDirectoryEntry(id);
         if (entry != null) {
-            Long enabled = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
-                    DirectoryUpdater.ENABLED_PROP);
+            Long enabled = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.ENABLED_PROP);
             if (enabled != null && enabled.intValue() >= 0) {
                 tpi.setEnabled(enabled.intValue() == 0 ? false : true);
             }
-            Long restricted = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
-                    DirectoryUpdater.RESTRICTED_PROP);
+            Long restricted = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.RESTRICTED_PROP);
             if (restricted != null && restricted.intValue() >= 0) {
                 tpi.setRestricted(restricted.intValue() == 0 ? false : true);
             }
-            Long deprecated = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
-                    DirectoryUpdater.DEPRECATED_PROP);
+            Long deprecated = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.DEPRECATED_PROP);
             if (deprecated != null && deprecated.intValue() >= 0) {
                 tpi.setDeprecated(deprecated.intValue() == 0 ? false : true);
             }
-            Long trial = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
-                    DirectoryUpdater.TRIAL_PROP);
+            Long trial = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.TRIAL_PROP);
             if (trial != null && trial.intValue() >= 0) {
                 tpi.setTrial(trial.intValue() == 0 ? false : true);
             }
-            Long isDefault = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
-                    DirectoryUpdater.DEFAULT_PROP);
+            Long isDefault = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.DEFAULT_PROP);
             if (isDefault != null && isDefault.intValue() >= 0) {
                 tpi.setDefault(isDefault.intValue() == 0 ? false : true);
             }
@@ -370,9 +347,8 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
             return null;
         }
         TargetPackageDescriptor desc = packages.getTargetPackage(id);
-        TargetPackageInfoImpl tpi = new TargetPackageInfoImpl(desc.getId(),
-                desc.getName(), desc.getVersion(), desc.getRefVersion(),
-                desc.getLabel());
+        TargetPackageInfoImpl tpi = new TargetPackageInfoImpl(desc.getId(), desc.getName(), desc.getVersion(),
+                desc.getRefVersion(), desc.getLabel());
         tpi.setDescription(desc.getDescription());
         tpi.setStatus(desc.getStatus());
         tpi.setEnabled(desc.isEnabled());
@@ -389,9 +365,8 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         if (desc == null) {
             return null;
         }
-        TargetPackageImpl tp = new TargetPackageImpl(desc.getId(),
-                desc.getName(), desc.getVersion(), desc.getRefVersion(),
-                desc.getLabel());
+        TargetPackageImpl tp = new TargetPackageImpl(desc.getId(), desc.getName(), desc.getVersion(),
+                desc.getRefVersion(), desc.getLabel());
         tp.setDependencies(desc.getDependencies());
         tp.setDeprecated(desc.isDeprecated());
         tp.setDescription(desc.getDescription());
@@ -408,8 +383,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public TargetPlatformInstance getTargetPlatformInstance(String id,
-            List<String> packages) throws ClientException {
+    public TargetPlatformInstance getTargetPlatformInstance(String id, List<String> packages) throws ClientException {
         if (id == null) {
             return null;
         }
@@ -422,8 +396,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
                 if (tpkg != null) {
                     tpi.addEnabledPackage(tpkg);
                 } else {
-                    log.warn(String.format(
-                            "Referenced target package '%s' not found.", pkg));
+                    log.warn(String.format("Referenced target package '%s' not found.", pkg));
                 }
             }
         }
@@ -432,8 +405,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public List<TargetPlatform> getAvailableTargetPlatforms(
-            TargetPlatformFilter filter) throws ClientException {
+    public List<TargetPlatform> getAvailableTargetPlatforms(TargetPlatformFilter filter) throws ClientException {
         List<TargetPlatform> tps = new ArrayList<>();
         for (TargetPlatformDescriptor desc : platforms.getTargetPlatforms()) {
             TargetPlatform tp = getTargetPlatform(desc);
@@ -456,8 +428,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public List<TargetPlatformInfo> getAvailableTargetPlatformsInfo(
-            TargetPlatformFilter filter) throws ClientException {
+    public List<TargetPlatformInfo> getAvailableTargetPlatformsInfo(TargetPlatformFilter filter) throws ClientException {
         List<TargetPlatformInfo> tps = new ArrayList<>();
         for (TargetPlatformDescriptor desc : platforms.getTargetPlatforms()) {
             TargetPlatformInfo tp = getTargetPlatformInfo(desc);
@@ -479,36 +450,31 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void deprecateTargetPlatform(boolean deprecate, final String id)
-            throws ClientException {
+    public void deprecateTargetPlatform(boolean deprecate, final String id) throws ClientException {
         Integer val = deprecate ? Integer.valueOf(1) : Integer.valueOf(0);
         updateOrCreateEntry(id, DirectoryUpdater.DEPRECATED_PROP, val);
     }
 
     @Override
-    public void enableTargetPlatform(boolean enable, final String id)
-            throws ClientException {
+    public void enableTargetPlatform(boolean enable, final String id) throws ClientException {
         Integer val = enable ? Integer.valueOf(1) : Integer.valueOf(0);
         updateOrCreateEntry(id, DirectoryUpdater.ENABLED_PROP, val);
     }
 
     @Override
-    public void restrictTargetPlatform(boolean restrict, final String id)
-            throws ClientException {
+    public void restrictTargetPlatform(boolean restrict, final String id) throws ClientException {
         Integer val = restrict ? Integer.valueOf(1) : Integer.valueOf(0);
         updateOrCreateEntry(id, DirectoryUpdater.RESTRICTED_PROP, val);
     }
 
     @Override
-    public void setTrialTargetPlatform(boolean trial, final String id)
-            throws ClientException {
+    public void setTrialTargetPlatform(boolean trial, final String id) throws ClientException {
         Integer val = trial ? Integer.valueOf(1) : Integer.valueOf(0);
         updateOrCreateEntry(id, DirectoryUpdater.TRIAL_PROP, val);
     }
 
     @Override
-    public void setDefaultTargetPlatform(boolean isDefault, final String id)
-            throws ClientException {
+    public void setDefaultTargetPlatform(boolean isDefault, final String id) throws ClientException {
         Integer val = isDefault ? Integer.valueOf(1) : Integer.valueOf(0);
         updateOrCreateEntry(id, DirectoryUpdater.DEFAULT_PROP, val);
     }
@@ -517,8 +483,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
     public void restoreTargetPlatform(final String id) throws ClientException {
         new DirectoryUpdater(getOverrideDirectory()) {
             @Override
-            public void run(DirectoryService service, Session session)
-                    throws ClientException {
+            public void run(DirectoryService service, Session session) throws ClientException {
                 session.deleteEntry(id);
             }
         }.run();
@@ -528,8 +493,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
     public void restoreAllTargetPlatforms() throws ClientException {
         new DirectoryUpdater(getOverrideDirectory()) {
             @Override
-            public void run(DirectoryService service, Session session)
-                    throws ClientException {
+            public void run(DirectoryService service, Session session) throws ClientException {
                 for (DocumentModel entry : session.getEntries()) {
                     session.deleteEntry(entry.getId());
                 }
@@ -537,19 +501,16 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         }.run();
     }
 
-    protected void updateOrCreateEntry(final String id, final String prop,
-            final Integer value) throws ClientException {
+    protected void updateOrCreateEntry(final String id, final String prop, final Integer value) throws ClientException {
         new DirectoryUpdater(getOverrideDirectory()) {
             @Override
-            public void run(DirectoryService service, Session session)
-                    throws ClientException {
+            public void run(DirectoryService service, Session session) throws ClientException {
                 DocumentModel doc = session.getEntry(id);
                 if (doc != null) {
                     doc.setProperty(DirectoryUpdater.SCHEMA, prop, value);
                     session.updateEntry(doc);
                 } else {
-                    DocumentModel entry = BaseSession.createEntryModel(null,
-                            DirectoryUpdater.SCHEMA, null, null);
+                    DocumentModel entry = BaseSession.createEntryModel(null, DirectoryUpdater.SCHEMA, null, null);
                     entry.setProperty(DirectoryUpdater.SCHEMA, prop, value);
                     entry.setProperty(DirectoryUpdater.SCHEMA, "id", id);
                     session.createEntry(entry);
@@ -576,8 +537,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public TargetPlatformInstance getDefaultTargetPlatformInstance(
-            boolean restricted) throws ClientException {
+    public TargetPlatformInstance getDefaultTargetPlatformInstance(boolean restricted) throws ClientException {
         TargetPlatformInstance tpi = null;
         TargetPlatformFilterImpl filter = new TargetPlatformFilterImpl();
         filter.setFilterRestricted(restricted);
@@ -594,15 +554,13 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
      *
      * @since 5.9.3-NXP-15602
      */
-    protected TargetPlatformInstanceImpl createTargetPlatformInstanceFromId(
-            String id) throws ClientException {
+    protected TargetPlatformInstanceImpl createTargetPlatformInstanceFromId(String id) throws ClientException {
         TargetPlatformDescriptor desc = platforms.getTargetPlatform(id);
         if (desc == null) {
             return null;
         }
-        TargetPlatformInstanceImpl tpi = new TargetPlatformInstanceImpl(id,
-                desc.getName(), desc.getVersion(), desc.getRefVersion(),
-                desc.getLabel());
+        TargetPlatformInstanceImpl tpi = new TargetPlatformInstanceImpl(id, desc.getName(), desc.getVersion(),
+                desc.getRefVersion(), desc.getLabel());
         tpi.setDeprecated(desc.isDeprecated());
         tpi.setDescription(desc.getDescription());
         tpi.setDownloadLink(desc.getDownloadLink());
@@ -618,18 +576,15 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
 
         DocumentModel entry = getDirectoryEntry(id);
         if (entry != null) {
-            Long enabled = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
-                    DirectoryUpdater.ENABLED_PROP);
+            Long enabled = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.ENABLED_PROP);
             if (enabled != null && enabled.intValue() >= 0) {
                 tpi.setEnabled(enabled.intValue() == 0 ? false : true);
             }
-            Long restricted = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
-                    DirectoryUpdater.RESTRICTED_PROP);
+            Long restricted = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.RESTRICTED_PROP);
             if (restricted != null && restricted.intValue() >= 0) {
                 tpi.setRestricted(restricted.intValue() == 0 ? false : true);
             }
-            Long deprecated = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
-                    DirectoryUpdater.DEPRECATED_PROP);
+            Long deprecated = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.DEPRECATED_PROP);
             if (deprecated != null && deprecated.intValue() >= 0) {
                 tpi.setDeprecated(deprecated.intValue() == 0 ? false : true);
             }
