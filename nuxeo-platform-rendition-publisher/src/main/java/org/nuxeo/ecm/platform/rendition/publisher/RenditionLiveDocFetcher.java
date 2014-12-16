@@ -24,11 +24,9 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 
 /**
- * 
  * Fetched the live doc for a given proxy on a Rendition
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class RenditionLiveDocFetcher extends UnrestrictedSessionRunner {
 

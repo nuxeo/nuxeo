@@ -33,10 +33,9 @@ import org.nuxeo.ecm.platform.publisher.impl.core.RootSectionsPublicationTree;
 import org.nuxeo.ecm.platform.rendition.Constants;
 
 /**
- * Implementation of
- * {@link org.nuxeo.ecm.platform.publisher.api.PublicationTree} that retrieve
- * also any published Rendition documents for the given document.
- *
+ * Implementation of {@link org.nuxeo.ecm.platform.publisher.api.PublicationTree} that retrieve also any published
+ * Rendition documents for the given document.
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.4.1
@@ -52,35 +51,30 @@ public class RenditionPublicationCoreTree extends RootSectionsPublicationTree {
             + "AND ecm:path STARTSWITH '%s' " + "AND ecm:isProxy = 1";
 
     @Override
-    public List<PublishedDocument> getExistingPublishedDocument(
-            DocumentLocation docLoc) throws ClientException {
+    public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) throws ClientException {
         List<PublishedDocument> publishedDocuments = super.getExistingPublishedDocument(docLoc);
 
         DocumentModel sourceDocument = coreSession.getDocument(docLoc.getDocRef());
         if (sourceDocument.isProxy()) {
             // If on a proxy, we want all the others proxy pointing to the same
             // version
-            if (!sourceDocument.hasFacet(RENDITION_FACET)
-                    && !sourceDocument.hasSchema(RENDITION_SCHEMA)) {
+            if (!sourceDocument.hasFacet(RENDITION_FACET) && !sourceDocument.hasSchema(RENDITION_SCHEMA)) {
                 return publishedDocuments;
             }
             DocumentRef docRef = new IdRef(
                     (String) sourceDocument.getPropertyValue(Constants.RENDITION_SOURCE_ID_PROPERTY));
-            publishedDocuments.addAll(getPublishedDocumentsFromProxyDocument(
-                    docRef, sourceDocument));
+            publishedDocuments.addAll(getPublishedDocumentsFromProxyDocument(docRef, sourceDocument));
         } else {
             publishedDocuments.addAll(getPublishedDocumentsFromLiveDocument(docLoc.getDocRef()));
         }
         return publishedDocuments;
     }
 
-    protected List<PublishedDocument> getPublishedDocumentsFromProxyDocument(
-            DocumentRef docRef, DocumentModel sourceDocument)
-            throws ClientException {
+    protected List<PublishedDocument> getPublishedDocumentsFromProxyDocument(DocumentRef docRef,
+            DocumentModel sourceDocument) throws ClientException {
         List<PublishedDocument> publishedDocuments = new ArrayList<PublishedDocument>();
-        List<DocumentModel> docs = coreSession.query(String.format(
-                RENDITION_PUBLISHED_DOCUMENTS_FROM_PROXY_DOCUMENT, docRef,
-                NXQL.escapeStringInner(rootPath)));
+        List<DocumentModel> docs = coreSession.query(String.format(RENDITION_PUBLISHED_DOCUMENTS_FROM_PROXY_DOCUMENT,
+                docRef, NXQL.escapeStringInner(rootPath)));
         for (DocumentModel doc : docs) {
             if (!doc.getRef().equals(sourceDocument.getRef())) {
                 publishedDocuments.add(factory.wrapDocumentModel(doc));
@@ -89,12 +83,10 @@ public class RenditionPublicationCoreTree extends RootSectionsPublicationTree {
         return publishedDocuments;
     }
 
-    protected List<PublishedDocument> getPublishedDocumentsFromLiveDocument(
-            DocumentRef docRef) throws ClientException {
+    protected List<PublishedDocument> getPublishedDocumentsFromLiveDocument(DocumentRef docRef) throws ClientException {
         List<PublishedDocument> publishedDocuments = new ArrayList<PublishedDocument>();
-        List<DocumentModel> docs = coreSession.query(String.format(
-                RENDITION_PUBLISHED_DOCUMENTS_FROM_LIVE_DOCUMENT, docRef,
-                NXQL.escapeStringInner(rootPath)));
+        List<DocumentModel> docs = coreSession.query(String.format(RENDITION_PUBLISHED_DOCUMENTS_FROM_LIVE_DOCUMENT,
+                docRef, NXQL.escapeStringInner(rootPath)));
         for (DocumentModel doc : docs) {
             publishedDocuments.add(factory.wrapDocumentModel(doc));
         }

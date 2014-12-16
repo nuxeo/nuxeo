@@ -44,9 +44,9 @@ public class RenditionBusinessDelegate implements Serializable {
     protected RenditionService renditionService;
 
     /**
-     * Acquires a new {@link RenditionService} reference. The related service
-     * may be deployed on a local or remote AppServer.
-     *
+     * Acquires a new {@link RenditionService} reference. The related service may be deployed on a local or remote
+     * AppServer.
+     * 
      * @throws org.nuxeo.ecm.core.api.ClientException
      */
     @Unwrap
@@ -55,13 +55,11 @@ public class RenditionBusinessDelegate implements Serializable {
             try {
                 renditionService = Framework.getService(RenditionService.class);
             } catch (Exception e) {
-                final String errMsg = "Error connecting to RenditionService. "
-                        + e.getMessage();
+                final String errMsg = "Error connecting to RenditionService. " + e.getMessage();
                 throw new ClientException(errMsg, e);
             }
             if (renditionService == null) {
-                throw new ClientException(
-                        "ContentViewService service not bound");
+                throw new ClientException("ContentViewService service not bound");
             }
         }
         return renditionService;
