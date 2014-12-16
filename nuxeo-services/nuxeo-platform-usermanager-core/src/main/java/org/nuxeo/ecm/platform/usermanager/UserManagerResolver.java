@@ -19,7 +19,7 @@ public class UserManagerResolver implements ExternalReferenceResolver {
 
     public static final String FILTER_USER = "user";
 
-    public static final String NAME = "UserManagerReference";
+    public static final String NAME = "userManagerResolver";
 
     public static final String PARAM_INCLUDE_USERS = "includeUsers";
 
@@ -122,23 +122,14 @@ public class UserManagerResolver implements ExternalReferenceResolver {
     @Override
     public String getConstraintErrorMessage(Object invalidValue, Locale locale) {
         checkConfig();
-        String computedInvalidValue = null;
-        if (invalidValue != null) {
-            String invalidValueString = invalidValue.toString();
-            if (invalidValueString.length() > 20) {
-                computedInvalidValue = invalidValueString.substring(0, 15) + "...";
-            } else {
-                computedInvalidValue = invalidValueString;
-            }
+        if (isIncludingUsers() && isIncludingGroups()) {
+            return Helper.getConstraintErrorMessage(this, "any", invalidValue, locale);
+        } else if (!isIncludingUsers() && isIncludingGroups()) {
+            return Helper.getConstraintErrorMessage(this, "group", invalidValue, locale);
+        } else if (isIncludingUsers() && !isIncludingGroups()) {
+            return Helper.getConstraintErrorMessage(this, "user", invalidValue, locale);
         }
-        if (includingGroups && includingUsers) {
-            return String.format("%s must be a user name or a group name", computedInvalidValue);
-        } else if (includingGroups) {
-            return String.format("%s must be a group name", computedInvalidValue);
-        } else if (includingUsers) {
-            return String.format("%s must be a user name", computedInvalidValue);
-        }
-        return "invalid value";
+        return String.format("%s cannot resolve reference %s", getName(), invalidValue);
     }
 
     public boolean isIncludingUsers() {

@@ -26,7 +26,7 @@ public class TestingColorDummyReferenceResolver implements ExternalReferenceReso
 
     public static final String COLOR_MODE = "mode";
 
-    public static final String NAME = "DummyColorReference";
+    public static final String NAME = "colorReference";
 
     private MODE mode;
 

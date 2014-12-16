@@ -18,8 +18,14 @@
 package org.nuxeo.ecm.core.schema.types.reference;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.i18n.I18NUtils;
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 
 /**
  * External references are document field with a simple type whose value refers to an external business entity. Objects
@@ -105,5 +111,71 @@ public interface ExternalReferenceResolver {
      * @since 7.1
      */
     String getConstraintErrorMessage(Object invalidValue, Locale locale);
+
+    /**
+     * Manage translation for resolver : {@link #getConstraintErrorMessage(ExternalReferenceResolver, Object, Locale)}
+     *
+     * @since 7.1
+     */
+    public static final class Helper {
+
+        private Helper() {
+        }
+
+        /**
+         * Use a default translation key : label.schema.constraint.resolver.[Resolver.getName()]
+         *
+         * @param resolver The requesting resolver.
+         * @param suffixCase This field is a which allow to define alternative translation.
+         * @param invalidValue The invalid value that don't match any entity.
+         * @param locale The language in which the message should be generated.
+         * @return A message in the specified language or
+         * @since 7.1
+         */
+        public static String getConstraintErrorMessage(ExternalReferenceResolver resolver, String suffixCase,
+                Object invalidValue, Locale locale) {
+            List<String> pathTokens = new ArrayList<String>();
+            pathTokens.add(Constraint.MESSAGES_KEY);
+            pathTokens.add("resolver");
+            pathTokens.add(resolver.getName());
+            if (suffixCase != null) {
+                pathTokens.add(suffixCase);
+            }
+            String keyConstraint = StringUtils.join(pathTokens, '.');
+            String computedInvalidValue = "null";
+            if (invalidValue != null) {
+                String invalidValueString = invalidValue.toString();
+                if (invalidValueString.length() > 20) {
+                    computedInvalidValue = invalidValueString.substring(0, 15) + "...";
+                } else {
+                    computedInvalidValue = invalidValueString;
+                }
+            }
+            Object[] params = new Object[] { computedInvalidValue };
+            Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
+            String message = I18NUtils.getMessageString(Constraint.MESSAGES_BUNDLE, keyConstraint, params,
+                    computedLocale);
+            if (message != null && !message.trim().isEmpty() && !keyConstraint.equals(message)) {
+                // use a constraint specific message if there's one
+                return message;
+            } else {
+                return String.format("%s cannot resolve reference %s", resolver.getName(), computedInvalidValue);
+            }
+        }
+
+        /**
+         * Use a default translation key : label.schema.constraint.resolver.[Resolver.getName()]
+         *
+         * @param resolver The requesting resolver.
+         * @param invalidValue The invalid value that don't match any entity.
+         * @param locale The language in which the message should be generated.
+         * @return A message in the specified language or
+         * @since 7.1
+         */
+        public static String getConstraintErrorMessage(ExternalReferenceResolver resolver, Object invalidValue,
+                Locale locale) {
+            return Helper.getConstraintErrorMessage(resolver, null, invalidValue, locale);
+        }
+    }
 
 }

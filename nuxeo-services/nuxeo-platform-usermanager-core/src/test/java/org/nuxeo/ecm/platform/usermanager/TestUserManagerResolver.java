@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -87,8 +88,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testConfigurationDefaultUserOrGroup() {
         UserManagerResolver umr = new UserManagerResolver();
-        Map<String, String> parameters = new HashMap<String, String>();
-        umr.configure(parameters);
+        umr.configure(new HashMap<String, String>());
         assertTrue(umr.isIncludingGroups());
         assertTrue(umr.isIncludingUsers());
         Map<String, Serializable> outputParameters = umr.getParameters();
@@ -464,6 +464,33 @@ public class TestUserManagerResolver extends UserManagerTestCase {
         doc.setPropertyValue(USER_GROUP_XPATH, "group:members");
         NuxeoGroup group = (NuxeoGroup) doc.getProperty(USER_GROUP_XPATH).getReferencedEntity();
         assertNotNull(group);
+    }
+
+    @Test
+    public void testTranslation() {
+        UserManagerResolver allUMR = new UserManagerResolver();
+        allUMR.configure(new HashMap<String, String>());
+        checkMessage(allUMR);
+        UserManagerResolver userUMR = new UserManagerResolver();
+        Map<String, String> userParams = new HashMap<String, String>();
+        userParams.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_USER);
+        userUMR.configure(userParams);
+        checkMessage(userUMR);
+        UserManagerResolver groupUMR = new UserManagerResolver();
+        Map<String, String> groupParams = new HashMap<String, String>();
+        groupParams.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_GROUP);
+        groupUMR.configure(groupParams);
+        checkMessage(groupUMR);
+
+    }
+
+    private void checkMessage(UserManagerResolver umr) {
+        for (Locale locale : Arrays.asList(Locale.FRENCH, Locale.ENGLISH)) {
+            String message = umr.getConstraintErrorMessage("abc123", locale);
+            assertNotNull(message);
+            assertFalse(message.trim().isEmpty());
+            System.out.println(message);
+        }
     }
 
 }
