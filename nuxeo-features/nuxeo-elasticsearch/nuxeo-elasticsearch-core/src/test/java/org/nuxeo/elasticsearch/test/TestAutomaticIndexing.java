@@ -182,6 +182,7 @@ public class TestAutomaticIndexing {
         SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+        Assert.assertFalse(esa.isIndexingInProgress());
     }
 
     @Test
@@ -383,19 +384,19 @@ public class TestAutomaticIndexing {
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         TransactionHelper.commitOrRollbackTransaction();
+        startTransaction();
         waitForIndexing();
         assertNumberOfCommandProcessed(2);
 
-        startTransaction();
         DocumentRef src = doc.getRef();
         DocumentRef dst = new PathRef("/");
         session.copy(src, dst, "file2");
         // turn the sync flag after the action
         ElasticSearchInlineListener.useSyncIndexing.set(true);
         TransactionHelper.commitOrRollbackTransaction();
+        startTransaction();
         waitForIndexing();
 
-        startTransaction();
         SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(3, searchResponse.getHits().getTotalHits());

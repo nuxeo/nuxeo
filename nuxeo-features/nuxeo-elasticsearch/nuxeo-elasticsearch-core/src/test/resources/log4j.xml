@@ -35,6 +35,14 @@
     <appender-ref ref="POOL"/>
   </category>
 
+  <category name="org.nuxeo.elasticsearch.work.ScrollingIndexingWorker" additivity="false">
+    <appender-ref ref="FILE"/>
+  </category>
+  <category name="org.nuxeo.elasticsearch.work.BucketIndexingWorker" additivity="false">
+    <appender-ref ref="FILE"/>
+  </category>
+
+
   <root>
     <priority value="TRACE" />
     <appender-ref ref="CONSOLE" />
