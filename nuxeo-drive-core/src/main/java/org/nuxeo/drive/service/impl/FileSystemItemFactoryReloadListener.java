@@ -24,9 +24,9 @@ import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
 
 /**
- * Runtime listener for handling reload of {@code fileSystemItemFactory} and
- * {@code topLevelFolderItemFactory} contributions.
- *
+ * Runtime listener for handling reload of {@code fileSystemItemFactory} and {@code topLevelFolderItemFactory}
+ * contributions.
+ * 
  * @author Antoine Taillefer
  * @see FileSystemItemAdapterServiceImpl
  */
@@ -39,9 +39,7 @@ public class FileSystemItemFactoryReloadListener implements EventListener {
                 FileSystemItemAdapterServiceImpl fileSystemItemAdapterService = (FileSystemItemAdapterServiceImpl) Framework.getLocalService(FileSystemItemAdapterService.class);
                 fileSystemItemAdapterService.setActiveFactories();
             } catch (Exception e) {
-                throw new ClientRuntimeException(
-                        "Cannot sort fileSystemItemFactory contributions on reload.",
-                        e);
+                throw new ClientRuntimeException("Cannot sort fileSystemItemFactory contributions on reload.", e);
             }
         }
     }

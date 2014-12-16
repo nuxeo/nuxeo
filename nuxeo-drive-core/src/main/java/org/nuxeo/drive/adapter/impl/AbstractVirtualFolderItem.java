@@ -29,19 +29,17 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Base implementation of a virtual {@link FolderItem}.
- *
+ * 
  * @author Antoine Taillefer
  */
-public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem
-        implements FolderItem {
+public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem implements FolderItem {
 
     private static final long serialVersionUID = 1L;
 
     protected boolean canCreateChild;
 
-    public AbstractVirtualFolderItem(String factoryName, Principal principal,
-            String parentId, String parentPath, String folderName)
-            throws ClientException {
+    public AbstractVirtualFolderItem(String factoryName, Principal principal, String parentId, String parentPath,
+            String folderName) throws ClientException {
         super(factoryName, principal, false);
         this.parentId = parentId;
         name = folderName;
@@ -70,14 +68,12 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem
     /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void rename(String name) throws ClientException {
-        throw new UnsupportedOperationException(
-                "Cannot rename a virtual folder item.");
+        throw new UnsupportedOperationException("Cannot rename a virtual folder item.");
     }
 
     @Override
     public void delete() throws ClientException {
-        throw new UnsupportedOperationException(
-                "Cannot delete a virtual folder item.");
+        throw new UnsupportedOperationException("Cannot delete a virtual folder item.");
     }
 
     @Override
@@ -87,8 +83,7 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem
 
     @Override
     public FileSystemItem move(FolderItem dest) throws ClientException {
-        throw new UnsupportedOperationException(
-                "Cannot move a virtual folder item.");
+        throw new UnsupportedOperationException("Cannot move a virtual folder item.");
     }
 
     /*--------------------- FolderItem -----------------*/
@@ -99,14 +94,12 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem
 
     @Override
     public FolderItem createFolder(String name) throws ClientException {
-        throw new UnsupportedOperationException(
-                "Cannot create a folder in a virtual folder item.");
+        throw new UnsupportedOperationException("Cannot create a folder in a virtual folder item.");
     }
 
     @Override
     public FileItem createFile(Blob blob) throws ClientException {
-        throw new UnsupportedOperationException(
-                "Cannot create a file in a virtual folder item.");
+        throw new UnsupportedOperationException("Cannot create a file in a virtual folder item.");
     }
 
     /*---------- Needed for JSON deserialization ----------*/

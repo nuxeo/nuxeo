@@ -27,27 +27,24 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default implementation of a synchronization root {@link FolderItem}.
- *
+ * 
  * @author Antoine Taillefer
  */
-public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem
-        implements FolderItem {
+public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem implements FolderItem {
 
     private static final long serialVersionUID = 1L;
 
-    public DefaultSyncRootFolderItem(String factoryName, FolderItem parentItem,
-            DocumentModel doc) throws ClientException {
+    public DefaultSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc)
+            throws ClientException {
         this(factoryName, parentItem, doc, false);
     }
 
-    public DefaultSyncRootFolderItem(String factoryName, FolderItem parentItem,
-            DocumentModel doc, boolean relaxSyncRootConstraint)
-            throws ClientException {
+    public DefaultSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc,
+            boolean relaxSyncRootConstraint) throws ClientException {
         super(factoryName, parentItem, doc, relaxSyncRootConstraint);
         // A sync root can be renamed if the current user has the
         // WriteProperties permission on it
-        this.canRename = doc.getCoreSession().hasPermission(doc.getRef(),
-                SecurityConstants.WRITE_PROPERTIES);
+        this.canRename = doc.getCoreSession().hasPermission(doc.getRef(), SecurityConstants.WRITE_PROPERTIES);
         // A sync root can be deleted since deletion is implemented as
         // unregistration
         this.canDelete = true;
@@ -61,8 +58,7 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem
     public void delete() throws ClientException {
         CoreSession session = getSession();
         DocumentModel doc = getDocument(session);
-        Framework.getLocalService(NuxeoDriveManager.class).unregisterSynchronizationRoot(
-                principal, doc, session);
+        Framework.getLocalService(NuxeoDriveManager.class).unregisterSynchronizationRoot(principal, doc, session);
     }
 
     @Override
@@ -72,8 +68,7 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem
 
     @Override
     public FileSystemItem move(FolderItem dest) throws ClientException {
-        throw new UnsupportedOperationException(
-                "Cannot move a synchronization root folder item.");
+        throw new UnsupportedOperationException("Cannot move a synchronization root folder item.");
     }
 
 }

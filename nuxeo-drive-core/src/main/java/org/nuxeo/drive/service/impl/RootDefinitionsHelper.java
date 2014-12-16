@@ -10,7 +10,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 
 /**
  * Helper to handle synchronization root definitions.
- *
+ * 
  * @author Antoine Taillefer
  */
 public final class RootDefinitionsHelper {
@@ -22,12 +22,10 @@ public final class RootDefinitionsHelper {
     /**
      * Parses the given synchronization root definitions string.
      */
-    public static Map<String, Set<IdRef>> parseRootDefinitions(
-            String rootDefinitions) {
+    public static Map<String, Set<IdRef>> parseRootDefinitions(String rootDefinitions) {
         Map<String, Set<IdRef>> lastActiveRootRefs = new LinkedHashMap<String, Set<IdRef>>();
         if (rootDefinitions != null) {
-            String[] rootDefinitionComponents = StringUtils.split(
-                    rootDefinitions, ",");
+            String[] rootDefinitionComponents = StringUtils.split(rootDefinitions, ",");
             for (String rootDefinition : rootDefinitionComponents) {
                 String[] rootComponents = StringUtils.split(rootDefinition, ":");
                 String repoName = rootComponents[0].trim();

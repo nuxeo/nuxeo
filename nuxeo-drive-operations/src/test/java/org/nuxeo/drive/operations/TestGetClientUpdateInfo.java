@@ -37,7 +37,7 @@ import com.google.inject.Inject;
 
 /**
  * Tests the {@link NuxeoDriveGetClientUpdateInfo} operation.
- *
+ * 
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
@@ -57,30 +57,25 @@ public class TestGetClientUpdateInfo {
     public void init() throws Exception {
 
         // Get an Automation client session as Administrator
-        clientSession = automationClient.getSession("Administrator",
-                "Administrator");
+        clientSession = automationClient.getSession("Administrator", "Administrator");
         mapper = new ObjectMapper();
 
         // Set Framework properties required for the client update
         Framework.getProperties().put("org.nuxeo.ecm.product.version", "5.9.3");
-        Framework.getProperties().put("org.nuxeo.drive.update.site.url",
-                "http://community.nuxeo.com/static/drive/");
+        Framework.getProperties().put("org.nuxeo.drive.update.site.url", "http://community.nuxeo.com/static/drive/");
     }
 
     @Test
     public void testGetClientUpdateInfo() throws Exception {
 
-        Blob clientUpdateInfoJSON = (Blob) clientSession.newRequest(
-                NuxeoDriveGetClientUpdateInfo.ID).execute();
+        Blob clientUpdateInfoJSON = (Blob) clientSession.newRequest(NuxeoDriveGetClientUpdateInfo.ID).execute();
         assertNotNull(clientUpdateInfoJSON);
 
-        NuxeoDriveClientUpdateInfo clientUpdateInfo = mapper.readValue(
-                clientUpdateInfoJSON.getStream(),
+        NuxeoDriveClientUpdateInfo clientUpdateInfo = mapper.readValue(clientUpdateInfoJSON.getStream(),
                 NuxeoDriveClientUpdateInfo.class);
 
         assertEquals("5.9.3", clientUpdateInfo.getServerVersion());
-        assertEquals("http://community.nuxeo.com/static/drive/",
-                clientUpdateInfo.getUpdateSiteURL());
+        assertEquals("http://community.nuxeo.com/static/drive/", clientUpdateInfo.getUpdateSiteURL());
 
     }
 

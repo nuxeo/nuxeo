@@ -31,10 +31,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Moves the {@link FileSystemItem} with the given source id to the
- * {@link FileSystemItem} with the given destination id for the currently
- * authenticated user.
- *
+ * Moves the {@link FileSystemItem} with the given source id to the {@link FileSystemItem} with the given destination id
+ * for the currently authenticated user.
+ * 
  * @author Antoine Taillefer
  */
 @Operation(id = NuxeoDriveMove.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Move")
@@ -54,8 +53,7 @@ public class NuxeoDriveMove {
     @OperationMethod
     public Blob run() throws ClientException, IOException {
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
-        FileSystemItem fsItem = fileSystemItemManager.move(srcId, destId,
-                ctx.getPrincipal());
+        FileSystemItem fsItem = fileSystemItemManager.move(srcId, destId, ctx.getPrincipal());
 
         // Commit transaction explicitly to ensure client-side consistency
         // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed

@@ -31,9 +31,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Renames the {@link FileSystemItem} with the given id with the given name for
- * the currently authenticated user.
- *
+ * Renames the {@link FileSystemItem} with the given id with the given name for the currently authenticated user.
+ * 
  * @author Antoine Taillefer
  */
 @Operation(id = NuxeoDriveRename.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Rename")
@@ -54,8 +53,7 @@ public class NuxeoDriveRename {
     public Blob run() throws ClientException, IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
-        FileSystemItem fsItem = fileSystemItemManager.rename(id, name,
-                ctx.getPrincipal());
+        FileSystemItem fsItem = fileSystemItemManager.rename(id, name, ctx.getPrincipal());
 
         // Commit transaction explicitly to ensure client-side consistency
         // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed

@@ -35,9 +35,8 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Gets a summary of document changes in the synchronization roots of the
- * currently authenticated user.
- *
+ * Gets a summary of document changes in the synchronization roots of the currently authenticated user.
+ * 
  * @author Antoine Taillefer
  */
 @Operation(id = NuxeoDriveGetChangeSummary.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get change summary")
@@ -65,11 +64,10 @@ public class NuxeoDriveGetChangeSummary {
         Map<String, Set<IdRef>> lastActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(lastSyncActiveRootDefinitions);
         FileSystemChangeSummary docChangeSummary;
         if (lastSyncDate >= 0) {
-            docChangeSummary = driveManager.getChangeSummary(
-                    ctx.getPrincipal(), lastActiveRootRefs, lastSyncDate);
+            docChangeSummary = driveManager.getChangeSummary(ctx.getPrincipal(), lastActiveRootRefs, lastSyncDate);
         } else {
-            docChangeSummary = driveManager.getChangeSummaryIntegerBounds(
-                    ctx.getPrincipal(), lastActiveRootRefs, lowerBound);
+            docChangeSummary = driveManager.getChangeSummaryIntegerBounds(ctx.getPrincipal(), lastActiveRootRefs,
+                    lowerBound);
         }
         return NuxeoDriveOperationHelper.asJSONBlob(docChangeSummary);
     }

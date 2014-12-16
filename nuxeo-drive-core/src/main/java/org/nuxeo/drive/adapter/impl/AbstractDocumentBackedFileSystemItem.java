@@ -38,13 +38,12 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * {@link DocumentModel} backed implementation of a {@link FileSystemItem}.
- *
+ * 
  * @author Antoine Taillefer
  * @see DocumentBackedFileItem
  * @see DocumentBackedFolderItem
  */
-public abstract class AbstractDocumentBackedFileSystemItem extends
-        AbstractFileSystemItem {
+public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileSystemItem {
 
     private static final long serialVersionUID = 1L;
 
@@ -59,14 +58,12 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
 
     protected String docTitle;
 
-    protected AbstractDocumentBackedFileSystemItem(String factoryName,
-            DocumentModel doc) throws ClientException {
+    protected AbstractDocumentBackedFileSystemItem(String factoryName, DocumentModel doc) throws ClientException {
         this(factoryName, doc, false);
     }
 
-    protected AbstractDocumentBackedFileSystemItem(String factoryName,
-            DocumentModel doc, boolean relaxSyncRootConstraint)
-            throws ClientException {
+    protected AbstractDocumentBackedFileSystemItem(String factoryName, DocumentModel doc,
+            boolean relaxSyncRootConstraint) throws ClientException {
         this(factoryName, null, doc, relaxSyncRootConstraint);
         CoreSession docSession = doc.getCoreSession();
         DocumentModel parentDoc = null;
@@ -89,8 +86,8 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
             // information on the source document.
             throw new RootlessItemException();
         } else {
-            FileSystemItem parent = getFileSystemItemAdapterService().getFileSystemItem(
-                    parentDoc, true, relaxSyncRootConstraint);
+            FileSystemItem parent = getFileSystemItemAdapterService().getFileSystemItem(parentDoc, true,
+                    relaxSyncRootConstraint);
             if (parent == null) {
                 // We reached a document for which the parent document cannot be
                 // adapted to a (possibly virtual) descendant of the top level
@@ -104,12 +101,10 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         }
     }
 
-    protected AbstractDocumentBackedFileSystemItem(String factoryName,
-            FolderItem parentItem, DocumentModel doc,
+    protected AbstractDocumentBackedFileSystemItem(String factoryName, FolderItem parentItem, DocumentModel doc,
             boolean relaxSyncRootConstraint) throws ClientException {
 
-        super(factoryName, doc.getCoreSession().getPrincipal(),
-                relaxSyncRootConstraint);
+        super(factoryName, doc.getCoreSession().getPrincipal(), relaxSyncRootConstraint);
 
         // Backing DocumentModel attributes
         repositoryName = doc.getRepositoryName();
@@ -123,13 +118,10 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         creationDate = (Calendar) doc.getPropertyValue("dc:created");
         lastModificationDate = (Calendar) doc.getPropertyValue("dc:modified");
         CoreSession docSession = doc.getCoreSession();
-        canRename = docSession.hasPermission(doc.getRef(),
-                SecurityConstants.WRITE_PROPERTIES);
+        canRename = docSession.hasPermission(doc.getRef(), SecurityConstants.WRITE_PROPERTIES);
         DocumentRef parentRef = doc.getParentRef();
-        canDelete = docSession.hasPermission(doc.getRef(),
-                SecurityConstants.REMOVE)
-                && (parentRef == null || docSession.hasPermission(parentRef,
-                        SecurityConstants.REMOVE_CHILDREN));
+        canDelete = docSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE)
+                && (parentRef == null || docSession.hasPermission(parentRef, SecurityConstants.REMOVE_CHILDREN));
 
         String parentPath;
         if (parentItem != null) {
@@ -189,15 +181,12 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         // create doc in destination
         if (repositoryName.equals(destRepoName)) {
             CoreSession session = getSession();
-            DocumentModel movedDoc = session.move(sourceDocRef, destDocRef,
-                    null);
+            DocumentModel movedDoc = session.move(sourceDocRef, destDocRef, null);
             session.save();
-            return getFileSystemItemAdapterService().getFileSystemItem(
-                    movedDoc, dest);
+            return getFileSystemItemAdapterService().getFileSystemItem(movedDoc, dest);
         } else {
             // TODO: implement move to another repository
-            throw new UnsupportedOperationException(
-                    "Multi repository move is not supported yet.");
+            throw new UnsupportedOperationException("Multi repository move is not supported yet.");
         }
     }
 
@@ -227,13 +216,11 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         return docPath;
     }
 
-    protected DocumentModel getDocument(CoreSession session)
-            throws ClientException {
+    protected DocumentModel getDocument(CoreSession session) throws ClientException {
         return session.getDocument(new IdRef(docId));
     }
 
-    protected void updateLastModificationDate(DocumentModel doc)
-            throws ClientException {
+    protected void updateLastModificationDate(DocumentModel doc) throws ClientException {
         lastModificationDate = (Calendar) doc.getPropertyValue("dc:modified");
     }
 
@@ -252,8 +239,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
             this.docId = idFragments[2];
 
         } catch (ClientException e) {
-            throw new ClientRuntimeException(
-                    "Cannot set id as it cannot be parsed.", e);
+            throw new ClientRuntimeException("Cannot set id as it cannot be parsed.", e);
         }
 
     }

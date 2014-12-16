@@ -46,16 +46,10 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Event listener to track events that should be mapped to file system item
- * deletions in the the ChangeSummary computation.
- *
- * In particular this includes
- *
- * <li>Synchronization root unregistration (user specific)</li>
- *
- * <li>Simple document or root document lifecycle change to the 'deleted' state</li>
- *
- * <li>Simple document or root physical removal from the directory.</li>
+ * Event listener to track events that should be mapped to file system item deletions in the the ChangeSummary
+ * computation. In particular this includes <li>Synchronization root unregistration (user specific)</li> <li>Simple
+ * document or root document lifecycle change to the 'deleted' state</li> <li>Simple document or root physical removal
+ * from the directory.</li>
  */
 public class NuxeoDriveFileSystemDeletionListener implements EventListener {
 
@@ -82,12 +76,10 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
                 return;
             }
         }
-        if (LifeCycleConstants.TRANSITION_EVENT.equals(event.getName())
-                && !handleLifeCycleTransition(ctx)) {
+        if (LifeCycleConstants.TRANSITION_EVENT.equals(event.getName()) && !handleLifeCycleTransition(ctx)) {
             return;
         }
-        if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())
-                && !handleAboutToRemove(doc)) {
+        if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName()) && !handleAboutToRemove(doc)) {
             return;
         }
         // Virtual event name
@@ -100,12 +92,10 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         // Some events will only impact a specific user (e.g. root
         // unregistration)
         String impactedUserName = (String) ctx.getProperty(NuxeoDriveEvents.IMPACTED_USERNAME_PROPERTY);
-        logVirtualEvent(docForLogEntry, virtualEventName, ctx.getPrincipal(),
-                impactedUserName);
+        logVirtualEvent(docForLogEntry, virtualEventName, ctx.getPrincipal(), impactedUserName);
     }
 
-    protected DocumentModel handleBeforeDocUpdate(DocumentEventContext ctx,
-            DocumentModel doc) throws ClientException {
+    protected DocumentModel handleBeforeDocUpdate(DocumentEventContext ctx, DocumentModel doc) throws ClientException {
         // Interested in update of a BlobHolder whose blob has been removed
         boolean blobRemoved = false;
         DocumentModel previousDoc = (DocumentModel) ctx.getProperty(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL);
@@ -114,8 +104,7 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
             if (previousBh != null) {
                 BlobHolder bh = doc.getAdapter(BlobHolder.class);
                 if (bh != null) {
-                    blobRemoved = previousBh.getBlob() != null
-                            && bh.getBlob() == null;
+                    blobRemoved = previousBh.getBlob() != null && bh.getBlob() == null;
                 }
             }
         }
@@ -128,24 +117,20 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         }
     }
 
-    protected boolean handleLifeCycleTransition(DocumentEventContext ctx)
-            throws ClientException {
+    protected boolean handleLifeCycleTransition(DocumentEventContext ctx) throws ClientException {
         String transition = (String) ctx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION);
         // Interested in 'deleted' life cycle transition only
-        return transition != null
-                && LifeCycleConstants.DELETE_TRANSITION.equals(transition);
+        return transition != null && LifeCycleConstants.DELETE_TRANSITION.equals(transition);
 
     }
 
-    protected boolean handleAboutToRemove(DocumentModel doc)
-            throws ClientException {
+    protected boolean handleAboutToRemove(DocumentModel doc) throws ClientException {
         // Document deletion of document that are already in deleted
         // state should not be marked as FS deletion to avoid duplicates
         return !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState());
     }
 
-    protected void logVirtualEvent(DocumentModel doc, String eventName,
-            Principal principal, String impactedUserName)
+    protected void logVirtualEvent(DocumentModel doc, String eventName, Principal principal, String impactedUserName)
             throws ClientException {
 
         AuditLogger logger = Framework.getLocalService(AuditLogger.class);
@@ -155,9 +140,7 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         }
         FileSystemItem fsItem = null;
         try {
-            fsItem = Framework.getLocalService(
-                    FileSystemItemAdapterService.class).getFileSystemItem(doc,
-                    true, true);
+            fsItem = Framework.getLocalService(FileSystemItemAdapterService.class).getFileSystemItem(doc, true, true);
         } catch (RootlessItemException e) {
             // can happen when deleting a folder under and unregistered root:
             // nothing to do
@@ -187,15 +170,12 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
 
         Map<String, ExtendedInfo> extendedInfos = new HashMap<String, ExtendedInfo>();
         if (impactedUserName != null) {
-            extendedInfos.put("impactedUserName",
-                    logger.newExtendedInfo(impactedUserName));
+            extendedInfos.put("impactedUserName", logger.newExtendedInfo(impactedUserName));
         }
         // We do not serialize the whole object as it's too big to fit in a
         // StringInfo column and
-        extendedInfos.put("fileSystemItemId",
-                logger.newExtendedInfo(fsItem.getId()));
-        extendedInfos.put("fileSystemItemName",
-                logger.newExtendedInfo(fsItem.getName()));
+        extendedInfos.put("fileSystemItemId", logger.newExtendedInfo(fsItem.getId()));
+        extendedInfos.put("fileSystemItemName", logger.newExtendedInfo(fsItem.getName()));
         entry.setExtendedInfos(extendedInfos);
         logger.addLogEntries(Collections.singletonList(entry));
     }

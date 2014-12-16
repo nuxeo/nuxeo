@@ -39,21 +39,18 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * User workspace based implementation of the synchronization root parent
- * {@link FolderItem}.
- *
+ * User workspace based implementation of the synchronization root parent {@link FolderItem}.
+ * 
  * @author Antoine Taillefer
  */
-public class UserWorkspaceSyncRootParentFolderItem extends
-        AbstractVirtualFolderItem {
+public class UserWorkspaceSyncRootParentFolderItem extends AbstractVirtualFolderItem {
 
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(UserWorkspaceSyncRootParentFolderItem.class);
 
-    public UserWorkspaceSyncRootParentFolderItem(String factoryName,
-            Principal principal, String parentId, String parentPath,
-            String folderName) throws ClientException {
+    public UserWorkspaceSyncRootParentFolderItem(String factoryName, Principal principal, String parentId,
+            String parentPath, String folderName) throws ClientException {
         super(factoryName, principal, parentId, parentPath, folderName);
     }
 
@@ -65,8 +62,8 @@ public class UserWorkspaceSyncRootParentFolderItem extends
     public List<FileSystemItem> getChildren() throws ClientException {
 
         List<FileSystemItem> children = new ArrayList<FileSystemItem>();
-        Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getLocalService(
-                NuxeoDriveManager.class).getSynchronizationRoots(principal);
+        Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getLocalService(NuxeoDriveManager.class).getSynchronizationRoots(
+                principal);
         for (String repositoryName : syncRootsByRepo.keySet()) {
             CoreSession session = getSession(repositoryName);
             Set<IdRef> syncRootRefs = syncRootsByRepo.get(repositoryName).getRefs();
@@ -86,17 +83,14 @@ public class UserWorkspaceSyncRootParentFolderItem extends
                 // Don't include user workspace (ie.top level folder) if
                 // registered as a synchronization root to avoid recursion
                 if (!UserWorkspaceHelper.isUserWorkspace(doc)) {
-                    FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(
-                            doc, this);
+                    FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(doc, this);
                     if (child == null) {
                         log.debug(String.format(
                                 "Synchronization root %s cannot be adapted as a FileSystemItem, not including it in children.",
                                 idRef));
                         continue;
                     }
-                    log.debug(String.format(
-                            "Including synchronization root %s in children.",
-                            idRef));
+                    log.debug(String.format("Including synchronization root %s in children.", idRef));
                     children.add(child);
                 }
             }

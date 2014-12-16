@@ -26,7 +26,7 @@ import java.util.List;
  * <li>A global status code</li>
  * </ul>
  * A document change is implemented by {@link FileSystemItemChange}.
- *
+ * 
  * @author Antoine Taillefer
  */
 public interface FileSystemChangeSummary extends Serializable {
@@ -36,30 +36,25 @@ public interface FileSystemChangeSummary extends Serializable {
     void setFileSystemChanges(List<FileSystemItemChange> changes);
 
     /**
-     * @return the time code of current sync operation in milliseconds since
-     *         1970-01-01 UTC rounded to the second as measured on the server
-     *         clock. This value can be passed to the next call to
-     *         {@link NuxeoDriveManager#getChangeSummary(java.security.Principal, java.util.Map, long)}
-     *         to get strictly monotonic change summaries (without overlap). In
-     *         this case, changes from the current summary instance all happen
-     *         "strictly" before this time code.
+     * @return the time code of current sync operation in milliseconds since 1970-01-01 UTC rounded to the second as
+     *         measured on the server clock. This value can be passed to the next call to
+     *         {@link NuxeoDriveManager#getChangeSummary(java.security.Principal, java.util.Map, long)} to get strictly
+     *         monotonic change summaries (without overlap). In this case, changes from the current summary instance all
+     *         happen "strictly" before this time code.
      */
     Long getSyncDate();
 
     /**
-     * @return the upper bound of the range clause in the change query. Changes
-     *         from the current summary instance all happen "strictly before"
-     *         this bound. This value is expected to be passed to the next call
-     *         to
-     *         {@link NuxeoDriveManager#getChangeSummaryIntegerBounds(java.security.Principal, java.util.Map, long)}
-     *         to get strictly monotonic change summaries (without overlap).
+     * @return the upper bound of the range clause in the change query. Changes from the current summary instance all
+     *         happen "strictly before" this bound. This value is expected to be passed to the next call to
+     *         {@link NuxeoDriveManager#getChangeSummaryIntegerBounds(java.security.Principal, java.util.Map, long)} to
+     *         get strictly monotonic change summaries (without overlap).
      */
     Long getUpperBound();
 
     String getActiveSynchronizationRootDefinitions();
 
-    void setActiveSynchronizationRootDefinitions(
-            String activeSynchronizationRootDefinitions);
+    void setActiveSynchronizationRootDefinitions(String activeSynchronizationRootDefinitions);
 
     void setSyncDate(Long syncDate);
 

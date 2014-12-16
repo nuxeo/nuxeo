@@ -149,14 +149,12 @@ public class NuxeoDriveActions implements Serializable {
     }
 
     /**
-     * {@link #NXDRIVE_PROTOCOL} must be handled by a protocol handler
-     * configured on the client side (either on the browser, or on the OS).
-     *
-     * @return Drive edit URL in the form "{@link #NXDRIVE_PROTOCOL}://
-     *         {@link #PROTOCOL_COMMAND_EDIT}
+     * {@link #NXDRIVE_PROTOCOL} must be handled by a protocol handler configured on the client side (either on the
+     * browser, or on the OS).
+     * 
+     * @return Drive edit URL in the form "{@link #NXDRIVE_PROTOCOL}:// {@link #PROTOCOL_COMMAND_EDIT}
      *         /protocol/server[:port]/webappName/nxdoc/repoName/docRef"
      * @throws ClientException
-     *
      */
     public String getDriveEditURL() throws ClientException {
         // Current document must be adaptable as a FileSystemItem
@@ -185,8 +183,7 @@ public class NuxeoDriveActions implements Serializable {
         if (currentDocument == null) {
             return false;
         }
-        return isSyncRootCandidate(currentDocument)
-                && getCurrentSynchronizationRoot() == null;
+        return isSyncRootCandidate(currentDocument) && getCurrentSynchronizationRoot() == null;
     }
 
     @Factory(value = "canUnSynchronizeCurrentDocument")
@@ -207,8 +204,7 @@ public class NuxeoDriveActions implements Serializable {
     }
 
     @Factory(value = "canNavigateToCurrentSynchronizationRoot")
-    public boolean canNavigateToCurrentSynchronizationRoot()
-            throws ClientException {
+    public boolean canNavigateToCurrentSynchronizationRoot() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return false;
@@ -233,14 +229,12 @@ public class NuxeoDriveActions implements Serializable {
         return UserWorkspaceHelper.isUserWorkspace(currentDocument);
     }
 
-    public String synchronizeCurrentDocument() throws ClientException,
-            SecurityException {
+    public String synchronizeCurrentDocument() throws ClientException, SecurityException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         Principal principal = documentManager.getPrincipal();
         String userName = principal.getName();
         DocumentModel newSyncRoot = navigationContext.getCurrentDocument();
-        driveManager.registerSynchronizationRoot(principal, newSyncRoot,
-                documentManager);
+        driveManager.registerSynchronizationRoot(principal, newSyncRoot, documentManager);
         TokenAuthenticationService tokenService = Framework.getLocalService(TokenAuthenticationService.class);
         boolean hasOneNuxeoDriveToken = false;
         for (DocumentModel token : tokenService.getTokenBindings(userName)) {
@@ -262,8 +256,7 @@ public class NuxeoDriveActions implements Serializable {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         Principal principal = documentManager.getPrincipal();
         DocumentModel syncRoot = navigationContext.getCurrentDocument();
-        driveManager.unregisterSynchronizationRoot(principal, syncRoot,
-                documentManager);
+        driveManager.unregisterSynchronizationRoot(principal, syncRoot, documentManager);
     }
 
     public String navigateToCurrentSynchronizationRoot() throws ClientException {
@@ -284,37 +277,28 @@ public class NuxeoDriveActions implements Serializable {
         return syncRoots;
     }
 
-    public void unsynchronizeRoot(DocumentModel syncRoot)
-            throws ClientException {
+    public void unsynchronizeRoot(DocumentModel syncRoot) throws ClientException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         Principal principal = documentManager.getPrincipal();
-        driveManager.unregisterSynchronizationRoot(principal, syncRoot,
-                documentManager);
+        driveManager.unregisterSynchronizationRoot(principal, syncRoot, documentManager);
     }
 
     @Factory(value = "nuxeoDriveClientPackages", scope = ScopeType.CONVERSATION)
     public List<DesktopPackageDefinition> getClientPackages() {
         List<DesktopPackageDefinition> packages = new ArrayList<DesktopPackageDefinition>();
-        Object desktopPackageBaseURL = Component.getInstance(
-                "desktopPackageBaseURL", ScopeType.APPLICATION);
+        Object desktopPackageBaseURL = Component.getInstance("desktopPackageBaseURL", ScopeType.APPLICATION);
         // Add link to packages from the update site
         if (desktopPackageBaseURL != ObjectUtils.NULL) {
             // Mac OS X
             String packageName = DESKTOP_PACKAGE_PREFIX + DMG_EXTENSION;
             String packageURL = desktopPackageBaseURL + packageName;
-            packages.add(new DesktopPackageDefinition(packageURL, packageName,
-                    OSX_PLATFORM));
-            log.debug(String.format(
-                    "Added %s to the list of desktop packages available for download.",
-                    packageURL));
+            packages.add(new DesktopPackageDefinition(packageURL, packageName, OSX_PLATFORM));
+            log.debug(String.format("Added %s to the list of desktop packages available for download.", packageURL));
             // Windows
             packageName = DESKTOP_PACKAGE_PREFIX + MSI_EXTENSION;
             packageURL = desktopPackageBaseURL + packageName;
-            packages.add(new DesktopPackageDefinition(packageURL, packageName,
-                    WINDOWS_PLATFORM));
-            log.debug(String.format(
-                    "Added %s to the list of desktop packages available for download.",
-                    packageURL));
+            packages.add(new DesktopPackageDefinition(packageURL, packageName, WINDOWS_PLATFORM));
+            log.debug(String.format("Added %s to the list of desktop packages available for download.", packageURL));
         }
         // Debian / Ubuntu
         // TODO: remove when Debian package is available
@@ -346,16 +330,14 @@ public class NuxeoDriveActions implements Serializable {
         return ComponentUtils.downloadFile(facesCtx, name, file);
     }
 
-    protected boolean isSyncRootCandidate(DocumentModel doc)
-            throws ClientException {
+    protected boolean isSyncRootCandidate(DocumentModel doc) throws ClientException {
         if (!doc.isFolder()) {
             return false;
         }
         if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
             return false;
         }
-        if (!documentManager.hasPermission(doc.getRef(),
-                SecurityConstants.ADD_CHILDREN)) {
+        if (!documentManager.hasPermission(doc.getRef(), SecurityConstants.ADD_CHILDREN)) {
             return false;
         }
         return true;
@@ -368,20 +350,17 @@ public class NuxeoDriveActions implements Serializable {
             // recursively adapt the parents)
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             try {
-                currentFileSystemItem = Framework.getLocalService(
-                        FileSystemItemAdapterService.class).getFileSystemItem(
+                currentFileSystemItem = Framework.getLocalService(FileSystemItemAdapterService.class).getFileSystemItem(
                         currentDocument);
             } catch (RootlessItemException e) {
                 log.debug(String.format(
                         "RootlessItemException thrown while trying to adapt document %s (%s) as a FileSystemItem.",
-                        currentDocument.getId(),
-                        currentDocument.getPathAsString()));
+                        currentDocument.getId(), currentDocument.getPathAsString()));
             }
             if (currentFileSystemItem == null) {
                 log.debug(String.format(
                         "Document %s (%s) is not adaptable as a FileSystemItem => currentFileSystemItem is null.",
-                        currentDocument.getId(),
-                        currentDocument.getPathAsString()));
+                        currentDocument.getId(), currentDocument.getPathAsString()));
             }
         }
         return currentFileSystemItem;

@@ -38,7 +38,7 @@ import com.google.inject.Inject;
 
 /**
  * Tests the {@link NuxeoDriveSetVersioningOptions} operation.
- *
+ * 
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
@@ -66,26 +66,18 @@ public class TestSetVersioningOptions {
     public void testSetVersioningOptions() throws Exception {
 
         // Default values
-        assertEquals(3600.0, defaultFileSystemItemFactory.getVersioningDelay(),
-                .01);
-        assertEquals(VersioningOption.MINOR,
-                defaultFileSystemItemFactory.getVersioningOption());
+        assertEquals(3600.0, defaultFileSystemItemFactory.getVersioningDelay(), .01);
+        assertEquals(VersioningOption.MINOR, defaultFileSystemItemFactory.getVersioningOption());
 
         // Set delay to 2 seconds
-        clientSession.newRequest(NuxeoDriveSetVersioningOptions.ID).set(
-                "delay", "2").execute();
-        assertEquals(2.0, defaultFileSystemItemFactory.getVersioningDelay(),
-                .01);
-        assertEquals(VersioningOption.MINOR,
-                defaultFileSystemItemFactory.getVersioningOption());
+        clientSession.newRequest(NuxeoDriveSetVersioningOptions.ID).set("delay", "2").execute();
+        assertEquals(2.0, defaultFileSystemItemFactory.getVersioningDelay(), .01);
+        assertEquals(VersioningOption.MINOR, defaultFileSystemItemFactory.getVersioningOption());
 
         // Set option to MAJOR
-        clientSession.newRequest(NuxeoDriveSetVersioningOptions.ID).set(
-                "option", "MAJOR").execute();
-        assertEquals(2.0, defaultFileSystemItemFactory.getVersioningDelay(),
-                .01);
-        assertEquals(VersioningOption.MAJOR,
-                defaultFileSystemItemFactory.getVersioningOption());
+        clientSession.newRequest(NuxeoDriveSetVersioningOptions.ID).set("option", "MAJOR").execute();
+        assertEquals(2.0, defaultFileSystemItemFactory.getVersioningDelay(), .01);
+        assertEquals(VersioningOption.MAJOR, defaultFileSystemItemFactory.getVersioningOption());
 
     }
 

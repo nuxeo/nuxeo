@@ -34,8 +34,7 @@ public final class UserWorkspaceHelper {
         // TODO: find a better way than checking the path?
         Path path = doc.getPath();
         int pathLength = path.segmentCount();
-        return pathLength > 1
-                && USER_WORKSPACE_ROOT.equals(path.segment(pathLength - 2));
+        return pathLength > 1 && USER_WORKSPACE_ROOT.equals(path.segment(pathLength - 2));
     }
 
 }

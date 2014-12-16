@@ -26,7 +26,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Factory for {@link FileSystemItem} adapters.
- *
+ * 
  * @author Antoine Taillefer
  */
 public class FileSystemItemAdapterFactory implements DocumentAdapterFactory {
@@ -36,10 +36,8 @@ public class FileSystemItemAdapterFactory implements DocumentAdapterFactory {
         try {
             return getService().getFileSystemItem(doc);
         } catch (ClientException e) {
-            throw new ClientRuntimeException(
-                    String.format(
-                            "Error while trying to get adapter of class %s for doc %s.",
-                            itf.getName(), doc.getId()), e);
+            throw new ClientRuntimeException(String.format("Error while trying to get adapter of class %s for doc %s.",
+                    itf.getName(), doc.getId()), e);
         }
     }
 

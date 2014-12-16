@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * <li>Deleting the test users and their personal workspace</li>
  * <li>Deleting the test workspace</li>
  * </ul>
- *
+ * 
  * @author Antoine Taillefer
  */
 @Operation(id = NuxeoDriveTearDownIntegrationTests.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Tear down integration tests")

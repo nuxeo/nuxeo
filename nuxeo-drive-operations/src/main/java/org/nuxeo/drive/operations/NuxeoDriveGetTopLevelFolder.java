@@ -31,7 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Gets the top level {@link FolderItem} for the currently authenticated user.
- *
+ * 
  * @author Olivier Grisel
  */
 @Operation(id = NuxeoDriveGetTopLevelFolder.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get the top level folder")

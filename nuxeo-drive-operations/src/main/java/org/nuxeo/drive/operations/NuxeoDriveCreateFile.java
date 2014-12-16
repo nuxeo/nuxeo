@@ -35,9 +35,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Creates a file with the given blob in the {@link FileSystemItem} with the
- * given id for the currently authenticated user.
- *
+ * Creates a file with the given blob in the {@link FileSystemItem} with the given id for the currently authenticated
+ * user.
+ * 
  * @author Antoine Taillefer
  */
 @Operation(id = NuxeoDriveCreateFile.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Create file")
@@ -60,8 +60,7 @@ public class NuxeoDriveCreateFile {
     protected String name;
 
     @OperationMethod
-    public Blob run(Blob blob) throws ClientException, ParseException,
-            IOException {
+    public Blob run(Blob blob) throws ClientException, ParseException, IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         // The filename transfered by the multipart encoding is not preserved
@@ -70,8 +69,7 @@ public class NuxeoDriveCreateFile {
             blob.setFilename(name);
         }
         NuxeoDriveOperationHelper.normalizeMimeTypeAndEncoding(blob);
-        FileItem fileItem = fileSystemItemManager.createFile(parentId, blob,
-                ctx.getPrincipal());
+        FileItem fileItem = fileSystemItemManager.createFile(parentId, blob, ctx.getPrincipal());
 
         // Commit transaction explicitly to ensure client-side consistency
         // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed

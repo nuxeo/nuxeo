@@ -29,7 +29,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
  * Registry for {@code topLevelFolderItemFactory} contributions.
- *
+ * 
  * @author Antoine Taillefer
  * @see FileSystemItemAdapterServiceImpl
  */
@@ -44,41 +44,31 @@ public class TopLevelFolderItemFactoryRegistry extends
     public String getContributionId(TopLevelFolderItemFactoryDescriptor contrib) {
         String name = contrib.getName();
         if (StringUtils.isEmpty(name)) {
-            throw new ClientRuntimeException(
-                    "Cannot register topLevelFolderItemFactory without a name.");
+            throw new ClientRuntimeException("Cannot register topLevelFolderItemFactory without a name.");
         }
         return name;
     }
 
     @Override
-    public void contributionUpdated(String id,
-            TopLevelFolderItemFactoryDescriptor contrib,
+    public void contributionUpdated(String id, TopLevelFolderItemFactoryDescriptor contrib,
             TopLevelFolderItemFactoryDescriptor newOrigContrib) {
         try {
-            log.trace(String.format(
-                    "Putting contribution with class name %s in factory registry.",
-                    contrib.getName()));
+            log.trace(String.format("Putting contribution with class name %s in factory registry.", contrib.getName()));
             factories.put(id, contrib.getFactory());
         } catch (Exception e) {
-            throw new ClientRuntimeException(
-                    "Cannot update topLevelFolderItemFactory contribution.", e);
+            throw new ClientRuntimeException("Cannot update topLevelFolderItemFactory contribution.", e);
         }
     }
 
     @Override
-    public void contributionRemoved(String id,
-            TopLevelFolderItemFactoryDescriptor origContrib) {
-        log.trace(String.format(
-                "Removing contribution with class name %s in factory registry.",
-                id));
+    public void contributionRemoved(String id, TopLevelFolderItemFactoryDescriptor origContrib) {
+        log.trace(String.format("Removing contribution with class name %s in factory registry.", id));
         factories.remove(id);
     }
 
     @Override
-    public TopLevelFolderItemFactoryDescriptor clone(
-            TopLevelFolderItemFactoryDescriptor orig) {
-        log.trace(String.format("Cloning contribution with class name %s.",
-                orig.getName()));
+    public TopLevelFolderItemFactoryDescriptor clone(TopLevelFolderItemFactoryDescriptor orig) {
+        log.trace(String.format("Cloning contribution with class name %s.", orig.getName()));
         TopLevelFolderItemFactoryDescriptor clone = new TopLevelFolderItemFactoryDescriptor();
         clone.factoryClass = orig.factoryClass;
         clone.parameters = orig.parameters;
@@ -86,14 +76,11 @@ public class TopLevelFolderItemFactoryRegistry extends
     }
 
     @Override
-    public void merge(TopLevelFolderItemFactoryDescriptor src,
-            TopLevelFolderItemFactoryDescriptor dst) {
-        log.trace(String.format(
-                "Merging contribution with class name %s to contribution with class name %s",
+    public void merge(TopLevelFolderItemFactoryDescriptor src, TopLevelFolderItemFactoryDescriptor dst) {
+        log.trace(String.format("Merging contribution with class name %s to contribution with class name %s",
                 src.getName(), dst.getName()));
         // Class
-        if (src.getFactoryClass() != null
-                && !src.getFactoryClass().equals(dst.getFactoryClass())) {
+        if (src.getFactoryClass() != null && !src.getFactoryClass().equals(dst.getFactoryClass())) {
             dst.setFactoryClass(src.getFactoryClass());
         }
         // Parameters

@@ -44,7 +44,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Default implementation of the {@link FileSystemItemManager}.
- *
+ * 
  * @author Antoine Taillefer
  */
 public class FileSystemItemManagerImpl implements FileSystemItemManager {
@@ -59,24 +59,20 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
         }
     };
 
-    public CoreSession getSession(String repositoryName, Principal principal)
-            throws ClientException {
+    public CoreSession getSession(String repositoryName, Principal principal) throws ClientException {
         final String sessionKey = repositoryName + "/" + principal.getName();
         CoreSession session = openedSessions.get().get(sessionKey);
         if (session == null) {
             Map<String, Serializable> context = new HashMap<String, Serializable>();
             context.put("principal", (Serializable) principal);
-            final CoreSession newSession = CoreInstance.getInstance().open(
-                    repositoryName, context);
+            final CoreSession newSession = CoreInstance.getInstance().open(repositoryName, context);
             openedSessions.get().put(sessionKey, newSession);
             try {
                 Transaction t = TransactionHelper.lookupTransactionManager().getTransaction();
                 if (t == null) {
-                    throw new RuntimeException(
-                            "FileSystemItemManagerImpl requires an active transaction.");
+                    throw new RuntimeException("FileSystemItemManagerImpl requires an active transaction.");
                 }
-                t.registerSynchronization(new SessionCloser(newSession,
-                        sessionKey));
+                t.registerSynchronization(new SessionCloser(newSession, sessionKey));
             } catch (Exception e) {
                 throw new ClientRuntimeException(e);
             }
@@ -86,9 +82,8 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     /**
-     * Closer for a {@link CoreSession} object held by {@link #openedSessions}.
-     * It is synchronized with the transaction within which the
-     * {@link CoreSession} was opened.
+     * Closer for a {@link CoreSession} object held by {@link #openedSessions}. It is synchronized with the transaction
+     * within which the {@link CoreSession} was opened.
      */
     protected class SessionCloser implements Synchronization {
 
@@ -117,62 +112,49 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
 
     /*------------- Read operations ----------------*/
     @Override
-    public List<FileSystemItem> getTopLevelChildren(Principal principal)
-            throws ClientException {
+    public List<FileSystemItem> getTopLevelChildren(Principal principal) throws ClientException {
         return getTopLevelFolder(principal).getChildren();
     }
 
     @Override
-    public FolderItem getTopLevelFolder(Principal principal)
-            throws ClientException {
-        return getFileSystemItemAdapterService().getTopLevelFolderItemFactory().getTopLevelFolderItem(
-                principal);
+    public FolderItem getTopLevelFolder(Principal principal) throws ClientException {
+        return getFileSystemItemAdapterService().getTopLevelFolderItemFactory().getTopLevelFolderItem(principal);
     }
 
     @Override
-    public boolean exists(String id, Principal principal)
-            throws ClientException {
-        return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(
-                id).exists(id, principal);
+    public boolean exists(String id, Principal principal) throws ClientException {
+        return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(id).exists(id, principal);
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, Principal principal)
-            throws ClientException {
+    public FileSystemItem getFileSystemItemById(String id, Principal principal) throws ClientException {
         try {
-            return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(
-                    id).getFileSystemItemById(id, principal);
+            return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(id).getFileSystemItemById(id,
+                    principal);
         } catch (RootlessItemException e) {
             log.debug(String.format(
-                    "RootlessItemException thrown while trying to get file system item with id %s, returning null.",
-                    id));
+                    "RootlessItemException thrown while trying to get file system item with id %s, returning null.", id));
             return null;
         }
     }
 
     @Override
-    public List<FileSystemItem> getChildren(String id, Principal principal)
-            throws ClientException {
+    public List<FileSystemItem> getChildren(String id, Principal principal) throws ClientException {
         FileSystemItem fileSystemItem = getFileSystemItemById(id, principal);
         if (fileSystemItem == null) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot get the children of file system item with id %s because it doesn't exist.",
-                            id));
+            throw new ClientException(String.format(
+                    "Cannot get the children of file system item with id %s because it doesn't exist.", id));
         }
         if (!(fileSystemItem instanceof FolderItem)) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot get the children of file system item with id %s because it is not a folder.",
-                            id));
+            throw new ClientException(String.format(
+                    "Cannot get the children of file system item with id %s because it is not a folder.", id));
         }
         FolderItem folderItem = (FolderItem) fileSystemItem;
         return folderItem.getChildren();
     }
 
     @Override
-    public boolean canMove(String srcId, String destId, Principal principal)
-            throws ClientException {
+    public boolean canMove(String srcId, String destId, Principal principal) throws ClientException {
         FileSystemItem srcFsItem = getFileSystemItemById(srcId, principal);
         if (srcFsItem == null) {
             return false;
@@ -186,60 +168,47 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
 
     /*------------- Write operations ---------------*/
     @Override
-    public FolderItem createFolder(String parentId, String name,
-            Principal principal) throws ClientException {
+    public FolderItem createFolder(String parentId, String name, Principal principal) throws ClientException {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, principal);
         if (parentFsItem == null) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot create a folder in file system item with id %s because it doesn't exist.",
-                            parentId));
+            throw new ClientException(String.format(
+                    "Cannot create a folder in file system item with id %s because it doesn't exist.", parentId));
         }
         if (!(parentFsItem instanceof FolderItem)) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot create a folder in file system item with id %s because it is not a folder but is: %s",
-                            parentId, parentFsItem));
+            throw new ClientException(String.format(
+                    "Cannot create a folder in file system item with id %s because it is not a folder but is: %s",
+                    parentId, parentFsItem));
         }
         FolderItem parentFolder = (FolderItem) parentFsItem;
         return parentFolder.createFolder(name);
     }
 
     @Override
-    public FileItem createFile(String parentId, Blob blob, Principal principal)
-            throws ClientException {
+    public FileItem createFile(String parentId, Blob blob, Principal principal) throws ClientException {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, principal);
         if (parentFsItem == null) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot create a file in file system item with id %s because it doesn't exist.",
-                            parentId));
+            throw new ClientException(String.format(
+                    "Cannot create a file in file system item with id %s because it doesn't exist.", parentId));
         }
         if (!(parentFsItem instanceof FolderItem)) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot create a file in file system item with id %s because it is not a folder but is: %s",
-                            parentId, parentFsItem));
+            throw new ClientException(String.format(
+                    "Cannot create a file in file system item with id %s because it is not a folder but is: %s",
+                    parentId, parentFsItem));
         }
         FolderItem parentFolder = (FolderItem) parentFsItem;
         return parentFolder.createFile(blob);
     }
 
     @Override
-    public FileItem updateFile(String id, Blob blob, Principal principal)
-            throws ClientException {
+    public FileItem updateFile(String id, Blob blob, Principal principal) throws ClientException {
         FileSystemItem fsItem = getFileSystemItemById(id, principal);
         if (fsItem == null) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot update the content of file system item with id %s because it doesn't exist.",
-                            id));
+            throw new ClientException(String.format(
+                    "Cannot update the content of file system item with id %s because it doesn't exist.", id));
         }
         if (!(fsItem instanceof FileItem)) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot update the content of file system item with id %s because it is not a file.",
-                            id));
+            throw new ClientException(String.format(
+                    "Cannot update the content of file system item with id %s because it is not a file.", id));
         }
         FileItem file = (FileItem) fsItem;
         file.setBlob(blob);
@@ -250,44 +219,34 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     public void delete(String id, Principal principal) throws ClientException {
         FileSystemItem fsItem = getFileSystemItemById(id, principal);
         if (fsItem == null) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot delete file system item with id %s because it doesn't exist.",
-                            id));
+            throw new ClientException(String.format(
+                    "Cannot delete file system item with id %s because it doesn't exist.", id));
         }
         fsItem.delete();
     }
 
     @Override
-    public FileSystemItem rename(String id, String name, Principal principal)
-            throws ClientException {
+    public FileSystemItem rename(String id, String name, Principal principal) throws ClientException {
         FileSystemItem fsItem = getFileSystemItemById(id, principal);
         if (fsItem == null) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot renamefile system item with id %s because it doesn't exist.",
-                            id));
+            throw new ClientException(String.format(
+                    "Cannot renamefile system item with id %s because it doesn't exist.", id));
         }
         fsItem.rename(name);
         return fsItem;
     }
 
     @Override
-    public FileSystemItem move(String srcId, String destId, Principal principal)
-            throws ClientException {
+    public FileSystemItem move(String srcId, String destId, Principal principal) throws ClientException {
         FileSystemItem srcFsItem = getFileSystemItemById(srcId, principal);
         if (srcFsItem == null) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot move file system item with id %s because it doesn't exist.",
-                            srcId));
+            throw new ClientException(String.format(
+                    "Cannot move file system item with id %s because it doesn't exist.", srcId));
         }
         FileSystemItem destFsItem = getFileSystemItemById(destId, principal);
         if (destFsItem == null) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot move a file system item to file system item with id %s because it doesn't exist.",
-                            destId));
+            throw new ClientException(String.format(
+                    "Cannot move a file system item to file system item with id %s because it doesn't exist.", destId));
         }
         if (!(destFsItem instanceof FolderItem)) {
             throw new ClientException(
