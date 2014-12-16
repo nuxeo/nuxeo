@@ -20,32 +20,32 @@ This project is an on-going project, supported by Nuxeo.
 ## Sub-modules organization
 The project is splitted in several sub modules :
 
-nuxeo-template-rendering-api
+**nuxeo-template-rendering-api**
 API module containing all interfaces.
 
-nuxeo-template-rendering-core
+**nuxeo-template-rendering-core**
 Component, extension points and service implementation. This modules only contains template processors for FreeMarker and XSLT.
 
-nuxeo-template-rendering-web
+**nuxeo-template-rendering-web**
 Contribute UI level extensions : Layouts, Widgets, Views, Url bindings ...
 
-nuxeo-template-rendering-xdocreport
+**nuxeo-template-rendering-xdocreport**
 Contribute the OpenOffice / DocX processor based on XDocReport. This is by far the most powerfull processor.
 See : http://code.google.com/p/xdocreport/
 
-nuxeo-template-rendering-jxls
+**nuxeo-template-rendering-jxls**
 Contribute a template processor for XLS files based on JXLS project. See :http://jxls.sourceforge.net/
 
-nuxeo-template-rendering-jod
+**nuxeo-template-rendering-jod**
 Contribute JOD Report based template processor for ODT files. This renderer is historical and replaced by xdocreport that is more powerful.
 
-nuxeo-template-rendering-jaxrs
+**nuxeo-template-rendering-jaxrs**
 Contribute a JAXRS simple API as well as a new WebTemplate doc type that is based on a Note rather than a file.
 
-nuxeo-template-rendering-sandbox
+**nuxeo-template-rendering-sandbox**
 Misc code and extensions that are currently experimental.
 
-nuxeo-template-rendering-package
+**nuxeo-template-rendering-package**
 Builder for marketplace package. 
 
 ## Building
