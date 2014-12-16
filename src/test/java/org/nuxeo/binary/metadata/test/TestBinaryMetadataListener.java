@@ -30,7 +30,7 @@ import com.google.inject.Inject;
  * @since 7.1
  */
 @RunWith(FeaturesRunner.class)
-@Features({ BinaryMetadataFeature.class })
+@Features(BinaryMetadataFeature.class)
 @LocalDeploy({ "org.nuxeo.binary.metadata.test:binary-metadata-contrib-test.xml",
         "org.nuxeo.binary.metadata.test:binary-metadata-file-contrib-test.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)

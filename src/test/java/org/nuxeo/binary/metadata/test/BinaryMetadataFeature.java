@@ -16,13 +16,16 @@
  */
 package org.nuxeo.binary.metadata.test;
 
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
  * @since 7.1
  */
-@Deploy({ "org.nuxeo.binary.metadata" })
+@Features(CoreFeature.class)
+@Deploy({ "org.nuxeo.binary.metadata", "org.nuxeo.ecm.platform.commandline.executor" })
 public class BinaryMetadataFeature extends SimpleFeature {
 
 }

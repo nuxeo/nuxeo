@@ -1,6 +1,6 @@
 <component name="org.nuxeo.binary.metadata.contrib.test">
 
-  <extension target="org.nuxeo.metadata.MetadataService"
+  <extension target="org.nuxeo.binary.metadata.api.service"
              point="metadataMappings">
     <metadataMapping id="xmp" processor="exifTool" blobXPath="file:content">
       <metadata name="tiff:ImageWidth" xpath="xmp:ImageWidth"/>
@@ -9,8 +9,8 @@
     </metadataMapping>
   </extension>
 
-  <extension target="org.nuxeo.binary.metadata.BinaryMetadataService"
-             point="rules">
+  <extension target="org.nuxeo.binary.metadata.api.service"
+             point="metadataRules">
     <rule id="default" order="0" enabled="true" async="false">
       <metadataMappings>
         <metadataMapping-id>xmp</metadataMapping-id>

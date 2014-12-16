@@ -32,8 +32,8 @@ import com.google.inject.Inject;
  * @since 7.1
  */
 @RunWith(FeaturesRunner.class)
-@Features({ BinaryMetadataFeature.class })
-@Deploy({ "org.nuxeo.ecm.automation.core" })
+@Features(BinaryMetadataFeature.class)
+@Deploy("org.nuxeo.ecm.automation.core")
 @LocalDeploy({ "org.nuxeo.binary.metadata.test:binary-metadata-contrib-test.xml",
         "org.nuxeo.binary.metadata.test:binary-metadata-file-contrib-test.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)

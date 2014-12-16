@@ -16,9 +16,19 @@
  */
 package org.nuxeo.binary.metadata.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
@@ -31,17 +41,33 @@ import com.google.inject.Inject;
  * @since 7.1
  */
 @RunWith(FeaturesRunner.class)
-@Features({ BinaryMetadataFeature.class })
-@LocalDeploy({ "org.nuxeo.binary.metadata.test:binary-metadata-contrib-test.xml",
-        "org.nuxeo.binary.metadata.test:binary-metadata-file-contrib-test.xml" })
+@Features(BinaryMetadataFeature.class)
+@LocalDeploy({ "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-contrib-test.xml",
+        "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-file-contrib-test.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = BinaryMetadataServerInit.class)
 public class TestBinaryMetadataService {
 
     @Inject
     BinaryMetadataService binaryMetadataService;
 
-    @Test
-    public void itShouldExtractBinaryMetadata() {
+    @Inject
+    CoreSession session;
 
+    List<String> musicMetadata = new ArrayList<String>() {
+        {
+            add("Title");
+            add("Lyrics-por");
+            add("Publisher");
+            add("Comment");
+        }
+    };
+
+    @Test
+    public void itShouldExtractAllMetadataFromBinary() {
+        DocumentModel musicFile = BinaryMetadataServerInit.getFile(0, session);
+        BlobHolder musicBlobHolder = musicFile.getAdapter(BlobHolder.class);
+        Map<String, String> blobProperties = binaryMetadataService.readMetadata(musicBlobHolder.getBlob(), musicMetadata);
+        assertNotNull(blobProperties);
+        assertEquals("", blobProperties.get(""));
     }
 }
