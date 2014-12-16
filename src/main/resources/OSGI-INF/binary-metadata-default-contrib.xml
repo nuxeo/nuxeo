@@ -1,7 +1,7 @@
 <component name="org.nuxeo.binary.metadata.contrib">
 
   <extension target="org.nuxeo.binary.metadata.BinaryMetadataService"
-             point="processors">
+             point="metadataProcessors">
     <processor id="exifTool"
                class="org.nuxeo.binary.metadata.ExifToolProcessor"/>
   </extension>

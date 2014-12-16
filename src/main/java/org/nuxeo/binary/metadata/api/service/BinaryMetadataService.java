@@ -54,6 +54,32 @@ public interface BinaryMetadataService {
     public Map<String, String> readMetadata(String processorName, Blob blob, List<String> metadataNames);
 
     /**
+     * Read and return metadata from a given binary and a given metadata list with Nuxeo default processor.
+     *
+     * @param blob Binary which metadata are read.
+     * @param metadataNames Metadata list to extract from the binary.
+     * @return Extracted metadata.
+     */
+    public Map<String, String> readMetadata(Blob blob, List<String> metadataNames);
+
+    /**
+     * Read and return metadata from a given binary with Nuxeo default processor.
+     *
+     * @param blob Binary which metadata are read.
+     * @return Extracted metadata.
+     */
+    public Map<String, String> readMetadata(Blob blob);
+
+    /**
+     * Read and return metadata from a given binary with a given processor.
+     *
+     * @param processorName Name of the contributed processor to run.
+     * @param blob Binary which metadata are read.
+     * @return Extracted metadata.
+     */
+    public Map<String, String> readMetadata(String processorName, Blob blob);
+
+    /**
      * Write metadata into a given binary with a given processor.
      *
      * @param processorName Name of the contributed processor to run.
@@ -61,4 +87,12 @@ public interface BinaryMetadataService {
      * @param metadata Injected metadata.
      */
     public void writeMetadata(String processorName, Blob blob, Map<String, String> metadata);
+
+    /**
+     * Write metadata into a given binary with a Nuxeo default processor.
+     *
+     * @param blob Binary which metadata are written.
+     * @param metadata Injected metadata.
+     */
+    public void writeMetadata(Blob blob, Map<String, String> metadata);
 }

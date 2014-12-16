@@ -21,7 +21,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 @XObject("processor")
-public class ProcessorDescriptor {
+public class MetadataProcessorDescriptor {
 
     @XNode("@id")
     protected String id;

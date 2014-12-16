@@ -1,25 +1,47 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.binary.metadata.api.service">
   <implementation
-          class="org.nuxeo.binary.metadata.api.service.BinaryMetadataServiceImpl"/>
-
+          class="org.nuxeo.binary.metadata.contribution.BinaryMetadataComponent"/>
   <service>
     <provide
             interface="org.nuxeo.binary.metadata.api.service.BinaryMetadataService"/>
+    <provide
+            interface="org.nuxeo.binary.metadata.api.service.BinaryMetadataRegistryService"/>
   </service>
 
-  <extension-point name="processors">
-    <object class="org.nuxeo.binary.metadata.ProcessorDescriptor"/>
+  <extension-point name="metadataProcessors">
+    <object class="org.nuxeo.binary.metadata.contribution.MetadataProcessorDescriptor"/>
+    <documentation>
+      <processor id="exifTool"
+                 class="org.nuxeo.binary.metadata.ExifToolProcessor"/>
+    </documentation>
   </extension-point>
 
   <extension-point name="metadataMappings">
     <object
-            class="org.nuxeo.binary.metadata.MetadataMappingDescriptor"/>
+            class="org.nuxeo.binary.metadata.contribution.MetadataMappingDescriptor"/>
+    <documentation>
+      <metadataMapping id="xmp" processor="exifTool" blobXPath="file:content">
+        <metadata name="tiff:ImageWidth" xpath="xmp:ImageWidth"/>
+        <metadata name="tiff:ImageLength" xpath="xmp:ImageLength"/>
+        <metadata name="xmp:CreatorTool" xpath="xmp:CreatorTool"/>
+      </metadataMapping>
+    </documentation>
   </extension-point>
 
-  <extension-point name="rules">
+  <extension-point name="metadataRules">
     <object
-            class="org.nuxeo.binary.metadata.RuleDescriptor"/>
+            class="org.nuxeo.binary.metadata.contribution.MetadataRuleDescriptor"/>
+    <documentation>
+      <rule id="default" order="0" enabled="true" async="false">
+        <metadataMappings>
+          <metadataMapping-id>xmp</metadataMapping-id>
+        </metadataMappings>
+        <filters>
+          <filter-id>hasXMPFacet</filter-id>
+        </filters>
+      </rule>
+    </documentation>
   </extension-point>
 
 </component>
