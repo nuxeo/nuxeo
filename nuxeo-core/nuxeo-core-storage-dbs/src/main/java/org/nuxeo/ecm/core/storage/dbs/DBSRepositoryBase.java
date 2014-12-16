@@ -65,10 +65,13 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     protected final String repositoryName;
 
+    protected final boolean fulltextDisabled;
+
     protected final BinaryManager binaryManager;
 
-    public DBSRepositoryBase(String repositoryName) {
+    public DBSRepositoryBase(String repositoryName, boolean fulltextDisabled) {
         this.repositoryName = repositoryName;
+        this.fulltextDisabled = fulltextDisabled;
         binaryManager = newBinaryManager();
     }
 
@@ -116,6 +119,11 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     @Override
     public BinaryManager getBinaryManager() {
         return binaryManager;
+    }
+
+    @Override
+    public boolean isFulltextDisabled() {
+        return fulltextDisabled;
     }
 
     public BinaryManager newBinaryManager() {

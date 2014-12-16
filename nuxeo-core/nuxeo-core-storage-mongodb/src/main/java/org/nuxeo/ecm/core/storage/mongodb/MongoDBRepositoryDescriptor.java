@@ -23,6 +23,11 @@ public class MongoDBRepositoryDescriptor {
     public MongoDBRepositoryDescriptor() {
     }
 
+    /** False if the boolean is null or FALSE, true otherwise. */
+    private static boolean defaultFalse(Boolean bool) {
+        return Boolean.TRUE.equals(bool);
+    }
+
     @XNode("@name")
     public String name;
 
@@ -36,6 +41,13 @@ public class MongoDBRepositoryDescriptor {
         return isDefault;
     }
 
+    @XNode("fulltext@disabled")
+    private Boolean fulltextDisabled;
+
+    public boolean getFulltextDisabled() {
+        return defaultFalse(fulltextDisabled);
+    }
+
     // ----- MongoDB specific options -----
 
     @XNode("server")
@@ -47,6 +59,7 @@ public class MongoDBRepositoryDescriptor {
         label = other.label;
         isDefault = other.isDefault;
         server = other.server;
+        fulltextDisabled = other.fulltextDisabled;
     }
 
     public void merge(MongoDBRepositoryDescriptor other) {
@@ -61,6 +74,9 @@ public class MongoDBRepositoryDescriptor {
         }
         if (other.server != null) {
             server = other.server;
+        }
+        if (other.fulltextDisabled != null) {
+            fulltextDisabled = other.fulltextDisabled;
         }
     }
 
