@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -81,7 +82,7 @@ public class ContentViewRegistry extends ContributionFragmentRegistry<ContentVie
             for (String flag : flags) {
                 Set<String> items = contentViewsByFlag.get(flag);
                 if (items == null) {
-                    items = new HashSet<String>();
+                    items = new LinkedHashSet<String>();
                 }
                 items.add(name);
                 contentViewsByFlag.put(flag, items);
