@@ -283,6 +283,10 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
         Iterator<FileSystemItemFactoryWrapper> factoriesIt = fileSystemItemFactories.iterator();
         while (factoriesIt.hasNext()) {
             FileSystemItemFactoryWrapper factory = factoriesIt.next();
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Trying to adapt document %s (path: %s) as a FileSystemItem with factory %s",
+                        doc.getId(), doc.getPathAsString(), factory.getFactory().getName()));
+            }
             if (generalFactoryMatches(factory) || docTypeFactoryMatches(factory, doc)
                     || facetFactoryMatches(factory, doc, relaxSyncRootConstraint)) {
                 matchingFactory = factory;
@@ -324,11 +328,20 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     }
 
     protected boolean generalFactoryMatches(FileSystemItemFactoryWrapper factory) {
-        return StringUtils.isEmpty(factory.getDocType()) && StringUtils.isEmpty(factory.getFacet());
+        boolean matches = StringUtils.isEmpty(factory.getDocType()) && StringUtils.isEmpty(factory.getFacet());
+        if (log.isTraceEnabled() && matches) {
+            log.trace(String.format("General factory %s matches", factory));
+        }
+        return matches;
     }
 
     protected boolean docTypeFactoryMatches(FileSystemItemFactoryWrapper factory, DocumentModel doc) {
-        return !StringUtils.isEmpty(factory.getDocType()) && factory.getDocType().equals(doc.getType());
+        boolean matches = !StringUtils.isEmpty(factory.getDocType()) && factory.getDocType().equals(doc.getType());
+        if (log.isTraceEnabled() && matches) {
+            log.trace(String.format("DocType factory %s matches for doc %s (path: %s)", factory, doc.getId(),
+                    doc.getPathAsString()));
+        }
+        return matches;
     }
 
     protected boolean facetFactoryMatches(FileSystemItemFactoryWrapper factory, DocumentModel doc,
@@ -338,8 +351,17 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
                 if (factory.getFacet().equals(docFacet)) {
                     // Handle synchronization root case
                     if (NuxeoDriveManagerImpl.NUXEO_DRIVE_FACET.equals(docFacet)) {
-                        return syncRootFactoryMatches(doc, relaxSyncRootConstraint);
+                        boolean matches = syncRootFactoryMatches(doc, relaxSyncRootConstraint);
+                        if (log.isTraceEnabled() && matches) {
+                            log.trace(String.format("Facet factory %s matches for doc %s (path: %s)", factory,
+                                    doc.getId(), doc.getPathAsString()));
+                        }
+                        return matches;
                     } else {
+                        if (log.isTraceEnabled()) {
+                            log.trace(String.format("Facet factory %s matches for doc %s (path: %s)", factory,
+                                    doc.getId(), doc.getPathAsString()));
+                        }
                         return true;
                     }
                 }
@@ -355,6 +377,10 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
         for (Map<String, Object> subscription : subscriptions) {
             if (Boolean.TRUE.equals(subscription.get("enabled"))
                     && (userName.equals(subscription.get("username")) || relaxSyncRootConstraint)) {
+                if (log.isTraceEnabled()) {
+                    log.trace(String.format("Doc %s (path: %s) registered as a sync root for user %s", doc.getId(),
+                            doc.getPathAsString(), userName));
+                }
                 return true;
             }
         }
