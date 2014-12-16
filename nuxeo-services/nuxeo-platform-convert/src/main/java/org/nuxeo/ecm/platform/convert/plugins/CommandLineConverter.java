@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,7 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
  * <p>
  * The command line to call is stored in the {@code CommandLineName} parameter.
  * <p>
- * The target file path is in the {@code targetFilePath} parameter. If it's null, a temporary one will be created.
+ * The target file name is in the {@code targetFileName} parameter. If it's null, a temporary one will be created.
  * <p>
  * All the converter parameters are passed to the command line.
  * <p>
@@ -67,7 +68,12 @@ public class CommandLineConverter extends CommandLineBasedConverter {
 
     public static final String OUT_DIR_PATH_KEY = "outDirPath";
 
+    public static final String TARGET_FILE_NAME_KEY = "targetFileName";
+
     public static final String TARGET_FILE_PATH_KEY = "targetFilePath";
+
+    public static final List<String> RESERVED_PARAMETERS = Arrays.asList(SOURCE_FILE_PATH_KEY, OUT_DIR_PATH_KEY,
+            TARGET_FILE_PATH_KEY);
 
     @Override
     protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
@@ -93,22 +99,19 @@ public class CommandLineConverter extends CommandLineBasedConverter {
             Map<String, String> cmdStringParams = new HashMap<>();
             cmdStringParams.put(OUT_DIR_PATH_KEY, outDirPath.toString());
 
-            String targetFilePathParam = (String) parameters.get(TARGET_FILE_PATH_KEY);
+            String targetFileName = (String) parameters.get(TARGET_FILE_NAME_KEY);
             Path targetFilePath;
-            if (targetFilePathParam == null) {
+            if (targetFileName == null) {
                 targetFilePath = tmpDirPath != null ? Files.createTempFile(tmpDirPath, null, null)
                         : Files.createTempFile(null, null);
             } else {
-                targetFilePath = Paths.get(targetFilePathParam);
-                if (!targetFilePath.isAbsolute()) {
-                    targetFilePath = Paths.get(outDirPath.toString(), targetFilePath.toString());
-                }
+                targetFilePath = Paths.get(outDirPath.toString(), targetFileName);
             }
             cmdStringParams.put(TARGET_FILE_PATH_KEY, targetFilePath.toString());
 
             // pass all converter parameters to the command line
             for (Map.Entry<String, Serializable> entry : parameters.entrySet()) {
-                if (!TARGET_FILE_PATH_KEY.equals(entry.getKey())) {
+                if (!RESERVED_PARAMETERS.contains(entry.getKey())) {
                     cmdStringParams.put(entry.getKey(), (String) entry.getValue());
                 }
             }

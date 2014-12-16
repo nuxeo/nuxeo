@@ -47,7 +47,7 @@
       </parameters>
     </converter>
 
-    <converter name="pdf2image" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
+    <converter name="pdf2image" class="org.nuxeo.ecm.platform.convert.plugins.PDF2ImageConverter">
       <sourceMimeType>application/pdf</sourceMimeType>
       <destinationMimeType>image/jpeg</destinationMimeType>
       <destinationMimeType>image/png</destinationMimeType>
