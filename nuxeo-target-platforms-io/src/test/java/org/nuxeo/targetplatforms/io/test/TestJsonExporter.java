@@ -72,20 +72,6 @@ public class TestJsonExporter {
     @Inject
     protected TargetPlatformService service;
 
-    @Before
-    public void setUpContextFactory() throws NamingException {
-        DataSource datasourceAutocommit = new SimpleDataSource("jdbc:hsqldb:mem:memid", jdbcDriver.class.getName(),
-                "SA", "") {
-            @Override
-            public Connection getConnection() throws SQLException {
-                Connection con = super.getConnection();
-                con.setAutoCommit(true);
-                return con;
-            }
-        };
-        NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxsqldirectory", datasourceAutocommit);
-    }
-
     @After
     public void tearDown() throws Exception {
         // remove all entries from directory
