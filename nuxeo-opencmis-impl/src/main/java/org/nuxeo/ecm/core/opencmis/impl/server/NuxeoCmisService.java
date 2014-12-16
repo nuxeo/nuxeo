@@ -1932,6 +1932,8 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             }
         }
         try {
+            // comment for save event
+            doc.putContextData("comment", checkinComment);
             coreSession.saveDocument(doc);
             DocumentRef ver = doc.checkIn(option, checkinComment);
             doc.removeLock();

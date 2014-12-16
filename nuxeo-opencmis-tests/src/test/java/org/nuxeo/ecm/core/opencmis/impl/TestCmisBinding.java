@@ -2573,7 +2573,17 @@ public class TestCmisBinding extends TestCmisBindingBase {
         ContentStream cs = new ContentStreamImpl("test.pdf", BigInteger.valueOf(bytes.length), "application/pdf", in);
 
         Holder<String> idHolder = new Holder<String>(id);
-        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, props, cs, "comment", null, null, null, null);
+        harness.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/comment-listener-contrib.xml");
+        try {
+            CommentListener.clearComments();
+            verService.checkIn(repositoryId, idHolder, Boolean.TRUE, props, cs, "comment", null, null, null, null);
+        } finally {
+            harness.undeployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/comment-listener-contrib.xml");
+        }
+        List<String> comments = CommentListener.getComments();
+        assertEquals(Arrays.asList("documentModified:comment=comment,checkInComment=null",
+                "documentCheckedIn:comment=1.0 comment,checkInComment=comment",
+                "documentCreated:comment=1.0 comment,checkInComment=comment"), comments);
 
         String vid = idHolder.getValue();
         ObjectData ver = getObject(vid);
