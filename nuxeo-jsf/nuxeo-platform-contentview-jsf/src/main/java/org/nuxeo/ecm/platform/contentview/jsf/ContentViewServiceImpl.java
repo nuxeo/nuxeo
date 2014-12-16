@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -178,7 +179,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
 
     @Override
     public Set<String> getContentViewNames(String flag) {
-        Set<String> res = new HashSet<String>();
+        Set<String> res = new LinkedHashSet<String>();
         Set<String> items = contentViewReg.getContentViewsByFlag(flag);
         if (items != null) {
             res.addAll(items);
