@@ -49,7 +49,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
-import org.nuxeo.elasticsearch.commands.IndexingCommand.Name;
+import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 import org.nuxeo.elasticsearch.work.ScrollingIndexingWorker;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -121,7 +121,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     void processBulkDeleteCommands(List<IndexingCommand> cmds) {
         // Can be optimized with a single delete by query
         for (IndexingCommand cmd : cmds) {
-            if (cmd.getName() == IndexingCommand.Name.DELETE) {
+            if (cmd.getType() == Type.DELETE) {
                 Context stopWatch = deleteTimer.time();
                 try {
                     processDeleteCommand(cmd);
@@ -135,22 +135,19 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     void processBulkIndexCommands(List<IndexingCommand> cmds) throws ClientException {
         BulkRequestBuilder bulkRequest = esa.getClient().prepareBulk();
         for (IndexingCommand cmd : cmds) {
-            String id = cmd.getDocId();
-            if (IndexingCommand.UNKOWN_DOCUMENT_ID.equals(id) || cmd.getName() == Name.DELETE) {
+            if (cmd.getType() == Type.DELETE) {
                 continue;
             }
             if (log.isTraceEnabled()) {
-                log.trace("Sending bulk indexing request to Elasticsearch: " + cmd);
-            }
-            if (cmd.getTargetDocument() == null) {
-                log.warn("Skipping cmd because targetDocument is null " + cmd);
-                continue;
+                log.trace("Adding indexing command to bulk: " + cmd.getId());
             }
             try {
                 IndexRequestBuilder idxRequest = buildEsIndexingRequest(cmd);
-                bulkRequest.add(idxRequest);
-            } catch (ClientException e) {
-                log.error("Fail to create indexing request for cmd: " + cmd, e);
+                if (idxRequest != null) {
+                    bulkRequest.add(idxRequest);
+                }
+            } catch (ClientException | IllegalArgumentException e) {
+                log.error("Skip indexing command to bulk, fail to create request: " + cmd, e);
             }
         }
         if (bulkRequest.numberOfActions() > 0) {
@@ -168,15 +165,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     @Override
     public void indexNow(IndexingCommand cmd) throws ClientException {
-        if (cmd.getTargetDocument() == null && IndexingCommand.UNKOWN_DOCUMENT_ID.equals(cmd.getDocId())) {
-            esa.totalCommandProcessed.addAndGet(1);
-            return;
-        }
         esa.totalCommandRunning.incrementAndGet();
-        if (log.isTraceEnabled()) {
-            log.trace("Sending indexing request to Elasticsearch: " + cmd.toString());
-        }
-        if (cmd.getName() == Name.DELETE) {
+        if (cmd.getType() == Type.DELETE) {
             Context stopWatch = deleteTimer.time();
             try {
                 processDeleteCommand(cmd);
@@ -198,21 +188,20 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     void processIndexCommand(IndexingCommand cmd) {
-        String docId = cmd.getDocId();
-        if (IndexingCommand.UNKOWN_DOCUMENT_ID.equals(docId) || cmd.getTargetDocument() == null) {
-            log.warn("Skipping cmd because targetDocument is null " + cmd);
-            return;
-        }
         IndexRequestBuilder request;
         try {
             request = buildEsIndexingRequest(cmd);
-        } catch (ClientException e) {
-            log.error("Fail to create indexing request for cmd: " + cmd, e);
+        } catch (ClientException | IllegalArgumentException e) {
+            log.error("Fail to create request for indexing command: " + cmd, e);
+            return;
+        }
+        if (request == null) {
+            // doc does not exist any more nothing to index
             return;
         }
         if (log.isDebugEnabled()) {
             log.debug(String.format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                    esa.getRepositoryIndex(cmd.getRepository()), DOC_TYPE, docId, request.request().toString()));
+                    esa.getRepositoryIndex(cmd.getRepository()), DOC_TYPE, cmd.getDocId(), request.request().toString()));
         }
         request.execute().actionGet();
     }
@@ -282,8 +271,17 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         return ret.getField(PATH_FIELD).getValue().toString();
     }
 
+    /**
+     * Return indexing request or null if the doc does not exists anymore.
+     *
+     * @throws ClientException in case of pb to get the document or generate json
+     * @throws java.lang.IllegalStateException if the command is not attached to a session
+     */
     IndexRequestBuilder buildEsIndexingRequest(IndexingCommand cmd) throws ClientException {
         DocumentModel doc = cmd.getTargetDocument();
+        if (doc == null) {
+            return null;
+        }
         try {
             JsonFactory factory = new JsonFactory();
             XContentBuilder builder = jsonBuilder();

@@ -59,7 +59,7 @@ public class ElasticSearchManager {
 
     private static final String DEFAULT_NXQL_QUERY = "SELECT * FROM Document";
 
-    private static final String JSON_DELETE_CMD = "{\"id\":\"IndexingCommand-reindex\",\"name\":\"ES_DELETE\",\"docId\":\"%s\",\"repo\":\"%s\",\"recurse\":true,\"sync\":true}";
+    private static final String JSON_DELETE_CMD = "{\"id\":\"IndexingCommand-reindex\",\"type\":\"ES_DELETE\",\"docId\":\"%s\",\"repo\":\"%s\",\"recurse\":true,\"sync\":true}";
 
     @In(create = true)
     protected ElasticSearchAdmin esa;
@@ -114,7 +114,7 @@ public class ElasticSearchManager {
         try (CoreSession session = CoreInstance.openCoreSessionSystem(repositoryName)) {
             log.warn(String.format("Try to remove %s and its children from %s repository index", rootId, repositoryName));
             String jsonCmd = String.format(JSON_DELETE_CMD, rootId, repositoryName);
-            IndexingCommand rmCmd = IndexingCommand.fromJSON(session, jsonCmd);
+            IndexingCommand rmCmd = IndexingCommand.fromJSON(jsonCmd);
             esi.indexNow(rmCmd);
 
             DocumentRef ref = new IdRef(rootId);

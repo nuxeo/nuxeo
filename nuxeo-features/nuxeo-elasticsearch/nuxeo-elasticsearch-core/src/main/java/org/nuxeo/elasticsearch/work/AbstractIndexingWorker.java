@@ -17,8 +17,6 @@
 
 package org.nuxeo.elasticsearch.work;
 
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
@@ -34,25 +32,18 @@ public abstract class AbstractIndexingWorker extends BaseIndexingWorker {
 
     protected final IndexingCommand cmd;
 
-    protected final String path;
-
     public AbstractIndexingWorker(IndexingCommand cmd) {
         super();
         this.cmd = cmd;
-        DocumentModel targetDocument = cmd.getTargetDocument();
-        if (targetDocument != null) {
-            path = targetDocument.getPathAsString();
-        } else {
-            path = null;
-        }
-        cmd.disconnect();
+        this.repositoryName = cmd.getRepository();
+        this.docId = cmd.getDocId();
     }
 
     @Override
     public void doWork() {
-        CoreSession session = initSession(repositoryName);
+        initSession();
+        cmd.attach(session);
         ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
-        cmd.refresh(session);
         doIndexingWork(esi, cmd);
     }
 

@@ -153,7 +153,7 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker impleme
     @Override
     public void beforeCompletion() {
         try {
-            // run flush !
+            // before completion is not called if the tx is marked as rollback
             flushCommands();
         } catch (ClientException e) {
             log.error("Error during flush", e);

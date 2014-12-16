@@ -183,7 +183,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
                     new UnrestrictedSessionRunner(cmd.getRepository()) {
                         @Override
                         public void run() throws ClientException {
-                            cmd.refresh(session);
+                            cmd.attach(session);
                             esi.indexNow(cmd);
                         }
                     }.runUnrestricted();
@@ -273,25 +273,20 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     @Override
     public void scheduleIndexing(IndexingCommand cmd) throws ClientException {
         String id = cmd.getDocId();
-        if (IndexingCommand.UNKOWN_DOCUMENT_ID.equals(id)) {
-            return;
-        }
         if (isAlreadyScheduled(cmd)) {
             if (log.isDebugEnabled()) {
-                log.debug("Skip indexing for " + cmd.toString() + " since it is already scheduled");
+                log.debug("Schedule indexing command, cancelled because already scheduled: " + cmd);
             }
             return;
         }
-        pendingCommands.add(cmd.getId());
-        pendingWork.add(getWorkKey(cmd));
         if (cmd.isSync()) {
             if (log.isDebugEnabled()) {
-                log.debug("Schedule Sync PostCommit indexing request " + cmd.toString());
+                log.debug("Schedule indexing command Sync PostCommit: " + cmd);
             }
             schedulePostCommitIndexing(cmd);
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("Schedule Async indexing request  " + cmd.toString());
+                log.debug("Schedule indexing command Async: " + cmd.toString());
             }
             WorkManager wm = Framework.getLocalService(WorkManager.class);
             IndexingWorker idxWork = new IndexingWorker(cmd);
@@ -299,31 +294,39 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
             // rollbacked
             wm.schedule(idxWork, true);
         }
+        pendingCommands.add(cmd.getId());
+        pendingWork.add(cmd.getWorkKey());
     }
 
     void schedulePostCommitIndexing(IndexingCommand cmd) throws ClientException {
+        EventProducer evtProducer = Framework.getLocalService(EventProducer.class);
+        Event indexingEvent = null;
         try {
-            EventProducer evtProducer = Framework.getLocalService(EventProducer.class);
-            Event indexingEvent = cmd.asIndexingEvent();
-            if (indexingEvent != null) {
-                evtProducer.fireEvent(indexingEvent);
-            }
+            indexingEvent = cmd.asIndexingEvent();
         } catch (IOException e) {
             throw ClientException.wrap(e);
+        }
+        if (indexingEvent != null) {
+            evtProducer.fireEvent(indexingEvent);
         }
     }
 
     @Override
     public boolean isAlreadyScheduled(IndexingCommand cmd) {
-        return pendingCommands.contains(cmd.getId()) || pendingWork.contains(getWorkKey(cmd));
+        return pendingCommands.contains(cmd.getId()) || pendingWork.contains(cmd.getWorkKey());
     }
 
     @Override
     public void indexNow(IndexingCommand cmd) throws ClientException {
         if (!isReady()) {
             stackedCommands.add(cmd);
-            log.debug("Delaying indexing command: Waiting for Index to be initialized.");
+            if (log.isDebugEnabled()) {
+                log.debug("Delaying indexing command: Waiting for Index to be initialized: " + cmd);
+            }
             return;
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Process indexing command: " + cmd);
         }
         markCommandInProgress(cmd);
         esi.indexNow(cmd);
@@ -332,9 +335,14 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     @Override
     public void indexNow(List<IndexingCommand> cmds) throws ClientException {
         if (!isReady()) {
-            log.debug("Delaying indexing commands: Waiting for Index to be initialized.");
+            if (log.isDebugEnabled()) {
+                log.debug("Delaying indexing commands: Waiting for Index to be initialized.");
+            }
             stackedCommands.addAll(cmds);
             return;
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Process indexing commands: " + cmds);
         }
         markCommandInProgress(cmds);
         esi.indexNow(cmds);
@@ -383,12 +391,8 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         return ret;
     }
 
-    String getWorkKey(IndexingCommand cmd) {
-        return cmd.getRepository() + ":" + cmd.getDocId() + ":" + cmd.isRecurse();
-    }
-
     int markCommandInProgress(IndexingCommand cmd) {
-        pendingWork.remove(getWorkKey(cmd));
+        pendingWork.remove(cmd.getWorkKey());
         boolean isRemoved = pendingCommands.remove(cmd.getId());
         return isRemoved ? 1 : 0;
     }

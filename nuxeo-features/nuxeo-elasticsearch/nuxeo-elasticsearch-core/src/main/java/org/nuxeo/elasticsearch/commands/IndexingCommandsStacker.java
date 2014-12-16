@@ -43,9 +43,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-import org.nuxeo.elasticsearch.commands.IndexingCommand.Name;
 
 /**
  * Contains logic to stack ElasticSearch commands depending on Document events This class is mainly here to make testing
@@ -83,27 +83,27 @@ public abstract class IndexingCommandsStacker {
         }
         IndexingCommands cmds = getOrCreateCommands(doc);
         if (DOCUMENT_CREATED.equals(eventId)) {
-            cmds.add(Name.INSERT, sync, false);
+            cmds.add(Type.INSERT, sync, false);
         } else if (BEFORE_DOC_UPDATE.equals(eventId)) {
-            cmds.add(Name.UPDATE, sync, false);
+            cmds.add(Type.UPDATE, sync, false);
         } else if (DOCUMENT_CHECKEDOUT.equals(eventId)) {
-            cmds.add(Name.UPDATE, sync, false);
+            cmds.add(Type.UPDATE, sync, false);
         } else if (DOCUMENT_CHECKEDIN.equals(eventId)) {
-            cmds.add(Name.UPDATE, sync, false);
+            cmds.add(Type.UPDATE, sync, false);
         } else if (DOCUMENT_CREATED_BY_COPY.equals(eventId)) {
-            cmds.add(Name.INSERT, sync, doc.isFolder());
+            cmds.add(Type.INSERT, sync, doc.isFolder());
         } else if (LifeCycleConstants.TRANSITION_EVENT.equals(eventId)) {
-            cmds.add(Name.INSERT, sync, false);
+            cmds.add(Type.INSERT, sync, false);
         } else if (DOCUMENT_MOVED.equals(eventId)) {
-            cmds.add(Name.UPDATE, sync, doc.isFolder());
+            cmds.add(Type.UPDATE, sync, doc.isFolder());
         } else if (DOCUMENT_SECURITY_UPDATED.equals(eventId)) {
-            cmds.add(Name.UPDATE_SECURITY, sync, doc.isFolder());
+            cmds.add(Type.UPDATE_SECURITY, sync, doc.isFolder());
         } else if (DOCUMENT_REMOVED.equals(eventId)) {
-            cmds.add(Name.DELETE, sync, doc.isFolder());
+            cmds.add(Type.DELETE, sync, doc.isFolder());
         } else if (BINARYTEXT_UPDATED.equals(eventId)) {
-            cmds.add(Name.UPDATE, sync, false);
+            cmds.add(Type.UPDATE, sync, false);
         } else if (DOCUMENT_TAG_UPDATED.equals(eventId)) {
-            cmds.add(Name.UPDATE, sync, false);
+            cmds.add(Type.UPDATE, sync, false);
         }
     }
 
@@ -126,18 +126,6 @@ public abstract class IndexingCommandsStacker {
         } catch (NamingException | IllegalStateException | SystemException | RollbackException e) {
             log.error("Unable to register synchronization", e);
             return false;
-        }
-    }
-
-    // never called because we don't have a proper hook for that !
-    protected void prepareFlush() {
-        Map<String, IndexingCommands> allCmds = getAllCommands();
-        for (IndexingCommands cmds : allCmds.values()) {
-            for (IndexingCommand cmd : cmds.getCommands()) {
-                if (cmd.isSync()) {
-                    cmd.computeIndexingEvent();
-                }
-            }
         }
     }
 

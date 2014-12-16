@@ -5,14 +5,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.elasticsearch.commands.IndexingCommand;
+import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 import org.nuxeo.elasticsearch.commands.IndexingCommands;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import org.nuxeo.elasticsearch.commands.IndexingCommand.Name;
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
@@ -32,19 +31,14 @@ public class TestIndexingCommandsMarshaling {
         doc1 = session.createDocument(doc1);
 
         IndexingCommands cmds = new IndexingCommands(doc1);
-        IndexingCommand cmd1 = cmds.add(Name.INSERT, true, false);
-        IndexingCommand cmd2 = cmds.add(Name.UPDATE_SECURITY, false, false);
-        Assert.assertNotNull(cmd1);
-        // command 2 should be ignored
-        Assert.assertNull(cmd2);
+        cmds.add(Type.INSERT, true, false);
+        cmds.add(Type.UPDATE_SECURITY, false, false);
+        Assert.assertEquals(1, cmds.getCommands().size());
 
         String json = cmds.toJSON();
-
-        IndexingCommands cmds2 = IndexingCommands.fromJSON(session, json);
-        Assert.assertEquals(1, cmds.getCommands().size());
-        Assert.assertEquals(cmd1.getId(), cmds2.getCommands().get(0).getId());
-
-        Assert.assertEquals(json, cmds2.toJSON());
+        IndexingCommands cmds2 = IndexingCommands.fromJSON(json);
+        Assert.assertEquals(1, cmds2.getCommands().size());
+        Assert.assertEquals(cmds.toJSON(), cmds2.toJSON());
     }
 
     @Test
@@ -55,19 +49,14 @@ public class TestIndexingCommandsMarshaling {
         doc1 = session.createDocument(doc1);
 
         IndexingCommands cmds = new IndexingCommands(doc1);
-        IndexingCommand cmd1 = cmds.add(Name.UPDATE, true, false);
-        IndexingCommand cmd2 = cmds.add(Name.UPDATE_SECURITY, false, true);
-        Assert.assertNotNull(cmd1);
-        Assert.assertNotNull(cmd2);
+        cmds.add(Type.UPDATE, true, false);
+        cmds.add(Type.UPDATE_SECURITY, false, true);
+        Assert.assertEquals(2, cmds.getCommands().size());
 
         String json = cmds.toJSON();
-
-        IndexingCommands cmds2 = IndexingCommands.fromJSON(session, json);
-        Assert.assertEquals(2, cmds.getCommands().size());
-        Assert.assertEquals(cmd1.getId(), cmds2.getCommands().get(0).getId());
-        Assert.assertEquals(cmd2.getId(), cmds2.getCommands().get(1).getId());
-
-        Assert.assertEquals(json, cmds2.toJSON());
+        IndexingCommands cmds2 = IndexingCommands.fromJSON(json);
+        Assert.assertEquals(2, cmds2.getCommands().size());
+        Assert.assertEquals(cmds.toJSON(), cmds2.toJSON());
     }
 
 }

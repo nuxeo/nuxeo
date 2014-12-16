@@ -17,17 +17,11 @@
 
 package org.nuxeo.elasticsearch.work;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
-
-
-import static org.nuxeo.elasticsearch.commands.IndexingCommand.Name;
 
 /**
  * Simple Indexing Worker
@@ -44,20 +38,17 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
 
     @Override
     public String getTitle() {
-        String title = " ElasticSearch indexing for doc " + cmd.getDocId() + " in repository " + cmd.getRepository();
-        if (path != null) {
-            title = title + " (" + path + ")";
-        }
+        String title = " ElasticSearch indexing for doc " + cmd;
         return title;
     }
 
     protected boolean needRecurse(IndexingCommand cmd) {
         if (cmd.isRecurse()) {
-            switch (cmd.getName()) {
-                case INSERT:
-                case UPDATE:
-                case UPDATE_SECURITY:
-                    return true;
+            switch (cmd.getType()) {
+            case INSERT:
+            case UPDATE:
+            case UPDATE_SECURITY:
+                return true;
             }
         }
         return false;
@@ -65,7 +56,6 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
 
     @Override
     protected void doIndexingWork(ElasticSearchIndexing esi, IndexingCommand cmd) {
-
         esi.indexNow(cmd);
         if (needRecurse(cmd)) {
             ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(cmd);
