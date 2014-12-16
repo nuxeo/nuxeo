@@ -28,11 +28,9 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Default implementation for {@link Renderable} interface.
  * <p>
- * This is a simple wrapper around the {@link RenditionService} in the context
- * of a given {@link DocumentModel}
+ * This is a simple wrapper around the {@link RenditionService} in the context of a given {@link DocumentModel}
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class RenderableDocument implements Renderable {
 
@@ -47,8 +45,7 @@ public class RenderableDocument implements Renderable {
     @Override
     public List<RenditionDefinition> getAvailableRenditionDefinitions() {
         if (defs == null) {
-            defs = Framework.getLocalService(RenditionService.class).getAvailableRenditionDefinitions(
-                    doc);
+            defs = Framework.getLocalService(RenditionService.class).getAvailableRenditionDefinitions(doc);
         }
         return defs;
     }
@@ -73,10 +70,8 @@ public class RenderableDocument implements Renderable {
         return null;
     }
 
-    protected Rendition getRendition(RenditionDefinition def)
-            throws RenditionException {
-        return Framework.getLocalService(RenditionService.class).getRendition(
-                doc, def.getName());
+    protected Rendition getRendition(RenditionDefinition def) throws RenditionException {
+        return Framework.getLocalService(RenditionService.class).getRendition(doc, def.getName());
 
     }
 

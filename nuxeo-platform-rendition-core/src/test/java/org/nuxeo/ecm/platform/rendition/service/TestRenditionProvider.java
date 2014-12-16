@@ -44,18 +44,14 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.inject.Inject;
 
 /**
- * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(type = BackendType.H2, init = DefaultRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert",
-        "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.platform.convert",
-        "org.nuxeo.ecm.platform.rendition.api",
-        "org.nuxeo.ecm.platform.rendition.core",
-        "org.nuxeo.ecm.automation.core" })
+@Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
+        "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.rendition.api",
+        "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.automation.core" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.rendition.core:test-renditionprovider-contrib.xml" })
 public class TestRenditionProvider {
 
@@ -92,8 +88,7 @@ public class TestRenditionProvider {
         return file;
     }
 
-    protected DocumentModel createFileWithBlob(Blob blob, String name)
-            throws ClientException {
+    protected DocumentModel createFileWithBlob(Blob blob, String name) throws ClientException {
         DocumentModel file = session.createDocumentModel("/", name, "File");
         BlobHolder bh = file.getAdapter(BlobHolder.class);
         bh.setBlob(blob);

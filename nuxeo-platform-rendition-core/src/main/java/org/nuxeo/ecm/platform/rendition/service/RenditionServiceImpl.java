@@ -48,8 +48,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.1
  */
-public class RenditionServiceImpl extends DefaultComponent implements
-        RenditionService {
+public class RenditionServiceImpl extends DefaultComponent implements RenditionService {
 
     public static final String RENDITION_DEFINITIONS_EP = "renditionDefinitions";
 
@@ -77,8 +76,7 @@ public class RenditionServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public List<RenditionDefinition> getDeclaredRenditionDefinitionsForProviderType(
-            String providerType) {
+    public List<RenditionDefinition> getDeclaredRenditionDefinitionsForProviderType(String providerType) {
         List<RenditionDefinition> defs = new ArrayList<RenditionDefinition>();
         for (RenditionDefinition def : getDeclaredRenditionDefinitions()) {
             if (def.getProviderType().equals(providerType)) {
@@ -89,8 +87,7 @@ public class RenditionServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public List<RenditionDefinition> getAvailableRenditionDefinitions(
-            DocumentModel doc) {
+    public List<RenditionDefinition> getAvailableRenditionDefinitions(DocumentModel doc) {
         List<RenditionDefinition> defs = new ArrayList<RenditionDefinition>();
         for (RenditionDefinition def : renditionDefinitions.values()) {
             if (def.getProvider().isAvailable(doc, def)) {
@@ -102,25 +99,21 @@ public class RenditionServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public DocumentRef storeRendition(DocumentModel source,
-            String renditionDefinitionName) throws RenditionException {
+    public DocumentRef storeRendition(DocumentModel source, String renditionDefinitionName) throws RenditionException {
 
-        Rendition rendition = getRendition(source, renditionDefinitionName,
-                true);
+        Rendition rendition = getRendition(source, renditionDefinitionName, true);
 
         return rendition.getHostDocument().getRef();
     }
 
-    protected DocumentModel storeRendition(DocumentModel sourceDocument,
-            List<Blob> renderedBlobs, String name) throws RenditionException {
+    protected DocumentModel storeRendition(DocumentModel sourceDocument, List<Blob> renderedBlobs, String name)
+            throws RenditionException {
         try {
             CoreSession session = sourceDocument.getCoreSession();
-            DocumentRef versionRef = createVersionIfNeeded(sourceDocument,
-                    session);
+            DocumentRef versionRef = createVersionIfNeeded(sourceDocument, session);
 
             DocumentModel version = session.getDocument(versionRef);
-            RenditionCreator rc = new RenditionCreator(session, sourceDocument,
-                    version, renderedBlobs.get(0), name);
+            RenditionCreator rc = new RenditionCreator(session, sourceDocument, version, renderedBlobs.get(0), name);
             rc.runUnrestricted();
 
             DocumentModel detachedRendition = rc.getDetachedDendition();
@@ -133,19 +126,16 @@ public class RenditionServiceImpl extends DefaultComponent implements
     }
 
     /**
-     * Checks if the given {@code DocumentModel} can be rendered, throws a
-     * {@code RenditionException} if not.
+     * Checks if the given {@code DocumentModel} can be rendered, throws a {@code RenditionException} if not.
      */
-    protected void validateSourceDocument(DocumentModel source)
-            throws RenditionException {
+    protected void validateSourceDocument(DocumentModel source) throws RenditionException {
         if (source.isProxy()) {
             throw new RenditionException("Cannot render a proxy document");
         }
 
         BlobHolder bh = source.getAdapter(BlobHolder.class);
         if (bh == null) {
-            throw new RenditionException("No main file attached",
-                    "label.cannot.render.without.main.blob");
+            throw new RenditionException("No main file attached", "label.cannot.render.without.main.blob");
         }
 
         try {
@@ -155,14 +145,12 @@ public class RenditionServiceImpl extends DefaultComponent implements
         }
     }
 
-    protected DocumentRef createVersionIfNeeded(DocumentModel source,
-            CoreSession session) throws ClientException {
+    protected DocumentRef createVersionIfNeeded(DocumentModel source, CoreSession session) throws ClientException {
         DocumentRef versionRef;
         if (source.isVersion()) {
             versionRef = source.getRef();
         } else if (source.isCheckedOut()) {
-            versionRef = session.checkIn(source.getRef(),
-                    VersioningOption.MINOR, null);
+            versionRef = session.checkIn(source.getRef(), VersioningOption.MINOR, null);
             source.refresh(DocumentModel.REFRESH_STATE, null);
         } else {
             versionRef = session.getLastDocumentVersionRef(source.getRef());
@@ -170,27 +158,23 @@ public class RenditionServiceImpl extends DefaultComponent implements
         return versionRef;
     }
 
-    protected AutomationService getAutomationService()
-            throws RenditionException {
+    protected AutomationService getAutomationService() throws RenditionException {
         if (automationService == null) {
             try {
                 automationService = Framework.getService(AutomationService.class);
             } catch (Exception e) {
-                final String errMsg = "Error connecting to AutomationService. "
-                        + e.getMessage();
+                final String errMsg = "Error connecting to AutomationService. " + e.getMessage();
                 throw new RenditionException(errMsg, "", e);
             }
             if (automationService == null) {
-                throw new RenditionException(
-                        "AutomationService service not bound");
+                throw new RenditionException("AutomationService service not bound");
             }
         }
         return automationService;
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (RENDITION_DEFINITIONS_EP.equals(extensionPoint)) {
             registerRendition((RenditionDefinition) contribution);
@@ -207,8 +191,7 @@ public class RenditionServiceImpl extends DefaultComponent implements
         if (renditionDefinitions.containsKey(name)) {
             log.info("Overriding rendition with name: " + name);
             if (enabled) {
-                renditionDefinition = mergeRenditions(
-                        renditionDefinitions.get(name), renditionDefinition);
+                renditionDefinition = mergeRenditions(renditionDefinitions.get(name), renditionDefinition);
             } else {
                 log.info("Disabled rendition with name " + name);
                 renditionDefinitions.remove(name);
@@ -236,8 +219,7 @@ public class RenditionServiceImpl extends DefaultComponent implements
         }
     }
 
-    protected RenditionDefinition mergeRenditions(
-            RenditionDefinition oldRenditionDefinition,
+    protected RenditionDefinition mergeRenditions(RenditionDefinition oldRenditionDefinition,
             RenditionDefinition newRenditionDefinition) {
         String label = newRenditionDefinition.getLabel();
         if (label != null) {
@@ -253,8 +235,7 @@ public class RenditionServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (RENDITION_DEFINITIONS_EP.equals(extensionPoint)) {
             unregisterRendition((RenditionDefinition) contribution);
@@ -268,22 +249,19 @@ public class RenditionServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public Rendition getRendition(DocumentModel doc, String renditionName)
-            throws RenditionException {
+    public Rendition getRendition(DocumentModel doc, String renditionName) throws RenditionException {
         return getRendition(doc, renditionName, false);
     }
 
     @Override
-    public Rendition getRendition(DocumentModel doc, String renditionName,
-            boolean store) throws RenditionException {
+    public Rendition getRendition(DocumentModel doc, String renditionName, boolean store) throws RenditionException {
 
         validateSourceDocument(doc);
 
         RenditionDefinition renditionDefinition = renditionDefinitions.get(renditionName);
         if (renditionDefinition == null) {
             String message = "The rendition definition '%s' is not registered";
-            throw new RenditionException(String.format(message, renditionName),
-                    "label.rendition.not.defined");
+            throw new RenditionException(String.format(message, renditionName), "label.rendition.not.defined");
         }
 
         DocumentModel stored = null;
@@ -301,8 +279,7 @@ public class RenditionServiceImpl extends DefaultComponent implements
                 }
             }
         } catch (ClientException e) {
-            throw new RenditionException(
-                    "Error while searching for stored rendition", e);
+            throw new RenditionException("Error while searching for stored rendition", e);
         }
 
         if (stored != null) {
@@ -312,8 +289,7 @@ public class RenditionServiceImpl extends DefaultComponent implements
         LiveRendition rendition = new LiveRendition(doc, renditionDefinition);
 
         if (store) {
-            DocumentModel storedRenditionDoc = storeRendition(doc,
-                    rendition.getBlobs(), renditionDefinition.getName());
+            DocumentModel storedRenditionDoc = storeRendition(doc, rendition.getBlobs(), renditionDefinition.getName());
             return new StoredRendition(storedRenditionDoc, renditionDefinition);
 
         } else {
@@ -321,8 +297,7 @@ public class RenditionServiceImpl extends DefaultComponent implements
         }
     }
 
-    public List<Rendition> getAvailableRenditions(DocumentModel doc)
-            throws RenditionException {
+    public List<Rendition> getAvailableRenditions(DocumentModel doc) throws RenditionException {
 
         List<Rendition> renditions = new ArrayList<Rendition>();
 

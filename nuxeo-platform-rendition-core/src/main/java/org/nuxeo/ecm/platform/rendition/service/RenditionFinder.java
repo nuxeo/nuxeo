@@ -25,13 +25,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 
 /**
- * 
  * Retrives stored Rendition associated to a DocumentModel.
  * <p>
  * Can run Unrestricted or not.
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class RenditionFinder extends UnrestrictedSessionRunner {
 
@@ -51,14 +49,12 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
     public void run() throws ClientException {
 
         String query = "select * from Document where ecm:isProxy = 0 AND ";
-        query = query + RENDITION_NAME_PROPERTY + "='" + definitionName
-                + "' AND ";
+        query = query + RENDITION_NAME_PROPERTY + "='" + definitionName + "' AND ";
         String versionUUUID = source.getId();
         if (!source.isVersion() && !source.isCheckedOut()) {
             versionUUUID = session.getLastDocumentVersion(source.getRef()).getId();
         }
-        query = query + RENDITION_SOURCE_ID_PROPERTY + "='" + versionUUUID
-                + "' ";
+        query = query + RENDITION_SOURCE_ID_PROPERTY + "='" + versionUUUID + "' ";
 
         query = query + " order by dc:modified desc ";
 

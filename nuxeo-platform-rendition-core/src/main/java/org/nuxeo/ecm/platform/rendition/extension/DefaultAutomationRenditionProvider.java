@@ -29,8 +29,7 @@ public class DefaultAutomationRenditionProvider implements RenditionProvider {
     }
 
     @Override
-    public List<Blob> render(DocumentModel doc, RenditionDefinition definition)
-            throws RenditionException {
+    public List<Blob> render(DocumentModel doc, RenditionDefinition definition) throws RenditionException {
 
         String chain = definition.getOperationChain();
         if (chain == null) {
@@ -42,17 +41,15 @@ public class DefaultAutomationRenditionProvider implements RenditionProvider {
         OperationContext oc = new OperationContext();
 
         try {
-            oc.push(Constants.O_BLOB,
-                    doc.getAdapter(BlobHolder.class).getBlob());
+            oc.push(Constants.O_BLOB, doc.getAdapter(BlobHolder.class).getBlob());
             Blob blob = (Blob) as.run(oc, definition.getOperationChain());
             List<Blob> blobs = new ArrayList<Blob>();
             blobs.add(blob);
             return blobs;
 
         } catch (Exception e) {
-            throw new RenditionException(
-                    "Exception while running the operation chain: "
-                            + definition.getOperationChain(), e);
+            throw new RenditionException("Exception while running the operation chain: "
+                    + definition.getOperationChain(), e);
         }
     }
 }
