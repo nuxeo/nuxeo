@@ -8,12 +8,11 @@ import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 import org.nuxeo.ecm.core.versioning.OrphanVersionRemovalFilter;
 import org.nuxeo.ecm.platform.rendition.Constants;
 
-public class RenditionAwareVersionRemovalPolicy implements
-        OrphanVersionRemovalFilter {
+public class RenditionAwareVersionRemovalPolicy implements OrphanVersionRemovalFilter {
 
     @Override
-    public List<String> getRemovableVersionIds(CoreSession session,
-            ShallowDocumentModel deletedLiveDoc, List<String> versionUUIDs) {
+    public List<String> getRemovableVersionIds(CoreSession session, ShallowDocumentModel deletedLiveDoc,
+            List<String> versionUUIDs) {
 
         if (deletedLiveDoc.hasFacet(Constants.RENDITION_FACET)) {
             // don't remove orphan rendition versions
