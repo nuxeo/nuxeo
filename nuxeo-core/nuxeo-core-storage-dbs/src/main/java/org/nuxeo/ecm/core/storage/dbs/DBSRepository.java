@@ -39,6 +39,14 @@ public interface DBSRepository extends Repository {
     BinaryManager getBinaryManager();
 
     /**
+     * Checks if fulltext indexing is disabled.
+     *
+     * @return {@code true} if fulltext indexing is disabled, {@code false} if it is enabled
+     * @since 7.1, 6.0-HF02
+     */
+    boolean isFulltextDisabled();
+
+    /**
      * Gets the root id.
      *
      * @return the root id.

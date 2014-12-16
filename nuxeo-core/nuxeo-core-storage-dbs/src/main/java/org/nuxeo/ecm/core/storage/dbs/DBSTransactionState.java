@@ -507,8 +507,13 @@ public class DBSTransactionState {
      */
     public void save() throws DocumentException {
         updateProxies();
-        // TODO getting fulltext already does a getStateChange
-        List<Work> works = getFulltextWorks();
+        List<Work> works;
+        if (!repository.isFulltextDisabled()) {
+            // TODO getting fulltext already does a getStateChange
+            works = getFulltextWorks();
+        } else {
+            works = Collections.emptyList();
+        }
         for (String id : transientCreated) { // ordered
             DBSDocumentState docState = transientStates.get(id);
             docState.setNotDirty();

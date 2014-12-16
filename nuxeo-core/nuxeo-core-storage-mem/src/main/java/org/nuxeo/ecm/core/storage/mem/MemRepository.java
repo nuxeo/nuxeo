@@ -75,7 +75,7 @@ public class MemRepository extends DBSRepositoryBase {
     protected Map<String, State> states;
 
     public MemRepository(String repositoryName) {
-        super(repositoryName);
+        super(repositoryName, false);
         initRepository();
     }
 

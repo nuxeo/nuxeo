@@ -118,7 +118,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     protected DBCollection countersColl;
 
     public MongoDBRepository(MongoDBRepositoryDescriptor descriptor) {
-        super(descriptor.name);
+        super(descriptor.name, descriptor.getFulltextDisabled());
         try {
             mongoClient = newMongoClient(descriptor);
             coll = getCollection(descriptor, mongoClient);
@@ -402,13 +402,15 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected void initRepository() {
         // create required indexes
-        DBObject indexKeys = new BasicDBObject();
-        indexKeys.put(KEY_FULLTEXT_SIMPLE, MONGODB_INDEX_TEXT);
-        indexKeys.put(KEY_FULLTEXT_BINARY, MONGODB_INDEX_TEXT);
-        DBObject indexOptions = new BasicDBObject();
-        indexOptions.put(MONGODB_INDEX_NAME, FULLTEXT_INDEX_NAME);
-        indexOptions.put(MONGODB_LANGUAGE_OVERRIDE, LANGUAGE_FIELD);
-        coll.createIndex(indexKeys, indexOptions);
+        if (!fulltextDisabled) {
+            DBObject indexKeys = new BasicDBObject();
+            indexKeys.put(KEY_FULLTEXT_SIMPLE, MONGODB_INDEX_TEXT);
+            indexKeys.put(KEY_FULLTEXT_BINARY, MONGODB_INDEX_TEXT);
+            DBObject indexOptions = new BasicDBObject();
+            indexOptions.put(MONGODB_INDEX_NAME, FULLTEXT_INDEX_NAME);
+            indexOptions.put(MONGODB_LANGUAGE_OVERRIDE, LANGUAGE_FIELD);
+            coll.createIndex(indexKeys, indexOptions);
+        }
         // check root presence
         DBObject query = new BasicDBObject(KEY_ID, getRootId());
         if (coll.findOne(query, justPresenceField()) != null) {
@@ -612,6 +614,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
         MongoDBQueryBuilder builder = new MongoDBQueryBuilder(
                 evaluator.pathResolver);
         DBObject query = builder.walkExpression(expression);
+        if (builder.hasFulltext && fulltextDisabled) {
+            throw new RuntimeException("Fulltext disabled by configuration");
+        }
         addPrincipals(query, evaluator.principals);
 
         // order by
