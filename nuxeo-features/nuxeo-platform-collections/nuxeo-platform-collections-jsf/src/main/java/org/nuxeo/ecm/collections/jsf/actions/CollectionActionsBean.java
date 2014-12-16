@@ -292,7 +292,7 @@ public class CollectionActionsBean implements Serializable {
         if (isCreateNewCollection()) {
             return null;
         } else {
-            return getSelectedCollection().getProperty("dc:description").getValue().toString();
+            return (String) getSelectedCollection().getProperty("dc:description").getValue();
         }
     }
 
