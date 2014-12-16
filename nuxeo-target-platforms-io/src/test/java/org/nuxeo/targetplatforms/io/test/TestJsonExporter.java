@@ -62,9 +62,11 @@ import org.skyscreamer.jsonassert.JSONAssert;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core", "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.directory.sql", "org.nuxeo.targetplatforms.core", "org.nuxeo.targetplatforms.io" })
-@LocalDeploy("org.nuxeo.targetplatforms.io:OSGI-INF/test-targetplatforms-contrib.xml")
+@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.schema",
+        "org.nuxeo.ecm.core", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
+        "org.nuxeo.targetplatforms.core", "org.nuxeo.targetplatforms.io" })
+@LocalDeploy({ "org.nuxeo.targetplatforms.core:OSGI-INF/test-datasource-contrib.xml",
+        "org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml" })
 public class TestJsonExporter {
 
     @Inject

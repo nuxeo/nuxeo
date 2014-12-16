@@ -22,8 +22,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,20 +29,14 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 
-import org.hsqldb.jdbcDriver;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.directory.sql.SimpleDataSource;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -65,29 +57,17 @@ import org.nuxeo.targetplatforms.core.service.DirectoryUpdater;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core", "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.directory.sql", "org.nuxeo.targetplatforms.core" })
-@LocalDeploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml")
+@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core",
+        "org.nuxeo.ecm.core.schema", "org.nuxeo.targetplatforms.core", "org.nuxeo.ecm.directory",
+        "org.nuxeo.ecm.directory.sql" })
+@LocalDeploy({ "org.nuxeo.targetplatforms.core:OSGI-INF/test-datasource-contrib.xml",
+        "org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml" })
 public class TestTargetPlatformService {
 
     final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
     @Inject
     protected TargetPlatformService service;
-
-    @Before
-    public void setUpContextFactory() throws NamingException {
-        DataSource datasourceAutocommit = new SimpleDataSource("jdbc:hsqldb:mem:memid", jdbcDriver.class.getName(),
-                "SA", "") {
-            @Override
-            public Connection getConnection() throws SQLException {
-                Connection con = super.getConnection();
-                con.setAutoCommit(true);
-                return con;
-            }
-        };
-        NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxsqldirectory", datasourceAutocommit);
-    }
 
     @After
     public void tearDown() throws Exception {
