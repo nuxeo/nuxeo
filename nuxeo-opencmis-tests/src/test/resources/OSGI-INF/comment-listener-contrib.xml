@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.opencmis.tests.comment.listener">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="loggingListener" async="false"
+      postCommit="false"
+      class="org.nuxeo.ecm.core.opencmis.impl.CommentListener">
+      <event>documentCreated</event>
+      <event>documentModified</event>
+      <event>documentCheckedIn</event>
+    </listener>
+  </extension>
+
+</component>
