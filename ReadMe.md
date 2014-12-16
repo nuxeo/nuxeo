@@ -30,16 +30,16 @@ Component, extension points and service implementation. This modules only contai
 
 **nuxeo-template-rendering-web**
 
-Contribute UI level extensions : Layouts, Widgets, Views, Url bindings ...
+Contribute UI level extensions: Layouts, Widgets, Views, Url bindings ...
 
 **nuxeo-template-rendering-xdocreport**
 
 Contribute the OpenOffice / DocX processor based on XDocReport. This is by far the most powerfull processor.
-See : http://code.google.com/p/xdocreport/
+See: http://code.google.com/p/xdocreport/
 
 **nuxeo-template-rendering-jxls**
 
-Contribute a template processor for XLS files based on JXLS project. See :http://jxls.sourceforge.net/
+Contribute a template processor for XLS files based on JXLS project. See: http://jxls.sourceforge.net/
 
 **nuxeo-template-rendering-jod**
 
