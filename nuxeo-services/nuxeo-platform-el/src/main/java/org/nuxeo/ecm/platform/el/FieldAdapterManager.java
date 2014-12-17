@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.el;
 
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -63,9 +64,10 @@ public final class FieldAdapterManager {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Object getValueForStorage(Object value) {
-        // FIXME: Temp hack : While we still have no EP management
         if (value instanceof Date) {
             value = getDateAsCalendar((Date) value);
+        } else if (value instanceof BigDecimal) {
+            value = getBigDecimalAsLong((BigDecimal) value);
         } else if (value instanceof Object[]) {
             Object[] array = (Object[]) value;
             Class<?> oldType = array.getClass().getComponentType();
@@ -162,6 +164,13 @@ public final class FieldAdapterManager {
 
     private static Date getCalendarAsDate(Calendar value) {
         return value.getTime();
+    }
+
+    /**
+     * @since 7.1
+     */
+    private static Long getBigDecimalAsLong(BigDecimal value) {
+        return value.longValueExact();
     }
 
 }
