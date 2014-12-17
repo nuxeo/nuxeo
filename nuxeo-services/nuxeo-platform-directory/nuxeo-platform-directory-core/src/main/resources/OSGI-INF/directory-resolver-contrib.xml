@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.directory.resolver">
+  <documentation>
+    Resolver for document properties containing Directory entries id. This resolver reference a proper
+    directory.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.core.schema.ExternalReferenceService" point="resolvers">
+    <resolver type="directoryResolver" class="org.nuxeo.ecm.directory.DirectoryEntryReferenceResolver" />
+  </extension>
+
+</component>

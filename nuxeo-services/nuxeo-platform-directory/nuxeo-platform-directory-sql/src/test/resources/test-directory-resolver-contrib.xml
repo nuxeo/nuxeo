@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.autoincrementid">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="directoryResolverSchema" src="sqldirectoryschema/directoryResolverSchema.xsd" prefix="drs" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
+
+    <directory name="referencedDirectory1">
+      <schema>directoryResolverSchema</schema>
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+      <table>referencedDirectory1</table>
+      <idField>id</idField>
+      <createTablePolicy>always</createTablePolicy>
+      <dataFile>test-directory-resolver.csv</dataFile>
+    </directory>
+
+    <directory name="referencedDirectory2">
+      <schema>directoryResolverSchema</schema>
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+      <table>referencedDirectory2</table>
+      <idField>id</idField>
+      <createTablePolicy>always</createTablePolicy>
+      <dataFile>test-directory-resolver.csv</dataFile>
+    </directory>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="directoryResolver" src="schemas/directoryResolver.xsd" prefix="dr" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="DirectoryReferencer" extends="Document">
+      <schema name="directoryResolver" />
+    </doctype>
+  </extension>
+
+
+</component>

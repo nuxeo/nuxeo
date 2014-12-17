@@ -40,9 +40,10 @@ public interface ExternalReferenceResolver {
      *
      * @param parameters A map of parameter whose keys are parameter names and map value are corresponding values.
      * @throws IllegalArgumentException If some parameter are not compatible with this resolver.
+     * @throws IllegalStateException If this resolver is already configured.
      * @since 7.1
      */
-    void configure(Map<String, String> parameters) throws IllegalArgumentException;
+    void configure(Map<String, String> parameters) throws IllegalArgumentException, IllegalArgumentException;
 
     /**
      * Provides this resolver name.
@@ -129,11 +130,12 @@ public interface ExternalReferenceResolver {
          * @param suffixCase This field is a which allow to define alternative translation.
          * @param invalidValue The invalid value that don't match any entity.
          * @param locale The language in which the message should be generated.
-         * @return A message in the specified language or
+         * @param additionnalParameters Relayed elements to build the message.
+         * @return A message in the specified language
          * @since 7.1
          */
         public static String getConstraintErrorMessage(ExternalReferenceResolver resolver, String suffixCase,
-                Object invalidValue, Locale locale) {
+                Object invalidValue, Locale locale, String... additionnalParameters) {
             List<String> pathTokens = new ArrayList<String>();
             pathTokens.add(Constraint.MESSAGES_KEY);
             pathTokens.add("resolver");
@@ -151,7 +153,11 @@ public interface ExternalReferenceResolver {
                     computedInvalidValue = invalidValueString;
                 }
             }
-            Object[] params = new Object[] { computedInvalidValue };
+            Object[] params = new Object[1 + additionnalParameters.length];
+            params[0] = computedInvalidValue;
+            for (int i = 1; i < params.length; i++) {
+                params[i] = additionnalParameters[i - 1];
+            }
             Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
             String message = I18NUtils.getMessageString(Constraint.MESSAGES_BUNDLE, keyConstraint, params,
                     computedLocale);
@@ -169,12 +175,13 @@ public interface ExternalReferenceResolver {
          * @param resolver The requesting resolver.
          * @param invalidValue The invalid value that don't match any entity.
          * @param locale The language in which the message should be generated.
-         * @return A message in the specified language or
+         * @param additionnalParameters Relayed elements to build the message.
+         * @return A message in the specified language
          * @since 7.1
          */
         public static String getConstraintErrorMessage(ExternalReferenceResolver resolver, Object invalidValue,
-                Locale locale) {
-            return Helper.getConstraintErrorMessage(resolver, null, invalidValue, locale);
+                Locale locale, String... additionnalParameters) {
+            return Helper.getConstraintErrorMessage(resolver, null, invalidValue, locale, additionnalParameters);
         }
     }
 

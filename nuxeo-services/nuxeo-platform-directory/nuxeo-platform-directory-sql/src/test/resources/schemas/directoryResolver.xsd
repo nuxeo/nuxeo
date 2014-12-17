@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://nuxeo.com/schemas/externalReferenceSample"
+  xmlns:nxs="http://nuxeo.com/schemas/resolver" xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/">
+
+  <xs:element name="directory1Ref">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="referencedDirectory1" />
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="directory2Ref">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="referencedDirectory2" />
+    </xs:simpleType>
+  </xs:element>
+
+</xs:schema>
