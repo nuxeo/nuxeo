@@ -166,8 +166,8 @@ public class TestReindex {
         startTransaction();
 
         DocumentModel folder = session.createDocumentModel("/", "section", "Folder");
-        session.createDocument(folder);
-        folder = session.saveDocument(folder);
+        folder = session.createDocument(folder);
+        session.saveDocument(folder);
         for (int i = 0; i < 10; i++) {
             DocumentModel doc = session.createDocumentModel("/", "testDoc" + i, "File");
             doc.setPropertyValue("dc:title", "TestMe" + i);

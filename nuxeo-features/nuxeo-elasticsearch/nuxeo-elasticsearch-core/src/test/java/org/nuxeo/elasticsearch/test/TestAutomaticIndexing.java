@@ -21,6 +21,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -88,6 +92,8 @@ public class TestAutomaticIndexing {
 
     private boolean syncMode = false;
 
+    private Priority consoleThresold;
+
     public void startCountingCommandProcessed() {
         Assert.assertEquals(0, esa.getPendingCommands());
         Assert.assertEquals(0, esa.getPendingDocs());
@@ -132,6 +138,7 @@ public class TestAutomaticIndexing {
     @After
     public void cleanupIndexed() throws Exception {
         esa.initIndexes(true);
+        restoreConsoleLog();
     }
 
     @Test
@@ -487,7 +494,9 @@ public class TestAutomaticIndexing {
         // here we manipulate the transient doc with a null docid
         Assert.assertNull(tmpDoc.getId());
         tmpDoc.setPropertyValue("dc:title", "NewTitle");
+        hideWarningFromConsoleLog();
         session.saveDocument(tmpDoc);
+        restoreConsoleLog();
 
         startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
@@ -506,10 +515,12 @@ public class TestAutomaticIndexing {
         DocumentModel tmpDoc = session.createDocumentModel("/", "file", "File");
         tmpDoc.setPropertyValue("dc:title", "TestMe");
         DocumentModel doc = session.createDocument(tmpDoc); // Send an ES_INSERT cmd
+        hideWarningFromConsoleLog();
         session.saveDocument(doc); // Send an ES_UPDATE merged with ES_INSERT
 
         tmpDoc.setPropertyValue("dc:title", "NewTitle"); // ES_UPDATE with transient, merged
         session.saveDocument(tmpDoc);
+        restoreConsoleLog();
 
         startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
@@ -520,4 +531,37 @@ public class TestAutomaticIndexing {
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document Where dc:title='NewTitle'"));
         Assert.assertEquals(1, docs.totalSize());
     }
+
+    @Test
+    public void shouldHandleUpdateBeforeInsertOnTransientDoc() throws Exception {
+        startTransaction();
+        DocumentModel folder = session.createDocumentModel("/", "section", "Folder");
+        session.createDocument(folder);
+        hideWarningFromConsoleLog();
+        folder = session.saveDocument(folder); // generate a WARN and an UPDATE command
+        restoreConsoleLog();
+        startCountingCommandProcessed();
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
+        startTransaction();
+        assertNumberOfCommandProcessed(1);
+    }
+
+    private void hideWarningFromConsoleLog() {
+        Logger rootLogger = Logger.getRootLogger();
+        ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender("CONSOLE");
+        consoleThresold = consoleAppender.getThreshold();
+        consoleAppender.setThreshold(Level.ERROR);
+    }
+
+    private void restoreConsoleLog() {
+        if (consoleThresold == null) {
+            return;
+        }
+        Logger rootLogger = Logger.getRootLogger();
+        ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender("CONSOLE");
+        consoleAppender.setThreshold(consoleThresold);
+        consoleThresold = null;
+    }
+
 }
