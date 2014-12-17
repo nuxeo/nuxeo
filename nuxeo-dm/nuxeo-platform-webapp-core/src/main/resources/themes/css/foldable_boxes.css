@@ -198,3 +198,9 @@ a.bubbleBox:hover {
   background: none "color.major.light (__FLAVOR__ background)";
   color: "black (__FLAVOR__ color)";
   text-decoration: none }
+
+/* Stop max-width for dataInput nested in boxes */
+.foldableLightBox .dataInput,
+.grayBox .dataInput,
+.simpleBox .dataInput {
+  max-width: none }
