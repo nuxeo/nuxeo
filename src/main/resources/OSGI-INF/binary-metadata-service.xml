@@ -12,8 +12,10 @@
   <extension-point name="metadataProcessors">
     <object class="org.nuxeo.binary.metadata.contribution.MetadataProcessorDescriptor"/>
     <documentation>
-      <processor id="exifTool"
-                 class="org.nuxeo.binary.metadata.ExifToolProcessor"/>
+      <code>
+        <processor id="exifTool"
+                   class="org.nuxeo.binary.metadata.ExifToolProcessor"/>
+      </code>
     </documentation>
   </extension-point>
 
@@ -21,11 +23,13 @@
     <object
             class="org.nuxeo.binary.metadata.contribution.MetadataMappingDescriptor"/>
     <documentation>
-      <metadataMapping id="xmp" processor="exifTool" blobXPath="file:content">
-        <metadata name="tiff:ImageWidth" xpath="xmp:ImageWidth"/>
-        <metadata name="tiff:ImageLength" xpath="xmp:ImageLength"/>
-        <metadata name="xmp:CreatorTool" xpath="xmp:CreatorTool"/>
-      </metadataMapping>
+      <code>
+        <metadataMapping id="xmp" processor="exifTool" blobXPath="file:content">
+          <metadata name="tiff:ImageWidth" xpath="xmp:ImageWidth"/>
+          <metadata name="tiff:ImageLength" xpath="xmp:ImageLength"/>
+          <metadata name="xmp:CreatorTool" xpath="xmp:CreatorTool"/>
+        </metadataMapping>
+      </code>
     </documentation>
   </extension-point>
 
@@ -33,14 +37,16 @@
     <object
             class="org.nuxeo.binary.metadata.contribution.MetadataRuleDescriptor"/>
     <documentation>
-      <rule id="default" order="0" enabled="true" async="false">
-        <metadataMappings>
-          <metadataMapping-id>xmp</metadataMapping-id>
-        </metadataMappings>
-        <filters>
-          <filter-id>hasXMPFacet</filter-id>
-        </filters>
-      </rule>
+      <code>
+        <rule id="default" order="0" enabled="true" async="false">
+          <metadataMappings>
+            <metadataMapping-id>xmp</metadataMapping-id>
+          </metadataMappings>
+          <filters>
+            <filter-id>hasXMPFacet</filter-id>
+          </filters>
+        </rule>
+      </code>
     </documentation>
   </extension-point>
 
