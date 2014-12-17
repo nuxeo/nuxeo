@@ -1,38 +1,32 @@
-Multi threaded document importer from server filesystem
-=======================================================
+# Nuxeo Platform Importer
 
-The file importer comes as a Java library (with nuxeo runtime service)
-and a sample JAX-RS interface to launch, monitor and abort import jobs.
+## About Nuxeo Platform Importer
 
-Build with::
+The file importer comes as a Java library (with nuxeo runtime service) and a sample JAX-RS interface to launch, monitor and abort import jobs.
+This project is an on-going project, supported by Nuxeo
 
-  $ mvn install -Dmaven.test.skip=true
+## Building 
+### How to Build Nuxeo Platform Importer
+Build the Nuxeo Platform Importer with Maven:    
+```$ mvn install -Dmaven.test.skip=true```
 
-And deploy the two jars from the target subfolder into the nuxeo.ear/plugins or
-nxserver/bundles folder of your nuxeo server (and restart).
+## Deploying
+Nuxeo Platform Importer is available as two package add-ons [from the Nuxeo Marketplace]
+https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-platform-importer
+https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-scan-importer
 
-To import the folder '/home/ogrisel/Documents' into the workspace
-'/default-domain/workspaces/my-workspace' while monitoring the import logs from
-a REST client use the following HTTP GET queries::
+## Resources 
+### Documentation
+The documentation for Nuxeo Platform Importer is available in our Documentation Center: http://doc.nuxeo.com/x/gYBVAQ
 
-  GET http://localhost:8080/nuxeo/site/fileImporter/logActivate
+### Following Project QA Status
+Follow the project build status on: http://qa.nuxeo.org/jenkins/job/addons_nuxeo-platform-importer-master/
 
-  GET http://localhost:8080/nuxeo/site/fileImporter/run?targetPath=/default-domain/workspaces/my-workspace&inputPath=/home/ogrisel/Documents&batchSize=10&interactive=false&nbThreads=4
+### Reporting Issues 
+You can report issues in the Nuxeo Platform project of our JIRA bug tracker, which includes a Nuxeo Platform Importer
+https://jira.nuxeo.com/browse/NXP/component/10621
 
-  GET http://localhost:8080/nuxeo/site/fileImporter/log
+## About Nuxeo
+Nuxeo dramatically improves how content-based applications are built, managed and deployed, making customers more agile, innovative and successful. Nuxeo provides a next generation, enterprise ready platform for building traditional and cutting-edge content oriented applications. Combining a powerful application development environment with SaaS-based tools and a modular architecture, the Nuxeo Platform and Products provide clear business value to some of the most recognizable brands including Verizon, Electronic Arts, Netflix, Sharp, FICO, the U.S. Navy, and Boeing. Nuxeo is headquartered in New York and Paris. More information is available at www.nuxeo.com.
 
-To execute those HTTP queries you can either use a browser with an active Nuxeo
-session (JSESSIONID cookie) or use a third party stateless HTTP client with HTTP
-Basic Authentication, eg: with the curl commandline client::
-
-  $ curl --basic -u 'Administrator:Administrator' "http://localhost:8080/nuxeo/site/fileImporter/log"
-
-Don't forget to quote the URL if it includes special shell characters such as
-'&'.
-
-You can also the generic HTTP GUI client from the rest-client java project::
-
-  http://code.google.com/p/rest-client/
-
-Don't forget to fill in the 'Auth' tab with your user credentials.
 
