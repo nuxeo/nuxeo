@@ -263,6 +263,12 @@ public class ContentViewRegistry extends ContributionFragmentRegistry<ContentVie
         if (resultCols != null) {
             oldDesc.resultColumns = resultCols;
         }
+
+        String resultLayout = newDesc.getResultLayoutBinding();
+        if (resultLayout != null) {
+            oldDesc.resultLayout = resultLayout;
+        }
+
     }
 
     // API
