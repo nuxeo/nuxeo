@@ -33,7 +33,6 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -156,8 +155,7 @@ public class IndexingCommand implements Serializable {
         }
         IdRef idref = new IdRef(uid);
         if (!session.exists(idref)) {
-                // Doc was deleted : no way we can fetch it
-            log.info("Can not get target document, because it does not exists anymore: " + this);
+            // Doc was deleted : no way we can fetch it
             return null;
         }
         return session.getDocument(idref);
