@@ -119,8 +119,8 @@ public class IndexingCommand implements Serializable {
         }
         // transient document try to get it from its path
         DocumentRef documentRef = target.getRef();
-        log.warn("Processing indexing command on a document with a null id, ref: " + documentRef
-                + " activate trace level for more info.");
+        log.warn("Creating indexing command on a document with a null id, ref: " + documentRef
+                + ", trying to get the docId from its path, activate trace level for more info " + this);
         if (log.isTraceEnabled()) {
             Throwable throwable = new Throwable();
             StringWriter stack = new StringWriter();
