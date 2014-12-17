@@ -20,6 +20,7 @@ package org.nuxeo.elasticsearch.work;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -47,9 +48,8 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements Wo
 
     @Override
     protected void doIndexingWork(ElasticSearchIndexing esi, IndexingCommand cmd) {
-        DocumentModel doc = cmd.getTargetDocument();
+        DocumentModel doc = getDocument(cmd);
         if (doc == null) {
-            // doc has been deleted
             return;
         }
         DocumentModelIterator iter = session.getChildrenIterator(doc.getRef());
@@ -70,6 +70,24 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements Wo
             }
         }
 
+    }
+
+    private DocumentModel getDocument(IndexingCommand cmd) {
+        DocumentModel doc;
+        try {
+            doc = cmd.getTargetDocument();
+        } catch (ClientException e) {
+            if (e.getCause() instanceof NoSuchDocumentException) {
+                doc = null;
+            } else {
+                throw e;
+            }
+        }
+        if (doc == null) {
+            // doc has been deleted
+            return null;
+        }
+        return doc;
     }
 
 }

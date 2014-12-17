@@ -46,6 +46,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
@@ -147,7 +148,11 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                     bulkRequest.add(idxRequest);
                 }
             } catch (ClientException | IllegalArgumentException e) {
-                log.error("Skip indexing command to bulk, fail to create request: " + cmd, e);
+                if (e.getCause() instanceof NoSuchDocumentException) {
+                    log.info("Skip indexing command to bulk, doc does not exists anymore: " + cmd);
+                } else {
+                    log.error("Skip indexing command to bulk, fail to create request: " + cmd, e);
+                }
             }
         }
         if (bulkRequest.numberOfActions() > 0) {
@@ -191,12 +196,16 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         IndexRequestBuilder request;
         try {
             request = buildEsIndexingRequest(cmd);
-        } catch (ClientException | IllegalArgumentException e) {
-            log.error("Fail to create request for indexing command: " + cmd, e);
-            return;
+        } catch (ClientException | IllegalStateException e) {
+            if (e.getCause() instanceof NoSuchDocumentException) {
+                request = null;
+            } else {
+                log.error("Fail to create request for indexing command: " + cmd, e);
+                return;
+            }
         }
         if (request == null) {
-            // doc does not exist any more nothing to index
+            log.info("Cancel indexing command because target document does not exists anymore: " + cmd);
             return;
         }
         if (log.isDebugEnabled()) {
