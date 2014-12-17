@@ -23,6 +23,8 @@ public class BinaryMetadataConstants {
 
     public static final String EXIFTOOL_READ = "exiftool-read";
 
+    public static final String EXIFTOOL_READ_TAGLIST = "exiftool-read-taglist";
+
     public static final String EXIFTOOL_WRITE = "exiftool-write";
 
     public static final String METADATA_MAPPING_EP = "metadataMappings";
@@ -32,4 +34,6 @@ public class BinaryMetadataConstants {
     public static final String METADATA_RULES_EP = "metadataRules";
 
     public static final String EXIF_TOOL_CONTRIBUTION_ID = "exifTool";
+
+    public static final String READ_METADATA_METHOD = "readMetadata";
 }

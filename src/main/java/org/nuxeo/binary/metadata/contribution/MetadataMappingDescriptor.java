@@ -46,7 +46,7 @@ public class MetadataMappingDescriptor {
     }
 
     @XObject("metadata")
-    public class MetadataDescriptor {
+    public static class MetadataDescriptor {
 
         @XNode("@name")
         protected String name;

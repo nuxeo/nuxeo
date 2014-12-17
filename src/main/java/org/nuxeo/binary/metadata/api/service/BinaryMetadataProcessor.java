@@ -18,6 +18,7 @@ package org.nuxeo.binary.metadata.api.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -58,7 +59,7 @@ public abstract class BinaryMetadataProcessor {
      * @param metadata Metadata to extract.
      * @return Metadata map.
      */
-    public abstract Map<String, String> readMetadata(Blob blob, Map<String, String> metadata);
+    public abstract Map<String, Object> readMetadata(Blob blob, List<String> metadata);
 
     /**
      * Read all metadata from a given blob.

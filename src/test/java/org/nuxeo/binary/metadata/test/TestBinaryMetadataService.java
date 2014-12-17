@@ -72,4 +72,14 @@ public class TestBinaryMetadataService {
         assertEquals("Twist", blobProperties.get("Title").toString());
         assertEquals("Divine Recordings", blobProperties.get("Publisher").toString());
     }
+
+    @Test
+    public void itShouldExtractGivenMetadataFromBinary() {
+        DocumentModel musicFile = BinaryMetadataServerInit.getFile(0, session);
+        BlobHolder musicBlobHolder = musicFile.getAdapter(BlobHolder.class);
+        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(musicBlobHolder.getBlob(), musicMetadata);
+        assertNotNull(blobProperties);
+        assertEquals("Twist", blobProperties.get("Title").toString());
+        assertEquals("Divine Recordings", blobProperties.get("Publisher").toString());
+    }
 }

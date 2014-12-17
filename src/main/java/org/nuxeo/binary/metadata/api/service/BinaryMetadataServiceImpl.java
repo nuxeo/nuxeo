@@ -18,6 +18,7 @@ package org.nuxeo.binary.metadata.api.service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  *
  * @since 7.1
  */
-public class BinaryMetadataServiceImpl implements BinaryMetadataService, BinaryMetadataRegistryService {
+public class BinaryMetadataServiceImpl implements BinaryMetadataService {
 
     private static final Log log = LogFactory.getLog(BinaryMetadataServiceImpl.class);
 
@@ -49,10 +50,13 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService, BinaryM
 
     protected MetadataRuleRegistry ruleRegistry;
 
+    protected Map<String, BinaryMetadataProcessor> binaryMetadataProcessorInstances;
+
     public BinaryMetadataServiceImpl() {
         this.mappingRegistry = new MetadataMappingRegistry();
         this.ruleRegistry = new MetadataRuleRegistry();
         this.processorRegistry = new MetadataProcessorRegistry();
+        this.binaryMetadataProcessorInstances = new HashMap<>();
     }
 
     /**
@@ -75,7 +79,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService, BinaryM
      * {@inheritDoc}
      */
     @Override
-    public Map<String, String> readMetadata(String processorName, Blob blob, List<String> metadataNames) {
+    public Map<String, Object> readMetadata(String processorName, Blob blob, List<String> metadataNames) {
         return null;
     }
 
@@ -83,26 +87,29 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService, BinaryM
      * {@inheritDoc}
      */
     @Override
-    public Map<String, String> readMetadata(Blob blob, List<String> metadataNames) {
-        return null;
-    }
-
-    @Override
-    public Map<String, Object> readMetadata(Blob blob) {
+    public Map<String, Object> readMetadata(Blob blob, List<String> metadataNames) {
         try {
-            Class[] paramBlob = new Class[1];
-            paramBlob[0] = Blob.class;
-            BinaryMetadataProcessor binaryMetadataProcessor = processorRegistry.getProcessorDescriptorMap().get(
-                    BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID).getProcessorClass().newInstance();
-            Method method = binaryMetadataProcessor.getClass().getDeclaredMethod("readMetadata", paramBlob);
-            return (Map<String, Object>) method.invoke(binaryMetadataProcessor, blob);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
+            Class[] params = {Blob.class, List.class};
+            Method method = getProcessorMethod(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, BinaryMetadataConstants.READ_METADATA_METHOD, params);
+            return processorMethodInvoker(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, method, blob, metadataNames);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new BinaryMetadataException(e);
         }
     }
 
     @Override
-    public Map<String, String> readMetadata(String processorName, Blob blob) {
+    public Map<String, Object> readMetadata(Blob blob) {
+        try {
+            Class[] paramBlob = {Blob.class};
+            Method method = getProcessorMethod(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, BinaryMetadataConstants.READ_METADATA_METHOD, paramBlob);
+            return processorMethodInvoker(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, method, blob);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new BinaryMetadataException(e);
+        }
+    }
+
+    @Override
+    public Map<String, Object> readMetadata(String processorName, Blob blob) {
         return null;
     }
 
@@ -110,7 +117,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService, BinaryM
      * {@inheritDoc}
      */
     @Override
-    public void writeMetadata(String processorName, Blob blob, Map<String, String> metadata) {
+    public void writeMetadata(String processorName, Blob blob, Map<String, Object> metadata) {
 
     }
 
@@ -118,39 +125,48 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService, BinaryM
      * {@inheritDoc}
      */
     @Override
-    public void writeMetadata(Blob blob, Map<String, String> metadata) {
+    public void writeMetadata(Blob blob, Map<String, Object> metadata) {
 
+    }
+
+    protected Map<String, Object> processorMethodInvoker(String processorId, Method method, Object... args)
+            throws IllegalAccessException, InvocationTargetException {
+        return (Map<String, Object>) method.invoke(binaryMetadataProcessorInstances.get(processorId), args);
+    }
+
+    protected Method getProcessorMethod(String processorId, String methodId, Class[] params)
+            throws NoSuchMethodException {
+        return binaryMetadataProcessorInstances.get(processorId).getClass().getDeclaredMethod(methodId, params);
     }
 
     /*--------------------- Registry Service -----------------------*/
 
-    @Override
-    public void addMappingContribution(MetadataMappingDescriptor contribution) {
+    protected void addMappingContribution(MetadataMappingDescriptor contribution) {
         this.mappingRegistry.addContribution(contribution);
     }
 
-    @Override
-    public void addRuleContribution(MetadataRuleDescriptor contribution) {
+    protected void addRuleContribution(MetadataRuleDescriptor contribution) {
         this.ruleRegistry.addContribution(contribution);
     }
 
-    @Override
-    public void addProcessorContribution(MetadataProcessorDescriptor contribution) {
+    protected void addProcessorContribution(MetadataProcessorDescriptor contribution) {
+        try {
+            this.binaryMetadataProcessorInstances.put(contribution.getId(),contribution.getProcessorClass().newInstance());
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new BinaryMetadataException(e);
+        }
         this.processorRegistry.addContribution(contribution);
     }
 
-    @Override
-    public void removeMappingContribution(MetadataMappingDescriptor contribution) {
+    protected void removeMappingContribution(MetadataMappingDescriptor contribution) {
         this.mappingRegistry.removeContribution(contribution);
     }
 
-    @Override
-    public void removeRuleContribution(MetadataRuleDescriptor contribution) {
+    protected void removeRuleContribution(MetadataRuleDescriptor contribution) {
         this.ruleRegistry.removeContribution(contribution);
     }
 
-    @Override
-    public void removeProcessorContribution(MetadataProcessorDescriptor contribution) {
+    protected void removeProcessorContribution(MetadataProcessorDescriptor contribution) {
         this.processorRegistry.removeContribution(contribution);
     }
 

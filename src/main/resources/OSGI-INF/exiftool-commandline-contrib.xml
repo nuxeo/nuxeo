@@ -4,6 +4,13 @@
           target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
           point="command">
 
+    <command name="exiftool-read-taglist" enabled="true">
+      <commandLine>exiftool</commandLine>
+      <parameterString> -json #{tagList} #{inFilePath}</parameterString>
+      <installationDirective>You need to install exiftool
+      </installationDirective>
+    </command>
+
     <command name="exiftool-read" enabled="true">
       <commandLine>exiftool</commandLine>
       <parameterString> -json #{inFilePath}</parameterString>

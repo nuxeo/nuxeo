@@ -51,7 +51,7 @@ public interface BinaryMetadataService {
      * @param metadataNames Metadata list to extract from the binary.
      * @return Extracted metadata.
      */
-    public Map<String, String> readMetadata(String processorName, Blob blob, List<String> metadataNames);
+    public Map<String, Object> readMetadata(String processorName, Blob blob, List<String> metadataNames);
 
     /**
      * Read and return metadata from a given binary and a given metadata list with Nuxeo default processor.
@@ -60,7 +60,7 @@ public interface BinaryMetadataService {
      * @param metadataNames Metadata list to extract from the binary.
      * @return Extracted metadata.
      */
-    public Map<String, String> readMetadata(Blob blob, List<String> metadataNames);
+    public Map<String, Object> readMetadata(Blob blob, List<String> metadataNames);
 
     /**
      * Read and return metadata from a given binary with Nuxeo default processor.
@@ -77,7 +77,7 @@ public interface BinaryMetadataService {
      * @param blob Binary which metadata are read.
      * @return Extracted metadata.
      */
-    public Map<String, String> readMetadata(String processorName, Blob blob);
+    public Map<String, Object> readMetadata(String processorName, Blob blob);
 
     /**
      * Write metadata into a given binary with a given processor.
@@ -86,7 +86,7 @@ public interface BinaryMetadataService {
      * @param blob Binary which metadata are written.
      * @param metadata Injected metadata.
      */
-    public void writeMetadata(String processorName, Blob blob, Map<String, String> metadata);
+    public void writeMetadata(String processorName, Blob blob, Map<String, Object> metadata);
 
     /**
      * Write metadata into a given binary with a Nuxeo default processor.
@@ -94,5 +94,5 @@ public interface BinaryMetadataService {
      * @param blob Binary which metadata are written.
      * @param metadata Injected metadata.
      */
-    public void writeMetadata(Blob blob, Map<String, String> metadata);
+    public void writeMetadata(Blob blob, Map<String, Object> metadata);
 }

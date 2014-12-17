@@ -1,12 +1,10 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.binary.metadata.api.service">
   <implementation
-          class="org.nuxeo.binary.metadata.contribution.BinaryMetadataComponent"/>
+          class="org.nuxeo.binary.metadata.api.service.BinaryMetadataComponent"/>
   <service>
     <provide
             interface="org.nuxeo.binary.metadata.api.service.BinaryMetadataService"/>
-    <provide
-            interface="org.nuxeo.binary.metadata.api.service.BinaryMetadataRegistryService"/>
   </service>
 
   <extension-point name="metadataProcessors">

@@ -54,18 +54,18 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
     }
 
     @Override
-    public Map<String, String> readMetadata(Blob blob, Map<String,
-            String> metadata) {
-        CommandAvailability ca = getCommandLineExecutorService().getCommandAvailability(BinaryMetadataConstants.EXIFTOOL_READ);
+    public Map<String, Object> readMetadata(Blob blob, List<String> metadata) {
+        CommandAvailability ca = getCommandLineExecutorService().getCommandAvailability(BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST);
         if (!ca.isAvailable()) {
-            throw new BinaryMetadataException("Command '" + BinaryMetadataConstants.EXIFTOOL_READ
+            throw new BinaryMetadataException("Command '" + BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST
                     + "' is not available.");
         }
         try {
             CmdParameters params = new CmdParameters();
             File file = makeFile(blob);
             params.addNamedParameter("inFilePath", file);
-            ExecResult er = getCommandLineExecutorService().execCommand(BinaryMetadataConstants.EXIFTOOL_READ, params);
+            params.addNamedParameter("tagList", getCommandTags(metadata));
+            ExecResult er = getCommandLineExecutorService().execCommand(BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST, params);
             if (!er.isSuccessful()) {
                 throw new BinaryMetadataException("There was an error executing the following command: "
                         + er.getCommandLine());
@@ -75,34 +75,24 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
                 sb.append(line);
             }
             String jsonOutput = sb.toString();
-            JsonNode jsArray = jacksonMapper.readTree(jsonOutput);
-            JsonNode jsonObject = jsArray.get(0);
-            /*for (PropertyItemDescriptor property : MetadataMappingDescriptor.getProperties()) {
-                JsonNode node = jsonObject.get(property.getMetadataName());
-                if (node == null) {
-                    // try fallback
-                    for (String fallbackMetadata : property.fallbackMetadata) {
-                        node = jsonObject.get(fallbackMetadata);
-                        if (node != null) {
-                            break;
-                        }
-                    }
-                }
-                if (node != null) {
-                    String metadata = node.getValueAsText();
-                    if (metadata != null && !"".equals(metadata)) {
-                        Property p = doc.getProperty(property.getXpath());
-                        p.setValue(metadata);
-                    }
-                }
-            }*/
+            List<Map<String,Object>> map = jacksonMapper.readValue(jsonOutput, new TypeReference<List<HashMap<String, Object>>>() {
+            });
+            Map<String,Object> binaryMetadataMap = map.get(0);
+            return binaryMetadataMap;
         } catch (CommandNotAvailable commandNotAvailable) {
-            throw new RuntimeException("Command '" + BinaryMetadataConstants.EXIFTOOL_READ + "' is not available.",
+            throw new RuntimeException("Command '" + BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST + "' is not available.",
                     commandNotAvailable);
         } catch (IOException ioException) {
             throw new BinaryMetadataException(ioException);
         }
-        return null;
+    }
+
+    protected String getCommandTags(List<String> metadataList) {
+        StringBuilder sb = new StringBuilder();
+        for(String metadata: metadataList){
+            sb.append("-" + metadata + " ");
+        }
+        return sb.toString();
     }
 
     @Override

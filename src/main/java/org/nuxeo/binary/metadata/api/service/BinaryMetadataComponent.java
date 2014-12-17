@@ -14,15 +14,14 @@
  * Contributors:
  *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.binary.metadata.contribution;
+package org.nuxeo.binary.metadata.api.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
-import org.nuxeo.binary.metadata.api.service.BinaryMetadataRegistryService;
-import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
-import org.nuxeo.binary.metadata.api.service.BinaryMetadataServiceImpl;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.binary.metadata.contribution.MetadataMappingDescriptor;
+import org.nuxeo.binary.metadata.contribution.MetadataProcessorDescriptor;
+import org.nuxeo.binary.metadata.contribution.MetadataRuleDescriptor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -83,7 +82,7 @@ public class BinaryMetadataComponent extends DefaultComponent {
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (adapter == BinaryMetadataRegistryService.class || adapter == BinaryMetadataService.class) {
+        if (adapter == BinaryMetadataService.class) {
             return adapter.cast(metadataService);
         }
         return null;
