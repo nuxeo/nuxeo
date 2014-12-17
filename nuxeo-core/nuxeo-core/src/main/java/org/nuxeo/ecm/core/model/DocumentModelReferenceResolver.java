@@ -61,12 +61,12 @@ import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
  * <xs:simpleType name="userOrGroupReference">
  *   <xs:restriction base="xs:string" ref:resolver="documentResolver" />
  * </xs:simpleType>
- * 
+ *
  * <!-- user resolver -->
  * <xs:simpleType name="userReference">
  *   <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:type="user" />
  * </xs:simpleType>
- * 
+ *
  * <!-- group resolver -->
  * <xs:simpleType name="groupReference">
  *   <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:type="group" />
@@ -105,10 +105,13 @@ public class DocumentModelReferenceResolver implements ExternalReferenceResolver
         if (this.parameters != null) {
             throw new IllegalStateException("cannot change configuration, may be already in use somewhere");
         }
-        if (STORE_ID_REF.equals(parameters.get(PARAM_STORE))) {
-            mode = MODE.ID_REF;
-        } else if (STORE_PATH_REF.equals(parameters.get(PARAM_STORE))) {
-            mode = MODE.PATH_REF;
+        String store = parameters.get(PARAM_STORE);
+        if (store != null) {
+            if (STORE_ID_REF.equals(store)) {
+                mode = MODE.ID_REF;
+            } else if (STORE_PATH_REF.equals(store)) {
+                mode = MODE.PATH_REF;
+            }
         }
         this.parameters = new HashMap<String, Serializable>();
         this.parameters.put(PARAM_STORE, mode == MODE.ID_REF ? STORE_ID_REF : STORE_PATH_REF);
@@ -147,7 +150,9 @@ public class DocumentModelReferenceResolver implements ExternalReferenceResolver
                     if (session != null) {
                         try {
                             session.close();
+                            session = null;
                         } catch (Exception e) {
+                            session = null;
                         }
                     }
                 }
@@ -183,7 +188,9 @@ public class DocumentModelReferenceResolver implements ExternalReferenceResolver
                     if (session != null) {
                         try {
                             session.close();
+                            session = null;
                         } catch (Exception e) {
+                            session = null;
                         }
                     }
                 }
