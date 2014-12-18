@@ -37,13 +37,6 @@ public interface BinaryMetadataService {
     public void readMetadata(DocumentModel doc);
 
     /**
-     * Write metadata (from a binary) into a given Nuxeo Document.
-     *
-     * @param doc Nuxeo Document which metadata are written.
-     */
-    public void writeMetadata(DocumentModel doc);
-
-    /**
      * Read and return metadata from a given binary and a given metadata list with a given processor.
      *
      * @param processorName Name of the contributed processor to run.
@@ -85,14 +78,24 @@ public interface BinaryMetadataService {
      * @param processorName Name of the contributed processor to run.
      * @param blob Binary which metadata are written.
      * @param metadata Injected metadata.
+     * @return success or not.
      */
-    public void writeMetadata(String processorName, Blob blob, Map<String, Object> metadata);
+    public boolean writeMetadata(String processorName, Blob blob, Map<String, Object> metadata);
 
     /**
      * Write metadata into a given binary with a Nuxeo default processor.
      *
      * @param blob Binary which metadata are written.
      * @param metadata Injected metadata.
+     * @return success or not.
      */
-    public void writeMetadata(Blob blob, Map<String, Object> metadata);
+    public boolean writeMetadata(Blob blob, Map<String, Object> metadata);
+
+    /**
+     * Write metadata (from a binary) into a given Nuxeo Document.
+     *
+     * @param doc Nuxeo Document which metadata are written.
+     * @return success or not.
+     */
+    public boolean writeMetadata(DocumentModel doc);
 }

@@ -50,7 +50,7 @@ public abstract class BinaryMetadataProcessor {
      * @param metadata Metadata to inject.
      * @return success or not.
      */
-    public abstract boolean writeMetadata(Blob blob, Map<String, String> metadata);
+    public abstract boolean writeMetadata(Blob blob, Map<String, Object> metadata);
 
     /**
      * Read from a given blob given metadata map.

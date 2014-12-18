@@ -71,14 +71,6 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
      * {@inheritDoc}
      */
     @Override
-    public void writeMetadata(DocumentModel doc) {
-
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Map<String, Object> readMetadata(String processorName, Blob blob, List<String> metadataNames) {
         return null;
     }
@@ -91,7 +83,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         try {
             Class[] params = {Blob.class, List.class};
             Method method = getProcessorMethod(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, BinaryMetadataConstants.READ_METADATA_METHOD, params);
-            return processorMethodInvoker(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, method, blob, metadataNames);
+            return (Map<String, Object>) processorMethodInvoker(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, method, blob, metadataNames);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new BinaryMetadataException(e);
         }
@@ -102,7 +94,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         try {
             Class[] paramBlob = {Blob.class};
             Method method = getProcessorMethod(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, BinaryMetadataConstants.READ_METADATA_METHOD, paramBlob);
-            return processorMethodInvoker(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, method, blob);
+            return (Map<String, Object>) processorMethodInvoker(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, method, blob);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new BinaryMetadataException(e);
         }
@@ -117,21 +109,35 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
      * {@inheritDoc}
      */
     @Override
-    public void writeMetadata(String processorName, Blob blob, Map<String, Object> metadata) {
-
+    public boolean writeMetadata(String processorName, Blob blob, Map<String, Object> metadata) {
+        return true;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void writeMetadata(Blob blob, Map<String, Object> metadata) {
-
+    public boolean writeMetadata(Blob blob, Map<String, Object> metadata) {
+        try {
+            Class[] params = {Blob.class, Map.class};
+            Method method = getProcessorMethod(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, BinaryMetadataConstants.WRITE_METADATA_METHOD, params);
+            return (boolean) processorMethodInvoker(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, method, blob, metadata);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new BinaryMetadataException(e);
+        }
     }
 
-    protected Map<String, Object> processorMethodInvoker(String processorId, Method method, Object... args)
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean writeMetadata(DocumentModel doc) {
+        return true;
+    }
+
+    protected Object processorMethodInvoker(String processorId, Method method, Object... args)
             throws IllegalAccessException, InvocationTargetException {
-        return (Map<String, Object>) method.invoke(binaryMetadataProcessorInstances.get(processorId), args);
+        return method.invoke(binaryMetadataProcessorInstances.get(processorId), args);
     }
 
     protected Method getProcessorMethod(String processorId, String methodId, Class[] params)
