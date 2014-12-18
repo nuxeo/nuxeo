@@ -17,6 +17,8 @@
 
 package org.nuxeo.elasticsearch.work;
 
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
@@ -42,12 +44,16 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements Wo
 
     @Override
     public String getTitle() {
-        String title = " ElasticSearch indexing children for cmd " + cmd;
+        String title = " ElasticSearch indexing children for cmd " + (cmds.isEmpty() ? "null" : cmds.get(0));
         return title;
     }
 
     @Override
-    protected void doIndexingWork(ElasticSearchIndexing esi, IndexingCommand cmd) {
+    protected void doIndexingWork(ElasticSearchIndexing esi, List<IndexingCommand> cmds) {
+        if (cmds.isEmpty()) {
+            return;
+        }
+        IndexingCommand cmd = cmds.get(0);
         DocumentModel doc = getDocument(cmd);
         if (doc == null) {
             return;
@@ -61,7 +67,7 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements Wo
             IndexingCommand childCommand = cmd.clone(child);
 
             if (!esi.isAlreadyScheduled(childCommand)) {
-                esi.indexNow(childCommand);
+                esi.indexNonRecursive(childCommand);
             }
             if (child.isFolder()) {
                 ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(childCommand);

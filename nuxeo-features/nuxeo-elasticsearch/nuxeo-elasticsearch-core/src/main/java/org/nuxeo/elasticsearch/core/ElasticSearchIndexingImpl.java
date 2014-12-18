@@ -83,13 +83,40 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     @Override
-    public void indexNow(List<IndexingCommand> cmds) throws ClientException {
-        // we count all commands even those coming from async children worker
-        // which are not scheduled
+    public void runIndexingWorker(List<IndexingCommand> cmds) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public void runIndexingWorker(IndexingCommand cmds) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public void runReindexingWorker(String repositoryName, String nxql) {
+        if (nxql == null || nxql.isEmpty()) {
+            throw new IllegalArgumentException("Expecting an NXQL query");
+        }
+        esa.totalCommandRunning.incrementAndGet();
+        try {
+            ScrollingIndexingWorker worker = new ScrollingIndexingWorker(repositoryName, nxql);
+            WorkManager wm = Framework.getLocalService(WorkManager.class);
+            wm.schedule(worker);
+        } finally {
+            esa.totalCommandRunning.decrementAndGet();
+        }
+    }
+
+    @Override
+    public void indexNonRecursive(List<IndexingCommand> cmds) throws ClientException {
         int nbCommands = cmds.size();
+        if (nbCommands == 1) {
+            indexNonRecursive(cmds.get(0));
+            return;
+        }
         esa.totalCommandRunning.addAndGet(nbCommands);
         try {
-            // uncomment to simulate long indexing which timeout postcommit
+            // simulate long indexing
             // try {Thread.sleep(1000);} catch (InterruptedException e) { }
             processBulkDeleteCommands(cmds);
             Context stopWatch = bulkIndexTimer.time();
@@ -102,21 +129,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             esa.totalCommandRunning.addAndGet(-nbCommands);
         }
         esa.totalCommandProcessed.addAndGet(nbCommands);
-    }
-
-    @Override
-    public void reindex(String repositoryName, String nxql) {
-        if (nxql == null || nxql.isEmpty()) {
-            throw new IllegalArgumentException("Expecting an NXQL query");
-        }
-        esa.totalCommandRunning.incrementAndGet();
-        try {
-            ScrollingIndexingWorker worker = new ScrollingIndexingWorker(repositoryName, nxql);
-            WorkManager wm = Framework.getLocalService(WorkManager.class);
-            wm.schedule(worker);
-        } finally {
-            esa.totalCommandRunning.decrementAndGet();
-        }
+        refreshIfNeeded(cmds);
     }
 
     void processBulkDeleteCommands(List<IndexingCommand> cmds) {
@@ -138,9 +151,6 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         for (IndexingCommand cmd : cmds) {
             if (cmd.getType() == Type.DELETE) {
                 continue;
-            }
-            if (log.isTraceEnabled()) {
-                log.trace("Adding indexing command to bulk: " + cmd.getId());
             }
             try {
                 IndexRequestBuilder idxRequest = buildEsIndexingRequest(cmd);
@@ -168,8 +178,23 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
     }
 
+    protected void refreshIfNeeded(List<IndexingCommand> cmds) {
+        for (IndexingCommand cmd : cmds) {
+            if (refreshIfNeeded(cmd))
+                return;
+        }
+    }
+
+    private boolean refreshIfNeeded(IndexingCommand cmd) {
+        if (cmd.isSync()) {
+            esa.refresh();
+            return true;
+        }
+        return false;
+    }
+
     @Override
-    public void indexNow(IndexingCommand cmd) throws ClientException {
+    public void indexNonRecursive(IndexingCommand cmd) throws ClientException {
         esa.totalCommandRunning.incrementAndGet();
         if (cmd.getType() == Type.DELETE) {
             Context stopWatch = deleteTimer.time();
@@ -190,6 +215,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                 esa.totalCommandRunning.decrementAndGet();
             }
         }
+        refreshIfNeeded(cmd);
     }
 
     void processIndexCommand(IndexingCommand cmd) {
@@ -210,7 +236,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
         if (log.isDebugEnabled()) {
             log.debug(String.format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                    esa.getRepositoryIndex(cmd.getRepository()), DOC_TYPE, cmd.getDocId(), request.request().toString()));
+                    esa.getRepositoryIndex(cmd.getRepositoryName()), DOC_TYPE, cmd.getDocId(),
+                    request.request().toString()));
         }
         request.execute().actionGet();
     }
@@ -224,7 +251,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     void processDeleteCommandNonRecursive(IndexingCommand cmd) {
-        String indexName = esa.getRepositoryIndex(cmd.getRepository());
+        String indexName = esa.getRepositoryIndex(cmd.getRepositoryName());
         DeleteRequestBuilder request = esa.getClient().prepareDelete(indexName, DOC_TYPE, cmd.getDocId());
         if (log.isDebugEnabled()) {
             log.debug(String.format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s'", indexName,
@@ -234,10 +261,10 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     void processDeleteCommandRecursive(IndexingCommand cmd) {
-        String indexName = esa.getRepositoryIndex(cmd.getRepository());
+        String indexName = esa.getRepositoryIndex(cmd.getRepositoryName());
         // we don't want to rely on target document because the document can be
         // already removed
-        String docPath = getPathOfDocFromEs(cmd.getRepository(), cmd.getDocId());
+        String docPath = getPathOfDocFromEs(cmd.getRepositoryName(), cmd.getDocId());
         if (docPath == null) {
             if (!Framework.isTestModeSet()) {
                 log.warn("Trying to delete a non existing doc: " + cmd.toString());
@@ -296,17 +323,11 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             XContentBuilder builder = jsonBuilder();
             JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
             JsonESDocumentWriter.writeESDocument(jsonGen, doc, cmd.getSchemas(), null);
-            return esa.getClient().prepareIndex(esa.getRepositoryIndex(cmd.getRepository()), DOC_TYPE, cmd.getDocId()).setSource(
-                    builder);
+            return esa.getClient().prepareIndex(esa.getRepositoryIndex(cmd.getRepositoryName()), DOC_TYPE,
+                    cmd.getDocId()).setSource(builder);
         } catch (IOException e) {
             throw new ClientException("Unable to create index request for Document " + cmd.getDocId(), e);
         }
-    }
-
-    @Override
-    public void scheduleIndexing(IndexingCommand cmd) throws ClientException {
-        // impl of scheduling is left to the ESService
-        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override

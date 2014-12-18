@@ -22,6 +22,7 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -109,7 +110,7 @@ public class TestManualIndexing {
         startCountingCommandProcessed();
         // sync non recursive
         IndexingCommand cmd = new IndexingCommand(doc, true, false);
-        esi.indexNow(cmd);
+        esi.indexNonRecursive(cmd);
         assertNumberOfCommandProcessed(1);
 
         esa.refresh();
@@ -124,6 +125,7 @@ public class TestManualIndexing {
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
     }
 
+    @Ignore
     @Test
     public void checkPostCommitIndexing() throws Exception {
         // create one doc that is going to be indexed in an async job
@@ -134,7 +136,7 @@ public class TestManualIndexing {
 
         // but ask to index it right now
         IndexingCommand cmd0 = new IndexingCommand(doc0, true, false);
-        esi.indexNow(cmd0);
+        esi.indexNonRecursive(cmd0);
 
         // create another doc without the automatic indexing
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
@@ -146,9 +148,8 @@ public class TestManualIndexing {
         // schedule the indexing in sync (i.e in postcommit)
         IndexingCommand cmd = new IndexingCommand(doc, true, false);
         startCountingCommandProcessed();
-        esi.scheduleIndexing(cmd);
-        esa.refresh();
-        assertNumberOfCommandProcessed(0);
+        esi.indexNonRecursive(cmd);
+        assertNumberOfCommandProcessed(1);
 
         // only the first doc testNote should be in the index
         SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setSearchType(
@@ -185,20 +186,13 @@ public class TestManualIndexing {
 
         // init index
         IndexingCommand cmd0 = new IndexingCommand(doc0, true, false);
-        esi.indexNow(cmd0);
+        esi.indexNonRecursive(cmd0);
 
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
         doc.setPropertyValue("dc:title", "TestMe");
         doc.putContextData(EventConstants.DISABLE_AUTO_INDEXING, Boolean.TRUE);
         doc = session.createDocument(doc);
         session.save();
-
-        // ask for async indexing
-        startCountingCommandProcessed();
-        IndexingCommand cmd = new IndexingCommand(doc, false, false);
-        esi.scheduleIndexing(cmd);
-        esa.refresh();
-        assertNumberOfCommandProcessed(0);
 
         // only one doc should be indexed for now
         SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setSearchType(
@@ -212,6 +206,13 @@ public class TestManualIndexing {
 
         // now commit and wait for post commit indexing
         TransactionHelper.commitOrRollbackTransaction();
+        // ask for async indexing
+        startCountingCommandProcessed();
+        IndexingCommand cmd = new IndexingCommand(doc, false, false);
+        esi.runIndexingWorker(cmd);
+        esa.refresh();
+        assertNumberOfCommandProcessed(0);
+
         waitForIndexing();
         assertNumberOfCommandProcessed(1);
 

@@ -22,12 +22,5 @@
       <event>documentTagUpdated</event>
     </listener>
 
-    <listener name="elasticSearchPostCommitSyncListener" async="false"
-      enabled="${elasticsearch.enabled:=true}"
-      postCommit="true" priority="500"
-      class="org.nuxeo.elasticsearch.listener.ElasticSearchPostCommitSyncListener">
-      <event>ESIndexSyncTrigger</event>
-    </listener>
-
   </extension>
 </component>

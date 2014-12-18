@@ -33,7 +33,7 @@ import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
 
-/**
+/**œ
  * Worker to index a bucket of documents
  *
  * @since 7.1
@@ -74,12 +74,12 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
         for (DocumentLocation doc : getDocuments()) {
             ids.add(doc.getIdRef().value);
             if ((ids.size() % bucketSize) == 0) {
-                esi.indexNow(getIndexingCommands(session, ids));
+                esi.indexNonRecursive(getIndexingCommands(session, ids));
                 ids.clear();
             }
         }
         if (!ids.isEmpty()) {
-            esi.indexNow(getIndexingCommands(session, ids));
+            esi.indexNonRecursive(getIndexingCommands(session, ids));
             ids.clear();
         }
         if (isLast) {

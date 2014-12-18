@@ -17,6 +17,8 @@
 
 package org.nuxeo.elasticsearch.work;
 
+import java.util.List;
+
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -32,14 +34,13 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
 
     private static final long serialVersionUID = 1L;
 
-    public IndexingWorker(IndexingCommand cmd) {
-        super(cmd);
+    public IndexingWorker(String repositoryName, List<IndexingCommand> cmds) {
+        super(repositoryName, cmds);
     }
 
     @Override
     public String getTitle() {
-        String title = " ElasticSearch indexing for doc " + cmd;
-        return title;
+        return " ElasticSearch indexing for docs: " + getCmdsDigest();
     }
 
     protected boolean needRecurse(IndexingCommand cmd) {
@@ -55,13 +56,22 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
     }
 
     @Override
-    protected void doIndexingWork(ElasticSearchIndexing esi, IndexingCommand cmd) {
-        esi.indexNow(cmd);
-        if (needRecurse(cmd)) {
-            ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(cmd);
-            WorkManager wm = Framework.getLocalService(WorkManager.class);
-            wm.schedule(subWorker);
+    protected void doIndexingWork(ElasticSearchIndexing esi, List<IndexingCommand> cmds) {
+        esi.indexNonRecursive(cmds);
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        for (IndexingCommand cmd : cmds) {
+            if (needRecurse(cmd)) {
+                ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(cmd);
+                wm.schedule(subWorker);
+            }
         }
     }
 
+    public String getCmdsDigest() {
+        String ret = "";
+        for (IndexingCommand cmd : cmds) {
+            ret += " " + cmd.getId();
+        }
+        return ret;
+    }
 }

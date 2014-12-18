@@ -111,7 +111,13 @@ public class TestAutomaticIndexing {
         for (int i = 0; (i < 100) && esa.isIndexingInProgress(); i++) {
             Thread.sleep(100);
         }
-        Assert.assertFalse("Still indexing in progress", esa.isIndexingInProgress());
+        if (esa.isIndexingInProgress()) {
+            String msg = String.format("Indexing in progress, giveup, pending: %s, docs: %s, runnning %s",
+                    esa.getPendingCommands(), esa.getPendingDocs(), esa.getRunningCommands());
+            System.out.println(msg);
+
+            Assert.fail(msg);
+        }
         esa.refresh();
     }
 
@@ -411,15 +417,16 @@ public class TestAutomaticIndexing {
 
     @Test
     public void shouldIndexTag() throws Exception {
+        // ElasticSearchInlineListener.useSyncIndexing.set(true);
         startTransaction();
         startCountingCommandProcessed();
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         tagService.tag(session, doc.getId(), "mytag", "Administrator");
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
         startTransaction();
-
+        waitForIndexing();
+        ElasticSearchInlineListener.useSyncIndexing.set(true);
         // doc, tagging relation and tag
         assertNumberOfCommandProcessed(3);
         SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
@@ -431,8 +438,8 @@ public class TestAutomaticIndexing {
         tagService.tag(session, doc.getId(), "mytagbis", "Administrator");
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
         startTransaction();
+        waitForIndexing();
 
         // doc, tagging and new tag
         assertNumberOfCommandProcessed(3);

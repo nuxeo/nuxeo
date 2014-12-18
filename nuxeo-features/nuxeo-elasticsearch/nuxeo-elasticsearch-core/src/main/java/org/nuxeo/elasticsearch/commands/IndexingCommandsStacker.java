@@ -28,8 +28,6 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_SECURITY_UPDATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_TAG_UPDATED;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.naming.NamingException;
@@ -40,7 +38,6 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
@@ -128,34 +125,5 @@ public abstract class IndexingCommandsStacker {
             return false;
         }
     }
-
-    protected void flushCommands() throws ClientException {
-        Map<String, IndexingCommands> allCmds = getAllCommands();
-
-        List<IndexingCommand> syncCommands = new ArrayList<>();
-        List<IndexingCommand> asyncCommands = new ArrayList<>();
-
-        for (IndexingCommands cmds : allCmds.values()) {
-            for (IndexingCommand cmd : cmds.getCommands()) {
-                if (cmd.isSync()) {
-                    syncCommands.add(cmd);
-                } else {
-                    asyncCommands.add(cmd);
-                }
-            }
-        }
-        getAllCommands().clear();
-
-        if (syncCommands.size() > 0) {
-            fireSyncIndexing(syncCommands);
-        }
-        if (asyncCommands.size() > 0) {
-            fireAsyncIndexing(asyncCommands);
-        }
-    }
-
-    protected abstract void fireSyncIndexing(List<IndexingCommand> syncCommands) throws ClientException;
-
-    protected abstract void fireAsyncIndexing(List<IndexingCommand> asyncCommands) throws ClientException;
 
 }

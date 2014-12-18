@@ -41,14 +41,37 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
         flushedAsyncCommands = new ArrayList<>();
     }
 
-    @Override
     protected void fireSyncIndexing(List<IndexingCommand> syncCommands) throws ClientException {
         flushedSyncCommands.addAll(syncCommands);
     }
 
-    @Override
     protected void fireAsyncIndexing(List<IndexingCommand> asyncCommands) throws ClientException {
         flushedAsyncCommands.addAll(asyncCommands);
+    }
+
+    protected void flushCommands() throws ClientException {
+        Map<String, IndexingCommands> allCmds = getAllCommands();
+
+        List<IndexingCommand> syncCommands = new ArrayList<>();
+        List<IndexingCommand> asyncCommands = new ArrayList<>();
+
+        for (IndexingCommands cmds : allCmds.values()) {
+            for (IndexingCommand cmd : cmds.getCommands()) {
+                if (cmd.isSync()) {
+                    syncCommands.add(cmd);
+                } else {
+                    asyncCommands.add(cmd);
+                }
+            }
+        }
+        getAllCommands().clear();
+
+        if (syncCommands.size() > 0) {
+            fireSyncIndexing(syncCommands);
+        }
+        if (asyncCommands.size() > 0) {
+            fireAsyncIndexing(asyncCommands);
+        }
     }
 
     public final class MockDocumentModel extends DocumentModelImpl {
