@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ui.web.component.file;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 
 import javax.faces.convert.ConverterException;
 
@@ -34,7 +35,9 @@ import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class InputFileInfo {
+public class InputFileInfo implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(InputFileInfo.class);
 
