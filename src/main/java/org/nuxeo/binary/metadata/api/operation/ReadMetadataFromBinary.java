@@ -21,13 +21,17 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
-import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.Blob;
+
+import java.util.Map;
 
 /**
  * @since 7.1
  */
-@Operation(id = ReadMetadataFromBinary.ID, category = Constants.CAT_BLOB, label = "Read Metadata From Binary", description = "", since = "7.1", addToStudio = true)
+@Operation(id = ReadMetadataFromBinary.ID, category = Constants.CAT_BLOB,
+        label = "Read Metadata From Binary", description = "Read Metadata " +
+        "From Binary with the default Nuxeo processor.", since = "7.1",
+        addToStudio = false)
 public class ReadMetadataFromBinary {
 
     public static final String ID = "Binary.ReadMetadataFromBinary";
@@ -35,11 +39,8 @@ public class ReadMetadataFromBinary {
     @Context
     protected BinaryMetadataService binaryMetadataService;
 
-    @Param(name = "processor", required = false, description = "The processor.")
-    protected String processor = "exifTool";
-
     @OperationMethod
-    public DocumentModelList run() {
-        return null;
+    public Map<String, Object> run(Blob blob) {
+        return binaryMetadataService.readMetadata(blob);
     }
 }

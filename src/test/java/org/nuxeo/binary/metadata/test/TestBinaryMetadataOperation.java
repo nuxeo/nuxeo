@@ -18,7 +18,13 @@ package org.nuxeo.binary.metadata.test;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.binary.metadata.api.operation.ReadMetadataFromBinary;
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -28,22 +34,43 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.Map;
+
 /**
  * @since 7.1
  */
 @RunWith(FeaturesRunner.class)
 @Features(BinaryMetadataFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
-@LocalDeploy({ "org.nuxeo.binary.metadata.test:binary-metadata-contrib-test.xml",
-        "org.nuxeo.binary.metadata.test:binary-metadata-file-contrib-test.xml" })
-@RepositoryConfig(cleanup = Granularity.METHOD)
+@LocalDeploy({ "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-contrib-test.xml",
+        "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-file-contrib-test.xml" })
+@RepositoryConfig(cleanup = Granularity.METHOD, init = BinaryMetadataServerInit.class)
 public class TestBinaryMetadataOperation {
 
     @Inject
     AutomationService automationService;
 
-    @Test
-    public void itShouldExtractBinaryMetadata() {
+    @Inject
+    OperationContext operationContext;
 
+    @Inject
+    CoreSession session;
+
+    @Test
+    public void itShouldExtractBinaryMetadata() throws OperationException {
+        // Get mp3 file
+        DocumentModel musicFile = BinaryMetadataServerInit.getFile(0, session);
+        BlobHolder musicBlobHolder = musicFile.getAdapter(BlobHolder.class);
+        operationContext.setInput(musicBlobHolder.getBlob());
+        Map<String, Object> blobProperties = (Map<String, Object>) automationService.run(operationContext, ReadMetadataFromBinary.ID);
+        assertNotNull(blobProperties);
+        assertEquals(49, blobProperties.size());
+        assertEquals("Twist", blobProperties.get("ID3:Title").toString());
+        assertEquals("Divine Recordings", blobProperties.get("ID3:Publisher")
+                .toString());
     }
+
 }

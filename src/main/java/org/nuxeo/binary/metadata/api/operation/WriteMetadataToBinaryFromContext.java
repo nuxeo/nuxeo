@@ -22,12 +22,20 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.automation.core.util.Properties;
+import org.nuxeo.ecm.core.api.Blob;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @since 7.1
  */
-@Operation(id = WriteMetadataToBinaryFromContext.ID, category = Constants.CAT_BLOB, label = "Write Metadata To Binary From Context", description = "", since = "7.1", addToStudio = true)
+@Operation(id = WriteMetadataToBinaryFromContext.ID,
+        category = Constants.CAT_BLOB, label = "Write Metadata To Binary From" +
+        " Context", description = "Write Metadata To Binary From Context " +
+        "given a processor name (or the default Nuxeo one) and given metadata" +
+        ".", since = "7.1", addToStudio = true)
 public class WriteMetadataToBinaryFromContext {
 
     public static final String ID = "Binary.WriteMetadataFromContext";
@@ -38,8 +46,15 @@ public class WriteMetadataToBinaryFromContext {
     @Param(name = "processor", required = false, description = "The processor.")
     protected String processor = "exifTool";
 
+    @Param(name = "metadata", required = true, description = "The processor.")
+    protected Properties metadata;
+
     @OperationMethod
-    public DocumentModelList run() {
-        return null;
+    public void run(Blob blob) {
+        Map<String, Object> metadataMap = new HashMap<>(metadata.size());
+        for (Map.Entry<String, String> entry : metadata.entrySet()) {
+            metadataMap.put(entry.getKey(), entry.getValue());
+        }
+        binaryMetadataService.writeMetadata(blob, metadataMap);
     }
 }
