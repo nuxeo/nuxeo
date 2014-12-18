@@ -54,6 +54,14 @@
       </genericPageProvider>
     </contentView>
 
+    <!-- override named page provider definition -->
+    <contentView name="NAMED_PAGE_PROVIDER">
+      <coreQueryPageProvider name="PP_NAME_OVERRIDE">
+        <property name="foo2">bar2</property>
+        <pattern>SELECT * FROM Document</pattern>
+      </coreQueryPageProvider>
+    </contentView>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"

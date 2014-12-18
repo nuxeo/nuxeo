@@ -402,7 +402,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testPageProviderRegistering() throws Exception {
+    public void testInnerPageProviderRegistration() throws Exception {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
         // CorePP
         assertNotNull(ppService.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN"));
@@ -414,4 +414,36 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertNotNull(ppService.getPageProviderDefinition("PP_NAME"));
         assertNull(ppService.getPageProviderDefinition("NAMED_PAGE_PROVIDER"));
     }
+
+    @Test
+    public void testInnerPageProviderOverride() throws Exception {
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
+        ContentView cv = service.getContentView("NAMED_PAGE_PROVIDER");
+        assertEquals("PP_NAME", cv.getPageProvider().getName());
+        assertNotNull(cv.getPageProvider().getProperties());
+        assertEquals(1, cv.getPageProvider().getProperties().size());
+        assertTrue(cv.getPageProvider().getProperties().containsKey("coreSession"));
+        assertNotNull(ppService.getPageProviderDefinition("PP_NAME"));
+
+        // override page provider directly on page provider service
+        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-pageprovider-override-contrib.xml");
+        cv = service.getContentView("NAMED_PAGE_PROVIDER");
+        assertEquals("PP_NAME", cv.getPageProvider().getName());
+        assertNotNull(cv.getPageProvider().getProperties());
+        assertEquals(1, cv.getPageProvider().getProperties().size());
+        assertTrue(cv.getPageProvider().getProperties().containsKey("coreSession"));
+        assertNotNull(ppService.getPageProviderDefinition("PP_NAME"));
+
+        // override again the complete content view definition
+        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-override-contrib.xml");
+        cv = service.getContentView("NAMED_PAGE_PROVIDER");
+        assertEquals("PP_NAME_OVERRIDE", cv.getPageProvider().getName());
+        assertNotNull(cv.getPageProvider().getProperties());
+        assertEquals(1, cv.getPageProvider().getProperties().size());
+        assertTrue(cv.getPageProvider().getProperties().containsKey("foo2"));
+        assertNotNull(ppService.getPageProviderDefinition("PP_NAME_OVERRIDE"));
+        // old one is still registered
+        assertNotNull(ppService.getPageProviderDefinition("PP_NAME"));
+    }
+
 }
