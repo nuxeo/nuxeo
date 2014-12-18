@@ -76,6 +76,7 @@ Follow the project build status on: http://qa.nuxeo.org/jenkins/job/addons_nuxeo
 
 ### Reporting Issues 
 You can follow the developments in the Nuxeo Platform project of our JIRA bug tracker, which includes a Template Rendering component: https://jira.nuxeo.com/browse/NXP/component/11405
+
 You can report issues on: http://answers.nuxeo.com/
 
 ## About Nuxeo
