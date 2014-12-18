@@ -151,7 +151,7 @@ public class NuxeoResponseStateManagerImpl extends ResponseStateManagerImpl {
     }
 
     /**
-     * @since 6.1.1
+     * @since 7.1
      */
     @Override
     public boolean isPostback(FacesContext context) {
@@ -181,7 +181,7 @@ public class NuxeoResponseStateManagerImpl extends ResponseStateManagerImpl {
     }
 
     /**
-     * @since 6.1.1
+     * @since 7.1
      */
     private static String getComponentId(final String excetionMessage) {
         String sep = ":";
