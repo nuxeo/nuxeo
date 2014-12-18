@@ -42,10 +42,13 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorServic
 import org.nuxeo.ecm.platform.picture.api.BlobHelper;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
+import org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.PictureConversion;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.runtime.api.Framework;
+
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_INFO_PROPERTY;
 
 public class DefaultPictureAdapter extends AbstractPictureAdapter {
     private static final Log log = LogFactory.getLog(DefaultPictureAdapter.class);
@@ -99,10 +102,16 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         if (type == null || type.equals("application/octet-stream")) {
             return false;
         }
+
+        ImageInfo imageInfo = getImageInfo();
+        if (imageInfo != null) {
+            doc.setPropertyValue(PICTURE_INFO_PROPERTY, (Serializable) imageInfo.toMap());
+        }
+
         try {
             setMetadata();
         } catch (IOException | ClientException e) {
-            log.debug("An error occured while trying to set metadata for " + filename, e);
+            log.debug("An error occurred while trying to set metadata for " + filename, e);
         }
         if (width != null && height != null) {
             clearViews();
@@ -126,7 +135,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
             pictureViews = imagingService.computeViewsFor(blob, conversions, imageInfo, false);
         } else {
-            pictureViews = imagingService.computeViewFor(doc, blob, false);
+            pictureViews = imagingService.computeViewsFor(doc, blob, imageInfo, false);
         }
 
         addPictureViews(pictureViews, true);

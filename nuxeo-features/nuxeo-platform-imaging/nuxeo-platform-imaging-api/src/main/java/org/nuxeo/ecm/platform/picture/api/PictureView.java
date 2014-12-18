@@ -40,6 +40,8 @@ public interface PictureView {
 
     String FIELD_CONTENT = "content";
 
+    String FIELD_INFO = "info";
+
     String getTitle();
 
     void setTitle(String title);
@@ -69,6 +71,20 @@ public interface PictureView {
     void setContent(Object content);
 
     /**
+     * Returns the {@code ImageInfo} of the picture view.
+     *
+     * @since 7.1
+     */
+    ImageInfo getImageInfo();
+
+    /**
+     * Sets the {@code ImageInfo} of the picture view.
+     *
+     * @since 7.1
+     */
+    void setImageInfo(ImageInfo info);
+
+    /**
      * Returns the {@code Blob} of the picture view.
      *
      * @since 5.7
@@ -81,6 +97,9 @@ public interface PictureView {
      * @since 5.7
      */
     void setBlob(Blob blob);
+
+
+
 
     /**
      * Convert this {@code PictureView} as a MAp to be stored inside a document.

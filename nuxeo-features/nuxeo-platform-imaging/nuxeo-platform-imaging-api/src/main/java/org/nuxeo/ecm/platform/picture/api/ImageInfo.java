@@ -20,13 +20,28 @@
 package org.nuxeo.ecm.platform.picture.api;
 
 import java.io.File;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Wrapper class for the information returned by the Identify ImageMagick command.
  *
  * @author tiry
  */
-public class ImageInfo {
+public class ImageInfo implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    public static final String WIDTH = "width";
+
+    public static final String HEIGHT = "height";
+
+    public static final String DEPTH = "depth";
+
+    public static final String FORMAT = "format";
+
+    public static final String COLOR_SPACE = "colorSpace";
 
     protected int width;
 
@@ -40,6 +55,32 @@ public class ImageInfo {
     protected String colorSpace;
 
     protected String filePath;
+
+    public static ImageInfo fromMap(Map<String, Serializable> map) {
+        if (map == null) {
+            return null;
+        }
+
+        ImageInfo info = new ImageInfo();
+        Long width = (Long) map.get(WIDTH);
+        if (width != null) {
+            info.width = width.intValue();
+        }
+        Long height = (Long) map.get(HEIGHT);
+        if (height != null) {
+            info.height = height.intValue();
+        }
+        Long depth = (Long) map.get(DEPTH);
+        if (depth != null) {
+            info.depth = depth.intValue();
+        }
+        info.format = (String) map.get(FORMAT);
+        info.colorSpace = (String) map.get(COLOR_SPACE);
+        return info;
+    }
+
+    public ImageInfo() {
+    }
 
     public ImageInfo(String width, String height, String format, String filePath) {
         this.width = Integer.parseInt(width);
@@ -113,5 +154,22 @@ public class ImageInfo {
     /** @since 5.9.5 */
     public void setColorSpace(String colorSpace) {
         this.colorSpace = colorSpace;
+    }
+
+    /**
+     * Returns a {@code Map} of attributes for this {@code ImageInfo}.
+     * <p>
+     * Used when saving this {@code ImageInfo} to a {@code DocumentModel} property.
+     *
+     * @since 7.1
+     */
+    public Map<String, Serializable> toMap() {
+        Map<String, Serializable> map = new HashMap<>();
+        map.put(WIDTH, width);
+        map.put(HEIGHT, height);
+        map.put(DEPTH, depth);
+        map.put(FORMAT, format);
+        map.put(COLOR_SPACE, colorSpace);
+        return map;
     }
 }

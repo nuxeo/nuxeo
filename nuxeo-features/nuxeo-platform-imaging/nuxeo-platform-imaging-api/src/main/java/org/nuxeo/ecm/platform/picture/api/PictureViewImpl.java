@@ -43,6 +43,8 @@ public class PictureViewImpl implements PictureView {
 
     Blob blob;
 
+    ImageInfo imageInfo;
+
     /**
      * @since 5.7
      */
@@ -58,6 +60,7 @@ public class PictureViewImpl implements PictureView {
         tag = (String) m.get(PictureView.FIELD_TAG);
         filename = (String) m.get(PictureView.FIELD_FILENAME);
         blob = (Blob) m.get(PictureView.FIELD_CONTENT);
+        imageInfo = (ImageInfo) m.get(PictureView.FIELD_INFO);
 
         Integer w = (Integer) m.get(PictureView.FIELD_WIDTH);
         if (w != null) {
@@ -67,6 +70,7 @@ public class PictureViewImpl implements PictureView {
         if (h != null) {
             height = h;
         }
+
     }
 
     @Override
@@ -150,6 +154,16 @@ public class PictureViewImpl implements PictureView {
     }
 
     @Override
+    public ImageInfo getImageInfo() {
+        return imageInfo;
+    }
+
+    @Override
+    public void setImageInfo(ImageInfo info) {
+        this.imageInfo = info;
+    }
+
+    @Override
     public Map<String, Serializable> asMap() {
         Map<String, Serializable> m = new HashMap<String, Serializable>();
         m.put(PictureView.FIELD_TITLE, getTitle());
@@ -159,6 +173,7 @@ public class PictureViewImpl implements PictureView {
         m.put(PictureView.FIELD_WIDTH, getWidth());
         m.put(PictureView.FIELD_FILENAME, getFilename());
         m.put(PictureView.FIELD_CONTENT, (Serializable) blob);
+        m.put(PictureView.FIELD_INFO, (Serializable) imageInfo.toMap());
         return m;
     }
 }

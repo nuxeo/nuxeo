@@ -301,7 +301,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
                         (String) view.get("title"), maxsize, filename, width, height, depth, fileContent);
             }
         } else {
-            List<PictureView> pictureViews = getImagingService().computeViewFor(doc, fileContent, true);
+            List<PictureView> pictureViews = getImagingService().computeViewsFor(doc, fileContent, getImageInfo(), true);
             addPictureViews(pictureViews, true);
         }
     }

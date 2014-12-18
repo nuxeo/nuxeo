@@ -326,6 +326,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         Blob originalViewBlob = wrapBlob(blob);
         originalViewBlob.setFilename(viewFilename);
         map.put(PictureView.FIELD_CONTENT, (Serializable) originalViewBlob);
+        map.put(PictureView.FIELD_INFO, imageInfo);
         return new PictureViewImpl(map);
     }
 
@@ -380,6 +381,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         map.put(PictureView.FIELD_FILENAME, viewFilename);
         originalJpegBlob.setFilename(viewFilename);
         map.put(PictureView.FIELD_CONTENT, (Serializable) originalJpegBlob);
+        map.put(PictureView.FIELD_INFO, getImageInfo(originalJpegBlob));
         return new PictureViewImpl(map);
     }
 
@@ -429,6 +431,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         viewBlob.setFilename(viewFilename);
         pictureViewMap.put(PictureView.FIELD_FILENAME, viewFilename);
         pictureViewMap.put(PictureView.FIELD_CONTENT, (Serializable) viewBlob);
+        pictureViewMap.put(PictureView.FIELD_INFO, getImageInfo(viewBlob));
 
         return new PictureViewImpl(pictureViewMap);
     }
@@ -481,14 +484,14 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
     }
 
     @Override
-    public List<PictureView> computeViewFor(DocumentModel doc, Blob blob, boolean convert) throws ClientException,
+    public List<PictureView> computeViewsFor(DocumentModel doc, Blob blob, ImageInfo imageInfo, boolean convert) throws ClientException,
             IOException {
         List<PictureConversion> pictureConversions = getPictureConversions();
         List<PictureView> pictureViews = new ArrayList<>(pictureConversions.size());
 
         for (PictureConversion pictureConversion : pictureConversions) {
             if (canApplyPictureConversion(pictureConversion, doc)) {
-                PictureView pictureView = computeView(doc, blob, pictureConversion, getImageInfo(blob), convert);
+                PictureView pictureView = computeView(doc, blob, pictureConversion, imageInfo, convert);
                 pictureViews.add(pictureView);
             }
         }
@@ -521,6 +524,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         view.setTitle(pictureConversion.getId());
         view.setDescription(pictureConversion.getDescription());
         view.setTag(pictureConversion.getTag());
+        view.setImageInfo(imageInfo);
         return view;
     }
 

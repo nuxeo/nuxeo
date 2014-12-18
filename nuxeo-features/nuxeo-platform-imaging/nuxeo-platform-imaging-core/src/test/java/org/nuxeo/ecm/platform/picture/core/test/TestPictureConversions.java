@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -36,8 +37,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.PictureConversion;
+import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -189,6 +192,14 @@ public class TestPictureConversions {
 
         MultiviewPicture multiviewPicture = picture.getAdapter(MultiviewPicture.class);
         assertEquals(5, multiviewPicture.getViews().length);
+        PictureView smallView = multiviewPicture.getView("Small");
+        ImageInfo imageInfo = smallView.getImageInfo();
+        assertNotNull(imageInfo);
+        assertTrue(imageInfo.getWidth() > 0);
+        assertTrue(imageInfo.getHeight() > 0);
+        assertTrue(imageInfo.getDepth() > 0);
+        assertNotNull(imageInfo.getFormat());
+        assertNotNull(imageInfo.getColorSpace());
 
         // trigger 2 new conversions
         picture.setPropertyValue("file:content", (Serializable) blob);

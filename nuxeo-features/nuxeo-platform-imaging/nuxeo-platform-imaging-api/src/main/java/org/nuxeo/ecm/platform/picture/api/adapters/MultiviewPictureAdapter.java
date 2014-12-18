@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.ecm.platform.picture.api.PictureViewImpl;
 
@@ -110,6 +111,7 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
         Blob blob = (Blob) map.get(PictureView.FIELD_CONTENT);
         view.setContent(blob);
         view.setBlob(blob);
+        view.setImageInfo(ImageInfo.fromMap((Map<String, Serializable>) map.get("info")));
         return view;
     }
 

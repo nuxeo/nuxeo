@@ -195,6 +195,6 @@ public interface ImagingService {
      *
      * @since 7.1
      */
-    List<PictureView> computeViewFor(DocumentModel doc, Blob blob, boolean convert) throws ClientException, IOException;
+    List<PictureView> computeViewsFor(DocumentModel doc, Blob blob, ImageInfo imageInfo, boolean convert) throws ClientException, IOException;
 
 }
