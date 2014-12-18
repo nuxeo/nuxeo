@@ -4404,6 +4404,10 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="edit">
+            <property name="startDefaultTime">00:00:00</property>
+            <property name="endDefaultTime">23:59:59</property>
+          </defaultValues>
           <layouts mode="view">
             <layout name="daterange_widget_type_properties_view">
               <rows>
@@ -4449,7 +4453,49 @@
                 <row>
                   <widget category="widgetTypeConf">datetime_triggerStyleClass</widget>
                 </row>
+                <row>
+                  <widget>datetimeRange_startDefaultTime</widget>
+                </row>
+                <row>
+                  <widget>datetimeRange_endDefaultTime</widget>
+                </row>
               </rows>
+              <widget name="datetimeRange_startDefaultTime" type="text">
+                <labels>
+                  <label mode="any">Datetime Range Start Default Time</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The start default time, ignore if time is
+                    not taken into account in the date pattern/format. Defaults
+                    to 00:00, available since 7.1.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>startDefaultTime</field>
+                </fields>
+                <controls mode="any">
+                  <control name="sinceVersion">7.1</control>
+                </controls>
+              </widget>
+              <widget name="datetimeRange_endDefaultTime" type="text">
+                <labels>
+                  <label mode="any">Datetime Range End Default Time</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The end default time, ignore if time is
+                    not taken into account in the date pattern/format. Defaults
+                    to 23:59, available since 7.1.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>endDefaultTime</field>
+                </fields>
+                <controls mode="any">
+                  <control name="sinceVersion">7.1</control>
+                </controls>
+              </widget>
             </layout>
           </layouts>
         </properties>
