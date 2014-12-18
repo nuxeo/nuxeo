@@ -142,4 +142,17 @@ public class TestBinaryMetadataService {
         assertEquals("Nuxeo", blobProperties.get("EXIF:Software")
                 .toString());
     }
+
+    @Test
+    public void itShouldWriteDocPropertiesFromBinaryWithMapping() {
+        // Get the document with PSD attached
+        DocumentModel psdDoc = BinaryMetadataServerInit.getFile(3, session);
+        // Copy into the document according to metadata mapping contribution.
+        binaryMetadataService.writeMetadata(psdDoc);
+        // Check if the document has been overwritten
+        psdDoc = BinaryMetadataServerInit.getFile(3, session);
+        assertEquals("100",psdDoc.getPropertyValue("dc:title"));
+        assertEquals("Adobe Photoshop CS4 Macintosh",psdDoc.getPropertyValue("dc:source"));
+        assertEquals("Horizontal (normal)",psdDoc.getPropertyValue("dc:description"));
+    }
 }

@@ -30,13 +30,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public interface BinaryMetadataService {
 
     /**
-     * Read metadata from a given Nuxeo Document.
-     *
-     * @param doc Nuxeo Document which metadata are read.
-     */
-    public void readMetadata(DocumentModel doc);
-
-    /**
      * Read and return metadata from a given binary and a given metadata list with a given processor.
      *
      * @param processorName Name of the contributed processor to run.
@@ -92,10 +85,9 @@ public interface BinaryMetadataService {
     public boolean writeMetadata(Blob blob, Map<String, Object> metadata);
 
     /**
-     * Write metadata (from a binary) into a given Nuxeo Document.
+     * Write metadata (from a binary) into a given Nuxeo Document according to the metadata mapping and rules contributions.
      *
      * @param doc Nuxeo Document which metadata are written.
-     * @return success or not.
      */
-    public boolean writeMetadata(DocumentModel doc);
+    public void writeMetadata(DocumentModel doc);
 }
