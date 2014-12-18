@@ -38,8 +38,8 @@ import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 /**
  * Renders many listboxes for the MultiListbox component
  *
- * @deprecated : renderer is useless (not declared correctly in
- *             deployment-fragment.xml and bugg) should be refactored instead
+ * @deprecated : renderer is useless (not declared correctly in deployment-fragment.xml and bugg) should be refactored
+ *             instead
  */
 @Deprecated
 public class ChainSelectMultiListboxRenderer extends Renderer {
@@ -52,20 +52,18 @@ public class ChainSelectMultiListboxRenderer extends Renderer {
     }
 
     @Override
-    public void encodeBegin(FacesContext context, UIComponent component)
-            throws IOException {
+    public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
         ChainSelectMultiListboxComponent comp = (ChainSelectMultiListboxComponent) component;
         ResponseWriter writer = context.getResponseWriter();
-        Boolean displayValueOnly = comp.getChain().getBooleanProperty(
-                "displayValueOnly", false);
+        Boolean displayValueOnly = comp.getChain().getBooleanProperty("displayValueOnly", false);
         if (displayValueOnly) {
             return;
         }
         encodeInput(context, writer, comp);
     }
 
-    private void encodeInput(FacesContext context, ResponseWriter writer,
-            ChainSelectMultiListboxComponent mcomp) throws IOException {
+    private void encodeInput(FacesContext context, ResponseWriter writer, ChainSelectMultiListboxComponent mcomp)
+            throws IOException {
 
         ChainSelectListboxComponent[] sComps = mcomp.createSingleComponents();
         for (ChainSelectListboxComponent component : sComps) {
@@ -76,8 +74,7 @@ public class ChainSelectMultiListboxRenderer extends Renderer {
         }
     }
 
-    private static void encodeInput(FacesContext context,
-            ResponseWriter writer, ChainSelectListboxComponent comp)
+    private static void encodeInput(FacesContext context, ResponseWriter writer, ChainSelectListboxComponent comp)
             throws IOException {
         String id = comp.getClientId(context);
         ChainSelect chain = comp.getChain();
@@ -87,20 +84,13 @@ public class ChainSelectMultiListboxRenderer extends Renderer {
 
         String id1 = comp.getClientId(context).split(":")[0];
         String id2 = comp.getClientId(context);
-        onchange = "A4J.AJAX.Submit('_viewRoot','"
-                + id1
-                + "',event,{'parameters':{'"
-                + id2
-                + "':'"
-                + id2
+        onchange = "A4J.AJAX.Submit('_viewRoot','" + id1 + "',event,{'parameters':{'" + id2 + "':'" + id2
                 + "'},'actionUrl':'" + BaseURL.getContextPath() + "/documents/tabs/document_externe_edit.faces'})";
 
         boolean multiSelect = comp.getBooleanProperty("multiSelect", false);
         String size = comp.getStringProperty("size", null);
-        boolean displayIdAndLabel = comp.getBooleanProperty(
-                "displayIdAndLabel", false);
-        String displayIdAndLabelSeparator = comp.getStringProperty(
-                "displayIdAndLabelSeparator", " ");
+        boolean displayIdAndLabel = comp.getBooleanProperty("displayIdAndLabel", false);
+        String displayIdAndLabelSeparator = comp.getStringProperty("displayIdAndLabelSeparator", " ");
         boolean localize = comp.getBooleanProperty("localize", false);
         String display = comp.getStringProperty("display", "");
 
@@ -164,8 +154,7 @@ public class ChainSelectMultiListboxRenderer extends Renderer {
                 if (localize) {
                     optionLabel = translate(context, optionLabel);
                 }
-                writer.writeText(DirectoryHelper.getOptionValue(optionId,
-                        optionLabel, display, displayIdAndLabel,
+                writer.writeText(DirectoryHelper.getOptionValue(optionId, optionLabel, display, displayIdAndLabel,
                         displayIdAndLabelSeparator), null);
                 writer.endElement("option");
             }

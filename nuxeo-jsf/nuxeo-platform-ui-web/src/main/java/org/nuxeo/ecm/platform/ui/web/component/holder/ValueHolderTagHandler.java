@@ -41,8 +41,8 @@ import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
 import com.sun.faces.facelets.tag.jsf.ComponentSupport;
 
 /**
- * Tag handler for a {@link UIValueHolder} component, that exposes the value
- * kept by the component at build time for children components.
+ * Tag handler for a {@link UIValueHolder} component, that exposes the value kept by the component at build time for
+ * children components.
  *
  * @since 5.5
  */
@@ -58,8 +58,7 @@ public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
     }
 
     @Override
-    public void applyNextHandler(FaceletContext ctx, UIComponent c)
-            throws IOException, FacesException, ELException {
+    public void applyNextHandler(FaceletContext ctx, UIComponent c) throws IOException, FacesException, ELException {
         String varName = null;
         boolean varSet = false;
         if (var != null) {
@@ -71,8 +70,7 @@ public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
         // XXX: reuse the component id as the alias variable mapper id so that
         // the value holder JSF component can reuse it at render time to expose
         // the value it keeps
-        String aliasId = (String) c.getAttributes().get(
-                ComponentSupport.MARK_CREATED);
+        String aliasId = (String) c.getAttributes().get(ComponentSupport.MARK_CREATED);
         alias.setId(aliasId);
 
         if (!StringUtils.isBlank(varName)) {
@@ -86,19 +84,16 @@ public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
             if (varSet) {
                 Object valueToExpose = retrieveValueToExpose(ctx, c);
                 ExpressionFactory eFactory = ctx.getExpressionFactory();
-                ValueExpression valueVe = eFactory.createValueExpression(
-                        valueToExpose, Object.class);
+                ValueExpression valueVe = eFactory.createValueExpression(valueToExpose, Object.class);
                 alias.setVariable(varName, valueVe);
                 VariableMapper vm = alias.getVariableMapperForBuild(orig);
                 ctx.setVariableMapper(vm);
-                AliasVariableMapper.exposeAliasesToRequest(
-                        ctx.getFacesContext(), alias);
+                AliasVariableMapper.exposeAliasesToRequest(ctx.getFacesContext(), alias);
             }
             super.applyNextHandler(ctx, c);
         } finally {
             if (varSet) {
-                AliasVariableMapper.removeAliasesExposedToRequest(
-                        ctx.getFacesContext(), aliasId);
+                AliasVariableMapper.removeAliasesExposedToRequest(ctx.getFacesContext(), aliasId);
                 ctx.setVariableMapper(orig);
             }
         }
@@ -107,23 +102,21 @@ public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
     /**
      * Returns the value to expose at build time for this tag handler.
      * <p>
-     * Value can be retrieved directly from component in most of cases, but
-     * should be retrieved from view-scoped managed bean when the restore phase
-     * is called (as component has not been restored yet, so its value is not
-     * available to be exposed in the tree view being built).
+     * Value can be retrieved directly from component in most of cases, but should be retrieved from view-scoped managed
+     * bean when the restore phase is called (as component has not been restored yet, so its value is not available to
+     * be exposed in the tree view being built).
      *
      * @since 6.0
      */
-    protected Object retrieveValueToExpose(FaceletContext context,
-            UIComponent comp) {
+    protected Object retrieveValueToExpose(FaceletContext context, UIComponent comp) {
         if (comp instanceof UIValueHolder) {
             UIValueHolder c = (UIValueHolder) comp;
             FacesContext faces = context.getFacesContext();
             if (PhaseId.RESTORE_VIEW.equals(faces.getCurrentPhaseId())) {
                 // lookup backing bean
-                NuxeoValueHolderBean bean = ((UIValueHolder) c).lookupBean(faces);
+                NuxeoValueHolderBean bean = c.lookupBean(faces);
                 if (bean != null) {
-                    String fid = ((UIValueHolder) c).getFaceletId();
+                    String fid = c.getFaceletId();
                     if (fid != null) {
                         return bean.getState(fid);
                     }
@@ -135,10 +128,8 @@ public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
             if (comp != null) {
                 className = comp.getClass().getName();
             }
-            log.error(String.format(
-                    "Associated component with class '%s' is not"
-                            + " a UIValueHolder instance => cannot "
-                            + "retrieve value to expose.", className));
+            log.error(String.format("Associated component with class '%s' is not"
+                    + " a UIValueHolder instance => cannot " + "retrieve value to expose.", className));
         }
         return null;
     }

@@ -29,8 +29,8 @@ import javax.faces.model.SelectItem;
 import com.sun.faces.renderkit.SelectItemsIterator;
 
 /**
- * Component representing a single radio button, referencing the original
- * select and an index, for original button attributes retrieval.
+ * Component representing a single radio button, referencing the original select and an index, for original button
+ * attributes retrieval.
  *
  * @since 6.0
  */
@@ -52,29 +52,28 @@ public class UIRadio extends UIOutput implements ClientBehaviorHolder {
         PropertyKeys() {
         }
 
+        @Override
         public String toString() {
-            return ((this.toString != null) ? this.toString : super.toString());
+            return ((toString != null) ? toString : super.toString());
         }
     }
 
+    @Override
     public String getFamily() {
         return COMPONENT_FAMILY;
     }
 
-    public static List<SelectItem> getSelectItems(FacesContext context,
-            UIComponent component) {
+    public static List<SelectItem> getSelectItems(FacesContext context, UIComponent component) {
         if (context == null) {
             throw new IllegalArgumentException("Faces context is null");
         }
 
         ArrayList<SelectItem> list = new ArrayList<SelectItem>();
-        final SelectItemsIterator<SelectItem> iterator = new SelectItemsIterator<SelectItem>(
-                context, component);
+        final SelectItemsIterator<SelectItem> iterator = new SelectItemsIterator<SelectItem>(context, component);
         while (iterator.hasNext()) {
             final SelectItem next = iterator.next();
-            list.add(new SelectItem(next.getValue(), next.getLabel(),
-                    next.getDescription(), next.isDisabled(), next.isEscape(),
-                    next.isNoSelectionOption()));
+            list.add(new SelectItem(next.getValue(), next.getLabel(), next.getDescription(), next.isDisabled(),
+                    next.isEscape(), next.isNoSelectionOption()));
         }
         return list;
     }
@@ -96,16 +95,14 @@ public class UIRadio extends UIOutput implements ClientBehaviorHolder {
     }
 
     @SuppressWarnings("boxing")
-    public SelectItem getSelectItem(FacesContext context,
-            UIComponent targetComponent) {
+    public SelectItem getSelectItem(FacesContext context, UIComponent targetComponent) {
         final List<SelectItem> list = getSelectItems(context, targetComponent);
         try {
             return list.get(getIndex());
         } catch (IndexOutOfBoundsException e) {
-            throw new IllegalArgumentException("Component ''" + getId()
-                    + "'' has wrong value of index attribute (" + getIndex()
-                    + "). Target component ''" + targetComponent.getId()
-                    + "'' has only " + list.size() + " items.");
+            throw new IllegalArgumentException("Component ''" + getId() + "'' has wrong value of index attribute ("
+                    + getIndex() + "). Target component ''" + targetComponent.getId() + "'' has only " + list.size()
+                    + " items.");
         }
     }
 

@@ -29,10 +29,10 @@ public class JSFAnnotationProvider extends AnnotationProvider {
     }
 
     @Override
-    public Map<Class<? extends Annotation>, Set<Class<?>>> getAnnotatedClasses(
-            Set<URI> urls) {
+    public Map<Class<? extends Annotation>, Set<Class<?>>> getAnnotatedClasses(Set<URI> urls) {
         if (JSFContainerInitializer.self == null) {
-            LogFactory.getLog(JSFAnnotationProvider.class).warn("container scanned classes unavailable, applying default scanning");
+            LogFactory.getLog(JSFAnnotationProvider.class).warn(
+                    "container scanned classes unavailable, applying default scanning");
             return base.getAnnotatedClasses(urls);
         }
         return JSFContainerInitializer.self.index;

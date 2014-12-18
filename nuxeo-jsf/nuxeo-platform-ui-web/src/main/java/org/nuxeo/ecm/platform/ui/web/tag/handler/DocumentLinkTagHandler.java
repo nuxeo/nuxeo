@@ -73,27 +73,23 @@ public class DocumentLinkTagHandler extends GenericHtmlComponentHandler {
      * Sets action after component has been created.
      */
     @Override
-    public void onComponentCreated(FaceletContext ctx, UIComponent c,
-            UIComponent parent) {
+    public void onComponentCreated(FaceletContext ctx, UIComponent c, UIComponent parent) {
         if (c instanceof ActionSource2) {
             ActionSource2 command = (ActionSource2) c;
             String docValue = getDocumentValue();
             String viewId = getViewValue();
             String actionValue;
             if (viewId == null) {
-                actionValue = "#{navigationContext.navigateToDocument("
-                        + docValue + ")}";
+                actionValue = "#{navigationContext.navigateToDocument(" + docValue + ")}";
             } else {
-                actionValue = "#{navigationContext.navigateToDocumentWithView("
-                        + docValue + ", " + viewId + ")}";
+                actionValue = "#{navigationContext.navigateToDocumentWithView(" + docValue + ", " + viewId + ")}";
             }
             FacesContext facesContext = ctx.getFacesContext();
             Application app = facesContext.getApplication();
             ExpressionFactory ef = app.getExpressionFactory();
             ELContext context = facesContext.getELContext();
-            MethodExpression action = ef.createMethodExpression(context,
-                    actionValue, String.class, new Class[] {
-                            DocumentModel.class, String.class });
+            MethodExpression action = ef.createMethodExpression(context, actionValue, String.class, new Class[] {
+                    DocumentModel.class, String.class });
             command.setActionExpression(action);
         }
     }
@@ -114,8 +110,7 @@ public class DocumentLinkTagHandler extends GenericHtmlComponentHandler {
             viewName = view.getValue();
             if (viewName != null) {
                 viewName = viewName.trim();
-                if ((viewName.startsWith("${") || viewName.startsWith("#{"))
-                        && viewName.endsWith("}")) {
+                if ((viewName.startsWith("${") || viewName.startsWith("#{")) && viewName.endsWith("}")) {
                     viewName = viewName.substring(2, viewName.length() - 1);
                 } else {
                     viewName = '\"' + viewName + '\"';

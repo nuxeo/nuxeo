@@ -34,8 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 
 /**
- * Interceptor used for automatic injection/invalidation tied to
- * currentDocumentModel
+ * Interceptor used for automatic injection/invalidation tied to currentDocumentModel
  *
  * @author tiry
  */
@@ -47,8 +46,7 @@ public class DocumentContextInvalidatorInterceptor extends AbstractInterceptor {
     private static final Log log = LogFactory.getLog(DocumentContextInvalidatorInterceptor.class);
 
     @Override
-    public Object aroundInvoke(InvocationContext invocationContext)
-            throws Exception {
+    public Object aroundInvoke(InvocationContext invocationContext) throws Exception {
         beforeInvocation(invocationContext);
         return invocationContext.proceed();
     }
@@ -66,9 +64,8 @@ public class DocumentContextInvalidatorInterceptor extends AbstractInterceptor {
         }
     }
 
-    private void doInvalidationCall(Object target, Method meth)
-            throws IllegalArgumentException, IllegalAccessException,
-            InvocationTargetException {
+    private void doInvalidationCall(Object target, Method meth) throws IllegalArgumentException,
+            IllegalAccessException, InvocationTargetException {
         if (meth.getParameterTypes().length == 0) {
             meth.invoke(target);
         } else {
@@ -79,8 +76,8 @@ public class DocumentContextInvalidatorInterceptor extends AbstractInterceptor {
     }
 
     private DocumentModel getCurrentDocumentModel() {
-        NavigationContext navigationContext = (NavigationContext) Component.getInstance(
-                "navigationContext", ScopeType.CONVERSATION);
+        NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext",
+                ScopeType.CONVERSATION);
         return navigationContext.getCurrentDocument();
     }
 

@@ -40,8 +40,7 @@ public interface EditableModel {
     /**
      * Gets wrapped data.
      * <p>
-     * This data may be different from the original one if any changes occured
-     * on the model.
+     * This data may be different from the original one if any changes occured on the model.
      */
     Object getWrappedData();
 
@@ -110,8 +109,7 @@ public interface EditableModel {
     /**
      * Returns the list diff, ignoring all data that has not changed.
      * <p>
-     * The list diff tracks chronologically all changes that were made to the
-     * original (and changing) model.
+     * The list diff tracks chronologically all changes that were made to the original (and changing) model.
      */
     ListDiff getListDiff();
 
@@ -141,8 +139,7 @@ public interface EditableModel {
      * Modifies value at given index on the model.
      *
      * @return the old value at that index.
-     * @throws IllegalArgumentException if model does not handle one of given
-     *             indexes.
+     * @throws IllegalArgumentException if model does not handle one of given indexes.
      */
     Object moveValue(int fromIndex, int toIndex);
 

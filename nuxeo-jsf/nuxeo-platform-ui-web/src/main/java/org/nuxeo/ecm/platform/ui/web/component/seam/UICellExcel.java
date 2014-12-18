@@ -39,8 +39,8 @@ import org.nuxeo.ecm.platform.ui.web.util.NXHtmlResponseWriter;
 import com.sun.faces.config.WebConfiguration;
 
 /**
- * Override of Seam cell component to control HTML encoding of accents in
- * excel, and to improve data type guessing when using dates or numbers.
+ * Override of Seam cell component to control HTML encoding of accents in excel, and to improve data type guessing when
+ * using dates or numbers.
  *
  * @since 5.5
  */
@@ -65,6 +65,7 @@ public class UICellExcel extends org.jboss.seam.excel.ui.UICell {
      */
     protected String style;
 
+    @Override
     public Object getValue() {
         Object theValue = valueOf("value", value);
         if (theValue == null) {
@@ -72,12 +73,10 @@ public class UICellExcel extends org.jboss.seam.excel.ui.UICell {
                 theValue = cmp2String(FacesContext.getCurrentInstance(), this);
                 String forceType = getForceType();
                 if (forceType != null && !forceType.isEmpty()) {
-                    theValue = convertStringToTargetType((String) theValue,
-                            forceType);
+                    theValue = convertStringToTargetType((String) theValue, forceType);
                 }
             } catch (IOException e) {
-                String message = Interpolator.instance().interpolate(
-                        "Could not render cell #0", getId());
+                String message = Interpolator.instance().interpolate("Could not render cell #0", getId());
                 throw new ExcelWorkbookException(message, e);
             }
         } else {
@@ -86,22 +85,19 @@ public class UICellExcel extends org.jboss.seam.excel.ui.UICell {
         return theValue;
     }
 
+    @Override
     public void setValue(Object value) {
         this.value = value;
     }
 
     /**
-     * Converts string value as returned by widget to the target type for an
-     * accurate cell format in the XLS/CSV export.
+     * Converts string value as returned by widget to the target type for an accurate cell format in the XLS/CSV export.
      * <ul>
-     * <li>If force type is set to "number", convert value to a double (null if
-     * empty).</li>
-     * <li>If force type is set to "bool", convert value to a boolean (null if
-     * empty).</li>
-     * <li>If force type is set to "date", convert value to a date using most
-     * frequent date parsers using the short, medium, long and full formats and
-     * current locale, trying first with time information and after with only
-     * date information. Returns null if date is empty or could not be parsed.</li>
+     * <li>If force type is set to "number", convert value to a double (null if empty).</li>
+     * <li>If force type is set to "bool", convert value to a boolean (null if empty).</li>
+     * <li>If force type is set to "date", convert value to a date using most frequent date parsers using the short,
+     * medium, long and full formats and current locale, trying first with time information and after with only date
+     * information. Returns null if date is empty or could not be parsed.</li>
      * </ul>
      *
      * @since 5.6
@@ -117,18 +113,15 @@ public class UICellExcel extends org.jboss.seam.excel.ui.UICell {
                 return null;
             }
             Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
-            int[] formats = { DateFormat.SHORT, DateFormat.MEDIUM,
-                    DateFormat.LONG, DateFormat.FULL };
+            int[] formats = { DateFormat.SHORT, DateFormat.MEDIUM, DateFormat.LONG, DateFormat.FULL };
             for (int format : formats) {
                 try {
-                    return DateFormat.getDateTimeInstance(format, format,
-                            locale).parse(value);
+                    return DateFormat.getDateTimeInstance(format, format, locale).parse(value);
                 } catch (ParseException e) {
                     // ignore
                 }
                 try {
-                    return DateFormat.getDateInstance(format, locale).parse(
-                            value);
+                    return DateFormat.getDateInstance(format, locale).parse(value);
                 } catch (ParseException e) {
                     // ignore
                 }
@@ -145,19 +138,16 @@ public class UICellExcel extends org.jboss.seam.excel.ui.UICell {
     }
 
     /**
-     * Helper method for rendering a component (usually on a facescontext with
-     * a caching reponsewriter)
+     * Helper method for rendering a component (usually on a facescontext with a caching reponsewriter)
      *
      * @param facesContext The faces context to render to
      * @param component The component to render
      * @return The textual representation of the component
      * @throws IOException If the JSF helper class can't render the component
      */
-    public static String cmp2String(FacesContext facesContext,
-            UIComponent component) throws IOException {
+    public static String cmp2String(FacesContext facesContext, UIComponent component) throws IOException {
         ResponseWriter oldResponseWriter = facesContext.getResponseWriter();
-        String contentType = oldResponseWriter != null ? oldResponseWriter.getContentType()
-                : DEFAULT_CONTENT_TYPE;
+        String contentType = oldResponseWriter != null ? oldResponseWriter.getContentType() : DEFAULT_CONTENT_TYPE;
         String characterEncoding = oldResponseWriter != null ? oldResponseWriter.getCharacterEncoding()
                 : DEFAULT_CHARACTER_ENCODING;
         StringWriter cacheingWriter = new StringWriter();
@@ -169,9 +159,8 @@ public class UICellExcel extends org.jboss.seam.excel.ui.UICell {
         Boolean scriptInAttributes = Boolean.TRUE;
         // force escaping to true
         WebConfiguration.DisableUnicodeEscaping escaping = WebConfiguration.DisableUnicodeEscaping.True;
-        ResponseWriter newResponseWriter = new NXHtmlResponseWriter(
-                cacheingWriter, contentType, characterEncoding, scriptHiding,
-                scriptInAttributes, escaping);
+        ResponseWriter newResponseWriter = new NXHtmlResponseWriter(cacheingWriter, contentType, characterEncoding,
+                scriptHiding, scriptInAttributes, escaping);
         // ResponseWriter newResponseWriter = renderKit.createResponseWriter(
         // cacheingWriter, contentType, characterEncoding);
 
@@ -186,12 +175,12 @@ public class UICellExcel extends org.jboss.seam.excel.ui.UICell {
     }
 
     /**
-     * Returns the style attribute, used to format cells with a specific
-     * {@link #forceType}. Sample value for dates formatting: "xls-format-mask:
-     * #{nxu:basicDateFormatter()};".
+     * Returns the style attribute, used to format cells with a specific {@link #forceType}. Sample value for dates
+     * formatting: "xls-format-mask: #{nxu:basicDateFormatter()};".
      *
      * @since 5.6
      */
+    @Override
     public String getStyle() {
         if (style != null) {
             return style;
@@ -211,13 +200,13 @@ public class UICellExcel extends org.jboss.seam.excel.ui.UICell {
     /**
      * @since 5.6
      */
+    @Override
     public void setStyle(String style) {
         this.style = style;
     }
 
     /**
-     * Returns the force type attribute, used to force cell type to "date" or
-     * "number" for instance.
+     * Returns the force type attribute, used to force cell type to "date" or "number" for instance.
      *
      * @since 5.6
      */

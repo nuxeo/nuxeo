@@ -64,14 +64,12 @@ import com.sun.faces.facelets.tag.jsf.ComponentSupport;
 /**
  * Editable table component.
  * <p>
- * Allows to add/remove elements from an {@link UIEditableList}, inspired from
- * Trinidad UIXCollection component.
+ * Allows to add/remove elements from an {@link UIEditableList}, inspired from Trinidad UIXCollection component.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 // XXX AT: review this completely in regards of JSF2
-public class UIEditableList extends UIInput implements NamingContainer,
-        ResettableComponent {
+public class UIEditableList extends UIInput implements NamingContainer, ResettableComponent {
 
     public static final String COMPONENT_TYPE = UIEditableList.class.getName();
 
@@ -167,8 +165,8 @@ public class UIEditableList extends UIInput implements NamingContainer,
         }
 
         if (superState != null || stampState != null) {
-            return new Object[] { superState, stampState, getSubmittedValue(),
-                    editableModel, model, template, diff, number, removeEmpty };
+            return new Object[] { superState, stampState, getSubmittedValue(), editableModel, model, template, diff,
+                    number, removeEmpty };
         }
         return null;
     }
@@ -297,11 +295,11 @@ public class UIEditableList extends UIInput implements NamingContainer,
     /**
      * Resets the cache model
      * <p>
-     * Can be useful when re-rendering a list with ajax and not wanting to keep
-     * cached values already submitted.
+     * Can be useful when re-rendering a list with ajax and not wanting to keep cached values already submitted.
      *
      * @since 5.3.1
      */
+    @Override
     public void resetCachedModel() {
         InternalState iState = getInternalState(true);
         Object value = getValue();
@@ -349,9 +347,8 @@ public class UIEditableList extends UIInput implements NamingContainer,
     /**
      * Prepares this component for a change in the rowData.
      * <p>
-     * This method should be called right before the rowData changes. It saves
-     * the internal states of all the stamps of this component so that they can
-     * be restored when the rowData is reverted.
+     * This method should be called right before the rowData changes. It saves the internal states of all the stamps of
+     * this component so that they can be restored when the rowData is reverted.
      */
     protected final void preRowDataChange() {
         // save stamp state
@@ -376,10 +373,8 @@ public class UIEditableList extends UIInput implements NamingContainer,
     /**
      * Sets up this component to use the new rowData.
      * <p>
-     * This method should be called right after the rowData changes. It sets up
-     * the var EL variable to be the current rowData. It also sets up the
-     * internal states of all the stamps of this component to match this new
-     * rowData.
+     * This method should be called right after the rowData changes. It sets up the var EL variable to be the current
+     * rowData. It also sets up the internal states of all the stamps of this component to match this new rowData.
      */
     protected final void postRowDataChange() {
         StampState stampState = getStampState();
@@ -414,10 +409,8 @@ public class UIEditableList extends UIInput implements NamingContainer,
                 Object iniStateObj = getCurrencyKeyForInitialStampState();
                 state = stampState.get(iniStateObj, stampId);
                 if (state == null) {
-                    log.error("There was no initial stamp state for currencyKey:"
-                            + currencyObj
-                            + " and currencyKeyForInitialStampState:"
-                            + iniStateObj + " and stampId:" + stampId);
+                    log.error("There was no initial stamp state for currencyKey:" + currencyObj
+                            + " and currencyKeyForInitialStampState:" + iniStateObj + " and stampId:" + stampId);
                     continue;
                 }
             }
@@ -426,8 +419,7 @@ public class UIEditableList extends UIInput implements NamingContainer,
     }
 
     /**
-     * Gets the currencyObject to setup the rowData to use to build initial
-     * stamp state.
+     * Gets the currencyObject to setup the rowData to use to build initial stamp state.
      */
     protected Object getCurrencyKeyForInitialStampState() {
         InternalState iState = getInternalState(false);
@@ -471,8 +463,7 @@ public class UIEditableList extends UIInput implements NamingContainer,
      * @param current the current CollectionModel, or null if there is none.
      * @param value this is the value returned from {@link #getValue()}
      */
-    protected EditableModel createEditableModel(EditableModel current,
-            Object value) {
+    protected EditableModel createEditableModel(EditableModel current, Object value) {
         EditableModel model = new EditableModelImpl(value);
         Integer defaultNumber = getNumber();
         int missing = 0;
@@ -497,8 +488,7 @@ public class UIEditableList extends UIInput implements NamingContainer,
                         model.addValue(newTemplate);
                     }
                 } else {
-                    log.warn("Template is not serializable, cannot clone "
-                            + "to add unreferenced value into model.");
+                    log.warn("Template is not serializable, cannot clone " + "to add unreferenced value into model.");
                     model.addValue(template);
                 }
             } catch (IOException e) {
@@ -513,8 +503,7 @@ public class UIEditableList extends UIInput implements NamingContainer,
     }
 
     /**
-     * Checks to see if the current row is available. This is useful when the
-     * total number of rows is not known.
+     * Checks to see if the current row is available. This is useful when the total number of rows is not known.
      *
      * @see EditableModel#isRowAvailable
      * @return true if the current row is available.
@@ -579,12 +568,10 @@ public class UIEditableList extends UIInput implements NamingContainer,
     /**
      * Makes a row current.
      * <p>
-     * This method calls {@link #preRowDataChange} and
-     * {@link #postRowDataChange} as appropriate.
+     * This method calls {@link #preRowDataChange} and {@link #postRowDataChange} as appropriate.
      *
      * @see EditableModel#setRowIndex
-     * @param rowIndex The rowIndex of the row that should be made current. Use
-     *            -1 to clear the current row.
+     * @param rowIndex The rowIndex of the row that should be made current. Use -1 to clear the current row.
      */
     public void setRowIndex(int rowIndex) {
         preRowDataChange();
@@ -595,12 +582,10 @@ public class UIEditableList extends UIInput implements NamingContainer,
     /**
      * Makes a row current.
      * <p>
-     * This method calls {@link #preRowDataChange} and
-     * {@link #postRowDataChange} as appropriate.
+     * This method calls {@link #preRowDataChange} and {@link #postRowDataChange} as appropriate.
      *
      * @see EditableModel#setRowKey
-     * @param rowKey The rowKey of the row that should be made current. Use
-     *            null to clear the current row.
+     * @param rowKey The rowKey of the row that should be made current. Use null to clear the current row.
      */
     public void setRowKey(Integer rowKey) {
         // XXX AT: do not save state before setting row key as current index
@@ -644,8 +629,7 @@ public class UIEditableList extends UIInput implements NamingContainer,
      * Modifies value at given index on the editable model.
      *
      * @return the old value at that index.
-     * @throws IllegalArgumentException if model does not handle one of given
-     *             indexes.
+     * @throws IllegalArgumentException if model does not handle one of given indexes.
      */
     public Object moveValue(int fromIndex, int toIndex) {
         throw new NotImplementedException();
@@ -700,8 +684,7 @@ public class UIEditableList extends UIInput implements NamingContainer,
                 Object res = ve.getValue(getFacesContext().getELContext());
                 if (res instanceof String) {
                     // try to resolve a second time in case it's an expression
-                    res = ComponentTagUtils.resolveElExpression(
-                            getFacesContext(), (String) res);
+                    res = ComponentTagUtils.resolveElExpression(getFacesContext(), (String) res);
                 }
                 return res;
             } catch (ELException e) {
@@ -720,8 +703,7 @@ public class UIEditableList extends UIInput implements NamingContainer,
     }
 
     /**
-     * Gets boolean stating if diff must be used when saving the value
-     * submitted.
+     * Gets boolean stating if diff must be used when saving the value submitted.
      */
     public Boolean getDiff() {
         if (diff != null) {
@@ -741,8 +723,7 @@ public class UIEditableList extends UIInput implements NamingContainer,
     }
 
     /**
-     * Sets boolean stating if diff must be used when saving the value
-     * submitted.
+     * Sets boolean stating if diff must be used when saving the value submitted.
      */
     public void setDiff(Boolean diff) {
         this.diff = diff;
@@ -845,8 +826,7 @@ public class UIEditableList extends UIInput implements NamingContainer,
 
     // events
     /**
-     * Delivers a wrapped event to the appropriate component. If the event is a
-     * special wrapped event, it is unwrapped.
+     * Delivers a wrapped event to the appropriate component. If the event is a special wrapped event, it is unwrapped.
      *
      * @param event a FacesEvent
      * @throws javax.faces.event.AbortProcessingException
@@ -888,9 +868,8 @@ public class UIEditableList extends UIInput implements NamingContainer,
     }
 
     /**
-     * Queues an event. If there is a currency set on this table, then the
-     * event will be wrapped so that when it is finally delivered, the correct
-     * currency will be restored.
+     * Queues an event. If there is a currency set on this table, then the event will be wrapped so that when it is
+     * finally delivered, the correct currency will be restored.
      *
      * @param event a FacesEvent
      */
@@ -912,8 +891,7 @@ public class UIEditableList extends UIInput implements NamingContainer,
         return !ctx.getHints().contains(VisitHint.SKIP_ITERATION);
     }
 
-    private boolean visitRows(VisitContext context, VisitCallback callback,
-            boolean visitRows) {
+    private boolean visitRows(VisitContext context, VisitCallback callback, boolean visitRows) {
         // Iterate over our children, once per row
         int processed = 0;
         int oldIndex = getRowIndex();
@@ -1016,8 +994,7 @@ public class UIEditableList extends UIInput implements NamingContainer,
             if (result == VisitResult.COMPLETE) {
                 return true;
             }
-            if ((result == VisitResult.ACCEPT)
-                    && doVisitChildren(context, visitRows)) {
+            if ((result == VisitResult.ACCEPT) && doVisitChildren(context, visitRows)) {
                 if (visitRows(context, callback, visitRows)) {
                     return true;
                 }
@@ -1141,8 +1118,7 @@ public class UIEditableList extends UIInput implements NamingContainer,
         }
     }
 
-    protected final void processFacetsAndChildren(final FacesContext context,
-            final PhaseId phaseId) {
+    protected final void processFacetsAndChildren(final FacesContext context, final PhaseId phaseId) {
         Exception exception = null;
         List<UIComponent> stamps = getChildren();
         int oldIndex = getRowIndex();
@@ -1180,8 +1156,7 @@ public class UIEditableList extends UIInput implements NamingContainer,
         }
     }
 
-    protected final void processComponent(FacesContext context,
-            UIComponent component, PhaseId phaseId) {
+    protected final void processComponent(FacesContext context, UIComponent component, PhaseId phaseId) {
         if (component != null) {
             if (phaseId == PhaseId.APPLY_REQUEST_VALUES) {
                 component.processDecodes(context);
@@ -1215,8 +1190,8 @@ public class UIEditableList extends UIInput implements NamingContainer,
     }
 
     @Override
-    public boolean invokeOnComponent(FacesContext context, String clientId,
-            ContextCallback callback) throws FacesException {
+    public boolean invokeOnComponent(FacesContext context, String clientId, ContextCallback callback)
+            throws FacesException {
         if (null == context || null == clientId || null == callback) {
             throw new NullPointerException();
         }
@@ -1225,14 +1200,13 @@ public class UIEditableList extends UIInput implements NamingContainer,
         String myId = super.getClientId(context);
         if (clientId.equals(myId)) {
             try {
-                this.pushComponentToEL(context,
-                        UIComponent.getCompositeComponentParent(this));
+                pushComponentToEL(context, UIComponent.getCompositeComponentParent(this));
                 callback.invokeContextCallback(context, this);
                 return true;
             } catch (Exception e) {
                 throw new FacesException(e);
             } finally {
-                this.popComponentFromEL(context);
+                popComponentFromEL(context);
             }
         }
 
@@ -1248,8 +1222,7 @@ public class UIEditableList extends UIInput implements NamingContainer,
                 setRowIndex(i);
                 if (isRowAvailable()) {
                     for (UIComponent stamp : stamps) {
-                        found = stamp.invokeOnComponent(context, clientId,
-                                callback);
+                        found = stamp.invokeOnComponent(context, clientId, callback);
                     }
                 } else {
                     break;

@@ -31,8 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 import com.sun.faces.renderkit.html_basic.MessagesRenderer;
 
 /**
- * Handles rendering of {@link javax.faces.application.FacesMessage} through
- * jQuery Ambiance plugin.
+ * Handles rendering of {@link javax.faces.application.FacesMessage} through jQuery Ambiance plugin.
  *
  * @since 5.7.3
  */
@@ -41,8 +40,7 @@ public class NXMessagesRenderer extends MessagesRenderer {
     public static final String RENDERER_TYPE = "javax.faces.NXMessages";
 
     @Override
-    public void encodeEnd(FacesContext context, UIComponent component)
-            throws IOException {
+    public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
         rendererParamsNotNull(context, component);
 
         if (!shouldEncode(component)) {
@@ -97,31 +95,25 @@ public class NXMessagesRenderer extends MessagesRenderer {
 
             // make sure we have a non-null value for summary and
             // detail.
-            String summary = (null != (summary = curMessage.getSummary())) ? summary
-                    : "";
+            String summary = (null != (summary = curMessage.getSummary())) ? summary : "";
             // Default to summary if we have no detail
-            String detail = (null != (detail = curMessage.getDetail())) ? detail
-                    : summary;
+            String detail = (null != (detail = curMessage.getDetail())) ? detail : summary;
 
             String severityStyleClass = null;
             String errorType = "default";
             long timeout = 5;
             if (curMessage.getSeverity() == FacesMessage.SEVERITY_INFO) {
-                severityStyleClass = (String) component.getAttributes().get(
-                        "infoClass");
+                severityStyleClass = (String) component.getAttributes().get("infoClass");
                 errorType = "info";
             } else if (curMessage.getSeverity() == FacesMessage.SEVERITY_WARN) {
-                severityStyleClass = (String) component.getAttributes().get(
-                        "warnClass");
+                severityStyleClass = (String) component.getAttributes().get("warnClass");
                 errorType = "warn";
             } else if (curMessage.getSeverity() == FacesMessage.SEVERITY_ERROR) {
-                severityStyleClass = (String) component.getAttributes().get(
-                        "errorClass");
+                severityStyleClass = (String) component.getAttributes().get("errorClass");
                 errorType = "error";
                 timeout = 0;
             } else if (curMessage.getSeverity() == FacesMessage.SEVERITY_FATAL) {
-                severityStyleClass = (String) component.getAttributes().get(
-                        "fatalClass");
+                severityStyleClass = (String) component.getAttributes().get("fatalClass");
                 errorType = "fatal";
                 timeout = 0;
             }
@@ -134,18 +126,16 @@ public class NXMessagesRenderer extends MessagesRenderer {
             writer.startElement("script", messages);
             writer.writeAttribute("type", "text/javascript", null);
 
-            String scriptContent = "jQuery(document).ready(function() {\n"
-                    + "  jQuery.ambiance({\n" + "    " + "message: \"%s\",\n"
-                    + "    title: \"%s\",\n" + "    type: \"%s\",\n"
-                    + "    className: \"%s\",\n" + "    timeout: \"%d\""
-                    + "  })\n" + "});\n";
+            String scriptContent = "jQuery(document).ready(function() {\n" + "  jQuery.ambiance({\n" + "    "
+                    + "message: \"%s\",\n" + "    title: \"%s\",\n" + "    type: \"%s\",\n"
+                    + "    className: \"%s\",\n" + "    timeout: \"%d\"" + "  })\n" + "});\n";
             String formattedScriptContent;
             if (showDetail) {
-                formattedScriptContent = String.format(scriptContent, detail,
-                        summary, errorType, severityStyleClass, timeout);
+                formattedScriptContent = String.format(scriptContent, detail, summary, errorType, severityStyleClass,
+                        timeout);
             } else {
-                formattedScriptContent = String.format(scriptContent, "",
-                        summary, errorType, severityStyleClass, timeout);
+                formattedScriptContent = String.format(scriptContent, "", summary, errorType, severityStyleClass,
+                        timeout);
             }
             writer.writeText(formattedScriptContent, null);
             writer.endElement("script");

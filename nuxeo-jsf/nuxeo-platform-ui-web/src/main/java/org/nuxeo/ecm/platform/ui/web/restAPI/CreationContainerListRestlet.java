@@ -50,10 +50,10 @@ import org.restlet.data.Response;
  */
 @Name("creationContainerListRestlet")
 @Scope(EVENT)
-public class CreationContainerListRestlet extends BaseNuxeoRestlet implements
-        LiveEditConstants, Serializable {
+public class CreationContainerListRestlet extends BaseNuxeoRestlet implements LiveEditConstants, Serializable {
 
     private static final Log log = LogFactory.getLog(CreationContainerListRestlet.class);
+
     private static final long serialVersionUID = 5403775170948512675L;
 
     @Override
@@ -63,8 +63,7 @@ public class CreationContainerListRestlet extends BaseNuxeoRestlet implements
         String docType = getQueryParamValue(req, DOC_TYPE, DEFAULT_DOCTYPE);
         try {
             FileManager fileManager = Framework.getService(FileManager.class);
-            containers = fileManager.getCreationContainers(
-                    getUserPrincipal(req), docType);
+            containers = fileManager.getCreationContainers(getUserPrincipal(req), docType);
         } catch (Exception e) {
             handleError(res, e);
         }
@@ -75,8 +74,7 @@ public class CreationContainerListRestlet extends BaseNuxeoRestlet implements
         Element containersElement = resultDocument.addElement("containers");
         for (DocumentModel parent : containers) {
             Element docElement = containersElement.addElement(documentTag);
-            docElement.addElement(docRepositoryTag).setText(
-                    parent.getRepositoryName());
+            docElement.addElement(docRepositoryTag).setText(parent.getRepositoryName());
             docElement.addElement(docRefTag).setText(parent.getRef().toString());
             try {
                 docElement.addElement(docTitleTag).setText(parent.getTitle());

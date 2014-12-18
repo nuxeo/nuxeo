@@ -53,8 +53,7 @@ import org.restlet.resource.StringRepresentation;
  */
 @Name("createDocumentRestlet")
 @Scope(EVENT)
-public class CreateDocumentRestlet extends BaseNuxeoRestlet implements
-        LiveEditConstants, Serializable {
+public class CreateDocumentRestlet extends BaseNuxeoRestlet implements LiveEditConstants, Serializable {
 
     private static final long serialVersionUID = -7223939557577366747L;
 
@@ -74,16 +73,13 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements
         DocumentModel parentDm;
         PathSegmentService pss;
         try {
-            navigationContext.setCurrentServerLocation(new RepositoryLocation(
-                    repo));
+            navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
             documentManager = navigationContext.getOrCreateDocumentManager();
-            String parentDocRef = (String) req.getAttributes().get(
-                    "parentdocid");
+            String parentDocRef = (String) req.getAttributes().get("parentdocid");
             if (parentDocRef != null) {
                 parentDm = documentManager.getDocument(new IdRef(parentDocRef));
             } else {
-                handleError(res,
-                        "you must specify a valid document IdRef for the parent document");
+                handleError(res, "you must specify a valid document IdRef for the parent document");
                 return;
             }
             pss = Framework.getService(PathSegmentService.class);
@@ -102,8 +98,7 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements
             for (String paramName : queryParameters.getNames()) {
                 if (!DOC_TYPE.equals(paramName)) {
                     // treat all non doctype parameters as string fields
-                    newDm.setPropertyValue(paramName, getQueryParamValue(req,
-                            paramName, null));
+                    newDm.setPropertyValue(paramName, getQueryParamValue(req, paramName, null));
                     // TODO: handle multi-valued parameters as StringList fields
                 }
                 // override the title for consistency
@@ -118,13 +113,11 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements
             DOMDocumentFactory domFactory = new DOMDocumentFactory();
             DOMDocument resultDocument = (DOMDocument) domFactory.createDocument();
             Element docElement = resultDocument.addElement(documentTag);
-            docElement.addElement(docRepositoryTag).setText(
-                    newDm.getRepositoryName());
+            docElement.addElement(docRepositoryTag).setText(newDm.getRepositoryName());
             docElement.addElement(docRefTag).setText(newDm.getRef().toString());
             docElement.addElement(docTitleTag).setText(newDm.getTitle());
             docElement.addElement(docPathTag).setText(newDm.getPathAsString());
-            Representation rep = new StringRepresentation(resultDocument.asXML(),
-                    MediaType.APPLICATION_XML);
+            Representation rep = new StringRepresentation(resultDocument.asXML(), MediaType.APPLICATION_XML);
             rep.setCharacterSet(CharacterSet.UTF_8);
             res.setEntity(rep);
         } catch (ClientException e) {

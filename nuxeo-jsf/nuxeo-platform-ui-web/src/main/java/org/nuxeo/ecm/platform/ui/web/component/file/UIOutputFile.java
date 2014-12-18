@@ -26,11 +26,8 @@ import javax.faces.application.Application;
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UICommand;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIOutcomeTarget;
 import javax.faces.component.UIOutput;
 import javax.faces.component.html.HtmlCommandLink;
-import javax.faces.component.html.HtmlInputFile;
-import javax.faces.component.html.HtmlInputText;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
@@ -43,13 +40,11 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * UIOutput file.
  * <p>
- * Attribute named value is the file to be displayed. Its submitted value as
- * well as filename are handled by sub components in facets. Rendering is
- * handled here.
+ * Attribute named value is the file to be displayed. Its submitted value as well as filename are handled by sub
+ * components in facets. Rendering is handled here.
  * <p>
- * If convertAction and editOnlineAction method bindings are set, corresponding
- * links are rendered. The editOnlineActionRendered is used to filter action
- * visibility.
+ * If convertAction and editOnlineAction method bindings are set, corresponding links are rendered. The
+ * editOnlineActionRendered is used to filter action visibility.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -269,8 +264,7 @@ public class UIOutputFile extends UIOutput implements NamingContainer {
             if (parent instanceof UIInputFile) {
                 UIInputFile inputFile = (UIInputFile) parent;
                 ExpressionFactory ef = context.getApplication().getExpressionFactory();
-                return ef.createValueExpression(inputFile.getCurrentBlob(),
-                        Blob.class);
+                return ef.createValueExpression(inputFile.getCurrentBlob(), Blob.class);
             }
         }
         // default get
@@ -289,8 +283,7 @@ public class UIOutputFile extends UIOutput implements NamingContainer {
             if (parent instanceof UIInputFile) {
                 UIInputFile inputFile = (UIInputFile) parent;
                 ExpressionFactory ef = context.getApplication().getExpressionFactory();
-                return ef.createValueExpression(inputFile.getCurrentFilename(),
-                        String.class);
+                return ef.createValueExpression(inputFile.getCurrentFilename(), String.class);
             }
         }
         if (filename != null) {
@@ -301,13 +294,11 @@ public class UIOutputFile extends UIOutput implements NamingContainer {
         }
     }
 
-    protected String getDownloadLinkValue(FacesContext context, Blob blob,
-            String filename) {
+    protected String getDownloadLinkValue(FacesContext context, Blob blob, String filename) {
         String linkValue = getDownloadLabel();
         if (linkValue == null) {
             if (filename == null || filename.length() == 0) {
-                linkValue = ComponentUtils.translate(context,
-                        "label.outputFile.download");
+                linkValue = ComponentUtils.translate(context, "label.outputFile.download");
             } else {
                 linkValue = filename;
             }
@@ -340,8 +331,7 @@ public class UIOutputFile extends UIOutput implements NamingContainer {
                 String filenameSet = getFilename();
                 UICommand downloadComp = (UICommand) downloadFacet;
                 // action expression will be set thanks to parent values
-                downloadComp.setValue(getDownloadLinkValue(context, blob,
-                        filenameSet));
+                downloadComp.setValue(getDownloadLinkValue(context, blob, filenameSet));
                 downloadComp.setImmediate(true);
                 ComponentUtils.copyLinkValues(this, downloadComp);
                 if (getIconRendered()) {
@@ -354,8 +344,7 @@ public class UIOutputFile extends UIOutput implements NamingContainer {
         }
     }
 
-    public void encodeFileIcon(FacesContext context, Blob blob)
-            throws IOException {
+    public void encodeFileIcon(FacesContext context, Blob blob) throws IOException {
         String iconPath = "";
         try {
             MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
@@ -371,10 +360,8 @@ public class UIOutputFile extends UIOutput implements NamingContainer {
         if (iconPath.length() > 0) {
             ResponseWriter writer = context.getResponseWriter();
             writer.startElement("img", this);
-            String src = context.getApplication().getViewHandler().getResourceURL(
-                    context, iconPath);
-            writer.writeURIAttribute("src",
-                    context.getExternalContext().encodeResourceURL(src), null);
+            String src = context.getApplication().getViewHandler().getResourceURL(context, iconPath);
+            writer.writeURIAttribute("src", context.getExternalContext().encodeResourceURL(src), null);
             writer.writeAttribute("alt", blob.getMimeType(), null);
             writer.endElement("img");
             writer.write(ComponentUtils.WHITE_SPACE_CHARACTER);

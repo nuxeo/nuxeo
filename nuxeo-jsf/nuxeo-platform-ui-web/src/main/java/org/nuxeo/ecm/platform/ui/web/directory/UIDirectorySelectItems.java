@@ -82,8 +82,7 @@ public class UIDirectorySelectItems extends UISelectItems {
 
     @SuppressWarnings("boxing")
     public boolean isDisplayAll() {
-        return (Boolean) getStateHelper().eval(DirPropertyKeys.displayAll,
-                Boolean.TRUE);
+        return (Boolean) getStateHelper().eval(DirPropertyKeys.displayAll, Boolean.TRUE);
     }
 
     @SuppressWarnings("boxing")
@@ -93,14 +92,12 @@ public class UIDirectorySelectItems extends UISelectItems {
 
     @SuppressWarnings("boxing")
     public boolean isDisplayObsoleteEntries() {
-        return (Boolean) getStateHelper().eval(
-                DirPropertyKeys.displayObsoleteEntries, Boolean.FALSE);
+        return (Boolean) getStateHelper().eval(DirPropertyKeys.displayObsoleteEntries, Boolean.FALSE);
     }
 
     @SuppressWarnings("boxing")
     public void setDisplayObsoleteEntries(boolean displayObsoleteEntries) {
-        getStateHelper().put(DirPropertyKeys.displayObsoleteEntries,
-                displayObsoleteEntries);
+        getStateHelper().put(DirPropertyKeys.displayObsoleteEntries, displayObsoleteEntries);
     }
 
     public String getFilter() {
@@ -111,23 +108,25 @@ public class UIDirectorySelectItems extends UISelectItems {
         getStateHelper().put(DirPropertyKeys.filter, filter);
     }
 
+    @Override
     @SuppressWarnings("boxing")
     public boolean isLocalize() {
-        return (Boolean) getStateHelper().eval(DirPropertyKeys.localize,
-                Boolean.FALSE);
+        return (Boolean) getStateHelper().eval(DirPropertyKeys.localize, Boolean.FALSE);
     }
 
+    @Override
     @SuppressWarnings("boxing")
     public void setLocalize(boolean localize) {
         getStateHelper().put(DirPropertyKeys.localize, localize);
     }
 
+    @Override
     @SuppressWarnings("boxing")
     public boolean isdbl10n() {
-        return (Boolean) getStateHelper().eval(DirPropertyKeys.dbl10n,
-                Boolean.FALSE);
+        return (Boolean) getStateHelper().eval(DirPropertyKeys.dbl10n, Boolean.FALSE);
     }
 
+    @Override
     @SuppressWarnings("boxing")
     public void setdbl10n(boolean dbl10n) {
         getStateHelper().put(DirPropertyKeys.dbl10n, dbl10n);
@@ -143,10 +142,8 @@ public class UIDirectorySelectItems extends UISelectItems {
             }
 
             @Override
-            protected DirectorySelectItem createSelectItem(String label,
-                    Long ordering) {
-                return UIDirectorySelectItems.this.createSelectItem(label,
-                        ordering);
+            protected DirectorySelectItem createSelectItem(String label, Long ordering) {
+                return UIDirectorySelectItems.this.createSelectItem(label, ordering);
             }
 
             @Override
@@ -180,8 +177,7 @@ public class UIDirectorySelectItems extends UISelectItems {
             }
 
             @Override
-            protected Long retrieveOrderingFromEntry(
-                    DocumentModel directoryEntry) {
+            protected Long retrieveOrderingFromEntry(DocumentModel directoryEntry) {
                 return UIDirectorySelectItems.this.retrieveOrderingFromEntry(directoryEntry);
             }
 
@@ -198,8 +194,7 @@ public class UIDirectorySelectItems extends UISelectItems {
         String ordering = getOrdering();
         boolean caseSensitive = isCaseSensitive();
         if (!StringUtils.isBlank(ordering)) {
-            Collections.sort(items, new DirectorySelectItemComparator(ordering,
-                    Boolean.valueOf(caseSensitive)));
+            Collections.sort(items, new DirectorySelectItemComparator(ordering, Boolean.valueOf(caseSensitive)));
         }
         DirectorySelectItem[] res = items.toArray(new DirectorySelectItem[0]);
         if (isDisplayAll()) {
@@ -230,8 +225,8 @@ public class UIDirectorySelectItems extends UISelectItems {
         if (!StringUtils.isBlank(labelSuffix)) {
             label = label + getItemLabelSuffixSeparator() + labelSuffix;
         }
-        return new DirectorySelectItem(value, label, ordering == null ? 0L
-                : ordering.longValue(), isItemDisabled(), isItemEscaped());
+        return new DirectorySelectItem(value, label, ordering == null ? 0L : ordering.longValue(), isItemDisabled(),
+                isItemEscaped());
     }
 
     protected String retrieveSelectEntryId() {
@@ -265,8 +260,7 @@ public class UIDirectorySelectItems extends UISelectItems {
                 if (docEntry.getProperties(schema).containsKey(pattern)) {
                     label = (String) docEntry.getProperties(schema).get(pattern);
                 } else {
-                    label = (String) docEntry.getProperties(schema).get(
-                            defaultPattern);
+                    label = (String) docEntry.getProperties(schema).get(defaultPattern);
                 }
             } else {
                 label = (String) docEntry.getProperties(schema).get("label");
@@ -298,6 +292,7 @@ public class UIDirectorySelectItems extends UISelectItems {
         return ordering;
     }
 
+    @Override
     protected String translate(FacesContext context, Locale locale, String label) {
         if (StringUtils.isBlank(label)) {
             return label;

@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.el.ELException;
+import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UINamingContainer;
 import javax.faces.component.UISelectOne;
@@ -45,9 +46,8 @@ public class NXRadioRenderer extends RadioRenderer {
     private static final Attribute[] ATTRIBUTES = AttributeManager.getAttributes(AttributeManager.Key.SELECTONERADIO);
 
     @Override
-    protected void renderOption(FacesContext context, UIComponent component,
-            Converter converter, SelectItem curItem, Object currentSelections,
-            Object[] submittedValues, boolean alignVertical, int itemNumber,
+    protected void renderOption(FacesContext context, UIComponent component, Converter converter, SelectItem curItem,
+            Object currentSelections, Object[] submittedValues, boolean alignVertical, int itemNumber,
             OptionComponentInfo optionInfo) throws IOException {
 
         ResponseWriter writer = context.getResponseWriter();
@@ -82,12 +82,10 @@ public class NXRadioRenderer extends RadioRenderer {
             }
         }
         Object itemValue = curItem.getValue();
-        RequestStateManager.set(context,
-                RequestStateManager.TARGET_COMPONENT_ATTRIBUTE_NAME, component);
+        RequestStateManager.set(context, RequestStateManager.TARGET_COMPONENT_ATTRIBUTE_NAME, component);
         Object newValue;
         try {
-            newValue = context.getApplication().getExpressionFactory().coerceToType(
-                    itemValue, type);
+            newValue = context.getApplication().getExpressionFactory().coerceToType(itemValue, type);
         } catch (ELException ele) {
             newValue = itemValue;
         } catch (IllegalArgumentException iae) {
@@ -129,17 +127,12 @@ public class NXRadioRenderer extends RadioRenderer {
         if (checked) {
             writer.writeAttribute("checked", Boolean.TRUE, null);
         }
-        writer.writeAttribute("name", component.getClientId(context),
-                "clientId");
-        String idString = component.getClientId(context)
-                + UINamingContainer.SEPARATOR_CHAR
+        writer.writeAttribute("name", component.getClientId(context), "clientId");
+        String idString = component.getClientId(context) + NamingContainer.SEPARATOR_CHAR
                 + Integer.toString(itemNumber);
         writer.writeAttribute("id", idString, "id");
 
-        writer.writeAttribute(
-                "value",
-                (getFormattedValue(context, component, curItem.getValue(),
-                        converter)), "value");
+        writer.writeAttribute("value", (getFormattedValue(context, component, curItem.getValue(), converter)), "value");
 
         // Don't render the disabled attribute twice if the 'parent'
         // component is already marked disabled.
@@ -151,8 +144,8 @@ public class NXRadioRenderer extends RadioRenderer {
         // Apply HTML 4.x attributes specified on UISelectMany component to all
         // items in the list except styleClass and style which are rendered as
         // attributes of outer most table.
-        RenderKitUtils.renderPassThruAttributes(context, writer, component,
-                ATTRIBUTES, getNonOnClickSelectBehaviors(component));
+        RenderKitUtils.renderPassThruAttributes(context, writer, component, ATTRIBUTES,
+                getNonOnClickSelectBehaviors(component));
         RenderKitUtils.renderXHTMLStyleBooleanAttributes(writer, component);
 
         RenderKitUtils.renderSelectOnclick(context, component, false);

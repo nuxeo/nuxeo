@@ -31,12 +31,10 @@ import javax.faces.view.facelets.TagAttribute;
 import org.nuxeo.ecm.platform.ui.web.binding.MetaValueExpression;
 
 /**
- * Meta value rule, used to evaluate an expression as a regular value
- * expression, or invoking it again as another value expression or method
- * expression.
+ * Meta value rule, used to evaluate an expression as a regular value expression, or invoking it again as another value
+ * expression or method expression.
  * <p>
- * The method can have parameters and the expression must use parentheses even
- * if no parameters are needed.
+ * The method can have parameters and the expression must use parentheses even if no parameters are needed.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -66,18 +64,15 @@ public class MetaValueHolderRule extends MetaRule {
 
         @Override
         public void applyMetadata(FaceletContext ctx, Object instance) {
-            ValueExpression originalExpression = attr.getValueExpression(ctx,
-                    Object.class);
-            ((UIComponent) instance).setValueExpression("value",
-                    new MetaValueExpression(originalExpression));
+            ValueExpression originalExpression = attr.getValueExpression(ctx, Object.class);
+            ((UIComponent) instance).setValueExpression("value", new MetaValueExpression(originalExpression));
         }
     }
 
     public static final MetaValueHolderRule Instance = new MetaValueHolderRule();
 
     @Override
-    public Metadata applyRule(String name, TagAttribute attribute,
-            MetadataTarget meta) {
+    public Metadata applyRule(String name, TagAttribute attribute, MetadataTarget meta) {
         if (meta.isTargetInstanceOf(ValueHolder.class)) {
             if ("value".equals(name)) {
                 if (attribute.isLiteral()) {

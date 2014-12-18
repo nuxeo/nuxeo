@@ -63,8 +63,7 @@ public class PluggableRestletService extends DefaultComponent {
         }
 
         // override URL
-        if (newContrib.getUrlPatterns() != null
-                && !newContrib.getUrlPatterns().isEmpty()) {
+        if (newContrib.getUrlPatterns() != null && !newContrib.getUrlPatterns().isEmpty()) {
             oldDescriptor.getUrlPatterns().addAll(newContrib.getUrlPatterns());
         }
 
@@ -75,19 +74,16 @@ public class PluggableRestletService extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         RestletPluginDescriptor descriptor = (RestletPluginDescriptor) contribution;
 
         if (restletsDescriptors.containsKey(descriptor.getName())) {
             mergeDescriptors(descriptor);
-            log.debug("merged RestletDescriptor: "
-                    + descriptor.getName());
+            log.debug("merged RestletDescriptor: " + descriptor.getName());
         } else {
             restletsDescriptors.put(descriptor.getName(), descriptor);
-            log.debug("registered RestletDescriptor: "
-                    + descriptor.getName());
+            log.debug("registered RestletDescriptor: " + descriptor.getName());
         }
     }
 
@@ -111,14 +107,12 @@ public class PluggableRestletService extends DefaultComponent {
 
             RestletPluginDescriptor rpd = restletsDescriptors.get(name);
             if (rpd == null) {
-                log.error("Error while creating Restlet instance. Cannot get RestletPluginDescriptor for name: "
-                        + name);
+                log.error("Error while creating Restlet instance. Cannot get RestletPluginDescriptor for name: " + name);
                 return null;
             }
             Class<Restlet> theClass = rpd.getClassName();
             if (theClass == null) {
-                log.error("Error while creating Restlet instance. Class not available for restlet descriptor: "
-                        + name);
+                log.error("Error while creating Restlet instance. Class not available for restlet descriptor: " + name);
                 return null;
             }
             Restlet restlet;

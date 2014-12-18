@@ -31,8 +31,7 @@ import yarfraw.io.FeedWriter;
 /**
  * Override for better resolution of feedFormat variable.
  * <p>
- * When this is a value expression, the original component does not decode the
- * value correctly.
+ * When this is a value expression, the original component does not decode the value correctly.
  *
  * @since 5.4.2
  */
@@ -44,8 +43,7 @@ public class UIFeed extends org.jboss.seam.rss.ui.UIFeed {
 
     @Override
     public void encodeEnd(FacesContext facesContext) throws IOException {
-        ChannelFeed channelFeed = (ChannelFeed) Contexts.getEventContext().get(
-                FEED_IMPL_KEY);
+        ChannelFeed channelFeed = (ChannelFeed) Contexts.getEventContext().get(FEED_IMPL_KEY);
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         try {
             // XXX: retrieve fee format with getter instead of using the static

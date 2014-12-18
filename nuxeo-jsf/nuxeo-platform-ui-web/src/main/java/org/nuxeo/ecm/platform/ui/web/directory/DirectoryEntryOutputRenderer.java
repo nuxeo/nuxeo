@@ -54,24 +54,18 @@ public class DirectoryEntryOutputRenderer extends Renderer {
         String toWrite = null;
         if (directoryName != null) {
             // get the entry information
-            String keySeparator = (String) dirComponent.getAttributes().get(
-                    "keySeparator");
+            String keySeparator = (String) dirComponent.getAttributes().get("keySeparator");
             String schema;
             try {
-                schema = DirectoryHelper.getDirectoryService().getDirectorySchema(
-                        directoryName);
+                schema = DirectoryHelper.getDirectoryService().getDirectorySchema(directoryName);
             } catch (DirectoryException de) {
-                log.error(
-                        "Unable to get directory schema for " + directoryName,
-                        de);
+                log.error("Unable to get directory schema for " + directoryName, de);
                 schema = keySeparator != null ? "xvocabulary" : "vocabulary";
             }
             if (keySeparator != null && entryId != null) {
-                entryId = entryId.substring(
-                        entryId.lastIndexOf(keySeparator) + 1, entryId.length());
+                entryId = entryId.substring(entryId.lastIndexOf(keySeparator) + 1, entryId.length());
             }
-            DocumentModel entry = DirectoryHelper.getEntry(directoryName,
-                    entryId);
+            DocumentModel entry = DirectoryHelper.getEntry(directoryName, entryId);
 
             if (entry != null) {
                 Boolean displayIdAndLabel = dirComponent.getDisplayIdAndLabel();
@@ -86,16 +80,14 @@ public class DirectoryEntryOutputRenderer extends Renderer {
                 } catch (ClientException e) {
                     label = null;
                 }
-                String display = (String) dirComponent.getAttributes().get(
-                        "display");
+                String display = (String) dirComponent.getAttributes().get("display");
                 if (label == null || "".equals(label)) {
                     label = entryId;
                 }
                 if (Boolean.TRUE.equals(translate)) {
                     label = translate(context, label);
                 }
-                toWrite = DirectoryHelper.getOptionValue(entryId, label,
-                        display, displayIdAndLabel.booleanValue(), " ");
+                toWrite = DirectoryHelper.getOptionValue(entryId, label, display, displayIdAndLabel.booleanValue(), " ");
             }
         }
         if (toWrite == null) {

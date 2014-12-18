@@ -29,7 +29,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * Component registering url policies and document view codecs.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class URLServiceComponent extends DefaultComponent {
 
@@ -60,16 +59,14 @@ public class URLServiceComponent extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (URL_PATTERNS_EXTENSION_POINT.equals(extensionPoint)) {
             urlPolicyService.addPatternDescriptor((URLPatternDescriptor) contribution);
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (URL_PATTERNS_EXTENSION_POINT.equals(extensionPoint)) {
             urlPolicyService.removePatternDescriptor((URLPatternDescriptor) contribution);
         }

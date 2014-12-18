@@ -43,8 +43,7 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
-public class ChainSelectListboxComponent extends UIInput implements
-        ClientBehaviorHolder {
+public class ChainSelectListboxComponent extends UIInput implements ClientBehaviorHolder {
 
     public static final String COMPONENT_TYPE = "nxdirectory.chainSelectListbox";
 
@@ -95,8 +94,7 @@ public class ChainSelectListboxComponent extends UIInput implements
         ChainSelect chain = getChain();
         if (chain != null) {
             boolean isLastSelect = getIndex() == chain.getSize() - 1;
-            boolean isChainMultiSelect = chain.getBooleanProperty(
-                    "multiSelect", false);
+            boolean isChainMultiSelect = chain.getBooleanProperty("multiSelect", false);
             return isLastSelect && isChainMultiSelect;
         }
         return false;
@@ -181,8 +179,7 @@ public class ChainSelectListboxComponent extends UIInput implements
 
     public Map<String, DirectorySelectItem> getOptions() {
         index = getIndex();
-        if (index == 0
-                || getChain().getSelection(0).getColumnValue(index - 1) != null) {
+        if (index == 0 || getChain().getSelection(0).getColumnValue(index - 1) != null) {
             return rebuildOptions();
         }
         return new HashMap<String, DirectorySelectItem>();
@@ -305,16 +302,14 @@ public class ChainSelectListboxComponent extends UIInput implements
     }
 
     /**
-     * Reload listbox values based on previous selections in the chain.
-     * (functionality moved from ChainSelect)
+     * Reload listbox values based on previous selections in the chain. (functionality moved from ChainSelect)
      */
     public LinkedHashMap<String, DirectorySelectItem> rebuildOptions() {
 
         index = getIndex();
 
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
-        Boolean displayObsolete = getBooleanProperty("displayObsoleteEntries",
-                Boolean.FALSE);
+        Boolean displayObsolete = getBooleanProperty("displayObsoleteEntries", Boolean.FALSE);
         if (!displayObsolete) {
             filter.put("obsolete", 0);
         }
@@ -333,8 +328,7 @@ public class ChainSelectListboxComponent extends UIInput implements
             boolean qualifiedParentKeys = getChain().isQualifiedParentKeys();
             String keySeparator = getChain().getKeySeparator();
             Selection sel = getChain().getSelections()[0];
-            String parentValue = sel.getParentKey(index, qualifiedParentKeys,
-                    keySeparator);
+            String parentValue = sel.getParentKey(index, qualifiedParentKeys, keySeparator);
             if (parentValue == null) {
                 // use default parent key
                 parentValue = defaultRootKey;
@@ -346,8 +340,7 @@ public class ChainSelectListboxComponent extends UIInput implements
 
         List<DirectorySelectItem> list;
         if (directoryName != null) {
-            list = DirectoryHelper.instance().getSelectItems(directoryName,
-                    filter);
+            list = DirectoryHelper.instance().getSelectItems(directoryName, filter);
         } else {
             list = DirectoryHelper.getSelectItems(directoryValues, filter);
         }
@@ -363,8 +356,7 @@ public class ChainSelectListboxComponent extends UIInput implements
             item.setLocalizedLabel(translatedLabel);
 
             String displayedLabel = translatedLabel;
-            Boolean displayIdAndLabel = getBooleanProperty("displayIdAndLabel",
-                    Boolean.FALSE);
+            Boolean displayIdAndLabel = getBooleanProperty("displayIdAndLabel", Boolean.FALSE);
             if (displayIdAndLabel) {
                 displayedLabel = id + displayIdAndLabelSeparator + label;
             }
@@ -393,8 +385,8 @@ public class ChainSelectListboxComponent extends UIInput implements
     }
 
     /**
-     * This method reads submitted data and rebuilds the current list of values
-     * based on selections in the parent components.
+     * This method reads submitted data and rebuilds the current list of values based on selections in the parent
+     * components.
      */
     @Override
     public void decode(FacesContext context) {
@@ -457,8 +449,7 @@ public class ChainSelectListboxComponent extends UIInput implements
 
         String[] lastValues = requestValueMap.get(name);
 
-        boolean lastValueIsOk = lastValues != null && lastValues.length != 0
-                && !StringUtils.isEmpty(lastValues[0]);
+        boolean lastValueIsOk = lastValues != null && lastValues.length != 0 && !StringUtils.isEmpty(lastValues[0]);
 
         Selection[] selections;
 
@@ -509,15 +500,16 @@ public class ChainSelectListboxComponent extends UIInput implements
     /**
      * @since 6.0
      */
-    private static final Collection<String> EVENT_NAMES = Collections.unmodifiableCollection(Arrays.asList(
-            "blur", "change", "valueChange", "click", "dblclick", "focus",
-            "keydown", "keypress", "keyup", "mousedown", "mousemove",
-            "mouseout", "mouseover", "mouseup", "select"));
+    private static final Collection<String> EVENT_NAMES = Collections.unmodifiableCollection(Arrays.asList("blur",
+            "change", "valueChange", "click", "dblclick", "focus", "keydown", "keypress", "keyup", "mousedown",
+            "mousemove", "mouseout", "mouseover", "mouseup", "select"));
 
+    @Override
     public Collection<String> getEventNames() {
         return EVENT_NAMES;
     }
 
+    @Override
     public String getDefaultEventName() {
         return "valueChange";
     }

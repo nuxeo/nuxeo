@@ -37,14 +37,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- * Provide simple extension to Seam injection system to be able to inject Nuxeo
- * Services and Nuxeo Components inside Seam Beans
+ * Provide simple extension to Seam injection system to be able to inject Nuxeo Services and Nuxeo Components inside
+ * Seam Beans
  *
  * @since 5.7.3
- *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 @Scope(ScopeType.STATELESS)
 @Name(ServiceProvider.NAME)
@@ -83,7 +80,7 @@ public class NuxeoRuntimeServiceProvider implements ServiceProvider {
         if (result == null && name != null) {
             if (!name.startsWith("org.jboss")) {
                 // remove lookup by component name
-                //result = Framework.getRuntime().getComponent(name);
+                // result = Framework.getRuntime().getComponent(name);
                 // lookup service by short name
                 if (result == null) {
                     result = findServiceByShortCut(name);
@@ -112,17 +109,13 @@ public class NuxeoRuntimeServiceProvider implements ServiceProvider {
                     }
                     if (name.equalsIgnoreCase(serviceClassName)) {
                         try {
-                            klass = Thread.currentThread().getContextClassLoader().loadClass(
-                                    fullClassName);
+                            klass = Thread.currentThread().getContextClassLoader().loadClass(fullClassName);
                             if (log.isDebugEnabled()) {
-                                log.debug("Lookup for " + name
-                                        + " resolved to service "
-                                        + fullClassName);
+                                log.debug("Lookup for " + name + " resolved to service " + fullClassName);
                             }
                             break;
                         } catch (ClassNotFoundException e) {
-                            log.error("Unable to load class for service "
-                                    + fullClassName, e);
+                            log.error("Unable to load class for service " + fullClassName, e);
                         }
                     }
                 }

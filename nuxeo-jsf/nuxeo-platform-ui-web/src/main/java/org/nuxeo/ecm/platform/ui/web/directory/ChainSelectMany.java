@@ -36,7 +36,6 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class ChainSelectMany extends ChainSelectBase {
 
@@ -61,8 +60,7 @@ public class ChainSelectMany extends ChainSelectBase {
         emptyValueMarker.setValue("true");
         getFacets().put(EMPTY_VALUE_MARKER, emptyValueMarker);
 
-        UICommand addButton = (UICommand) context.getApplication().createComponent(
-                "org.ajax4jsf.ajax.CommandButton");
+        UICommand addButton = (UICommand) context.getApplication().createComponent("org.ajax4jsf.ajax.CommandButton");
         addButton.getAttributes().put("id", "addButton");
         addButton.getAttributes().put("value", "add");
         getFacets().put(ADD_BUTTON, addButton);
@@ -71,8 +69,7 @@ public class ChainSelectMany extends ChainSelectBase {
         addHidden.setId("addHidden");
         getFacets().put(ADD_HIDDEN, addHidden);
 
-        UICommand removeButton = (UICommand) context.getApplication().createComponent(
-                "org.ajax4jsf.ajax.CommandLink");
+        UICommand removeButton = (UICommand) context.getApplication().createComponent("org.ajax4jsf.ajax.CommandLink");
         UIGraphic image = new UIGraphic();
         image.setValue("/icons/delete.png");
         removeButton.getAttributes().put("id", "removeButton");
@@ -95,10 +92,8 @@ public class ChainSelectMany extends ChainSelectBase {
     }
 
     private void decodeValue(FacesContext context) {
-        String emptyValueMarkerClientId = getFacet(EMPTY_VALUE_MARKER).getClientId(
-                context);
-        String removeEntryClientId = getFacet(REMOVE_HIDDEN).getClientId(
-                context);
+        String emptyValueMarkerClientId = getFacet(EMPTY_VALUE_MARKER).getClientId(context);
+        String removeEntryClientId = getFacet(REMOVE_HIDDEN).getClientId(context);
         String addEntryClientId = getFacet(ADD_HIDDEN).getClientId(context);
         Map<String, String> map = context.getExternalContext().getRequestParameterMap();
 
@@ -178,11 +173,11 @@ public class ChainSelectMany extends ChainSelectBase {
         }
         if (values != null) {
             writer.startElement("div", this);
-            for (String value: values) {
+            for (String value : values) {
                 String[] keys = StringUtils.split(value, getKeySeparator());
                 List<DirectoryEntry> nodes = resolveKeys(keys);
                 List<String> labels = new ArrayList<String>();
-                for (DirectoryEntry node: nodes) {
+                for (DirectoryEntry node : nodes) {
                     String itemValue = node.getId();
                     String itemLabel = node.getLabel();
                     itemLabel = computeItemLabel(context, itemValue, itemLabel);
@@ -201,9 +196,8 @@ public class ChainSelectMany extends ChainSelectBase {
     private void encodeAddButton(FacesContext context) throws IOException {
         UICommand addButton = (UICommand) getFacet(ADD_BUTTON);
         HtmlInputHidden addHidden = (HtmlInputHidden) getFacet(ADD_HIDDEN);
-        String addJs = String.format(
-                    "document.getElementById('%s').value = '%s'",
-                    addHidden.getClientId(context), "true");
+        String addJs = String.format("document.getElementById('%s').value = '%s'", addHidden.getClientId(context),
+                "true");
         addButton.getAttributes().put("onclick", addJs);
         addHidden.setValue("");
 
@@ -250,22 +244,20 @@ public class ChainSelectMany extends ChainSelectBase {
             }
             removeButton.getAttributes().put("reRender", reRender);
             writer.startElement("div", this);
-            for (String value: values) {
+            for (String value : values) {
                 String[] keys = StringUtils.split(value, getKeySeparator());
                 List<DirectoryEntry> nodes = resolveKeys(keys);
                 List<String> labels = new ArrayList<String>();
-                for (DirectoryEntry node: nodes) {
+                for (DirectoryEntry node : nodes) {
                     String itemValue = node.getId();
                     String itemLabel = node.getLabel();
                     itemLabel = computeItemLabel(context, itemValue, itemLabel);
                     labels.add(itemLabel);
                 }
-                String concatenatedLabel = StringUtils.join(
-                        labels.iterator(), getKeySeparator());
+                String concatenatedLabel = StringUtils.join(labels.iterator(), getKeySeparator());
 
                 writer.startElement("div", this);
-                String removeJs = String.format(
-                        "document.getElementById('%s').value = '%s'",
+                String removeJs = String.format("document.getElementById('%s').value = '%s'",
                         removeHidden.getClientId(context), value);
                 removeButton.getAttributes().put("onclick", removeJs);
                 ComponentUtils.encodeComponent(context, removeButton);

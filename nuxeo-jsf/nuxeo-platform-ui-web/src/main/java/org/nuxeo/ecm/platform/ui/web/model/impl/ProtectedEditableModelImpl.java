@@ -24,7 +24,6 @@ import org.nuxeo.ecm.platform.ui.web.model.ProtectedEditableModel;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class ProtectedEditableModelImpl implements ProtectedEditableModel {
 
@@ -34,22 +33,27 @@ public class ProtectedEditableModelImpl implements ProtectedEditableModel {
         this.delegate = delegate;
     }
 
+    @Override
     public int getRowCount() {
         return delegate.getRowCount();
     }
 
+    @Override
     public Object getRowData() {
         return delegate.getRowData();
     }
 
+    @Override
     public int getRowIndex() {
         return delegate.getRowIndex();
     }
 
+    @Override
     public void setRowData(Object rowData) {
         delegate.setRowData(rowData);
     }
 
+    @Override
     public boolean isRowNew() {
         return delegate.isRowNew();
     }

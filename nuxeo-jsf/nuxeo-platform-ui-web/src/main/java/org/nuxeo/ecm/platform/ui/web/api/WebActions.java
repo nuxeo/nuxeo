@@ -27,8 +27,7 @@ import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 
 /**
- * Component that handles actions retrieval as well as current tab(s)
- * selection.
+ * Component that handles actions retrieval as well as current tab(s) selection.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -72,20 +71,18 @@ public interface WebActions {
     public static final String MAIN_TAB_ID_PARAMETER = "mainTabId";
 
     /**
-     * Event raised when the current tab has changed, with 2 parameters: first
-     * parameter is a String representing the tab category, and second
-     * parameter is a String representing the new tab id (or null if current
-     * tab is reset for this category).
+     * Event raised when the current tab has changed, with 2 parameters: first parameter is a String representing the
+     * tab category, and second parameter is a String representing the new tab id (or null if current tab is reset for
+     * this category).
      *
      * @since 5.4.2
      */
     public static final String CURRENT_TAB_CHANGED_EVENT = "currentTabChanged";
 
     /**
-     * Event raised when the current tab is selected, with 2 parameters: first
-     * parameter is a String representing the tab category, and second
-     * parameter is a String representing the new tab id (or null if current
-     * tab is reset for this category).
+     * Event raised when the current tab is selected, with 2 parameters: first parameter is a String representing the
+     * tab category, and second parameter is a String representing the new tab id (or null if current tab is reset for
+     * this category).
      * <p>
      * This event is sent also when current tab did not change.
      *
@@ -101,68 +98,53 @@ public interface WebActions {
     public static final String AJAX_TAB_PROPERTY = "nuxeo.jsf.useAjaxTabs";
 
     /**
-     * Returns all filtered actions for a given category and given resolution
-     * context.
+     * Returns all filtered actions for a given category and given resolution context.
      * <p>
-     * Actions are filtered according to filters set on the actions
-     * definitions.
+     * Actions are filtered according to filters set on the actions definitions.
      * <p>
-     * Since 5.8, the category can be a list of categories, separated by
-     * commas.
+     * Since 5.8, the category can be a list of categories, separated by commas.
      */
     List<Action> getActionsList(String category, ActionContext context);
 
     /**
-     * Returns all filtered actions for a given category and given resolution
-     * context, creating a new context for the filters resolution.
+     * Returns all filtered actions for a given category and given resolution context, creating a new context for the
+     * filters resolution.
      * <p>
-     * Actions are filtered according to filters set on the actions
-     * definitions.
+     * Actions are filtered according to filters set on the actions definitions.
      * <p>
-     * Since 5.8, the category can be a list of categories, separated by
-     * commas.
+     * Since 5.8, the category can be a list of categories, separated by commas.
      *
      * @since 5.7
      */
     List<Action> getActionsList(String category, Boolean hideUnavailableAction);
 
     /**
-     * Returns all filtered actions for a given category and a context built
-     * with given current document context, creating a new context for the
-     * filters resolution.
+     * Returns all filtered actions for a given category and a context built with given current document context,
+     * creating a new context for the filters resolution.
      * <p>
-     * Actions are filtered according to filters set on the actions
-     * definitions.
+     * Actions are filtered according to filters set on the actions definitions.
      * <p>
-     * Since 5.8, the category can be a list of categories, separated by
-     * commas.
+     * Since 5.8, the category can be a list of categories, separated by commas.
      *
      * @since 5.7.3
      */
-    List<Action> getActionsListForDocument(String category,
-            DocumentModel document, boolean hideUnavailableAction);
+    List<Action> getActionsListForDocument(String category, DocumentModel document, boolean hideUnavailableAction);
 
     /**
-     * Returns all filtered actions for a given category and given resolution
-     * context.
+     * Returns all filtered actions for a given category and given resolution context.
      * <p>
-     * Actions are filtered according to filters set on the actions
-     * definitions.
+     * Actions are filtered according to filters set on the actions definitions.
      * <p>
-     * Since 5.8, the category can be a list of categories, separated by
-     * commas.
+     * Since 5.8, the category can be a list of categories, separated by commas.
      *
      * @since 5.7
      */
-    List<Action> getActionsList(String category, ActionContext context,
-            boolean hideUnavailableAction);
+    List<Action> getActionsList(String category, ActionContext context, boolean hideUnavailableAction);
 
     /**
-     * Returns all filtered actions for a given category, creating a new
-     * context for the filters resolution.
+     * Returns all filtered actions for a given category, creating a new context for the filters resolution.
      * <p>
-     * Since 5.8, the category can be a list of categories, separated by
-     * commas.
+     * Since 5.8, the category can be a list of categories, separated by commas.
      *
      * @see #getActionsList(String, ActionContext)
      */
@@ -171,29 +153,23 @@ public interface WebActions {
     /**
      * Returns all actions for a given category and given resolution context.
      * <p>
-     * Actions are not filtered according to filters set on the actions
-     * definitions: actions that should have been removed are just marked as
-     * non-available.
+     * Actions are not filtered according to filters set on the actions definitions: actions that should have been
+     * removed are just marked as non-available.
      * <p>
-     * Since 5.8, the category can be a list of categories, separated by
-     * commas.
+     * Since 5.8, the category can be a list of categories, separated by commas.
      *
-     * @deprecated since 5.7, use
-     *             {@link #getActionsList(String, ActionContext, boolean)}
+     * @deprecated since 5.7, use {@link #getActionsList(String, ActionContext, boolean)}
      */
     @Deprecated
     List<Action> getUnfiltredActionsList(String category, ActionContext context);
 
     /**
-     * Returns all actions for a given category, creating a new context for the
-     * filters resolution.
+     * Returns all actions for a given category, creating a new context for the filters resolution.
      * <p>
-     * Since 5.8, the category can be a list of categories, separated by
-     * commas.
+     * Since 5.8, the category can be a list of categories, separated by commas.
      *
      * @see #getUnfiltredActionsList(String, ActionContext)
-     * @deprecated since 5.7, use
-     *             {@link #getActionsList(String, ActionContext, boolean)}
+     * @deprecated since 5.7, use {@link #getActionsList(String, ActionContext, boolean)}
      */
     @Deprecated
     List<Action> getUnfiltredActionsList(String category);
@@ -209,8 +185,8 @@ public interface WebActions {
     List<Action> getTabsList();
 
     /**
-     * Returns filtered actions for a category computed from the current tab
-     * action id and the suffix {@link #SUBTAB_CATEGORY_SUFFIX}.
+     * Returns filtered actions for a category computed from the current tab action id and the suffix
+     * {@link #SUBTAB_CATEGORY_SUFFIX}.
      */
     List<Action> getSubTabsList();
 
@@ -225,55 +201,51 @@ public interface WebActions {
     void setCurrentTabAction(Action tabAction);
 
     /**
-     * Returns the current sub tab for a category computed from the current tab
-     * action id and the suffix {@link #SUBTAB_CATEGORY_SUFFIX}.
+     * Returns the current sub tab for a category computed from the current tab action id and the suffix
+     * {@link #SUBTAB_CATEGORY_SUFFIX}.
      */
     Action getCurrentSubTabAction();
 
     /**
-     * Sets the current sub tab for a category computed from the current tab
-     * action id and the suffix {@link #SUBTAB_CATEGORY_SUFFIX}.
+     * Sets the current sub tab for a category computed from the current tab action id and the suffix
+     * {@link #SUBTAB_CATEGORY_SUFFIX}.
      */
     void setCurrentSubTabAction(Action tabAction);
 
     /**
-     * Returns the current action id for category
-     * {@link #DEFAULT_TABS_CATEGORY}
+     * Returns the current action id for category {@link #DEFAULT_TABS_CATEGORY}
      */
     String getCurrentTabId();
 
     /**
      * Sets the current action id for category {@link #DEFAULT_TABS_CATEGORY}.
      * <p>
-     * Does nothing if tabId is null, but resets current tab for this category
-     * when using an empty string instead.
+     * Does nothing if tabId is null, but resets current tab for this category when using an empty string instead.
      */
     void setCurrentTabId(String tabId);
 
     /**
-     * Returns the current sub tab id for a category computed from the current
-     * tab action id and the suffix {@link #SUBTAB_CATEGORY_SUFFIX}.
+     * Returns the current sub tab id for a category computed from the current tab action id and the suffix
+     * {@link #SUBTAB_CATEGORY_SUFFIX}.
      */
     String getCurrentSubTabId();
 
     /**
-     * Sets the current sub tab id for a category computed from the current tab
-     * action id and the suffix {@link #SUBTAB_CATEGORY_SUFFIX}.
+     * Sets the current sub tab id for a category computed from the current tab action id and the suffix
+     * {@link #SUBTAB_CATEGORY_SUFFIX}.
      * <p>
-     * Does nothing if sub tab id is null, but resets current tab for this
-     * category when using an empty string instead.
+     * Does nothing if sub tab id is null, but resets current tab for this category when using an empty string instead.
      */
     void setCurrentSubTabId(String tabId);
 
     /**
-     * Resets actions resolved for category {@link #DEFAULT_TABS_CATEGORY} so
-     * that they're recomputed. Also calls {@link #resetCurrentTab()}
+     * Resets actions resolved for category {@link #DEFAULT_TABS_CATEGORY} so that they're recomputed. Also calls
+     * {@link #resetCurrentTab()}
      */
     void resetTabList();
 
     /**
-     * Resets current tab information (includes sub tab information) for
-     * category {@link #DEFAULT_TABS_CATEGORY}.
+     * Resets current tab information (includes sub tab information) for category {@link #DEFAULT_TABS_CATEGORY}.
      */
     void resetCurrentTab();
 
@@ -283,9 +255,8 @@ public interface WebActions {
     Action getCurrentTabAction(String category);
 
     /**
-     * Returns the current sub tab action for given parent action, computing
-     * the category from parent action id with suffix
-     * {@link #SUBTAB_CATEGORY_SUFFIX}.
+     * Returns the current sub tab action for given parent action, computing the category from parent action id with
+     * suffix {@link #SUBTAB_CATEGORY_SUFFIX}.
      */
     Action getCurrentSubTabAction(String parentActionId);
 
@@ -314,24 +285,20 @@ public interface WebActions {
     void setCurrentTabId(String category, String tabId, String... subTabIds);
 
     /**
-     * Returns current tab ids as a string, encoded as is:
-     * CATEGORY_1:ACTION_ID_1,CATEGORY_2:ACTION_ID_2,...
+     * Returns current tab ids as a string, encoded as is: CATEGORY_1:ACTION_ID_1,CATEGORY_2:ACTION_ID_2,...
      *
      * @since 5.4.2
      */
     String getCurrentTabIds();
 
     /**
-     * Sets current tab ids as a String, splitting on commas ',' and parsing
-     * each action information as is:
+     * Sets current tab ids as a String, splitting on commas ',' and parsing each action information as is:
      * CATEGORY:ACTION_ID[:OPTIONAL_SUB_ACTION_ID[:OPTIONAL_SUB_ACTION_ID]...]
      * <p>
-     * If category is omitted or empty, the category
-     * {@link #DEFAULT_TABS_CATEGORY} will be used (if there is no subtab
+     * If category is omitted or empty, the category {@link #DEFAULT_TABS_CATEGORY} will be used (if there is no subtab
      * information).
      * <p>
-     * The resulting string looks like:
-     * CATEGORY_1:ACTION_ID_1,CATEGORY_2:ACTION_ID_2_SUB_ACTION_ID_2,...
+     * The resulting string looks like: CATEGORY_1:ACTION_ID_1,CATEGORY_2:ACTION_ID_2_SUB_ACTION_ID_2,...
      *
      * @since 5.4.2
      */
@@ -345,15 +312,13 @@ public interface WebActions {
     void resetCurrentTabs();
 
     /**
-     * Resets current tabs for given category, taking subtabs into account by
-     * resetting actions in categories computed from reset actions id with
-     * suffix {@link #SUBTAB_CATEGORY_SUFFIX}.
+     * Resets current tabs for given category, taking subtabs into account by resetting actions in categories computed
+     * from reset actions id with suffix {@link #SUBTAB_CATEGORY_SUFFIX}.
      */
     void resetCurrentTabs(String category);
 
     /**
-     * Calls {@link #setCurrentTabAndNavigate(DocumentModel, String)} for the
-     * current document.
+     * Calls {@link #setCurrentTabAndNavigate(DocumentModel, String)} for the current document.
      * <p>
      * Given action should hold the category {@link #DEFAULT_TABS_CATEGORY}
      *
@@ -362,8 +327,7 @@ public interface WebActions {
     String setCurrentTabAndNavigate(String currentTabActionId);
 
     /**
-     * Navigate to the given document and opens the view page of the given
-     * document selecting the given tab.
+     * Navigate to the given document and opens the view page of the given document selecting the given tab.
      * <p>
      * Given action should hold the category {@link #DEFAULT_TABS_CATEGORY}
      *
@@ -371,8 +335,7 @@ public interface WebActions {
      * @param currentTabActionId the tab that will be selected in the view page
      * @return the JSF view for the given document.
      */
-    String setCurrentTabAndNavigate(DocumentModel document,
-            String currentTabActionId);
+    String setCurrentTabAndNavigate(DocumentModel document, String currentTabActionId);
 
     /**
      * @since 5.6
@@ -392,19 +355,17 @@ public interface WebActions {
      * @since 5.7.3
      * @see ActionManager#getAction(String, ActionContext, boolean)
      */
-    Action getActionForDocument(String actionId, DocumentModel document,
-            boolean hideUnavailableAction);
+    Action getActionForDocument(String actionId, DocumentModel document, boolean hideUnavailableAction);
 
     /**
      * @since 5.6
      * @see ActionManager#getAction(String, ActionContext, boolean)
      */
-    Action getAction(String actionId, ActionContext context,
-            boolean hideUnavailableAction);
+    Action getAction(String actionId, ActionContext context, boolean hideUnavailableAction);
 
     /**
-     * Returns true if ajaxified behaviour of tabs is activated on the server,
-     * and if history push state is supported by browser.
+     * Returns true if ajaxified behaviour of tabs is activated on the server, and if history push state is supported by
+     * browser.
      *
      * @since 5.8
      * @see #AJAX_TAB_PROPERTY
@@ -424,8 +385,7 @@ public interface WebActions {
     List<Action> getSubViewActionsList();
 
     /**
-     * @deprecated use {@link #setCurrentTabId()} or
-     *             {@link #setCurrentTabAction(String, Action)}
+     * @deprecated use {@link #setCurrentTabId()} or {@link #setCurrentTabAction(String, Action)}
      */
     @Deprecated
     void setCurrentTabAction(String currentTabActionId);
@@ -437,8 +397,7 @@ public interface WebActions {
     void selectTabAction();
 
     /**
-     * @deprecated should be handled by a workflow related (or at least
-     *             document) action listener.
+     * @deprecated should be handled by a workflow related (or at least document) action listener.
      */
     @Deprecated
     String getCurrentLifeCycleState() throws Exception;

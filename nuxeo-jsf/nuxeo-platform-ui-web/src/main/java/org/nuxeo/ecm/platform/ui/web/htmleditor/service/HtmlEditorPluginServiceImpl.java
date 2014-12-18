@@ -35,8 +35,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-public class HtmlEditorPluginServiceImpl extends DefaultComponent implements
-        HtmlEditorPluginService {
+public class HtmlEditorPluginServiceImpl extends DefaultComponent implements HtmlEditorPluginService {
 
     public static final String PLUGINS_EXTENSION_POINT = "plugins";
 
@@ -53,12 +52,10 @@ public class HtmlEditorPluginServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (PLUGINS_EXTENSION_POINT.equals(extensionPoint)) {
             final HtmlEditorPluginDescriptor descriptor = (HtmlEditorPluginDescriptor) contribution;
-            if (descriptor.getRemove()
-                    && pluginsDescriptors.containsKey(descriptor.getPluginName())) {
+            if (descriptor.getRemove() && pluginsDescriptors.containsKey(descriptor.getPluginName())) {
                 pluginsDescriptors.remove(descriptor.getPluginName());
             } else {
                 pluginsDescriptors.put(descriptor.getPluginName(), descriptor);
@@ -67,8 +64,7 @@ public class HtmlEditorPluginServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (PLUGINS_EXTENSION_POINT.equals(extensionPoint)) {
             final HtmlEditorPluginDescriptor descriptor = (HtmlEditorPluginDescriptor) contribution;
             pluginsDescriptors.remove(descriptor.getPluginName());

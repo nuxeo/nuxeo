@@ -31,7 +31,6 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
  * Formats dates according to the TimeZone selected in seam.
  *
  * @author Narcis Paslaru
- *
  */
 @Converter
 @Scope(ScopeType.STATELESS)
@@ -39,8 +38,6 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 @Name(javax.faces.convert.DateTimeConverter.CONVERTER_ID)
 public class DateTimeConverter extends org.jboss.seam.ui.converter.DateTimeConverter implements Serializable {
 
-
     private static final long serialVersionUID = 1L;
-
 
 }

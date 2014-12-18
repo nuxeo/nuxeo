@@ -54,9 +54,8 @@ import com.sun.faces.util.MessageFactory;
 /**
  * UIInput file that handles complex validation.
  * <p>
- * Attribute value is the file to be uploaded. Its submitted value as well as
- * filename are handled by sub components. Rendering and validation of
- * subcomponents are handled here.
+ * Attribute value is the file to be uploaded. Its submitted value as well as filename are handled by sub components.
+ * Rendering and validation of subcomponents are handled here.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -98,8 +97,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 app.createComponent(UIOutputFile.COMPONENT_TYPE));
         ComponentUtils.initiateSubComponent(this, EDIT_FILENAME_FACET_NAME,
                 app.createComponent(HtmlInputText.COMPONENT_TYPE));
-        ComponentUtils.initiateSubComponent(this, UPLOAD_FACET_NAME,
-                app.createComponent(HtmlInputFile.COMPONENT_TYPE));
+        ComponentUtils.initiateSubComponent(this, UPLOAD_FACET_NAME, app.createComponent(HtmlInputFile.COMPONENT_TYPE));
     }
 
     // component will render itself
@@ -111,8 +109,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
     // getters and setters
 
     /**
-     * Override value so that an {@link InputFileInfo} structure is given
-     * instead of the "value" attribute resolution.
+     * Override value so that an {@link InputFileInfo} structure is given instead of the "value" attribute resolution.
      */
     @Override
     public Object getValue() {
@@ -246,8 +243,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
         // decode the radio button, other input components will decode
         // themselves
         Map<String, String> requestMap = context.getExternalContext().getRequestParameterMap();
-        String radioClientId = getClientId(context)
-                + NamingContainer.SEPARATOR_CHAR + CHOICE_FACET_NAME;
+        String radioClientId = getClientId(context) + NamingContainer.SEPARATOR_CHAR + CHOICE_FACET_NAME;
         String choice = requestMap.get(radioClientId);
         // other submitted values will be handled at validation time
         InputFileInfo submitted = new InputFileInfo(choice, null, null, null);
@@ -282,20 +278,16 @@ public class UIInputFile extends UIInput implements NamingContainer {
             return;
         }
         if (choice == null) {
-            ComponentUtils.addErrorMessage(context, this,
-                    "error.inputFile.choiceRequired");
+            ComponentUtils.addErrorMessage(context, this, "error.inputFile.choiceRequired");
             setValid(false);
             return;
         }
         submitted.setChoice(choice);
         InputFileChoice previousChoice = previous.getConvertedChoice();
-        boolean temp = InputFileChoice.tempKeep == previousChoice
-                || InputFileChoice.upload == previousChoice;
-        List<InputFileChoice> choices = getAvailableChoices(previous.getBlob(),
-                temp);
+        boolean temp = InputFileChoice.tempKeep == previousChoice || InputFileChoice.upload == previousChoice;
+        List<InputFileChoice> choices = getAvailableChoices(previous.getBlob(), temp);
         if (!choices.contains(choice)) {
-            ComponentUtils.addErrorMessage(context, this,
-                    "error.inputFile.invalidChoice");
+            ComponentUtils.addErrorMessage(context, this, "error.inputFile.invalidChoice");
             setValid(false);
             return;
         }
@@ -378,13 +370,12 @@ public class UIInputFile extends UIInput implements NamingContainer {
     /**
      * Validates submitted blob.
      * <p>
-     * Throws ValidatorException as a flag when blob is null and file is not
-     * required to set choice back to "no file" (see NXP-1732).
+     * Throws ValidatorException as a flag when blob is null and file is not required to set choice back to "no file"
+     * (see NXP-1732).
      *
      * @throws ValidatorException
      */
-    public void validateBlob(FacesContext context, InputFileInfo submitted)
-            throws ValidatorException {
+    public void validateBlob(FacesContext context, InputFileInfo submitted) throws ValidatorException {
         // validate blob
         UIComponent uploadFacet = getFacet(UPLOAD_FACET_NAME);
         if (uploadFacet instanceof HtmlInputFile) {
@@ -395,8 +386,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 try {
                     submitted.setBlob(file.getInputStream());
                 } catch (IOException e) {
-                    ComponentUtils.addErrorMessage(context, this,
-                            e.getMessage());
+                    ComponentUtils.addErrorMessage(context, this, e.getMessage());
                     setValid(false);
                     return;
                 }
@@ -437,8 +427,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
     protected String retrieveFilename(Part part) {
         for (String cd : part.getHeader("content-disposition").split(";")) {
             if (cd.trim().startsWith("filename")) {
-                String filename = cd.substring(cd.indexOf('=') + 1).trim().replace(
-                        "\"", "");
+                String filename = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
                 return filename;
             }
         }
@@ -468,38 +457,31 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 InputFileInfo local = getFileInfoLocalValue();
                 InputFileChoice choice = local.getConvertedChoice();
                 // set file name
-                if ((InputFileChoice.keep == choice && getEditFilename())
-                        || InputFileChoice.upload == choice
-                        || InputFileChoice.delete == choice
-                        || InputFileChoice.tempKeep == choice) {
+                if ((InputFileChoice.keep == choice && getEditFilename()) || InputFileChoice.upload == choice
+                        || InputFileChoice.delete == choice || InputFileChoice.tempKeep == choice) {
                 }
                 // set blob and filename
-                if (InputFileChoice.upload == choice
-                        || InputFileChoice.delete == choice
+                if (InputFileChoice.upload == choice || InputFileChoice.delete == choice
                         || InputFileChoice.tempKeep == choice) {
                     if (InputFileChoice.delete == choice) {
                         // set filename first to avoid error in case it maps
                         // the blob filename
                         ValueExpression vef = getValueExpression("filename");
                         if (vef != null) {
-                            vef.setValue(context.getELContext(),
-                                    local.getConvertedFilename());
+                            vef.setValue(context.getELContext(), local.getConvertedFilename());
                         }
-                        ve.setValue(context.getELContext(),
-                                local.getConvertedBlob());
+                        ve.setValue(context.getELContext(), local.getConvertedBlob());
                         setValue(null);
                         setLocalValueSet(false);
                     } else {
                         // set blob first to avoid error in case the filename
                         // maps the blob filename
-                        ve.setValue(context.getELContext(),
-                                local.getConvertedBlob());
+                        ve.setValue(context.getELContext(), local.getConvertedBlob());
                         setValue(null);
                         setLocalValueSet(false);
                         ValueExpression vef = getValueExpression("filename");
                         if (vef != null) {
-                            vef.setValue(context.getELContext(),
-                                    local.getConvertedFilename());
+                            vef.setValue(context.getELContext(), local.getConvertedFilename());
                         }
                     }
                 } else if (InputFileChoice.keep == choice) {
@@ -510,8 +492,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
                         // set filename
                         ValueExpression vef = getValueExpression("filename");
                         if (vef != null) {
-                            vef.setValue(context.getELContext(),
-                                    local.getConvertedFilename());
+                            vef.setValue(context.getELContext(), local.getConvertedFilename());
                         }
                     }
                 }
@@ -519,31 +500,26 @@ public class UIInputFile extends UIInput implements NamingContainer {
             } catch (ELException e) {
                 String messageStr = e.getMessage();
                 Throwable result = e.getCause();
-                while (null != result
-                        && result.getClass().isAssignableFrom(ELException.class)) {
+                while (null != result && result.getClass().isAssignableFrom(ELException.class)) {
                     messageStr = result.getMessage();
                     result = result.getCause();
                 }
                 FacesMessage message;
                 if (null == messageStr) {
-                    message = MessageFactory.getMessage(context,
-                            UPDATE_MESSAGE_ID,
+                    message = MessageFactory.getMessage(context, UPDATE_MESSAGE_ID,
                             MessageFactory.getLabel(context, this));
                 } else {
-                    message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            messageStr, messageStr);
+                    message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageStr, messageStr);
                 }
                 context.addMessage(getClientId(context), message);
                 setValid(false);
             } catch (IllegalArgumentException e) {
-                FacesMessage message = MessageFactory.getMessage(context,
-                        UPDATE_MESSAGE_ID,
+                FacesMessage message = MessageFactory.getMessage(context, UPDATE_MESSAGE_ID,
                         MessageFactory.getLabel(context, this));
                 context.addMessage(getClientId(context), message);
                 setValid(false);
             } catch (Exception e) {
-                FacesMessage message = MessageFactory.getMessage(context,
-                        UPDATE_MESSAGE_ID,
+                FacesMessage message = MessageFactory.getMessage(context, UPDATE_MESSAGE_ID,
                         MessageFactory.getLabel(context, this));
                 context.addMessage(getClientId(context), message);
                 setValid(false);
@@ -553,8 +529,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
 
     // rendering methods
 
-    protected List<InputFileChoice> getAvailableChoices(Object value,
-            boolean temp) {
+    protected List<InputFileChoice> getAvailableChoices(Object value, boolean temp) {
         List<InputFileChoice> choices = new ArrayList<InputFileChoice>();
         boolean hasFile = value != null;
         boolean isRequired = isRequired();
@@ -588,8 +563,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
             InputFileInfo submittedFileInfo = getFileInfoSubmittedValue();
             if (submittedFileInfo != null) {
                 InputFileChoice choice = submittedFileInfo.getConvertedChoice();
-                if (InputFileChoice.keep == choice
-                        || InputFileChoice.tempKeep == choice) {
+                if (InputFileChoice.keep == choice || InputFileChoice.tempKeep == choice) {
                     // rebuild other info from current value
                     InputFileInfo fileInfo = getFileInfoValue();
                     blob = fileInfo.getConvertedBlob();
@@ -612,8 +586,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
             InputFileInfo submittedFileInfo = getFileInfoSubmittedValue();
             if (submittedFileInfo != null) {
                 InputFileChoice choice = submittedFileInfo.getConvertedChoice();
-                if (InputFileChoice.keep == choice
-                        || InputFileChoice.tempKeep == choice) {
+                if (InputFileChoice.keep == choice || InputFileChoice.tempKeep == choice) {
                     // rebuild it in case it's supposed to be kept
                     InputFileInfo fileInfo = getFileInfoValue();
                     filename = fileInfo.getConvertedFilename();
@@ -646,8 +619,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
         boolean temp = InputFileChoice.tempKeep == currentChoice;
         List<InputFileChoice> choices = getAvailableChoices(blob, temp);
 
-        String radioClientId = getClientId(context)
-                + NamingContainer.SEPARATOR_CHAR + CHOICE_FACET_NAME;
+        String radioClientId = getClientId(context) + NamingContainer.SEPARATOR_CHAR + CHOICE_FACET_NAME;
         writer.startElement("table", this);
         writer.writeAttribute("class", "dataInput", null);
         writer.startElement("tbody", this);
@@ -680,8 +652,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
             StringBuffer htmlBuffer = new StringBuffer();
             htmlBuffer.append("<input");
             for (Map.Entry<String, String> prop : props.entrySet()) {
-                htmlBuffer.append(String.format(" %s=\"%s\"", prop.getKey(),
-                        prop.getValue()));
+                htmlBuffer.append(String.format(" %s=\"%s\"", prop.getKey(), prop.getValue()));
             }
             htmlBuffer.append(" />");
             writer.write(htmlBuffer.toString());
@@ -689,16 +660,13 @@ public class UIInputFile extends UIInput implements NamingContainer {
             writer.startElement("td", this);
             writer.writeAttribute("class", "fieldColumn", null);
             String html = "<label for=\"%s\" style=\"float:left\">%s</label>";
-            String label = (String) ComponentUtils.getAttributeValue(this,
-                    radioChoice + "Label", null);
+            String label = (String) ComponentUtils.getAttributeValue(this, radioChoice + "Label", null);
             if (label == null) {
-                label = ComponentUtils.translate(context, "label.inputFile."
-                        + radioChoice + "Choice");
+                label = ComponentUtils.translate(context, "label.inputFile." + radioChoice + "Choice");
             }
             writer.write(String.format(html, id, label));
             writer.write(ComponentUtils.WHITE_SPACE_CHARACTER);
-            if (InputFileChoice.keep == radioChoice
-                    || InputFileChoice.tempKeep == radioChoice) {
+            if (InputFileChoice.keep == radioChoice || InputFileChoice.tempKeep == radioChoice) {
                 UIComponent downloadFacet = getFacet(DOWNLOAD_FACET_NAME);
                 if (downloadFacet != null) {
                     // redefined in template
@@ -708,10 +676,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
                     if (downloadFacet != null) {
                         UIOutputFile downloadComp = (UIOutputFile) downloadFacet;
                         downloadComp.setQueryParent(true);
-                        ComponentUtils.copyValues(
-                                this,
-                                downloadComp,
-                                new String[] { "downloadLabel", "iconRendered" });
+                        ComponentUtils.copyValues(this, downloadComp, new String[] { "downloadLabel", "iconRendered" });
                         ComponentUtils.copyLinkValues(this, downloadComp);
                         ComponentUtils.encodeComponent(context, downloadComp);
                     }
@@ -727,14 +692,11 @@ public class UIInputFile extends UIInput implements NamingContainer {
                         filenameComp.setOnclick(String.format(onClick, id));
                         writer.write(ComponentUtils.WHITE_SPACE_CHARACTER);
                         html = "<label for=\"%s\">%s</label>";
-                        label = (String) ComponentUtils.getAttributeValue(this,
-                                "editFilenameLabel", null);
+                        label = (String) ComponentUtils.getAttributeValue(this, "editFilenameLabel", null);
                         if (label == null) {
-                            label = ComponentUtils.translate(context,
-                                    "label.inputFile.editFilename");
+                            label = ComponentUtils.translate(context, "label.inputFile.editFilename");
                         }
-                        writer.write(String.format(html, filenameComp.getId(),
-                                label));
+                        writer.write(String.format(html, filenameComp.getId(), label));
                         writer.write(ComponentUtils.WHITE_SPACE_CHARACTER);
                         ComponentUtils.encodeComponent(context, filenameComp);
                     }
@@ -767,24 +729,17 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 List<String> constraints = new ArrayList<String>();
 
                 if (sizeConstraint != null) {
-                    constraints.add(ComponentUtils.translate(context,
-                            "label.inputFile.maxSize", sizeConstraint));
+                    constraints.add(ComponentUtils.translate(context, "label.inputFile.maxSize", sizeConstraint));
                 }
 
-                if (!hidden
-                        && (!authorizedExtensions.isEmpty() || !unauthorizedExtensions.isEmpty())) {
+                if (!hidden && (!authorizedExtensions.isEmpty() || !unauthorizedExtensions.isEmpty())) {
                     if (!authorizedExtensions.isEmpty()) {
-                        constraints.add(ComponentUtils.translate(context,
-                                "label.inputFile.authorizedExtensions",
-                                StringUtils.join(
-                                        authorizedExtensions.toArray(), ", ")));
+                        constraints.add(ComponentUtils.translate(context, "label.inputFile.authorizedExtensions",
+                                StringUtils.join(authorizedExtensions.toArray(), ", ")));
                     }
                     if (!unauthorizedExtensions.isEmpty()) {
-                        constraints.add(ComponentUtils.translate(
-                                context,
-                                "label.inputFile.unauthorizedExtensions",
-                                StringUtils.join(
-                                        unauthorizedExtensions.toArray(), ", ")));
+                        constraints.add(ComponentUtils.translate(context, "label.inputFile.unauthorizedExtensions",
+                                StringUtils.join(unauthorizedExtensions.toArray(), ", ")));
                     }
 
                 }
@@ -816,22 +771,15 @@ public class UIInputFile extends UIInput implements NamingContainer {
      * @since 6.1.1
      */
     private void notifyPreviousErrors(FacesContext context) {
-        final Object hasError = context.getAttributes().get(
-                NuxeoResponseStateManagerImpl.MULTIPART_SIZE_ERROR_FLAG);
+        final Object hasError = context.getAttributes().get(NuxeoResponseStateManagerImpl.MULTIPART_SIZE_ERROR_FLAG);
         final String componentId = (String) context.getAttributes().get(
                 NuxeoResponseStateManagerImpl.MULTIPART_SIZE_ERROR_COMPONENT_ID);
         if (hasError != null && (boolean) hasError) {
             if (StringUtils.isBlank(componentId)) {
-                ComponentUtils.addErrorMessage(
-                        context,
-                        this,
-                        "error.inputFile.maxRequestSize",
+                ComponentUtils.addErrorMessage(context, this, "error.inputFile.maxRequestSize",
                         new Object[] { Framework.getProperty("nuxeo.jsf.maxRequestSize") });
             } else if (componentId.equals(getFacet(UPLOAD_FACET_NAME).getClientId())) {
-                ComponentUtils.addErrorMessage(
-                        context,
-                        this,
-                        "error.inputFile.maxSize",
+                ComponentUtils.addErrorMessage(context, this, "error.inputFile.maxSize",
                         new Object[] { Framework.getProperty("nuxeo.jsf.maxFileSize") });
             }
         }

@@ -53,7 +53,7 @@ public final class BaseURL {
     }
 
     /**
-     * @return WebApp name, ie  "nuxeo"
+     * @return WebApp name, ie "nuxeo"
      */
     public static String getWebAppName() {
         ServletRequest request = getRequest();

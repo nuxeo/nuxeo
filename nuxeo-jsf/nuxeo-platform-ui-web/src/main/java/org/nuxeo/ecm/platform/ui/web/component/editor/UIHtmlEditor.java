@@ -45,8 +45,7 @@ public class UIHtmlEditor extends HtmlInputText {
     // setters & getters
 
     public Boolean getDisableHtmlInit() {
-        return (Boolean) getStateHelper().eval(PropertyKeys.disableHtmlInit,
-                Boolean.FALSE);
+        return (Boolean) getStateHelper().eval(PropertyKeys.disableHtmlInit, Boolean.FALSE);
     }
 
     public void setDisableHtmlInit(Boolean disableHtmlInit) {
@@ -86,8 +85,7 @@ public class UIHtmlEditor extends HtmlInputText {
     }
 
     public String getEditorSelector() {
-        return (String) getStateHelper().eval(PropertyKeys.editorSelector,
-                "mceEditor");
+        return (String) getStateHelper().eval(PropertyKeys.editorSelector, "mceEditor");
     }
 
     public void setEditorSelector(String editorSelector) {

@@ -25,13 +25,13 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class VocabularyEntryList implements Serializable {
 
     private static final long serialVersionUID = 7342526066954918526L;
 
     private final List<VocabularyEntry> entries;
+
     private final String name;
 
     public VocabularyEntryList(String name, List<VocabularyEntry> entries) {

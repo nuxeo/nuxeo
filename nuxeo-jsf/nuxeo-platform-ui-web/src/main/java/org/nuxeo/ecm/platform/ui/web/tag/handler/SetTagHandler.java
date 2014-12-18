@@ -42,15 +42,13 @@ import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 /**
- * Tag handler that exposes a variable to the variable map. Behaviour is close
- * to the c:set tag handler except:
+ * Tag handler that exposes a variable to the variable map. Behaviour is close to the c:set tag handler except:
  * <ul>
- * <li>It allows caching a variable using cache parameter: variable will be
- * resolved the first time is is called and will be put in the context after</li>
- * <li>The resolved variable is removed from context when tag is closed to
- * avoid filling the context with it</li>
- * <li>Since 5.4, variables are made available in the request context after the
- * JSF component tree build thanks to a backing component.</li>
+ * <li>It allows caching a variable using cache parameter: variable will be resolved the first time is is called and
+ * will be put in the context after</li>
+ * <li>The resolved variable is removed from context when tag is closed to avoid filling the context with it</li>
+ * <li>Since 5.4, variables are made available in the request context after the JSF component tree build thanks to a
+ * backing component.</li>
  * </ul>
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
@@ -86,11 +84,12 @@ public class SetTagHandler extends AliasTagHandler {
         blockMerge = getAttribute("blockMerge");
     }
 
-    public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, FaceletException, ELException {
+    @Override
+    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
+            ELException {
         // make sure our parent is not null
         if (parent == null) {
-            throw new TagException(this.tag, "Parent UIComponent was null");
+            throw new TagException(tag, "Parent UIComponent was null");
         }
 
         FaceletHandler nextHandler = this.nextHandler;
@@ -99,7 +98,7 @@ public class SetTagHandler extends AliasTagHandler {
         // generate id before applying (and before generating next handler, in
         // case of merge of variables, as parent aliases will be exposed to
         // request then).
-        target.setId(ctx.generateUniqueId(this.tagId));
+        target.setId(ctx.generateUniqueId(tagId));
 
         VariableMapper vm = target.getVariableMapperForBuild(orig);
         ctx.setVariableMapper(vm);
@@ -130,12 +129,11 @@ public class SetTagHandler extends AliasTagHandler {
         return true;
     }
 
-    public FaceletHandler getAliasVariableMapper(FaceletContext ctx,
-            AliasVariableMapper target) {
+    public FaceletHandler getAliasVariableMapper(FaceletContext ctx, AliasVariableMapper target) {
         String varStr = var.getValue(ctx);
         // avoid overriding variable already in the mapper
         if (target.hasVariables(varStr)) {
-            return this.nextHandler;
+            return nextHandler;
         }
 
         // handle variable expression
@@ -152,14 +150,11 @@ public class SetTagHandler extends AliasTagHandler {
         if (cacheValue) {
             // resolve value and put it as is in variable mapper
             Object res = value.getObject(ctx);
-            if (resolveTwiceBool && res instanceof String
-                    && ComponentTagUtils.isValueReference((String) res)) {
-                ve = ctx.getExpressionFactory().createValueExpression(ctx,
-                        (String) res, Object.class);
+            if (resolveTwiceBool && res instanceof String && ComponentTagUtils.isValueReference((String) res)) {
+                ve = ctx.getExpressionFactory().createValueExpression(ctx, (String) res, Object.class);
                 res = ve.getValue(ctx);
             }
-            ve = ctx.getExpressionFactory().createValueExpression(res,
-                    Object.class);
+            ve = ctx.getExpressionFactory().createValueExpression(res, Object.class);
         } else {
             ve = value.getValueExpression(ctx, Object.class);
             if (resolveTwiceBool) {
@@ -185,12 +180,10 @@ public class SetTagHandler extends AliasTagHandler {
                 // make sure referenced vars will be resolved in this context
                 ctx.getVariableMapper().setVariable(varStr, ve);
                 try {
-                    AliasVariableMapper.exposeAliasesToRequest(
-                            ctx.getFacesContext(), target);
+                    AliasVariableMapper.exposeAliasesToRequest(ctx.getFacesContext(), target);
                     nextHandler = next.getAliasVariableMapper(ctx, target);
                 } finally {
-                    AliasVariableMapper.removeAliasesExposedToRequest(
-                            ctx.getFacesContext(), target.getId());
+                    AliasVariableMapper.removeAliasesExposedToRequest(ctx.getFacesContext(), target.getId());
                 }
             }
         }

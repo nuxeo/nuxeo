@@ -23,12 +23,10 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
-
 /**
- * This class is used by ChainSelectOne / ChainSelectMany components.
- * It represents an entry in a directory.
- * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
+ * This class is used by ChainSelectOne / ChainSelectMany components. It represents an entry in a directory.
  *
+ * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
 public class DirectoryEntry {
 

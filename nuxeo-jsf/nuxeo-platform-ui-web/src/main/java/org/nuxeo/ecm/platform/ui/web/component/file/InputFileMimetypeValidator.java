@@ -34,9 +34,8 @@ import com.sun.faces.util.MessageFactory;
 /**
  * Input file mimetype validator.
  * <p>
- * Validates an {@link InputFileInfo} blob value in case it's been uploaded.
- * Accepted mimetypes are set using the "extensions" attribute, representing the
- * list of accepted extension suffixes separated by commas (for instance:
+ * Validates an {@link InputFileInfo} blob value in case it's been uploaded. Accepted mimetypes are set using the
+ * "extensions" attribute, representing the list of accepted extension suffixes separated by commas (for instance:
  * ".jpeg, .png").
  * <p>
  * Validation is done on the filename, no actual mimetype check is done for now.
@@ -59,10 +58,9 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
     private boolean transientValue = false;
 
     /**
-     * The message identifier of the
-     * {@link javax.faces.application.FacesMessage} to be created if the
-     * authorized extensions check fails. The message format string for this
-     * message may optionally include the following placeholders:
+     * The message identifier of the {@link javax.faces.application.FacesMessage} to be created if the authorized
+     * extensions check fails. The message format string for this message may optionally include the following
+     * placeholders:
      * <ul>
      * <li><code>{0}</code> replaced by the configured auhtorized extensions.</li>
      * </ul>
@@ -71,10 +69,9 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
     public static final String MIMETYPE_AUTHORIZED_EXTENSIONS_MESSAGE_ID = "error.inputFile.authorizedExtensions";
 
     /**
-     * The message identifier of the
-     * {@link javax.faces.application.FacesMessage} to be created if the
-     * unauthorized extensions check fails. The message format string for this
-     * message may optionally include the following placeholders:
+     * The message identifier of the {@link javax.faces.application.FacesMessage} to be created if the unauthorized
+     * extensions check fails. The message format string for this message may optionally include the following
+     * placeholders:
      * <ul>
      * <li><code>{0}</code> replaced by the configured unauthorized extensions.</li>
      * </ul>
@@ -82,14 +79,13 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
      */
     public static final String MIMETYPE_UNAUTHORIZED_EXTENSIONS_MESSAGE_ID = "error.inputFile.unauthorizedExtensions";
 
-    public void validate(FacesContext context, UIComponent component,
-            Object value) throws ValidatorException {
+    @Override
+    public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
         if (value != null && extensions != null && extensions.length > 0) {
             if (value instanceof InputFileInfo) {
                 InputFileInfo info = (InputFileInfo) value;
                 InputFileChoice choice = info.getConvertedChoice();
-                if (InputFileChoice.tempKeep != choice
-                        && InputFileChoice.upload != choice) {
+                if (InputFileChoice.tempKeep != choice && InputFileChoice.upload != choice) {
                     return;
                 }
                 String filename = info.getConvertedFilename();
@@ -107,8 +103,7 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
                     if (error) {
                         String messageId = authorized ? MIMETYPE_AUTHORIZED_EXTENSIONS_MESSAGE_ID
                                 : MIMETYPE_UNAUTHORIZED_EXTENSIONS_MESSAGE_ID;
-                        throw new ValidatorException(MessageFactory.getMessage(
-                                context, messageId,
+                        throw new ValidatorException(MessageFactory.getMessage(context, messageId,
                                 StringUtils.join(extensions, ", ")));
                     }
                 }
@@ -140,14 +135,17 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
         this.hidden = hidden;
     }
 
+    @Override
     public boolean isTransient() {
         return transientValue;
     }
 
+    @Override
     public void setTransient(boolean newTransientValue) {
         transientValue = newTransientValue;
     }
 
+    @Override
     public Object saveState(FacesContext context) {
         Object[] values = new Object[3];
         values[0] = extensions;
@@ -156,6 +154,7 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
         return values;
     }
 
+    @Override
     public void restoreState(FacesContext context, Object state) {
         Object[] values = (Object[]) state;
         extensions = (String[]) values[0];

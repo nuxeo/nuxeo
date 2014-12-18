@@ -103,9 +103,8 @@ public class SuggestionActionsBean implements Serializable {
     /**
      * Gets the base naming container from anchor.
      * <p>
-     * Gets out of suggestion box as it's a naming container and we can't get
-     * components out of it with a relative path => take above first found
-     * container.
+     * Gets out of suggestion box as it's a naming container and we can't get components out of it with a relative path
+     * => take above first found container.
      *
      * @deprecated: use {@link ComponentUtils#getBase(UIComponent)} instead
      */
@@ -117,9 +116,8 @@ public class SuggestionActionsBean implements Serializable {
     /**
      * Adds selection from selector as a list element
      * <p>
-     * Must pass request parameter "suggestionSelectionListId" holding the
-     * binding to model. Selection will be retrieved using the
-     * {@link #getSelectedValue()} method.
+     * Must pass request parameter "suggestionSelectionListId" holding the binding to model. Selection will be retrieved
+     * using the {@link #getSelectedValue()} method.
      */
     public void addBoundSelectionToList(ActionEvent event) {
         UIComponent component = event.getComponent();
@@ -127,8 +125,7 @@ public class SuggestionActionsBean implements Serializable {
             return;
         }
         UIComponent base = ComponentUtils.getBase(component);
-        UIEditableList list = ComponentUtils.getComponent(base,
-                suggestionSelectionListId, UIEditableList.class);
+        UIEditableList list = ComponentUtils.getComponent(base, suggestionSelectionListId, UIEditableList.class);
 
         if (list != null) {
             // add selected value to the list
@@ -142,13 +139,11 @@ public class SuggestionActionsBean implements Serializable {
     /**
      * Adds selection from selector as a list element
      * <p>
-     * Must pass request parameters "suggestionInputSelectorId" holding the
-     * value to pass to the binding component, "suggestionSelectionListId"
-     * holding the binding to model.
+     * Must pass request parameters "suggestionInputSelectorId" holding the value to pass to the binding component,
+     * "suggestionSelectionListId" holding the binding to model.
      *
-     * @deprecated use {@link #addBoundSelectionToList(ActionEvent)} which
-     *             retrieves selected value from bound method instead of
-     *             retrieving suggestion input.
+     * @deprecated use {@link #addBoundSelectionToList(ActionEvent)} which retrieves selected value from bound method
+     *             instead of retrieving suggestion input.
      */
     @Deprecated
     public void addSelectionToList(ActionEvent event) {
@@ -157,10 +152,8 @@ public class SuggestionActionsBean implements Serializable {
             return;
         }
         UIComponent base = ComponentUtils.getBase(component);
-        ValueHolder selector = ComponentUtils.getComponent(base,
-                suggestionInputSelectorId, ValueHolder.class);
-        UIEditableList list = ComponentUtils.getComponent(base,
-                suggestionSelectionListId, UIEditableList.class);
+        ValueHolder selector = ComponentUtils.getComponent(base, suggestionInputSelectorId, ValueHolder.class);
+        UIEditableList list = ComponentUtils.getComponent(base, suggestionSelectionListId, UIEditableList.class);
 
         if (selector != null && list != null) {
             // add selected value to the list
@@ -171,13 +164,12 @@ public class SuggestionActionsBean implements Serializable {
     /**
      * Adds selection from selector as single element
      * <p>
-     * Must pass request parameters "suggestionSelectionOutputId" holding the
-     * value to show, and "suggestionSelectionHiddenId" holding the binding to
-     * model. Selection will be retrieved using the {@link #getSelectedValue()}
-     * method. Since 5.5, only one of these two parameters is required.
+     * Must pass request parameters "suggestionSelectionOutputId" holding the value to show, and
+     * "suggestionSelectionHiddenId" holding the binding to model. Selection will be retrieved using the
+     * {@link #getSelectedValue()} method. Since 5.5, only one of these two parameters is required.
      * <p>
-     * Additional optional request parameter "suggestionSelectionDeleteId" can
-     * be used to show an area where the "clear" button is shown.
+     * Additional optional request parameter "suggestionSelectionDeleteId" can be used to show an area where the "clear"
+     * button is shown.
      */
     public void addSingleBoundSelection(ActionEvent event) {
         UIComponent component = event.getComponent();
@@ -187,13 +179,11 @@ public class SuggestionActionsBean implements Serializable {
         UIComponent base = ComponentUtils.getBase(component);
         EditableValueHolder hiddenSelector = null;
         if (suggestionSelectionHiddenId != null) {
-            hiddenSelector = ComponentUtils.getComponent(base,
-                    suggestionSelectionHiddenId, EditableValueHolder.class);
+            hiddenSelector = ComponentUtils.getComponent(base, suggestionSelectionHiddenId, EditableValueHolder.class);
         }
         ValueHolder output = null;
         if (suggestionSelectionOutputId != null) {
-            output = ComponentUtils.getComponent(base,
-                    suggestionSelectionOutputId, ValueHolder.class);
+            output = ComponentUtils.getComponent(base, suggestionSelectionOutputId, ValueHolder.class);
         }
 
         if (output != null || hiddenSelector != null) {
@@ -207,8 +197,8 @@ public class SuggestionActionsBean implements Serializable {
 
             // display delete component if needed
             if (suggestionSelectionDeleteId != null) {
-                UIComponent deleteComponent = ComponentUtils.getComponent(base,
-                        suggestionSelectionDeleteId, UIComponent.class);
+                UIComponent deleteComponent = ComponentUtils.getComponent(base, suggestionSelectionDeleteId,
+                        UIComponent.class);
                 if (deleteComponent != null) {
                     deleteComponent.setRendered(true);
                 }
@@ -220,17 +210,15 @@ public class SuggestionActionsBean implements Serializable {
     /**
      * Adds selection from selector as single element
      * <p>
-     * Must pass request parameters "suggestionInputSelectorId" holding the
-     * value to pass to the binding component, "suggestionSelectionOutputId"
-     * holding the value to show, and "suggestionSelectionHiddenId" holding the
-     * binding to model.
+     * Must pass request parameters "suggestionInputSelectorId" holding the value to pass to the binding component,
+     * "suggestionSelectionOutputId" holding the value to show, and "suggestionSelectionHiddenId" holding the binding to
+     * model.
      * <p>
-     * Additional optional request parameter "suggestionSelectionDeleteId" can
-     * be used to show an area where the "clear" button is shown. *
+     * Additional optional request parameter "suggestionSelectionDeleteId" can be used to show an area where the "clear"
+     * button is shown. *
      *
-     * @deprecated use {@link #addBoundSelectionToList(ActionEvent)} which
-     *             retrieves selected value from bound method instead of
-     *             retrieving suggestion input.
+     * @deprecated use {@link #addBoundSelectionToList(ActionEvent)} which retrieves selected value from bound method
+     *             instead of retrieving suggestion input.
      */
     @Deprecated
     public void addSingleSelection(ActionEvent event) {
@@ -239,12 +227,10 @@ public class SuggestionActionsBean implements Serializable {
             return;
         }
         UIComponent base = ComponentUtils.getBase(component);
-        ValueHolder selector = ComponentUtils.getComponent(base,
-                suggestionInputSelectorId, ValueHolder.class);
-        EditableValueHolder hiddenSelector = ComponentUtils.getComponent(base,
-                suggestionSelectionHiddenId, EditableValueHolder.class);
-        ValueHolder output = ComponentUtils.getComponent(base,
-                suggestionSelectionOutputId, ValueHolder.class);
+        ValueHolder selector = ComponentUtils.getComponent(base, suggestionInputSelectorId, ValueHolder.class);
+        EditableValueHolder hiddenSelector = ComponentUtils.getComponent(base, suggestionSelectionHiddenId,
+                EditableValueHolder.class);
+        ValueHolder output = ComponentUtils.getComponent(base, suggestionSelectionOutputId, ValueHolder.class);
 
         if (selector != null && hiddenSelector != null && output != null) {
             String selection = (String) selector.getValue();
@@ -253,8 +239,8 @@ public class SuggestionActionsBean implements Serializable {
 
             // display delete component if needed
             if (suggestionSelectionDeleteId != null) {
-                UIComponent deleteComponent = ComponentUtils.getComponent(base,
-                        suggestionSelectionDeleteId, UIComponent.class);
+                UIComponent deleteComponent = ComponentUtils.getComponent(base, suggestionSelectionDeleteId,
+                        UIComponent.class);
                 if (deleteComponent != null) {
                     deleteComponent.setRendered(true);
                 }
@@ -266,12 +252,12 @@ public class SuggestionActionsBean implements Serializable {
     /**
      * Clears single selection.
      * <p>
-     * Must pass request parameters "suggestionSelectionOutputId" holding the
-     * value to show, and "suggestionSelectionHiddenId" holding the binding to
-     * model. Since 5.5, only one of these two parameters is required.
+     * Must pass request parameters "suggestionSelectionOutputId" holding the value to show, and
+     * "suggestionSelectionHiddenId" holding the binding to model. Since 5.5, only one of these two parameters is
+     * required.
      * <p>
-     * Additional optional request parameter "suggestionSelectionDeleteId" can
-     * be used to hide an area where the "clear" button is shown.
+     * Additional optional request parameter "suggestionSelectionDeleteId" can be used to hide an area where the "clear"
+     * button is shown.
      */
     public void clearSingleSelection(ActionEvent event) {
         UIComponent component = event.getComponent();
@@ -281,13 +267,11 @@ public class SuggestionActionsBean implements Serializable {
         UIComponent base = component;
         EditableValueHolder hiddenSelector = null;
         if (suggestionSelectionHiddenId != null) {
-            hiddenSelector = ComponentUtils.getComponent(base,
-                    suggestionSelectionHiddenId, EditableValueHolder.class);
+            hiddenSelector = ComponentUtils.getComponent(base, suggestionSelectionHiddenId, EditableValueHolder.class);
         }
         ValueHolder output = null;
         if (suggestionSelectionOutputId != null) {
-            output = ComponentUtils.getComponent(base,
-                    suggestionSelectionOutputId, ValueHolder.class);
+            output = ComponentUtils.getComponent(base, suggestionSelectionOutputId, ValueHolder.class);
         }
 
         if (output != null || hiddenSelector != null) {
@@ -300,8 +284,8 @@ public class SuggestionActionsBean implements Serializable {
 
             // hide delete component if needed
             if (suggestionSelectionDeleteId != null) {
-                UIComponent deleteComponent = ComponentUtils.getComponent(base,
-                        suggestionSelectionDeleteId, UIComponent.class);
+                UIComponent deleteComponent = ComponentUtils.getComponent(base, suggestionSelectionDeleteId,
+                        UIComponent.class);
                 if (deleteComponent != null) {
                     deleteComponent.setRendered(false);
                 }

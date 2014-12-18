@@ -32,15 +32,14 @@ import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 
 /**
- * Method value expression encapsulates a method expression so that it invokes
- * it when evaluated as a standard value expression.
+ * Method value expression encapsulates a method expression so that it invokes it when evaluated as a standard value
+ * expression.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  * @deprecated method resolution is now supported by jboss-el
  */
 @Deprecated
-public class MethodValueExpression extends ValueExpression implements
-        Externalizable {
+public class MethodValueExpression extends ValueExpression implements Externalizable {
 
     private static final long serialVersionUID = 1228707110702282837L;
 
@@ -55,9 +54,8 @@ public class MethodValueExpression extends ValueExpression implements
     public MethodValueExpression() {
     }
 
-    public MethodValueExpression(FunctionMapper functionMapper,
-            VariableMapper variableMapper, MethodExpression methodExpression,
-            Class[] paramTypesClasses) {
+    public MethodValueExpression(FunctionMapper functionMapper, VariableMapper variableMapper,
+            MethodExpression methodExpression, Class[] paramTypesClasses) {
         this.functionMapper = functionMapper;
         this.variableMapper = variableMapper;
         this.methodExpression = methodExpression;
@@ -109,13 +107,11 @@ public class MethodValueExpression extends ValueExpression implements
     public Object getValue(ELContext arg0) {
         // invoke method instead of resolving value
         try {
-            EvaluationContext evalCtx = new EvaluationContext(arg0,
-                    functionMapper, variableMapper);
+            EvaluationContext evalCtx = new EvaluationContext(arg0, functionMapper, variableMapper);
             return methodExpression.invoke(evalCtx, paramTypesClasses);
         } catch (Throwable t) {
-            throw new ELException(
-                    "Error while evaluation MethodValueExpression "
-                            + methodExpression.getExpressionString(), t);
+            throw new ELException("Error while evaluation MethodValueExpression "
+                    + methodExpression.getExpressionString(), t);
         }
     }
 
@@ -131,12 +127,13 @@ public class MethodValueExpression extends ValueExpression implements
 
     // Externalizable interface
 
-    public void readExternal(ObjectInput in) throws IOException,
-            ClassNotFoundException {
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         methodExpression = (MethodExpression) in.readObject();
         paramTypesClasses = (Class[]) in.readObject();
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject(methodExpression);
         out.writeObject(paramTypesClasses);

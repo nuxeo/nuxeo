@@ -38,7 +38,9 @@ import org.restlet.data.Response;
 public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
 
     protected CoreSession session;
+
     protected DocumentRef targetDocRef;
+
     protected DocumentModel targetDocument;
 
     protected boolean initRepository(Response res, String repoId) {
@@ -57,8 +59,7 @@ public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
         return true;
     }
 
-    protected boolean initRepositoryAndTargetDocument(Response res,
-            String repoId, String docId) {
+    protected boolean initRepositoryAndTargetDocument(Response res, String repoId, String docId) {
 
         DOMDocumentFactory domFactory = new DOMDocumentFactory();
         DOMDocument result = (DOMDocument) domFactory.createDocument();
@@ -85,8 +86,7 @@ public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
         try {
             targetDocument = session.getDocument(targetDocRef);
         } catch (ClientException e) {
-            handleError(result, res,
-                    "Unable to open " + repoId + " repository");
+            handleError(result, res, "Unable to open " + repoId + " repository");
             return false;
         }
 
@@ -106,8 +106,7 @@ public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
     public void handle(Request request, Response response) {
         try {
             doHandleStatelessRequest(request, response);
-        }
-        finally {
+        } finally {
             cleanUp();
         }
     }

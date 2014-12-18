@@ -40,21 +40,16 @@ public class FileUtils {
     }
 
     /**
-     * Creates a serializable blob from a stream, with filename and mimetype
-     * detection.
+     * Creates a serializable blob from a stream, with filename and mimetype detection.
      * <p>
-     * Creates an in-memory blob if data is under 64K, otherwise constructs a
-     * serializable FileBlob which stores data in a temporary file on the hard
-     * disk.
+     * Creates an in-memory blob if data is under 64K, otherwise constructs a serializable FileBlob which stores data in
+     * a temporary file on the hard disk.
      *
      * @param file the input stream holding data
-     * @param filename the file name. Will be set on the blob and will used for
-     *            mimetype detection.
-     * @param mimeType the detected mimetype at upload. Can be null. Will be
-     *            verified by the mimetype service.
+     * @param filename the file name. Will be set on the blob and will used for mimetype detection.
+     * @param mimeType the detected mimetype at upload. Can be null. Will be verified by the mimetype service.
      */
-    public static Blob createSerializableBlob(InputStream file,
-            String filename, String mimeType) {
+    public static Blob createSerializableBlob(InputStream file, String filename, String mimeType) {
         Blob blob = null;
         try {
             // persisting the blob makes it possible to read the binary content
@@ -68,8 +63,7 @@ public class FileUtils {
             blob.setFilename(filename);
             // mimetype detection
             MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
-            String detectedMimeType = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
-                    filename, blob, null);
+            String detectedMimeType = mimeService.getMimetypeFromFilenameAndBlobWithDefault(filename, blob, null);
             if (detectedMimeType == null) {
                 if (mimeType != null) {
                     detectedMimeType = mimeType;
@@ -80,8 +74,7 @@ public class FileUtils {
             }
             blob.setMimeType(detectedMimeType);
         } catch (MimetypeDetectionException e) {
-            log.error(String.format("could not fetch mimetype for file %s",
-                    filename), e);
+            log.error(String.format("could not fetch mimetype for file %s", filename), e);
         } catch (IOException e) {
             log.error(e);
         } catch (Exception e) {
@@ -109,11 +102,10 @@ public class FileUtils {
     }
 
     /**
-     * A Blob based on a File but whose contract says that the file is allowed
-     * to be moved to another filesystem location if needed.
+     * A Blob based on a File but whose contract says that the file is allowed to be moved to another filesystem
+     * location if needed.
      * <p>
-     * The move is done by getting the StreamSource from the Blob, casting to
-     * FileSource.
+     * The move is done by getting the StreamSource from the Blob, casting to FileSource.
      *
      * @since 5.7.2
      */
@@ -121,8 +113,7 @@ public class FileUtils {
 
         private static final long serialVersionUID = 1L;
 
-        public TemporaryFileBlob(File file, String mimeType, String encoding,
-                String filename, String digest) {
+        public TemporaryFileBlob(File file, String mimeType, String encoding, String filename, String digest) {
             super(new FileSource(file), mimeType, encoding, filename, digest);
         }
 
@@ -138,13 +129,11 @@ public class FileUtils {
     }
 
     /**
-     * Creates a TemporaryFileBlob. Similar to
-     * FileUtils.createSerializableBlob.
+     * Creates a TemporaryFileBlob. Similar to FileUtils.createSerializableBlob.
      *
      * @since 5.7.2
      */
-    public static Blob createTemporaryFileBlob(File file, String filename,
-            String mimeType) {
+    public static Blob createTemporaryFileBlob(File file, String filename, String mimeType) {
         if (filename != null) {
             filename = FileUtils.getCleanFileName(filename);
         }
@@ -152,13 +141,11 @@ public class FileUtils {
         return configureFileBlob(blob, filename, mimeType);
     }
 
-    protected static Blob configureFileBlob(Blob blob, String filename,
-            String mimeType) {
+    protected static Blob configureFileBlob(Blob blob, String filename, String mimeType) {
         try {
             // mimetype detection
             MimetypeRegistry mimeService = Framework.getLocalService(MimetypeRegistry.class);
-            String detectedMimeType = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
-                    filename, blob, null);
+            String detectedMimeType = mimeService.getMimetypeFromFilenameAndBlobWithDefault(filename, blob, null);
             if (detectedMimeType == null) {
                 if (mimeType != null) {
                     detectedMimeType = mimeType;
@@ -169,8 +156,7 @@ public class FileUtils {
             }
             blob.setMimeType(detectedMimeType);
         } catch (MimetypeDetectionException e) {
-            log.error(String.format("could not fetch mimetype for file %s",
-                    filename), e);
+            log.error(String.format("could not fetch mimetype for file %s", filename), e);
         }
         return blob;
     }

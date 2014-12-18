@@ -27,14 +27,11 @@ import javax.faces.context.FacesContext;
 import org.nuxeo.ecm.platform.ui.web.binding.DownloadMethodExpression;
 
 /**
- * Command Link with an overriden getActionExpression method.
- *
- * This is used to get the action expression querying the parent of this
- * component, an {@link UIOutputFile} component which values may be changing if
- * it is itself within an {@link UIInputFile} component.
+ * Command Link with an overriden getActionExpression method. This is used to get the action expression querying the
+ * parent of this component, an {@link UIOutputFile} component which values may be changing if it is itself within an
+ * {@link UIInputFile} component.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class UIOutputFileCommandLink extends HtmlCommandLink {
 
@@ -46,8 +43,7 @@ public class UIOutputFileCommandLink extends HtmlCommandLink {
         if (parent instanceof UIOutputFile) {
             UIOutputFile outputFile = (UIOutputFile) parent;
             FacesContext context = FacesContext.getCurrentInstance();
-            return new DownloadMethodExpression(
-                    outputFile.getBlobExpression(context),
+            return new DownloadMethodExpression(outputFile.getBlobExpression(context),
                     outputFile.getFileNameExpression(context));
         }
         return super.getActionExpression();

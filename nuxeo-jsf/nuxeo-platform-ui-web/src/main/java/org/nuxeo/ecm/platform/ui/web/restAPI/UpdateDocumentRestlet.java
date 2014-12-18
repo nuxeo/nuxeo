@@ -17,7 +17,6 @@
  * $Id$
  */
 
-
 /**
  * This RESTLET allows to update document properties
  * @author jthimonier
@@ -37,8 +36,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-public class UpdateDocumentRestlet extends BaseStatelessNuxeoRestlet implements
-        LiveEditConstants {
+public class UpdateDocumentRestlet extends BaseStatelessNuxeoRestlet implements LiveEditConstants {
 
     private static final Log log = LogFactory.getLog(UpdateDocumentRestlet.class);
 
@@ -61,8 +59,7 @@ public class UpdateDocumentRestlet extends BaseStatelessNuxeoRestlet implements
             for (String paramName : queryParameters.getNames()) {
                 if (!DOC_TYPE.equals(paramName)) {
                     // treat all non doctype parameters as string fields
-                    targetDocument.setPropertyValue(paramName,
-                            getQueryParamValue(req, paramName, null));
+                    targetDocument.setPropertyValue(paramName, getQueryParamValue(req, paramName, null));
                 }
             }
             session.saveDocument(targetDocument);
@@ -70,12 +67,11 @@ public class UpdateDocumentRestlet extends BaseStatelessNuxeoRestlet implements
 
             // build the XML response document holding the ref
             Element docElement = result.addElement(documentTag);
-            docElement.addElement(docRefTag).setText(
-                    "Document " + docId + " has been updated");
+            docElement.addElement(docRefTag).setText("Document " + docId + " has been updated");
             res.setEntity(result.asXML(), MediaType.TEXT_XML);
             res.getEntity().setCharacterSet(CharacterSet.UTF_8);
         } catch (ClientException e) {
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
             handleError(res, e);
         }
     }

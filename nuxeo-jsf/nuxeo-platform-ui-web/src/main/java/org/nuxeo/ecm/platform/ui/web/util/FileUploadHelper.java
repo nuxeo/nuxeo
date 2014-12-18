@@ -42,9 +42,8 @@ import com.noelios.restlet.http.HttpRequest;
 /**
  * Helper to encapsulate Multipart requests parsing to extract blobs.
  * <p>
- * This helper is needed to provide the indirection between - the Apache file
- * upload based solution (5.1) and - the Seam MultiPartFilter bases solution
- * (5.1 / Seam 2.x).
+ * This helper is needed to provide the indirection between - the Apache file upload based solution (5.1) and - the Seam
+ * MultiPartFilter bases solution (5.1 / Seam 2.x).
  *
  * @author tiry
  */
@@ -72,8 +71,7 @@ public class FileUploadHelper {
      * Parses a Multipart Servlet Request to extract blobs
      */
     @SuppressWarnings("unchecked")
-    public static List<Blob> parseRequest(HttpServletRequest request)
-            throws Exception {
+    public static List<Blob> parseRequest(HttpServletRequest request) throws Exception {
         List<Blob> blobs = new ArrayList<Blob>();
 
         if (request instanceof MultipartRequest) {
@@ -96,12 +94,10 @@ public class FileUploadHelper {
             if (fileNameCharset != null) {
                 fu.setHeaderEncoding(fileNameCharset);
             }
-            ServletRequestContext requestContext = new ServletRequestContext(
-                    request);
+            ServletRequestContext requestContext = new ServletRequestContext(request);
             List<FileItem> fileItems = fu.parseRequest(requestContext);
             for (FileItem item : fileItems) {
-                Blob blob = StreamingBlob.createFromStream(
-                        item.getInputStream()).persist();
+                Blob blob = StreamingBlob.createFromStream(item.getInputStream()).persist();
                 blob.setFilename(item.getName());
                 blobs.add(blob);
             }

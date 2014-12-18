@@ -112,23 +112,20 @@ public class ChainSelect extends UIInput implements ResettableComponent {
     private int lastSelectedComponentIndex;
 
     /**
-     * This field is used to separate the levels of on hierarchical
-     * vocabulary.This way all parents of a record will be separated through
-     * this field.
+     * This field is used to separate the levels of on hierarchical vocabulary.This way all parents of a record will be
+     * separated through this field.
      */
     private String keySeparator;
 
     /**
-     * Value used to filter on parent key when searching for a hierarchical
-     * directory roots.
+     * Value used to filter on parent key when searching for a hierarchical directory roots.
      * <p>
      * If not set, will use null.
      */
     protected String defaultRootKey;
 
     /**
-     * New attribute to handle bad behaviour on ajax re-render, forcing local
-     * cache refresh
+     * New attribute to handle bad behaviour on ajax re-render, forcing local cache refresh
      *
      * @since 5.6
      */
@@ -243,8 +240,7 @@ public class ChainSelect extends UIInput implements ResettableComponent {
             } else {
                 if (!multiParentSelect) {
                     // remove the "" entry from the submitted value
-                    List<String> list = new ArrayList<String>(
-                            Arrays.asList(value));
+                    List<String> list = new ArrayList<String>(Arrays.asList(value));
                     list.remove("");
                     value = list.toArray(new String[list.size()]);
                 }
@@ -415,8 +411,8 @@ public class ChainSelect extends UIInput implements ResettableComponent {
     }
 
     /**
-     * If the user changes selection for position k, all options for n>k will
-     * be reset. We only have to rebuild options for position k+1.
+     * If the user changes selection for position k, all options for n>k will be reset. We only have to rebuild options
+     * for position k+1.
      */
     public void rebuildOptions() {
         // for (int i = 0; i < size; i++) {
@@ -627,8 +623,7 @@ public class ChainSelect extends UIInput implements ResettableComponent {
 
                 directoryName = comp.getStringProperty("directoryName", null);
                 directoryValues = comp.getDirectoryValues();
-                displayObsoleteEntries = comp.getBooleanProperty(
-                        "displayObsoleteEntries", false);
+                displayObsoleteEntries = comp.getBooleanProperty("displayObsoleteEntries", false);
             }
 
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
@@ -636,16 +631,14 @@ public class ChainSelect extends UIInput implements ResettableComponent {
 
             if (i == 0) {
                 if (directoryName != null) {
-                    if (DirectoryHelper.instance().hasParentColumn(
-                            directoryName)) {
+                    if (DirectoryHelper.instance().hasParentColumn(directoryName)) {
                         filter.put("parent", getDefaultRootKey());
                     }
                 }
             } else {
                 String parentId;
                 if (qualifiedParentKeys) {
-                    parentId = StringUtils.join(keyList.iterator(),
-                            getKeySeparator());
+                    parentId = StringUtils.join(keyList.iterator(), getKeySeparator());
                 } else {
                     parentId = columns[i - 1];
                 }
@@ -659,33 +652,26 @@ public class ChainSelect extends UIInput implements ResettableComponent {
             }
             List<DirectorySelectItem> items = null;
             if (directoryName != null) {
-                items = DirectoryHelper.instance().getSelectItems(
-                        directoryName, filter);
+                items = DirectoryHelper.instance().getSelectItems(directoryName, filter);
             } else {
                 items = DirectoryHelper.getSelectItems(directoryValues, filter);
             }
             if (items == null) {
-                throw new IllegalStateException(String.format(
-                        "Item not found: directoryName=%s, filter=%s",
+                throw new IllegalStateException(String.format("Item not found: directoryName=%s, filter=%s",
                         directoryName, filter));
             }
             if (items.isEmpty()) {
-                log.warn(String.format("No selection for dir %s ",
-                        directoryName));
-                return new Selection(
-                        itemList.toArray(new DirectorySelectItem[0]));
+                log.warn(String.format("No selection for dir %s ", directoryName));
+                return new Selection(itemList.toArray(new DirectorySelectItem[0]));
             } else {
                 if (items.size() != 1) {
-                    log.warn(String.format(
-                            "Too many items (%s) found: directoryName=%s, filter=%s",
-                            Integer.toString(items.size()), directoryName,
-                            filter));
+                    log.warn(String.format("Too many items (%s) found: directoryName=%s, filter=%s",
+                            Integer.toString(items.size()), directoryName, filter));
                 }
                 itemList.add(items.get(0));
             }
         }
-        return new Selection(
-                itemList.toArray(new DirectorySelectItem[columns.length]));
+        return new Selection(itemList.toArray(new DirectorySelectItem[columns.length]));
     }
 
     public Selection[] getComponentValue() {
@@ -705,8 +691,7 @@ public class ChainSelect extends UIInput implements ResettableComponent {
     }
 
     /**
-     * This structure is needed to keep data for dynamically generated
-     * components.
+     * This structure is needed to keep data for dynamically generated components.
      */
     static class NestedChainSelectComponentInfo {
 
@@ -728,8 +713,7 @@ public class ChainSelect extends UIInput implements ResettableComponent {
 
         compInfo.directoryName = comp.getStringProperty("directoryName", null);
         compInfo.directoryValues = comp.getDirectoryValues();
-        compInfo.displayObsoleteEntries = comp.getBooleanProperty(
-                "displayObsoleteEntries", false);
+        compInfo.displayObsoleteEntries = comp.getBooleanProperty("displayObsoleteEntries", false);
         compInfo.localize = comp.getBooleanProperty("localize", false);
         compInfo.display = comp.getDisplay();
 
@@ -771,13 +755,10 @@ public class ChainSelect extends UIInput implements ResettableComponent {
             }
 
             String[] rows = StringUtils.split(newValueStr, getKeySeparator());
-            boolean allowBranchSelection = Boolean.TRUE.equals(getBooleanProperty(
-                    "allowBranchSelection", false));
+            boolean allowBranchSelection = Boolean.TRUE.equals(getBooleanProperty("allowBranchSelection", false));
             if (!allowBranchSelection && rows.length != size) {
-                String messageStr = ComponentUtils.translate(context,
-                        "label.chainSelect.incomplete_selection");
-                FacesMessage message = new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, messageStr, messageStr);
+                String messageStr = ComponentUtils.translate(context, "label.chainSelect.incomplete_selection");
+                FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageStr, messageStr);
                 context.addMessage(getClientId(context), message);
                 setValid(false);
             }
@@ -812,11 +793,11 @@ public class ChainSelect extends UIInput implements ResettableComponent {
     }
 
     /**
-     * Override update method to reset cached value and ensure good re-render
-     * in ajax
+     * Override update method to reset cached value and ensure good re-render in ajax
      *
      * @since 5.6
      */
+    @Override
     public void processUpdates(FacesContext context) {
         super.processUpdates(context);
         if (Boolean.TRUE.equals(getResetCacheOnUpdate()) && isValid()) {

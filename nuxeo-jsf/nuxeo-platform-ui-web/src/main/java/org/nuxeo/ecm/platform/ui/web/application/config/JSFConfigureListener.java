@@ -30,13 +30,11 @@ import com.sun.faces.config.ConfigureListener;
 /**
  * Handles JSF configuration at startup.
  * <p>
- * Delays configuration until runtime is initialized to handle correctly dev
- * mode.
+ * Delays configuration until runtime is initialized to handle correctly dev mode.
  *
  * @since 6.0
  */
-public class JSFConfigureListener implements ServletContextListener,
-        RuntimeServiceListener {
+public class JSFConfigureListener implements ServletContextListener, RuntimeServiceListener {
 
     private static final Log log = LogFactory.getLog(JSFConfigureListener.class);
 

@@ -38,14 +38,13 @@ import javax.faces.view.facelets.TagHandler;
 import org.nuxeo.ecm.platform.ui.web.binding.MetaMethodExpression;
 
 /**
- * Action listener method handler: makes it possible to add an action listener
- * method to any action source component parent.
+ * Action listener method handler: makes it possible to add an action listener method to any action source component
+ * parent.
  * <p>
- * This is useful when declaring several action listeners on the same parent
- * component, and when the order of calls needs to be respected: the action
- * listener method declared on a component is the first one called. So this
- * method makes it possible to add other action listeners before it, without
- * having to declare a class (when using the f:actionListener tag).
+ * This is useful when declaring several action listeners on the same parent component, and when the order of calls
+ * needs to be respected: the action listener method declared on a component is the first one called. So this method
+ * makes it possible to add other action listeners before it, without having to declare a class (when using the
+ * f:actionListener tag).
  *
  * @author Anahide Tchertchian
  */
@@ -61,20 +60,19 @@ public class ActionListenerMethodTagHandler extends TagHandler {
         value = getRequiredAttribute("value");
     }
 
-    public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, FaceletException, ELException {
+    @Override
+    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
+            ELException {
         if (parent instanceof ActionSource) {
             // only process if parent was just created
             if (parent.getParent() == null) {
                 ActionSource src = (ActionSource) parent;
-                ActionListener listener = new MethodExpressionActionListener(
-                        new MetaMethodExpression(value.getMethodExpression(ctx,
-                                null, ACTION_LISTENER_SIG)));
+                ActionListener listener = new MethodExpressionActionListener(new MetaMethodExpression(
+                        value.getMethodExpression(ctx, null, ACTION_LISTENER_SIG)));
                 src.addActionListener(listener);
             }
         } else {
-            throw new TagException(tag,
-                    "Parent is not of type ActionSource, type is: " + parent);
+            throw new TagException(tag, "Parent is not of type ActionSource, type is: " + parent);
         }
     }
 

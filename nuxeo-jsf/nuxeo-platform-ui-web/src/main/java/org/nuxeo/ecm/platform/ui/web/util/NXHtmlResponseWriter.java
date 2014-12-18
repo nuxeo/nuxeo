@@ -61,9 +61,8 @@ import com.sun.faces.util.HtmlUtils;
 import com.sun.faces.util.MessageUtils;
 
 /**
- * CSV specific response writer copied pasted from
- * com.sun.faces.renderkit.html_basic.HtmlResponseWriter without the HTML
- * encode part.
+ * CSV specific response writer copied pasted from com.sun.faces.renderkit.html_basic.HtmlResponseWriter without the
+ * HTML encode part.
  *
  * @since 5.9.1, 5.8-HF01
  */
@@ -179,16 +178,14 @@ public class NXHtmlResponseWriter extends ResponseWriter {
     // Constructors
 
     /**
-     * Constructor sets the <code>ResponseWriter</code> and encoding, and
-     * enables script hiding by default.
+     * Constructor sets the <code>ResponseWriter</code> and encoding, and enables script hiding by default.
      *
      * @param writer the <code>ResponseWriter</code>
      * @param contentType the content type.
      * @param encoding the character encoding.
      * @throws javax.faces.FacesException the encoding is not recognized.
      */
-    public NXHtmlResponseWriter(Writer writer, String contentType,
-            String encoding) throws FacesException {
+    public NXHtmlResponseWriter(Writer writer, String contentType, String encoding) throws FacesException {
         this(writer, contentType, encoding, null, null, null);
     }
 
@@ -197,12 +194,11 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * Constructor sets the <code>ResponseWriter</code> and encoding.
      * </p>
      * <p>
-     * The argument configPrefs is a map of configurable prefs that affect this
-     * instance's behavior. Supported keys are:
+     * The argument configPrefs is a map of configurable prefs that affect this instance's behavior. Supported keys are:
      * </p>
      * <p>
-     * BooleanWebContextInitParameter.EnableJSStyleHiding: <code>true</code> if
-     * the writer should attempt to hide JS from older browsers
+     * BooleanWebContextInitParameter.EnableJSStyleHiding: <code>true</code> if the writer should attempt to hide JS
+     * from older browsers
      * </p>
      *
      * @param writer the <code>ResponseWriter</code>
@@ -210,10 +206,8 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * @param encoding the character encoding.
      * @throws javax.faces.FacesException the encoding is not recognized.
      */
-    public NXHtmlResponseWriter(Writer writer, String contentType,
-            String encoding, Boolean isScriptHidingEnabled,
-            Boolean isScriptInAttributeValueEnabled,
-            WebConfiguration.DisableUnicodeEscaping disableUnicodeEscaping)
+    public NXHtmlResponseWriter(Writer writer, String contentType, String encoding, Boolean isScriptHidingEnabled,
+            Boolean isScriptInAttributeValueEnabled, WebConfiguration.DisableUnicodeEscaping disableUnicodeEscaping)
             throws FacesException {
 
         this.writer = writer;
@@ -252,7 +246,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
         this.isScriptInAttributeValueEnabled = isScriptInAttributeValueEnabled;
         this.disableUnicodeEscaping = disableUnicodeEscaping;
 
-        this.attributesBuffer = new FastStringWriter(128);
+        attributesBuffer = new FastStringWriter(128);
 
         // Check the character encoding
         if (!HtmlUtils.validateEncoding(encoding)) {
@@ -279,8 +273,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
             escapeUnicode = !HtmlUtils.isUTFencoding(charsetName);
             // is stream capable of rendering unicode or iso-8859-1, do not
             // escape
-            escapeIso = !HtmlUtils.isISO8859_1encoding(charsetName)
-                    && !HtmlUtils.isUTFencoding(charsetName);
+            escapeIso = !HtmlUtils.isISO8859_1encoding(charsetName) && !HtmlUtils.isUTFencoding(charsetName);
             break;
         }
     }
@@ -305,6 +298,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     /** Methods From <code>java.io.Writer</code> */
 
+    @Override
     public void close() throws IOException {
 
         closeStartIfNecessary();
@@ -320,6 +314,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      *
      * @throws IOException if an input/output error occurs.
      */
+    @Override
     public void flush() throws IOException {
 
         // NOTE: Internal buffer's contents (the ivar "buffer") is
@@ -337,6 +332,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
     // Methods
 
     /** @return the content type such as "text/html" for this ResponseWriter. */
+    @Override
     public String getContentType() {
 
         return contentType;
@@ -345,19 +341,16 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     /**
      * <p>
-     * Create a new instance of this <code>ResponseWriter</code> using a
-     * different <code>Writer</code>.
+     * Create a new instance of this <code>ResponseWriter</code> using a different <code>Writer</code>.
      *
-     * @param writer The <code>Writer</code> that will be used to create
-     *            another <code>ResponseWriter</code>.
+     * @param writer The <code>Writer</code> that will be used to create another <code>ResponseWriter</code>.
      */
+    @Override
     public ResponseWriter cloneWithWriter(Writer writer) {
 
         try {
-            return new HtmlResponseWriter(writer, getContentType(),
-                    getCharacterEncoding(), isScriptHidingEnabled,
-                    isScriptInAttributeValueEnabled, disableUnicodeEscaping,
-                    false);
+            return new HtmlResponseWriter(writer, getContentType(), getCharacterEncoding(), isScriptHidingEnabled,
+                    isScriptInAttributeValueEnabled, disableUnicodeEscaping, false);
         } catch (FacesException e) {
             // This should never happen
             throw new IllegalStateException();
@@ -366,6 +359,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
     }
 
     /** Output the text for the end of a document. */
+    @Override
     public void endDocument() throws IOException {
 
         writer.flush();
@@ -374,26 +368,24 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     /**
      * <p>
-     * Write the end of an element. This method will first close any open
-     * element created by a call to <code>startElement()</code>.
+     * Write the end of an element. This method will first close any open element created by a call to
+     * <code>startElement()</code>.
      *
      * @param name Name of the element to be ended
      * @throws IOException if an input/output error occurs
      * @throws NullPointerException if <code>name</code> is <code>null</code>
      */
+    @Override
     public void endElement(String name) throws IOException {
 
         if (name == null) {
-            throw new NullPointerException(
-                    MessageUtils.getExceptionMessageString(
-                            MessageUtils.NULL_PARAMETERS_ERROR_MESSAGE_ID,
-                            "name"));
+            throw new NullPointerException(MessageUtils.getExceptionMessageString(
+                    MessageUtils.NULL_PARAMETERS_ERROR_MESSAGE_ID, "name"));
         }
 
         isXhtml = getContentType().equals(RIConstants.XHTML_CONTENT_TYPE);
 
-        if (isScriptOrStyle(name) && !scriptOrStyleSrc
-                && writer instanceof FastStringWriter) {
+        if (isScriptOrStyle(name) && !scriptOrStyleSrc && writer instanceof FastStringWriter) {
             String result = ((FastStringWriter) writer).getBuffer().toString();
             writer = origWriter;
 
@@ -404,39 +396,30 @@ public class NXHtmlResponseWriter extends ResponseWriter {
                         Matcher cdataStartSlashSlash = CDATA_START_SLASH_SLASH.matcher(trim), cdataEndSlashSlash = CDATA_END_SLASH_SLASH.matcher(trim), cdataStartSlashStar = CDATA_START_SLASH_STAR.matcher(trim), cdataEndSlashStar = CDATA_END_SLASH_STAR.matcher(trim);
                         int trimLen = trim.length(), start, end;
                         // case 1 start is // end is //
-                        if (cdataStartSlashSlash.find()
-                                && cdataEndSlashSlash.find()) {
-                            start = cdataStartSlashSlash.end()
-                                    - cdataStartSlashSlash.start();
-                            end = trimLen
-                                    - (cdataEndSlashSlash.end() - cdataEndSlashSlash.start());
+                        if (cdataStartSlashSlash.find() && cdataEndSlashSlash.find()) {
+                            start = cdataStartSlashSlash.end() - cdataStartSlashSlash.start();
+                            end = trimLen - (cdataEndSlashSlash.end() - cdataEndSlashSlash.start());
                             writer.write(trim.substring(start, end));
                         }
                         // case 2 start is // end is /* */
                         else if ((null != cdataStartSlashSlash.reset() && cdataStartSlashSlash.find())
                                 && cdataEndSlashStar.find()) {
-                            start = cdataStartSlashSlash.end()
-                                    - cdataStartSlashSlash.start();
-                            end = trimLen
-                                    - (cdataEndSlashStar.end() - cdataEndSlashStar.start());
+                            start = cdataStartSlashSlash.end() - cdataStartSlashSlash.start();
+                            end = trimLen - (cdataEndSlashStar.end() - cdataEndSlashStar.start());
                             writer.write(trim.substring(start, end));
                         }
                         // case 3 start is /* */ end is /* */
                         else if (cdataStartSlashStar.find()
                                 && (null != cdataEndSlashStar.reset() && cdataEndSlashStar.find())) {
-                            start = cdataStartSlashStar.end()
-                                    - cdataStartSlashStar.start();
-                            end = trimLen
-                                    - (cdataEndSlashStar.end() - cdataEndSlashStar.start());
+                            start = cdataStartSlashStar.end() - cdataStartSlashStar.start();
+                            end = trimLen - (cdataEndSlashStar.end() - cdataEndSlashStar.start());
                             writer.write(trim.substring(start, end));
                         }
                         // case 4 start is /* */ end is //
                         else if ((null != cdataStartSlashStar.reset() && cdataStartSlashStar.find())
                                 && (null != cdataEndSlashStar.reset() && cdataEndSlashSlash.find())) {
-                            start = cdataStartSlashStar.end()
-                                    - cdataStartSlashStar.start();
-                            end = trimLen
-                                    - (cdataEndSlashSlash.end() - cdataEndSlashSlash.start());
+                            start = cdataStartSlashStar.end() - cdataStartSlashStar.start();
+                            end = trimLen - (cdataEndSlashSlash.end() - cdataEndSlashSlash.start());
                             writer.write(trim.substring(start, end));
                         }
                         // case 5 no commented out cdata present.
@@ -444,8 +427,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
                             writer.write(result);
                         }
                     } else {
-                        if (trim.startsWith("<![CDATA[")
-                                && trim.endsWith("]]>")) {
+                        if (trim.startsWith("<![CDATA[") && trim.endsWith("]]>")) {
                             writer.write(trim.substring(9, trim.length() - 3));
                         } else {
                             writer.write(result);
@@ -506,11 +488,10 @@ public class NXHtmlResponseWriter extends ResponseWriter {
     }
 
     /**
-     * @return the character encoding, such as "ISO-8859-1" for this
-     *         ResponseWriter. Refer to: <a
-     *         href="http://www.iana.org/assignments/character-sets"
-     *         >theIANA</a> for a list of character encodings.
+     * @return the character encoding, such as "ISO-8859-1" for this ResponseWriter. Refer to: <a
+     *         href="http://www.iana.org/assignments/character-sets" >theIANA</a> for a list of character encodings.
      */
+    @Override
     public String getCharacterEncoding() {
 
         return encoding;
@@ -524,6 +505,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      *
      * @throws IOException if an input/output error occurs
      */
+    @Override
     public void startDocument() throws IOException {
 
         // do nothing;
@@ -532,25 +514,21 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     /**
      * <p>
-     * Write the start of an element, up to and including the element name.
-     * Clients call <code>writeAttribute()</code> or
-     * <code>writeURIAttribute()</code> methods to add attributes after calling
-     * this method.
+     * Write the start of an element, up to and including the element name. Clients call <code>writeAttribute()</code>
+     * or <code>writeURIAttribute()</code> methods to add attributes after calling this method.
      *
      * @param name Name of the starting element
-     * @param componentForElement The UIComponent instance that applies to this
-     *            element. This argument may be <code>null</code>.
+     * @param componentForElement The UIComponent instance that applies to this element. This argument may be
+     *            <code>null</code>.
      * @throws IOException if an input/output error occurs
      * @throws NullPointerException if <code>name</code> is <code>null</code>
      */
-    public void startElement(String name, UIComponent componentForElement)
-            throws IOException {
+    @Override
+    public void startElement(String name, UIComponent componentForElement) throws IOException {
 
         if (name == null) {
-            throw new NullPointerException(
-                    MessageUtils.getExceptionMessageString(
-                            MessageUtils.NULL_PARAMETERS_ERROR_MESSAGE_ID,
-                            "name"));
+            throw new NullPointerException(MessageUtils.getExceptionMessageString(
+                    MessageUtils.NULL_PARAMETERS_ERROR_MESSAGE_ID, "name"));
         }
         closeStartIfNecessary();
         isScriptOrStyle(name);
@@ -598,6 +576,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     }
 
+    @Override
     public void write(char[] cbuf, int off, int len) throws IOException {
 
         closeStartIfNecessary();
@@ -615,30 +594,25 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     /**
      * <p>
-     * Write a properly escaped attribute name and the corresponding value. The
-     * value text will be converted to a String if necessary. This method may
-     * only be called after a call to <code>startElement()</code>, and before
-     * the opened element has been closed.
+     * Write a properly escaped attribute name and the corresponding value. The value text will be converted to a String
+     * if necessary. This method may only be called after a call to <code>startElement()</code>, and before the opened
+     * element has been closed.
      * </p>
      *
      * @param name Attribute name to be added
      * @param value Attribute value to be added
-     * @param componentPropertyName The name of the component property to which
-     *            this attribute argument applies. This argument may be
-     *            <code>null</code>.
-     * @throws IllegalStateException if this method is called when there is no
-     *             currently open element
+     * @param componentPropertyName The name of the component property to which this attribute argument applies. This
+     *            argument may be <code>null</code>.
+     * @throws IllegalStateException if this method is called when there is no currently open element
      * @throws IOException if an input/output error occurs
      * @throws NullPointerException if <code>name</code> is <code>null</code>
      */
-    public void writeAttribute(String name, Object value,
-            String componentPropertyName) throws IOException {
+    @Override
+    public void writeAttribute(String name, Object value, String componentPropertyName) throws IOException {
 
         if (name == null) {
-            throw new NullPointerException(
-                    MessageUtils.getExceptionMessageString(
-                            MessageUtils.NULL_PARAMETERS_ERROR_MESSAGE_ID,
-                            "name"));
+            throw new NullPointerException(MessageUtils.getExceptionMessageString(
+                    MessageUtils.NULL_PARAMETERS_ERROR_MESSAGE_ID, "name"));
         }
         if (value == null) {
             return;
@@ -675,8 +649,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
             // write the attribute value
             String val = value.toString();
             ensureTextBufferCapacity(val);
-            HtmlUtils.writeAttribute(attributesBuffer, escapeUnicode,
-                    escapeIso, buffer, val, textBuffer,
+            HtmlUtils.writeAttribute(attributesBuffer, escapeUnicode, escapeIso, buffer, val, textBuffer,
                     isScriptInAttributeValueEnabled);
             attributesBuffer.write('"');
         }
@@ -685,17 +658,16 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     /**
      * <p>
-     * Write a comment string containing the specified text. The text will be
-     * converted to a String if necessary. If there is an open element that has
-     * been created by a call to <code>startElement()</code>, that element will
-     * be closed first.
+     * Write a comment string containing the specified text. The text will be converted to a String if necessary. If
+     * there is an open element that has been created by a call to <code>startElement()</code>, that element will be
+     * closed first.
      * </p>
      *
      * @param comment Text content of the comment
      * @throws IOException if an input/output error occurs
-     * @throws NullPointerException if <code>comment</code> is
-     *             <code>null</code>
+     * @throws NullPointerException if <code>comment</code> is <code>null</code>
      */
+    @Override
     public void writeComment(Object comment) throws IOException {
 
         if (comment == null) {
@@ -719,14 +691,12 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     /**
      * <p>
-     * Write a properly escaped single character, If there is an open element
-     * that has been created by a call to <code>startElement()</code>, that
-     * element will be closed first.
+     * Write a properly escaped single character, If there is an open element that has been created by a call to
+     * <code>startElement()</code>, that element will be closed first.
      * </p>
      * <p/>
      * <p>
-     * All angle bracket occurrences in the argument must be escaped using the
-     * &amp;gt; &amp;lt; syntax.
+     * All angle bracket occurrences in the argument must be escaped using the &amp;gt; &amp;lt; syntax.
      * </p>
      *
      * @param text Text to be written
@@ -740,17 +710,14 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     /**
      * <p>
-     * Write properly escaped text from a character array. The output from this
-     * command is identical to the invocation:
-     * <code>writeText(c, 0, c.length)</code>. If there is an open element that
-     * has been created by a call to <code>startElement()</code>, that element
-     * will be closed first.
+     * Write properly escaped text from a character array. The output from this command is identical to the invocation:
+     * <code>writeText(c, 0, c.length)</code>. If there is an open element that has been created by a call to
+     * <code>startElement()</code>, that element will be closed first.
      * </p>
      * </p>
      * <p/>
      * <p>
-     * All angle bracket occurrences in the argument must be escaped using the
-     * &amp;gt; &amp;lt; syntax.
+     * All angle bracket occurrences in the argument must be escaped using the &amp;gt; &amp;lt; syntax.
      * </p>
      *
      * @param text Text to be written
@@ -760,10 +727,8 @@ public class NXHtmlResponseWriter extends ResponseWriter {
     public void writeText(char text[]) throws IOException {
 
         if (text == null) {
-            throw new NullPointerException(
-                    MessageUtils.getExceptionMessageString(
-                            MessageUtils.NULL_PARAMETERS_ERROR_MESSAGE_ID,
-                            "text"));
+            throw new NullPointerException(MessageUtils.getExceptionMessageString(
+                    MessageUtils.NULL_PARAMETERS_ERROR_MESSAGE_ID, "text"));
         }
         closeStartIfNecessary();
         writer.write(text);
@@ -772,27 +737,22 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     /**
      * <p>
-     * Write a properly escaped object. The object will be converted to a
-     * String if necessary. If there is an open element that has been created
-     * by a call to <code>startElement()</code>, that element will be closed
-     * first.
+     * Write a properly escaped object. The object will be converted to a String if necessary. If there is an open
+     * element that has been created by a call to <code>startElement()</code>, that element will be closed first.
      * </p>
      *
      * @param text Text to be written
-     * @param componentPropertyName The name of the component property to which
-     *            this text argument applies. This argument may be
-     *            <code>null</code>.
+     * @param componentPropertyName The name of the component property to which this text argument applies. This
+     *            argument may be <code>null</code>.
      * @throws IOException if an input/output error occurs
      * @throws NullPointerException if <code>text</code> is <code>null</code>
      */
-    public void writeText(Object text, String componentPropertyName)
-            throws IOException {
+    @Override
+    public void writeText(Object text, String componentPropertyName) throws IOException {
 
         if (text == null) {
-            throw new NullPointerException(
-                    MessageUtils.getExceptionMessageString(
-                            MessageUtils.NULL_PARAMETERS_ERROR_MESSAGE_ID,
-                            "text"));
+            throw new NullPointerException(MessageUtils.getExceptionMessageString(
+                    MessageUtils.NULL_PARAMETERS_ERROR_MESSAGE_ID, "text"));
         }
         closeStartIfNecessary();
         writer.write(text.toString());
@@ -800,31 +760,28 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     /**
      * <p>
-     * Write properly escaped text from a character array. If there is an open
-     * element that has been created by a call to <code>startElement()</code>,
-     * that element will be closed first.
+     * Write properly escaped text from a character array. If there is an open element that has been created by a call
+     * to <code>startElement()</code>, that element will be closed first.
      * </p>
      * <p/>
      * <p>
-     * All angle bracket occurrences in the argument must be escaped using the
-     * &amp;gt; &amp;lt; syntax.
+     * All angle bracket occurrences in the argument must be escaped using the &amp;gt; &amp;lt; syntax.
      * </p>
      *
      * @param text Text to be written
      * @param off Starting offset (zero-relative)
      * @param len Number of characters to be written
-     * @throws IndexOutOfBoundsException if the calculated starting or ending
-     *             position is outside the bounds of the character array
+     * @throws IndexOutOfBoundsException if the calculated starting or ending position is outside the bounds of the
+     *             character array
      * @throws IOException if an input/output error occurs
      * @throws NullPointerException if <code>text</code> is <code>null</code>
      */
+    @Override
     public void writeText(char text[], int off, int len) throws IOException {
 
         if (text == null) {
-            throw new NullPointerException(
-                    MessageUtils.getExceptionMessageString(
-                            MessageUtils.NULL_PARAMETERS_ERROR_MESSAGE_ID,
-                            "text"));
+            throw new NullPointerException(MessageUtils.getExceptionMessageString(
+                    MessageUtils.NULL_PARAMETERS_ERROR_MESSAGE_ID, "text"));
         }
         if (off < 0 || off > text.length || len < 0 || len > text.length) {
             throw new IndexOutOfBoundsException();
@@ -835,37 +792,29 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     /**
      * <p>
-     * Write a properly encoded URI attribute name and the corresponding value.
-     * The value text will be converted to a String if necessary). This method
-     * may only be called after a call to <code>startElement()</code>, and
-     * before the opened element has been closed.
+     * Write a properly encoded URI attribute name and the corresponding value. The value text will be converted to a
+     * String if necessary). This method may only be called after a call to <code>startElement()</code>, and before the
+     * opened element has been closed.
      * </p>
      *
      * @param name Attribute name to be added
      * @param value Attribute value to be added
-     * @param componentPropertyName The name of the component property to which
-     *            this attribute argument applies. This argument may be
-     *            <code>null</code>.
-     * @throws IllegalStateException if this method is called when there is no
-     *             currently open element
+     * @param componentPropertyName The name of the component property to which this attribute argument applies. This
+     *            argument may be <code>null</code>.
+     * @throws IllegalStateException if this method is called when there is no currently open element
      * @throws IOException if an input/output error occurs
-     * @throws NullPointerException if <code>name</code> or <code>value</code>
-     *             is <code>null</code>
+     * @throws NullPointerException if <code>name</code> or <code>value</code> is <code>null</code>
      */
-    public void writeURIAttribute(String name, Object value,
-            String componentPropertyName) throws IOException {
+    @Override
+    public void writeURIAttribute(String name, Object value, String componentPropertyName) throws IOException {
 
         if (name == null) {
-            throw new NullPointerException(
-                    MessageUtils.getExceptionMessageString(
-                            MessageUtils.NULL_PARAMETERS_ERROR_MESSAGE_ID,
-                            "name"));
+            throw new NullPointerException(MessageUtils.getExceptionMessageString(
+                    MessageUtils.NULL_PARAMETERS_ERROR_MESSAGE_ID, "name"));
         }
         if (value == null) {
-            throw new NullPointerException(
-                    MessageUtils.getExceptionMessageString(
-                            MessageUtils.NULL_PARAMETERS_ERROR_MESSAGE_ID,
-                            "value"));
+            throw new NullPointerException(MessageUtils.getExceptionMessageString(
+                    MessageUtils.NULL_PARAMETERS_ERROR_MESSAGE_ID, "value"));
         }
 
         if (isCdata) {
@@ -884,12 +833,10 @@ public class NXHtmlResponseWriter extends ResponseWriter {
         ensureTextBufferCapacity(stringValue);
         // Javascript URLs should not be URL-encoded
         if (stringValue.startsWith("javascript:")) {
-            HtmlUtils.writeAttribute(attributesBuffer, escapeUnicode,
-                    escapeIso, buffer, stringValue, textBuffer,
+            HtmlUtils.writeAttribute(attributesBuffer, escapeUnicode, escapeIso, buffer, stringValue, textBuffer,
                     isScriptInAttributeValueEnabled);
         } else {
-            HtmlUtils.writeURL(attributesBuffer, stringValue, textBuffer,
-                    encoding);
+            HtmlUtils.writeURL(attributesBuffer, stringValue, textBuffer, encoding);
         }
 
         attributesBuffer.write('"');
@@ -907,8 +854,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
     }
 
     /**
-     * This method automatically closes a previous element (if not already
-     * closed).
+     * This method automatically closes a previous element (if not already closed).
      *
      * @throws IOException if an error occurs writing
      */
@@ -919,8 +865,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
             writer.write('>');
             closeStart = false;
             if (isScriptOrStyle() && !scriptOrStyleSrc) {
-                isXhtml = getContentType().equals(
-                        RIConstants.XHTML_CONTENT_TYPE);
+                isXhtml = getContentType().equals(RIConstants.XHTML_CONTENT_TYPE);
                 if (isXhtml) {
                     if (!writingCdata) {
                         if (isScript) {

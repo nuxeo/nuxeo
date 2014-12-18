@@ -36,14 +36,15 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
  * Utility class that externalize means to access a document by using an URL.
  *
  * @author DM
- * @deprecated see the url service with codecs registered through extension
- *             points
+ * @deprecated see the url service with codecs registered through extension points
  */
 @Deprecated
 public final class DocumentLocator {
 
     public static final String URL_PREFIX = "getDocument.faces?";
+
     public static final String PARAM_NAME = "docRef";
+
     public static final String CHAR_ENCODING = "UTF-8";
 
     @SuppressWarnings("unused")
@@ -52,8 +53,7 @@ public final class DocumentLocator {
     private DocumentLocator() {
     }
 
-    public static String getDocumentUrl(RepositoryLocation serverLocation,
-            DocumentRef docRef) {
+    public static String getDocumentUrl(RepositoryLocation serverLocation, DocumentRef docRef) {
         if (serverLocation == null) {
             String nullRepoName = null;
             return getDocumentUrl(nullRepoName, docRef);
@@ -62,11 +62,9 @@ public final class DocumentLocator {
     }
 
     /**
-     * Returns something like
-     * getDocument.faces?docRef=ServerLocationName/DocRef.
+     * Returns something like getDocument.faces?docRef=ServerLocationName/DocRef.
      */
-    public static String getDocumentUrl(String serverLocationName,
-            DocumentRef docRef) {
+    public static String getDocumentUrl(String serverLocationName, DocumentRef docRef) {
 
         if (null == docRef) {
             throw new IllegalArgumentException("null docRef");
@@ -116,11 +114,9 @@ public final class DocumentLocator {
     }
 
     /**
-     * Returns something like
-     * http://server:port/nuxeo/getDocument.xhtml?docRef=ServerLocationName/DocRef.
+     * Returns something like http://server:port/nuxeo/getDocument.xhtml?docRef=ServerLocationName/DocRef.
      */
-    public static String getFullDocumentUrl(RepositoryLocation serverLocation,
-            DocumentRef docRef) {
+    public static String getFullDocumentUrl(RepositoryLocation serverLocation, DocumentRef docRef) {
         String baseUrl = BaseURL.getBaseURL();
         String docUrl = getDocumentUrl(serverLocation, docRef);
         if (baseUrl != null) {
@@ -130,11 +126,9 @@ public final class DocumentLocator {
     }
 
     /**
-     * Returns something like
-     * http://server:port/nuxeo/getDocument.xhtml?docRef=ServerLocationName/DocRef.
+     * Returns something like http://server:port/nuxeo/getDocument.xhtml?docRef=ServerLocationName/DocRef.
      */
-    public static String getFullDocumentUrl(String serverLocation,
-            DocumentRef docRef) {
+    public static String getFullDocumentUrl(String serverLocation, DocumentRef docRef) {
         String baseUrl = BaseURL.getBaseURL();
         String docUrl = getDocumentUrl(serverLocation, docRef);
         if (baseUrl != null) {
@@ -144,13 +138,9 @@ public final class DocumentLocator {
     }
 
     /**
-     *
-     * @param docUriRef in format
-     *            &lt;ServerLocationName&gt;/&lt;DocRefType&gt;:&lt;doc
-     *            reference&gt;
+     * @param docUriRef in format &lt;ServerLocationName&gt;/&lt;DocRefType&gt;:&lt;doc reference&gt;
      */
-    public static DocumentLocation parseDocRef(String docUriRef)
-            throws BadDocumentUriException {
+    public static DocumentLocation parseDocRef(String docUriRef) throws BadDocumentUriException {
         final int pos = docUriRef.indexOf('/');
         if (pos == -1) {
             throw new BadDocumentUriException("/ delimiter not found");
@@ -169,8 +159,7 @@ public final class DocumentLocator {
         try {
             refType = Integer.parseInt(refTypeStr);
         } catch (NumberFormatException e) {
-            throw new BadDocumentUriException("bad refType (not a number) "
-                    + refTypeStr);
+            throw new BadDocumentUriException("bad refType (not a number) " + refTypeStr);
         }
 
         String reference = docUriRef.substring(pos2 + 1);

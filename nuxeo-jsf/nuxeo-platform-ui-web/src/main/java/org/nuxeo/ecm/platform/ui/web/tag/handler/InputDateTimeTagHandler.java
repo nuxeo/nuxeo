@@ -53,8 +53,7 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
         defaultTime = getValue(attributes, "defaultTime", "12:00");
     }
 
-    protected String getValue(TagAttributes attrs, String name,
-            String defaultValue) {
+    protected String getValue(TagAttributes attrs, String name, String defaultValue) {
         TagAttribute attr = attrs.get(name);
         if (attr == null) {
             return defaultValue;
@@ -103,8 +102,7 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
         @Override
         public void applyMetadata(FaceletContext ctx, Object instance) {
             if (!(instance instanceof UICalendar)) {
-                log.error("Cannot apply date time component metadata, "
-                        + "not a HtmlCalendar instance: " + instance);
+                log.error("Cannot apply date time component metadata, " + "not a HtmlCalendar instance: " + instance);
                 return;
             }
             UICalendar c = (UICalendar) instance;
@@ -119,10 +117,8 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
         // set default time in timezone
         UICalendar c = (UICalendar) instance;
         c.setPopup(Boolean.parseBoolean(getValue(attributes, "popup", "true")));
-        c.setEnableManualInput(Boolean.parseBoolean(getValue(attributes,
-                "enableManualInput", "true")));
-        c.setShowApplyButton(Boolean.parseBoolean(getValue(attributes,
-                "showApplyButton", "false")));
+        c.setEnableManualInput(Boolean.parseBoolean(getValue(attributes, "enableManualInput", "true")));
+        c.setShowApplyButton(Boolean.parseBoolean(getValue(attributes, "showApplyButton", "false")));
         c.setZindex(Integer.parseInt(getValue(attributes, "zindex", "1500")));
         setDefaultTime(c);
     }

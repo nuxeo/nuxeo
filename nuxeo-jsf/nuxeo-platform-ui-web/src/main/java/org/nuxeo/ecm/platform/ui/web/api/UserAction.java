@@ -20,16 +20,14 @@
 package org.nuxeo.ecm.platform.ui.web.api;
 
 /**
- * Definitions for actions that are going to be performed after certain user
- * actions.
+ * Definitions for actions that are going to be performed after certain user actions.
  *
  * @author dragos
- *
  */
 public enum UserAction {
 
-    VIEW("view"), EDIT("edit"), CREATE("create"), AFTER_EDIT("after-edit"),
-    AFTER_CREATE("after-create"), GO_HOME("go-home");
+    VIEW("view"), EDIT("edit"), CREATE("create"), AFTER_EDIT("after-edit"), AFTER_CREATE("after-create"), GO_HOME(
+            "go-home");
 
     final String value;
 

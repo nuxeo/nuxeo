@@ -50,12 +50,12 @@ public class TestPropertyEditors {
 
         // check singleton
         editor.setAsText("single");
-        assertTrue(Arrays.equals(new String[] { "single" }, (String[])editor.getValue()));
+        assertTrue(Arrays.equals(new String[] { "single" }, (String[]) editor.getValue()));
         assertEquals("single", editor.getAsText());
 
         // check multi valued
         editor.setAsText("a,b");
-        assertTrue(Arrays.equals(new String[] { "a", "b" }, (String[])editor.getValue()));
+        assertTrue(Arrays.equals(new String[] { "a", "b" }, (String[]) editor.getValue()));
         assertEquals("a, b", editor.getAsText());
     }
 }

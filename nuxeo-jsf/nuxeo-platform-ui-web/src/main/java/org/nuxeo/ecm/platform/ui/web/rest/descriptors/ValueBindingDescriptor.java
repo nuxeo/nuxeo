@@ -37,8 +37,8 @@ public class ValueBindingDescriptor {
     protected String expression;
 
     /**
-     * If set to false, the binding will not be called to get the value (and
-     * use it to preserve it in the redirect URL after a POST)
+     * If set to false, the binding will not be called to get the value (and use it to preserve it in the redirect URL
+     * after a POST)
      *
      * @since 5.4.2
      */

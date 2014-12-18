@@ -71,8 +71,7 @@ public final class ComponentUtils {
     /**
      * Calls a component encodeBegin/encodeChildren/encodeEnd methods.
      */
-    public static void encodeComponent(FacesContext context,
-            UIComponent component) throws IOException {
+    public static void encodeComponent(FacesContext context, UIComponent component) throws IOException {
         component.encodeBegin(context);
         component.encodeChildren(context);
         component.encodeEnd(context);
@@ -81,19 +80,17 @@ public final class ComponentUtils {
     /**
      * Helper method meant to be called in the component constructor.
      * <p>
-     * When adding sub components dynamically, the tree fetching could be a
-     * problem so all possible sub components must be added.
+     * When adding sub components dynamically, the tree fetching could be a problem so all possible sub components must
+     * be added.
      * <p>
      * Since 6.0, does not mark component as not rendered anymore, calls
-     * {@link #hookSubComponent(FacesContext, UIComponent, UIComponent, String)}
-     * directly.
+     * {@link #hookSubComponent(FacesContext, UIComponent, UIComponent, String)} directly.
      *
      * @param parent
      * @param child
      * @param facetName facet name to put the child in.
      */
-    public static void initiateSubComponent(UIComponent parent,
-            String facetName, UIComponent child) {
+    public static void initiateSubComponent(UIComponent parent, String facetName, UIComponent child) {
         parent.getFacets().put(facetName, child);
         hookSubComponent(null, parent, child, facetName);
     }
@@ -109,8 +106,8 @@ public final class ComponentUtils {
      * @param defaultChildId
      * @return child comp
      */
-    public static UIComponent hookSubComponent(FacesContext context,
-            UIComponent parent, UIComponent child, String defaultChildId) {
+    public static UIComponent hookSubComponent(FacesContext context, UIComponent parent, UIComponent child,
+            String defaultChildId) {
         // build a valid id using the parent id so that it's found everytime.
         String childId = child.getId();
         if (defaultChildId != null) {
@@ -128,11 +125,9 @@ public final class ComponentUtils {
     }
 
     /**
-     * Copies attributes and value expressions with given name from parent
-     * component to child component.
+     * Copies attributes and value expressions with given name from parent component to child component.
      */
-    public static void copyValues(UIComponent parent, UIComponent child,
-            String[] valueNames) {
+    public static void copyValues(UIComponent parent, UIComponent child, String[] valueNames) {
         Map<String, Object> parentAttributes = parent.getAttributes();
         Map<String, Object> childAttributes = child.getAttributes();
         for (String name : valueNames) {
@@ -149,17 +144,14 @@ public final class ComponentUtils {
     }
 
     public static void copyLinkValues(UIComponent parent, UIComponent child) {
-        String[] valueNames = { "accesskey", "charset", "coords", "dir",
-                "disabled", "hreflang", "lang", "onblur", "onclick",
-                "ondblclick", "onfocus", "onkeydown", "onkeypress", "onkeyup",
-                "onmousedown", "onmousemove", "onmouseout", "onmouseover",
-                "onmouseup", "rel", "rev", "shape", "style", "styleClass",
-                "tabindex", "target", "title", "type" };
+        String[] valueNames = { "accesskey", "charset", "coords", "dir", "disabled", "hreflang", "lang", "onblur",
+                "onclick", "ondblclick", "onfocus", "onkeydown", "onkeypress", "onkeyup", "onmousedown", "onmousemove",
+                "onmouseout", "onmouseover", "onmouseup", "rel", "rev", "shape", "style", "styleClass", "tabindex",
+                "target", "title", "type" };
         copyValues(parent, child, valueNames);
     }
 
-    public static Object getAttributeValue(UIComponent component,
-            String attributeName, Object defaultValue) {
+    public static Object getAttributeValue(UIComponent component, String attributeName, Object defaultValue) {
         Object value = component.getAttributes().get(attributeName);
         if (value == null) {
             value = defaultValue;
@@ -167,8 +159,8 @@ public final class ComponentUtils {
         return value;
     }
 
-    public static Object getAttributeOrExpressionValue(FacesContext context,
-            UIComponent component, String attributeName, Object defaultValue) {
+    public static Object getAttributeOrExpressionValue(FacesContext context, UIComponent component,
+            String attributeName, Object defaultValue) {
         Object value = component.getAttributes().get(attributeName);
         if (value == null) {
             ValueExpression schemaExpr = component.getValueExpression(attributeName);
@@ -209,13 +201,11 @@ public final class ComponentUtils {
                     } else {
                         response.setHeader("ETag", digest);
                         response.setHeader("Content-Disposition",
-                                ServletHelper.getRFC2231ContentDisposition(
-                                        request, filename));
+                                ServletHelper.getRFC2231ContentDisposition(request, filename));
 
                         addCacheControlHeaders(request, response);
 
-                        log.debug("Downloading with mime/type : "
-                                + blob.getMimeType());
+                        log.debug("Downloading with mime/type : " + blob.getMimeType());
                         response.setContentType(blob.getMimeType());
                         long fileSize = blob.getLength();
                         if (fileSize > 0) {
@@ -225,8 +215,7 @@ public final class ComponentUtils {
                         response.flushBuffer();
                     }
                 } catch (IOException e) {
-                    log.error("Error while downloading the file: " + filename,
-                            e);
+                    log.error("Error while downloading the file: " + filename, e);
                 }
                 faces.responseComplete();
             }
@@ -234,8 +223,7 @@ public final class ComponentUtils {
         return null;
     }
 
-    public static String downloadFile(FacesContext faces, String filename,
-            File file) {
+    public static String downloadFile(FacesContext faces, String filename, File file) {
         FileBlob fileBlob = new FileBlob(file);
         return download(faces, fileBlob, filename);
     }
@@ -246,16 +234,14 @@ public final class ComponentUtils {
     }
 
     /**
-     * Internet Explorer file downloads over SSL do not work with certain HTTP
-     * cache control headers
+     * Internet Explorer file downloads over SSL do not work with certain HTTP cache control headers
      * <p>
      * See http://support.microsoft.com/kb/323308/
      * <p>
-     * What is not mentioned in the above Knowledge Base is that
-     * "Pragma: no-cache" also breaks download in MSIE over SSL
+     * What is not mentioned in the above Knowledge Base is that "Pragma: no-cache" also breaks download in MSIE over
+     * SSL
      */
-    private static void addCacheControlHeaders(HttpServletRequest request,
-            HttpServletResponse response) {
+    private static void addCacheControlHeaders(HttpServletRequest request, HttpServletResponse response) {
         String userAgent = request.getHeader("User-Agent");
         boolean secure = request.isSecure();
         if (!secure) {
@@ -283,46 +269,38 @@ public final class ComponentUtils {
         return translate(context, messageId, (Object[]) null);
     }
 
-    public static String translate(FacesContext context, String messageId,
-            Object... params) {
+    public static String translate(FacesContext context, String messageId, Object... params) {
         String bundleName = context.getApplication().getMessageBundle();
         Locale locale = context.getViewRoot().getLocale();
-        return I18NUtils.getMessageString(bundleName, messageId,
-                evaluateParams(context, params), locale);
+        return I18NUtils.getMessageString(bundleName, messageId, evaluateParams(context, params), locale);
     }
 
-    public static void addErrorMessage(FacesContext context,
-            UIComponent component, String message) {
+    public static void addErrorMessage(FacesContext context, UIComponent component, String message) {
         addErrorMessage(context, component, message, null);
     }
 
-    public static void addErrorMessage(FacesContext context,
-            UIComponent component, String message, Object[] params) {
+    public static void addErrorMessage(FacesContext context, UIComponent component, String message, Object[] params) {
         String bundleName = context.getApplication().getMessageBundle();
         Locale locale = context.getViewRoot().getLocale();
-        message = I18NUtils.getMessageString(bundleName, message,
-                evaluateParams(context, params), locale);
+        message = I18NUtils.getMessageString(bundleName, message, evaluateParams(context, params), locale);
         FacesMessage msg = new FacesMessage(message);
         msg.setSeverity(FacesMessage.SEVERITY_ERROR);
         context.addMessage(component.getClientId(context), msg);
     }
 
     /**
-     * Evaluates parameters to pass to translation methods if they are value
-     * expressions.
+     * Evaluates parameters to pass to translation methods if they are value expressions.
      *
      * @since 5.7
      */
-    protected static Object[] evaluateParams(FacesContext context,
-            Object[] params) {
+    protected static Object[] evaluateParams(FacesContext context, Object[] params) {
         if (params == null) {
             return null;
         }
         Object[] res = new Object[params.length];
         for (int i = 0; i < params.length; i++) {
             Object val = params[i];
-            if (val instanceof String
-                    && ComponentTagUtils.isValueReference((String) val)) {
+            if (val instanceof String && ComponentTagUtils.isValueReference((String) val)) {
                 ValueExpression ve = context.getApplication().getExpressionFactory().createValueExpression(
                         context.getELContext(), (String) val, Object.class);
                 res[i] = ve.getValue(context.getELContext());
@@ -336,9 +314,8 @@ public final class ComponentUtils {
     /**
      * Gets the base naming container from anchor.
      * <p>
-     * Gets out of suggestion box as it's a naming container and we can't get
-     * components out of it with a relative path => take above first found
-     * container.
+     * Gets out of suggestion box as it's a naming container and we can't get components out of it with a relative path
+     * => take above first found container.
      *
      * @since 5.3.1
      */
@@ -352,46 +329,38 @@ public final class ComponentUtils {
             }
         }
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Resolved base '%s' for anchor '%s'",
-                    base.getId(), anchor.getId()));
+            log.debug(String.format("Resolved base '%s' for anchor '%s'", base.getId(), anchor.getId()));
         }
         return base;
     }
 
     /**
-     * Returns the component specified by the {@code componentId} parameter
-     * from the {@code base} component.
+     * Returns the component specified by the {@code componentId} parameter from the {@code base} component.
      * <p>
-     * Does not throw any exception if the component is not found, returns
-     * {@code null} instead.
+     * Does not throw any exception if the component is not found, returns {@code null} instead.
      *
      * @since 5.4
      */
     @SuppressWarnings("unchecked")
-    public static <T> T getComponent(UIComponent base, String componentId,
-            Class<T> expectedComponentClass) {
+    public static <T> T getComponent(UIComponent base, String componentId, Class<T> expectedComponentClass) {
         if (componentId == null) {
             log.error("Cannot retrieve component with a null id");
             return null;
         }
         try {
-            UIComponent component = ComponentRenderUtils.getComponent(base,
-                    componentId);
+            UIComponent component = ComponentRenderUtils.getComponent(base, componentId);
             if (component == null) {
                 log.error("Could not find component with id: " + componentId);
             } else {
                 try {
                     return (T) component;
                 } catch (ClassCastException e) {
-                    log.error(String.format(
-                            "Invalid component with id %s: %s, expected a "
-                                    + "component with interface %s",
-                            componentId, component, expectedComponentClass));
+                    log.error(String.format("Invalid component with id %s: %s, expected a "
+                            + "component with interface %s", componentId, component, expectedComponentClass));
                 }
             }
         } catch (Exception e) {
-            log.error("Error when trying to retrieve component with id "
-                    + componentId, e);
+            log.error("Error when trying to retrieve component with id " + componentId, e);
         }
         return null;
     }
@@ -412,8 +381,8 @@ public final class ComponentUtils {
     /**
      * Move items up inside the target select
      */
-    public static void shiftItemsUp(UISelectMany targetSelect,
-            UISelectItems targetItems, UIEditableList hiddenTargetList) {
+    public static void shiftItemsUp(UISelectMany targetSelect, UISelectItems targetItems,
+            UIEditableList hiddenTargetList) {
         String[] selected = (String[]) targetSelect.getSelectedValues();
         SelectItem[] all = (SelectItem[]) targetItems.getValue();
         if (selected == null) {
@@ -426,8 +395,8 @@ public final class ComponentUtils {
         addToTargetList(hiddenTargetList, all);
     }
 
-    public static void shiftItemsDown(UISelectMany targetSelect,
-            UISelectItems targetItems, UIEditableList hiddenTargetList) {
+    public static void shiftItemsDown(UISelectMany targetSelect, UISelectItems targetItems,
+            UIEditableList hiddenTargetList) {
         String[] selected = (String[]) targetSelect.getSelectedValues();
         SelectItem[] all = (SelectItem[]) targetItems.getValue();
         if (selected == null) {
@@ -440,8 +409,8 @@ public final class ComponentUtils {
         addToTargetList(hiddenTargetList, all);
     }
 
-    public static void shiftItemsFirst(UISelectMany targetSelect,
-            UISelectItems targetItems, UIEditableList hiddenTargetList) {
+    public static void shiftItemsFirst(UISelectMany targetSelect, UISelectItems targetItems,
+            UIEditableList hiddenTargetList) {
         String[] selected = (String[]) targetSelect.getSelectedValues();
         SelectItem[] all = (SelectItem[]) targetItems.getValue();
         if (selected == null) {
@@ -454,8 +423,8 @@ public final class ComponentUtils {
         addToTargetList(hiddenTargetList, all);
     }
 
-    public static void shiftItemsLast(UISelectMany targetSelect,
-            UISelectItems targetItems, UIEditableList hiddenTargetList) {
+    public static void shiftItemsLast(UISelectMany targetSelect, UISelectItems targetItems,
+            UIEditableList hiddenTargetList) {
         String[] selected = (String[]) targetSelect.getSelectedValues();
         SelectItem[] all = (SelectItem[]) targetItems.getValue();
         if (selected == null) {
@@ -469,8 +438,8 @@ public final class ComponentUtils {
     }
 
     /**
-     * Make a new SelectItem[] with items whose ids belong to selected first,
-     * preserving inner ordering of selected and its complement in all.
+     * Make a new SelectItem[] with items whose ids belong to selected first, preserving inner ordering of selected and
+     * its complement in all.
      * <p>
      * Again this assumes that selected is an ordered sub-list of all
      * </p>
@@ -495,8 +464,8 @@ public final class ComponentUtils {
     }
 
     /**
-     * Make a new SelectItem[] with items whose ids belong to selected last,
-     * preserving inner ordering of selected and its complement in all.
+     * Make a new SelectItem[] with items whose ids belong to selected last, preserving inner ordering of selected and
+     * its complement in all.
      * <p>
      * Again this assumes that selected is an ordered sub-list of all
      * </p>
@@ -560,8 +529,7 @@ public final class ComponentUtils {
     /**
      * Move items from components to others.
      */
-    public static void moveItems(UISelectMany sourceSelect,
-            UISelectItems sourceItems, UISelectItems targetItems,
+    public static void moveItems(UISelectMany sourceSelect, UISelectItems sourceItems, UISelectItems targetItems,
             UIEditableList hiddenTargetList, boolean setTargetIds) {
         String[] selected = (String[]) sourceSelect.getSelectedValues();
         if (selected == null) {
@@ -633,9 +601,8 @@ public final class ComponentUtils {
     /**
      * Move items from components to others.
      */
-    public static void moveAllItems(UISelectItems sourceItems,
-            UISelectItems targetItems, UIEditableList hiddenTargetList,
-            boolean setTargetIds) {
+    public static void moveAllItems(UISelectItems sourceItems, UISelectItems targetItems,
+            UIEditableList hiddenTargetList, boolean setTargetIds) {
         SelectItem[] all = (SelectItem[]) sourceItems.getValue();
         List<SelectItem> toMove = new ArrayList<SelectItem>();
         List<SelectItem> toKeep = new ArrayList<SelectItem>();

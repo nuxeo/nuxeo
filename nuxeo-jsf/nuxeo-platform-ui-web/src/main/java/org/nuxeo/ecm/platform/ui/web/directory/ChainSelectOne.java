@@ -30,7 +30,6 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class ChainSelectOne extends ChainSelectBase {
 
@@ -77,7 +76,7 @@ public class ChainSelectOne extends ChainSelectBase {
             String[] keys = StringUtils.split(value, getKeySeparator());
             List<DirectoryEntry> nodes = resolveKeys(keys);
             List<String> labels = new ArrayList<String>();
-            for (DirectoryEntry node: nodes) {
+            for (DirectoryEntry node : nodes) {
                 String itemValue = node.getId();
                 String itemLabel = node.getLabel();
                 itemLabel = computeItemLabel(context, itemValue, itemLabel);
@@ -90,7 +89,6 @@ public class ChainSelectOne extends ChainSelectBase {
             writer.endElement("div");
         }
     }
-
 
     public void encodeReadWrite(FacesContext context) throws IOException {
         ResponseWriter writer = context.getResponseWriter();

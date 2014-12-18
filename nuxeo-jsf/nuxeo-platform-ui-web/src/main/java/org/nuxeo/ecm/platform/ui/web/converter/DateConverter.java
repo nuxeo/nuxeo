@@ -27,7 +27,6 @@ import java.util.TimeZone;
  * In the future the TimeZone of the client should be used.
  *
  * @author Narcis Paslaru
- *
  */
 public class DateConverter extends javax.faces.convert.DateTimeConverter {
 

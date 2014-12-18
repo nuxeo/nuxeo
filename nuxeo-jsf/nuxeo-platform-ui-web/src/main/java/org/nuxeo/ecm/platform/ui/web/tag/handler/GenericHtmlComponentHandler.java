@@ -30,8 +30,7 @@ import com.sun.faces.facelets.tag.jsf.html.HtmlComponentHandler;
 /**
  * Generic HTML component handler.
  * <p>
- * Handler that manages a defaultValue attribute set on the tag, to default to
- * this value when value is null or empty. *
+ * Handler that manages a defaultValue attribute set on the tag, to default to this value when value is null or empty. *
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -42,8 +41,7 @@ public class GenericHtmlComponentHandler extends HtmlComponentHandler {
     }
 
     /**
-     * Create meta rule set as regular html component, adding a default value
-     * holder rule.
+     * Create meta rule set as regular html component, adding a default value holder rule.
      *
      * @see DefaultValueHolderRule
      */

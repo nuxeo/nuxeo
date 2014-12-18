@@ -31,8 +31,7 @@ import javax.faces.view.facelets.TagAttribute;
 import org.nuxeo.ecm.platform.ui.web.binding.MetaMethodExpression;
 
 /**
- * Meta rule set that wires a method binding to a {@link MetaMethodBinding} when
- * invoking the method.
+ * Meta rule set that wires a method binding to a {@link MetaMethodBinding} when invoking the method.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -53,15 +52,13 @@ public class MetaActionSourceRule extends MetaRule {
         @Override
         public void applyMetadata(FaceletContext ctx, Object instance) {
             ActionSource2 as = (ActionSource2) instance;
-            MethodExpression originalExpression = attr.getMethodExpression(ctx,
-                    String.class, ACTION_SIG);
+            MethodExpression originalExpression = attr.getMethodExpression(ctx, String.class, ACTION_SIG);
             as.setActionExpression(new MetaMethodExpression(originalExpression));
         }
     }
 
     @Override
-    public Metadata applyRule(String name, TagAttribute attribute,
-            MetadataTarget meta) {
+    public Metadata applyRule(String name, TagAttribute attribute, MetadataTarget meta) {
         if (meta.isTargetInstanceOf(ActionSource.class)) {
             if ("action".equals(name)) {
                 return new ActionExpressionMapper(attribute);

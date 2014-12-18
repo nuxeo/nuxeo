@@ -34,9 +34,8 @@ import com.sun.faces.renderkit.RenderKitUtils;
 import com.sun.faces.renderkit.html_basic.OutputLinkRenderer;
 
 /**
- * Overrides default output link renderer so that URL parameters passed through
- * f:param tags are not added twice, since the component already takes them
- * into account when building the URL.
+ * Overrides default output link renderer so that URL parameters passed through f:param tags are not added twice, since
+ * the component already takes them into account when building the URL.
  *
  * @see RestDocumentLink
  * @since 5.4.2
@@ -44,17 +43,17 @@ import com.sun.faces.renderkit.html_basic.OutputLinkRenderer;
 public class RestDocumentLinkRenderer extends OutputLinkRenderer {
 
     /**
-     * Returns an empty parameters list because parameters are already taken
-     * care of in the computed URL.
+     * Returns an empty parameters list because parameters are already taken care of in the computed URL.
      */
+    @Override
     protected Param[] getParamList(UIComponent command) {
         return new Param[0];
     }
 
     private static final Attribute[] PASSTHROUGHATTRIBUTES = AttributeManager.getAttributes(AttributeManager.Key.OUTPUTLINK);
 
-    protected void renderAsActive(FacesContext context, UIComponent component)
-            throws IOException {
+    @Override
+    protected void renderAsActive(FacesContext context, UIComponent component) throws IOException {
 
         String hrefVal = getCurrentValue(context, component);
 
@@ -66,16 +65,15 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
         // false
         if (!component.isRendered()) {
             if (logger.isLoggable(Level.FINE)) {
-                logger.fine("End encoding component " + component.getId()
-                        + " since " + "rendered attribute is set to false ");
+                logger.fine("End encoding component " + component.getId() + " since "
+                        + "rendered attribute is set to false ");
             }
             return;
         }
         ResponseWriter writer = context.getResponseWriter();
         assert (writer != null);
         writer.startElement("a", component);
-        String writtenId = writeIdAttributeIfNecessary(context, writer,
-                component);
+        String writtenId = writeIdAttributeIfNecessary(context, writer, component);
         if (null != writtenId) {
             writer.writeAttribute("name", writtenId, "name");
         }
@@ -105,15 +103,13 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
 
         String url;
         Boolean isNewConversation = ((RestDocumentLink) component).getNewConversation();
-        if (!Boolean.TRUE.equals(isNewConversation)
-                && !StringUtils.isBlank(sb.toString())) {
+        if (!Boolean.TRUE.equals(isNewConversation) && !StringUtils.isBlank(sb.toString())) {
             url = sb.toString();
             String urlNewConversation = RestHelper.addCurrentConversationParameters(sb.toString());
             url += getFragment(component);
             urlNewConversation += getFragment(component);
             url = context.getExternalContext().encodeResourceURL(url);
-            urlNewConversation = context.getExternalContext().encodeResourceURL(
-                    urlNewConversation);
+            urlNewConversation = context.getExternalContext().encodeResourceURL(urlNewConversation);
             String onclickJS = "if(!(event.ctrlKey||event.shiftKey||event.metaKey||event.button==1)){this.href='"
                     + Functions.javaScriptEscape(urlNewConversation) + "'}";
             writer.writeAttribute("onclick", onclickJS, "onclick");
@@ -124,8 +120,7 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
 
         writer.writeURIAttribute("href", url, "href");
 
-        RenderKitUtils.renderPassThruAttributes(context, writer, component,
-                PASSTHROUGHATTRIBUTES);
+        RenderKitUtils.renderPassThruAttributes(context, writer, component, PASSTHROUGHATTRIBUTES);
         RenderKitUtils.renderXHTMLStyleBooleanAttributes(writer, component);
 
         String target = (String) component.getAttributes().get("target");

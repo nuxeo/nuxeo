@@ -85,14 +85,12 @@ public class RestHelper implements Serializable {
     protected transient LocaleSelector localeSelector;
 
     /**
-     * Sets current server location (core repository) and core document as
-     * provided by the document view.
+     * Sets current server location (core repository) and core document as provided by the document view.
      * <p>
      * Only sets current server location if the document reference is null.
      */
     @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
-    public String initContextFromRestRequest(DocumentView docView)
-            throws ClientException {
+    public String initContextFromRestRequest(DocumentView docView) throws ClientException {
         String outcome = null;
 
         if (docView != null) {
@@ -104,9 +102,7 @@ public class RestHelper implements Serializable {
                 if (docRef != null) {
                     if (docView.getParameter(WebActions.MAIN_TAB_ID_PARAMETER) == null
                             && !webActions.hasCurrentTabId(WebActions.MAIN_TABS_CATEGORY)) {
-                        webActions.setCurrentTabId(
-                                WebActions.MAIN_TABS_CATEGORY,
-                                WebActions.DOCUMENTS_MAIN_TAB_ID);
+                        webActions.setCurrentTabId(WebActions.MAIN_TABS_CATEGORY, WebActions.DOCUMENTS_MAIN_TAB_ID);
                     }
                     outcome = navigationContext.navigateTo(repoLoc, docRef);
                 } else {
@@ -136,13 +132,11 @@ public class RestHelper implements Serializable {
                 params.put("version", "true");
             }
             if (!StringUtils.isEmpty(mainTabId)) {
-                params.put(WebActions.MAIN_TAB_ID_PARAMETER,
-                        WebActions.MAIN_TABS_CATEGORY + ":" + mainTabId);
+                params.put(WebActions.MAIN_TAB_ID_PARAMETER, WebActions.MAIN_TABS_CATEGORY + ":" + mainTabId);
             }
             // additional params will be set according to the url pattern,
             // calling getters on bindings.
-            docView = new DocumentViewImpl(docLoc, typeInfo.getDefaultView(),
-                    params);
+            docView = new DocumentViewImpl(docLoc, typeInfo.getDefaultView(), params);
         }
         return docView;
     }
@@ -165,11 +159,10 @@ public class RestHelper implements Serializable {
         return null;
     }
 
-    protected static String addConversationRequestParameters(String url,
-            Manager conversationManager, String conversationId) {
+    protected static String addConversationRequestParameters(String url, Manager conversationManager,
+            String conversationId) {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(conversationManager.getConversationIdParameter(),
-                conversationId);
+        params.put(conversationManager.getConversationIdParameter(), conversationId);
         return conversationManager.encodeParameters(url, params);
     }
 
@@ -205,8 +198,7 @@ public class RestHelper implements Serializable {
             } else {
                 conversationId = conversationManager.getCurrentConversationId();
             }
-            return addConversationRequestParameters(url, conversationManager,
-                    conversationId);
+            return addConversationRequestParameters(url, conversationManager, conversationId);
         }
     }
 
@@ -214,17 +206,13 @@ public class RestHelper implements Serializable {
         return DocumentModelFunctions.documentUrl(doc);
     }
 
-    public String getDocumentUrl(DocumentModel doc, String viewId,
-            boolean newConversation) {
-        return DocumentModelFunctions.documentUrl(null, doc, viewId, null,
-                newConversation, null);
+    public String getDocumentUrl(DocumentModel doc, String viewId, boolean newConversation) {
+        return DocumentModelFunctions.documentUrl(null, doc, viewId, null, newConversation, null);
     }
 
-    public String getDocumentUrl(String patternName, DocumentModel doc,
-            String viewId, Map<String, String> parameters,
+    public String getDocumentUrl(String patternName, DocumentModel doc, String viewId, Map<String, String> parameters,
             boolean newConversation) {
-        return DocumentModelFunctions.documentUrl(patternName, doc, viewId,
-                parameters, newConversation, null);
+        return DocumentModelFunctions.documentUrl(patternName, doc, viewId, parameters, newConversation, null);
     }
 
     @Factory(value = "baseURL", scope = ScopeType.CONVERSATION)
@@ -244,8 +232,7 @@ public class RestHelper implements Serializable {
         return doPrint(navigationContext.getCurrentDocument(), defaultTheme);
     }
 
-    public String doPrint(DocumentModel doc, String defaultTheme)
-            throws IOException {
+    public String doPrint(DocumentModel doc, String defaultTheme) throws IOException {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         if (facesContext == null) {
             return null;
@@ -272,8 +259,7 @@ public class RestHelper implements Serializable {
             sb.append("/print");
             parameters.put("theme", sb.toString());
         }
-        return DocumentModelFunctions.documentUrl(null, doc, null, parameters,
-                false, null);
+        return DocumentModelFunctions.documentUrl(null, doc, null, parameters, false, null);
     }
 
     public static HttpServletResponse getHttpServletResponse() {
@@ -302,13 +288,11 @@ public class RestHelper implements Serializable {
         return null;
     }
 
-    public static void handleRedirect(HttpServletResponse response, String url)
-            throws IOException {
+    public static void handleRedirect(HttpServletResponse response, String url) throws IOException {
         response.resetBuffer();
         response.sendRedirect(url);
         response.flushBuffer();
-        getHttpServletRequest().setAttribute(
-                NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, Boolean.TRUE);
+        getHttpServletRequest().setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, Boolean.TRUE);
         FacesContext.getCurrentInstance().responseComplete();
     }
 
@@ -324,9 +308,8 @@ public class RestHelper implements Serializable {
     }
 
     /**
-     * Sets the locale string if given string is not null and not empty, as
-     * well as on faces context view root in case it was already created so
-     * that it holds the new locale for future lookups by JSF components.
+     * Sets the locale string if given string is not null and not empty, as well as on faces context view root in case
+     * it was already created so that it holds the new locale for future lookups by JSF components.
      * <p>
      * Useful for url pattern bindings.
      */

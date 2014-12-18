@@ -41,9 +41,8 @@ import org.restlet.resource.StringRepresentation;
 /**
  * Restlet to invalidate the cache of directories from an external application.
  * <p>
- * Warning: this restlet can only be used on the JVM that hosts the
- * DirectoryService instance since it is using non-remotable API. This means
- * this restlet will not work with the multi machine setups of Nuxeo.
+ * Warning: this restlet can only be used on the JVM that hosts the DirectoryService instance since it is using
+ * non-remotable API. This means this restlet will not work with the multi machine setups of Nuxeo.
  *
  * @author ogrisel
  */
@@ -66,8 +65,7 @@ public class DirectoryCacheRestlet extends BaseNuxeoRestlet {
 
             if (form.getNames().contains(DIRECTORY_NAME_QUERY_PARAM)) {
                 // only invalidate the caches of the requested directories
-                String[] directoryNames = form.getValues(
-                        DIRECTORY_NAME_QUERY_PARAM).split(",");
+                String[] directoryNames = form.getValues(DIRECTORY_NAME_QUERY_PARAM).split(",");
                 for (String directoryName : directoryNames) {
                     Directory directory = service.getDirectory(directoryName);
                     if (directory == null) {
@@ -84,16 +82,14 @@ public class DirectoryCacheRestlet extends BaseNuxeoRestlet {
             Element invalidatedCachesElement = result.addElement("invalidatedCaches");
             for (Directory directory : directories) {
                 directory.getCache().invalidateAll();
-                invalidatedCachesElement.addElement("directory").addText(
-                        directory.getName());
+                invalidatedCachesElement.addElement("directory").addText(directory.getName());
             }
 
         } catch (Exception e) {
             handleError(res, e);
             return;
         }
-        Representation rep = new StringRepresentation(result.asXML(),
-                MediaType.APPLICATION_XML);
+        Representation rep = new StringRepresentation(result.asXML(), MediaType.APPLICATION_XML);
         rep.setCharacterSet(CharacterSet.UTF_8);
         res.setEntity(rep);
     }

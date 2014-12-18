@@ -66,8 +66,7 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
         } else {
             // "export", "exportSingle"
             exportAsTree = false;
-            String format = req.getResourceRef().getQueryAsForm().getFirstValue(
-                    "format");
+            String format = req.getResourceRef().getQueryAsForm().getFirstValue("format");
             if (format != null) {
                 format = format.toLowerCase();
             } else {
@@ -94,8 +93,7 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
             }
             if (docid == null || docid.equals("*")) {
                 root = session.getRootDocument();
-            } else if (session.hasPermission(new IdRef(docid),
-                        SecurityConstants.READ)) {
+            } else if (session.hasPermission(new IdRef(docid), SecurityConstants.READ)) {
                 root = session.getDocument(new IdRef(docid));
             } else {
                 UnrestrictedVersionExporter runner = new UnrestrictedVersionExporter(session, docid);
@@ -117,9 +115,11 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
                     }
                 }
                 if (!hasReadableProxy) {
-                    throw new DocumentSecurityException("Current user doesn't have access to any proxy pointing to version " + root.getPathAsString());
+                    throw new DocumentSecurityException(
+                            "Current user doesn't have access to any proxy pointing to version "
+                                    + root.getPathAsString());
                 }
-          }
+            }
         } catch (ClientException e) {
             handleError(res, e);
             return;
@@ -135,15 +135,12 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
             if (headers == null) {
                 headers = new Form();
             }
-            headers.add("Content-Disposition", String.format(
-                    "attachment; filename=\"%s\";", FILENAME));
+            headers.add("Content-Disposition", String.format("attachment; filename=\"%s\";", FILENAME));
             attributes.put(HttpConstants.ATTRIBUTE_HEADERS, headers);
         }
 
-        MediaType mediaType = exportAsZip ? MediaType.APPLICATION_ZIP
-                : MediaType.TEXT_XML;
-        Representation entity = makeRepresentation(mediaType, root,
-                exportAsTree, exportAsZip, needUnrestricted);
+        MediaType mediaType = exportAsZip ? MediaType.APPLICATION_ZIP : MediaType.TEXT_XML;
+        Representation entity = makeRepresentation(mediaType, root, exportAsTree, exportAsZip, needUnrestricted);
 
         res.setEntity(entity);
         if (mediaType == MediaType.TEXT_XML) {
@@ -151,8 +148,7 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
         }
     }
 
-    protected Representation makeRepresentation(MediaType mediaType,
-            DocumentModel root, final boolean exportAsTree,
+    protected Representation makeRepresentation(MediaType mediaType, DocumentModel root, final boolean exportAsTree,
             final boolean exportAsZip, final boolean isUnrestricted) {
 
         return new ExportRepresentation(mediaType, root, isUnrestricted) {
@@ -167,26 +163,22 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
             }
 
             @Override
-            protected DocumentReader makeDocumentReader(
-                    CoreSession documentManager, DocumentModel root)
+            protected DocumentReader makeDocumentReader(CoreSession documentManager, DocumentModel root)
                     throws ClientException {
                 DocumentReader documentReader;
                 if (exportAsTree) {
-                    documentReader = new DocumentTreeReader(documentManager,
-                            root, false);
+                    documentReader = new DocumentTreeReader(documentManager, root, false);
                     if (!exportAsZip) {
                         ((DocumentTreeReader) documentReader).setInlineBlobs(true);
                     }
                 } else {
-                    documentReader = new SingleDocumentReader(documentManager,
-                            root);
+                    documentReader = new SingleDocumentReader(documentManager, root);
                 }
                 return documentReader;
             }
 
             @Override
-            protected DocumentWriter makeDocumentWriter(
-                    OutputStream outputStream) throws IOException {
+            protected DocumentWriter makeDocumentWriter(OutputStream outputStream) throws IOException {
                 DocumentWriter documentWriter;
                 if (exportAsZip) {
                     documentWriter = new NuxeoArchiveWriter(outputStream);

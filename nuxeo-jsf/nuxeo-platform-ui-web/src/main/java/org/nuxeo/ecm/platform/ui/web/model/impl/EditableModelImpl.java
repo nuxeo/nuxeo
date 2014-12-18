@@ -47,8 +47,7 @@ import org.nuxeo.ecm.platform.ui.web.util.DeepCopy;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @SuppressWarnings("unchecked")
-public class EditableModelImpl extends DataModel implements EditableModel,
-        Serializable {
+public class EditableModelImpl extends DataModel implements EditableModel, Serializable {
 
     private static final long serialVersionUID = 2550850486035521538L;
 
@@ -73,8 +72,7 @@ public class EditableModelImpl extends DataModel implements EditableModel,
     public EditableModelImpl(Object value) {
         if (value != null) {
             if (!(value instanceof List) && !(value instanceof Object[])) {
-                log.error("Cannot build editable model from " + value
-                        + ", list or array needed");
+                log.error("Cannot build editable model from " + value + ", list or array needed");
                 value = null;
             }
         }
@@ -99,6 +97,7 @@ public class EditableModelImpl extends DataModel implements EditableModel,
         setWrappedData(data);
     }
 
+    @Override
     public Object getOriginalData() {
         return originalData;
     }
@@ -128,8 +127,7 @@ public class EditableModelImpl extends DataModel implements EditableModel,
     /**
      * Returns the initial data for the given key.
      * <p>
-     * Returns null marker if key is invalid or data did not exist for given key
-     * in the original data.
+     * Returns null marker if key is invalid or data did not exist for given key in the original data.
      */
     protected Object getOriginalRowDataForKey(int key) {
         if (originalData instanceof List) {
@@ -163,7 +161,7 @@ public class EditableModelImpl extends DataModel implements EditableModel,
         if (keys.isEmpty()) {
             return 0;
         } else {
-            List<Integer> lkeys = Arrays.asList(keys.toArray(new Integer[]{}));
+            List<Integer> lkeys = Arrays.asList(keys.toArray(new Integer[] {}));
             Comparator<Integer> comp = Collections.reverseOrder();
             Collections.sort(lkeys, comp);
             Integer max = lkeys.get(0);
@@ -179,6 +177,7 @@ public class EditableModelImpl extends DataModel implements EditableModel,
         return index >= 0 && index < data.size();
     }
 
+    @Override
     public boolean isRowModified() {
         if (!isRowAvailable()) {
             return false;
@@ -205,6 +204,7 @@ public class EditableModelImpl extends DataModel implements EditableModel,
         }
     }
 
+    @Override
     public boolean isRowNew() {
         if (!isRowAvailable()) {
             return false;
@@ -219,6 +219,7 @@ public class EditableModelImpl extends DataModel implements EditableModel,
         }
     }
 
+    @Override
     public void recordValueModified(int index, Object newValue) {
         listDiff.modify(index, newValue);
     }
@@ -242,6 +243,7 @@ public class EditableModelImpl extends DataModel implements EditableModel,
         }
     }
 
+    @Override
     public void setRowData(Object rowData) {
         if (isRowAvailable()) {
             data.set(index, rowData);
@@ -279,10 +281,12 @@ public class EditableModelImpl extends DataModel implements EditableModel,
         }
     }
 
+    @Override
     public Integer getRowKey() {
         return keyMap.get(index);
     }
 
+    @Override
     public void setRowKey(Integer key) {
         // find index for that key
         if (key != null) {
@@ -298,18 +302,22 @@ public class EditableModelImpl extends DataModel implements EditableModel,
         }
     }
 
+    @Override
     public ListDiff getListDiff() {
         return listDiff;
     }
 
+    @Override
     public void setListDiff(ListDiff listDiff) {
         this.listDiff = new ListDiff(listDiff);
     }
 
+    @Override
     public boolean isDirty() {
         return listDiff != null && listDiff.isDirty();
     }
 
+    @Override
     public boolean addValue(Object value) {
         int position = data.size();
         boolean res = data.add(value);
@@ -319,6 +327,7 @@ public class EditableModelImpl extends DataModel implements EditableModel,
         return res;
     }
 
+    @Override
     public void insertValue(int index, Object value) {
         data.add(index, value);
         listDiff.insert(index, value);
@@ -338,6 +347,7 @@ public class EditableModelImpl extends DataModel implements EditableModel,
         keyMap.put(index, newRowKey);
     }
 
+    @Override
     public Object moveValue(int fromIndex, int toIndex) {
         Object old = data.remove(fromIndex);
         data.add(toIndex, old);
@@ -372,6 +382,7 @@ public class EditableModelImpl extends DataModel implements EditableModel,
         return old;
     }
 
+    @Override
     public Object removeValue(int index) {
         Object old = data.remove(index);
         listDiff.remove(index);
@@ -389,6 +400,7 @@ public class EditableModelImpl extends DataModel implements EditableModel,
         return old;
     }
 
+    @Override
     public int size() {
         if (data != null) {
             return data.size();

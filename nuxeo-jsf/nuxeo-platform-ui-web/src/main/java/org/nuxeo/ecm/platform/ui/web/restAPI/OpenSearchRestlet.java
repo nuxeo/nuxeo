@@ -41,18 +41,14 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
 /**
- * Basic OpenSearch REST fulltext search implementation using the RSS 2.0
- * results format.
+ * Basic OpenSearch REST fulltext search implementation using the RSS 2.0 results format.
  * <p>
- * TODO: make it possible to change the page size and navigate to next results
- * pages using additional query parameters. See http://opensearch.org for
- * official specifications.
+ * TODO: make it possible to change the page size and navigate to next results pages using additional query parameters.
+ * See http://opensearch.org for official specifications.
  * <p>
- * TODO: use a OPENSEARCH stateless query model to be able to override the
- * currently hardcoded request pattern.
+ * TODO: use a OPENSEARCH stateless query model to be able to override the currently hardcoded request pattern.
  * <p>
- * TODO: add OpenSearch XML description snippet in the default theme so that
- * Firefox can autodetect the service URL.
+ * TODO: add OpenSearch XML description snippet in the default theme so that Firefox can autodetect the service URL.
  *
  * @author Olivier Grisel
  */
@@ -76,16 +72,13 @@ public class OpenSearchRestlet extends BaseNuxeoRestlet {
 
     public static final int MAX = 10;
 
-    public static final Namespace OPENSEARCH_NS = new Namespace("opensearch",
-            "http://a9.com/-/spec/opensearch/1.1/");
+    public static final Namespace OPENSEARCH_NS = new Namespace("opensearch", "http://a9.com/-/spec/opensearch/1.1/");
 
-    public static final Namespace ATOM_NS = new Namespace("atom",
-            "http://www.w3.org/2005/Atom");
+    public static final Namespace ATOM_NS = new Namespace("atom", "http://www.w3.org/2005/Atom");
 
     @Override
     public void handle(Request req, Response res) {
-        try (CoreSession session = CoreInstance.openCoreSession(null,
-                getUserPrincipal(req))) {
+        try (CoreSession session = CoreInstance.openCoreSession(null, getUserPrincipal(req))) {
             // read the search term passed as the 'q' request parameter
             String keywords = getQueryParamValue(req, "q", " ");
 
@@ -102,28 +95,23 @@ public class OpenSearchRestlet extends BaseNuxeoRestlet {
             // rss root tag
             Element rssElement = resultDocument.addElement(RSS_TAG);
             rssElement.addAttribute("version", "2.0");
-            rssElement.addNamespace(OPENSEARCH_NS.getPrefix(),
-                    OPENSEARCH_NS.getURI());
+            rssElement.addNamespace(OPENSEARCH_NS.getPrefix(), OPENSEARCH_NS.getURI());
             rssElement.addNamespace(ATOM_NS.getPrefix(), ATOM_NS.getURI());
 
             // channel with OpenSearch metadata
             Element channelElement = rssElement.addElement(CHANNEL_TAG);
 
-            channelElement.addElement(TITLE_TAG).setText(
-                    "Nuxeo EP OpenSearch channel for " + keywords);
+            channelElement.addElement(TITLE_TAG).setText("Nuxeo EP OpenSearch channel for " + keywords);
             channelElement.addElement("link").setText(
-                    BaseURL.getBaseURL(getHttpRequest(req))
-                            + "restAPI/opensearch?q="
+                    BaseURL.getBaseURL(getHttpRequest(req)) + "restAPI/opensearch?q="
                             + URLEncoder.encode(keywords, "UTF-8"));
             channelElement.addElement(new QName("totalResults", OPENSEARCH_NS)).setText(
                     Long.toString(documents.totalSize()));
-            channelElement.addElement(new QName("startIndex", OPENSEARCH_NS)).setText(
-                    "0");
+            channelElement.addElement(new QName("startIndex", OPENSEARCH_NS)).setText("0");
             channelElement.addElement(new QName("itemsPerPage", OPENSEARCH_NS)).setText(
                     Integer.toString(documents.size()));
 
-            Element queryElement = channelElement.addElement(new QName("Query",
-                    OPENSEARCH_NS));
+            Element queryElement = channelElement.addElement(new QName("Query", OPENSEARCH_NS));
             queryElement.addAttribute("role", "request");
             queryElement.addAttribute("searchTerms", keywords);
             queryElement.addAttribute("startPage", Integer.toString(1));
@@ -139,18 +127,15 @@ public class OpenSearchRestlet extends BaseNuxeoRestlet {
                     titleElement.setText(title);
                 }
                 Element descriptionElement = itemElement.addElement(DESCRIPTION_TAG);
-                String description = doc.getProperty("dublincore:description").getValue(
-                        String.class);
+                String description = doc.getProperty("dublincore:description").getValue(String.class);
                 if (description != null) {
                     descriptionElement.setText(description);
                 }
                 Element linkElement = itemElement.addElement("link");
-                linkElement.setText(baseUrl
-                        + DocumentModelFunctions.documentUrl(doc));
+                linkElement.setText(baseUrl + DocumentModelFunctions.documentUrl(doc));
             }
 
-            Representation rep = new StringRepresentation(resultDocument.asXML(),
-                    MediaType.APPLICATION_XML);
+            Representation rep = new StringRepresentation(resultDocument.asXML(), MediaType.APPLICATION_XML);
             rep.setCharacterSet(CharacterSet.UTF_8);
             res.setEntity(rep);
 

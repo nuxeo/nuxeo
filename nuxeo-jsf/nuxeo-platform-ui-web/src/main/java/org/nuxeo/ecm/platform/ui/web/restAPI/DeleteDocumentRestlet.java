@@ -37,8 +37,7 @@ import org.restlet.data.Response;
  *
  * @author jthimonier
  */
-public class DeleteDocumentRestlet extends BaseStatelessNuxeoRestlet implements
-        LiveEditConstants {
+public class DeleteDocumentRestlet extends BaseStatelessNuxeoRestlet implements LiveEditConstants {
 
     private static final Log log = LogFactory.getLog(DeleteDocumentRestlet.class);
 
@@ -90,8 +89,7 @@ public class DeleteDocumentRestlet extends BaseStatelessNuxeoRestlet implements
 
             // build the XML response document holding the ref
             Element docElement = result.addElement(documentTag);
-            docElement.addElement(docRefTag).setText(
-                    "Document " + docId + " deleted");
+            docElement.addElement(docRefTag).setText("Document " + docId + " deleted");
             res.setEntity(result.asXML(), MediaType.TEXT_XML);
             res.getEntity().setCharacterSet(CharacterSet.UTF_8);
         } catch (ClientException e) {

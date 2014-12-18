@@ -57,7 +57,7 @@ public class TreeWidgetActions implements Serializable {
 
     @RequestParameter
     protected String selectionListId;
-    
+
     @RequestParameter
     protected String selectionInputId;
 
@@ -71,8 +71,7 @@ public class TreeWidgetActions implements Serializable {
             return;
         }
         UIComponent base = ComponentUtils.getBase(component);
-        UIEditableList list = ComponentUtils.getComponent(base,
-                selectionListId, UIEditableList.class);
+        UIEditableList list = ComponentUtils.getComponent(base, selectionListId, UIEditableList.class);
 
         if (list != null) {
             List<String> values = (List<String>) list.getEditableModel().getWrappedData();
@@ -82,15 +81,14 @@ public class TreeWidgetActions implements Serializable {
             }
         }
     }
-    
+
     public void setUIInputValue(ActionEvent event) {
         UIComponent component = event.getComponent();
         if (component == null) {
             return;
         }
         UIComponent base = ComponentUtils.getBase(component);
-        UIInput uiInput = ComponentUtils.getComponent(base, selectionInputId,
-                UIInput.class);
+        UIInput uiInput = ComponentUtils.getComponent(base, selectionInputId, UIInput.class);
 
         if (uiInput != null) {
             uiInput.setSubmittedValue(selectedPath);
@@ -98,20 +96,16 @@ public class TreeWidgetActions implements Serializable {
     }
 
     /**
-     * Returns the {@code DocumentModel} referenced by the given path if
-     * exists, {@code null} otherwise.
+     * Returns the {@code DocumentModel} referenced by the given path if exists, {@code null} otherwise.
      */
-    public DocumentModel getDocumentFromPath(String path)
-            throws ClientException {
+    public DocumentModel getDocumentFromPath(String path) throws ClientException {
         // handle root document differently as user may not have browse rights
         // on it
         if ("/".equals(path)) {
             return documentManager.getRootDocument();
         }
         DocumentRef ref = new PathRef(path);
-        return documentManager.exists(ref) ? documentManager.getDocument(new PathRef(
-                path))
-                : null;
+        return documentManager.exists(ref) ? documentManager.getDocument(new PathRef(path)) : null;
     }
 
 }

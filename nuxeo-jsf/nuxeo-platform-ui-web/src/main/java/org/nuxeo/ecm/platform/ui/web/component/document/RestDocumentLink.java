@@ -45,7 +45,7 @@ import com.sun.faces.renderkit.html_basic.HtmlBasicRenderer.Param;
 
 /**
  * Component that gives generates a Restful link given a document.
- * 
+ *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class RestDocumentLink extends HtmlOutputLink {
@@ -102,8 +102,7 @@ public class RestDocumentLink extends HtmlOutputLink {
     /**
      * Override to build the URL thanks to other tag attributes information.
      * <p>
-     * The document view service is queried to build it, and the tag attribute
-     * named "value" is ignored.
+     * The document view service is queried to build it, and the tag attribute named "value" is ignored.
      */
     @Override
     public Object getValue() {
@@ -161,9 +160,8 @@ public class RestDocumentLink extends HtmlOutputLink {
 
         String pattern = getPattern();
 
-        return doc != null ? DocumentModelFunctions.documentUrl(pattern, doc,
-                viewId, params, true) : DocumentModelFunctions.repositoryUrl(
-                pattern, repoName, viewId, params, true);
+        return doc != null ? DocumentModelFunctions.documentUrl(pattern, doc, viewId, params, true)
+                : DocumentModelFunctions.repositoryUrl(pattern, repoName, viewId, params, true);
     }
 
     protected Param[] getParamList() {
@@ -173,8 +171,7 @@ public class RestDocumentLink extends HtmlOutputLink {
                 if (kid instanceof UIParameter) {
                     UIParameter uiParam = (UIParameter) kid;
                     Object value = uiParam.getValue();
-                    Param param = new Param(uiParam.getName(),
-                            (value == null ? null : value.toString()));
+                    Param param = new Param(uiParam.getName(), (value == null ? null : value.toString()));
                     parameterList.add(param);
                 }
             }
@@ -445,11 +442,10 @@ public class RestDocumentLink extends HtmlOutputLink {
     // the tag
 
     /**
-     * Saves the current value exposed as param to the request, and put new
-     * variable value instead.
+     * Saves the current value exposed as param to the request, and put new variable value instead.
      * <p>
      * Returns the original value exposed to the request.
-     * 
+     *
      * @since 5.7
      */
     protected Object beforeRender() {
@@ -462,9 +458,8 @@ public class RestDocumentLink extends HtmlOutputLink {
     }
 
     /**
-     * Restored the original value exposed as param to the request, and remove
-     * current variable value.
-     * 
+     * Restored the original value exposed as param to the request, and remove current variable value.
+     *
      * @since 5.7
      */
     protected void afterRender(Object origVarValue) {
@@ -476,8 +471,8 @@ public class RestDocumentLink extends HtmlOutputLink {
      * @since 5.7
      */
     @Override
-    public boolean invokeOnComponent(FacesContext context, String clientId,
-            ContextCallback callback) throws FacesException {
+    public boolean invokeOnComponent(FacesContext context, String clientId, ContextCallback callback)
+            throws FacesException {
         Object varValue = beforeRender();
         try {
             return super.invokeOnComponent(context, clientId, callback);
@@ -533,9 +528,8 @@ public class RestDocumentLink extends HtmlOutputLink {
 
     @Override
     public Object saveState(FacesContext context) {
-        return new Object[] { super.saveState(context), document,
-                documentIdRef, view, tab, subTab, tabs, addTabInfo, pattern,
-                newConversation, var, resolveOnly };
+        return new Object[] { super.saveState(context), document, documentIdRef, view, tab, subTab, tabs, addTabInfo,
+                pattern, newConversation, var, resolveOnly };
     }
 
     @Override

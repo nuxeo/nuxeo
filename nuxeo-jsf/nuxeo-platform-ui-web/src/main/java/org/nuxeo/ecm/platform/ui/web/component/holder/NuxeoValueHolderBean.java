@@ -28,8 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * View scoped bean keeping values held by {@link UIValueHolder} component
- * instances when their value is set.
+ * View scoped bean keeping values held by {@link UIValueHolder} component instances when their value is set.
  *
  * @since 6.0
  */
@@ -66,15 +65,13 @@ public class NuxeoValueHolderBean implements Serializable {
     public void saveState(UIValueHolder c, Object value) {
         String fid = c.getFaceletId();
         if (fid == null) {
-            log.error("Cannot save UIValueHolder state: "
-                    + "missing facelet marker id on component attributes");
+            log.error("Cannot save UIValueHolder state: " + "missing facelet marker id on component attributes");
             return;
         }
         if (value == null || value instanceof Serializable) {
             values.put(fid, (Serializable) value);
         } else {
-            log.warn("Value is not serializable, cannot store it in view: "
-                    + value);
+            log.warn("Value is not serializable, cannot store it in view: " + value);
         }
     }
 

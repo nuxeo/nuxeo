@@ -67,8 +67,7 @@ public class ThreadSafeCacheHolder<T extends Serializable> implements Serializab
         DocumentRef docRef = doc.getRef();
         Calendar modified;
         try {
-            modified = (Calendar) doc
-                    .getProperty("dublincore", "modified");
+            modified = (Calendar) doc.getProperty("dublincore", "modified");
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }

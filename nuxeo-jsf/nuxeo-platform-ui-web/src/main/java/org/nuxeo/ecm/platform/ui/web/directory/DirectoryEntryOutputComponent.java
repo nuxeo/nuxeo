@@ -29,7 +29,6 @@ import org.apache.commons.logging.LogFactory;
  * Component to display a directory entry.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class DirectoryEntryOutputComponent extends DirectoryAwareComponent {
 
@@ -69,8 +68,7 @@ public class DirectoryEntryOutputComponent extends DirectoryAwareComponent {
     public String getEntryId() {
         ValueBinding vb = getValueBinding("entryId");
         if (vb != null) {
-            log.warn("\"entryId\" attribute is deprecated on "
-                    + "DirectoryEntryOutputComponent, use \"value\" instead");
+            log.warn("\"entryId\" attribute is deprecated on " + "DirectoryEntryOutputComponent, use \"value\" instead");
             return (String) vb.getValue(getFacesContext());
         } else {
             return entryId;
@@ -82,8 +80,7 @@ public class DirectoryEntryOutputComponent extends DirectoryAwareComponent {
      */
     @Deprecated
     public void setEntryId(String entryId) {
-        log.warn("\"entryId\" attribute is deprecated on "
-                + "DirectoryEntryOutputComponent, use \"value\" instead");
+        log.warn("\"entryId\" attribute is deprecated on " + "DirectoryEntryOutputComponent, use \"value\" instead");
         setValue(entryId);
     }
 

@@ -56,8 +56,7 @@ public class UIEntry extends org.jboss.seam.rss.ui.UIEntry {
 
     @Override
     public void encodeBegin(FacesContext facesContext) throws IOException {
-        ChannelFeed channelFeed = (ChannelFeed) Contexts.getEventContext().get(
-                FEED_IMPL_KEY);
+        ChannelFeed channelFeed = (ChannelFeed) Contexts.getEventContext().get(FEED_IMPL_KEY);
 
         ItemEntry itemEntry = new ItemEntry();
         itemEntry.setUid(getUid());
@@ -71,12 +70,10 @@ public class UIEntry extends org.jboss.seam.rss.ui.UIEntry {
         }
         itemEntry.setDescriptionOrSummary(makeText(getSummary()));
         if (getUpdated() != null) {
-            itemEntry.setUpdatedDate(getUpdated(), new SimpleDateFormat(
-                    getFeedDateFormat()));
+            itemEntry.setUpdatedDate(getUpdated(), new SimpleDateFormat(getFeedDateFormat()));
         }
         if (getPublished() != null) {
-            itemEntry.setPubDate(getPublished(), new SimpleDateFormat(
-                    getFeedDateFormat()));
+            itemEntry.setPubDate(getPublished(), new SimpleDateFormat(getFeedDateFormat()));
         }
 
         channelFeed.addItem(itemEntry);

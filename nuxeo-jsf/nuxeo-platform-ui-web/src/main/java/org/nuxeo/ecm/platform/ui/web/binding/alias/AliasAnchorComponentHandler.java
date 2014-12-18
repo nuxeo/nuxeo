@@ -32,32 +32,27 @@ import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
 import com.sun.faces.facelets.el.VariableMapperWrapper;
 
 /**
- * Generic HTML component handler that ensures that {@link AliasTagHandler}
- * usage within this handler will make sure components are anchored in the
- * tree.
+ * Generic HTML component handler that ensures that {@link AliasTagHandler} usage within this handler will make sure
+ * components are anchored in the tree.
  * <p>
- * This is helpful when expôsing variables depending on a variabled only
- * available at render time (like a list or dataTable component), to ensure
- * accurate resolution of variables at render time.
+ * This is helpful when expôsing variables depending on a variabled only available at render time (like a list or
+ * dataTable component), to ensure accurate resolution of variables at render time.
  *
  * @since 6.0
  * @see AliasTagHandler
  */
-public class AliasAnchorComponentHandler extends
-        GenericHtmlComponentHandler {
+public class AliasAnchorComponentHandler extends GenericHtmlComponentHandler {
 
     public AliasAnchorComponentHandler(ComponentConfig config) {
         super(config);
     }
 
     @Override
-    public void applyNextHandler(FaceletContext ctx, UIComponent c)
-            throws IOException, FacesException, ELException {
+    public void applyNextHandler(FaceletContext ctx, UIComponent c) throws IOException, FacesException, ELException {
         VariableMapper orig = ctx.getVariableMapper();
         VariableMapper vm = new VariableMapperWrapper(orig);
         ExpressionFactory eFactory = ctx.getExpressionFactory();
-        ValueExpression ve = eFactory.createValueExpression(Boolean.TRUE,
-                Boolean.class);
+        ValueExpression ve = eFactory.createValueExpression(Boolean.TRUE, Boolean.class);
         vm.setVariable(AliasTagHandler.ANCHOR_ENABLED_VARIABLE, ve);
         ctx.setVariableMapper(vm);
         try {

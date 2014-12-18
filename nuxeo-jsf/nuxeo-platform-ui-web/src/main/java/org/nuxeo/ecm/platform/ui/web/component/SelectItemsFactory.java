@@ -40,8 +40,10 @@ public abstract class SelectItemsFactory extends SelectItemFactory {
 
     private static final Log log = LogFactory.getLog(SelectItemsFactory.class);
 
+    @Override
     protected abstract String getVar();
 
+    @Override
     protected abstract SelectItem createSelectItem();
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -80,8 +82,7 @@ public abstract class SelectItemsFactory extends SelectItemFactory {
                     }
                 }
             } else if (value != null) {
-                log.warn("Could not map values to select items, value is not supported: "
-                        + value);
+                log.warn("Could not map values to select items, value is not supported: " + value);
             }
             return items;
         } finally {

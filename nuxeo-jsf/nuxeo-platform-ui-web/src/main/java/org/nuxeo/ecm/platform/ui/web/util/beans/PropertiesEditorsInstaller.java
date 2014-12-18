@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.ui.web.util.beans;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 
-
 public class PropertiesEditorsInstaller {
 
     public PropertiesEditorsInstaller() {
@@ -36,14 +35,15 @@ public class PropertiesEditorsInstaller {
     }
 
     protected void installEditor(Class<?> targetType, Class<?> editorClass) {
-        if (PropertyEditorManager.findEditor(targetType)  != null) {;
+        if (PropertyEditorManager.findEditor(targetType) != null) {
+            ;
             return;
         }
         PropertyEditorManager.registerEditor(targetType, editorClass);
     }
 
     protected void uninstallEditor(Class<?> targetType, Class<?> editorClass) {
-        PropertyEditor editor  = PropertyEditorManager.findEditor(targetType);
+        PropertyEditor editor = PropertyEditorManager.findEditor(targetType);
         if (!editorClass.equals(editor.getClass())) {
             return;
         }

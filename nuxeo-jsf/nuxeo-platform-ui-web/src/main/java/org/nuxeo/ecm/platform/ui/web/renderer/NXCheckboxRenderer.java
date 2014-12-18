@@ -40,8 +40,7 @@ public class NXCheckboxRenderer extends CheckboxRenderer {
     public static final String RENDERER_TYPE = "javax.faces.NXCheckbox";
 
     @Override
-    public Object getConvertedValue(FacesContext context,
-            UIComponent component, Object submittedValue)
+    public Object getConvertedValue(FacesContext context, UIComponent component, Object submittedValue)
             throws ConverterException {
 
         String newValue = null;
@@ -50,8 +49,8 @@ public class NXCheckboxRenderer extends CheckboxRenderer {
         } else if (submittedValue instanceof String) {
             newValue = (String) submittedValue;
         } else if (submittedValue != null) {
-            log.error("Unsupported submitted value, should be a string or boolean: '"
-                    + submittedValue + "' => using false");
+            log.error("Unsupported submitted value, should be a string or boolean: '" + submittedValue
+                    + "' => using false");
         }
 
         Converter converter = null;
@@ -66,9 +65,7 @@ public class NXCheckboxRenderer extends CheckboxRenderer {
             // coercion,
             // make sure our special ConverterPropertyEditor knows about this
             // value.
-            RequestStateManager.set(context,
-                    RequestStateManager.TARGET_COMPONENT_ATTRIBUTE_NAME,
-                    component);
+            RequestStateManager.set(context, RequestStateManager.TARGET_COMPONENT_ATTRIBUTE_NAME, component);
             return converter.getAsObject(context, component, newValue);
         } else {
             return Boolean.valueOf(newValue);

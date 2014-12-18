@@ -135,8 +135,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             try {
                 typeManagerService = Framework.getService(TypeManager.class);
             } catch (Exception e) {
-                log.error("Unable to get typeManager service : "
-                        + e.getMessage());
+                log.error("Unable to get typeManager service : " + e.getMessage());
             }
         }
         return typeManagerService;
@@ -148,8 +147,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (defaultViewCache.containsKey(docType)) {
             return defaultViewCache.get(docType);
         } else {
-            org.nuxeo.ecm.platform.types.Type type = getTypeManager().getType(
-                    docType);
+            org.nuxeo.ecm.platform.types.Type type = getTypeManager().getType(docType);
             if (type == null) {
                 return null;
             }
@@ -207,8 +205,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             } catch (ClientException e) {
                 iconPath = null;
             }
-            if (iconPath == null || iconPath.length() == 0
-                    || document.getType().equals("Workspace")) {
+            if (iconPath == null || iconPath.length() == 0 || document.getType().equals("Workspace")) {
                 TypeInfo typeInfo = document.getAdapter(TypeInfo.class);
                 if (typeInfo != null) {
                     iconPath = typeInfo.getIcon();
@@ -222,8 +219,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         String iconPath = "";
         if (document != null) {
             try {
-                iconPath = (String) document.getProperty("common",
-                        "icon-expanded");
+                iconPath = (String) document.getProperty("common", "icon-expanded");
             } catch (ClientException e) {
                 iconPath = null;
             }
@@ -272,8 +268,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         String iconPath = "";
         if (blob != null) {
             try {
-                MimetypeEntry mimeEntry = getMimetypeService().getMimetypeEntryByMimeType(
-                        blob.getMimeType());
+                MimetypeEntry mimeEntry = getMimetypeService().getMimetypeEntryByMimeType(blob.getMimeType());
                 if (mimeEntry != null) {
                     if (mimeEntry.getIconPath() != null) {
                         // FIXME: above Context should find it
@@ -319,15 +314,13 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     /**
      * @since 6.0
      */
-    public static String titleFromId(final String documentId)
-            throws ClientException {
+    public static String titleFromId(final String documentId) throws ClientException {
         final CoreSession coreSession = (CoreSession) Component.getInstance("documentManager");
         if (StringUtils.isNotBlank(documentId)) {
             try {
                 return coreSession.getDocument(new IdRef(documentId)).getTitle();
             } catch (ClientException e) {
-                log.info(String.format("Could not find document with id %s",
-                        documentId));
+                log.info(String.format("Could not find document with id %s", documentId));
                 return documentId;
             }
         }
@@ -401,15 +394,13 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return false;
     }
 
-    public static boolean hasPermission(DocumentModel document,
-            String permission) throws ClientException {
+    public static boolean hasPermission(DocumentModel document, String permission) throws ClientException {
         if (document == null) {
             return false;
         }
         CoreSession session = document.getCoreSession();
         if (session == null) {
-            session = (CoreSession) Component.getInstance("documentManager",
-                    ScopeType.CONVERSATION);
+            session = (CoreSession) Component.getInstance("documentManager", ScopeType.CONVERSATION);
         }
         if (session == null) {
             log.error("Cannot retrieve CoreSession for " + document);
@@ -422,20 +413,18 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     /**
      * Returns true if document can be modified.
      * <p>
-     * A document can be modified if current user has 'Write' permission on it
-     * and document is mutable (no archived version).
+     * A document can be modified if current user has 'Write' permission on it and document is mutable (no archived
+     * version).
      *
      * @param document
      * @return true if document can be modified.
      * @throws ClientException
      */
-    public static boolean canModify(DocumentModel document)
-            throws ClientException {
+    public static boolean canModify(DocumentModel document) throws ClientException {
         if (document == null) {
             return false;
         }
-        return hasPermission(document, "Write")
-                && !document.hasFacet(FacetNames.IMMUTABLE);
+        return hasPermission(document, "Write") && !document.hasFacet(FacetNames.IMMUTABLE);
     }
 
     /**
@@ -447,8 +436,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @deprecated use defaultValue(propertyName) instead
      */
     @Deprecated
-    public static Object defaultValue(String schemaName, String fieldName)
-            throws Exception {
+    public static Object defaultValue(String schemaName, String fieldName) throws Exception {
         Object value = null;
         SchemaManager tm = Framework.getService(SchemaManager.class);
         Schema schema = tm.getSchema(schemaName);
@@ -519,16 +507,15 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     /**
      * @since 6.0
      */
-    public static String fileUrl(String baseURL, String patternName,
-            DocumentModel doc, String blobPropertyName, String filename) {
+    public static String fileUrl(String baseURL, String patternName, DocumentModel doc, String blobPropertyName,
+            String filename) {
         if (doc == null) {
             return null;
         }
         try {
             DocumentLocation docLoc = new DocumentLocationImpl(doc);
             Map<String, String> params = new HashMap<String, String>();
-            params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY,
-                    blobPropertyName);
+            params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, blobPropertyName);
             params.put(DocumentFileCodec.FILENAME_KEY, filename);
             DocumentView docView = new DocumentViewImpl(docLoc, null, params);
 
@@ -546,14 +533,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return null;
     }
 
-    public static String fileUrl(String patternName, DocumentModel doc,
-            String blobPropertyName, String filename) {
-        return fileUrl(BaseURL.getBaseURL(), patternName, doc,
-                blobPropertyName, filename);
+    public static String fileUrl(String patternName, DocumentModel doc, String blobPropertyName, String filename) {
+        return fileUrl(BaseURL.getBaseURL(), patternName, doc, blobPropertyName, filename);
     }
 
-    public static String bigFileUrl(DocumentModel doc, String blobPropertyName,
-            String filename) {
+    public static String bigFileUrl(DocumentModel doc, String blobPropertyName, String filename) {
         if (doc == null) {
             return null;
         }
@@ -566,8 +550,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return bigDownloadURL;
     }
 
-    public static String fileDescription(DocumentModel document,
-            String blobPropertyName, String filePropertyName, String filename) {
+    public static String fileDescription(DocumentModel document, String blobPropertyName, String filePropertyName,
+            String filename) {
         String fileInfo = "";
         if (document != null) {
             Long blobLength = null;
@@ -587,11 +571,9 @@ public final class DocumentModelFunctions implements LiveEditConstants {
                 }
             }
             if (blobLength != null && filename != null) {
-                fileInfo = String.format("%s [%s]", filename,
-                        Functions.printFileSize(String.valueOf(blobLength)));
+                fileInfo = String.format("%s [%s]", filename, Functions.printFileSize(String.valueOf(blobLength)));
             } else if (blobLength != null) {
-                fileInfo = String.format("[%s]",
-                        Functions.printFileSize(String.valueOf(blobLength)));
+                fileInfo = String.format("[%s]", Functions.printFileSize(String.valueOf(blobLength)));
             } else if (filename != null) {
                 fileInfo = filename;
             }
@@ -600,48 +582,38 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     }
 
     /**
-     * Convenient method to get the REST URL of a blob inside the
-     * <code>Files</code> schema.
+     * Convenient method to get the REST URL of a blob inside the <code>Files</code> schema.
      *
      * @param patternName
      * @param doc The document model.
-     * @param index index of the element containing the blob.
-     *            <code>index</code> starts at 0.
+     * @param index index of the element containing the blob. <code>index</code> starts at 0.
      * @param filename The filename of the blob.
-     * @return the REST URL for the blob, or <code>null</code> if an error
-     *         occurred.
+     * @return the REST URL for the blob, or <code>null</code> if an error occurred.
      */
-    public static String complexFileUrl(String patternName, DocumentModel doc,
-            int index, String filename) {
-        return complexFileUrl(patternName, doc, "files:files", index,
-                DEFAULT_SUB_BLOB_FIELD, filename);
+    public static String complexFileUrl(String patternName, DocumentModel doc, int index, String filename) {
+        return complexFileUrl(patternName, doc, "files:files", index, DEFAULT_SUB_BLOB_FIELD, filename);
     }
 
     /**
      * Get the REST URL for a blob inside a list of complex type. For instance,
-     * <code>http://localhost/nuxeo/nxfile/server/docId/files:files%5B0%5D/file/image.png</code>
-     * for the blob property 'file' of the first element inside the
-     * 'files:files' list.
+     * <code>http://localhost/nuxeo/nxfile/server/docId/files:files%5B0%5D/file/image.png</code> for the blob property
+     * 'file' of the first element inside the 'files:files' list.
      *
      * @param patternName
      * @param doc The document model.
      * @param listElement Element containing a list of complex type.
-     * @param index Index of the element containing the blob inside the list.
-     *            <code>index</code> starts at 0.
+     * @param index Index of the element containing the blob inside the list. <code>index</code> starts at 0.
      * @param blobPropertyName The property containing the blob.
      * @param filename Filename of the blob.
-     * @return the REST URL for the blob, or <code>null</code> if an error
-     *         occurred.
+     * @return the REST URL for the blob, or <code>null</code> if an error occurred.
      */
-    public static String complexFileUrl(String patternName, DocumentModel doc,
-            String listElement, int index, String blobPropertyName,
-            String filename) {
+    public static String complexFileUrl(String patternName, DocumentModel doc, String listElement, int index,
+            String blobPropertyName, String filename) {
         try {
             DocumentLocation docLoc = new DocumentLocationImpl(doc);
             Map<String, String> params = new HashMap<String, String>();
 
-            String fileProperty = getPropertyPath(listElement, index,
-                    blobPropertyName);
+            String fileProperty = getPropertyPath(listElement, index, blobPropertyName);
 
             params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, fileProperty);
             params.put(DocumentFileCodec.FILENAME_KEY, filename);
@@ -652,8 +624,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             if (patternName == null) {
                 patternName = service.getDefaultPatternName();
             }
-            return service.getUrlFromDocumentView(patternName, docView,
-                    BaseURL.getBaseURL());
+            return service.getUrlFromDocumentView(patternName, docView, BaseURL.getBaseURL());
 
         } catch (Exception e) {
             log.error("Could not generate url for document file", e);
@@ -672,40 +643,32 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return documentUrl(null, doc, null, null, false);
     }
 
-    public static String documentUrl(String patternName, DocumentModel doc,
-            String viewId, Map<String, String> parameters,
-            boolean newConversation) {
-        return documentUrl(patternName, doc, viewId, parameters,
-                newConversation, null);
+    public static String documentUrl(String patternName, DocumentModel doc, String viewId,
+            Map<String, String> parameters, boolean newConversation) {
+        return documentUrl(patternName, doc, viewId, parameters, newConversation, null);
     }
 
-    public static String documentUrl(String patternName, DocumentModel doc,
-            String viewId, Map<String, String> parameters,
-            boolean newConversation, HttpServletRequest req) {
+    public static String documentUrl(String patternName, DocumentModel doc, String viewId,
+            Map<String, String> parameters, boolean newConversation, HttpServletRequest req) {
         DocumentLocation docLoc = new DocumentLocationImpl(doc);
         if (viewId == null || viewId.length() == 0) {
             viewId = getDefaultView(doc);
         }
-        parameters = parameters == null ? new HashMap<String, String>()
-                : parameters;
+        parameters = parameters == null ? new HashMap<String, String>() : parameters;
 
         if (doc.isVersion()) {
             parameters.put("version", "true");
         }
-        return documentUrl(patternName, docLoc, viewId, parameters,
-                newConversation, req);
+        return documentUrl(patternName, docLoc, viewId, parameters, newConversation, req);
     }
 
     /**
      * @since 5.7
      */
-    public static String documentUrl(String patternName,
-            DocumentLocation docLoc, String viewId,
-            Map<String, String> parameters, boolean newConversation,
-            HttpServletRequest req) {
+    public static String documentUrl(String patternName, DocumentLocation docLoc, String viewId,
+            Map<String, String> parameters, boolean newConversation, HttpServletRequest req) {
         try {
-            DocumentView docView = new DocumentViewImpl(docLoc, viewId,
-                    parameters);
+            DocumentView docView = new DocumentViewImpl(docLoc, viewId, parameters);
 
             // generate url
             URLPolicyService service = Framework.getService(URLPolicyService.class);
@@ -720,8 +683,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
                 baseURL = BaseURL.getBaseURL(req);
             }
 
-            String url = service.getUrlFromDocumentView(patternName, docView,
-                    baseURL);
+            String url = service.getUrlFromDocumentView(patternName, docView, baseURL);
 
             // pass conversation info if needed
             if (!newConversation && url != null) {
@@ -740,11 +702,9 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      *
      * @since 5.7
      */
-    public static String repositoryUrl(String patternName,
-            String repositoryName, String viewId,
+    public static String repositoryUrl(String patternName, String repositoryName, String viewId,
             Map<String, String> parameters, boolean newConversation) {
-        return repositoryUrl(patternName, repositoryName, viewId, parameters,
-                newConversation, null);
+        return repositoryUrl(patternName, repositoryName, viewId, parameters, newConversation, null);
     }
 
     /**
@@ -752,19 +712,15 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      *
      * @since 5.7
      */
-    public static String repositoryUrl(String patternName,
-            String repositoryName, String viewId,
-            Map<String, String> parameters, boolean newConversation,
-            HttpServletRequest req) {
+    public static String repositoryUrl(String patternName, String repositoryName, String viewId,
+            Map<String, String> parameters, boolean newConversation, HttpServletRequest req) {
         DocumentLocation docLoc = new DocumentLocationImpl(repositoryName, null);
-        parameters = parameters == null ? new HashMap<String, String>()
-                : parameters;
-        return documentUrl(patternName, docLoc, viewId, parameters,
-                newConversation, req);
+        parameters = parameters == null ? new HashMap<String, String>() : parameters;
+        return documentUrl(patternName, docLoc, viewId, parameters, newConversation, req);
     }
 
-    protected static void addQueryParameter(StringBuilder sb, String name,
-            String value, boolean isFirst) throws ClientException {
+    protected static void addQueryParameter(StringBuilder sb, String name, String value, boolean isFirst)
+            throws ClientException {
         if (isFirst) {
             sb.append("?");
         } else {
@@ -778,21 +734,19 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         try {
             sb.append(URLEncoder.encode(value, URL_ENCODE_CHARSET));
         } catch (UnsupportedEncodingException e) {
-            throw new ClientException(String.format(
-                    "could not encode URL parameter: %s=%s", name, value), e);
+            throw new ClientException(String.format("could not encode URL parameter: %s=%s", name, value), e);
         }
     }
 
     /**
-     * Build the nxedit URL for the "edit existing document" use case for a
-     * document using the file:content field as Blob holder
+     * Build the nxedit URL for the "edit existing document" use case for a document using the file:content field as
+     * Blob holder
      *
      * @return the encoded URL string
      * @throws ClientException if the URL encoding fails
      */
     public static String liveEditUrl(DocumentModel doc) throws ClientException {
-        return liveEditUrl(doc, DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD,
-                DEFAULT_FILENAME_FIELD);
+        return liveEditUrl(doc, DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD, DEFAULT_FILENAME_FIELD);
     }
 
     /**
@@ -801,18 +755,15 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @return the encoded URL string
      * @throws ClientException if the URL encoding fails
      */
-    public static String liveEditUrl(DocumentModel doc, String schemaName,
-            String blobFieldName, String filenameFieldName)
-            throws ClientException {
+    public static String liveEditUrl(DocumentModel doc, String schemaName, String blobFieldName,
+            String filenameFieldName) throws ClientException {
         if (doc == null) {
             return ""; // JSF DebugUtil.printTree may call this
         }
         StringBuilder queryParamBuilder = new StringBuilder();
         addQueryParameter(queryParamBuilder, ACTION, ACTION_EDIT_DOCUMENT, true);
-        addQueryParameter(queryParamBuilder, REPO_ID, doc.getRepositoryName(),
-                false);
-        addQueryParameter(queryParamBuilder, DOC_REF, doc.getRef().toString(),
-                false);
+        addQueryParameter(queryParamBuilder, REPO_ID, doc.getRepositoryName(), false);
+        addQueryParameter(queryParamBuilder, DOC_REF, doc.getRef().toString(), false);
         if (schemaName == null || "".equals(schemaName)) {
             // try to extract it from blob field name
             schemaName = DocumentModelUtils.getSchemaName(blobFieldName);
@@ -821,8 +772,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         }
         addQueryParameter(queryParamBuilder, SCHEMA, schemaName, false);
         addQueryParameter(queryParamBuilder, BLOB_FIELD, blobFieldName, false);
-        addQueryParameter(queryParamBuilder, FILENAME_FIELD, filenameFieldName,
-                false);
+        addQueryParameter(queryParamBuilder, FILENAME_FIELD, filenameFieldName, false);
         return buildNxEditUrl(queryParamBuilder.toString());
     }
 
@@ -832,36 +782,30 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @return the encoded URL string
      * @throws ClientException if the URL encoding fails
      */
-    public static String complexLiveEditUrl(DocumentModel doc,
-            String listPropertyName, int index, String blobPropertyName,
-            String filenamePropertyName) throws ClientException {
+    public static String complexLiveEditUrl(DocumentModel doc, String listPropertyName, int index,
+            String blobPropertyName, String filenamePropertyName) throws ClientException {
 
         StringBuilder queryParamBuilder = new StringBuilder();
         addQueryParameter(queryParamBuilder, ACTION, ACTION_EDIT_DOCUMENT, true);
-        addQueryParameter(queryParamBuilder, REPO_ID, doc.getRepositoryName(),
-                false);
-        addQueryParameter(queryParamBuilder, DOC_REF, doc.getRef().toString(),
-                false);
+        addQueryParameter(queryParamBuilder, REPO_ID, doc.getRepositoryName(), false);
+        addQueryParameter(queryParamBuilder, DOC_REF, doc.getRef().toString(), false);
         addQueryParameter(queryParamBuilder, BLOB_PROPERTY_NAME,
-                getPropertyPath(listPropertyName, index, blobPropertyName),
-                false);
+                getPropertyPath(listPropertyName, index, blobPropertyName), false);
         addQueryParameter(queryParamBuilder, FILENAME_PROPERTY_NAME,
-                getPropertyPath(listPropertyName, index, filenamePropertyName),
-                false);
+                getPropertyPath(listPropertyName, index, filenamePropertyName), false);
         return buildNxEditUrl(queryParamBuilder.toString());
     }
 
     /**
-     * Build the nxedit URL for the "create new document" use case with a
-     * document using the file:content field as Blob holder
+     * Build the nxedit URL for the "create new document" use case with a document using the file:content field as Blob
+     * holder
      *
      * @param mimetype the mime type of the newly created document
      * @return the encoded URL string
      * @throws ClientException if the URL encoding fails
      */
     public static String liveCreateUrl(String mimetype) throws ClientException {
-        return liveCreateUrl(mimetype, DEFAULT_DOCTYPE, DEFAULT_SCHEMA,
-                DEFAULT_BLOB_FIELD, DEFAULT_FILENAME_FIELD);
+        return liveCreateUrl(mimetype, DEFAULT_DOCTYPE, DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD, DEFAULT_FILENAME_FIELD);
     }
 
     /**
@@ -870,87 +814,67 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @param mimetype the mime type of the newly created document
      * @param docType the document type of the document to create
      * @param schemaName the schema of the blob to hold the new attachment
-     * @param blobFieldName the field name of the blob to hold the new
-     *            attachment
-     * @param filenameFieldName the field name of the filename of the new
-     *            attachment
+     * @param blobFieldName the field name of the blob to hold the new attachment
+     * @param filenameFieldName the field name of the filename of the new attachment
      * @return the encoded URL string
      * @throws ClientException if the URL encoding fails
      */
-    public static String liveCreateUrl(String mimetype, String docType,
-            String schemaName, String blobFieldName, String filenameFieldName)
-            throws ClientException {
+    public static String liveCreateUrl(String mimetype, String docType, String schemaName, String blobFieldName,
+            String filenameFieldName) throws ClientException {
 
         StringBuilder queryParamBuilder = new StringBuilder();
-        addQueryParameter(queryParamBuilder, ACTION, ACTION_CREATE_DOCUMENT,
-                true);
+        addQueryParameter(queryParamBuilder, ACTION, ACTION_CREATE_DOCUMENT, true);
         addQueryParameter(queryParamBuilder, MIMETYPE, mimetype, false);
         addQueryParameter(queryParamBuilder, SCHEMA, schemaName, false);
         addQueryParameter(queryParamBuilder, BLOB_FIELD, blobFieldName, false);
-        addQueryParameter(queryParamBuilder, FILENAME_FIELD, filenameFieldName,
-                false);
+        addQueryParameter(queryParamBuilder, FILENAME_FIELD, filenameFieldName, false);
         addQueryParameter(queryParamBuilder, DOC_TYPE, docType, false);
         return buildNxEditUrl(queryParamBuilder.toString());
     }
 
     /**
-     * Build the nxedit URL for the "create new document from template" use
-     * case with "File" doc type and "file" schema
+     * Build the nxedit URL for the "create new document from template" use case with "File" doc type and "file" schema
      *
      * @param template the document holding the blob to be used as template
      * @return the encoded URL string
      * @throws ClientException if the URL encoding fails
      */
-    public static String liveCreateFromTemplateUrl(DocumentModel template)
-            throws ClientException {
-        return liveCreateFromTemplateUrl(template, DEFAULT_SCHEMA,
-                DEFAULT_BLOB_FIELD, DEFAULT_DOCTYPE, DEFAULT_SCHEMA,
+    public static String liveCreateFromTemplateUrl(DocumentModel template) throws ClientException {
+        return liveCreateFromTemplateUrl(template, DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD, DEFAULT_DOCTYPE, DEFAULT_SCHEMA,
                 DEFAULT_BLOB_FIELD, DEFAULT_FILENAME_FIELD);
     }
 
     /**
-     * Build the nxedit URL for the "create new document from template" use
-     * case
+     * Build the nxedit URL for the "create new document from template" use case
      *
      * @param template the document holding the blob to be used as template
      * @param templateSchemaName the schema of the blob holding the template
-     * @param templateBlobFieldName the field name of the blob holding the
-     *            template
+     * @param templateBlobFieldName the field name of the blob holding the template
      * @param docType the document type of the new document to create
      * @param schemaName the schema of the new blob to be saved as attachment
-     * @param blobFieldName the field name of the new blob to be saved as
-     *            attachment
-     * @param filenameFieldName the field name of the filename of the
-     *            attachment
+     * @param blobFieldName the field name of the new blob to be saved as attachment
+     * @param filenameFieldName the field name of the filename of the attachment
      * @return the encoded URL string
      * @throws ClientException if the URL encoding fails
      */
-    public static String liveCreateFromTemplateUrl(DocumentModel template,
-            String templateSchemaName, String templateBlobFieldName,
-            String docType, String schemaName, String blobFieldName,
+    public static String liveCreateFromTemplateUrl(DocumentModel template, String templateSchemaName,
+            String templateBlobFieldName, String docType, String schemaName, String blobFieldName,
             String filenameFieldName) throws ClientException {
 
         StringBuilder queryParamBuilder = new StringBuilder();
-        addQueryParameter(queryParamBuilder, ACTION,
-                ACTION_CREATE_DOCUMENT_FROM_TEMPLATE, true);
-        addQueryParameter(queryParamBuilder, TEMPLATE_REPO_ID,
-                template.getRepositoryName(), false);
-        addQueryParameter(queryParamBuilder, TEMPLATE_DOC_REF,
-                template.getRef().toString(), false);
-        addQueryParameter(queryParamBuilder, TEMPLATE_SCHEMA,
-                templateSchemaName, false);
-        addQueryParameter(queryParamBuilder, TEMPLATE_BLOB_FIELD,
-                templateBlobFieldName, false);
+        addQueryParameter(queryParamBuilder, ACTION, ACTION_CREATE_DOCUMENT_FROM_TEMPLATE, true);
+        addQueryParameter(queryParamBuilder, TEMPLATE_REPO_ID, template.getRepositoryName(), false);
+        addQueryParameter(queryParamBuilder, TEMPLATE_DOC_REF, template.getRef().toString(), false);
+        addQueryParameter(queryParamBuilder, TEMPLATE_SCHEMA, templateSchemaName, false);
+        addQueryParameter(queryParamBuilder, TEMPLATE_BLOB_FIELD, templateBlobFieldName, false);
         addQueryParameter(queryParamBuilder, SCHEMA, schemaName, false);
         addQueryParameter(queryParamBuilder, BLOB_FIELD, blobFieldName, false);
-        addQueryParameter(queryParamBuilder, FILENAME_FIELD, filenameFieldName,
-                false);
+        addQueryParameter(queryParamBuilder, FILENAME_FIELD, filenameFieldName, false);
         addQueryParameter(queryParamBuilder, DOC_TYPE, docType, false);
         return buildNxEditUrl(queryParamBuilder.toString());
     }
 
-    private static String buildNxEditUrl(String queryParameters)
-            throws ClientException {
+    private static String buildNxEditUrl(String queryParameters) throws ClientException {
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
 
@@ -966,11 +890,9 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         nxeditUrlBuilder.append(queryParameters);
 
         // add seam conversation and JSESSION ids
-        addQueryParameter(nxeditUrlBuilder,
-                Manager.instance().getConversationIdParameter(),
+        addQueryParameter(nxeditUrlBuilder, Manager.instance().getConversationIdParameter(),
                 Manager.instance().getCurrentConversationId(), false);
-        addQueryParameter(nxeditUrlBuilder, JSESSIONID,
-                extractJSessionId(request), false);
+        addQueryParameter(nxeditUrlBuilder, JSESSIONID, extractJSessionId(request), false);
         return nxeditUrlBuilder.toString();
     }
 
@@ -1001,12 +923,10 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @param id the label id
      * @return the label.
      * @throws DirectoryException
-     * @deprecated use
-     *             {@link DirectoryFunctions#getDirectoryEntry(String, String)}
+     * @deprecated use {@link DirectoryFunctions#getDirectoryEntry(String, String)}
      */
     @Deprecated
-    public static String getLabelFromId(String directoryName, String id)
-            throws DirectoryException {
+    public static String getLabelFromId(String directoryName, String id) throws DirectoryException {
         if (id == null) {
             return "";
         }
@@ -1026,10 +946,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         }
     }
 
-    public static String getPropertyPath(String listPropertyName, int index,
-            String subPropertyName) {
-        return String.format("%s/%s/%s", listPropertyName, index,
-                subPropertyName);
+    public static String getPropertyPath(String listPropertyName, int index, String subPropertyName) {
+        return String.format("%s/%s/%s", listPropertyName, index, subPropertyName);
     }
 
     /**
@@ -1039,8 +957,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @param currentState the state from which the transitions should start
      * @since 5.4.2
      */
-    public static Collection<String> getAvailableLifeCycleTransitions(
-            String lifeCycleName, String currentState)
+    public static Collection<String> getAvailableLifeCycleTransitions(String lifeCycleName, String currentState)
             throws LifeCycleException {
         LifeCycle lf = geLifeCycleService().getLifeCycleByName(lifeCycleName);
         return lf.getAllowedStateTransitionsFrom(currentState);

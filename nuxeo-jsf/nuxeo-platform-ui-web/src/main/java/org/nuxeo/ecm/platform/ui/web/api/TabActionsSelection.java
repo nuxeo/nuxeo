@@ -44,11 +44,10 @@ public class TabActionsSelection implements Serializable {
     private static final Log log = LogFactory.getLog(TabActionsSelection.class);
 
     /**
-     * Map of current tab actions, with category as key and corresponding
-     * action as value.
+     * Map of current tab actions, with category as key and corresponding action as value.
      * <p>
-     * Use a linked has map to preserve order when using several selections as
-     * sub tabs management needs order to be preserved.
+     * Use a linked has map to preserve order when using several selections as sub tabs management needs order to be
+     * preserved.
      */
     protected Map<String, Action> currentTabActions = new LinkedHashMap<String, Action>();
 
@@ -80,13 +79,10 @@ public class TabActionsSelection implements Serializable {
                         categoryFound = true;
                         Action oldAction = currentTabActions.get(category);
                         currentTabActions.put(category, tabAction);
-                        raiseEventOnCurrentTabSelected(category,
-                                tabAction.getId());
-                        if (oldAction == null
-                                || !oldAction.getId().equals(tabAction.getId())) {
+                        raiseEventOnCurrentTabSelected(category, tabAction.getId());
+                        if (oldAction == null || !oldAction.getId().equals(tabAction.getId())) {
                             // only raise the event if action actually changed
-                            raiseEventOnCurrentTabChange(category,
-                                    tabAction.getId());
+                            raiseEventOnCurrentTabChange(category, tabAction.getId());
                         }
                         if (oldAction != null) {
                             // additional cleanup of possible sub tabs
@@ -96,11 +92,9 @@ public class TabActionsSelection implements Serializable {
                     }
                 }
                 if (!categoryFound) {
-                    log.error(String.format(
-                            "Cannot set current action '%s' for category"
-                                    + " '%s' as this action does not "
-                                    + "hold the given category.",
-                            tabAction.getId(), category));
+                    log.error(String.format("Cannot set current action '%s' for category"
+                            + " '%s' as this action does not " + "hold the given category.", tabAction.getId(),
+                            category));
                 }
             }
         } else {
@@ -116,9 +110,8 @@ public class TabActionsSelection implements Serializable {
         return null;
     }
 
-    public void setCurrentTabId(ActionManager actionManager,
-            ActionContext actionContext, String category, String tabId,
-            String... subTabIds) {
+    public void setCurrentTabId(ActionManager actionManager, ActionContext actionContext, String category,
+            String tabId, String... subTabIds) {
         boolean set = false;
         if (tabId != null && !WebActions.NULL_TAB_ID.equals(tabId)) {
             if (actionManager.isEnabled(tabId, actionContext)) {
@@ -127,21 +120,15 @@ public class TabActionsSelection implements Serializable {
                 if (subTabIds != null && subTabIds.length > 0) {
                     String newTabId = subTabIds[0];
                     String[] newSubTabsIds = new String[subTabIds.length - 1];
-                    System.arraycopy(subTabIds, 1, newSubTabsIds, 0,
-                            subTabIds.length - 1);
-                    setCurrentTabId(actionManager, actionContext,
-                            getSubTabCategory(tabId), newTabId, newSubTabsIds);
+                    System.arraycopy(subTabIds, 1, newSubTabsIds, 0, subTabIds.length - 1);
+                    setCurrentTabId(actionManager, actionContext, getSubTabCategory(tabId), newTabId, newSubTabsIds);
                 }
                 set = true;
             } else {
                 if (actionManager.getAction(tabId) != null) {
-                    log.warn(String.format(
-                            "Cannot set current tab with id '%s': "
-                                    + "action is not enabled.", tabId));
+                    log.warn(String.format("Cannot set current tab with id '%s': " + "action is not enabled.", tabId));
                 } else {
-                    log.error(String.format(
-                            "Cannot set current tab with id '%s': "
-                                    + "action does not exist.", tabId));
+                    log.error(String.format("Cannot set current tab with id '%s': " + "action does not exist.", tabId));
                 }
             }
         }
@@ -182,8 +169,7 @@ public class TabActionsSelection implements Serializable {
             }
         }
         for (Map.Entry<String, List<Action>> item : actionsToEncode.entrySet()) {
-            String encodedActions = encodeActions(item.getKey(),
-                    item.getValue());
+            String encodedActions = encodeActions(item.getKey(), item.getValue());
             if (encodedActions != null) {
                 if (!first) {
                     builder.append(",");
@@ -196,27 +182,21 @@ public class TabActionsSelection implements Serializable {
     }
 
     /**
-     * Sets current tab ids as a String, splitting on commas ',' and parsing
-     * each action information as is:
-     * CATEGORY:[ACTION_ID[:OPTIONAL_SUB_ACTION_ID
-     * [:OPTIONAL_SUB_ACTION_ID]...]]
+     * Sets current tab ids as a String, splitting on commas ',' and parsing each action information as is:
+     * CATEGORY:[ACTION_ID[:OPTIONAL_SUB_ACTION_ID [:OPTIONAL_SUB_ACTION_ID]...]]
      * <p>
-     * If category is omitted or empty, the category
-     * {@link #DEFAULT_TABS_CATEGORY} will be used (if there is no subtab
+     * If category is omitted or empty, the category {@link #DEFAULT_TABS_CATEGORY} will be used (if there is no subtab
      * information).
      * <p>
-     * If no action id is given, the corresponding category is reset (for
-     * instance using 'CATEGORY:').
+     * If no action id is given, the corresponding category is reset (for instance using 'CATEGORY:').
      * <p>
      * If the action information is '*:', all categories will be reset.
      * <p>
-     * The resulting string looks like:
-     * CATEGORY_1:ACTION_ID_1,CATEGORY_2:ACTION_ID_2_SUB_ACTION_ID_2,...
+     * The resulting string looks like: CATEGORY_1:ACTION_ID_1,CATEGORY_2:ACTION_ID_2_SUB_ACTION_ID_2,...
      *
      * @since 5.4.2
      */
-    public void setCurrentTabIds(ActionManager actionManager,
-            ActionContext actionContext, String tabIds) {
+    public void setCurrentTabIds(ActionManager actionManager, ActionContext actionContext, String tabIds) {
         if (tabIds == null) {
             return;
         }
@@ -233,8 +213,7 @@ public class TabActionsSelection implements Serializable {
                     if (actionInfo != null && actionInfo.length == 1) {
                         if (encodedAction.startsWith(":")) {
                             // it's a default action
-                            setCurrentTabId(actionManager, actionContext,
-                                    WebActions.DEFAULT_TABS_CATEGORY,
+                            setCurrentTabId(actionManager, actionContext, WebActions.DEFAULT_TABS_CATEGORY,
                                     actionInfo[0]);
                         } else {
                             String category = actionInfo[0];
@@ -249,17 +228,13 @@ public class TabActionsSelection implements Serializable {
                         String category = actionInfo[0];
                         String actionId = actionInfo[1];
                         String[] subTabsIds = new String[actionInfo.length - 2];
-                        System.arraycopy(actionInfo, 2, subTabsIds, 0,
-                                actionInfo.length - 2);
+                        System.arraycopy(actionInfo, 2, subTabsIds, 0, actionInfo.length - 2);
                         if (category == null || category.isEmpty()) {
                             category = WebActions.DEFAULT_TABS_CATEGORY;
                         }
-                        setCurrentTabId(actionManager, actionContext, category,
-                                actionId, subTabsIds);
+                        setCurrentTabId(actionManager, actionContext, category, actionId, subTabsIds);
                     } else {
-                        log.error(String.format(
-                                "Cannot set current tab from given encoded action: '%s'",
-                                encodedAction));
+                        log.error(String.format("Cannot set current tab from given encoded action: '%s'", encodedAction));
                     }
                 }
             }
@@ -281,9 +256,8 @@ public class TabActionsSelection implements Serializable {
     }
 
     /**
-     * Resets current tabs for given category, taking subtabs into account by
-     * resetting actions in categories computed from reset actions id with
-     * suffix {@link #SUBTAB_CATEGORY_SUFFIX}.
+     * Resets current tabs for given category, taking subtabs into account by resetting actions in categories computed
+     * from reset actions id with suffix {@link #SUBTAB_CATEGORY_SUFFIX}.
      */
     public void resetCurrentTabs(String category) {
         if (currentTabActions.containsKey(category)) {
@@ -302,8 +276,7 @@ public class TabActionsSelection implements Serializable {
             return null;
         }
         StringBuilder builder = new StringBuilder();
-        builder.append(WebActions.DEFAULT_TABS_CATEGORY.equals(category) ? ""
-                : category);
+        builder.append(WebActions.DEFAULT_TABS_CATEGORY.equals(category) ? "" : category);
         for (int i = 0; i < actions.size(); i++) {
             builder.append(":" + actions.get(i).getId());
         }
@@ -320,49 +293,39 @@ public class TabActionsSelection implements Serializable {
     /**
      * Raises a seam event when current tab changes for a given category.
      * <p>
-     * Actually raises 2 events: one with name
-     * WebActions#CURRENT_TAB_CHANGED_EVENT and another with name
-     * WebActions#CURRENT_TAB_CHANGED_EVENT + '_' + category to optimize
-     * observers declarations.
+     * Actually raises 2 events: one with name WebActions#CURRENT_TAB_CHANGED_EVENT and another with name
+     * WebActions#CURRENT_TAB_CHANGED_EVENT + '_' + category to optimize observers declarations.
      * <p>
-     * The event is always sent with 2 parameters: the category and tab id (the
-     * tab id can be null when resetting current tab for given category).
+     * The event is always sent with 2 parameters: the category and tab id (the tab id can be null when resetting
+     * current tab for given category).
      *
      * @see WebActions#CURRENT_TAB_CHANGED_EVENT
      * @since 5.4.2
      */
     protected void raiseEventOnCurrentTabChange(String category, String tabId) {
         if (Events.exists()) {
-            Events.instance().raiseEvent(WebActions.CURRENT_TAB_CHANGED_EVENT,
-                    category, tabId);
-            Events.instance().raiseEvent(
-                    WebActions.CURRENT_TAB_CHANGED_EVENT + "_" + category,
-                    category, tabId);
+            Events.instance().raiseEvent(WebActions.CURRENT_TAB_CHANGED_EVENT, category, tabId);
+            Events.instance().raiseEvent(WebActions.CURRENT_TAB_CHANGED_EVENT + "_" + category, category, tabId);
         }
     }
 
     /**
-     * Raises a seam event when current tab is selected for a given category.
-     * Fired also when current tab did not change.
+     * Raises a seam event when current tab is selected for a given category. Fired also when current tab did not
+     * change.
      * <p>
-     * Actually raises 2 events: one with name
-     * WebActions#CURRENT_TAB_SELECTED_EVENT and another with name
-     * WebActions#CURRENT_TAB_SELECTED_EVENT + '_' + category to optimize
-     * observers declarations.
+     * Actually raises 2 events: one with name WebActions#CURRENT_TAB_SELECTED_EVENT and another with name
+     * WebActions#CURRENT_TAB_SELECTED_EVENT + '_' + category to optimize observers declarations.
      * <p>
-     * The event is always sent with 2 parameters: the category and tab id (the
-     * tab id can be null when resetting current tab for given category).
+     * The event is always sent with 2 parameters: the category and tab id (the tab id can be null when resetting
+     * current tab for given category).
      *
      * @see WebActions#CURRENT_TAB_SELECTED_EVENT
      * @since 5.6
      */
     protected void raiseEventOnCurrentTabSelected(String category, String tabId) {
         if (Events.exists()) {
-            Events.instance().raiseEvent(WebActions.CURRENT_TAB_SELECTED_EVENT,
-                    category, tabId);
-            Events.instance().raiseEvent(
-                    WebActions.CURRENT_TAB_SELECTED_EVENT + "_" + category,
-                    category, tabId);
+            Events.instance().raiseEvent(WebActions.CURRENT_TAB_SELECTED_EVENT, category, tabId);
+            Events.instance().raiseEvent(WebActions.CURRENT_TAB_SELECTED_EVENT + "_" + category, category, tabId);
         }
     }
 

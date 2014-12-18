@@ -29,8 +29,8 @@ import org.richfaces.renderkit.RenderKitUtils;
 import org.richfaces.renderkit.RendererBase;
 
 /**
- * Renderer for a single radio button, given a target original radio component
- * and index for original button attributes retrieval.
+ * Renderer for a single radio button, given a target original radio component and index for original button attributes
+ * retrieval.
  *
  * @since 6.0
  */
@@ -43,29 +43,24 @@ public class SingleRadioRenderer extends RendererBase {
     }
 
     @Override
-    protected void doEncodeEnd(ResponseWriter writer, FacesContext context,
-            UIComponent _component) throws IOException {
+    protected void doEncodeEnd(ResponseWriter writer, FacesContext context, UIComponent _component) throws IOException {
         UIRadio component = (UIRadio) _component;
         java.lang.String clientId = component.getClientId(context);
-        final UIComponent targetComponent = getUtils().findComponentFor(
-                component, component.getFor());
-        final javax.faces.model.SelectItem item = component.getSelectItem(
-                context, targetComponent);
+        final UIComponent targetComponent = getUtils().findComponentFor(component, component.getFor());
+        final javax.faces.model.SelectItem item = component.getSelectItem(context, targetComponent);
         boolean checked = false;
         if (targetComponent instanceof javax.faces.component.UIOutput) {
             final Object currentValue = ((javax.faces.component.UIOutput) targetComponent).getValue();
             final Object itemValue = item.getValue();
-            checked = itemValue == null ? currentValue == null
-                    : itemValue.equals(currentValue);
+            checked = itemValue == null ? currentValue == null : itemValue.equals(currentValue);
         }
 
         writer.startElement("input", component);
         writer.writeAttribute("id", clientId, "id");
-        writer.writeAttribute("name",
-                getUtils().clientId(context, targetComponent), "name");
+        writer.writeAttribute("name", getUtils().clientId(context, targetComponent), "name");
         writer.writeAttribute("type", "radio", "type");
-        writer.writeAttribute("value", InputUtils.getConvertedStringValue(
-                context, targetComponent, item.getValue()), "value");
+        writer.writeAttribute("value", InputUtils.getConvertedStringValue(context, targetComponent, item.getValue()),
+                "value");
         if (checked) {
             writer.writeAttribute("checked", "checked", "checked");
         }
@@ -75,20 +70,13 @@ public class SingleRadioRenderer extends RendererBase {
 
         String targetOnchange = null;
         if (targetComponent != null) {
-            targetOnchange = convertToString(RenderKitUtils.getAttributeAndBehaviorsValue(
-                    context,
-                    targetComponent,
-                    RenderKitUtils.attributes().generic("onchange", "onchange",
-                            "change", "valueChange").first()));
+            targetOnchange = convertToString(RenderKitUtils.getAttributeAndBehaviorsValue(context, targetComponent,
+                    RenderKitUtils.attributes().generic("onchange", "onchange", "change", "valueChange").first()));
         }
-        String onchange = convertToString(RenderKitUtils.getAttributeAndBehaviorsValue(
-                context,
-                component,
-                RenderKitUtils.attributes().generic("onchange", "onchange",
-                        "change", "valueChange").first()));
+        String onchange = convertToString(RenderKitUtils.getAttributeAndBehaviorsValue(context, component,
+                RenderKitUtils.attributes().generic("onchange", "onchange", "change", "valueChange").first()));
         if (targetOnchange != null && !targetOnchange.trim().isEmpty()) {
-            onchange = onchange == null ? targetOnchange : targetOnchange + ";"
-                    + onchange;
+            onchange = onchange == null ? targetOnchange : targetOnchange + ";" + onchange;
         }
         if (onchange != null && onchange.trim().length() > 0) {
             writer.writeAttribute("onchange", onchange, "onchange");
@@ -96,13 +84,10 @@ public class SingleRadioRenderer extends RendererBase {
         getUtils().encodeAttributesFromArray(
                 context,
                 component,
-                new String[] { "accept", "accesskey", "align", "alt",
-                        "checked", "dir", "disabled", "lang", "maxlength",
-                        "onblur", "onclick", "ondblclick", "onfocus",
-                        "onkeydown", "onkeypress", "onkeyup", "onmousedown",
-                        "onmousemove", "onmouseout", "onmouseover",
-                        "onmouseup", "onselect", "readonly", "size", "src",
-                        "style", "tabindex", "title", "usemap", "xml:lang" });
+                new String[] { "accept", "accesskey", "align", "alt", "checked", "dir", "disabled", "lang",
+                        "maxlength", "onblur", "onclick", "ondblclick", "onfocus", "onkeydown", "onkeypress",
+                        "onkeyup", "onmousedown", "onmousemove", "onmouseout", "onmouseover", "onmouseup", "onselect",
+                        "readonly", "size", "src", "style", "tabindex", "title", "usemap", "xml:lang" });
 
         writer.endElement("input");
         writer.startElement("label", component);
@@ -120,8 +105,7 @@ public class SingleRadioRenderer extends RendererBase {
         if (targetComponent instanceof HtmlSelectOneRadio) {
             return ((HtmlSelectOneRadio) targetComponent).isDisabled();
         } else {
-            final Object disabled = targetComponent.getAttributes().get(
-                    "disabled");
+            final Object disabled = targetComponent.getAttributes().get("disabled");
             return Boolean.TRUE.equals(disabled);
         }
     }
@@ -130,8 +114,7 @@ public class SingleRadioRenderer extends RendererBase {
         if (targetComponent instanceof HtmlSelectOneRadio) {
             return ((HtmlSelectOneRadio) targetComponent).isReadonly();
         } else {
-            final Object readonly = targetComponent.getAttributes().get(
-                    "readonly");
+            final Object readonly = targetComponent.getAttributes().get("readonly");
             return Boolean.TRUE.equals(readonly);
         }
     }

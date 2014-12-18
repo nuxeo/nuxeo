@@ -35,14 +35,11 @@ public class NuxeoResourceHandler extends ResourceHandlerWrapper {
     }
 
     @Override
-    public ViewResource createViewResource(FacesContext facesContext,
-            String resourceName) {
+    public ViewResource createViewResource(FacesContext facesContext, String resourceName) {
         if (resourceName.startsWith(NuxeoUnknownResource.MARKER)) {
-            return new NuxeoUnknownResource(
-                    resourceName.substring(NuxeoUnknownResource.MARKER.length()));
+            return new NuxeoUnknownResource(resourceName.substring(NuxeoUnknownResource.MARKER.length()));
         }
-        ViewResource res = wrapped.createViewResource(facesContext,
-                resourceName);
+        ViewResource res = wrapped.createViewResource(facesContext, resourceName);
         if (res == null) {
             res = new NuxeoUnknownResource(resourceName);
         }

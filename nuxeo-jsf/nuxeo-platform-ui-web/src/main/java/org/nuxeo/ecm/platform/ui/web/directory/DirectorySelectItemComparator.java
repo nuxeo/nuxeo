@@ -31,8 +31,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
-public class DirectorySelectItemComparator implements
-        Comparator<DirectorySelectItem>, Serializable {
+public class DirectorySelectItemComparator implements Comparator<DirectorySelectItem>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -44,8 +43,7 @@ public class DirectorySelectItemComparator implements
 
     private Locale locale;
 
-    public DirectorySelectItemComparator(String ordering,
-            Boolean caseSensitive, Locale locale) {
+    public DirectorySelectItemComparator(String ordering, Boolean caseSensitive, Locale locale) {
         this.ordering = StringUtils.split(ordering, ",");
         this.caseSensitive = caseSensitive;
         if (locale == null) {
@@ -72,8 +70,7 @@ public class DirectorySelectItemComparator implements
         this(ordering, Boolean.FALSE);
     }
 
-    protected int compareField(String field, DirectorySelectItem item1,
-            DirectorySelectItem item2) {
+    protected int compareField(String field, DirectorySelectItem item1, DirectorySelectItem item2) {
         if ("label".equals(field)) {
             String label1 = item1.getLabel();
             String label2 = item2.getLabel();
@@ -92,6 +89,7 @@ public class DirectorySelectItemComparator implements
         }
     }
 
+    @Override
     public int compare(DirectorySelectItem item1, DirectorySelectItem item2) {
         for (String field : ordering) {
             int compare = compareField(field, item1, item2);

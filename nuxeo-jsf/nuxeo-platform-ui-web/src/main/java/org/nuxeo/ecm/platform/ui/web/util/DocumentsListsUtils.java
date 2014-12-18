@@ -37,7 +37,8 @@ public final class DocumentsListsUtils {
     private static final Log log = LogFactory.getLog(DocumentsListsUtils.class);
 
     // Utility class.
-    private DocumentsListsUtils() { }
+    private DocumentsListsUtils() {
+    }
 
     /**
      * Returns list of the document types contained in the list of document.
@@ -73,16 +74,14 @@ public final class DocumentsListsUtils {
      *
      * @return <code>true</code> if the given list contains specified document and it has been removed
      */
-    public static boolean removeDocumentFromList(List<DocumentModel> documentList,
-            DocumentModel documentToRemove) {
+    public static boolean removeDocumentFromList(List<DocumentModel> documentList, DocumentModel documentToRemove) {
         if (null == documentToRemove) {
             return false;
         }
         try {
             boolean found = false;
             for (int i = 0; i < documentList.size(); i++) {
-                if (documentList.get(i).getRef().equals(
-                        documentToRemove.getRef())) {
+                if (documentList.get(i).getRef().equals(documentToRemove.getRef())) {
                     documentList.remove(i);
                     found = true;
                 }
@@ -90,8 +89,7 @@ public final class DocumentsListsUtils {
             return found;
         } catch (UnsupportedOperationException e) {
             // XXX: maybe throw a checked exception
-            log.error("immutable list, cannot remove document: "
-                    + documentToRemove, e);
+            log.error("immutable list, cannot remove document: " + documentToRemove, e);
             return false;
         }
     }
@@ -101,8 +99,7 @@ public final class DocumentsListsUtils {
      * <p>
      * Removal is based on DocumentRef.
      */
-    public static void removeDocumentsFromList(List<DocumentModel> documentList,
-            List<DocumentModel> documentsToRemove) {
+    public static void removeDocumentsFromList(List<DocumentModel> documentList, List<DocumentModel> documentsToRemove) {
         if (null == documentsToRemove || documentsToRemove.isEmpty()) {
             return;
         }
@@ -135,8 +132,7 @@ public final class DocumentsListsUtils {
         return parentRefs;
     }
 
-    public static boolean isDocumentInList(DocumentModel doc,
-            List<DocumentModel> list) {
+    public static boolean isDocumentInList(DocumentModel doc, List<DocumentModel> list) {
         String strDocRef = doc.getRef().toString();
         for (DocumentModel d : list) {
             if (strDocRef.equals(d.getRef().toString())) {

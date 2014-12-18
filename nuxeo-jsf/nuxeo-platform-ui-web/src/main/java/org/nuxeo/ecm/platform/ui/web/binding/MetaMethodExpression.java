@@ -38,27 +38,22 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 /**
- * Meta method expression used to invoke the EL expression that is already the
- * result of a method expression.
+ * Meta method expression used to invoke the EL expression that is already the result of a method expression.
  * <p>
- * For instance it is useful to use this expression to provide action links
- * defined in NXActions extensions with links like
- * #{documentAction.createDocument('Domain')}.
+ * For instance it is useful to use this expression to provide action links defined in NXActions extensions with links
+ * like #{documentAction.createDocument('Domain')}.
  * <p>
  * There is no more than one level of abstraction:
  * <ul>
- * <li>the expression method value can be a standard method expression (with
- * parameters or not);
- * <li>the expression method value can result in another expression method value
- * after being invoke, in which case it is reinvoked again using the same
- * context;
+ * <li>the expression method value can be a standard method expression (with parameters or not);
+ * <li>the expression method value can result in another expression method value after being invoke, in which case it is
+ * reinvoked again using the same context;
  * <li>no further method invoking will be performed.
  * </ul>
- * 
+ *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class MetaMethodExpression extends MethodExpression implements
-        Serializable {
+public class MetaMethodExpression extends MethodExpression implements Serializable {
 
     private static final long serialVersionUID = -2721042412903607760L;
 
@@ -118,8 +113,8 @@ public class MetaMethodExpression extends MethodExpression implements
                     FacesContext faces = FacesContext.getCurrentInstance();
                     Application app = faces.getApplication();
                     ExpressionFactory factory = app.getExpressionFactory();
-                    MethodExpression newMeth = factory.createMethodExpression(
-                            context, expression, Object.class, new Class[0]);
+                    MethodExpression newMeth = factory.createMethodExpression(context, expression, Object.class,
+                            new Class[0]);
                     try {
                         res = newMeth.invoke(context, null);
                     } catch (Throwable t) {
@@ -141,8 +136,7 @@ public class MetaMethodExpression extends MethodExpression implements
 
     // Externalizable interface
 
-    public void readExternal(ObjectInput in) throws IOException,
-            ClassNotFoundException {
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         originalMethodExpression = (MethodExpression) in.readObject();
     }
 

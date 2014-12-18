@@ -33,8 +33,7 @@ import com.lowagie.text.html.simpleparser.ChainedProperties;
 import com.lowagie.text.html.simpleparser.ImageProvider;
 
 /**
- * Nuxeo image provider handling base url and authentication propagation when
- * resolving resources on server.
+ * Nuxeo image provider handling base url and authentication propagation when resolving resources on server.
  *
  * @since 5.4.2
  */
@@ -48,8 +47,7 @@ public class NuxeoITextImageProvider implements ImageProvider {
     }
 
     @Override
-    public Image getImage(String src, HashMap h, ChainedProperties cprops,
-            DocListener doc) {
+    public Image getImage(String src, HashMap h, ChainedProperties cprops, DocListener doc) {
         if (!src.startsWith("http")) {
             // add base url
             String base = VirtualHostHelper.getServerURL(request, false);
@@ -62,8 +60,7 @@ public class NuxeoITextImageProvider implements ImageProvider {
         }
         // pass jsession id for authentication propagation
         String uriPath = URIUtils.getURIPath(src);
-        src = uriPath + ";jsessionid="
-                + DocumentModelFunctions.extractJSessionId(request);
+        src = uriPath + ";jsessionid=" + DocumentModelFunctions.extractJSessionId(request);
         URI uri = URI.create(src);
         String uriQuery = uri.getQuery();
         if (uriQuery != null && uriQuery.length() > 0) {

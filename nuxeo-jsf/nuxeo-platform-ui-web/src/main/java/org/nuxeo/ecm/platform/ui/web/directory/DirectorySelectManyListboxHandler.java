@@ -27,8 +27,7 @@ import javax.faces.view.facelets.TagConfig;
  *
  * @since 6.0
  */
-public class DirectorySelectManyListboxHandler extends
-        DirectorySelectOneListboxHandler {
+public class DirectorySelectManyListboxHandler extends DirectorySelectOneListboxHandler {
 
     public DirectorySelectManyListboxHandler(TagConfig config) {
         super(config);

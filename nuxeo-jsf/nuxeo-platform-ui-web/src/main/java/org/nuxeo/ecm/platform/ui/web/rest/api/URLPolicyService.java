@@ -33,11 +33,9 @@ import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 /**
  * Service used on the web layer to handle navigation using meaningful URLs.
  * <p>
- * It handles a document context description, and also performs JSF model
- * related operations.
+ * It handles a document context description, and also performs JSF model related operations.
  * <p>
- * It holds pattern descriptors used to interact with the
- * {@link DocumentViewCodecManager}.
+ * It holds pattern descriptors used to interact with the {@link DocumentViewCodecManager}.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -50,8 +48,7 @@ public interface URLPolicyService {
     String DISABLE_ACTION_BINDING_KEY = "DisableActionBinding";
 
     /**
-     * @deprecated: use {@link NXAuthConstants#DISABLE_REDIRECT_REQUEST_KEY}
-     *              instead
+     * @deprecated: use {@link NXAuthConstants#DISABLE_REDIRECT_REQUEST_KEY} instead
      */
     @Deprecated
     String DISABLE_REDIRECT_REQUEST_KEY = "nuxeo.disable.redirect.wrapper";
@@ -59,14 +56,12 @@ public interface URLPolicyService {
     String FORCE_URL_ENCODING_REQUEST_KEY = "nuxeo.force.url.encoding";
 
     /**
-     * Returns true if request is a GET request and filter preprocessing is
-     * turned on.
+     * Returns true if request is a GET request and filter preprocessing is turned on.
      */
     boolean isCandidateForDecoding(HttpServletRequest httpRequest);
 
     /**
-     * Returns true if request is a POST request and filter redirection is
-     * turned on.
+     * Returns true if request is a POST request and filter redirection is turned on.
      */
     boolean isCandidateForEncoding(HttpServletRequest httpRequest);
 
@@ -76,14 +71,12 @@ public interface URLPolicyService {
      * @param request the current request.
      * @param docView to save
      */
-    void setDocumentViewInRequest(HttpServletRequest request,
-            DocumentView docView);
+    void setDocumentViewInRequest(HttpServletRequest request, DocumentView docView);
 
     /**
      * Builds the document view from request information.
      * <p>
-     * Delegates call to a document view codec found thanks to the default URL
-     * pattern descriptor.
+     * Delegates call to a document view codec found thanks to the default URL pattern descriptor.
      */
     DocumentView getDocumentViewFromRequest(HttpServletRequest request);
 
@@ -92,14 +85,12 @@ public interface URLPolicyService {
      * <p>
      * Delegates call to a document view codec found thanks given pattern name.
      */
-    DocumentView getDocumentViewFromRequest(String pattern,
-            HttpServletRequest request);
+    DocumentView getDocumentViewFromRequest(String pattern, HttpServletRequest request);
 
     /**
      * Returns a URL given a document view.
      * <p>
-     * Delegates call to a document view codec found thanks to the default URL
-     * pattern descriptor.
+     * Delegates call to a document view codec found thanks to the default URL pattern descriptor.
      */
     String getUrlFromDocumentView(DocumentView docView, String baseUrl);
 
@@ -108,40 +99,34 @@ public interface URLPolicyService {
      * <p>
      * Delegates call to a document view codec found thanks given pattern name.
      */
-    String getUrlFromDocumentView(String pattern, DocumentView docView,
-            String baseUrl);
+    String getUrlFromDocumentView(String pattern, DocumentView docView, String baseUrl);
 
     /**
      * Extracts parameters from request attributes.
      * <p>
-     * Apply them to the model using EL value bindings described on URL pattern
-     * descriptors.
+     * Apply them to the model using EL value bindings described on URL pattern descriptors.
      * <p>
-     * We look for binding values to set on the request attribute and on the
-     * document view parameters.
+     * We look for binding values to set on the request attribute and on the document view parameters.
      */
     void applyRequestParameters(FacesContext facesContext);
 
     /**
-     * Appends parameters to request so that the model can be restored after
-     * request.
+     * Appends parameters to request so that the model can be restored after request.
      * <p>
-     * Extract them using EL value bindings described on URL pattern
-     * descriptors.
+     * Extract them using EL value bindings described on URL pattern descriptors.
      * <p>
-     * If the document view is not null, values are set on its parameters. If
-     * the document view is null, values are set on the request parameters.
+     * If the document view is not null, values are set on its parameters. If the document view is null, values are set
+     * on the request parameters.
      */
     void appendParametersToRequest(FacesContext facesContext);
 
     /**
      * Performs redirection action.
      * <p>
-     * Extract it using an EL action binding described on URL pattern
-     * descriptors.
+     * Extract it using an EL action binding described on URL pattern descriptors.
      * <p>
-     * The action binding is called using given document view as parameter. If
-     * a sub URI is found, do nothing (may be an invalid resource URL).
+     * The action binding is called using given document view as parameter. If a sub URI is found, do nothing (may be an
+     * invalid resource URL).
      */
     String navigate(FacesContext context);
 
@@ -166,40 +151,33 @@ public interface URLPolicyService {
     void clear();
 
     /**
-     * Initializes the view id manager {@link StaticNavigationHandler} using
-     * the given servlet context.
+     * Initializes the view id manager {@link StaticNavigationHandler} using the given servlet context.
      *
      * @since 5.5
      * @since 6.0, passes the request and response too
      */
-    void initViewIdManager(ServletContext context, HttpServletRequest request,
-            HttpServletResponse response);
+    void initViewIdManager(ServletContext context, HttpServletRequest request, HttpServletResponse response);
 
     /**
-     * Returns the view id given an outcome, to dispatch to the right view
-     * given an outcome.
+     * Returns the view id given an outcome, to dispatch to the right view given an outcome.
      * <p>
-     * For instance, will return "/view_documents.xhtml" given
-     * "view_documents".
+     * For instance, will return "/view_documents.xhtml" given "view_documents".
      *
      * @since 5.5
      */
     String getViewIdFromOutcome(String outcome, HttpServletRequest httpRequest);
 
     /**
-     * Returns an outcome given a view id, to fill a document view when parsing
-     * a standard JSF URL.
+     * Returns an outcome given a view id, to fill a document view when parsing a standard JSF URL.
      * <p>
-     * For instance, will return "view_documents" given "/view_documents.xhtml"
-     * or "/view_documents.faces".
+     * For instance, will return "view_documents" given "/view_documents.xhtml" or "/view_documents.faces".
      *
      * @since 5.5
      */
     String getOutcomeFromViewId(String viewId, HttpServletRequest httpRequest);
 
     /**
-     * Returns an outcome given a url, to fill a document view when parsing a
-     * standard JSF URL.
+     * Returns an outcome given a url, to fill a document view when parsing a standard JSF URL.
      * <p>
      * It parses the given url to extract the outcome, and then calls
      * {@link #getOutcomeFromViewId(String, HttpServletRequest)}
@@ -209,8 +187,7 @@ public interface URLPolicyService {
     String getOutcomeFromUrl(String url, HttpServletRequest httpRequest);
 
     /**
-     * Flushes the URLPolicyService cache, to be called when hot reload is
-     * performed for instance.
+     * Flushes the URLPolicyService cache, to be called when hot reload is performed for instance.
      *
      * @since 5.5
      */

@@ -34,7 +34,6 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  * @author Anahide Tchertchian
- *
  */
 public final class DirectoryFunctions {
 
@@ -45,9 +44,7 @@ public final class DirectoryFunctions {
     }
 
     /**
-     *
-     * @param data comma-separated values that will be used to create a list of
-     *            structures containing an index also
+     * @param data comma-separated values that will be used to create a list of structures containing an index also
      * @return
      */
     public static List<CSLData> getCSLData(String data) {
@@ -67,7 +64,6 @@ public final class DirectoryFunctions {
     }
 
     /**
-     *
      * @param data
      * @return number of elements (comma sepparated) in the given string
      */
@@ -81,8 +77,7 @@ public final class DirectoryFunctions {
         return items.length;
     }
 
-    public static DocumentModel getDirectoryEntry(String directoryName,
-            String entryId) throws Exception {
+    public static DocumentModel getDirectoryEntry(String directoryName, String entryId) throws Exception {
         if (entryId == null) {
             return null;
         }
@@ -98,8 +93,7 @@ public final class DirectoryFunctions {
         }
     }
 
-    public static DocumentModelList getDirectoryEntries(String directoryName,
-            String... entryIds) throws Exception {
+    public static DocumentModelList getDirectoryEntries(String directoryName, String... entryIds) throws Exception {
         if (entryIds == null) {
             return null;
         }
@@ -122,13 +116,12 @@ public final class DirectoryFunctions {
         }
     }
 
-    public static DocumentModelList getDirectoryListEntries(
-            String directoryName, Collection<String> entryIds) throws Exception {
+    public static DocumentModelList getDirectoryListEntries(String directoryName, Collection<String> entryIds)
+            throws Exception {
         if (entryIds == null) {
             return null;
         }
-        return getDirectoryEntries(directoryName,
-                entryIds.toArray(new String[] {}));
+        return getDirectoryEntries(directoryName, entryIds.toArray(new String[] {}));
     }
 
 }

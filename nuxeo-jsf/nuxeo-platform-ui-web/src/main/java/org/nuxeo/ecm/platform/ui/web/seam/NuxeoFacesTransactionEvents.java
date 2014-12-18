@@ -32,11 +32,10 @@ import org.jboss.seam.transaction.FacesTransactionEvents;
 import org.jboss.seam.transaction.Transaction;
 
 /**
- * Custom listener to "transaction failed" event to customize behaviour (show
- * the message only if there are no other messages in the stack).
+ * Custom listener to "transaction failed" event to customize behaviour (show the message only if there are no other
+ * messages in the stack).
  * <p>
- * The default {@link FacesTransactionEvents} observer is disabled in
- * components.xml.
+ * The default {@link FacesTransactionEvents} observer is disabled in components.xml.
  *
  * @see FacesTransactionEvents
  * @since 6.0
@@ -56,12 +55,9 @@ public class NuxeoFacesTransactionEvents {
             // NXP-12483 + VEND-13: only add the default message if none was
             // already set
             FacesMessages fm = FacesMessages.instance();
-            if (fm.getCurrentMessages().size() == 0
-                    && fm.getLocalMessages().size() == 0) {
-                StatusMessages.instance().addFromResourceBundleOrDefault(
-                        getTransactionFailedMessageSeverity(),
-                        getTransactionFailedMessageKey(),
-                        getTransactionFailedMessage());
+            if (fm.getCurrentMessages().size() == 0 && fm.getLocalMessages().size() == 0) {
+                StatusMessages.instance().addFromResourceBundleOrDefault(getTransactionFailedMessageSeverity(),
+                        getTransactionFailedMessageKey(), getTransactionFailedMessage());
             }
         }
     }
@@ -83,7 +79,7 @@ public class NuxeoFacesTransactionEvents {
     }
 
     public void setTransactionFailedMessageEnabled(boolean enabled) {
-        this.transactionFailedMessageEnabled = enabled;
+        transactionFailedMessageEnabled = enabled;
     }
 
 }

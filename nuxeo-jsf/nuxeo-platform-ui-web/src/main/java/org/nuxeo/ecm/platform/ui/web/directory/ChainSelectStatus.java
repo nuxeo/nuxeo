@@ -39,7 +39,6 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class ChainSelectStatus extends UIOutput {
 
@@ -141,8 +140,7 @@ public class ChainSelectStatus extends UIOutput {
         String label = getStringProperty("label", null);
 
         ChainSelect chain = getChain();
-        Boolean displayValueOnly = chain.getBooleanProperty("displayValueOnly",
-                false);
+        Boolean displayValueOnly = chain.getBooleanProperty("displayValueOnly", false);
         String display = getStringProperty("display", "selection");
 
         Selection[] selections;
@@ -152,13 +150,11 @@ public class ChainSelectStatus extends UIOutput {
             selections = chain.getComponentValue();
         }
 
-        boolean multiParentSelect = chain.getBooleanProperty(
-                "multiParentSelect", false);
+        boolean multiParentSelect = chain.getBooleanProperty("multiParentSelect", false);
 
         if (displayValueOnly) {
             cssStyle = chain.getStringProperty("displayValueOnlyStyle", null);
-            cssStyleClass = chain.getStringProperty(
-                    "displayValueOnlyStyleClass", null);
+            cssStyleClass = chain.getStringProperty("displayValueOnlyStyleClass", null);
         }
 
         writer.startElement("div", this);
@@ -180,16 +176,13 @@ public class ChainSelectStatus extends UIOutput {
                 writer.writeAttribute("style", entryCssStyle, "style");
             }
             if (entryCssStyleClass != null) {
-                //FIXME: is this a typo? Should it be entryCssStyleClass down there instead of entryCssStyle?
+                // FIXME: is this a typo? Should it be entryCssStyleClass down there instead of entryCssStyle?
                 writer.writeAttribute("class", entryCssStyle, "class");
             }
-            if (!displayValueOnly && display.equals("value")
-                    && multiParentSelect) {
+            if (!displayValueOnly && display.equals("value") && multiParentSelect) {
                 UICommand button = (UICommand) getFacet("removeButton");
                 if (button == null) {
-                    throw new RuntimeException(
-                            "f:facet with name='removeButton' not found for component "
-                                    + getId());
+                    throw new RuntimeException("f:facet with name='removeButton' not found for component " + getId());
                 }
                 String selectionId = selections[i].getValue(chain.getKeySeparator());
                 getUIParameter(button).setValue(selectionId);
@@ -214,8 +207,7 @@ public class ChainSelectStatus extends UIOutput {
                         compDisplay = chain.compInfos.get(i).display;
                     } else {
                         // fallback on the old solution
-                        localize = chain.getComponent(j).getBooleanProperty(
-                                "localize", false);
+                        localize = chain.getComponent(j).getBooleanProperty("localize", false);
                         compDisplay = chain.getComponent(j).getDisplay();
                     }
 
@@ -235,9 +227,8 @@ public class ChainSelectStatus extends UIOutput {
                 }
             }
 
-            String concatenatedLabel = StringUtils.join(displayedLabels,
-                    separator);
-            if (concatenatedLabel.compareTo("") == 0 && displayedLabels.length != 0){
+            String concatenatedLabel = StringUtils.join(displayedLabels, separator);
+            if (concatenatedLabel.compareTo("") == 0 && displayedLabels.length != 0) {
                 concatenatedLabel = translate(context, "label.directories.error");
             }
             writer.write(concatenatedLabel);

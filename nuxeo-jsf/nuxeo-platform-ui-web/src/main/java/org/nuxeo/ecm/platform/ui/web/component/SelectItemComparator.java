@@ -34,8 +34,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
-public class SelectItemComparator implements Comparator<SelectItem>,
-        Serializable {
+public class SelectItemComparator implements Comparator<SelectItem>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -47,10 +46,9 @@ public class SelectItemComparator implements Comparator<SelectItem>,
 
     private final Locale locale;
 
-    public SelectItemComparator(String ordering, Boolean caseSentitive,
-            Locale locale) {
+    public SelectItemComparator(String ordering, Boolean caseSentitive, Locale locale) {
         this.ordering = StringUtils.split(ordering, ",");
-        this.caseSensitive = caseSentitive;
+        caseSensitive = caseSentitive;
         if (locale == null) {
             FacesContext context = FacesContext.getCurrentInstance();
             this.locale = context.getViewRoot().getLocale();
@@ -58,7 +56,7 @@ public class SelectItemComparator implements Comparator<SelectItem>,
             this.locale = locale;
         }
         collator = Collator.getInstance(this.locale);
-        if (Boolean.TRUE.equals(this.caseSensitive)) {
+        if (Boolean.TRUE.equals(caseSensitive)) {
             collator.setStrength(Collator.TERTIARY); // TERTIARY will make a
                                                      // difference between 'a'
                                                      // and 'A'
@@ -86,6 +84,7 @@ public class SelectItemComparator implements Comparator<SelectItem>,
         }
     }
 
+    @Override
     public int compare(SelectItem item1, SelectItem item2) {
         for (String field : ordering) {
             int compare = compareField(field, item1, item2);

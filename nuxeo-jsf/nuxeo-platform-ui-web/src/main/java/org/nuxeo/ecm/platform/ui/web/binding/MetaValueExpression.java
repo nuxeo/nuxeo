@@ -35,13 +35,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 /**
- * Meta value expression used to invoke the EL expression that is already the
- * result of a value expression.
+ * Meta value expression used to invoke the EL expression that is already the result of a value expression.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class MetaValueExpression extends ValueExpression implements
-        Serializable {
+public class MetaValueExpression extends ValueExpression implements Serializable {
 
     private static final long serialVersionUID = -2721042412903607760L;
 
@@ -108,14 +106,11 @@ public class MetaValueExpression extends ValueExpression implements
                     FacesContext faces = FacesContext.getCurrentInstance();
                     Application app = faces.getApplication();
                     ExpressionFactory factory = app.getExpressionFactory();
-                    ValueExpression newExpr = factory.createValueExpression(
-                            context, expression, Object.class);
+                    ValueExpression newExpr = factory.createValueExpression(context, expression, Object.class);
                     try {
                         res = newExpr.getValue(context);
                     } catch (Exception err) {
-                        log.error(String.format(
-                                "Error processing expression %s: %s",
-                                expression, err));
+                        log.error(String.format("Error processing expression %s: %s", expression, err));
                         res = null;
                     }
                 } else {
@@ -138,8 +133,7 @@ public class MetaValueExpression extends ValueExpression implements
 
     // Externalizable interface
 
-    public void readExternal(ObjectInput in) throws IOException,
-            ClassNotFoundException {
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         originalValueExpression = (ValueExpression) in.readObject();
     }
 

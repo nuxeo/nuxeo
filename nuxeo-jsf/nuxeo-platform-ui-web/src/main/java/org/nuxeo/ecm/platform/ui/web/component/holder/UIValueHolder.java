@@ -41,11 +41,10 @@ import org.nuxeo.ecm.platform.ui.web.component.ResettableComponent;
 import com.sun.faces.facelets.tag.jsf.ComponentSupport;
 
 /**
- * Component that keeps and exposes a value to the context during each JSF
- * phase.
+ * Component that keeps and exposes a value to the context during each JSF phase.
  * <p>
- * Can be bound to a value as an input component, or not submit the value and
- * still expose it to the context at build time as well as at render time.
+ * Can be bound to a value as an input component, or not submit the value and still expose it to the context at build
+ * time as well as at render time.
  *
  * @since 5.5
  */
@@ -78,6 +77,7 @@ public class UIValueHolder extends HtmlInputText implements ResettableComponent 
         return COMPONENT_TYPE;
     }
 
+    @Override
     public boolean getRendersChildren() {
         return true;
     }
@@ -93,8 +93,7 @@ public class UIValueHolder extends HtmlInputText implements ResettableComponent 
                 origEvent.getComponent().broadcast(origEvent);
             } finally {
                 if (alias != null) {
-                    AliasVariableMapper.removeAliasesExposedToRequest(context,
-                            alias.getId());
+                    AliasVariableMapper.removeAliasesExposedToRequest(context, alias.getId());
                 }
             }
         } else {
@@ -108,16 +107,16 @@ public class UIValueHolder extends HtmlInputText implements ResettableComponent 
         super.queueEvent(event);
     }
 
-    public boolean invokeOnComponent(FacesContext context, String clientId,
-            ContextCallback callback) throws FacesException {
+    @Override
+    public boolean invokeOnComponent(FacesContext context, String clientId, ContextCallback callback)
+            throws FacesException {
         AliasVariableMapper alias = getAliasVariableMapper(context);
         try {
             AliasVariableMapper.exposeAliasesToRequest(context, alias);
             return super.invokeOnComponent(context, clientId, callback);
         } finally {
             if (alias != null) {
-                AliasVariableMapper.removeAliasesExposedToRequest(context,
-                        alias.getId());
+                AliasVariableMapper.removeAliasesExposedToRequest(context, alias.getId());
             }
         }
     }
@@ -140,8 +139,7 @@ public class UIValueHolder extends HtmlInputText implements ResettableComponent 
         super.encodeEnd(context);
         AliasVariableMapper alias = getAliasVariableMapper(context);
         if (alias != null) {
-            AliasVariableMapper.removeAliasesExposedToRequest(context,
-                    alias.getId());
+            AliasVariableMapper.removeAliasesExposedToRequest(context, alias.getId());
         }
     }
 
@@ -165,8 +163,7 @@ public class UIValueHolder extends HtmlInputText implements ResettableComponent 
             throw e;
         }
 
-        processFacetsAndChildrenWithVariable(context,
-                PhaseId.APPLY_REQUEST_VALUES);
+        processFacetsAndChildrenWithVariable(context, PhaseId.APPLY_REQUEST_VALUES);
 
         if (isImmediate()) {
             executeValidate(context);
@@ -184,8 +181,7 @@ public class UIValueHolder extends HtmlInputText implements ResettableComponent 
             return;
         }
 
-        processFacetsAndChildrenWithVariable(context,
-                PhaseId.PROCESS_VALIDATIONS);
+        processFacetsAndChildrenWithVariable(context, PhaseId.PROCESS_VALIDATIONS);
 
         if (!isImmediate()) {
             executeValidate(context);
@@ -219,8 +215,7 @@ public class UIValueHolder extends HtmlInputText implements ResettableComponent 
             return;
         }
 
-        processFacetsAndChildrenWithVariable(context,
-                PhaseId.UPDATE_MODEL_VALUES);
+        processFacetsAndChildrenWithVariable(context, PhaseId.UPDATE_MODEL_VALUES);
 
         if (Boolean.TRUE.equals(getSubmitValue())) {
             try {
@@ -236,30 +231,26 @@ public class UIValueHolder extends HtmlInputText implements ResettableComponent 
         }
     }
 
-    protected final void processFacetsAndChildren(final FacesContext context,
-            final PhaseId phaseId) {
+    protected final void processFacetsAndChildren(final FacesContext context, final PhaseId phaseId) {
         List<UIComponent> stamps = getChildren();
         for (UIComponent stamp : stamps) {
             processComponent(context, stamp, phaseId);
         }
     }
 
-    protected final void processFacetsAndChildrenWithVariable(
-            final FacesContext context, final PhaseId phaseId) {
+    protected final void processFacetsAndChildrenWithVariable(final FacesContext context, final PhaseId phaseId) {
         AliasVariableMapper alias = getAliasVariableMapper(context);
         try {
             AliasVariableMapper.exposeAliasesToRequest(context, alias);
             processFacetsAndChildren(context, phaseId);
         } finally {
             if (alias != null) {
-                AliasVariableMapper.removeAliasesExposedToRequest(context,
-                        alias.getId());
+                AliasVariableMapper.removeAliasesExposedToRequest(context, alias.getId());
             }
         }
     }
 
-    protected final void processComponent(FacesContext context,
-            UIComponent component, PhaseId phaseId) {
+    protected final void processComponent(FacesContext context, UIComponent component, PhaseId phaseId) {
         if (component != null) {
             if (phaseId == PhaseId.APPLY_REQUEST_VALUES) {
                 component.processDecodes(context);
@@ -337,10 +328,7 @@ public class UIValueHolder extends HtmlInputText implements ResettableComponent 
         // reuse facelets id set on component
         String aliasId = getFaceletId();
         alias.setId(aliasId);
-        alias.setVariable(
-                var,
-                ctx.getApplication().getExpressionFactory().createValueExpression(
-                        value, Object.class));
+        alias.setVariable(var, ctx.getApplication().getExpressionFactory().createValueExpression(value, Object.class));
         return alias;
     }
 
@@ -356,15 +344,12 @@ public class UIValueHolder extends HtmlInputText implements ResettableComponent 
     }
 
     /**
-     * Saves the locally set literal values kept on the component (from
-     * standard tags attributes) and since 5.6, also saves the submitted value
-     * as {@link UIInput#saveState(FacesContext)} does not do it (see
-     * NXP-8898).
+     * Saves the locally set literal values kept on the component (from standard tags attributes) and since 5.6, also
+     * saves the submitted value as {@link UIInput#saveState(FacesContext)} does not do it (see NXP-8898).
      */
     @Override
     public Object saveState(FacesContext context) {
-        return new Object[] { super.saveState(context), var, submitValue,
-                getSubmittedValue() };
+        return new Object[] { super.saveState(context), var, submitValue, getSubmittedValue() };
     }
 
     /**
@@ -390,8 +375,7 @@ public class UIValueHolder extends HtmlInputText implements ResettableComponent 
             return super.visitTree(visitContext, callback);
         } finally {
             if (alias != null) {
-                AliasVariableMapper.removeAliasesExposedToRequest(facesContext,
-                        alias.getId());
+                AliasVariableMapper.removeAliasesExposedToRequest(facesContext, alias.getId());
             }
         }
     }
@@ -402,8 +386,8 @@ public class UIValueHolder extends HtmlInputText implements ResettableComponent 
 
     public NuxeoValueHolderBean lookupBean(FacesContext ctx) {
         String expr = "#{" + NuxeoValueHolderBean.NAME + "}";
-        NuxeoValueHolderBean bean = (NuxeoValueHolderBean) ctx.getApplication().evaluateExpressionGet(
-                ctx, expr, Object.class);
+        NuxeoValueHolderBean bean = (NuxeoValueHolderBean) ctx.getApplication().evaluateExpressionGet(ctx, expr,
+                Object.class);
         if (bean == null) {
             log.error("Managed bean not found: " + expr);
             return null;

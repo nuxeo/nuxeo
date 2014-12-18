@@ -47,8 +47,7 @@ public abstract class DirectorySelectItemFactory extends SelectItemFactory {
                 DirectoryService service = DirectoryHelper.getDirectoryService();
                 directorySession = service.open(dirName);
             } catch (Exception e) {
-                log.error(String.format("Error when retrieving directory %s",
-                        dirName), e);
+                log.error(String.format("Error when retrieving directory %s", dirName), e);
             }
         }
         return directorySession;
@@ -63,6 +62,7 @@ public abstract class DirectorySelectItemFactory extends SelectItemFactory {
         }
     }
 
+    @Override
     public SelectItem createSelectItem(Object value) {
         SelectItem item = null;
         if (value instanceof SelectItem) {

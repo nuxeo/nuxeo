@@ -39,7 +39,6 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
  * Component to display a chained directory entry.
  *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class ChainSelectOutputComponent extends UIOutput {
 
@@ -181,9 +180,8 @@ public class ChainSelectOutputComponent extends UIOutput {
     }
 
     /**
-     * Hide legacy "displayIdAndLabel" property. Use "display" if set; else if
-     * "displayIdAndLabel" is true, return "idAndLabel", else default to
-     * "label".
+     * Hide legacy "displayIdAndLabel" property. Use "display" if set; else if "displayIdAndLabel" is true, return
+     * "idAndLabel", else default to "label".
      *
      * @return whether to display the id, the label or both
      */
@@ -248,8 +246,8 @@ public class ChainSelectOutputComponent extends UIOutput {
     }
 
     /**
-     * Transform a comma-separated list of keys into a selection. The list can
-     * be separated by the <b>keySeparator</b> string
+     * Transform a comma-separated list of keys into a selection. The list can be separated by the <b>keySeparator</b>
+     * string
      *
      * @param keyEnum the comma-separated list of keys
      * @return
@@ -286,8 +284,7 @@ public class ChainSelectOutputComponent extends UIOutput {
             } else {
                 String parentId;
                 if (qualifiedParentKeys) {
-                    parentId = StringUtils.join(keyList.iterator(),
-                            keySeparator);
+                    parentId = StringUtils.join(keyList.iterator(), keySeparator);
                 } else {
                     parentId = columns[i - 1];
                 }
@@ -299,8 +296,7 @@ public class ChainSelectOutputComponent extends UIOutput {
             if (!displayObsoleteEntries) {
                 filter.put("obsolete", 0);
             }
-            DirectorySelectItem item = DirectoryHelper.instance().getSelectItem(
-                    directoryName, filter);
+            DirectorySelectItem item = DirectoryHelper.instance().getSelectItem(directoryName, filter);
             if (item == null) {
                 item = new DirectorySelectItem(id, id);
             }
@@ -317,8 +313,7 @@ public class ChainSelectOutputComponent extends UIOutput {
             item.setLabel(label);
             itemList.add(item);
         }
-        return new Selection(
-                itemList.toArray(new DirectorySelectItem[columns.length]));
+        return new Selection(itemList.toArray(new DirectorySelectItem[columns.length]));
     }
 
     protected static String translate(FacesContext context, String label) {
@@ -336,8 +331,7 @@ public class ChainSelectOutputComponent extends UIOutput {
         } else {
             ret = entrySeparator;
         }
-        return entrySeparator == null ? DEFAULT_ENTRY_SEPARATOR
-                : entrySeparator;
+        return entrySeparator == null ? DEFAULT_ENTRY_SEPARATOR : entrySeparator;
     }
 
     public void setEntrySeparator(String entrySeparator) {

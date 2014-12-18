@@ -56,12 +56,11 @@ public class DateTimeValidator implements Validator, StateHolder {
 
     @Override
     public void setTransient(boolean newTransientValue) {
-        this.transientValue = newTransientValue;
+        transientValue = newTransientValue;
     }
 
     @Override
-    public void validate(FacesContext context, UIComponent component,
-            Object value) throws ValidatorException {
+    public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
         if ((context == null) || (component == null)) {
             throw new NullPointerException();
         }
@@ -71,8 +70,7 @@ public class DateTimeValidator implements Validator, StateHolder {
             c.setTime(date);
             final int year = c.get(Calendar.YEAR);
             if (year > 9999) {
-                throw new ValidatorException(MessageFactory.getMessage(context,
-                        OUT_OF_RANGE_MESSAGE_ID, year));
+                throw new ValidatorException(MessageFactory.getMessage(context, OUT_OF_RANGE_MESSAGE_ID, year));
             }
         }
     }

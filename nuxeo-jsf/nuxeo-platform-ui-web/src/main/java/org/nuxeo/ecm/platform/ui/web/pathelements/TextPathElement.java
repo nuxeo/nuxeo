@@ -34,14 +34,17 @@ public class TextPathElement implements PathElement {
         this.name = name;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getType() {
         return TYPE;
     }
 
+    @Override
     public boolean isLink() {
         return false;
     }
