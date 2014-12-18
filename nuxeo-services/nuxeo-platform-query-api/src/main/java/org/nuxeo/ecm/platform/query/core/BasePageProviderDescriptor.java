@@ -159,9 +159,6 @@ public abstract class BasePageProviderDescriptor {
         return name;
     }
 
-    /**
-     * @since 6.0
-     */
     public void setName(String name) {
         this.name = name;
     }

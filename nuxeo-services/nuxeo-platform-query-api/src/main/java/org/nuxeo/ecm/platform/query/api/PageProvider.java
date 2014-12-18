@@ -392,7 +392,7 @@ public interface PageProvider<T> extends Serializable {
     /**
      * @since 6.0
      */
-    Map<String, Aggregate> getAggregates();
+    Map<String, Aggregate<? extends Bucket>> getAggregates();
 
     /**
      * @since 6.0

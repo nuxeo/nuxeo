@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
+import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -136,7 +137,7 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
         List<AggregateDefinition> aggDefs = pp.getAggregateDefinitions();
         assertEquals(5, aggDefs.size());
         for (AggregateDefinition def : aggDefs) {
-            AggregateBase agg = new AggregateBase(def, pp.getSearchDocumentModel());
+            AggregateBase<Bucket> agg = new AggregateBase<Bucket>(def, pp.getSearchDocumentModel());
             switch (agg.getId()) {
             case "source_agg":
                 assertEquals("Aggregate(source_agg, terms, dc:source, [for search, you know], null)", agg.toString());

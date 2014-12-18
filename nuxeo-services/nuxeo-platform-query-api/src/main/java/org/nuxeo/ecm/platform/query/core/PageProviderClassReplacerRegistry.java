@@ -26,6 +26,8 @@ import org.nuxeo.ecm.platform.query.api.PageProviderClassReplacerDefinition;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
+ * Registry for page provider class replacements.
+ *
  * @since 6.0
  */
 public class PageProviderClassReplacerRegistry extends
@@ -33,7 +35,7 @@ public class PageProviderClassReplacerRegistry extends
 
     private static final Log log = LogFactory.getLog(PageProviderClassReplacerRegistry.class);
 
-    protected Map<String, Class<? extends PageProvider>> replacerMap = new HashMap<>();
+    protected Map<String, Class<? extends PageProvider<?>>> replacerMap = new HashMap<>();
 
     @Override
     public String getContributionId(PageProviderClassReplacerDefinition contrib) {
@@ -52,7 +54,7 @@ public class PageProviderClassReplacerRegistry extends
             return;
         }
         log.debug("Registering page provider class replacer using " + name);
-        Class<? extends PageProvider> klass = getPageProviderClass(desc.getPageProviderClassName());
+        Class<? extends PageProvider<?>> klass = getPageProviderClass(desc.getPageProviderClassName());
         for (String providerName : desc.getPageProviderNames()) {
             replacerMap.put(providerName, klass);
         }
@@ -82,10 +84,11 @@ public class PageProviderClassReplacerRegistry extends
         throw new UnsupportedOperationException();
     }
 
-    protected Class<? extends PageProvider> getPageProviderClass(final String className) {
-        Class<? extends PageProvider> ret;
+    @SuppressWarnings("unchecked")
+    protected Class<? extends PageProvider<?>> getPageProviderClass(final String className) {
+        Class<? extends PageProvider<?>> ret;
         try {
-            ret = (Class<? extends PageProvider>) Class.forName(className);
+            ret = (Class<? extends PageProvider<?>>) Class.forName(className);
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException(String.format("Class %s not found", className));
         }
@@ -97,7 +100,7 @@ public class PageProviderClassReplacerRegistry extends
     }
 
     // API
-    public Class<? extends PageProvider> getClassForPageProvider(String name) {
+    public Class<? extends PageProvider<?>> getClassForPageProvider(String name) {
         return replacerMap.get(name);
     }
 

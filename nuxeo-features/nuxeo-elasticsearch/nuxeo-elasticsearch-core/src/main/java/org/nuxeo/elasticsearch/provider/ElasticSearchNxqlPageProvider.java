@@ -49,6 +49,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.9.3
  */
 public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider {
+
     public static final String CORE_SESSION_PROPERTY = "coreSession";
 
     public static final String SEARCH_ON_ALL_REPOSITORIES_PROPERTY = "searchAllRepositories";
@@ -59,7 +60,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
 
     protected List<DocumentModel> currentPageDocuments;
 
-    protected HashMap<String, Aggregate> currentAggregates;
+    protected HashMap<String, Aggregate<? extends Bucket>> currentAggregates;
 
     @Override
     public List<DocumentModel> getCurrentPage() {
@@ -88,8 +89,8 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
             }
             EsResult ret = ess.queryAndAggregate(nxQuery);
             DocumentModelList dmList = ret.getDocuments();
-            currentAggregates = new HashMap<String, Aggregate>(ret.getAggregates().size());
-            for (Aggregate agg : ret.getAggregates()) {
+            currentAggregates = new HashMap<String, Aggregate<? extends Bucket>>(ret.getAggregates().size());
+            for (Aggregate<Bucket> agg : ret.getAggregates()) {
                 currentAggregates.put(agg.getId(), agg);
             }
             setResultsCount(dmList.totalSize());
@@ -151,7 +152,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
     }
 
     @Override
-    public Map<String, Aggregate> getAggregates() {
+    public Map<String, Aggregate<? extends Bucket>> getAggregates() {
         getCurrentPage();
         return currentAggregates;
     }
