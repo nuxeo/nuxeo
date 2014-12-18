@@ -38,6 +38,8 @@ import org.nuxeo.ecm.platform.ui.web.binding.DownloadMethodExpression;
  */
 public class UIOutputFileCommandLink extends HtmlCommandLink {
 
+    public static final String COMPONENT_TYPE = UIOutputFileCommandLink.class.getName();
+
     @Override
     public MethodExpression getActionExpression() {
         UIComponent parent = getParent();
