@@ -39,4 +39,19 @@ public interface Executor {
      */
     ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params);
 
+    /**
+     * Same method {@link Executor#exec(org.nuxeo.ecm.platform.commandline
+     * .executor.service.CommandLineDescriptor, org.nuxeo.ecm.platform
+     * .commandline.executor.api.CmdParameters)} but with the parameter
+     * quoteParameter.
+     *
+     * @param cmdDesc        Command to run. Cannot be null.
+     * @param params         Parameters passed to the command. Cannot be null.
+     * @param quoteParameter Define if parameters should be surrounded by
+     *                       quotes or not.
+     * @return Result of the execution
+     * @since 7.1
+     */
+    ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params, boolean
+            quoteParameter);
 }

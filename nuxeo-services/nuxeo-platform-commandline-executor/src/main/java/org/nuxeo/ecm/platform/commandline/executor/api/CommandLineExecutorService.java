@@ -38,6 +38,18 @@ public interface CommandLineExecutorService {
 
     ExecResult execCommand(String commandName, CmdParameters params) throws CommandNotAvailable;
 
+    /**
+     * @param commandName    The command id.
+     * @param params         Parameters to inject into the command line.
+     * @param quoteParameter Define if parameters are surrounding by quotes
+     *                       or not.
+     * @return Command line execution result.
+     * @throws CommandNotAvailable
+     * @since 7.1
+     */
+    ExecResult execCommand(String commandName, CmdParameters params,
+            boolean quoteParameter) throws CommandNotAvailable;
+
     List<String> getRegistredCommands();
 
     List<String> getAvailableCommands();

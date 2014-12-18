@@ -61,6 +61,13 @@ public abstract class AbstractExecutor implements Executor {
         return paramString;
     }
 
+    public static String getParametersString(CommandLineDescriptor cmdDesc, CmdParameters params, boolean quoteParameter) {
+        String paramString = cmdDesc.getParametersString();
+        Map<String, String> paramsValues = params.getParameters();
+        paramString = replaceParams(paramsValues, paramString, quoteParameter);
+        return paramString;
+    }
+
     /**
      * Returns parameters as a String array after having replaced parameterized values inside.
      *
@@ -87,6 +94,23 @@ public abstract class AbstractExecutor implements Executor {
                 String value = paramsValues.get(pname);
                 commandLineExecutorService.checkParameter(value);
                 paramString = paramString.replace("#{" + pname + "}", String.format("\"%s\"", value));
+            }
+        }
+        return paramString;
+    }
+
+    private static String replaceParams(Map<String, String> paramsValues, String paramString, boolean quoteParameter) {
+        CommandLineExecutorService commandLineExecutorService = Framework.getLocalService(CommandLineExecutorService.class);
+        for (String pname : paramsValues.keySet()) {
+            String param = "#{" + pname + "}";
+            if (paramString.contains(param)) {
+                String value = paramsValues.get(pname);
+                commandLineExecutorService.checkParameter(value);
+                if(quoteParameter) {
+                    paramString = paramString.replace("#{" + pname + "}", String.format("\"%s\"", value));
+                }else{
+                    paramString = paramString.replace("#{" + pname + "}", String.format("%s", value));
+                }
             }
         }
         return paramString;

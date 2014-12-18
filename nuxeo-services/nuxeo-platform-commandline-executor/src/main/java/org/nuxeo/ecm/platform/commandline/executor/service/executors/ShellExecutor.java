@@ -59,6 +59,32 @@ public class ShellExecutor extends AbstractExecutor {
         }
         String commandLine = StringUtils.join(cmd, " ");
 
+        return getExecResult(cmdDesc, t0, output, cmd, commandLine);
+    }
+
+    @Override
+    public ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params, boolean quoteParameter) {
+        long t0 = System.currentTimeMillis();
+        List<String> output = Collections.synchronizedList(new ArrayList<String>());
+
+        String[] cmd;
+        if (isWindows()) {
+            String[] paramsArray = getParametersArray(cmdDesc, params);
+            cmd = new String[] { "cmd", "/C", cmdDesc.getCommand() };
+            cmd = (String[]) ArrayUtils.addAll(cmd, paramsArray);
+        } else {
+            String paramsString = getParametersString(cmdDesc, params, quoteParameter);
+            cmd = new String[] { "/bin/sh", "-c", cmdDesc.getCommand() + " " + paramsString };
+        }
+        String commandLine = StringUtils.join(cmd, " ");
+
+        return getExecResult(cmdDesc, t0, output, cmd, commandLine);
+    }
+
+    /**
+     * @since 7.1
+     */
+    protected ExecResult getExecResult(CommandLineDescriptor cmdDesc, long t0, List<String> output, String[] cmd, String commandLine) {
         Process p1;
         try {
             if (log.isDebugEnabled()) {
@@ -76,6 +102,7 @@ public class ShellExecutor extends AbstractExecutor {
         } else {
             out = new ThreadedStreamGobbler(p1.getInputStream(), SimpleLog.LOG_LEVEL_DEBUG);
             err = new ThreadedStreamGobbler(p1.getErrorStream(), SimpleLog.LOG_LEVEL_ERROR);
+
         }
 
         err.start();

@@ -145,14 +145,29 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
      */
     @Override
     public ExecResult execCommand(String commandName, CmdParameters params) throws CommandNotAvailable {
+        CommandLineDescriptor cmdDesc = getCommandLineDescriptor(commandName);
+        Executor executor = executors.get(cmdDesc.getExecutor());
+        return executor.exec(cmdDesc, params);
+    }
+
+    @Override
+    public ExecResult execCommand(String commandName, CmdParameters params,
+            boolean quoteParameter) throws CommandNotAvailable {
+        CommandLineDescriptor cmdDesc = getCommandLineDescriptor(commandName);
+        Executor executor = executors.get(cmdDesc.getExecutor());
+        return executor.exec(cmdDesc, params, quoteParameter);
+    }
+
+    /**
+     * @since 7.1
+     */
+    protected CommandLineDescriptor getCommandLineDescriptor(String
+            commandName) throws CommandNotAvailable {
         CommandAvailability availability = getCommandAvailability(commandName);
         if (!availability.isAvailable()) {
             throw new CommandNotAvailable(availability);
         }
-
-        CommandLineDescriptor cmdDesc = commandDescriptors.get(commandName);
-        Executor executor = executors.get(cmdDesc.getExecutor());
-        return executor.exec(cmdDesc, params);
+        return commandDescriptors.get(commandName);
     }
 
     @Override
