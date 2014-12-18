@@ -2,10 +2,10 @@
 
   <extension target="org.nuxeo.binary.metadata.api.service"
              point="metadataMappings">
-    <metadataMapping id="xmp" processor="exifTool" blobXPath="file:content">
-      <metadata name="tiff:ImageWidth" xpath="xmp:ImageWidth"/>
-      <metadata name="tiff:ImageLength" xpath="xmp:ImageLength"/>
-      <metadata name="xmp:CreatorTool" xpath="xmp:CreatorTool"/>
+    <metadataMapping id="File" processor="exifTool" blobXPath="file:content">
+      <metadata name="EXIF:Orientation" xpath="dc:description"/>
+      <metadata name="EXIF:ImageHeight" xpath="dc:title"/>
+      <metadata name="EXIF:Software" xpath="dc:source"/>
     </metadataMapping>
   </extension>
 
@@ -13,10 +13,10 @@
              point="metadataRules">
     <rule id="default" order="0" enabled="true" async="false">
       <metadataMappings>
-        <metadataMapping-id>xmp</metadataMapping-id>
+        <metadataMapping-id>File</metadataMapping-id>
       </metadataMappings>
       <filters>
-        <filter-id>hasXMPFacet</filter-id>
+        <filter-id>hasFileFacet</filter-id>
       </filters>
     </rule>
   </extension>
