@@ -82,8 +82,6 @@ public class UIOutputFile extends UIOutput implements NamingContainer {
 
     private Boolean iconRendered;
 
-    // XXX AT: maybe add action listeners
-
     public UIOutputFile() {
         FacesContext faces = FacesContext.getCurrentInstance();
         Application app = faces.getApplication();

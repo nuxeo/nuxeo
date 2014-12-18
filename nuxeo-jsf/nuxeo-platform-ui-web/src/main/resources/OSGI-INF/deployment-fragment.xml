@@ -435,6 +435,15 @@
       </component-class>
     </component>
 
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.file.UIOutputFileCommandLink
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.file.UIOutputFileCommandLink
+      </component-class>
+    </component>
+
     <!-- directory components -->
 
     <component>
