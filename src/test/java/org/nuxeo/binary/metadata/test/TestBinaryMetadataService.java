@@ -16,14 +16,7 @@
  */
 package org.nuxeo.binary.metadata.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
+import com.google.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
@@ -36,16 +29,26 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @since 7.1
  */
 @RunWith(FeaturesRunner.class)
 @Features(BinaryMetadataFeature.class)
-@LocalDeploy({ "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-contrib-test.xml",
-        "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-file-contrib-test.xml" })
-@RepositoryConfig(cleanup = Granularity.METHOD, init = BinaryMetadataServerInit.class)
+@LocalDeploy({ "org.nuxeo.binary.metadata" +
+        ".test:OSGI-INF/binary-metadata-contrib-test.xml",
+        "org.nuxeo.binary.metadata" +
+                ".test:OSGI-INF/binary-metadata-file-contrib-test.xml" })
+@RepositoryConfig(cleanup = Granularity.METHOD,
+        init = BinaryMetadataServerInit.class)
 public class TestBinaryMetadataService {
 
     @Inject
@@ -56,30 +59,87 @@ public class TestBinaryMetadataService {
 
     List<String> musicMetadata = new ArrayList<String>() {
         {
-            add("Title");
-            add("Lyrics-por");
-            add("Publisher");
-            add("Comment");
+            add("ID3:Title");
+            add("ID3:Lyrics-por");
+            add("ID3:Publisher");
+            add("ID3:Comment");
         }
     };
 
+    List<String> PSDMetadata = new ArrayList<String>() {
+        {
+            add("EXIF:ImageHeight");
+            add("EXIF:Software");
+        }
+    };
+
+    private static final Map<String, Object> inputPSDMetadata;
+
+    static {
+        inputPSDMetadata = new HashMap<>();
+        inputPSDMetadata.put("EXIF:ImageHeight", 200);
+        inputPSDMetadata.put("EXIF:Software", "Nuxeo");
+    }
+
     @Test
     public void itShouldExtractAllMetadataFromBinary() {
+        // Get the document with MP3 attached
         DocumentModel musicFile = BinaryMetadataServerInit.getFile(0, session);
         BlobHolder musicBlobHolder = musicFile.getAdapter(BlobHolder.class);
-        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(musicBlobHolder.getBlob());
+        Map<String, Object> blobProperties = binaryMetadataService
+                .readMetadata(musicBlobHolder.getBlob());
         assertNotNull(blobProperties);
-        assertEquals("Twist", blobProperties.get("Title").toString());
-        assertEquals("Divine Recordings", blobProperties.get("Publisher").toString());
+        assertEquals(49, blobProperties.size());
+        assertEquals("Twist", blobProperties.get("ID3:Title").toString());
+        assertEquals("Divine Recordings", blobProperties.get("ID3:Publisher")
+                .toString());
     }
 
     @Test
     public void itShouldExtractGivenMetadataFromBinary() {
+        // Get the document with MP3 attached
         DocumentModel musicFile = BinaryMetadataServerInit.getFile(0, session);
         BlobHolder musicBlobHolder = musicFile.getAdapter(BlobHolder.class);
-        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(musicBlobHolder.getBlob(), musicMetadata);
+        Map<String, Object> blobProperties = binaryMetadataService
+                .readMetadata(musicBlobHolder.getBlob(), musicMetadata);
         assertNotNull(blobProperties);
-        assertEquals("Twist", blobProperties.get("Title").toString());
-        assertEquals("Divine Recordings", blobProperties.get("Publisher").toString());
+        // 5 properties cause: SourceFile is a mandatory property extracted
+        // by ExifTool - to be excluded post execution.
+        assertEquals(5, blobProperties.size());
+        assertEquals("Twist", blobProperties.get("ID3:Title").toString());
+        assertEquals("Divine Recordings", blobProperties.get("ID3:Publisher")
+                .toString());
+    }
+
+    @Test
+    public void itShouldWriteGivenMetadataInBinary() {
+        // Get the document with PSD attached
+        DocumentModel psdFile = BinaryMetadataServerInit.getFile(3, session);
+        BlobHolder psdBlobHolder = psdFile.getAdapter(BlobHolder.class);
+
+        //Check the content
+        Map<String, Object> blobProperties = binaryMetadataService
+                .readMetadata(psdBlobHolder.getBlob(), PSDMetadata);
+        assertNotNull(blobProperties);
+        assertNotNull(blobProperties);
+        assertEquals(3, blobProperties.size());
+        assertEquals(100, blobProperties.get("EXIF:ImageHeight"));
+        assertEquals("Adobe Photoshop CS4 Macintosh",
+                blobProperties.get("EXIF:Software")
+                .toString());
+
+        // Write a new content
+        assertTrue(binaryMetadataService.writeMetadata(psdBlobHolder
+                .getBlob(), inputPSDMetadata));
+
+        //Check the content
+        blobProperties = binaryMetadataService
+                .readMetadata(psdBlobHolder.getBlob(), PSDMetadata);
+        assertNotNull(blobProperties);
+        assertNotNull(blobProperties);
+        assertEquals(3, blobProperties.size());
+        assertEquals(200, blobProperties.get("EXIF:ImageHeight"));
+        assertEquals("Nuxeo", blobProperties.get("EXIF:Software")
+                .toString());
     }
 }
