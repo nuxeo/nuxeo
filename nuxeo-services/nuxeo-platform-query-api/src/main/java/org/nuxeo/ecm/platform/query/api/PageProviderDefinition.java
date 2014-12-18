@@ -34,7 +34,7 @@ public interface PageProviderDefinition extends Serializable {
     String getName();
 
     /**
-     * @since 5.6
+     * @since 6.0
      */
     void setName(String name);
 

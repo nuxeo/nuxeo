@@ -17,31 +17,27 @@
 package org.nuxeo.ecm.automation.jaxrs.io.documents;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.core.util.Paginable;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
+import org.nuxeo.ecm.platform.query.api.Bucket;
 
 /**
  * Paginable object that uses a delegate to handle pagination.
  *
  * @since 5.8
  */
-@SuppressWarnings("rawtypes")
 public class PaginableWithDelegate<T> extends ArrayList<T> implements Paginable<T> {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
-    private Paginable delegate;
+    private Paginable<T> delegate;
 
     /**
      * @param delegate
      */
-    public PaginableWithDelegate(Paginable delegate) {
+    public PaginableWithDelegate(Paginable<T> delegate) {
         this.delegate = delegate;
     }
 
@@ -106,7 +102,7 @@ public class PaginableWithDelegate<T> extends ArrayList<T> implements Paginable<
     }
 
     @Override
-    public Map<String, Aggregate> getAggregates() {
+    public Map<String, Aggregate<? extends Bucket>> getAggregates() {
         return delegate.getAggregates();
     }
 

@@ -629,7 +629,7 @@ public class TestAggregates {
                 "Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature1, 4), BucketTerm(Nature0, 3)])",
                 pp.getAggregates().get("nature").toString());
         @SuppressWarnings("unchecked")
-        List<BucketRangeDate> buckets = pp.getAggregates().get("created").getBuckets();
+        List<BucketRangeDate> buckets = (List<BucketRangeDate>) pp.getAggregates().get("created").getBuckets();
         Assert.assertEquals(3, buckets.size());
         Assert.assertEquals("long_time_ago", buckets.get(0).getKey());
         Assert.assertEquals(0, buckets.get(0).getDocCount());

@@ -132,7 +132,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
 
     protected PageProvider<?> newCoreQueryPageProviderInstance(String name) throws ClientException {
         PageProvider<?> ret;
-        Class<? extends PageProvider> klass = replacersReg.getClassForPageProvider(name);
+        Class<? extends PageProvider<?>> klass = replacersReg.getClassForPageProvider(name);
         if (klass == null) {
             ret = new CoreQueryDocumentPageProvider();
         } else {
@@ -141,7 +141,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
         return ret;
     }
 
-    protected PageProvider newPageProviderInstance(String name, Class<? extends PageProvider> klass)
+    protected PageProvider<?> newPageProviderInstance(String name, Class<? extends PageProvider<?>> klass)
             throws ClientException {
         PageProvider<?> ret;
         if (klass == null) {

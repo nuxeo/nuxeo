@@ -57,10 +57,10 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
 
     protected List<DocumentModel> currentPageDocuments;
 
-    protected Map<String, Aggregate> currentAggregates;
+    protected Map<String, Aggregate<? extends Bucket>> currentAggregates;
 
     @Override
-    public Map<String, Aggregate> getAggregates() {
+    public Map<String, Aggregate<? extends Bucket>> getAggregates() {
         getCurrentPage();
         return currentAggregates;
     }
@@ -92,8 +92,8 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
             }
             EsResult ret = ess.queryAndAggregate(nxQuery);
             DocumentModelList dmList = ret.getDocuments();
-            currentAggregates = new HashMap<String, Aggregate>(ret.getAggregates().size());
-            for (Aggregate agg : ret.getAggregates()) {
+            currentAggregates = new HashMap<String, Aggregate<? extends Bucket>>(ret.getAggregates().size());
+            for (Aggregate<Bucket> agg : ret.getAggregates()) {
                 currentAggregates.put(agg.getId(), agg);
             }
             setResultsCount(dmList.totalSize());

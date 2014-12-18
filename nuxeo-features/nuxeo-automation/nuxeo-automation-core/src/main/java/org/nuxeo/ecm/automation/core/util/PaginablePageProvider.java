@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.query.api.Aggregate;
+import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 
 /**
@@ -100,7 +101,7 @@ public class PaginablePageProvider<T> extends ArrayList<T> implements Paginable<
     }
 
     @Override
-    public Map<String, Aggregate> getAggregates() {
+    public Map<String, Aggregate<? extends Bucket>> getAggregates() {
         return pageProvider.getAggregates();
     }
 

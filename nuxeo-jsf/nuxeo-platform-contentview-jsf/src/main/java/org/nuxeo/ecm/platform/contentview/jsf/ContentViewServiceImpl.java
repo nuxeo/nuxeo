@@ -271,12 +271,14 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         PageProviderDefinition genDef = getPageProviderDefWithName(name, desc.getGenericPageProvider());
         if (coreDef != null && genDef != null) {
             log.error(String.format("Only one page provider should be registered on "
-                    + "content view '%s': take the reference " + "descriptor by default, then core query descriptor, "
+                    + "content view '%s': take the reference descriptor by default, then core query descriptor, "
                     + "and then generic descriptor", name));
         }
         PageProviderDefinition ppDef = (coreDef != null) ? coreDef : genDef;
         if (ppDef != null) {
-            // log.debug("Register PP: " + ppDef.getName() + " " + ppDef);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Register PageProvider from ContentView: %s %s", ppDef.getName(), ppDef));
+            }
             ppService.registerPageProviderDefinition(ppDef);
         }
     }
@@ -335,7 +337,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
                 String searchType = cv.getSearchDocumentModelType();
                 if (!searchDocument.getType().equals(searchType)) {
                     log.warn(String.format("Restored document type '%s' is different from "
-                            + "the one declared on content view " + "with name '%s': should be '%s'",
+                            + "the one declared on content view with name '%s': should be '%s'",
                             searchDocument.getType(), name, searchType));
                 }
             }

@@ -781,7 +781,7 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
     @Override
     public void resetPageProviderAggregates() {
         if (pageProvider != null && pageProvider.hasAggregateSupport()) {
-            Map<String, Aggregate> aggs = pageProvider.getAggregates();
+            Map<String, ? extends Aggregate> aggs = pageProvider.getAggregates();
             for (Aggregate agg : aggs.values()) {
                 agg.resetSelection();
             }

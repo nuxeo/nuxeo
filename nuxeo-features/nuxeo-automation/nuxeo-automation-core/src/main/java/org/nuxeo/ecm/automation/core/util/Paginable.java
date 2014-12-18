@@ -11,10 +11,11 @@
  */
 package org.nuxeo.ecm.automation.core.util;
 
-import org.nuxeo.ecm.platform.query.api.Aggregate;
-
 import java.util.List;
 import java.util.Map;
+
+import org.nuxeo.ecm.platform.query.api.Aggregate;
+import org.nuxeo.ecm.platform.query.api.Bucket;
 
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
@@ -83,7 +84,7 @@ public interface Paginable<T> extends List<T> {
     /**
      * @since 6.0
      */
-    Map<String, Aggregate> getAggregates();
+    Map<String, Aggregate<? extends Bucket>> getAggregates();
 
     /**
      * @since 6.0

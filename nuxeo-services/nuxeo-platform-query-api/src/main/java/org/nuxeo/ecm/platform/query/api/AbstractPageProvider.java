@@ -893,7 +893,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     @Override
-    public Map<String, Aggregate> getAggregates() {
+    public Map<String, Aggregate<? extends Bucket>> getAggregates() {
         throw new NotImplementedException();
     }
 
