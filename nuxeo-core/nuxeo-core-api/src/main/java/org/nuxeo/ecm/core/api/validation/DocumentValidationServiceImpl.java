@@ -29,6 +29,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -107,7 +108,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
         DocumentType docType = document.getDocumentType();
         if (dirtyOnly) {
             for (DataModel dataModel : document.getDataModels().values()) {
-                Schema schemaDef = docType.getSchema(dataModel.getSchema());
+                Schema schemaDef = schemaManager.getSchema(dataModel.getSchema());
                 for (String fieldName : dataModel.getDirtyFields()) {
                     Field field = schemaDef.getField(fieldName);
                     Property property = document.getProperty(field.getName().getPrefixedName());
@@ -193,7 +194,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
      */
     private List<ConstraintViolation> validateSimpleTypeField(Schema schema, List<PathNode> path, Field field,
             Object value) {
-        assert field.getType().isSimpleType();
+        assert field.getType().isSimpleType() || field.getType().isListType(); // list type to manage ArrayProperty
         List<ConstraintViolation> violations = new ArrayList<ConstraintViolation>();
         for (Constraint constraint : field.getConstraints()) {
             if (!constraint.validate(value)) {
@@ -285,7 +286,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
      */
     private List<ConstraintViolation> validateSimpleTypeProperty(Schema schema, List<PathNode> path, Property prop) {
         Field field = prop.getField();
-        assert field.getType().isSimpleType();
+        assert field.getType().isSimpleType() || prop.isScalar();
         List<ConstraintViolation> violations = new ArrayList<ConstraintViolation>();
         Serializable value = prop.getValue();
         if (prop.isPhantom() || value == null) {
@@ -359,11 +360,21 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
             }
             if (castedValue != null) {
                 int index = 0;
-                for (Property child : prop.getChildren()) {
-                    List<PathNode> subPath = new ArrayList<PathNode>(path);
-                    subPath.add(new PathNode(child.getField(), index));
-                    violations.addAll(validateAnyTypeProperty(schema, subPath, child));
-                    index++;
+                if (prop instanceof ArrayProperty) {
+                    // that's an ArrayProperty : there will not be child properties
+                    for (Object itemValue : castedValue) {
+                        List<PathNode> subPath = new ArrayList<PathNode>(path);
+                        subPath.add(new PathNode(field, index));
+                        violations.addAll(validateSimpleTypeField(schema, subPath, field, itemValue));
+                        index++;
+                    }
+                } else {
+                    for (Property child : prop.getChildren()) {
+                        List<PathNode> subPath = new ArrayList<PathNode>(path);
+                        subPath.add(new PathNode(child.getField(), index));
+                        violations.addAll(validateAnyTypeProperty(schema, subPath, child));
+                        index++;
+                    }
                 }
             }
         }
