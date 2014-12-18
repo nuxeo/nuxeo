@@ -94,6 +94,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         return null;
     }
 
+    @Override
     public String getDefaultPatternName() {
         URLPatternDescriptor desc = getDefaultPatternDescriptor();
         if (desc != null) {
@@ -120,6 +121,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         return desc;
     }
 
+    @Override
     public boolean isCandidateForDecoding(HttpServletRequest httpRequest) {
         // only rewrite GET/HEAD URLs
         String method = httpRequest.getMethod();
@@ -141,6 +143,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         return false;
     }
 
+    @Override
     public boolean isCandidateForEncoding(HttpServletRequest httpRequest) {
         Boolean forceEncoding = Boolean.FALSE;
         Object forceEncodingValue = httpRequest.getAttribute(FORCE_URL_ENCODING_REQUEST_KEY);
@@ -173,6 +176,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         return false;
     }
 
+    @Override
     public void setDocumentViewInRequest(HttpServletRequest request, DocumentView docView) {
         request.setAttribute(NXAuthConstants.REQUESTED_URL, NuxeoAuthenticationFilter.getRequestedUrl(request));
         request.setAttribute(DOCUMENT_VIEW_REQUEST_KEY, docView);
@@ -194,6 +198,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         return res;
     }
 
+    @Override
     public DocumentView getDocumentViewFromRequest(HttpServletRequest request) {
         DocumentView docView = null;
         for (URLPatternDescriptor desc : getURLPatternDescriptors()) {
@@ -210,6 +215,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         return docView;
     }
 
+    @Override
     public DocumentView getDocumentViewFromRequest(String patternName, HttpServletRequest request) {
         Object value = request.getAttribute(DOCUMENT_VIEW_REQUEST_KEY);
         if (value instanceof DocumentView) {
@@ -272,6 +278,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         return res;
     }
 
+    @Override
     public String getUrlFromDocumentView(DocumentView docView, String baseUrl) {
         String url = null;
         String patternName = docView.getPatternName();
@@ -329,6 +336,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         return sortedDescriptors;
     }
 
+    @Override
     public String getUrlFromDocumentView(String patternName, DocumentView docView, String baseUrl) {
         DocumentViewCodecManager docViewService = getDocumentViewCodecService();
         URLPatternDescriptor desc = getURLPatternDescriptor(patternName);
@@ -336,6 +344,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         return docViewService.getUrlFromDocumentView(codecName, docView, desc.getNeedBaseURL(), baseUrl);
     }
 
+    @Override
     public void applyRequestParameters(FacesContext facesContext) {
         // try to set document view
         ExpressionFactory ef = facesContext.getApplication().getExpressionFactory();
@@ -393,6 +402,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         }
     }
 
+    @Override
     public void appendParametersToRequest(FacesContext facesContext) {
         appendParametersToRequest(facesContext, null);
     }
@@ -497,6 +507,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         setDocumentViewInRequest(httpRequest, docView);
     }
 
+    @Override
     public String navigate(FacesContext facesContext) {
         HttpServletRequest httpRequest = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 
@@ -521,6 +532,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
 
     // registries management
 
+    @Override
     public void addPatternDescriptor(URLPatternDescriptor pattern) {
         String name = pattern.getName();
         if (descriptors.containsKey(name)) {
@@ -531,6 +543,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         log.debug("Added URLPatternDescriptor: " + name);
     }
 
+    @Override
     public void removePatternDescriptor(URLPatternDescriptor pattern) {
         String name = pattern.getName();
         descriptors.remove(name);
@@ -582,6 +595,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         return getViewIdManager().getViewIdFromOutcome(outcome);
     }
 
+    @Override
     public void clear() {
         descriptors.clear();
     }

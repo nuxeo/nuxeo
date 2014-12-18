@@ -84,11 +84,12 @@ public class SetTagHandler extends AliasTagHandler {
         blockMerge = getAttribute("blockMerge");
     }
 
+    @Override
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
             ELException {
         // make sure our parent is not null
         if (parent == null) {
-            throw new TagException(this.tag, "Parent UIComponent was null");
+            throw new TagException(tag, "Parent UIComponent was null");
         }
 
         FaceletHandler nextHandler = this.nextHandler;
@@ -97,7 +98,7 @@ public class SetTagHandler extends AliasTagHandler {
         // generate id before applying (and before generating next handler, in
         // case of merge of variables, as parent aliases will be exposed to
         // request then).
-        target.setId(ctx.generateUniqueId(this.tagId));
+        target.setId(ctx.generateUniqueId(tagId));
 
         VariableMapper vm = target.getVariableMapperForBuild(orig);
         ctx.setVariableMapper(vm);
@@ -132,7 +133,7 @@ public class SetTagHandler extends AliasTagHandler {
         String varStr = var.getValue(ctx);
         // avoid overriding variable already in the mapper
         if (target.hasVariables(varStr)) {
-            return this.nextHandler;
+            return nextHandler;
         }
 
         // handle variable expression

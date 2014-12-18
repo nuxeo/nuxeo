@@ -45,12 +45,14 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
     /**
      * Returns an empty parameters list because parameters are already taken care of in the computed URL.
      */
+    @Override
     protected Param[] getParamList(UIComponent command) {
         return new Param[0];
     }
 
     private static final Attribute[] PASSTHROUGHATTRIBUTES = AttributeManager.getAttributes(AttributeManager.Key.OUTPUTLINK);
 
+    @Override
     protected void renderAsActive(FacesContext context, UIComponent component) throws IOException {
 
         String hrefVal = getCurrentValue(context, component);

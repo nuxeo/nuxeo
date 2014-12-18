@@ -52,11 +52,13 @@ public class UIRadio extends UIOutput implements ClientBehaviorHolder {
         PropertyKeys() {
         }
 
+        @Override
         public String toString() {
-            return ((this.toString != null) ? this.toString : super.toString());
+            return ((toString != null) ? toString : super.toString());
         }
     }
 
+    @Override
     public String getFamily() {
         return COMPONENT_FAMILY;
     }

@@ -49,6 +49,7 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 @BypassInterceptors
 public class NuxeoConcurrentRequestResolver extends AbstractResolver implements ConcurrentRequestResolver {
 
+    @Override
     public boolean handleConcurrentRequest(ConversationEntry ce, HttpServletRequest request,
             HttpServletResponse response) {
 

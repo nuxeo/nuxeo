@@ -79,6 +79,7 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
      */
     public static final String MIMETYPE_UNAUTHORIZED_EXTENSIONS_MESSAGE_ID = "error.inputFile.unauthorizedExtensions";
 
+    @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
         if (value != null && extensions != null && extensions.length > 0) {
             if (value instanceof InputFileInfo) {
@@ -134,14 +135,17 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
         this.hidden = hidden;
     }
 
+    @Override
     public boolean isTransient() {
         return transientValue;
     }
 
+    @Override
     public void setTransient(boolean newTransientValue) {
         transientValue = newTransientValue;
     }
 
+    @Override
     public Object saveState(FacesContext context) {
         Object[] values = new Object[3];
         values[0] = extensions;
@@ -150,6 +154,7 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
         return values;
     }
 
+    @Override
     public void restoreState(FacesContext context, Object state) {
         Object[] values = (Object[]) state;
         extensions = (String[]) values[0];

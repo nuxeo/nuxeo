@@ -62,6 +62,7 @@ public abstract class DirectorySelectItemFactory extends SelectItemFactory {
         }
     }
 
+    @Override
     public SelectItem createSelectItem(Object value) {
         SelectItem item = null;
         if (value instanceof SelectItem) {

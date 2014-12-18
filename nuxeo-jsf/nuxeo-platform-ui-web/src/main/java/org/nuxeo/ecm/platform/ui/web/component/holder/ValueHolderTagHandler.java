@@ -114,9 +114,9 @@ public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
             FacesContext faces = context.getFacesContext();
             if (PhaseId.RESTORE_VIEW.equals(faces.getCurrentPhaseId())) {
                 // lookup backing bean
-                NuxeoValueHolderBean bean = ((UIValueHolder) c).lookupBean(faces);
+                NuxeoValueHolderBean bean = c.lookupBean(faces);
                 if (bean != null) {
-                    String fid = ((UIValueHolder) c).getFaceletId();
+                    String fid = c.getFaceletId();
                     if (fid != null) {
                         return bean.getState(fid);
                     }

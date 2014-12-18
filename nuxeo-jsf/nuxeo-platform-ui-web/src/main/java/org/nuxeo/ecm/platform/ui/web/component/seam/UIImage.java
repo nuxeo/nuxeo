@@ -167,7 +167,7 @@ public class UIImage extends org.jboss.seam.pdf.ui.UIRectangle {
             return;
         }
 
-        for (UIComponent cmp : this.getChildren()) {
+        for (UIComponent cmp : getChildren()) {
             if (cmp instanceof ImageTransform) {
                 ImageTransform imageTransform = (ImageTransform) cmp;
                 imageTransform.applyTransform(seamImage);

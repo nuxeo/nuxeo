@@ -46,7 +46,7 @@ public class DirectorySelectItem extends SelectItem {
             throw new IllegalArgumentException("value is null");
         }
         if (label == null) {
-            this.setLabel("");
+            setLabel("");
         }
 
         try {

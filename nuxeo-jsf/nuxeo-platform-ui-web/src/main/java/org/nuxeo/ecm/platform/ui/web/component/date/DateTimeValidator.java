@@ -56,7 +56,7 @@ public class DateTimeValidator implements Validator, StateHolder {
 
     @Override
     public void setTransient(boolean newTransientValue) {
-        this.transientValue = newTransientValue;
+        transientValue = newTransientValue;
     }
 
     @Override

@@ -127,11 +127,13 @@ public class MethodValueExpression extends ValueExpression implements Externaliz
 
     // Externalizable interface
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         methodExpression = (MethodExpression) in.readObject();
         paramTypesClasses = (Class[]) in.readObject();
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject(methodExpression);
         out.writeObject(paramTypesClasses);

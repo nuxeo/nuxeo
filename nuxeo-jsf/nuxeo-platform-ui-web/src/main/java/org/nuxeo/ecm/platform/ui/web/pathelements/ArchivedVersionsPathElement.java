@@ -39,15 +39,18 @@ public class ArchivedVersionsPathElement implements PathElement {
         this.docModel = docModel;
     }
 
+    @Override
     public String getName() {
         FacesContext context = FacesContext.getCurrentInstance();
         return ComponentUtils.translate(context, "label.archivedVersions");
     }
 
+    @Override
     public String getType() {
         return TYPE;
     }
 
+    @Override
     public boolean isLink() {
         return false;
     }

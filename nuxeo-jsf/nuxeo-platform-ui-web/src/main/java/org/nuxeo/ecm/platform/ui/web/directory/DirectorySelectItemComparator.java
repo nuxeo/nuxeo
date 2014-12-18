@@ -89,6 +89,7 @@ public class DirectorySelectItemComparator implements Comparator<DirectorySelect
         }
     }
 
+    @Override
     public int compare(DirectorySelectItem item1, DirectorySelectItem item2) {
         for (String field : ordering) {
             int compare = compareField(field, item1, item2);

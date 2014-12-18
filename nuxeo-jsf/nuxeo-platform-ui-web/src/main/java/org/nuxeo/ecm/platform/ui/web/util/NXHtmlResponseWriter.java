@@ -246,7 +246,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
         this.isScriptInAttributeValueEnabled = isScriptInAttributeValueEnabled;
         this.disableUnicodeEscaping = disableUnicodeEscaping;
 
-        this.attributesBuffer = new FastStringWriter(128);
+        attributesBuffer = new FastStringWriter(128);
 
         // Check the character encoding
         if (!HtmlUtils.validateEncoding(encoding)) {
@@ -298,6 +298,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     /** Methods From <code>java.io.Writer</code> */
 
+    @Override
     public void close() throws IOException {
 
         closeStartIfNecessary();
@@ -313,6 +314,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      *
      * @throws IOException if an input/output error occurs.
      */
+    @Override
     public void flush() throws IOException {
 
         // NOTE: Internal buffer's contents (the ivar "buffer") is
@@ -330,6 +332,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
     // Methods
 
     /** @return the content type such as "text/html" for this ResponseWriter. */
+    @Override
     public String getContentType() {
 
         return contentType;
@@ -342,6 +345,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      *
      * @param writer The <code>Writer</code> that will be used to create another <code>ResponseWriter</code>.
      */
+    @Override
     public ResponseWriter cloneWithWriter(Writer writer) {
 
         try {
@@ -355,6 +359,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
     }
 
     /** Output the text for the end of a document. */
+    @Override
     public void endDocument() throws IOException {
 
         writer.flush();
@@ -370,6 +375,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * @throws IOException if an input/output error occurs
      * @throws NullPointerException if <code>name</code> is <code>null</code>
      */
+    @Override
     public void endElement(String name) throws IOException {
 
         if (name == null) {
@@ -485,6 +491,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * @return the character encoding, such as "ISO-8859-1" for this ResponseWriter. Refer to: <a
      *         href="http://www.iana.org/assignments/character-sets" >theIANA</a> for a list of character encodings.
      */
+    @Override
     public String getCharacterEncoding() {
 
         return encoding;
@@ -498,6 +505,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      *
      * @throws IOException if an input/output error occurs
      */
+    @Override
     public void startDocument() throws IOException {
 
         // do nothing;
@@ -515,6 +523,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * @throws IOException if an input/output error occurs
      * @throws NullPointerException if <code>name</code> is <code>null</code>
      */
+    @Override
     public void startElement(String name, UIComponent componentForElement) throws IOException {
 
         if (name == null) {
@@ -567,6 +576,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     }
 
+    @Override
     public void write(char[] cbuf, int off, int len) throws IOException {
 
         closeStartIfNecessary();
@@ -597,6 +607,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * @throws IOException if an input/output error occurs
      * @throws NullPointerException if <code>name</code> is <code>null</code>
      */
+    @Override
     public void writeAttribute(String name, Object value, String componentPropertyName) throws IOException {
 
         if (name == null) {
@@ -656,6 +667,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * @throws IOException if an input/output error occurs
      * @throws NullPointerException if <code>comment</code> is <code>null</code>
      */
+    @Override
     public void writeComment(Object comment) throws IOException {
 
         if (comment == null) {
@@ -735,6 +747,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * @throws IOException if an input/output error occurs
      * @throws NullPointerException if <code>text</code> is <code>null</code>
      */
+    @Override
     public void writeText(Object text, String componentPropertyName) throws IOException {
 
         if (text == null) {
@@ -763,6 +776,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * @throws IOException if an input/output error occurs
      * @throws NullPointerException if <code>text</code> is <code>null</code>
      */
+    @Override
     public void writeText(char text[], int off, int len) throws IOException {
 
         if (text == null) {
@@ -791,6 +805,7 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * @throws IOException if an input/output error occurs
      * @throws NullPointerException if <code>name</code> or <code>value</code> is <code>null</code>
      */
+    @Override
     public void writeURIAttribute(String name, Object value, String componentPropertyName) throws IOException {
 
         if (name == null) {

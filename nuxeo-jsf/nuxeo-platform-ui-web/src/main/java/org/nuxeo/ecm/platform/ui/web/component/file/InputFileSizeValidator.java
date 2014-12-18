@@ -60,6 +60,7 @@ public class InputFileSizeValidator implements Validator, StateHolder {
      */
     public static final String MAXIMUM_MESSAGE_ID = "error.inputFile.maxSize";
 
+    @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
         if (!maximumSet) {
             return;
@@ -132,14 +133,17 @@ public class InputFileSizeValidator implements Validator, StateHolder {
         maximumSet = true;
     }
 
+    @Override
     public boolean isTransient() {
         return transientValue;
     }
 
+    @Override
     public void setTransient(boolean newTransientValue) {
         transientValue = newTransientValue;
     }
 
+    @Override
     public Object saveState(FacesContext context) {
         Object[] values = new Object[2];
         values[0] = maxSize;
@@ -147,6 +151,7 @@ public class InputFileSizeValidator implements Validator, StateHolder {
         return values;
     }
 
+    @Override
     public void restoreState(FacesContext context, Object state) {
         Object[] values = (Object[]) state;
         maxSize = (String) values[0];

@@ -90,6 +90,7 @@ public class AliasValueExpression extends ValueExpression {
      * Looks up the {@link AliasVariableMapper} in the context, and if found, resolve the corresponding
      * {@link ValueExpression}.
      */
+    @Override
     public Object getValue(ELContext context) {
         ValueExpression ve = resolveExpression(context);
         Object res = null;
@@ -111,6 +112,7 @@ public class AliasValueExpression extends ValueExpression {
         return true;
     }
 
+    @Override
     public void setValue(ELContext context, Object value) {
         ValueExpression ve = resolveExpression(context);
         if (ve != null) {

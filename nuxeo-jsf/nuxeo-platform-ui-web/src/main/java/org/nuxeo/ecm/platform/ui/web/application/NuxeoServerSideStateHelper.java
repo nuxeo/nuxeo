@@ -136,7 +136,7 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
                 }
 
                 Map<String, Map> logicalMap = TypedCollections.dynamicallyCastMap(
-                        (Map) conversationMap.get(conversationId), String.class, Map.class);
+                        conversationMap.get(conversationId), String.class, Map.class);
                 if (logicalMap == null) {
                     if (conversationMap.size() == getNbOfConversationsInSession(ctx)) {
                         if (log.isDebugEnabled()) {

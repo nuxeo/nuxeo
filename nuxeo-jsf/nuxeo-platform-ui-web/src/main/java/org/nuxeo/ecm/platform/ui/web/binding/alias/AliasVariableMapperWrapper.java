@@ -52,11 +52,12 @@ public class AliasVariableMapperWrapper extends VariableMapper {
      * First tries to resolve against the inner Map, then the wrapped ValueExpression, unless target is an
      * {@link AliasVariableMapper} that blocks this variable pattern.
      */
+    @Override
     public ValueExpression resolveVariable(String variable) {
         ValueExpression ve = null;
         try {
-            if (this.vars != null) {
-                ve = (ValueExpression) this.vars.get(variable);
+            if (vars != null) {
+                ve = (ValueExpression) vars.get(variable);
             }
             if (ve == null) {
                 // resolve to a value expression resolving to null if variable
@@ -83,7 +84,7 @@ public class AliasVariableMapperWrapper extends VariableMapper {
                         }
                     }
                 }
-                return this.orig.resolveVariable(variable);
+                return orig.resolveVariable(variable);
             }
             return ve;
         } catch (StackOverflowError e) {
@@ -95,11 +96,12 @@ public class AliasVariableMapperWrapper extends VariableMapper {
         return new ValueExpressionLiteral(null, Object.class);
     }
 
+    @Override
     public ValueExpression setVariable(String variable, ValueExpression expression) {
-        if (this.vars == null) {
-            this.vars = new HashMap();
+        if (vars == null) {
+            vars = new HashMap();
         }
-        return (ValueExpression) this.vars.put(variable, expression);
+        return (ValueExpression) vars.put(variable, expression);
     }
 
 }

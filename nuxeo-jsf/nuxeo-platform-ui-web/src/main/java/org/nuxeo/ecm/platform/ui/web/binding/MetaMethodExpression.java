@@ -50,7 +50,7 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
  * reinvoked again using the same context;
  * <li>no further method invoking will be performed.
  * </ul>
- * 
+ *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class MetaMethodExpression extends MethodExpression implements Serializable {

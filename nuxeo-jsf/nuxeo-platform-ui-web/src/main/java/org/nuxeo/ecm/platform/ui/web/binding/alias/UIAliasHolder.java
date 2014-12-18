@@ -85,14 +85,17 @@ public class UIAliasHolder extends UIOutput {
         // do nothing
     }
 
+    @Override
     public boolean isRendered() {
         return true;
     }
 
+    @Override
     public void setRendered(boolean rendered) {
         // do nothing
     }
 
+    @Override
     public boolean getRendersChildren() {
         return true;
     }
@@ -122,6 +125,7 @@ public class UIAliasHolder extends UIOutput {
         super.queueEvent(event);
     }
 
+    @Override
     public boolean invokeOnComponent(FacesContext context, String clientId, ContextCallback callback)
             throws FacesException {
         AliasVariableMapper alias = getAliasVariableMapper();

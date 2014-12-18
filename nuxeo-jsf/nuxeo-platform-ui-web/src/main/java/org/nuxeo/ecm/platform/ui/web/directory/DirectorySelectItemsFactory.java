@@ -45,6 +45,7 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
 
     private static final Log log = LogFactory.getLog(DirectorySelectItemsFactory.class);
 
+    @Override
     protected abstract String getVar();
 
     protected abstract String getDirectoryName();

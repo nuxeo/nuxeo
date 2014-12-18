@@ -65,6 +65,7 @@ public class UICellExcel extends org.jboss.seam.excel.ui.UICell {
      */
     protected String style;
 
+    @Override
     public Object getValue() {
         Object theValue = valueOf("value", value);
         if (theValue == null) {
@@ -84,6 +85,7 @@ public class UICellExcel extends org.jboss.seam.excel.ui.UICell {
         return theValue;
     }
 
+    @Override
     public void setValue(Object value) {
         this.value = value;
     }
@@ -178,6 +180,7 @@ public class UICellExcel extends org.jboss.seam.excel.ui.UICell {
      *
      * @since 5.6
      */
+    @Override
     public String getStyle() {
         if (style != null) {
             return style;
@@ -197,6 +200,7 @@ public class UICellExcel extends org.jboss.seam.excel.ui.UICell {
     /**
      * @since 5.6
      */
+    @Override
     public void setStyle(String style) {
         this.style = style;
     }

@@ -175,6 +175,7 @@ public class RepeatTagHandler extends TagHandler {
      * See also NXP-15050: since 6.0, anchor handler in component tree to ensure proper ajax refresh when iteration
      * value changes.
      */
+    @Override
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
             ELException {
         String anchor = String.valueOf(true);
@@ -189,12 +190,12 @@ public class RepeatTagHandler extends TagHandler {
                 if (StringUtils.isBlank(varStatusValue)) {
                     // need to create and set it as an attribute for the index
                     // to be exposed
-                    varStatusAttr = createAttribute(this.config, "varStatus",
+                    varStatusAttr = createAttribute(config, "varStatus",
                             getVarName(String.format("%s_%s", indexValue, "varStatus")));
                 } else {
-                    varStatusAttr = createAttribute(this.config, "varStatus", varStatusValue);
+                    varStatusAttr = createAttribute(config, "varStatus", varStatusValue);
                 }
-                ComponentConfig indexVarConfig = TagConfigFactory.createAliasTagConfig(this.config, this.tagId,
+                ComponentConfig indexVarConfig = TagConfigFactory.createAliasTagConfig(config, tagId,
                         indexValue, String.format("#{%s.index}", varStatusAttr.getValue()), "false", anchor,
                         this.nextHandler);
                 nextHandler = new SetTagHandler(indexVarConfig);
@@ -202,15 +203,15 @@ public class RepeatTagHandler extends TagHandler {
         }
 
         List<TagAttribute> forEachAttrs = new ArrayList<TagAttribute>();
-        forEachAttrs.add(createAttribute(this.config, "items", String.format("#{%s}", getVarName("items"))));
-        forEachAttrs.addAll(copyAttributes(this.config, var, begin, end, step, varStatusAttr, tranzient));
-        TagConfig forEachConfig = TagConfigFactory.createTagConfig(this.config, this.tagId, new TagAttributesImpl(
+        forEachAttrs.add(createAttribute(config, "items", String.format("#{%s}", getVarName("items"))));
+        forEachAttrs.addAll(copyAttributes(config, var, begin, end, step, varStatusAttr, tranzient));
+        TagConfig forEachConfig = TagConfigFactory.createTagConfig(config, tagId, new TagAttributesImpl(
                 forEachAttrs.toArray(new TagAttribute[] {})), nextHandler);
         ForEachHandler forEachHandler = new ForEachHandler(forEachConfig);
 
         String setTagConfigId = getTagConfigId(ctx);
         TagAttribute itemsAttr = getItemsAttribute();
-        ComponentConfig aliasConfig = TagConfigFactory.createAliasTagConfig(this.config, setTagConfigId,
+        ComponentConfig aliasConfig = TagConfigFactory.createAliasTagConfig(config, setTagConfigId,
                 getVarName("items"), itemsAttr != null ? itemsAttr.getValue() : null, "false", anchor, forEachHandler);
         FaceletHandler handler = new SetTagHandler(aliasConfig);
 

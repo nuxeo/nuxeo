@@ -96,11 +96,12 @@ public class AliasTagHandler extends ComponentHandler {
         this.blockedPatterns = blockedPatterns;
     }
 
+    @Override
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
             ELException {
         // make sure our parent is not null
         if (parent == null) {
-            throw new TagException(this.tag, "Parent UIComponent was null");
+            throw new TagException(tag, "Parent UIComponent was null");
         }
 
         // handle variable expression
@@ -124,8 +125,8 @@ public class AliasTagHandler extends ComponentHandler {
         }
 
         // generate id before applying
-        target.setId(ctx.generateUniqueId(this.tagId));
-        apply(ctx, parent, target, this.nextHandler);
+        target.setId(ctx.generateUniqueId(tagId));
+        apply(ctx, parent, target, nextHandler);
     }
 
     protected void apply(FaceletContext ctx, UIComponent parent, AliasVariableMapper alias, FaceletHandler nextHandler)

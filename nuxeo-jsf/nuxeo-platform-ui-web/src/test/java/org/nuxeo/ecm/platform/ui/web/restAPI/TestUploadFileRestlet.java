@@ -38,6 +38,7 @@ import org.nuxeo.runtime.AbstractRuntimeService;
  */
 public class TestUploadFileRestlet extends SQLRepositoryTestCase implements LiveEditConstants {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -45,6 +46,7 @@ public class TestUploadFileRestlet extends SQLRepositoryTestCase implements Live
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();

@@ -61,14 +61,17 @@ public final class TagConfigFactory {
             this.nextHandler = nextHandler;
         }
 
+        @Override
         public FaceletHandler getNextHandler() {
             return nextHandler;
         }
 
+        @Override
         public Tag getTag() {
             return tag;
         }
 
+        @Override
         public String getTagId() {
             return tagId;
         }
@@ -87,10 +90,12 @@ public final class TagConfigFactory {
             this.rendererType = rendererType;
         }
 
+        @Override
         public String getComponentType() {
             return componentType;
         }
 
+        @Override
         public String getRendererType() {
             return rendererType;
         }
@@ -106,6 +111,7 @@ public final class TagConfigFactory {
             this.converterId = converterId;
         }
 
+        @Override
         public String getConverterId() {
             return converterId;
         }
@@ -121,6 +127,7 @@ public final class TagConfigFactory {
             this.validatorId = validatorId;
         }
 
+        @Override
         public String getValidatorId() {
             return validatorId;
         }

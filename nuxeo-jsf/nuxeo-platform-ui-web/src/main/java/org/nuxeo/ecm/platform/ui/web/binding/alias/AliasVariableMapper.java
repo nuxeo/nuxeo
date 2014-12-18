@@ -66,23 +66,25 @@ public class AliasVariableMapper extends VariableMapper {
         this.id = id;
     }
 
+    @Override
     public ValueExpression resolveVariable(String variable) {
         ValueExpression ve = null;
-        if (this.vars != null) {
-            ve = this.vars.get(variable);
+        if (vars != null) {
+            ve = vars.get(variable);
         }
         return ve;
     }
 
+    @Override
     public ValueExpression setVariable(String variable, ValueExpression expression) {
-        if (this.vars == null) {
-            this.vars = new LinkedHashMap<String, ValueExpression>();
+        if (vars == null) {
+            vars = new LinkedHashMap<String, ValueExpression>();
         }
-        return this.vars.put(variable, expression);
+        return vars.put(variable, expression);
     }
 
     public boolean hasVariables(String variable) {
-        return this.vars != null && this.vars.containsKey(variable);
+        return vars != null && vars.containsKey(variable);
     }
 
     public VariableMapper getVariableMapperForBuild(VariableMapper orig) {

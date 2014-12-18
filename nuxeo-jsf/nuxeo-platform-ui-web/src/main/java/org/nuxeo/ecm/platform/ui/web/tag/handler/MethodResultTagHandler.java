@@ -68,6 +68,7 @@ public class MethodResultTagHandler extends MetaTagHandler {
         return DEFAULT_PARAM_TYPES_CLASSES;
     }
 
+    @Override
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException {
         String nameStr = name.getValue(ctx);
         // resolve given value as a method binding, paramtypes ignored for now

@@ -797,6 +797,7 @@ public class ChainSelect extends UIInput implements ResettableComponent {
      *
      * @since 5.6
      */
+    @Override
     public void processUpdates(FacesContext context) {
         super.processUpdates(context);
         if (Boolean.TRUE.equals(getResetCacheOnUpdate()) && isValid()) {

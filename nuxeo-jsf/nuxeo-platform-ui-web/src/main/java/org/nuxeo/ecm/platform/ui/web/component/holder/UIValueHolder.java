@@ -77,6 +77,7 @@ public class UIValueHolder extends HtmlInputText implements ResettableComponent 
         return COMPONENT_TYPE;
     }
 
+    @Override
     public boolean getRendersChildren() {
         return true;
     }
@@ -106,6 +107,7 @@ public class UIValueHolder extends HtmlInputText implements ResettableComponent 
         super.queueEvent(event);
     }
 
+    @Override
     public boolean invokeOnComponent(FacesContext context, String clientId, ContextCallback callback)
             throws FacesException {
         AliasVariableMapper alias = getAliasVariableMapper(context);

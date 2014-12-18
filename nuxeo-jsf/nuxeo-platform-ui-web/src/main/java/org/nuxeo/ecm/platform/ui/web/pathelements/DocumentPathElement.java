@@ -37,6 +37,7 @@ public class DocumentPathElement implements PathElement {
         this.docModel = docModel;
     }
 
+    @Override
     public String getName() {
         return DocumentModelFunctions.titleOrId(docModel);
     }
@@ -45,10 +46,12 @@ public class DocumentPathElement implements PathElement {
         return docModel;
     }
 
+    @Override
     public String getType() {
         return TYPE;
     }
 
+    @Override
     public boolean isLink() {
         return true;
     }

@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.el.ELException;
+import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UINamingContainer;
 import javax.faces.component.UISelectOne;
@@ -127,7 +128,7 @@ public class NXRadioRenderer extends RadioRenderer {
             writer.writeAttribute("checked", Boolean.TRUE, null);
         }
         writer.writeAttribute("name", component.getClientId(context), "clientId");
-        String idString = component.getClientId(context) + UINamingContainer.SEPARATOR_CHAR
+        String idString = component.getClientId(context) + NamingContainer.SEPARATOR_CHAR
                 + Integer.toString(itemNumber);
         writer.writeAttribute("id", idString, "id");
 

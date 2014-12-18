@@ -97,6 +97,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         setWrappedData(data);
     }
 
+    @Override
     public Object getOriginalData() {
         return originalData;
     }
@@ -176,6 +177,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         return index >= 0 && index < data.size();
     }
 
+    @Override
     public boolean isRowModified() {
         if (!isRowAvailable()) {
             return false;
@@ -202,6 +204,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         }
     }
 
+    @Override
     public boolean isRowNew() {
         if (!isRowAvailable()) {
             return false;
@@ -216,6 +219,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         }
     }
 
+    @Override
     public void recordValueModified(int index, Object newValue) {
         listDiff.modify(index, newValue);
     }
@@ -239,6 +243,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         }
     }
 
+    @Override
     public void setRowData(Object rowData) {
         if (isRowAvailable()) {
             data.set(index, rowData);
@@ -276,10 +281,12 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         }
     }
 
+    @Override
     public Integer getRowKey() {
         return keyMap.get(index);
     }
 
+    @Override
     public void setRowKey(Integer key) {
         // find index for that key
         if (key != null) {
@@ -295,18 +302,22 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         }
     }
 
+    @Override
     public ListDiff getListDiff() {
         return listDiff;
     }
 
+    @Override
     public void setListDiff(ListDiff listDiff) {
         this.listDiff = new ListDiff(listDiff);
     }
 
+    @Override
     public boolean isDirty() {
         return listDiff != null && listDiff.isDirty();
     }
 
+    @Override
     public boolean addValue(Object value) {
         int position = data.size();
         boolean res = data.add(value);
@@ -316,6 +327,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         return res;
     }
 
+    @Override
     public void insertValue(int index, Object value) {
         data.add(index, value);
         listDiff.insert(index, value);
@@ -335,6 +347,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         keyMap.put(index, newRowKey);
     }
 
+    @Override
     public Object moveValue(int fromIndex, int toIndex) {
         Object old = data.remove(fromIndex);
         data.add(toIndex, old);
@@ -369,6 +382,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         return old;
     }
 
+    @Override
     public Object removeValue(int index) {
         Object old = data.remove(index);
         listDiff.remove(index);
@@ -386,6 +400,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         return old;
     }
 
+    @Override
     public int size() {
         if (data != null) {
             return data.size();

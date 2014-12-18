@@ -46,10 +46,12 @@ public class SeamRemotingJSBuilderComponent extends DefaultComponent implements 
         }
     }
 
+    @Override
     public List<String> getRemotableBeanNames() {
         return beanNames;
     }
 
+    @Override
     @Factory(value = "SeamRemotingBeanNames", scope = ScopeType.APPLICATION)
     public String getSeamRemotingJavaScriptURLParameters() {
 

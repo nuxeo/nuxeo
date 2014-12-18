@@ -65,10 +65,12 @@ public class RestfulPhaseListener implements PhaseListener {
         return service;
     }
 
+    @Override
     public PhaseId getPhaseId() {
         return PhaseId.RENDER_RESPONSE;
     }
 
+    @Override
     public void beforePhase(PhaseEvent event) {
         FacesContext context = event.getFacesContext();
         HttpServletRequest httpRequest = (HttpServletRequest) context.getExternalContext().getRequest();
@@ -99,6 +101,7 @@ public class RestfulPhaseListener implements PhaseListener {
         }
     }
 
+    @Override
     public void afterPhase(PhaseEvent event) {
         // SeamPhaseListener.handleTransactionsAfterPhase will commit the
         // transaction, so it has to be started using Seam methods.

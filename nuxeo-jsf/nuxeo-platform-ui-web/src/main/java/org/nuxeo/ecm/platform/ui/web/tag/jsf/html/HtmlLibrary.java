@@ -43,7 +43,7 @@ public class HtmlLibrary extends AbstractHtmlLibrary {
     public HtmlLibrary() {
         super(Namespace);
 
-        this.addHtmlComponent("column", "javax.faces.Column", null);
+        addHtmlComponent("column", "javax.faces.Column", null);
 
         this.addComponent("commandButton", "javax.faces.HtmlCommandButton", "javax.faces.Button",
                 MetaActionSourceTagHandler.class);
@@ -51,29 +51,29 @@ public class HtmlLibrary extends AbstractHtmlLibrary {
         this.addComponent("commandLink", "javax.faces.HtmlCommandLink", "javax.faces.Link",
                 MetaActionSourceTagHandler.class);
 
-        this.addHtmlComponent("dataTable", "javax.faces.HtmlDataTable", "javax.faces.Table");
+        addHtmlComponent("dataTable", "javax.faces.HtmlDataTable", "javax.faces.Table");
 
-        this.addHtmlComponent("form", "javax.faces.HtmlForm", "javax.faces.Form");
+        addHtmlComponent("form", "javax.faces.HtmlForm", "javax.faces.Form");
 
-        this.addHtmlComponent("graphicImage", "javax.faces.HtmlGraphicImage", NXImageRenderer.RENDERER_TYPE);
+        addHtmlComponent("graphicImage", "javax.faces.HtmlGraphicImage", NXImageRenderer.RENDERER_TYPE);
 
-        this.addHtmlComponent("inputHidden", "javax.faces.HtmlInputHidden", "javax.faces.Hidden");
+        addHtmlComponent("inputHidden", "javax.faces.HtmlInputHidden", "javax.faces.Hidden");
 
-        this.addHtmlComponent("inputSecret", "javax.faces.HtmlInputSecret", "javax.faces.Secret");
+        addHtmlComponent("inputSecret", "javax.faces.HtmlInputSecret", "javax.faces.Secret");
 
-        this.addHtmlComponent("inputText", "javax.faces.HtmlInputText", "javax.faces.Text");
+        addHtmlComponent("inputText", "javax.faces.HtmlInputText", "javax.faces.Text");
 
-        this.addHtmlComponent("inputTextarea", "javax.faces.HtmlInputTextarea", "javax.faces.Textarea");
+        addHtmlComponent("inputTextarea", "javax.faces.HtmlInputTextarea", "javax.faces.Textarea");
 
-        this.addHtmlComponent("message", "javax.faces.HtmlMessage", "javax.faces.Message");
+        addHtmlComponent("message", "javax.faces.HtmlMessage", "javax.faces.Message");
 
-        this.addHtmlComponent("messages", "javax.faces.HtmlMessages", NXMessagesRenderer.RENDERER_TYPE);
+        addHtmlComponent("messages", "javax.faces.HtmlMessages", NXMessagesRenderer.RENDERER_TYPE);
 
-        this.addHtmlComponent("outputFormat", "javax.faces.HtmlOutputFormat", "javax.faces.Format");
+        addHtmlComponent("outputFormat", "javax.faces.HtmlOutputFormat", "javax.faces.Format");
 
-        this.addHtmlComponent("outputLabel", "javax.faces.HtmlOutputLabel", "javax.faces.Label");
+        addHtmlComponent("outputLabel", "javax.faces.HtmlOutputLabel", "javax.faces.Label");
 
-        this.addHtmlComponent("outputLink", "javax.faces.HtmlOutputLink", "javax.faces.Link");
+        addHtmlComponent("outputLink", "javax.faces.HtmlOutputLink", "javax.faces.Link");
 
         // meta value wired
         this.addComponent("metaOutputLink", "javax.faces.HtmlOutputLink", "javax.faces.Link",
@@ -82,24 +82,24 @@ public class HtmlLibrary extends AbstractHtmlLibrary {
         this.addComponent("outputText", "javax.faces.HtmlOutputText", "javax.faces.Text",
                 MetaValueHolderTagHandler.class);
 
-        this.addHtmlComponent("panelGrid", "javax.faces.HtmlPanelGrid", "javax.faces.Grid");
+        addHtmlComponent("panelGrid", "javax.faces.HtmlPanelGrid", "javax.faces.Grid");
 
-        this.addHtmlComponent("panelGroup", "javax.faces.HtmlPanelGroup", "javax.faces.Group");
+        addHtmlComponent("panelGroup", "javax.faces.HtmlPanelGroup", "javax.faces.Group");
 
-        this.addHtmlComponent("selectBooleanCheckbox", "javax.faces.HtmlSelectBooleanCheckbox",
+        addHtmlComponent("selectBooleanCheckbox", "javax.faces.HtmlSelectBooleanCheckbox",
                 NXCheckboxRenderer.RENDERER_TYPE);
 
-        this.addHtmlComponent("selectManyCheckbox", "javax.faces.HtmlSelectManyCheckbox", "javax.faces.Checkbox");
+        addHtmlComponent("selectManyCheckbox", "javax.faces.HtmlSelectManyCheckbox", "javax.faces.Checkbox");
 
-        this.addHtmlComponent("selectManyListbox", "javax.faces.HtmlSelectManyListbox", "javax.faces.Listbox");
+        addHtmlComponent("selectManyListbox", "javax.faces.HtmlSelectManyListbox", "javax.faces.Listbox");
 
-        this.addHtmlComponent("selectManyMenu", "javax.faces.HtmlSelectManyMenu", "javax.faces.Menu");
+        addHtmlComponent("selectManyMenu", "javax.faces.HtmlSelectManyMenu", "javax.faces.Menu");
 
-        this.addHtmlComponent("selectOneListbox", "javax.faces.HtmlSelectOneListbox", "javax.faces.Listbox");
+        addHtmlComponent("selectOneListbox", "javax.faces.HtmlSelectOneListbox", "javax.faces.Listbox");
 
-        this.addHtmlComponent("selectOneMenu", "javax.faces.HtmlSelectOneMenu", "javax.faces.Menu");
+        addHtmlComponent("selectOneMenu", "javax.faces.HtmlSelectOneMenu", "javax.faces.Menu");
 
-        this.addHtmlComponent("selectOneRadio", "javax.faces.HtmlSelectOneRadio", "javax.faces.Radio");
+        addHtmlComponent("selectOneRadio", "javax.faces.HtmlSelectOneRadio", "javax.faces.Radio");
     }
 
     @Override

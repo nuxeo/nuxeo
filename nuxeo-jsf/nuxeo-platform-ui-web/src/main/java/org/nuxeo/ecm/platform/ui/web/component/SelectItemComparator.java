@@ -48,7 +48,7 @@ public class SelectItemComparator implements Comparator<SelectItem>, Serializabl
 
     public SelectItemComparator(String ordering, Boolean caseSentitive, Locale locale) {
         this.ordering = StringUtils.split(ordering, ",");
-        this.caseSensitive = caseSentitive;
+        caseSensitive = caseSentitive;
         if (locale == null) {
             FacesContext context = FacesContext.getCurrentInstance();
             this.locale = context.getViewRoot().getLocale();
@@ -56,7 +56,7 @@ public class SelectItemComparator implements Comparator<SelectItem>, Serializabl
             this.locale = locale;
         }
         collator = Collator.getInstance(this.locale);
-        if (Boolean.TRUE.equals(this.caseSensitive)) {
+        if (Boolean.TRUE.equals(caseSensitive)) {
             collator.setStrength(Collator.TERTIARY); // TERTIARY will make a
                                                      // difference between 'a'
                                                      // and 'A'
@@ -84,6 +84,7 @@ public class SelectItemComparator implements Comparator<SelectItem>, Serializabl
         }
     }
 
+    @Override
     public int compare(SelectItem item1, SelectItem item2) {
         for (String field : ordering) {
             int compare = compareField(field, item1, item2);

@@ -60,6 +60,7 @@ public class ActionListenerMethodTagHandler extends TagHandler {
         value = getRequiredAttribute("value");
     }
 
+    @Override
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
             ELException {
         if (parent instanceof ActionSource) {

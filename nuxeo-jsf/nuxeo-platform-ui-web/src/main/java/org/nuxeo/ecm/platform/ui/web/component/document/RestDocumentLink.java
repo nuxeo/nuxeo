@@ -45,7 +45,7 @@ import com.sun.faces.renderkit.html_basic.HtmlBasicRenderer.Param;
 
 /**
  * Component that gives generates a Restful link given a document.
- * 
+ *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class RestDocumentLink extends HtmlOutputLink {
@@ -445,7 +445,7 @@ public class RestDocumentLink extends HtmlOutputLink {
      * Saves the current value exposed as param to the request, and put new variable value instead.
      * <p>
      * Returns the original value exposed to the request.
-     * 
+     *
      * @since 5.7
      */
     protected Object beforeRender() {
@@ -459,7 +459,7 @@ public class RestDocumentLink extends HtmlOutputLink {
 
     /**
      * Restored the original value exposed as param to the request, and remove current variable value.
-     * 
+     *
      * @since 5.7
      */
     protected void afterRender(Object origVarValue) {

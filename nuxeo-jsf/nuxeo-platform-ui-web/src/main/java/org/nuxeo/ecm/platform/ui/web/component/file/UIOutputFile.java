@@ -26,11 +26,8 @@ import javax.faces.application.Application;
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UICommand;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIOutcomeTarget;
 import javax.faces.component.UIOutput;
 import javax.faces.component.html.HtmlCommandLink;
-import javax.faces.component.html.HtmlInputFile;
-import javax.faces.component.html.HtmlInputText;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 

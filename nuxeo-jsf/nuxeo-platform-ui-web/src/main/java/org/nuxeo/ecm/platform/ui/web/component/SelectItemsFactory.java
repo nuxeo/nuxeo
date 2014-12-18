@@ -40,8 +40,10 @@ public abstract class SelectItemsFactory extends SelectItemFactory {
 
     private static final Log log = LogFactory.getLog(SelectItemsFactory.class);
 
+    @Override
     protected abstract String getVar();
 
+    @Override
     protected abstract SelectItem createSelectItem();
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

@@ -80,8 +80,8 @@ public class DirectorySelectOneListboxHandler extends MetaTagHandler {
 
     public DirectorySelectOneListboxHandler(TagConfig config) {
         super(config);
-        this.tagConfig = config;
-        initAttributes(this.tag.getAttributes().getAll());
+        tagConfig = config;
+        initAttributes(tag.getAttributes().getAll());
     }
 
     protected void initAttributes(TagAttribute[] attrs) {

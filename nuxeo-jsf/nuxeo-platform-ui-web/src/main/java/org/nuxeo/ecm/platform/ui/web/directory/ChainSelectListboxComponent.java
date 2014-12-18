@@ -504,10 +504,12 @@ public class ChainSelectListboxComponent extends UIInput implements ClientBehavi
             "change", "valueChange", "click", "dblclick", "focus", "keydown", "keypress", "keyup", "mousedown",
             "mousemove", "mouseout", "mouseover", "mouseup", "select"));
 
+    @Override
     public Collection<String> getEventNames() {
         return EVENT_NAMES;
     }
 
+    @Override
     public String getDefaultEventName() {
         return "valueChange";
     }

@@ -306,6 +306,7 @@ final class StampState implements Externalizable {
     }
 
     // TODO can do better...
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(rows.size());
 
@@ -325,6 +326,7 @@ final class StampState implements Externalizable {
         out.writeObject(map);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         int size = in.readInt();

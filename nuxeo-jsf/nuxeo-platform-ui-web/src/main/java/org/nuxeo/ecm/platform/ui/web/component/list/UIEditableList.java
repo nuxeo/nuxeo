@@ -300,6 +300,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
      *
      * @since 5.3.1
      */
+    @Override
     public void resetCachedModel() {
         InternalState iState = getInternalState(true);
         Object value = getValue();
@@ -1188,14 +1189,14 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         String myId = super.getClientId(context);
         if (clientId.equals(myId)) {
             try {
-                this.pushComponentToEL(context, UIComponent.getCompositeComponentParent(this));
+                pushComponentToEL(context, UIComponent.getCompositeComponentParent(this));
                 callback.invokeContextCallback(context, this);
                 return true;
             } catch (Exception e) { // TODO what is caught here?
                 ExceptionUtils.checkInterrupt(e);
                 throw new FacesException(e);
             } finally {
-                this.popComponentFromEL(context);
+                popComponentFromEL(context);
             }
         }
 

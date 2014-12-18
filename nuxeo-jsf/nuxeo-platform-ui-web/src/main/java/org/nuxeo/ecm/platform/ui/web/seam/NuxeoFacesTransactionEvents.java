@@ -79,7 +79,7 @@ public class NuxeoFacesTransactionEvents {
     }
 
     public void setTransactionFailedMessageEnabled(boolean enabled) {
-        this.transactionFailedMessageEnabled = enabled;
+        transactionFailedMessageEnabled = enabled;
     }
 
 }

@@ -108,21 +108,25 @@ public class UIDirectorySelectItems extends UISelectItems {
         getStateHelper().put(DirPropertyKeys.filter, filter);
     }
 
+    @Override
     @SuppressWarnings("boxing")
     public boolean isLocalize() {
         return (Boolean) getStateHelper().eval(DirPropertyKeys.localize, Boolean.FALSE);
     }
 
+    @Override
     @SuppressWarnings("boxing")
     public void setLocalize(boolean localize) {
         getStateHelper().put(DirPropertyKeys.localize, localize);
     }
 
+    @Override
     @SuppressWarnings("boxing")
     public boolean isdbl10n() {
         return (Boolean) getStateHelper().eval(DirPropertyKeys.dbl10n, Boolean.FALSE);
     }
 
+    @Override
     @SuppressWarnings("boxing")
     public void setdbl10n(boolean dbl10n) {
         getStateHelper().put(DirPropertyKeys.dbl10n, dbl10n);
@@ -288,6 +292,7 @@ public class UIDirectorySelectItems extends UISelectItems {
         return ordering;
     }
 
+    @Override
     protected String translate(FacesContext context, Locale locale, String label) {
         if (StringUtils.isBlank(label)) {
             return label;

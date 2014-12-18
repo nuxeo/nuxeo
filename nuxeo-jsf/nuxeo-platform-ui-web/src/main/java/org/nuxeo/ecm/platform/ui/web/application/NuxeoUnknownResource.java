@@ -54,7 +54,7 @@ public class NuxeoUnknownResource extends ViewResource {
     public NuxeoUnknownResource(String path) {
         super();
         this.path = path;
-        this.errorMessage = String.format("ERROR: facelet not found at '%s'", path);
+        errorMessage = String.format("ERROR: facelet not found at '%s'", path);
     }
 
     @Override

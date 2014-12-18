@@ -29,6 +29,7 @@ import org.jboss.seam.excel.WorksheetItem;
  */
 public class JXLExcelWorkbook extends org.jboss.seam.excel.jxl.JXLExcelWorkbook {
 
+    @Override
     public void addItem(WorksheetItem item) {
         // cheat by changing the component id before calling addItem to avoid
         // going through the cache...
