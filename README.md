@@ -23,7 +23,7 @@ The documentation for Nuxeo Platform Importer is available in our Documentation 
 Follow the project build status on: http://qa.nuxeo.org/jenkins/job/addons_nuxeo-platform-importer-master/
 
 ### Reporting Issues 
-You can report issues in the Nuxeo Platform project of our JIRA bug tracker, which includes a Nuxeo Platform Importer
+You can report issues in the Nuxeo Platform project of our JIRA bug tracker, which includes a Nuxeo Platform Importer component:
 https://jira.nuxeo.com/browse/NXP/component/10621
 
 ## About Nuxeo
