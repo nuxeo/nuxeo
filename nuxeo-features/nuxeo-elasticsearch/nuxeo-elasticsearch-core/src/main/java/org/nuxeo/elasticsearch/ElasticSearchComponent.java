@@ -19,14 +19,16 @@ package org.nuxeo.elasticsearch;
 
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_ENABLED_PROPERTY;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.transaction.Transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,8 +39,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
@@ -51,7 +51,7 @@ import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
 import org.nuxeo.elasticsearch.core.ElasticSearchAdminImpl;
 import org.nuxeo.elasticsearch.core.ElasticSearchIndexingImpl;
-import org.nuxeo.elasticsearch.core.ElasticsearchServiceImpl;
+import org.nuxeo.elasticsearch.core.ElasticSearchServiceImpl;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.work.BaseIndexingWorker;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
@@ -81,7 +81,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     private final Set<String> pendingCommands = Collections.synchronizedSet(new HashSet<String>());
 
-    private final Map<String, ElasticSearchIndexConfig> indexConfig = new HashMap<String, ElasticSearchIndexConfig>();
+    private final Map<String, ElasticSearchIndexConfig> indexConfig = new HashMap<>();
 
     // indexing command that where received before the index initialization
     private final List<IndexingCommand> stackedCommands = new ArrayList<>();
@@ -94,7 +94,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     private ElasticSearchIndexingImpl esi;
 
-    private ElasticsearchServiceImpl ess;
+    private ElasticSearchServiceImpl ess;
 
     // Nuxeo Component impl ======================================é=============
     @Override
@@ -149,7 +149,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         }
         esa = new ElasticSearchAdminImpl(localConfig, remoteConfig, indexConfig);
         esi = new ElasticSearchIndexingImpl(esa);
-        ess = new ElasticsearchServiceImpl(esa);
+        ess = new ElasticSearchServiceImpl(esa);
         processStackedCommands();
     }
 
@@ -179,15 +179,12 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
                 txCreated = TransactionHelper.startTransaction();
             }
             try {
-                for (final IndexingCommand cmd : stackedCommands) {
-                    new UnrestrictedSessionRunner(cmd.getRepository()) {
-                        @Override
-                        public void run() throws ClientException {
-                            cmd.attach(session);
-                            esi.indexNow(cmd);
-                        }
-                    }.runUnrestricted();
-                }
+                new UnrestrictedSessionRunner(stackedCommands.get(0).getRepositoryName()) {
+                    @Override
+                    public void run() throws ClientException {
+                        esi.indexNonRecursive(stackedCommands);
+                    }
+                }.runUnrestricted();
             } catch (ClientException e) {
                 log.error("Unable to flush pending indexing commands: " + e.getMessage(), e);
             } finally {
@@ -265,51 +262,9 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     @Override
     public void flushRepositoryIndex(String repositoryName) {
         esa.flushRepositoryIndex(repositoryName);
-
     }
 
     // ES Indexing =============================================================
-
-    @Override
-    public void scheduleIndexing(IndexingCommand cmd) throws ClientException {
-        String id = cmd.getDocId();
-        if (isAlreadyScheduled(cmd)) {
-            if (log.isDebugEnabled()) {
-                log.debug("Schedule indexing command, cancelled because already scheduled: " + cmd);
-            }
-            return;
-        }
-        if (cmd.isSync()) {
-            if (log.isDebugEnabled()) {
-                log.debug("Schedule indexing command Sync PostCommit: " + cmd);
-            }
-            schedulePostCommitIndexing(cmd);
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("Schedule indexing command Async: " + cmd.toString());
-            }
-            WorkManager wm = Framework.getLocalService(WorkManager.class);
-            IndexingWorker idxWork = new IndexingWorker(cmd);
-            // will be scheduled after the commit and only if the tx is not
-            // rollbacked
-            wm.schedule(idxWork, true);
-        }
-        pendingCommands.add(cmd.getId());
-        pendingWork.add(cmd.getWorkKey());
-    }
-
-    void schedulePostCommitIndexing(IndexingCommand cmd) throws ClientException {
-        EventProducer evtProducer = Framework.getLocalService(EventProducer.class);
-        Event indexingEvent = null;
-        try {
-            indexingEvent = cmd.asIndexingEvent();
-        } catch (IOException e) {
-            throw ClientException.wrap(e);
-        }
-        if (indexingEvent != null) {
-            evtProducer.fireEvent(indexingEvent);
-        }
-    }
 
     @Override
     public boolean isAlreadyScheduled(IndexingCommand cmd) {
@@ -317,40 +272,79 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     @Override
-    public void indexNow(IndexingCommand cmd) throws ClientException {
-        if (!isReady()) {
-            stackedCommands.add(cmd);
-            if (log.isDebugEnabled()) {
-                log.debug("Delaying indexing command: Waiting for Index to be initialized: " + cmd);
-            }
-            return;
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("Process indexing command: " + cmd);
-        }
-        markCommandInProgress(cmd);
-        esi.indexNow(cmd);
+    public void indexNonRecursive(IndexingCommand cmd) throws ClientException {
+        List<IndexingCommand> cmds = new ArrayList<>(1);
+        cmds.add(cmd);
+        indexNonRecursive(cmds);
     }
 
     @Override
-    public void indexNow(List<IndexingCommand> cmds) throws ClientException {
+    public void indexNonRecursive(List<IndexingCommand> cmds) throws ClientException {
         if (!isReady()) {
             if (log.isDebugEnabled()) {
-                log.debug("Delaying indexing commands: Waiting for Index to be initialized.");
+                log.debug("Delaying indexing commands: Waiting for Index to be initialized."
+                        + Arrays.toString(cmds.toArray()));
             }
             stackedCommands.addAll(cmds);
             return;
         }
         if (log.isDebugEnabled()) {
-            log.debug("Process indexing commands: " + cmds);
+            log.debug("Process indexing commands: " + Arrays.toString(cmds.toArray()));
         }
         markCommandInProgress(cmds);
-        esi.indexNow(cmds);
+        esi.indexNonRecursive(cmds);
     }
 
     @Override
-    public void reindex(String repositoryName, String nxql) {
-        esi.reindex(repositoryName, nxql);
+    public void runIndexingWorker(List<IndexingCommand> cmds) {
+        List<IndexingCommand> syncCommands = new ArrayList<>();
+        List<IndexingCommand> asyncCommands = new ArrayList<>();
+        for (IndexingCommand cmd : cmds) {
+            if (isAlreadyScheduled(cmd)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Cancel indexing command, because it is already scheduled: " + cmd);
+                }
+                continue;
+            }
+            pendingCommands.add(cmd.getId());
+            pendingWork.add(cmd.getWorkKey());
+            if (cmd.isSync()) {
+                syncCommands.add(cmd);
+            } else {
+                asyncCommands.add(cmd);
+            }
+        }
+        // TODO implement multi repositories
+        if (!syncCommands.isEmpty()) {
+            String repositoryName = syncCommands.get(0).getRepositoryName();
+            Transaction transaction = TransactionHelper.suspendTransaction();
+            IndexingWorker idxWork = new IndexingWorker(repositoryName, syncCommands);
+            try {
+                idxWork.run();
+            } finally {
+                if (transaction != null) {
+                    TransactionHelper.resumeTransaction(transaction);
+                }
+            }
+        }
+        if (!asyncCommands.isEmpty()) {
+            String repositoryName = asyncCommands.get(0).getRepositoryName();
+            IndexingWorker idxWork = new IndexingWorker(repositoryName, asyncCommands);
+            WorkManager wm = Framework.getLocalService(WorkManager.class);
+            wm.schedule(idxWork, false);
+        }
+    }
+
+    @Override
+    public void runIndexingWorker(IndexingCommand cmd) {
+        List<IndexingCommand> cmds = new ArrayList<>(1);
+        cmds.add(cmd);
+        runIndexingWorker(cmds);
+    }
+
+    @Override
+    public void runReindexingWorker(String repositoryName, String nxql) {
+        esi.runReindexingWorker(repositoryName, nxql);
     }
 
     // ES Search ===============================================================
@@ -368,14 +362,17 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     @Override
     public DocumentModelList query(CoreSession session, String nxql, int limit, int offset, SortInfo... sortInfos)
             throws ClientException {
-        return ess.query(session, nxql, limit, offset, sortInfos);
+        NxQueryBuilder query = new NxQueryBuilder(session).nxql(nxql).limit(limit).offset(offset).addSort(sortInfos);
+        return query(query);
     }
 
     @Deprecated
     @Override
     public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
             SortInfo... sortInfos) throws ClientException {
-        return ess.query(session, queryBuilder, limit, offset, sortInfos);
+        NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder).limit(limit).offset(offset).addSort(
+                sortInfos);
+        return query(query);
     }
 
     // misc ====================================================================
@@ -386,15 +383,12 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     int markCommandInProgress(List<IndexingCommand> cmds) {
         int ret = 0;
         for (IndexingCommand cmd : cmds) {
-            ret += markCommandInProgress(cmd);
+            pendingWork.remove(cmd.getWorkKey());
+            if (pendingCommands.remove(cmd.getId())) {
+                ret += 1;
+            }
         }
         return ret;
-    }
-
-    int markCommandInProgress(IndexingCommand cmd) {
-        pendingWork.remove(cmd.getWorkKey());
-        boolean isRemoved = pendingCommands.remove(cmd.getId());
-        return isRemoved ? 1 : 0;
     }
 
 }

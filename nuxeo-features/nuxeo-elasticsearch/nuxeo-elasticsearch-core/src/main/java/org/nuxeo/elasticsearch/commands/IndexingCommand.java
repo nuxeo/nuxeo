@@ -43,9 +43,9 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.elasticsearch.listener.EventConstants;
 
 /**
- * Holds information about what org.nuxeo.elasticsearch.commandstype of indexing operation must be processed.
- * IndexingCommands are create "on the fly" via a Synchronous event listener and at commit time the system will merge
- * the commands and generate events for the sync commands.
+ * Holds information about what type of indexing operation must be processed. IndexingCommands are create "on the fly"
+ * via a Synchronous event listener and at post commit time the system will merge the commands and execute worker to
+ * process commands.
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
@@ -71,7 +71,7 @@ public class IndexingCommand implements Serializable {
 
     protected String path;
 
-    protected String repository;
+    protected String repositoryName;
 
     protected String id;
 
@@ -101,7 +101,7 @@ public class IndexingCommand implements Serializable {
             throw new IllegalArgumentException("Target document is null for: " + this);
         }
         DocumentModel targetDocument = getValidTargetDocument(document);
-        repository = targetDocument.getRepositoryName();
+        repositoryName = targetDocument.getRepositoryName();
         uid = targetDocument.getId();
         sessionId = targetDocument.getSessionId();
         path = targetDocument.getPathAsString();
@@ -131,8 +131,8 @@ public class IndexingCommand implements Serializable {
     }
 
     public void attach(CoreSession session) {
-        if (!session.getRepositoryName().equals(repository)) {
-            throw new IllegalArgumentException("Invalid session, expected repo: " + repository + " actual: "
+        if (!session.getRepositoryName().equals(repositoryName)) {
+            throw new IllegalArgumentException("Invalid session, expected repo: " + repositoryName + " actual: "
                     + session.getRepositoryName());
         }
         sessionId = session.getSessionId();
@@ -161,8 +161,8 @@ public class IndexingCommand implements Serializable {
         return session.getDocument(idref);
     }
 
-    public String getRepository() {
-        return repository;
+    public String getRepositoryName() {
+        return repositoryName;
     }
 
     /**
@@ -221,7 +221,7 @@ public class IndexingCommand implements Serializable {
         jsonGen.writeStringField("type", String.format("%s", type));
         jsonGen.writeStringField("docId", getDocId());
         jsonGen.writeStringField("path", path);
-        jsonGen.writeStringField("repo", getRepository());
+        jsonGen.writeStringField("repo", getRepositoryName());
         jsonGen.writeBooleanField("recurse", recurse);
         jsonGen.writeBooleanField("sync", sync);
         jsonGen.writeEndObject();
@@ -259,7 +259,7 @@ public class IndexingCommand implements Serializable {
             } else if ("path".equals(key)) {
                 cmd.path = value.getTextValue();
             } else if ("repo".equals(key)) {
-                cmd.repository = value.getTextValue();
+                cmd.repositoryName = value.getTextValue();
             } else if ("id".equals(key)) {
                 cmd.id = value.getTextValue();
             } else if ("recurse".equals(key)) {
@@ -353,7 +353,7 @@ public class IndexingCommand implements Serializable {
         default:
             type.toString();
         }
-        return repository + ":" + uid + ":" + recurse + ":" + action;
+        return repositoryName + ":" + uid + ":" + recurse + ":" + action;
     }
 
 }

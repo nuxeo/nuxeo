@@ -153,8 +153,8 @@ public class TestReindex {
         esa.refresh();
         DocumentModelList docs2 = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
         Assert.assertEquals(0, docs2.totalSize());
-        esi.reindex(session.getRepositoryName(), "SELECT * FROM Document");
-        esi.reindex(session.getRepositoryName(), "SELECT * FROM Relation");
+        esi.runReindexingWorker(session.getRepositoryName(), "SELECT * FROM Document");
+        esi.runReindexingWorker(session.getRepositoryName(), "SELECT * FROM Relation");
         waitForIndexing();
         docs2 = ess.query(new NxQueryBuilder(session).nxql(nxql).limit(100));
 
