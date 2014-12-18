@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.platform.usermanager.resolver">
+<component name="org.nuxeo.ecm.core.DocumentModel.resolver">
   <documentation>
     Resolver for document properties containing DocumentModel reference. Can manage PATH reference or ID
     reference. Value will contain id or path prefixed by the repository name to which the referenced document belongs.
