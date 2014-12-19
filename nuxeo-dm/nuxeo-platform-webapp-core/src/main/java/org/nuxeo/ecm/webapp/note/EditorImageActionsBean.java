@@ -21,12 +21,14 @@ package org.nuxeo.ecm.webapp.note;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.Part;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +36,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -100,8 +103,12 @@ public class EditorImageActionsBean extends InputController implements EditorIma
 
     private String oldSelectedTab;
 
-    private InputStream uploadedImage;
+    private Part uploadedImage;
 
+    /**
+     * @deprecated since 7.1
+     */
+    @Deprecated
     private String uploadedImageName;
 
     private String imageUrl;
@@ -142,12 +149,12 @@ public class EditorImageActionsBean extends InputController implements EditorIma
     }
 
     @Override
-    public void setUploadedImage(InputStream uploadedImage) {
+    public void setUploadedImage(Part uploadedImage) {
         this.uploadedImage = uploadedImage;
     }
 
     @Override
-    public InputStream getUploadedImage() {
+    public Part getUploadedImage() {
         return uploadedImage;
     }
 
@@ -164,30 +171,36 @@ public class EditorImageActionsBean extends InputController implements EditorIma
     @Override
     @SuppressWarnings("unchecked")
     public String uploadImage() throws ClientException {
-        if (uploadedImage == null || uploadedImageName == null) {
-            return "";
+        if (uploadedImage == null) {
+            return null;
         }
-        final DocumentModel doc = navigationContext.getCurrentDocument();
+        try {
+            final DocumentModel doc = navigationContext.getCurrentDocument();
 
-        final List<Map<String, Object>> filesList = (List<Map<String, Object>>) doc.getProperty("files", "files");
-        final int fileIndex = filesList == null ? 0 : filesList.size();
+            final List<Map<String, Object>> filesList = (List<Map<String, Object>>) doc.getProperty("files", "files");
+            final int fileIndex = filesList == null ? 0 : filesList.size();
 
-        final Map<String, Object> props = new HashMap<String, Object>();
-        uploadedImageName = FileUtils.getCleanFileName(uploadedImageName);
-        props.put("filename", uploadedImageName);
-        props.put("file", FileUtils.createSerializableBlob(uploadedImage, uploadedImageName, null));
-        final ListDiff listDiff = new ListDiff();
-        listDiff.add(props);
-        doc.setProperty("files", "files", listDiff);
+            final Map<String, Object> props = new HashMap<String, Object>();
+            String filename = FileUtils.retrieveFilename(uploadedImage);
+            Blob blob = FileUtils.createSerializableBlob(uploadedImage.getInputStream(), filename,
+                    uploadedImage.getContentType());
+            props.put("filename", filename);
+            props.put("file", blob);
+            final ListDiff listDiff = new ListDiff();
+            listDiff.add(props);
+            doc.setProperty("files", "files", listDiff);
 
-        documentManager.saveDocument(doc);
-        documentManager.save();
+            documentManager.saveDocument(doc);
+            documentManager.save();
 
-        imageUrl = DocumentModelFunctions.complexFileUrl("downloadFile", doc, fileIndex, uploadedImageName);
+            imageUrl = DocumentModelFunctions.complexFileUrl("downloadFile", doc, fileIndex, filename);
 
-        isImageUploaded = true;
+            isImageUploaded = true;
 
-        return "editor_image_upload";
+            return "editor_image_upload";
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
     }
 
     @Override
@@ -334,7 +347,7 @@ public class EditorImageActionsBean extends InputController implements EditorIma
         List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) video.getPropertyValue("vid:transcodedVideos");
         int position = 0;
         for (Map<String, Serializable> prop : transcodedVideos) {
-            if (type.equals((String) prop.get("name"))) {
+            if (type.equals(prop.get("name"))) {
                 StorageBlob content = (StorageBlob) prop.get("content");
                 String blobPropertyName = "vid:transcodedVideos/" + position + "/content";
                 return DocumentModelFunctions.bigFileUrl(video, blobPropertyName, content.getFilename());
