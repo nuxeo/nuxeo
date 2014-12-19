@@ -29,9 +29,6 @@ import org.openqa.selenium.WebDriver;
  */
 public class FileCreationFormPage extends DublinCoreCreationDocumentFormPage {
 
-    /**
-     * @param driver
-     */
     public FileCreationFormPage(WebDriver driver) {
         super(driver);
     }
@@ -42,14 +39,49 @@ public class FileCreationFormPage extends DublinCoreCreationDocumentFormPage {
         descriptionTextInput.sendKeys(description);
 
         if (uploadBlob) {
-            LayoutElement layout = new LayoutElement(driver, "document_create:nxl_file");
-            // on file document, a widget template is used => standard file
-            // widget is wrapped, hence the duplicate nxw_file id
-            FileWidgetElement fileWidget = layout.getWidget("nxw_file:nxw_file_file", FileWidgetElement.class);
-            fileWidget.uploadTestFile(filePrefix, fileSuffix, fileContent);
+            uploadBlob(filePrefix, fileSuffix, fileContent);
         }
 
         create();
         return asPage(FileDocumentBasePage.class);
     }
+
+    protected FileWidgetElement getFileWidgetElement() {
+        LayoutElement layout = new LayoutElement(driver, "document_create:nxl_file");
+        // on file document, a widget template is used => standard file
+        // widget is wrapped, hence the duplicate nxw_file id
+        return layout.getWidget("nxw_file:nxw_file_file", FileWidgetElement.class);
+    }
+
+    protected void uploadBlob(String filePrefix, String fileSuffix, String fileContent) throws IOException {
+        FileWidgetElement fileWidget = getFileWidgetElement();
+        fileWidget.uploadTestFile(filePrefix, fileSuffix, fileContent);
+    }
+
+    /**
+     * @since 7.1
+     */
+    public FileCreationFormPage createFileDocumentWithoutTitle(String filePrefix, String fileSuffix, String fileContent)
+            throws IOException {
+        uploadBlob(filePrefix, fileSuffix, fileContent);
+        create();
+        return asPage(FileCreationFormPage.class);
+    }
+
+    /**
+     * @since 7.1
+     */
+    public String getSelectedOption() {
+        FileWidgetElement fileWidget = getFileWidgetElement();
+        return fileWidget.getEditChoice();
+    }
+
+    /**
+     * @since 7.1
+     */
+    public String getSelectedFilename() {
+        FileWidgetElement fileWidget = getFileWidgetElement();
+        return fileWidget.getFilename(true);
+    }
+
 }

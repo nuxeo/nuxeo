@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.servlet.http.Part;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -79,6 +81,24 @@ public class FileUtils {
             log.error(e);
         }
         return blob;
+    }
+
+    /**
+     * Helper method to retrieve filename from part, waiting for servlet-api related improvements.
+     * <p>
+     * Filename is cleaned before being returned.
+     *
+     * @see #getCleanFileName(String)
+     * @since 7.1
+     */
+    public static String retrieveFilename(Part part) {
+        for (String cd : part.getHeader("content-disposition").split(";")) {
+            if (cd.trim().startsWith("filename")) {
+                String filename = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
+                return getCleanFileName(filename);
+            }
+        }
+        return null;
     }
 
     /**

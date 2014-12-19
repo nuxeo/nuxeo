@@ -634,6 +634,14 @@
     </renderer>
 
     <renderer>
+      <component-family>javax.faces.Input</component-family>
+      <renderer-type>javax.faces.NXFile</renderer-type>
+      <renderer-class>
+        org.nuxeo.ecm.platform.ui.web.component.file.NXFileRenderer
+      </renderer-class>
+    </renderer>
+
+    <renderer>
       <component-family>javax.faces.SelectBoolean</component-family>
       <renderer-type>javax.faces.NXCheckbox</renderer-type>
       <renderer-class>

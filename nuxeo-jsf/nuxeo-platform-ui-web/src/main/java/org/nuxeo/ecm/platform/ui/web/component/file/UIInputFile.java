@@ -45,8 +45,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.ui.web.application.NuxeoResponseStateManagerImpl;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.util.MessageFactory;
@@ -97,7 +99,8 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 app.createComponent(UIOutputFile.COMPONENT_TYPE));
         ComponentUtils.initiateSubComponent(this, EDIT_FILENAME_FACET_NAME,
                 app.createComponent(HtmlInputText.COMPONENT_TYPE));
-        ComponentUtils.initiateSubComponent(this, UPLOAD_FACET_NAME, app.createComponent(HtmlInputFile.COMPONENT_TYPE));
+        ComponentUtils.initiateSubComponent(this, UPLOAD_FACET_NAME,
+                app.createComponent(faces, HtmlInputFile.COMPONENT_TYPE, NXFileRenderer.RENDERER_TYPE));
     }
 
     // component will render itself
@@ -381,57 +384,20 @@ public class UIInputFile extends UIInput implements NamingContainer {
         if (uploadFacet instanceof HtmlInputFile) {
             HtmlInputFile uploadComp = (HtmlInputFile) uploadFacet;
             Object submittedFile = uploadComp.getSubmittedValue();
-            if (submittedFile instanceof Part) {
-                Part file = (Part) submittedFile;
-                try {
-                    submitted.setBlob(file.getInputStream());
-                } catch (IOException e) {
-                    ComponentUtils.addErrorMessage(context, this, e.getMessage());
+            if (submittedFile instanceof Blob) {
+                Blob sblob = (Blob) submittedFile;
+                if (sblob.getLength() == 0) {
+                    String message = context.getPartialViewContext().isAjaxRequest() ? InputFileInfo.INVALID_WITH_AJAX_MESSAGE
+                            : InputFileInfo.INVALID_FILE_MESSAGE;
+                    ComponentUtils.addErrorMessage(context, this, message);
                     setValid(false);
                     return;
                 }
-                submitted.setFilename(retrieveFilename(file));
-                submitted.setMimeType(file.getContentType());
-            }
-            Blob blob = null;
-            try {
-                blob = submitted.getConvertedBlob();
-            } catch (ConverterException ce) {
-                ComponentUtils.addErrorMessage(context, this, ce.getMessage());
-                setValid(false);
-                return;
-            }
-            if (blob == null) {
-                Map<String, String> requestParameters = context.getExternalContext().getRequestParameterMap();
-                String message = requestParameters.containsKey("AJAXREQUEST") ? InputFileInfo.INVALID_WITH_AJAX_MESSAGE
-                        : InputFileInfo.INVALID_FILE_MESSAGE;
-                ComponentUtils.addErrorMessage(context, this, message);
-                setValid(false);
-                return;
-            }
-            // get new filename
-            String filename;
-            try {
-                filename = submitted.getConvertedFilename();
-            } catch (ConverterException ce) {
-                ComponentUtils.addErrorMessage(context, this, ce.getMessage());
-                setValid(false);
-                return;
-            }
-            submitted.setBlob(blob);
-            submitted.setFilename(filename);
-        }
-    }
-
-    // protected method waiting for servlet-api improvements
-    protected String retrieveFilename(Part part) {
-        for (String cd : part.getHeader("content-disposition").split(";")) {
-            if (cd.trim().startsWith("filename")) {
-                String filename = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
-                return filename;
+                submitted.setBlob(sblob);
+                submitted.setFilename(sblob.getFilename());
+                submitted.setMimeType(sblob.getMimeType());
             }
         }
-        return null;
     }
 
     public void updateFilename(FacesContext context, String newFilename) {
