@@ -48,8 +48,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceService;
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceService.Fetching;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -280,13 +278,7 @@ public class SimpleDocumentModel implements DocumentModel {
 
     @Override
     public Serializable getPropertyValue(String xpath) throws PropertyException, ClientException {
-        Property property = getProperty(xpath);
-        Fetching fetching = (Fetching) this.getContextData(ExternalReferenceService.CTX_MAP_KEY);
-        if (fetching != null && fetching == Fetching.FETCH_ALL && property.isReference()) {
-            return (Serializable) property.getReferencedEntity();
-        } else {
-            return property.getValue();
-        }
+        return getProperty(xpath).getValue();
     }
 
     @Override

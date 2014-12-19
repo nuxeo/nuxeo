@@ -76,8 +76,6 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceService;
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceService.Fetching;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -1433,19 +1431,13 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public Serializable getPropertyValue(String xpath) throws PropertyException, ClientException {
-        Serializable value = NULL;
         if (prefetch != null) {
-            value = prefetch.get(xpath);
+            Serializable value = prefetch.get(xpath);
+            if (value != NULL) {
+                return value;
+            }
         }
-        Property property = getProperty(xpath);
-        if (value == NULL) {
-            value = property.getValue();
-        }
-        Fetching fetching = (Fetching) this.getContextData(ExternalReferenceService.CTX_MAP_KEY);
-        if (fetching != null && fetching == Fetching.FETCH_ALL && value != null && property.isReference()) {
-            return (Serializable) getResolver(xpath).fetch(value);
-        }
-        return value;
+        return getProperty(xpath).getValue();
     }
 
     @Override
