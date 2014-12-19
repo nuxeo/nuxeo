@@ -25,18 +25,17 @@ public class RemoteException extends AutomationException {
     protected final int status;
 
     protected final String type;
-    
+
     protected final String info;
-    
+
     protected final Throwable remoteCause;
-    
-    public RemoteException(int status, String type, String message,
-            Throwable cause) {
+
+    public RemoteException(int status, String type, String message, Throwable cause) {
         super(message, cause);
         this.status = status;
         this.type = type;
-        this.info = extractInfo(cause);
-        this.remoteCause = cause;
+        info = extractInfo(cause);
+        remoteCause = cause;
     }
 
     public RemoteException(int status, String type, String message, String info) {
@@ -44,7 +43,7 @@ public class RemoteException extends AutomationException {
         this.status = status;
         this.type = type;
         this.info = info;
-        this.remoteCause = null;
+        remoteCause = null;
     }
 
     public int getStatus() {
@@ -61,7 +60,7 @@ public class RemoteException extends AutomationException {
         t.printStackTrace(pw);
         return sw.getBuffer().toString();
     }
-    
+
     public Throwable getRemoteCause() {
         return remoteCause;
     }
