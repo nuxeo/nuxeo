@@ -352,7 +352,7 @@ public class GenericThreadedImportTask implements Runnable {
             }
         }
         try {
-            session = CoreInstance.openCoreSessionSystem(null);
+            session = CoreInstance.openCoreSessionSystem(repositoryName);
             log.info("Starting new import task");
             if (rootDoc != null) {
                 // reopen the root to be sure the session is valid
@@ -363,9 +363,9 @@ public class GenericThreadedImportTask implements Runnable {
             GenericMultiThreadedImporter.addCreatedDoc(taskId, uploadedFiles);
             txHelper.commitOrRollbackTransaction();
         } catch (Exception e) { // deals with interrupt below
-            ExceptionUtils.checkInterrupt(e);
-            notifyImportError();
             log.error("Error during import", e);
+            ExceptionUtils.checkInterrupt(e);
+            notifyImportError();            
         } finally {
             log.info("End of task");
             if (session != null) {
