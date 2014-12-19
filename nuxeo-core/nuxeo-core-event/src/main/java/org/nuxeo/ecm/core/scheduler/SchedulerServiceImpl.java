@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
@@ -134,6 +135,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
+        Framework.addListener(this);
         setupScheduler(context);
     }
 
@@ -259,9 +261,10 @@ public class SchedulerServiceImpl extends DefaultComponent implements
 
     @Override
     public void handleEvent(RuntimeServiceEvent event) {
-        if (!event.getEventName().equals(RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP)) {
+        if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
             return;
         }
+        Framework.removeListener(this);
         shutdownScheduler();
     }
 
