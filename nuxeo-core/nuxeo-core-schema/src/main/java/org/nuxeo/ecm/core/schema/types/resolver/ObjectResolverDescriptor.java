@@ -15,7 +15,7 @@
  *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
 
-package org.nuxeo.ecm.core.schema.types.reference;
+package org.nuxeo.ecm.core.schema.types.resolver;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;

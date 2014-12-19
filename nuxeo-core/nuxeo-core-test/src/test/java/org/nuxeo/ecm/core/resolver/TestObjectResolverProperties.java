@@ -1,4 +1,4 @@
-package org.nuxeo.ecm.core.schema.types.reference;
+package org.nuxeo.ecm.core.resolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -24,9 +24,11 @@ import org.nuxeo.ecm.core.api.validation.DocumentValidationService.Forcing;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.constraints.ObjectResolverConstraint;
-import org.nuxeo.ecm.core.schema.types.reference.TestingColorResolver.Color;
-import org.nuxeo.ecm.core.schema.types.reference.TestingColorResolver.PrimaryColor;
-import org.nuxeo.ecm.core.schema.types.reference.TestingColorResolver.SecondaryColor;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolverService;
+import org.nuxeo.ecm.core.schema.types.resolver.TestingColorResolver;
+import org.nuxeo.ecm.core.schema.types.resolver.TestingColorResolver.Color;
+import org.nuxeo.ecm.core.schema.types.resolver.TestingColorResolver.PrimaryColor;
+import org.nuxeo.ecm.core.schema.types.resolver.TestingColorResolver.SecondaryColor;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;

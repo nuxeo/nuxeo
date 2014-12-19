@@ -16,7 +16,7 @@ package org.nuxeo.ecm.core.schema.types;
 import java.util.HashSet;
 
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
-import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
 /**
  * Implementation of a simple type that is not primitive (and therefore has constraints).

@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolver;
 import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolverImpl;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
 public abstract class AbstractProperty implements Property {
 

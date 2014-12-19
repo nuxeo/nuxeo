@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.local.LocalException;
-import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
 /**
  * This {@link ObjectResolver} allows to manage integrity for fields containing {@link DocumentModel}

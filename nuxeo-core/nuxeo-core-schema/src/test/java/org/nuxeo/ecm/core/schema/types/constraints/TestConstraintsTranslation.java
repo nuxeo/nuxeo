@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.ecm.core.schema.types.reference.TestingColorResolver;
+import org.nuxeo.ecm.core.schema.types.resolver.TestingColorResolver;
 
 public class TestConstraintsTranslation {
 

@@ -15,7 +15,7 @@
  *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
 
-package org.nuxeo.ecm.core.schema.types.reference;
+package org.nuxeo.ecm.core.schema.types.resolver;
 
 import java.io.Serializable;
 import java.util.ArrayList;

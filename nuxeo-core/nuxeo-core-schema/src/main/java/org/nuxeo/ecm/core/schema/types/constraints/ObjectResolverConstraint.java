@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
 /**
  * External references are document field with a simple type whose value refers to an external business entity. This

@@ -1,11 +1,11 @@
-package org.nuxeo.ecm.core.schema.types.reference;
+package org.nuxeo.ecm.core.resolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.schema.types.reference.TestingColorResolver.COLOR_MODE;
-import static org.nuxeo.ecm.core.schema.types.reference.TestingColorResolver.NAME;
+import static org.nuxeo.ecm.core.schema.types.resolver.TestingColorResolver.COLOR_MODE;
+import static org.nuxeo.ecm.core.schema.types.resolver.TestingColorResolver.NAME;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -22,7 +22,10 @@ import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint.Description;
 import org.nuxeo.ecm.core.schema.types.constraints.ConstraintUtils;
 import org.nuxeo.ecm.core.schema.types.constraints.ObjectResolverConstraint;
-import org.nuxeo.ecm.core.schema.types.reference.TestingColorResolver.MODE;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolverService;
+import org.nuxeo.ecm.core.schema.types.resolver.TestingColorResolver;
+import org.nuxeo.ecm.core.schema.types.resolver.TestingColorResolver.MODE;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;

@@ -17,7 +17,7 @@
 
 package org.nuxeo.ecm.core.api.model.resolver;
 
-import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
 /**
  * Object to resolve entities referenced by a property. Works only on properties whose type has an object resolver.

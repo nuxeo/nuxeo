@@ -1,4 +1,4 @@
-package org.nuxeo.ecm.core.schema.types.reference;
+package org.nuxeo.ecm.core.resolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

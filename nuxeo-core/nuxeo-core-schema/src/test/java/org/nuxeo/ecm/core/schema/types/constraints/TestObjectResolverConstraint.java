@@ -19,14 +19,14 @@ package org.nuxeo.ecm.core.schema.types.constraints;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.schema.types.reference.TestingColorResolver.COLOR_MODE;
+import static org.nuxeo.ecm.core.schema.types.resolver.TestingColorResolver.COLOR_MODE;
 
 import java.util.HashMap;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.nuxeo.ecm.core.schema.types.reference.TestingColorResolver;
-import org.nuxeo.ecm.core.schema.types.reference.TestingColorResolver.MODE;
+import org.nuxeo.ecm.core.schema.types.resolver.TestingColorResolver;
+import org.nuxeo.ecm.core.schema.types.resolver.TestingColorResolver.MODE;
 
 public class TestObjectResolverConstraint {
 

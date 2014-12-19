@@ -18,7 +18,7 @@
 package org.nuxeo.ecm.core.api.model.resolver;
 
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
 /**
  * @since 7.1

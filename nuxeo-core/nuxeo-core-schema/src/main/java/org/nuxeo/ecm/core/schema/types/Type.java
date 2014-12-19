@@ -16,7 +16,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
-import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
 /**
  * A Type object is used to describe some ECM content.

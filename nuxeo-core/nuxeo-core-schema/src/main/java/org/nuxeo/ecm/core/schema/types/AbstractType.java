@@ -21,7 +21,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.schema.TypeProvider;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
-import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 import org.nuxeo.runtime.api.Framework;
 
 /**
