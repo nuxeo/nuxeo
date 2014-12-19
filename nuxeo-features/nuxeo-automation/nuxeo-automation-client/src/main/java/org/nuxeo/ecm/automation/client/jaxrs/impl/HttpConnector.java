@@ -17,12 +17,12 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.Map;
 
 import javax.mail.internet.MimeMultipart;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -34,6 +34,7 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+
 import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
@@ -127,14 +128,14 @@ public class HttpConnector implements Connector {
         HttpEntity entity = resp.getEntity();
         int status = resp.getStatusLine().getStatusCode();
         if (entity == null) {
-            if (status < 400) {
+            if (status < Response.Status.BAD_REQUEST.getStatusCode()) {
                 return null;
             }
             throw new RemoteException(status, "ServerError", "Server Error", (Throwable) null);
         }
         Header ctypeHeader = entity.getContentType();
         if (ctypeHeader == null) { // handle broken responses with no ctype
-            if (status != 200) {
+            if (status != Response.Status.OK.getStatusCode()) {
                 // this may happen when login failed
                 throw new RemoteException(status, "ServerError", "Server Error", (Throwable) null);
             }

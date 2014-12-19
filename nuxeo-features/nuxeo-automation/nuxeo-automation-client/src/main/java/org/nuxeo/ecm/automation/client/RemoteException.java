@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,6 +14,8 @@ package org.nuxeo.ecm.automation.client;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+
+import javax.ws.rs.core.Response;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -34,8 +36,8 @@ public class RemoteException extends AutomationException {
         super(message, cause);
         this.status = status;
         this.type = type;
-        this.info = extractInfo(cause);
-        this.remoteCause = cause;
+        info = extractInfo(cause);
+        remoteCause = cause;
     }
 
     public RemoteException(int status, String type, String message, String info) {
@@ -43,7 +45,7 @@ public class RemoteException extends AutomationException {
         this.status = status;
         this.type = type;
         this.info = info;
-        this.remoteCause = null;
+        remoteCause = null;
     }
 
     public int getStatus() {
@@ -84,7 +86,7 @@ public class RemoteException extends AutomationException {
     }
 
     public static RemoteException wrap(Throwable t) {
-        return wrap(t, 500);
+        return wrap(t, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
     }
 
     public static RemoteException wrap(Throwable t, int status) {
@@ -92,7 +94,7 @@ public class RemoteException extends AutomationException {
     }
 
     public static RemoteException wrap(String message, Throwable t) {
-        return wrap(message, t, 500);
+        return wrap(message, t, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
     }
 
     public static RemoteException wrap(String message, Throwable t, int status) {
