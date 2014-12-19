@@ -17,12 +17,12 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolver;
+import org.nuxeo.ecm.core.api.validation.ConstraintViolation;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService.Forcing;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
-import org.nuxeo.ecm.core.schema.types.constraints.ConstraintViolation;
 import org.nuxeo.ecm.core.schema.types.constraints.ObjectResolverConstraint;
 import org.nuxeo.ecm.core.schema.types.reference.TestingColorResolver.Color;
 import org.nuxeo.ecm.core.schema.types.reference.TestingColorResolver.PrimaryColor;
@@ -88,13 +88,13 @@ public class TestObjectResolverProperties {
     @Test
     public void testPropertyValidationSucceed() {
         prop().setValue(PrimaryColor.BLUE.name());
-        assertTrue(validator.validate(prop()).isEmpty());
+        assertTrue(!validator.validate(prop()).hasError());
     }
 
     @Test
     public void testPropertyValidationFailed() {
         prop().setValue("bob");
-        List<ConstraintViolation> violations = validator.validate(prop());
+        List<ConstraintViolation> violations = validator.validate(prop()).asList();
         assertEquals(1, violations.size());
         Constraint constraint = violations.get(0).getConstraint();
         assertTrue(constraint instanceof ObjectResolverConstraint);

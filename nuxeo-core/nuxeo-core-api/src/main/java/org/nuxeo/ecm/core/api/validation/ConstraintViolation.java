@@ -15,7 +15,7 @@
  *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
 
-package org.nuxeo.ecm.core.schema.types.constraints;
+package org.nuxeo.ecm.core.api.validation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 
 /**
  * A constraint violation description. Use {@link #getMessage(Locale)} to get the constraint violation description.

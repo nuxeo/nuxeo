@@ -22,7 +22,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,11 +33,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.validation.ConstraintViolation.PathNode;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
-import org.nuxeo.ecm.core.schema.types.constraints.ConstraintViolation;
-import org.nuxeo.ecm.core.schema.types.constraints.ConstraintViolation.PathNode;
 import org.nuxeo.ecm.core.schema.types.constraints.NotNullConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.NumericIntervalConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.PatternConstraint;
@@ -64,8 +62,6 @@ public class TestDocumentValidationService {
     private static final String LIST_FIELD = "vs:roles";
 
     private static final String COMPLEX_LIST_FIELD = "vs:users";
-
-    private static final String FIELD = "groupCode";
 
     private static final String SCHEMA = "validationSample";
 
@@ -226,27 +222,6 @@ public class TestDocumentValidationService {
     }
 
     @Test
-    public void testSchemaMapWithoutViolation() {
-        Map<String, Serializable> values = new HashMap<String, Serializable>();
-        values.put(FIELD, 12345);
-        checkOk(validator.validateMap(SCHEMA, values));
-    }
-
-    @Test
-    public void testSchemaMapWithViolation1() {
-        Map<String, Serializable> values = new HashMap<String, Serializable>();
-        values.put(FIELD, null);
-        checkNotNullOnGroupCode(validator.validateMap(SCHEMA, values));
-    }
-
-    @Test
-    public void testSchemaMapWithViolation2() {
-        Map<String, Serializable> values = new HashMap<String, Serializable>();
-        values.put(FIELD, -12345);
-        checkNumericIntervalOnGroupCode(validator.validateMap(SCHEMA, values));
-    }
-
-    @Test
     public void testComplexFieldWithoutViolation() {
         doc.setPropertyValue(SIMPLE_FIELD, 12345);
         doc.setPropertyValue(COMPLEX_FIELD, createUser("Bob", "Sponge"));
@@ -354,7 +329,7 @@ public class TestDocumentValidationService {
         doc.setPropertyValue(COMPLEX_LIST_FIELD, value);
         doc = session.createDocument(doc);
         doc = session.saveDocument(doc);
-        List<ConstraintViolation> violations = validator.validate(doc);
+        List<ConstraintViolation> violations = validator.validate(doc).asList();
         assertEquals(5, violations.size());
         boolean found1 = false, found2 = false, found3 = false, found4 = false, found5 = false;
         for (ConstraintViolation violation : violations) {
@@ -404,11 +379,13 @@ public class TestDocumentValidationService {
         return user;
     }
 
-    private void checkOk(List<ConstraintViolation> violations) {
+    private void checkOk(DocumentValidationReport report) {
+        List<ConstraintViolation> violations = report.asList();
         assertEquals(0, violations.size());
     }
 
-    private void checkNotNullOnGroupCode(List<ConstraintViolation> violations) {
+    private void checkNotNullOnGroupCode(DocumentValidationReport report) {
+        List<ConstraintViolation> violations = report.asList();
         assertEquals(1, violations.size());
         ConstraintViolation violation = violations.get(0);
         assertEquals(NotNullConstraint.get(), violation.getConstraint());
@@ -419,7 +396,8 @@ public class TestDocumentValidationService {
         assertNull(violation.getInvalidValue());
     }
 
-    private void checkNumericIntervalOnGroupCode(List<ConstraintViolation> violations) {
+    private void checkNumericIntervalOnGroupCode(DocumentValidationReport report) {
+        List<ConstraintViolation> violations = report.asList();
         assertEquals(1, violations.size());
         ConstraintViolation violation = violations.get(0);
         Constraint constraint = violation.getConstraint();
@@ -431,7 +409,8 @@ public class TestDocumentValidationService {
         assertEquals(-12345, ((Number) violation.getInvalidValue()).intValue());
     }
 
-    private void checkNotNullOnManagerFirstname(List<ConstraintViolation> violations) {
+    private void checkNotNullOnManagerFirstname(DocumentValidationReport report) {
+        List<ConstraintViolation> violations = report.asList();
         assertEquals(1, violations.size());
         ConstraintViolation violation = violations.get(0);
         assertEquals(NotNullConstraint.get(), violation.getConstraint());
@@ -444,7 +423,8 @@ public class TestDocumentValidationService {
         assertNull(violation.getInvalidValue());
     }
 
-    private void checkPatternOnManagerFirstname(List<ConstraintViolation> violations) {
+    private void checkPatternOnManagerFirstname(DocumentValidationReport report) {
+        List<ConstraintViolation> violations = report.asList();
         assertEquals(1, violations.size());
         ConstraintViolation violation = violations.get(0);
         assertTrue(violation.getConstraint() instanceof PatternConstraint);
@@ -457,7 +437,8 @@ public class TestDocumentValidationService {
         assertEquals("   ", violation.getInvalidValue());
     }
 
-    private void checkNotNullOnRoles(List<ConstraintViolation> violations) {
+    private void checkNotNullOnRoles(DocumentValidationReport report) {
+        List<ConstraintViolation> violations = report.asList();
         assertEquals(1, violations.size());
         ConstraintViolation violation = violations.get(0);
         assertEquals(NotNullConstraint.get(), violation.getConstraint());
@@ -470,7 +451,8 @@ public class TestDocumentValidationService {
         assertNull(violation.getInvalidValue());
     }
 
-    private void checkPatternOnRoles(List<ConstraintViolation> violations) {
+    private void checkPatternOnRoles(DocumentValidationReport report) {
+        List<ConstraintViolation> violations = report.asList();
         assertEquals(1, violations.size());
         ConstraintViolation violation = violations.get(0);
         assertTrue(violation.getConstraint() instanceof PatternConstraint);
@@ -483,7 +465,8 @@ public class TestDocumentValidationService {
         assertEquals("invalid role3", violation.getInvalidValue());
     }
 
-    private void checkNotNullOnUsersFirstname(List<ConstraintViolation> violations) {
+    private void checkNotNullOnUsersFirstname(DocumentValidationReport report) {
+        List<ConstraintViolation> violations = report.asList();
         assertEquals(1, violations.size());
         ConstraintViolation violation = violations.get(0);
         assertEquals(NotNullConstraint.get(), violation.getConstraint());
@@ -498,7 +481,8 @@ public class TestDocumentValidationService {
         assertNull(violation.getInvalidValue());
     }
 
-    private void checkPatternOnUsersFirstname(List<ConstraintViolation> violations) {
+    private void checkPatternOnUsersFirstname(DocumentValidationReport report) {
+        List<ConstraintViolation> violations = report.asList();
         assertEquals(1, violations.size());
         ConstraintViolation violation = violations.get(0);
         assertTrue(violation.getConstraint() instanceof PatternConstraint);

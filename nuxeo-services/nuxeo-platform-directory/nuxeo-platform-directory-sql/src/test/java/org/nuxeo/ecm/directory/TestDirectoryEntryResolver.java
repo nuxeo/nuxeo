@@ -246,7 +246,7 @@ public class TestDirectoryEntryResolver extends SQLDirectoryTestCase {
         doc.setPropertyValue(REF2_XPATH, "BAD path !");
         assertNull(doc.getProperty(REF2_XPATH).getObjectResolver().fetch());
         assertFalse(doc.getProperty(REF2_XPATH).getObjectResolver().validate());
-        assertEquals(2, validator.validate(doc).size());
+        assertEquals(2, validator.validate(doc).numberOfErros());
     }
 
     @Test

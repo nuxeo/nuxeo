@@ -17,10 +17,7 @@
 
 package org.nuxeo.ecm.core.api.validation;
 
-import java.util.List;
-
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.schema.types.constraints.ConstraintViolation;
 
 /**
  * Exception thrown when some process failed due to {@link ConstraintViolation}.
@@ -34,22 +31,22 @@ public class DocumentValidationException extends ClientException {
 
     private static final long serialVersionUID = 1L;
 
-    private List<ConstraintViolation> violations;
+    private DocumentValidationReport report;
 
-    public DocumentValidationException(List<ConstraintViolation> violations) {
+    public DocumentValidationException(DocumentValidationReport report) {
         super();
-        this.violations = violations;
+        this.report = report;
     }
 
-    public List<ConstraintViolation> getViolations() {
-        return violations;
+    public DocumentValidationReport getReport() {
+        return report;
     }
 
     @Override
     public String getMessage() {
-        if (violations.size() > 0) {
-            String violationMessage = violations.get(0).getMessage(null);
-            String message = String.format(MESSAGE, violations.size(), violationMessage);
+        if (report.hasError()) {
+            String violationMessage = report.asList().get(0).getMessage(null);
+            String message = String.format(MESSAGE, report.numberOfErros(), violationMessage);
             return message;
         } else {
             return super.getMessage();

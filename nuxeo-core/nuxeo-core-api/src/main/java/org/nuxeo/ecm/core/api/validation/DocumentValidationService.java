@@ -18,14 +18,12 @@
 package org.nuxeo.ecm.core.api.validation;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.types.constraints.ConstraintViolation;
 
 /**
  * Provides a way to validate {@link DocumentModel} according to their {@link Schema}'s constraints.
@@ -82,7 +80,7 @@ public interface DocumentValidationService {
      *
      * @since 7.1
      */
-    List<ConstraintViolation> validate(DocumentModel document);
+    DocumentValidationReport validate(DocumentModel document);
 
     /**
      * Validates all {@link Field} of all {@link Schema} of a {@link DocumentModel}.
@@ -90,21 +88,21 @@ public interface DocumentValidationService {
      * @param dirtyOnly If true, limit validation to dirty properties of the {@link DocumentModel}.
      * @since 7.1
      */
-    List<ConstraintViolation> validate(DocumentModel document, boolean dirtyOnly);
+    DocumentValidationReport validate(DocumentModel document, boolean dirtyOnly);
 
     /**
      * Validates a value according to some {@link Field} definition.
      *
      * @since 7.1
      */
-    List<ConstraintViolation> validate(Field field, Object value);
+    DocumentValidationReport validate(Field field, Object value);
 
     /**
      * Validates a property according to its {@link Field} definition.
      *
      * @since 7.1
      */
-    List<ConstraintViolation> validate(Property property);
+    DocumentValidationReport validate(Property property);
 
     /**
      * Validates a value according to some {@link Field} definition.
@@ -112,15 +110,6 @@ public interface DocumentValidationService {
      * @param xpath schema:fieldName, for example dc:title.
      * @since 7.1
      */
-    List<ConstraintViolation> validate(String xpath, Object value);
-
-    /**
-     * Validates a Map of value for some {@link Schema} fields. Entries which not match any of the {@link Schema}'s
-     * {@link Field} will be ignored.
-     *
-     * @param values The keys are the local {@link Field} name.
-     * @since 7.1
-     */
-    List<ConstraintViolation> validateMap(String schema, Map<String, Serializable> values);
+    DocumentValidationReport validate(String xpath, Object value);
 
 }

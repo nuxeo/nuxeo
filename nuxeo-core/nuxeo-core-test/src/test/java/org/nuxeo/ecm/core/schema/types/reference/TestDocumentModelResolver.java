@@ -387,12 +387,10 @@ public class TestDocumentModelResolver {
 
     @Test
     public void testConfigurationIsLoaded() {
-        DocumentModelResolver idResolver = (DocumentModelResolver) ((SimpleType) doc.getProperty(
-                ID_XPATH).getType()).getObjectResolver();
+        DocumentModelResolver idResolver = (DocumentModelResolver) ((SimpleType) doc.getProperty(ID_XPATH).getType()).getObjectResolver();
         assertEquals(MODE.ID_REF, idResolver.getMode());
         assertEquals(STORE_ID_REF, idResolver.getParameters().get(PARAM_STORE));
-        DocumentModelResolver pathResolver = (DocumentModelResolver) ((SimpleType) doc.getProperty(
-                PATH_XPATH).getType()).getObjectResolver();
+        DocumentModelResolver pathResolver = (DocumentModelResolver) ((SimpleType) doc.getProperty(PATH_XPATH).getType()).getObjectResolver();
         assertEquals(MODE.PATH_REF, pathResolver.getMode());
         assertEquals(STORE_PATH_REF, pathResolver.getParameters().get(PARAM_STORE));
     }
@@ -417,7 +415,7 @@ public class TestDocumentModelResolver {
         doc.setPropertyValue(PATH_XPATH, "BAD path !");
         assertNull(doc.getProperty(PATH_XPATH).getObjectResolver().fetch());
         assertFalse(doc.getProperty(PATH_XPATH).getObjectResolver().validate());
-        assertEquals(2, validator.validate(doc).size());
+        assertEquals(2, validator.validate(doc).numberOfErros());
     }
 
     @Test

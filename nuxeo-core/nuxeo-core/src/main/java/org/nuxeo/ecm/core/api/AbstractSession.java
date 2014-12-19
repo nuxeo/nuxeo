@@ -69,6 +69,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
+import org.nuxeo.ecm.core.api.validation.DocumentValidationReport;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.event.Event;
@@ -90,7 +91,6 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.types.constraints.ConstraintViolation;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
@@ -592,13 +592,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             DocumentModel docModel = readModel(doc);
 
             Map<String, Serializable> options = new HashMap<String, Serializable>();
-            options.put(CoreEventConstants.OLD_ACP, (Serializable) docModel.getACP().clone());
-            options.put(CoreEventConstants.NEW_ACP, (Serializable) newAcp);
+            options.put(CoreEventConstants.OLD_ACP, docModel.getACP().clone());
+            options.put(CoreEventConstants.NEW_ACP, newAcp);
 
             notifyEvent(DocumentEventTypes.BEFORE_DOC_SECU_UPDATE, docModel, options, null, null, true, true);
             getSession().setACP(doc, newAcp, overwrite);
             docModel = readModel(doc);
-            options.put(CoreEventConstants.NEW_ACP, (Serializable) newAcp.clone());
+            options.put(CoreEventConstants.NEW_ACP, newAcp.clone());
             notifyEvent(DocumentEventTypes.DOCUMENT_SECURITY_UPDATED, docModel, options, null, null, true, false);
         } catch (DocumentException e) {
             throw new ClientException("Failed to set acp", e);
@@ -680,9 +680,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
             // document validation
             if (getValidationService().isActivated(DocumentValidationService.CTX_CREATEDOC, options)) {
-                List<ConstraintViolation> violations = getValidationService().validate(docModel, true);
-                if (violations.size() > 0) {
-                    throw new DocumentValidationException(violations);
+                DocumentValidationReport report = getValidationService().validate(docModel, true);
+                if (report.hasError()) {
+                    throw new DocumentValidationException(report);
                 }
             }
 
@@ -793,9 +793,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
         // document validation
         if (getValidationService().isActivated(DocumentValidationService.CTX_IMPORTDOC, props)) {
-            List<ConstraintViolation> violations = getValidationService().validate(docModel, true);
-            if (violations.size() > 0) {
-                throw new DocumentValidationException(violations);
+            DocumentValidationReport report = getValidationService().validate(docModel, true);
+            if (report.hasError()) {
+                throw new DocumentValidationException(report);
             }
         }
 
@@ -1509,9 +1509,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
             // document validation
             if (getValidationService().isActivated(DocumentValidationService.CTX_SAVEDOC, options)) {
-                List<ConstraintViolation> violations = getValidationService().validate(docModel, true);
-                if (violations.size() > 0) {
-                    throw new DocumentValidationException(violations);
+                DocumentValidationReport report = getValidationService().validate(docModel, true);
+                if (report.hasError()) {
+                    throw new DocumentValidationException(report);
                 }
             }
 

@@ -425,7 +425,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
         doc.setPropertyValue(USER_GROUP_XPATH, "totoDoesntExists");
         assertNull(doc.getProperty(USER_GROUP_XPATH).getObjectResolver().fetch());
         assertFalse(doc.getProperty(USER_GROUP_XPATH).getObjectResolver().validate());
-        assertEquals(3, validator.validate(doc).size());
+        assertEquals(3, validator.validate(doc).numberOfErros());
     }
 
     @Test

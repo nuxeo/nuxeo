@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
+import org.nuxeo.ecm.core.api.validation.ConstraintViolation.PathNode;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -38,8 +39,6 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
-import org.nuxeo.ecm.core.schema.types.constraints.ConstraintViolation;
-import org.nuxeo.ecm.core.schema.types.constraints.ConstraintViolation.PathNode;
 import org.nuxeo.ecm.core.schema.types.constraints.NotNullConstraint;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -98,12 +97,12 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
     }
 
     @Override
-    public List<ConstraintViolation> validate(DocumentModel document) {
-        return this.validate(document, false);
+    public DocumentValidationReport validate(DocumentModel document) {
+        return validate(document, false);
     }
 
     @Override
-    public List<ConstraintViolation> validate(DocumentModel document, boolean dirtyOnly) {
+    public DocumentValidationReport validate(DocumentModel document, boolean dirtyOnly) {
         List<ConstraintViolation> violations = new ArrayList<ConstraintViolation>();
         DocumentType docType = document.getDocumentType();
         if (dirtyOnly) {
@@ -112,53 +111,41 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
                 for (String fieldName : dataModel.getDirtyFields()) {
                     Field field = schemaDef.getField(fieldName);
                     Property property = document.getProperty(field.getName().getPrefixedName());
-                    violations.addAll(this.validate(property));
+                    List<PathNode> path = Arrays.asList(new PathNode(property.getField()));
+                    violations.addAll(validateAnyTypeProperty(property.getSchema(), path, property));
                 }
             }
         } else {
             for (Schema schema : docType.getSchemas()) {
                 for (Field field : schema.getFields()) {
                     Property property = document.getProperty(field.getName().getPrefixedName());
-                    violations.addAll(this.validate(property));
+                    List<PathNode> path = Arrays.asList(new PathNode(property.getField()));
+                    violations.addAll(validateAnyTypeProperty(property.getSchema(), path, property));
                 }
             }
         }
-        return violations;
+        return new DocumentValidationReport(violations);
     }
 
     @Override
-    public List<ConstraintViolation> validate(Field field, Object value) {
+    public DocumentValidationReport validate(Field field, Object value) {
         String prefix = field.getName().getPrefix();
         Schema schema = schemaManager.getSchemaFromPrefix(prefix);
-        return this.validate(schema, field, value);
+        return new DocumentValidationReport(validate(schema, field, value));
     }
 
     @Override
-    public List<ConstraintViolation> validate(Property property) {
+    public DocumentValidationReport validate(Property property) {
         List<PathNode> path = Arrays.asList(new PathNode(property.getField()));
-        return validateAnyTypeProperty(property.getSchema(), path, property);
+        return new DocumentValidationReport(validateAnyTypeProperty(property.getSchema(), path, property));
     }
 
     @Override
-    public List<ConstraintViolation> validate(String xpath, Object value) {
+    public DocumentValidationReport validate(String xpath, Object value) {
         QName name = QName.valueOf(xpath);
         Schema schemaDef = schemaManager.getSchemaFromPrefix(name.getPrefix());
         Field fieldDef = schemaDef.getField(name.getLocalName());
-        return this.validate(schemaDef, fieldDef, value);
-    }
-
-    @Override
-    public List<ConstraintViolation> validateMap(String schema, Map<String, Serializable> values) {
-        List<ConstraintViolation> violations = new ArrayList<ConstraintViolation>();
-        Schema schemaDef = schemaManager.getSchema(schema);
-        for (Map.Entry<String, Serializable> entry : values.entrySet()) {
-            Field field = schemaDef.getField(entry.getKey());
-            if (field != null) {
-                Object value = entry.getValue();
-                violations.addAll(this.validate(schemaDef, field, value));
-            }
-        }
-        return violations;
+        return new DocumentValidationReport(validate(schemaDef, fieldDef, value));
     }
 
     // ///////////////////
