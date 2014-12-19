@@ -288,7 +288,10 @@ public class NuxeoRepository {
         addPermissionMapping(permMap, CAN_GET_FOLDER_PARENT_OBJECT, READ);
         addPermissionMapping(permMap, CAN_CREATE_DOCUMENT_FOLDER, WRITE);
         addPermissionMapping(permMap, CAN_CREATE_FOLDER_FOLDER, WRITE);
-        addPermissionMapping(permMap, CAN_CREATE_POLICY_FOLDER, WRITE);
+        if (!CallContext.BINDING_WEBSERVICES.equals(callContext.getBinding())) {
+            // don't send this for SOAP because the official XSD cannot parse it
+            addPermissionMapping(permMap, CAN_CREATE_POLICY_FOLDER, WRITE);
+        }
         addPermissionMapping(permMap, CAN_CREATE_RELATIONSHIP_SOURCE, READ);
         addPermissionMapping(permMap, CAN_CREATE_RELATIONSHIP_TARGET, READ);
         addPermissionMapping(permMap, CAN_GET_PROPERTIES_OBJECT, READ);
