@@ -19,9 +19,10 @@
 
 package org.nuxeo.ecm.webapp.note;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.Part;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -35,13 +36,26 @@ public interface EditorImageActions {
 
     String getSelectedTab();
 
-    // image uploading related methods
-    void setUploadedImage(InputStream uploadedImage);
+    /**
+     * @since 7.1
+     */
+    void setUploadedImage(Part uploadedImage);
 
-    InputStream getUploadedImage();
+    /**
+     * @since 7.1
+     */
+    Part getUploadedImage();
 
+    /**
+     * @deprecated since 7.1, Part already holds a filename
+     */
+    @Deprecated
     void setUploadedImageName(String uploadedImageName);
 
+    /**
+     * @deprecated since 7.1, Part already holds a filename
+     */
+    @Deprecated
     String getUploadedImageName();
 
     String uploadImage() throws ClientException;
