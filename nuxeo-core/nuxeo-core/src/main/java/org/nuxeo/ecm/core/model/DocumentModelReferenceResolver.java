@@ -101,7 +101,7 @@ public class DocumentModelReferenceResolver implements ExternalReferenceResolver
     }
 
     @Override
-    public void configure(Map<String, String> parameters) throws IllegalArgumentException {
+    public void configure(Map<String, String> parameters) throws IllegalStateException {
         if (this.parameters != null) {
             throw new IllegalStateException("cannot change configuration, may be already in use somewhere");
         }
@@ -213,7 +213,7 @@ public class DocumentModelReferenceResolver implements ExternalReferenceResolver
     }
 
     @Override
-    public Serializable getReference(Object entity) throws IllegalStateException, IllegalArgumentException {
+    public Serializable getReference(Object entity) throws IllegalStateException {
         checkConfig();
         if (entity != null && entity instanceof DocumentModel) {
             DocumentModel doc = (DocumentModel) entity;

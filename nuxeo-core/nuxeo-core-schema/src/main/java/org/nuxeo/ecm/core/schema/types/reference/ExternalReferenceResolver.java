@@ -69,7 +69,7 @@ public interface ExternalReferenceResolver {
      * @throws IllegalStateException If this resolver has not been configured.
      * @since 7.1
      */
-    boolean validate(Object value) throws IllegalStateException;
+    boolean validate(Object value);
 
     /**
      * Provides the entity referenced by a value.
@@ -79,7 +79,7 @@ public interface ExternalReferenceResolver {
      * @throws IllegalStateException If this resolver has not been configured.
      * @since 7.1
      */
-    Object fetch(Object value) throws IllegalStateException;
+    Object fetch(Object value);
 
     /**
      * Provides the entity referenced by a value, return the entity as expected type.
@@ -89,7 +89,7 @@ public interface ExternalReferenceResolver {
      * @throws IllegalStateException If this resolver has not been configured.
      * @since 7.1
      */
-    <T> T fetch(Class<T> type, Object value) throws IllegalStateException;
+    <T> T fetch(Class<T> type, Object value);
 
     /**
      * Generates a reference to an entity.
@@ -101,7 +101,7 @@ public interface ExternalReferenceResolver {
      * @throws NullPointerException If entity is null
      * @since 7.1
      */
-    Serializable getReference(Object entity) throws IllegalStateException, IllegalArgumentException;
+    Serializable getReference(Object entity);
 
     /**
      * Provides an error message to display when some invalid value does not match existing entity.

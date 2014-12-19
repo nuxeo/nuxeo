@@ -88,7 +88,7 @@ public class UserManagerResolver implements ExternalReferenceResolver {
     }
 
     @Override
-    public void configure(Map<String, String> parameters) throws IllegalArgumentException {
+    public void configure(Map<String, String> parameters) throws IllegalStateException {
         if (this.parameters != null) {
             throw new IllegalStateException("cannot change configuration, may be already in use somewhere");
         }
@@ -103,13 +103,13 @@ public class UserManagerResolver implements ExternalReferenceResolver {
     }
 
     @Override
-    public String getName() {
+    public String getName() throws IllegalStateException {
         checkConfig();
         return UserManagerResolver.NAME;
     }
 
     @Override
-    public Map<String, Serializable> getParameters() {
+    public Map<String, Serializable> getParameters() throws IllegalStateException {
         checkConfig();
         return Collections.unmodifiableMap(parameters);
     }
@@ -154,7 +154,7 @@ public class UserManagerResolver implements ExternalReferenceResolver {
     }
 
     @Override
-    public Serializable getReference(Object entity) throws IllegalStateException, IllegalArgumentException {
+    public Serializable getReference(Object entity) throws IllegalStateException {
         checkConfig();
         if (entity != null) {
             if (entity instanceof NuxeoPrincipal && includingUsers) {
@@ -167,7 +167,7 @@ public class UserManagerResolver implements ExternalReferenceResolver {
     }
 
     @Override
-    public String getConstraintErrorMessage(Object invalidValue, Locale locale) {
+    public String getConstraintErrorMessage(Object invalidValue, Locale locale) throws IllegalStateException {
         checkConfig();
         if (isIncludingUsers() && isIncludingGroups()) {
             return Helper.getConstraintErrorMessage(this, "any", invalidValue, locale);
@@ -179,12 +179,12 @@ public class UserManagerResolver implements ExternalReferenceResolver {
         return String.format("%s cannot resolve reference %s", getName(), invalidValue);
     }
 
-    public boolean isIncludingUsers() {
+    public boolean isIncludingUsers() throws IllegalStateException {
         checkConfig();
         return includingUsers;
     }
 
-    public boolean isIncludingGroups() {
+    public boolean isIncludingGroups() throws IllegalStateException {
         checkConfig();
         return includingGroups;
     }

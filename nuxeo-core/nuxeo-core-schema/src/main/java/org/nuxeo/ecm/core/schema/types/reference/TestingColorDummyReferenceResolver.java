@@ -33,7 +33,10 @@ public class TestingColorDummyReferenceResolver implements ExternalReferenceReso
     private Map<String, Serializable> parameters;
 
     @Override
-    public void configure(Map<String, String> parameters) throws IllegalArgumentException {
+    public void configure(Map<String, String> parameters) throws IllegalStateException, IllegalArgumentException {
+        if (this.parameters != null) {
+            throw new IllegalStateException("cannot change configuration, may be already in use somewhere");
+        }
         String modeParam = parameters.get(COLOR_MODE);
         if (modeParam == null || modeParam.trim().isEmpty()) {
             throw new IllegalArgumentException("missing mode param");
@@ -48,22 +51,26 @@ public class TestingColorDummyReferenceResolver implements ExternalReferenceReso
     }
 
     @Override
-    public String getName() {
+    public String getName() throws IllegalStateException {
+        checkConfig();
         return NAME;
     }
 
     @Override
-    public Map<String, Serializable> getParameters() {
+    public Map<String, Serializable> getParameters() throws IllegalStateException {
+        checkConfig();
         return Collections.unmodifiableMap(parameters);
     }
 
     @Override
     public boolean validate(Object value) throws IllegalStateException {
+        checkConfig();
         return fetch(value) != null;
     }
 
     @Override
     public Color fetch(Object value) throws IllegalStateException {
+        checkConfig();
         if (value instanceof String) {
             String ref = (String) value;
             switch (mode) {
@@ -89,6 +96,7 @@ public class TestingColorDummyReferenceResolver implements ExternalReferenceReso
     @Override
     @SuppressWarnings("unchecked")
     public <T> T fetch(Class<T> type, Object value) throws IllegalStateException {
+        checkConfig();
         if (Color.class.equals(type)) {
             return (T) fetch(value);
         } else if (mode == MODE.PRIMARY && PrimaryColor.class.equals(type)) {
@@ -100,7 +108,8 @@ public class TestingColorDummyReferenceResolver implements ExternalReferenceReso
     }
 
     @Override
-    public Serializable getReference(Object entity) throws IllegalStateException, IllegalArgumentException {
+    public Serializable getReference(Object entity) throws IllegalStateException {
+        checkConfig();
         if (entity instanceof Color) {
             Color color = (Color) entity;
             if (color != null) {
@@ -123,7 +132,15 @@ public class TestingColorDummyReferenceResolver implements ExternalReferenceReso
 
     @Override
     public String getConstraintErrorMessage(Object invalidValue, Locale locale) {
+        checkConfig();
         return String.format("\"%s\" is not a correct %s color", invalidValue, mode.name().toLowerCase());
+    }
+
+    private void checkConfig() throws IllegalStateException {
+        if (parameters == null) {
+            throw new IllegalStateException(
+                    "you should call #configure(Map<String, String>) before. Please get this resolver throught ExternalReferenceService which is in charge of resolver configuration.");
+        }
     }
 
 }

@@ -135,7 +135,7 @@ public class DirectoryEntryReferenceResolver implements ExternalReferenceResolve
     }
 
     @Override
-    public Serializable getReference(Object entity) throws IllegalStateException, IllegalArgumentException {
+    public Serializable getReference(Object entity) throws IllegalStateException {
         checkConfig();
         if (entity != null && entity instanceof DocumentModel) {
             DocumentModel doc = (DocumentModel) entity;
