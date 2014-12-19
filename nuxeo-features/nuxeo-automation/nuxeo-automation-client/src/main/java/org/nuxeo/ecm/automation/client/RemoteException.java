@@ -57,6 +57,9 @@ public class RemoteException extends AutomationException {
     }
 
     protected static String extractInfo(Throwable t) {
+        if (t == null) {
+            return "";
+        }
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         t.printStackTrace(pw);

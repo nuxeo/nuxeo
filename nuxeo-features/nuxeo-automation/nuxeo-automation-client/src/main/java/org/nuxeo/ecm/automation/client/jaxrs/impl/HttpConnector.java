@@ -131,13 +131,13 @@ public class HttpConnector implements Connector {
             if (status < Response.Status.BAD_REQUEST.getStatusCode()) {
                 return null;
             }
-            throw new RemoteException(status, "ServerError", "Server Error", (Throwable) null);
+            throw new RemoteException(status, "ServerError", "Server Error", "");
         }
         Header ctypeHeader = entity.getContentType();
         if (ctypeHeader == null) { // handle broken responses with no ctype
             if (status != Response.Status.OK.getStatusCode()) {
                 // this may happen when login failed
-                throw new RemoteException(status, "ServerError", "Server Error", (Throwable) null);
+                throw new RemoteException(status, "ServerError", "Server Error", "");
             }
             return null; // cannot handle responses with no ctype
         }
