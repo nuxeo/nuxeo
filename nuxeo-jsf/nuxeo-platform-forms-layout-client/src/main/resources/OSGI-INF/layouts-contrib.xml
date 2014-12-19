@@ -3687,6 +3687,8 @@
       widgetTypeCategory="jsf" />
     <disabledPropertyRef name="defaultTime" widgetType="datetime"
       widgetTypeCategory="jsf" />
+    <disabledPropertyRef name="pattern" widgetType="datetime"
+      widgetTypeCategory="jsf" />
 
   </extension>
 
