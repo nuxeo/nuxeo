@@ -32,6 +32,9 @@ public class DublinCoreCreationDocumentFormPage extends AbstractPage {
     @FindBy(id = "document_create:nxl_heading:nxw_title")
     public WebElement titleTextInput;
 
+    @FindBy(id = "document_create:nxl_heading:nxw_title_message")
+    public WebElement titleTextInputMessage;
+
     @Required
     @FindBy(id = "document_create:nxl_heading:nxw_description")
     public WebElement descriptionTextInput;
@@ -57,6 +60,13 @@ public class DublinCoreCreationDocumentFormPage extends AbstractPage {
     public DocumentBasePage createDocument(String title, String description) {
         fillDublinCoreFieldsAndCreate(title, description);
         return asPage(DocumentBasePage.class);
+    }
+
+    /**
+     * @since 7.1
+     */
+    public String getTitleMessage() {
+        return titleTextInputMessage == null ? null : titleTextInputMessage.getText();
     }
 
 }

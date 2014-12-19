@@ -34,6 +34,23 @@ public class FileWidgetElement extends AbstractWidgetElement {
         super(driver, id);
     }
 
+    enum InputFileChoice {
+        none, keep, upload, delete, tempKeep,
+    }
+
+    /**
+     * @since 7.1
+     */
+    public String getEditChoice() {
+        for (InputFileChoice choice : InputFileChoice.values()) {
+            String subid = "choice" + choice.name();
+            if (hasSubElement(subid) && getSubElement(subid).isSelected()) {
+                return choice.name();
+            }
+        }
+        return null;
+    }
+
     public String getFilename(boolean isEdit) {
         WebElement link;
         if (isEdit) {
