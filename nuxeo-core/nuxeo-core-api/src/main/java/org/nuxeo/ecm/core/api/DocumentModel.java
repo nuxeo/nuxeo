@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyVisitor;
+import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolver;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.Prefetch;
@@ -847,27 +848,6 @@ public interface DocumentModel extends Serializable {
     void setPropertyValue(String xpath, Serializable value) throws PropertyException, ClientException;
 
     /**
-     * Sets the entity referenced by a property given a xpath.
-     * <p>
-     * The value will be a reference to the entity.
-     * </p>
-     *
-     * @param xpath The property path
-     * @param entity The entity referenced by this property.
-     * @since 7.1
-     */
-    void setPropertyReferencedEntity(String xpath, Object entity);
-
-    /**
-     * Gets the entity referenced by a property value given a xpath.
-     *
-     * @param xpath The property xpath
-     * @return The entity
-     * @since 7.1
-     */
-    Object getPropertyReferencedEntity(String xpath);
-
-    /**
      * Clears any prefetched or cached document data.
      * <p>
      * This will force the document to lazily update its data when required.
@@ -966,4 +946,12 @@ public interface DocumentModel extends Serializable {
      * @since 5.9.3
      */
     Map<String, String> getBinaryFulltext() throws ClientException;
+
+    /**
+     * @param xpath the property xpath
+     * @return A {@link PropertyObjectResolver} to manage the property reference to external entities, null if this
+     *         property's type has no resolver.
+     * @since 7.1
+     */
+    PropertyObjectResolver getObjectResolver(String xpath);
 }

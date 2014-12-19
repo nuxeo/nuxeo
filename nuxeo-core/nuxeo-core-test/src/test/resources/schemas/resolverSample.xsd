@@ -5,25 +5,25 @@
 
   <xs:element name="primaryColor">
     <xs:simpleType>
-      <xs:restriction base="xs:string" ref:resolver="colorReference" ref:mode="PRIMARY" nxs:toto="notReadParam" />
+      <xs:restriction base="xs:string" ref:resolver="colorResolver" ref:mode="PRIMARY" nxs:toto="notReadParam" />
     </xs:simpleType>
   </xs:element>
 
   <xs:element name="isReference1">
     <xs:simpleType>
-      <xs:restriction base="xs:string" ref:resolver="colorReference" ref:mode="PRIMARY" nxs:toto="notReadParam" />
+      <xs:restriction base="xs:string" ref:resolver="colorResolver" ref:mode="PRIMARY" nxs:toto="notReadParam" />
     </xs:simpleType>
   </xs:element>
 
   <xs:element name="isReference2">
-    <xs:simpleType ref:resolver="colorReference">
+    <xs:simpleType ref:resolver="colorResolver">
       <xs:restriction base="xs:string" ref:mode="PRIMARY" nxs:toto="notReadParam" />
     </xs:simpleType>
   </xs:element>
 
   <xs:element name="isReference3">
     <xs:simpleType ref:mode="PRIMARY" nxs:tata="notReadParam">
-      <xs:restriction base="xs:string" ref:resolver="colorReference" nxs:toto="notReadParam" />
+      <xs:restriction base="xs:string" ref:resolver="colorResolver" nxs:toto="notReadParam" />
     </xs:simpleType>
   </xs:element>
 
@@ -43,13 +43,13 @@
 
   <xs:element name="isReferenceButParamMissingFailed1">
     <xs:simpleType>
-      <xs:restriction base="xs:string" ref:resolver="colorReference" nxs:toto="notReadParam" />
+      <xs:restriction base="xs:string" ref:resolver="colorResolver" nxs:toto="notReadParam" />
     </xs:simpleType>
   </xs:element>
 
   <xs:element name="isReferenceButWrongParamFailed1">
     <xs:simpleType>
-      <xs:restriction base="xs:string" ref:resolver="colorReference" ref:mode="BRIGHT" nxs:toto="notReadParam" />
+      <xs:restriction base="xs:string" ref:resolver="colorResolver" ref:mode="BRIGHT" nxs:toto="notReadParam" />
     </xs:simpleType>
   </xs:element>
 
@@ -58,7 +58,7 @@
       <xs:sequence>
         <xs:element name="color" minOccurs="0" maxOccurs="unbounded">
           <xs:simpleType>
-            <xs:restriction base="xs:string" ref:resolver="colorReference" ref:mode="PRIMARY" />
+            <xs:restriction base="xs:string" ref:resolver="colorResolver" ref:mode="PRIMARY" />
           </xs:simpleType>
         </xs:element>
       </xs:sequence>
@@ -73,12 +73,12 @@
             <xs:sequence>
               <xs:element name="color1">
                 <xs:simpleType>
-                  <xs:restriction base="xs:string" ref:resolver="colorReference" ref:mode="PRIMARY" />
+                  <xs:restriction base="xs:string" ref:resolver="colorResolver" ref:mode="PRIMARY" />
                 </xs:simpleType>
               </xs:element>
               <xs:element name="color2">
                 <xs:simpleType>
-                  <xs:restriction base="xs:string" ref:resolver="colorReference" ref:mode="SECONDARY" />
+                  <xs:restriction base="xs:string" ref:resolver="colorResolver" ref:mode="SECONDARY" />
                 </xs:simpleType>
               </xs:element>
             </xs:sequence>

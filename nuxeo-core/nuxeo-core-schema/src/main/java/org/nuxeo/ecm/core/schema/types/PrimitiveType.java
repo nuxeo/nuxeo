@@ -19,7 +19,7 @@ import java.util.Set;
 import org.nuxeo.ecm.core.schema.SchemaNames;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.constraints.TypeConstraint;
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
+import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
 
 /**
  * Primitive type (basic types like long, string, boolean, etc.).
@@ -36,7 +36,7 @@ public abstract class PrimitiveType extends AbstractType implements SimpleType {
     public abstract boolean validate(Object object);
 
     @Override
-    public ExternalReferenceResolver getResolver() {
+    public ObjectResolver getObjectResolver() {
         return null;
     }
 

@@ -6,8 +6,8 @@
     reference. Value will contain id or path prefixed by the repository name to which the referenced document belongs.
   </documentation>
 
-  <extension target="org.nuxeo.ecm.core.schema.ExternalReferenceService" point="resolvers">
-    <resolver type="documentResolver" class="org.nuxeo.ecm.core.model.DocumentModelReferenceResolver" />
+  <extension target="org.nuxeo.ecm.core.schema.ObjectResolverService" point="resolvers">
+    <resolver type="documentResolver" class="org.nuxeo.ecm.core.model.DocumentModelResolver" />
   </extension>
 
 </component>

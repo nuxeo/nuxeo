@@ -22,6 +22,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.schema.types.SimpleType;
+import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
 import org.nuxeo.runtime.api.Framework;
 
 public class TestUserManagerResolver extends UserManagerTestCase {
@@ -49,7 +50,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
         session = Framework.getService(CoreSession.class);
         validator = Framework.getService(DocumentValidationService.class);
         userManager = Framework.getService(UserManager.class);
-        doc = session.createDocumentModel("/", "doc1", "UserManagerReferencer");
+        doc = session.createDocumentModel("/", "doc1", "TestResolver");
     }
 
     @Test(expected = IllegalStateException.class)
@@ -372,45 +373,74 @@ public class TestUserManagerResolver extends UserManagerTestCase {
 
     @Test
     public void testConfigurationIsLoaded() {
-        UserManagerResolver userResolver = (UserManagerResolver) ((SimpleType) doc.getProperty(USER_XPATH).getType()).getResolver();
+        UserManagerResolver userResolver = (UserManagerResolver) ((SimpleType) doc.getProperty(USER_XPATH).getType()).getObjectResolver();
         assertTrue(userResolver.isIncludingUsers());
         assertFalse(userResolver.isIncludingGroups());
-        UserManagerResolver groupResolver = (UserManagerResolver) ((SimpleType) doc.getProperty(GROUP_XPATH).getType()).getResolver();
+        UserManagerResolver groupResolver = (UserManagerResolver) ((SimpleType) doc.getProperty(GROUP_XPATH).getType()).getObjectResolver();
         assertFalse(groupResolver.isIncludingUsers());
         assertTrue(groupResolver.isIncludingGroups());
-        UserManagerResolver anyResolver = (UserManagerResolver) ((SimpleType) doc.getProperty(USER_GROUP_XPATH).getType()).getResolver();
+        UserManagerResolver anyResolver = (UserManagerResolver) ((SimpleType) doc.getProperty(USER_GROUP_XPATH).getType()).getObjectResolver();
         assertTrue(anyResolver.isIncludingUsers());
         assertTrue(anyResolver.isIncludingGroups());
     }
 
     @Test
-    public void testNullValueReturnNullPrincipal() {
-        assertNull(doc.getProperty(USER_XPATH).getReferencedEntity());
-        assertNull(doc.getProperty(USER_XPATH).getValue(NuxeoPrincipal.class));
-        assertNull(doc.getProperty(GROUP_XPATH).getReferencedEntity());
-        assertNull(doc.getProperty(GROUP_XPATH).getValue(NuxeoPrincipal.class));
-        assertNull(doc.getProperty(USER_GROUP_XPATH).getReferencedEntity());
-        assertNull(doc.getProperty(USER_GROUP_XPATH).getValue(NuxeoPrincipal.class));
+    public void testTypeHasResolver() {
+        ObjectResolver resolver;
+        resolver = doc.getProperty(USER_XPATH).getType().getObjectResolver();
+        assertNotNull(resolver);
+        assertTrue(resolver instanceof UserManagerResolver);
+        resolver = doc.getProperty(GROUP_XPATH).getType().getObjectResolver();
+        assertNotNull(resolver);
+        assertTrue(resolver instanceof UserManagerResolver);
+        resolver = doc.getProperty(USER_GROUP_XPATH).getType().getObjectResolver();
+        assertNotNull(resolver);
+        assertTrue(resolver instanceof UserManagerResolver);
+    }
+
+    @Test
+    public void testNullValueReturnNull() {
+        assertNull(doc.getObjectResolver(USER_XPATH).fetch());
+        assertNull(doc.getObjectResolver(USER_XPATH).fetch(DocumentModel.class));
+        assertNull(doc.getProperty(USER_XPATH).getObjectResolver().fetch());
+        assertNull(doc.getProperty(USER_XPATH).getObjectResolver().fetch(DocumentModel.class));
+        assertNull(doc.getObjectResolver(GROUP_XPATH).fetch());
+        assertNull(doc.getObjectResolver(GROUP_XPATH).fetch(DocumentModel.class));
+        assertNull(doc.getProperty(GROUP_XPATH).getObjectResolver().fetch());
+        assertNull(doc.getProperty(GROUP_XPATH).getObjectResolver().fetch(DocumentModel.class));
+        assertNull(doc.getObjectResolver(USER_GROUP_XPATH).fetch());
+        assertNull(doc.getObjectResolver(USER_GROUP_XPATH).fetch(DocumentModel.class));
+        assertNull(doc.getProperty(USER_GROUP_XPATH).getObjectResolver().fetch());
+        assertNull(doc.getProperty(USER_GROUP_XPATH).getObjectResolver().fetch(DocumentModel.class));
     }
 
     @Test
     public void testBadValuesValidationFailed() {
         doc.setPropertyValue(USER_XPATH, "totoDoesntExists");
-        assertNull(doc.getProperty(USER_XPATH).getReferencedEntity());
+        assertNull(doc.getProperty(USER_XPATH).getObjectResolver().fetch());
+        assertFalse(doc.getProperty(USER_XPATH).getObjectResolver().validate());
         doc.setPropertyValue(GROUP_XPATH, "totoDoesntExists");
-        assertNull(doc.getProperty(GROUP_XPATH).getReferencedEntity());
+        assertNull(doc.getProperty(GROUP_XPATH).getObjectResolver().fetch());
+        assertFalse(doc.getProperty(GROUP_XPATH).getObjectResolver().validate());
         doc.setPropertyValue(USER_GROUP_XPATH, "totoDoesntExists");
-        assertNull(doc.getProperty(USER_GROUP_XPATH).getReferencedEntity());
+        assertNull(doc.getProperty(USER_GROUP_XPATH).getObjectResolver().fetch());
+        assertFalse(doc.getProperty(USER_GROUP_XPATH).getObjectResolver().validate());
         assertEquals(3, validator.validate(doc).size());
     }
 
     @Test
     public void testUserCorrectValues() {
         doc.setPropertyValue(USER_XPATH, "user:Administrator");
-        NuxeoPrincipal principal = (NuxeoPrincipal) doc.getProperty(USER_XPATH).getReferencedEntity();
+        NuxeoPrincipal principal = (NuxeoPrincipal) doc.getProperty(USER_XPATH).getObjectResolver().fetch();
         assertNotNull(principal);
         assertEquals("Administrator", principal.getName());
-        principal = doc.getProperty(USER_XPATH).getValue(NuxeoPrincipal.class);
+        principal = doc.getProperty(USER_XPATH).getObjectResolver().fetch(NuxeoPrincipal.class);
+        assertNotNull(principal);
+        assertEquals("Administrator", principal.getName());
+        principal = (NuxeoPrincipal) doc.getObjectResolver(USER_XPATH).fetch();
+        assertNotNull(principal);
+        assertEquals("Administrator", principal.getName());
+        principal = doc.getObjectResolver(USER_XPATH).fetch(NuxeoPrincipal.class);
         assertNotNull(principal);
         assertEquals("Administrator", principal.getName());
     }
@@ -418,30 +448,34 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testUserDoesntSupportGroup() {
         doc.setPropertyValue(USER_XPATH, "group:members");
-        assertNull(doc.getProperty(USER_XPATH).getReferencedEntity());
+        assertNull(doc.getProperty(USER_XPATH).getObjectResolver().fetch());
     }
 
     @Test
     public void testUserWrongPrefixReturnNull() {
         doc.setPropertyValue(USER_XPATH, "Administrator");
-        NuxeoPrincipal principal = (NuxeoPrincipal) doc.getProperty(USER_XPATH).getReferencedEntity();
-        assertNull(principal);
+        assertNull(doc.getProperty(USER_XPATH).getObjectResolver().fetch());
     }
 
     @Test
     public void testUserOrGroupSupportsUser() {
         doc.setPropertyValue(USER_GROUP_XPATH, "user:Administrator");
-        NuxeoPrincipal principal = (NuxeoPrincipal) doc.getProperty(USER_GROUP_XPATH).getReferencedEntity();
-        assertNotNull(principal);
+        assertNotNull(doc.getProperty(USER_GROUP_XPATH).getObjectResolver());
     }
 
     @Test
     public void testGroupCorrectValues() {
         doc.setPropertyValue(GROUP_XPATH, "group:members");
-        NuxeoGroup group = (NuxeoGroup) doc.getProperty(GROUP_XPATH).getReferencedEntity();
+        NuxeoGroup group = (NuxeoGroup) doc.getProperty(GROUP_XPATH).getObjectResolver().fetch();
         assertNotNull(group);
         assertEquals("members", group.getName());
-        group = doc.getProperty(GROUP_XPATH).getValue(NuxeoGroup.class);
+        group = doc.getProperty(GROUP_XPATH).getObjectResolver().fetch(NuxeoGroup.class);
+        assertNotNull(group);
+        assertEquals("members", group.getName());
+        group = (NuxeoGroup) doc.getObjectResolver(GROUP_XPATH).fetch();
+        assertNotNull(group);
+        assertEquals("members", group.getName());
+        group = doc.getObjectResolver(GROUP_XPATH).fetch(NuxeoGroup.class);
         assertNotNull(group);
         assertEquals("members", group.getName());
     }
@@ -449,21 +483,19 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testGroupFieldDoesntSupportUser() {
         doc.setPropertyValue(GROUP_XPATH, "user:Administrator");
-        assertNull(doc.getProperty(GROUP_XPATH).getReferencedEntity());
+        assertNull(doc.getProperty(GROUP_XPATH).getObjectResolver().fetch());
     }
 
     @Test
     public void testGroupWrongPrefixReturnNull() {
         doc.setPropertyValue(GROUP_XPATH, "members");
-        NuxeoGroup group = (NuxeoGroup) doc.getProperty(GROUP_XPATH).getReferencedEntity();
-        assertNull(group);
+        assertNull(doc.getProperty(GROUP_XPATH).getObjectResolver().fetch());
     }
 
     @Test
     public void testUserOrGroupSupportsGroup() {
         doc.setPropertyValue(USER_GROUP_XPATH, "group:members");
-        NuxeoGroup group = (NuxeoGroup) doc.getProperty(USER_GROUP_XPATH).getReferencedEntity();
-        assertNotNull(group);
+        assertNotNull(doc.getProperty(USER_GROUP_XPATH).getObjectResolver().fetch());
     }
 
     @Test

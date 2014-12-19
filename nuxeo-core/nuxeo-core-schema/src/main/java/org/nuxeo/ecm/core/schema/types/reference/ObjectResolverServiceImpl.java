@@ -31,22 +31,22 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  * @since 7.1
  */
-public class ExternalReferenceServiceImpl extends DefaultComponent implements ExternalReferenceService {
+public class ObjectResolverServiceImpl extends DefaultComponent implements ObjectResolverService {
 
-    private static final Log log = LogFactory.getLog(ExternalReferenceServiceImpl.class);
+    private static final Log log = LogFactory.getLog(ObjectResolverServiceImpl.class);
 
-    private Map<String, Class<? extends ExternalReferenceResolver>> resolvers;
+    private Map<String, Class<? extends ObjectResolver>> resolvers;
 
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        resolvers = new HashMap<String, Class<? extends ExternalReferenceResolver>>();
+        resolvers = new HashMap<String, Class<? extends ObjectResolver>>();
     }
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals("resolvers")) {
-            ExternalReferenceResolverDescriptor erd = (ExternalReferenceResolverDescriptor) contribution;
+            ObjectResolverDescriptor erd = (ObjectResolverDescriptor) contribution;
             resolvers.put(erd.getType(), erd.getResolver());
         }
     }
@@ -54,18 +54,18 @@ public class ExternalReferenceServiceImpl extends DefaultComponent implements Ex
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals("resolvers")) {
-            ExternalReferenceResolverDescriptor erd = (ExternalReferenceResolverDescriptor) contribution;
+            ObjectResolverDescriptor erd = (ObjectResolverDescriptor) contribution;
             resolvers.remove(erd.getType());
         }
     }
 
     @Override
-    public ExternalReferenceResolver getResolver(String type, Map<String, String> parameters) {
-        Class<? extends ExternalReferenceResolver> resolverClass = resolvers.get(type);
+    public ObjectResolver getResolver(String type, Map<String, String> parameters) {
+        Class<? extends ObjectResolver> resolverClass = resolvers.get(type);
         if (resolverClass == null) {
             return null;
         }
-        ExternalReferenceResolver resolver = null;
+        ObjectResolver resolver = null;
         try {
             resolver = resolverClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {

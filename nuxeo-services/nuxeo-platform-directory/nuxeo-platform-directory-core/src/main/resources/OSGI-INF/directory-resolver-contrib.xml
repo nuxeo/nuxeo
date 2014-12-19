@@ -6,8 +6,8 @@
     directory.
   </documentation>
 
-  <extension target="org.nuxeo.ecm.core.schema.ExternalReferenceService" point="resolvers">
-    <resolver type="directoryResolver" class="org.nuxeo.ecm.directory.DirectoryEntryReferenceResolver" />
+  <extension target="org.nuxeo.ecm.core.schema.ObjectResolverService" point="resolvers">
+    <resolver type="directoryResolver" class="org.nuxeo.ecm.directory.DirectoryEntryResolver" />
   </extension>
 
 </component>

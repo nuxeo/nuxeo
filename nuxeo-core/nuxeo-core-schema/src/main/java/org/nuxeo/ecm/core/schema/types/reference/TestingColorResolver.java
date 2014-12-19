@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class TestingColorDummyReferenceResolver implements ExternalReferenceResolver {
+public class TestingColorResolver implements ObjectResolver {
 
     public static enum MODE {
         PRIMARY, SECONDARY;

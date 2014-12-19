@@ -5,8 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.directory.DirectoryEntryReferenceResolver.NAME;
-import static org.nuxeo.ecm.directory.DirectoryEntryReferenceResolver.PARAM_DIRECTORY;
+import static org.nuxeo.ecm.directory.DirectoryEntryResolver.NAME;
+import static org.nuxeo.ecm.directory.DirectoryEntryResolver.PARAM_DIRECTORY;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -19,13 +19,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
-public class TestDirectoryEntryReferenceResolver extends SQLDirectoryTestCase {
+public class TestDirectoryEntryResolver extends SQLDirectoryTestCase {
 
     private static final String REFERENCED_DIRECTORY2 = "referencedDirectory2";
 
@@ -65,32 +64,32 @@ public class TestDirectoryEntryReferenceResolver extends SQLDirectoryTestCase {
 
     @Test(expected = IllegalStateException.class)
     public void testLifecycleNoConfigurationFetch() {
-        new DirectoryEntryReferenceResolver().fetch(ENTRY_ID);
+        new DirectoryEntryResolver().fetch(ENTRY_ID);
     }
 
     @Test(expected = IllegalStateException.class)
     public void testLifecycleNoConfigurationFetchCast() {
-        new DirectoryEntryReferenceResolver().fetch(DocumentModel.class, ENTRY_ID);
+        new DirectoryEntryResolver().fetch(DocumentModel.class, ENTRY_ID);
     }
 
     @Test(expected = IllegalStateException.class)
     public void testLifecycleNoConfigurationGetReference() {
-        new DirectoryEntryReferenceResolver().getReference(entry1);
+        new DirectoryEntryResolver().getReference(entry1);
     }
 
     @Test(expected = IllegalStateException.class)
     public void testLifecycleNoConfigurationGetParameters() {
-        new DirectoryEntryReferenceResolver().getParameters();
+        new DirectoryEntryResolver().getParameters();
     }
 
     @Test(expected = IllegalStateException.class)
     public void testLifecycleNoConfigurationGetConstraintErrorMessage() {
-        new DirectoryEntryReferenceResolver().getConstraintErrorMessage(null, Locale.ENGLISH);
+        new DirectoryEntryResolver().getConstraintErrorMessage(null, Locale.ENGLISH);
     }
 
     @Test(expected = IllegalStateException.class)
     public void testLifecycleConfigurationTwice() {
-        DirectoryEntryReferenceResolver derr = new DirectoryEntryReferenceResolver();
+        DirectoryEntryResolver derr = new DirectoryEntryResolver();
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put(PARAM_DIRECTORY, REFERENCED_DIRECTORY1);
         derr.configure(parameters);
@@ -99,7 +98,7 @@ public class TestDirectoryEntryReferenceResolver extends SQLDirectoryTestCase {
 
     @Test
     public void testConfigurationDir1() {
-        DirectoryEntryReferenceResolver derr = new DirectoryEntryReferenceResolver();
+        DirectoryEntryResolver derr = new DirectoryEntryResolver();
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put(PARAM_DIRECTORY, REFERENCED_DIRECTORY1);
         derr.configure(parameters);
@@ -110,13 +109,13 @@ public class TestDirectoryEntryReferenceResolver extends SQLDirectoryTestCase {
 
     @Test(expected = IllegalArgumentException.class)
     public void testConfigurationMissingDirectory() {
-        DirectoryEntryReferenceResolver derr = new DirectoryEntryReferenceResolver();
+        DirectoryEntryResolver derr = new DirectoryEntryResolver();
         derr.configure(new HashMap<String, String>());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConfigurationNonExistingDirectory() {
-        DirectoryEntryReferenceResolver derr = new DirectoryEntryReferenceResolver();
+        DirectoryEntryResolver derr = new DirectoryEntryResolver();
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put(PARAM_DIRECTORY, "aBadDirectoryName");
         derr.configure(parameters);
@@ -124,7 +123,7 @@ public class TestDirectoryEntryReferenceResolver extends SQLDirectoryTestCase {
 
     @Test
     public void testName() {
-        DirectoryEntryReferenceResolver derr = new DirectoryEntryReferenceResolver();
+        DirectoryEntryResolver derr = new DirectoryEntryResolver();
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put(PARAM_DIRECTORY, REFERENCED_DIRECTORY1);
         derr.configure(parameters);
@@ -133,7 +132,7 @@ public class TestDirectoryEntryReferenceResolver extends SQLDirectoryTestCase {
 
     @Test
     public void testValidateGoodDir1Ref() {
-        DirectoryEntryReferenceResolver derr = new DirectoryEntryReferenceResolver();
+        DirectoryEntryResolver derr = new DirectoryEntryResolver();
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put(PARAM_DIRECTORY, REFERENCED_DIRECTORY1);
         derr.configure(parameters);
@@ -142,7 +141,7 @@ public class TestDirectoryEntryReferenceResolver extends SQLDirectoryTestCase {
 
     @Test
     public void testValidateDir1RefFailedWithBadValue() {
-        DirectoryEntryReferenceResolver derr = new DirectoryEntryReferenceResolver();
+        DirectoryEntryResolver derr = new DirectoryEntryResolver();
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put(PARAM_DIRECTORY, REFERENCED_DIRECTORY1);
         derr.configure(parameters);
@@ -151,7 +150,7 @@ public class TestDirectoryEntryReferenceResolver extends SQLDirectoryTestCase {
 
     @Test
     public void testFetchGoodDir1Ref() {
-        DirectoryEntryReferenceResolver derr = new DirectoryEntryReferenceResolver();
+        DirectoryEntryResolver derr = new DirectoryEntryResolver();
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put(PARAM_DIRECTORY, REFERENCED_DIRECTORY1);
         derr.configure(parameters);
@@ -162,7 +161,7 @@ public class TestDirectoryEntryReferenceResolver extends SQLDirectoryTestCase {
 
     @Test
     public void testFetchDir1RefFailedWithBadValue() {
-        DirectoryEntryReferenceResolver derr = new DirectoryEntryReferenceResolver();
+        DirectoryEntryResolver derr = new DirectoryEntryResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(PARAM_DIRECTORY, REFERENCED_DIRECTORY1);
         derr.configure(parameters);
@@ -171,7 +170,7 @@ public class TestDirectoryEntryReferenceResolver extends SQLDirectoryTestCase {
 
     @Test
     public void testFetchCastDocumentModel() {
-        DirectoryEntryReferenceResolver derr = new DirectoryEntryReferenceResolver();
+        DirectoryEntryResolver derr = new DirectoryEntryResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(PARAM_DIRECTORY, REFERENCED_DIRECTORY1);
         derr.configure(parameters);
@@ -183,7 +182,7 @@ public class TestDirectoryEntryReferenceResolver extends SQLDirectoryTestCase {
 
     @Test
     public void testFetchCastDoesntSupportReferenceType() {
-        DirectoryEntryReferenceResolver derr = new DirectoryEntryReferenceResolver();
+        DirectoryEntryResolver derr = new DirectoryEntryResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(PARAM_DIRECTORY, REFERENCED_DIRECTORY1);
         derr.configure(parameters);
@@ -192,7 +191,7 @@ public class TestDirectoryEntryReferenceResolver extends SQLDirectoryTestCase {
 
     @Test
     public void testFetchCastDoesntSupportStupidTypes() {
-        DirectoryEntryReferenceResolver derr = new DirectoryEntryReferenceResolver();
+        DirectoryEntryResolver derr = new DirectoryEntryResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(PARAM_DIRECTORY, REFERENCED_DIRECTORY1);
         derr.configure(parameters);
@@ -201,7 +200,7 @@ public class TestDirectoryEntryReferenceResolver extends SQLDirectoryTestCase {
 
     @Test
     public void testGetReferenceDir1Ref() {
-        DirectoryEntryReferenceResolver derr = new DirectoryEntryReferenceResolver();
+        DirectoryEntryResolver derr = new DirectoryEntryResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(PARAM_DIRECTORY, REFERENCED_DIRECTORY1);
         derr.configure(parameters);
@@ -210,7 +209,7 @@ public class TestDirectoryEntryReferenceResolver extends SQLDirectoryTestCase {
 
     @Test
     public void testGetReferenceInvalid() {
-        DirectoryEntryReferenceResolver derr = new DirectoryEntryReferenceResolver();
+        DirectoryEntryResolver derr = new DirectoryEntryResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(PARAM_DIRECTORY, REFERENCED_DIRECTORY1);
         derr.configure(parameters);
@@ -219,52 +218,62 @@ public class TestDirectoryEntryReferenceResolver extends SQLDirectoryTestCase {
 
     @Test
     public void testConfigurationIsLoaded() {
-        DirectoryEntryReferenceResolver idResolver = (DirectoryEntryReferenceResolver) ((SimpleType) doc.getProperty(
-                REF1_XPATH).getType()).getResolver();
+        DirectoryEntryResolver idResolver = (DirectoryEntryResolver) ((SimpleType) doc.getProperty(REF1_XPATH).getType()).getObjectResolver();
         assertEquals(REFERENCED_DIRECTORY1, idResolver.getDirectory().getName());
         assertEquals(REFERENCED_DIRECTORY1, idResolver.getParameters().get(PARAM_DIRECTORY));
-        DirectoryEntryReferenceResolver pathResolver = (DirectoryEntryReferenceResolver) ((SimpleType) doc.getProperty(
-                REF2_XPATH).getType()).getResolver();
+        DirectoryEntryResolver pathResolver = (DirectoryEntryResolver) ((SimpleType) doc.getProperty(REF2_XPATH).getType()).getObjectResolver();
         assertEquals(REFERENCED_DIRECTORY2, pathResolver.getDirectory().getName());
         assertEquals(REFERENCED_DIRECTORY2, pathResolver.getParameters().get(PARAM_DIRECTORY));
     }
 
     @Test
-    public void testNullValueReturnNullDocument() {
-        assertNull(doc.getProperty(REF1_XPATH).getReferencedEntity());
-        assertNull(doc.getProperty(REF1_XPATH).getValue(NuxeoPrincipal.class));
-        assertNull(doc.getProperty(REF2_XPATH).getReferencedEntity());
-        assertNull(doc.getProperty(REF2_XPATH).getValue(NuxeoPrincipal.class));
+    public void testNullValueReturnNull() {
+        assertNull(doc.getObjectResolver(REF1_XPATH).fetch());
+        assertNull(doc.getObjectResolver(REF1_XPATH).fetch(DocumentModel.class));
+        assertNull(doc.getProperty(REF1_XPATH).getObjectResolver().fetch());
+        assertNull(doc.getProperty(REF1_XPATH).getObjectResolver().fetch(DocumentModel.class));
+        assertNull(doc.getObjectResolver(REF2_XPATH).fetch());
+        assertNull(doc.getObjectResolver(REF2_XPATH).fetch(DocumentModel.class));
+        assertNull(doc.getProperty(REF2_XPATH).getObjectResolver().fetch());
+        assertNull(doc.getProperty(REF2_XPATH).getObjectResolver().fetch(DocumentModel.class));
     }
 
     @Test
     public void testBadValuesValidationFailed() {
         doc.setPropertyValue(REF1_XPATH, "BAD id !");
-        assertNull(doc.getProperty(REF1_XPATH).getReferencedEntity());
-        doc.setPropertyValue(REF2_XPATH, "BAD id !");
-        assertNull(doc.getProperty(REF2_XPATH).getReferencedEntity());
+        assertNull(doc.getProperty(REF1_XPATH).getObjectResolver().fetch());
+        assertFalse(doc.getProperty(REF1_XPATH).getObjectResolver().validate());
+        doc.setPropertyValue(REF2_XPATH, "BAD path !");
+        assertNull(doc.getProperty(REF2_XPATH).getObjectResolver().fetch());
+        assertFalse(doc.getProperty(REF2_XPATH).getObjectResolver().validate());
         assertEquals(2, validator.validate(doc).size());
     }
 
     @Test
     public void testRefCorrectValues() {
         doc.setPropertyValue(REF1_XPATH, ENTRY_ID);
-        DocumentModel document = (DocumentModel) doc.getProperty(REF1_XPATH).getReferencedEntity();
+        DocumentModel document = (DocumentModel) doc.getProperty(REF1_XPATH).getObjectResolver().fetch();
         assertNotNull(document);
         assertEquals(ENTRY_LABEL, document.getPropertyValue("drs:label"));
-        document = doc.getProperty(REF1_XPATH).getValue(DocumentModel.class);
+        document = (DocumentModel) doc.getObjectResolver(REF1_XPATH).fetch();
+        assertNotNull(document);
+        assertEquals(ENTRY_LABEL, document.getPropertyValue("drs:label"));
+        document = doc.getProperty(REF1_XPATH).getObjectResolver().fetch(DocumentModel.class);
+        assertNotNull(document);
+        assertEquals(ENTRY_LABEL, document.getPropertyValue("drs:label"));
+        document = doc.getObjectResolver(REF1_XPATH).fetch(DocumentModel.class);
         assertNotNull(document);
         assertEquals(ENTRY_LABEL, document.getPropertyValue("drs:label"));
     }
 
     @Test
     public void testTranslation() {
-        DirectoryEntryReferenceResolver idderr = new DirectoryEntryReferenceResolver();
+        DirectoryEntryResolver idderr = new DirectoryEntryResolver();
         Map<String, String> userParams = new HashMap<String, String>();
         userParams.put(PARAM_DIRECTORY, REFERENCED_DIRECTORY1);
         idderr.configure(userParams);
         checkMessage(idderr);
-        DirectoryEntryReferenceResolver pathderr = new DirectoryEntryReferenceResolver();
+        DirectoryEntryResolver pathderr = new DirectoryEntryResolver();
         Map<String, String> groupParams = new HashMap<String, String>();
         groupParams.put(PARAM_DIRECTORY, REFERENCED_DIRECTORY2);
         pathderr.configure(groupParams);
@@ -272,7 +281,7 @@ public class TestDirectoryEntryReferenceResolver extends SQLDirectoryTestCase {
 
     }
 
-    private void checkMessage(DirectoryEntryReferenceResolver derr) {
+    private void checkMessage(DirectoryEntryResolver derr) {
         for (Locale locale : Arrays.asList(Locale.FRENCH, Locale.ENGLISH)) {
             String message = derr.getConstraintErrorMessage("abc123", locale);
             assertNotNull(message);

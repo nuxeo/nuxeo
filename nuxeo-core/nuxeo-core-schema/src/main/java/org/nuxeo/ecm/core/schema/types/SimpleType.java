@@ -13,11 +13,6 @@
  */
 package org.nuxeo.ecm.core.schema.types;
 
-import java.util.Set;
-
-import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
-
 /**
  * Simple Type.
  * <p>
@@ -33,20 +28,5 @@ public interface SimpleType extends Type {
     boolean isPrimitive();
 
     PrimitiveType getPrimitiveType();
-
-    /**
-     * @return this type's constraints
-     * @since 7.1
-     */
-    Set<Constraint> getConstraints();
-
-    /**
-     * If this SimpleType is a reference type (see {@link #isReference()}, provides a {@link ExternalReferenceResolver}
-     * to get entity referenced a value of this type.
-     *
-     * @return
-     * @since 7.1
-     */
-    ExternalReferenceResolver getResolver();
 
 }

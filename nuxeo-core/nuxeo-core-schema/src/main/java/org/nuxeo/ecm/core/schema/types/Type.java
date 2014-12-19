@@ -13,8 +13,10 @@
 package org.nuxeo.ecm.core.schema.types;
 
 import java.io.Serializable;
+import java.util.Set;
 
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
+import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
 
 /**
  * A Type object is used to describe some ECM content.
@@ -106,15 +108,6 @@ public interface Type extends Serializable {
     boolean isSuperTypeOf(Type type);
 
     /**
-     * Tests whether this type is a simple type whose value references an external entity (see
-     * {@link ExternalReferenceResolver} ).
-     *
-     * @return true if this type is a reference, false otherwise
-     * @since 7.1
-     */
-    boolean isReference();
-
-    /**
      * Tests whether this type is a simple type.
      *
      * @return true if this type is a simple type, false otherwise
@@ -196,5 +189,19 @@ public interface Type extends Serializable {
      * @throws TypeException if the value to convert is not compatible with the associated type
      */
     Object convert(Object value) throws TypeException;
+
+    /**
+     * @return this type's constraints
+     * @since 7.1
+     */
+    Set<Constraint> getConstraints();
+
+    /**
+     * Provides a {@link ObjectResolver} if this type is a reference to an external entity.
+     *
+     * @return a resolver if available, null otherwise.
+     * @since 7.1
+     */
+    ObjectResolver getObjectResolver();
 
 }

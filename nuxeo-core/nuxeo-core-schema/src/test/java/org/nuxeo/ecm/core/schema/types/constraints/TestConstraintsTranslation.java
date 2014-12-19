@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.ecm.core.schema.types.reference.TestingColorDummyReferenceResolver;
+import org.nuxeo.ecm.core.schema.types.reference.TestingColorResolver;
 
 public class TestConstraintsTranslation {
 
@@ -209,12 +209,12 @@ public class TestConstraintsTranslation {
 
     @Test
     public void testExternalReferenceConstraintMessage() {
-        TestingColorDummyReferenceResolver resolver = new TestingColorDummyReferenceResolver();
+        TestingColorResolver resolver = new TestingColorResolver();
         HashMap<String, String> parameters = new HashMap<String, String>();
-        parameters.put(TestingColorDummyReferenceResolver.COLOR_MODE,
-                TestingColorDummyReferenceResolver.MODE.PRIMARY.name());
+        parameters.put(TestingColorResolver.COLOR_MODE,
+                TestingColorResolver.MODE.PRIMARY.name());
         resolver.configure(parameters);
-        checkConstraintMessage(new ExternalReferenceConstraint(resolver));
+        checkConstraintMessage(new ObjectResolverConstraint(resolver));
     }
 
     private void checkConstraintMessage(Constraint constraint) {

@@ -54,13 +54,13 @@ import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.constraints.ConstraintUtils;
 import org.nuxeo.ecm.core.schema.types.constraints.DateIntervalConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.EnumConstraint;
-import org.nuxeo.ecm.core.schema.types.constraints.ExternalReferenceConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.LengthConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.NotNullConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.NumericIntervalConstraint;
+import org.nuxeo.ecm.core.schema.types.constraints.ObjectResolverConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.PatternConstraint;
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceService;
+import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
+import org.nuxeo.ecm.core.schema.types.reference.ObjectResolverService;
 import org.nuxeo.runtime.api.Framework;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
@@ -111,11 +111,11 @@ public class XSDLoader {
 
     protected SchemaBindingDescriptor sd;
 
-    private ExternalReferenceService referenceService;
+    private ObjectResolverService referenceService;
 
-    protected ExternalReferenceService getReferenceService() {
+    protected ObjectResolverService getObjectResolverService() {
         if (referenceService == null) {
-            referenceService = Framework.getService(ExternalReferenceService.class);
+            referenceService = Framework.getService(ObjectResolverService.class);
         }
         return referenceService;
     }
@@ -597,14 +597,14 @@ public class XSDLoader {
                 }
             }
             if (refName != null) {
-                ExternalReferenceResolver resolver = getReferenceService().getResolver(refName, refParameters);
+                ObjectResolver resolver = getObjectResolverService().getResolver(refName, refParameters);
                 if (resolver != null) {
                     simpleType.setResolver(resolver);
-                    constraints.add(new ExternalReferenceConstraint(resolver));
+                    constraints.add(new ObjectResolverConstraint(resolver));
                 } else {
                     log.warn("type " + type.getName()
-                            + " targets ExternalReference namespace but has no matching resolver registered "
-                            + "(please contribute to component : org.nuxeo.ecm.core.schema.ExternalReferenceService)");
+                            + " targets ObjectResolver namespace but has no matching resolver registered "
+                            + "(please contribute to component : org.nuxeo.ecm.core.schema.ObjectResolverService)");
                 }
             }
 

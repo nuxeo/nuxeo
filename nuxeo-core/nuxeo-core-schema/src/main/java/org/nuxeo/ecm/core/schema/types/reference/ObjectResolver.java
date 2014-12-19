@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
  *
  * @since 7.1
  */
-public interface ExternalReferenceResolver {
+public interface ObjectResolver {
 
     /**
      * Configure this resolver.
@@ -94,14 +94,12 @@ public interface ExternalReferenceResolver {
     /**
      * Generates a reference to an entity.
      *
-     * @param value The entity.
-     * @return A reference to the entity.
+     * @param object The entity.
+     * @return A reference to the entity or null if its not a managed entity type.
      * @throws IllegalStateException If this resolver has not been configured.
-     * @throws IllegalArgumentException If the entity cannot be referenced. For example if it does not exists anymore.
-     * @throws NullPointerException If entity is null
      * @since 7.1
      */
-    Serializable getReference(Object entity);
+    Serializable getReference(Object object);
 
     /**
      * Provides an error message to display when some invalid value does not match existing entity.
@@ -114,7 +112,7 @@ public interface ExternalReferenceResolver {
     String getConstraintErrorMessage(Object invalidValue, Locale locale);
 
     /**
-     * Manage translation for resolver : {@link #getConstraintErrorMessage(ExternalReferenceResolver, Object, Locale)}
+     * Manage translation for resolver : {@link #getConstraintErrorMessage(ObjectResolver, Object, Locale)}
      *
      * @since 7.1
      */
@@ -134,8 +132,8 @@ public interface ExternalReferenceResolver {
          * @return A message in the specified language
          * @since 7.1
          */
-        public static String getConstraintErrorMessage(ExternalReferenceResolver resolver, String suffixCase,
-                Object invalidValue, Locale locale, String... additionnalParameters) {
+        public static String getConstraintErrorMessage(ObjectResolver resolver, String suffixCase, Object invalidValue,
+                Locale locale, String... additionnalParameters) {
             List<String> pathTokens = new ArrayList<String>();
             pathTokens.add(Constraint.MESSAGES_KEY);
             pathTokens.add("resolver");
@@ -179,8 +177,8 @@ public interface ExternalReferenceResolver {
          * @return A message in the specified language
          * @since 7.1
          */
-        public static String getConstraintErrorMessage(ExternalReferenceResolver resolver, Object invalidValue,
-                Locale locale, String... additionnalParameters) {
+        public static String getConstraintErrorMessage(ObjectResolver resolver, Object invalidValue, Locale locale,
+                String... additionnalParameters) {
             return Helper.getConstraintErrorMessage(resolver, null, invalidValue, locale, additionnalParameters);
         }
     }

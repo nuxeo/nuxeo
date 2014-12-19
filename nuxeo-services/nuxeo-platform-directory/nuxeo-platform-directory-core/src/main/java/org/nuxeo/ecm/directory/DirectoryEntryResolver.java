@@ -7,11 +7,11 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
+import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
-public class DirectoryEntryReferenceResolver implements ExternalReferenceResolver {
+public class DirectoryEntryResolver implements ObjectResolver {
 
     public static final String NAME = "directoryResolver";
 

@@ -8,7 +8,7 @@
     @author Bogdan Stefanescu (bs@nuxeo.com)
   </documentation>
   
-  <require>org.nuxeo.ecm.core.schema.ExternalReferenceService</require>
+  <require>org.nuxeo.ecm.core.schema.ObjectResolverService</require>
 
   <service>
     <provide

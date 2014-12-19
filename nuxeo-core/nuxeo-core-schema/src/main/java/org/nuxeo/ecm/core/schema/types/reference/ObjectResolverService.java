@@ -20,11 +20,11 @@ package org.nuxeo.ecm.core.schema.types.reference;
 import java.util.Map;
 
 /**
- * Provides a way to instanciate {@link ExternalReferenceResolver}.
+ * Provides a way to instanciate {@link ObjectResolver}.
  *
  * @since 7.1
  */
-public interface ExternalReferenceService {
+public interface ObjectResolverService {
 
     /**
      * @param type the xsd type, a resolver could manage.
@@ -32,6 +32,6 @@ public interface ExternalReferenceService {
      * @return
      * @since 7.1
      */
-    ExternalReferenceResolver getResolver(String type, Map<String, String> parameters);
+    ObjectResolver getResolver(String type, Map<String, String> parameters);
 
 }

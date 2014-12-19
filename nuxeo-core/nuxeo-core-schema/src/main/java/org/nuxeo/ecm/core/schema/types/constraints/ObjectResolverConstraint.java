@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
+import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
 
 /**
  * External references are document field with a simple type whose value refers to an external business entity. This
@@ -31,18 +31,18 @@ import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
  *
  * @since 7.1
  */
-public final class ExternalReferenceConstraint extends AbstractConstraint {
+public final class ObjectResolverConstraint extends AbstractConstraint {
 
     private static final long serialVersionUID = 1L;
 
-    private ExternalReferenceResolver resolver;
+    private ObjectResolver resolver;
 
-    public ExternalReferenceConstraint(ExternalReferenceResolver resolver) {
+    public ObjectResolverConstraint(ObjectResolver resolver) {
         super();
         this.resolver = resolver;
     }
 
-    public ExternalReferenceResolver getResolver() {
+    public ObjectResolver getResolver() {
         return resolver;
     }
 

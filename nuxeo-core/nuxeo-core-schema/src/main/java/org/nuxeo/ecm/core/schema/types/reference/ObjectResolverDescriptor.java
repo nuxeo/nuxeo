@@ -21,23 +21,23 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Handler for the {@link ExternalReferenceService} "resolvers" extension point.
+ * Handler for the {@link ObjectResolverService} "resolvers" extension point.
  *
  * @since 7.1
  */
 @XObject("resolver")
-public class ExternalReferenceResolverDescriptor {
+public class ObjectResolverDescriptor {
 
     @XNode("@type")
     private String type;
 
     @XNode("@class")
-    private Class<? extends ExternalReferenceResolver> resolver;
+    private Class<? extends ObjectResolver> resolver;
 
-    public ExternalReferenceResolverDescriptor() {
+    public ObjectResolverDescriptor() {
     }
 
-    public ExternalReferenceResolverDescriptor(String type, Class<? extends ExternalReferenceResolver> resolver) {
+    public ObjectResolverDescriptor(String type, Class<? extends ObjectResolver> resolver) {
         super();
         this.type = type;
         this.resolver = resolver;
@@ -51,11 +51,11 @@ public class ExternalReferenceResolverDescriptor {
         this.type = type;
     }
 
-    public Class<? extends ExternalReferenceResolver> getResolver() {
+    public Class<? extends ObjectResolver> getResolver() {
         return resolver;
     }
 
-    public void setResolver(Class<? extends ExternalReferenceResolver> resolver) {
+    public void setResolver(Class<? extends ObjectResolver> resolver) {
         this.resolver = resolver;
     }
 

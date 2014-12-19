@@ -38,6 +38,8 @@ import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyVisitor;
+import org.nuxeo.ecm.core.api.model.resolver.DocumentPropertyObjectResolverImpl;
+import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolver;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -318,16 +320,6 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
-    public void setPropertyReferencedEntity(String xpath, Object entity) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Object getPropertyReferencedEntity(String xpath) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public String getSessionId() {
         throw new UnsupportedOperationException();
     }
@@ -570,4 +562,10 @@ public class ShallowDocumentModel implements DocumentModel {
     public Map<String, String> getBinaryFulltext() throws ClientException {
         return null;
     }
+
+    @Override
+    public PropertyObjectResolver getObjectResolver(String xpath) {
+        return DocumentPropertyObjectResolverImpl.create(this, xpath);
+    }
+
 }

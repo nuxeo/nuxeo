@@ -19,26 +19,26 @@ package org.nuxeo.ecm.core.schema.types.constraints;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.schema.types.reference.TestingColorDummyReferenceResolver.COLOR_MODE;
+import static org.nuxeo.ecm.core.schema.types.reference.TestingColorResolver.COLOR_MODE;
 
 import java.util.HashMap;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.nuxeo.ecm.core.schema.types.reference.TestingColorDummyReferenceResolver;
-import org.nuxeo.ecm.core.schema.types.reference.TestingColorDummyReferenceResolver.MODE;
+import org.nuxeo.ecm.core.schema.types.reference.TestingColorResolver;
+import org.nuxeo.ecm.core.schema.types.reference.TestingColorResolver.MODE;
 
-public class TestExternalReferenceConstraint {
+public class TestObjectResolverConstraint {
 
-    protected static ExternalReferenceConstraint constraint;
+    protected static ObjectResolverConstraint constraint;
 
     @BeforeClass
     public static void setUp() {
-        TestingColorDummyReferenceResolver resolver = new TestingColorDummyReferenceResolver();
+        TestingColorResolver resolver = new TestingColorResolver();
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put(COLOR_MODE, MODE.PRIMARY.name());
         resolver.configure(parameters);
-        constraint = new ExternalReferenceConstraint(resolver);
+        constraint = new ObjectResolverConstraint(resolver);
     }
 
     @Test

@@ -13,13 +13,10 @@
  */
 package org.nuxeo.ecm.core.schema.types;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Set;
 
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
+import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
 
 /**
  * Implementation of a simple type that is not primitive (and therefore has constraints).
@@ -28,9 +25,7 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
 
     private static final long serialVersionUID = 1L;
 
-    protected Set<Constraint> constraints;
-
-    private ExternalReferenceResolver resolver;
+    private ObjectResolver resolver;
 
     private PrimitiveType primitiveType;
 
@@ -42,17 +37,6 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
         constraints = new HashSet<Constraint>();
     }
 
-    protected boolean validateConstraints(Object object) {
-        if (constraints != null) {
-            for (Constraint constraint : constraints) {
-                if (!constraint.validate(object)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     @Override
     public boolean validate(Object object) throws TypeException {
         if (object == null) {
@@ -62,21 +46,6 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
             return getSuperType().validate(object);
         }
         return false;
-    }
-
-    public void addConstraints(Collection<Constraint> constraints) {
-        this.constraints.addAll(constraints);
-    }
-
-    @Override
-    public Set<Constraint> getConstraints() {
-        Set<Constraint> constraints = new HashSet<Constraint>();
-        if (getSuperType() instanceof SimpleType) {
-            SimpleType superType = (SimpleType) getSuperType();
-            constraints.addAll(superType.getConstraints());
-        }
-        constraints.addAll(this.constraints);
-        return Collections.unmodifiableSet(constraints);
     }
 
     @Override
@@ -97,17 +66,12 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
         return true;
     }
 
-    @Override
-    public boolean isReference() {
-        return resolver != null;
-    }
-
-    public void setResolver(ExternalReferenceResolver resolver) {
+    public void setResolver(ObjectResolver resolver) {
         this.resolver = resolver;
     }
 
     @Override
-    public ExternalReferenceResolver getResolver() {
+    public ObjectResolver getObjectResolver() {
         return resolver;
     }
 

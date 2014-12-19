@@ -6,7 +6,7 @@
     by 'user:' or 'group:'.
   </documentation>
 
-  <extension target="org.nuxeo.ecm.core.schema.ExternalReferenceService" point="resolvers">
+  <extension target="org.nuxeo.ecm.core.schema.ObjectResolverService" point="resolvers">
     <resolver type="userManagerResolver" class="org.nuxeo.ecm.platform.usermanager.UserManagerResolver" />
   </extension>
 

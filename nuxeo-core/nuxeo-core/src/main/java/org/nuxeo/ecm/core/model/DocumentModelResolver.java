@@ -30,10 +30,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.local.LocalException;
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
+import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
 
 /**
- * This {@link ExternalReferenceResolver} allows to manage integrity for fields containing {@link DocumentModel}
+ * This {@link ObjectResolver} allows to manage integrity for fields containing {@link DocumentModel}
  * references (id or path).
  * <p>
  * Resolved references must be either a path or an id, default mode is id. Storing path keep link with place in the
@@ -76,7 +76,7 @@ import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
  *
  * @since 7.1
  */
-public class DocumentModelReferenceResolver implements ExternalReferenceResolver {
+public class DocumentModelResolver implements ObjectResolver {
 
     private static final String DEFAULT_REPO_NAME = "default";
 

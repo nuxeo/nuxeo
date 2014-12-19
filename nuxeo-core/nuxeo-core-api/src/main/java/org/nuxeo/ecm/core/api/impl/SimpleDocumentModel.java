@@ -44,6 +44,8 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.PropertyVisitor;
 import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
+import org.nuxeo.ecm.core.api.model.resolver.DocumentPropertyObjectResolverImpl;
+import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolver;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -284,16 +286,6 @@ public class SimpleDocumentModel implements DocumentModel {
     @Override
     public void setPropertyValue(String xpath, Serializable value) throws ClientException {
         getProperty(xpath).setValue(value);
-    }
-
-    @Override
-    public void setPropertyReferencedEntity(String xpath, Object entity) {
-        getProperty(xpath).setReferencedEntity(entity);
-    }
-
-    @Override
-    public Object getPropertyReferencedEntity(String xpath) {
-        return getProperty(xpath).getReferencedEntity();
     }
 
     @Override
@@ -682,5 +674,10 @@ public class SimpleDocumentModel implements DocumentModel {
     @Override
     public Map<String, String> getBinaryFulltext() throws ClientException {
         return null;
+    }
+
+    @Override
+    public PropertyObjectResolver getObjectResolver(String xpath) {
+        return DocumentPropertyObjectResolverImpl.create(this, xpath);
     }
 }

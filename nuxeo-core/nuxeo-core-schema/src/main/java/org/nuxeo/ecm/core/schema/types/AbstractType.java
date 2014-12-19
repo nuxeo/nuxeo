@@ -13,9 +13,15 @@
 package org.nuxeo.ecm.core.schema.types;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.schema.TypeProvider;
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
+import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -33,10 +39,13 @@ public abstract class AbstractType implements Type {
 
     protected final Type superType;
 
+    protected Set<Constraint> constraints;
+
     protected AbstractType(Type superType, String schema, String name) {
         this.name = name;
         this.schema = schema;
         this.superType = superType;
+        constraints = new HashSet<Constraint>();
     }
 
     @Override
@@ -95,11 +104,6 @@ public abstract class AbstractType implements Type {
     }
 
     @Override
-    public boolean isReference() {
-        return false;
-    }
-
-    @Override
     public boolean isComplexType() {
         return false;
     }
@@ -136,6 +140,37 @@ public abstract class AbstractType implements Type {
 
     @Override
     public Object newInstance() {
+        return null;
+    }
+
+    @Override
+    public Set<Constraint> getConstraints() {
+        Set<Constraint> constraints = new HashSet<Constraint>();
+        if (getSuperType() instanceof SimpleType) {
+            SimpleType superType = (SimpleType) getSuperType();
+            constraints.addAll(superType.getConstraints());
+        }
+        constraints.addAll(this.constraints);
+        return Collections.unmodifiableSet(constraints);
+    }
+
+    public void addConstraints(Collection<Constraint> constraints) {
+        this.constraints.addAll(constraints);
+    }
+
+    protected boolean validateConstraints(Object object) {
+        if (constraints != null) {
+            for (Constraint constraint : constraints) {
+                if (!constraint.validate(object)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public ObjectResolver getObjectResolver() {
         return null;
     }
 

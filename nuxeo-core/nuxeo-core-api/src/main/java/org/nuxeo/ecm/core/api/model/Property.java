@@ -20,11 +20,11 @@ import java.util.Iterator;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolver;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
 
 /**
  * Document properties are instances of document schema fields.
@@ -283,14 +283,6 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * @return true if the property is of a scalar type, false otherwise
      */
     boolean isScalar();
-
-    /**
-     * Tests whether this property is references an external entity (see {@link ExternalReferenceResolver} ).
-     *
-     * @return true if this property is a reference, false otherwise
-     * @since 7.1
-     */
-    boolean isReference();
 
     /**
      * Whether this property is a container - this means the property value is a map or a list.
@@ -601,29 +593,6 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     void setValue(String path, Object value) throws PropertyException;
 
     /**
-     * Sets the entity referenced by this property's value.
-     * <p>
-     * The value of this property will be a reference to the entity.
-     * </p>
-     *
-     * @param entity The entity referenced by this property.
-     * @throws {@link InvalidPropertyValueException} if the given value type is not compatible with the expected value
-     *         type
-     * @throws UnsupportedOperationException If this property's value is not a reference.
-     * @since 7.1
-     */
-    void setReferencedEntity(Object entity);
-
-    /**
-     * Gets the entity referenced by this property value.
-     *
-     * @return The entity
-     * @throws UnsupportedOperationException If this property's value is not a reference.
-     * @since 7.1
-     */
-    Object getReferencedEntity();
-
-    /**
      * Normalizes the given value as dictated by the property type.
      * <p>
      * Normalized values are the ones that are used for transportation over the net and that are given to the storage
@@ -708,5 +677,12 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * @return the iterator
      */
     Iterator<Property> getDirtyChildren();
+
+    /**
+     * @return A {@link PropertyObjectResolver} to manage this property reference to external entities, null if this
+     *         property's type has no resolver.
+     * @since 7.1
+     */
+    PropertyObjectResolver getObjectResolver();
 
 }

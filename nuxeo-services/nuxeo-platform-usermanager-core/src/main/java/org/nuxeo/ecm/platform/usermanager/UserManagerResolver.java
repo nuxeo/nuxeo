@@ -25,11 +25,11 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
+import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This {@link ExternalReferenceResolver} allows to manage integrity for fields containing group or user references.
+ * This {@link ObjectResolver} allows to manage integrity for fields containing group or user references.
  * <p>
  * References must have a prefix. NuxeoPrincipal.PREFIX for users, NuxeoGroup.PREFIX for groups.
  * </p>
@@ -58,7 +58,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 7.1
  */
-public class UserManagerResolver implements ExternalReferenceResolver {
+public class UserManagerResolver implements ObjectResolver {
 
     public static final String INPUT_PARAM_FILTER = "type";
 

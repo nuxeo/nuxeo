@@ -60,6 +60,8 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.PropertyVisitor;
 import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
+import org.nuxeo.ecm.core.api.model.resolver.DocumentPropertyObjectResolverImpl;
+import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolver;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -73,9 +75,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.JavaTypes;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -1446,36 +1446,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         clearPrefetchXPath(xpath);
     }
 
-    @Override
-    public void setPropertyReferencedEntity(String xpath, Object entity) {
-        ExternalReferenceResolver resolver = getResolver(xpath);
-        if (resolver != null) {
-            Serializable reference = resolver.getReference(entity);
-            setPropertyValue(xpath, reference);
-        } else {
-            setPropertyValue(xpath, null);
-        }
-    }
-
-    @Override
-    public Object getPropertyReferencedEntity(String xpath) {
-        ExternalReferenceResolver resolver = getResolver(xpath);
-        if (resolver != null) {
-            return resolver.fetch(getPropertyValue(xpath));
-        } else {
-            return null;
-        }
-    }
-
-    protected <T> ExternalReferenceResolver getResolver(String xpath) {
-        Property property = getProperty(xpath);
-        if (!property.isReference()) {
-            return null;
-        }
-        SimpleType type = (SimpleType) property.getType();
-        return type.getResolver();
-    }
-
     private void clearPrefetch(String schemaName) {
         if (prefetch != null) {
             prefetch.clearPrefetch(schemaName);
@@ -1659,4 +1629,10 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
         return session.getBinaryFulltext(ref);
     }
+
+    @Override
+    public PropertyObjectResolver getObjectResolver(String xpath) {
+        return DocumentPropertyObjectResolverImpl.create(this, xpath);
+    }
+
 }

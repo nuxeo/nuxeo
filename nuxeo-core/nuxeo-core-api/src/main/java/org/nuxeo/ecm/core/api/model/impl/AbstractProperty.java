@@ -22,9 +22,10 @@ import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
+import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolver;
+import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolverImpl;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.types.SimpleType;
-import org.nuxeo.ecm.core.schema.types.reference.ExternalReferenceResolver;
+import org.nuxeo.ecm.core.schema.types.reference.ObjectResolver;
 
 public abstract class AbstractProperty implements Property {
 
@@ -81,41 +82,6 @@ public abstract class AbstractProperty implements Property {
     public void setValue(int index, Object value) throws PropertyException {
         Property property = get(index);
         property.setValue(value);
-    }
-
-    protected ExternalReferenceResolver resolver;
-
-    protected ExternalReferenceResolver getResolver() {
-        if (resolver == null) {
-            if (!isReference()) {
-                return null;
-            }
-            SimpleType type = (SimpleType) getType();
-            ExternalReferenceResolver resolver = type.getResolver();
-            this.resolver = resolver;
-        }
-        return resolver;
-    }
-
-    @Override
-    public Object getReferencedEntity() {
-        ExternalReferenceResolver resolver = getResolver();
-        if (resolver != null) {
-            return resolver.fetch(getValue());
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public void setReferencedEntity(Object entity) {
-        ExternalReferenceResolver resolver = getResolver();
-        if (resolver != null) {
-            Serializable reference = resolver.getReference(entity);
-            setValue(reference);
-        } else {
-            setValue(null);
-        }
     }
 
     @Override
@@ -184,11 +150,6 @@ public abstract class AbstractProperty implements Property {
     @Override
     public boolean isScalar() {
         return getType().isSimpleType();
-    }
-
-    @Override
-    public boolean isReference() {
-        return getType().isReference();
     }
 
     @Override
@@ -321,18 +282,7 @@ public abstract class AbstractProperty implements Property {
 
     @Override
     public <T> T getValue(Class<T> type) throws PropertyException {
-        Serializable value = getValue();
-        if (isReference()) {
-            if (value == null) {
-                return null;
-            }
-            Object entity = getResolver().fetch(type, value);
-            if (entity == null) {
-                return convertTo(value, type);
-            }
-            return type.cast(entity);
-        }
-        return convertTo(value, type);
+        return convertTo(getValue(), type);
     }
 
     @Override
@@ -484,6 +434,15 @@ public abstract class AbstractProperty implements Property {
     @Override
     public String toString() {
         return getClass().getSimpleName() + '(' + getPath() + ')';
+    }
+
+    @Override
+    public PropertyObjectResolver getObjectResolver() {
+        ObjectResolver resolver = getType().getObjectResolver();
+        if (resolver != null) {
+            return new PropertyObjectResolverImpl(this, resolver);
+        }
+        return null;
     }
 
 }
