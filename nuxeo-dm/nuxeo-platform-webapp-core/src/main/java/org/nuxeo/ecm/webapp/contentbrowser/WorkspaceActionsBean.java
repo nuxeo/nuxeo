@@ -61,8 +61,7 @@ import org.nuxeo.ecm.webapp.security.SecurityActions;
  */
 @Name("workspaceActions")
 @Scope(CONVERSATION)
-public class WorkspaceActionsBean extends InputController implements
-        WorkspaceActions, Serializable {
+public class WorkspaceActionsBean extends InputController implements WorkspaceActions, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -117,10 +116,12 @@ public class WorkspaceActionsBean extends InputController implements
     }
 
     // Flag for indicating if template will be used
+    @Override
     public void setUseTemplate(Boolean value) {
         useTemplateFlag = value;
     }
 
+    @Override
     public Boolean getUseTemplate() {
         if (availableTemplates == null) {
             return false;
@@ -132,21 +133,25 @@ public class WorkspaceActionsBean extends InputController implements
     }
 
     // initialize pageflow context using Factories
+    @Override
     @Factory(value = "selectedTemplateId")
     public ContextStringWrapper FactoryForSelectedTemplateId() {
         return new ContextStringWrapper("none");
     }
 
+    @Override
     @Factory(value = "selectedSecurityModel")
     public ContextStringWrapper FactoryForSelectSecurityModel() {
         return new ContextStringWrapper("inherit");
     }
 
+    @Override
     @Factory(value = "selectedOwnerModel")
     public ContextStringWrapper FactoryForSelectSecurityOwner() {
         return new ContextStringWrapper("me");
     }
 
+    @Override
     @Begin(pageflow = "createWorkspace", nested = true)
     @Factory(value = "tmpWorkspace")
     public DocumentModel getTmpWorkspace() {
@@ -161,16 +166,19 @@ public class WorkspaceActionsBean extends InputController implements
         return tmpWorkspace;
     }
 
+    @Override
     @Factory(value = "availableWorkspaceTemplates")
     public DocumentModelList getTemplates() throws ClientException {
         availableTemplates = documentTemplatesActions.getTemplates("Workspace");
         return availableTemplates;
     }
 
+    @Override
     public String finishPageFlow() {
         return "done";
     }
 
+    @Override
     public String getSelectedTemplateDescription() {
         if (selectedTemplateId == null) {
             return "";
@@ -193,6 +201,7 @@ public class WorkspaceActionsBean extends InputController implements
         return "";
     }
 
+    @Override
     public DocumentModel getSelectedTemplate() {
         if (selectedTemplateId == null) {
             return null;
@@ -216,20 +225,19 @@ public class WorkspaceActionsBean extends InputController implements
     }
 
     // @End(beforeRedirect = true)
+    @Override
     @End
     public String createWorkspace() throws ClientException {
         String navResult = null;
 
-        if (useTemplateFlag == null || !useTemplateFlag
-                || selectedTemplateId == null || selectedTemplateId.equals("none")) {
+        if (useTemplateFlag == null || !useTemplateFlag || selectedTemplateId == null
+                || selectedTemplateId.equals("none")) {
             // create the new Workspace without Template
             // and navigate to it
-            navResult = documentTemplatesActions.createDocumentFromTemplate(
-                    tmpWorkspace, null);
+            navResult = documentTemplatesActions.createDocumentFromTemplate(tmpWorkspace, null);
         } else {
             // create the workspace from template
-            navResult = documentTemplatesActions.createDocumentFromTemplate(
-                    tmpWorkspace, selectedTemplateId);
+            navResult = documentTemplatesActions.createDocumentFromTemplate(tmpWorkspace, selectedTemplateId);
         }
 
         if (!selectedSecurityModel.equals("inherit")) {
@@ -248,13 +256,11 @@ public class WorkspaceActionsBean extends InputController implements
 
             // Grant to principalList
             for (String principalName : principalsName) {
-                securityActions.addPermission(principalName,
-                        SecurityConstants.EVERYTHING, true);
+                securityActions.addPermission(principalName, SecurityConstants.EVERYTHING, true);
             }
 
             // DENY at root
-            securityActions.addPermission(SecurityConstants.EVERYONE,
-                    SecurityConstants.EVERYTHING, false);
+            securityActions.addPermission(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false);
             securityActions.updateSecurityOnDocument();
         }
 
@@ -277,26 +283,21 @@ public class WorkspaceActionsBean extends InputController implements
             DocumentRef currentDocRef = navigationContext.getCurrentDocument().getRef();
 
             // duplicate the template
-            String title = (String) tmpWorkspace.getProperty("dublincore",
-                    "title");
+            String title = (String) tmpWorkspace.getProperty("dublincore", "title");
             String name = IdUtils.generatePathSegment(title);
-            documentManager.copy(new IdRef(selectedTemplateId), currentDocRef,
-                    name);
-            DocumentModel created = documentManager.getChild(currentDocRef,
-                    name);
+            documentManager.copy(new IdRef(selectedTemplateId), currentDocRef, name);
+            DocumentModel created = documentManager.getChild(currentDocRef, name);
 
             // Update from user input.
             created.setProperty("dublincore", "title", title);
-            String descr = (String) tmpWorkspace.getProperty("dublincore",
-                    "description");
+            String descr = (String) tmpWorkspace.getProperty("dublincore", "description");
             if (!descr.equals("")) {
                 created.setProperty("dublincore", "description", descr);
             }
             Blob blob = (Blob) tmpWorkspace.getProperty("file", "content");
             if (blob != null) {
                 created.setProperty("file", "content", blob);
-                String fname = (String) tmpWorkspace.getProperty("file",
-                        "filename");
+                String fname = (String) tmpWorkspace.getProperty("file", "filename");
                 created.setProperty("file", "filename", fname);
             }
 
@@ -304,8 +305,7 @@ public class WorkspaceActionsBean extends InputController implements
             documentManager.save();
 
             // navigate to the newly created doc
-            navResult = navigationContext.navigateToDocument(created,
-                    "after-create");
+            navResult = navigationContext.navigateToDocument(created, "after-create");
         }
 
         if (!selectedSecurityModel.equals("inherit")) {
@@ -321,16 +321,14 @@ public class WorkspaceActionsBean extends InputController implements
 
             // Grant to principalList
             for (String principalName : principalsName) {
-                securityActions.addPermission(principalName,
-                        SecurityConstants.EVERYTHING, true);
+                securityActions.addPermission(principalName, SecurityConstants.EVERYTHING, true);
             }
 
             // Force addition of administrators groups
             principalsName.addAll(userManager.getAdministratorsGroups());
 
             // DENY at root
-            securityActions.addPermission(SecurityConstants.EVERYONE,
-                    SecurityConstants.EVERYTHING, false);
+            securityActions.addPermission(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false);
             securityActions.updateSecurityOnDocument();
         }
 
@@ -339,14 +337,15 @@ public class WorkspaceActionsBean extends InputController implements
         return res;
     }
 
+    @Override
     @End(beforeRedirect = true)
     public String exitWizard() throws ClientException {
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
     }
 
+    @Override
     public String getA4JHackingURL() {
-        String url = BaseURL.getBaseURL()
-                + "wizards/createWorkspace/a4jUploadHack.faces?";
+        String url = BaseURL.getBaseURL() + "wizards/createWorkspace/a4jUploadHack.faces?";
         url = conversationManager.encodeConversationId(url);
         return url;
     }

@@ -25,8 +25,7 @@ import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeView;
 
 /**
- * Encapsulates the page handling logic. Based on a document type, computes what
- * page should be displayed to the user.
+ * Encapsulates the page handling logic. Based on a document type, computes what page should be displayed to the user.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
@@ -36,13 +35,16 @@ import org.nuxeo.ecm.platform.types.TypeView;
 public class ApplicationControllerHelper {
 
     protected static final String DEFAULT_VIEW = "view_documents";
+
     protected static final String CREATE_VIEW = "create_document";
+
     protected static final String EDIT_VIEW = "edit_document";
 
     private static final Log log = LogFactory.getLog(ApplicationControllerHelper.class);
 
     // Utility class.
-    private ApplicationControllerHelper() {}
+    private ApplicationControllerHelper() {
+    }
 
     public static String getPageOnSelectedDocumentType(Type docType) {
         String returnPage = null;

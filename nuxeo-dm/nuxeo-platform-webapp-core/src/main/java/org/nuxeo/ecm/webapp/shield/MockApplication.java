@@ -22,8 +22,8 @@ import javax.el.ELContextListener;
 import javax.faces.context.FacesContext;
 
 /**
- * Override of the default mock application to allow lookup of EL context and
- * benefit from translation and escaping features on the error page.
+ * Override of the default mock application to allow lookup of EL context and benefit from translation and escaping
+ * features on the error page.
  *
  * @since 5.9.3
  */

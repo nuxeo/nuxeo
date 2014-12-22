@@ -41,8 +41,7 @@ import org.nuxeo.ecm.webapp.base.InputController;
  */
 @Name("editorLinkActions")
 @Scope(CONVERSATION)
-public class EditorLinkActionsBean extends InputController implements
-        EditorLinkActions, Serializable {
+public class EditorLinkActionsBean extends InputController implements EditorLinkActions, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -57,14 +56,17 @@ public class EditorLinkActionsBean extends InputController implements
     @In(create = true, required = false)
     private CoreSession documentManager;
 
+    @Override
     public boolean getHasSearchResults() {
         return hasSearchResults;
     }
 
+    @Override
     public List<DocumentModel> getSearchDocumentResults() {
         return resultDocuments;
     }
 
+    @Override
     public String searchDocuments() throws ClientException {
         log.debug("Entering searchDocuments with keywords: " + searchKeywords);
 
@@ -75,8 +77,7 @@ public class EditorLinkActionsBean extends InputController implements
             if (searchKeywords.length() > 0) {
                 if (!searchKeywords.equals("*")) {
                     // full text search
-                    constraints.add(String.format("ecm:fulltext LIKE '%s'",
-                            searchKeywords));
+                    constraints.add(String.format("ecm:fulltext LIKE '%s'", searchKeywords));
                 }
             }
         }
@@ -96,10 +97,12 @@ public class EditorLinkActionsBean extends InputController implements
         return "editor_link_search_document";
     }
 
+    @Override
     public String getSearchKeywords() {
         return searchKeywords;
     }
 
+    @Override
     public void setSearchKeywords(String searchKeywords) {
         this.searchKeywords = searchKeywords;
     }

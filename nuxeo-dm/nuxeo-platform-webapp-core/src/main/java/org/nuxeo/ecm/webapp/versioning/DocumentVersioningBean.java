@@ -61,8 +61,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
- * Web action bean for document versioning. Used also by other seam components
- * through injection.
+ * Web action bean for document versioning. Used also by other seam components through injection.
  *
  * @author Dragos Mihalache
  */
@@ -82,8 +81,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     protected transient CoreSession documentManager;
 
     /**
-     * @deprecated since 5.7.3: versioning options map does not need to be kept
-     *             in cache anymore here
+     * @deprecated since 5.7.3: versioning options map does not need to be kept in cache anymore here
      */
     @Deprecated
     protected Map<String, String> availableVersioningOptionsMap;
@@ -95,25 +93,21 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     private transient VersioningManager versioningManager;
 
     /**
-     * field used for deciding whether or not to display versioning controls
-     * section (in document editing)
+     * field used for deciding whether or not to display versioning controls section (in document editing)
      */
     private Boolean rendered;
 
     private VersioningActions selectedOption;
 
     @Override
-    public Collection<VersionModel> getItemVersioningHistory(
-            DocumentModel document) {
+    public Collection<VersionModel> getItemVersioningHistory(DocumentModel document) {
         List<VersionModel> versions = Collections.emptyList();
         try {
             versions = documentManager.getVersionsForDocument(document.getRef());
             for (VersionModel model : versions) {
-                DocumentModel ver = documentManager.getDocumentWithVersion(
-                        document.getRef(), model);
+                DocumentModel ver = documentManager.getDocumentWithVersion(document.getRef(), model);
                 if (ver != null) {
-                    model.setDescription(ver.getAdapter(
-                            VersioningDocument.class).getVersionLabel());
+                    model.setDescription(ver.getAdapter(VersioningDocument.class).getVersionLabel());
                 }
             }
         } catch (ClientException e) {
@@ -138,8 +132,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return new VersionInfo(versionLabel, available);
     }
 
-    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_CHANGED }, create = false)
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED }, create = false)
     @BypassInterceptors
     public void resetVersioningOption() {
         availableVersioningOptionsMap = null;
@@ -179,16 +172,15 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     }
 
     /**
-     * @deprecated since 5.7.3: options are resolved from the layout value
-     *             instead now that a generic widget definition handles it
+     * @deprecated since 5.7.3: options are resolved from the layout value instead now that a generic widget definition
+     *             handles it
      */
     @Deprecated
     private VersionIncEditOptions getCurrentAvailableVersioningOptions() {
         return getAvailableVersioningOptions(navigationContext.getCurrentDocument());
     }
 
-    public VersionIncEditOptions getAvailableVersioningOptions(
-            DocumentModel doc) {
+    public VersionIncEditOptions getAvailableVersioningOptions(DocumentModel doc) {
         try {
             return versioningManager.getVersionIncEditOptions(doc);
         } catch (ClientException e) {
@@ -221,16 +213,13 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
 
     @Deprecated
     @Override
-    public void setVersioningOptionInstanceId(String optionId)
-            throws ClientException {
-        setVersioningOptionInstanceId(navigationContext.getCurrentDocument(),
-                optionId);
+    public void setVersioningOptionInstanceId(String optionId) throws ClientException {
+        setVersioningOptionInstanceId(navigationContext.getCurrentDocument(), optionId);
     }
 
     @Deprecated
     @Override
-    public void setVersioningOptionInstanceId(DocumentModel docModel,
-            String optionId) throws ClientException {
+    public void setVersioningOptionInstanceId(DocumentModel docModel, String optionId) throws ClientException {
         if (optionId != null) {
             selectedOption = VersioningActions.valueOf(optionId);
             setVersioningOptionInstanceId(docModel, selectedOption);
@@ -242,8 +231,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
 
     @Deprecated
     @Override
-    public void setVersioningOptionInstanceId(DocumentModel docModel,
-            VersioningActions option) throws ClientException {
+    public void setVersioningOptionInstanceId(DocumentModel docModel, VersioningActions option) throws ClientException {
         // add version inc option to document context so it will be
         // taken into consideration on the server side
         VersioningOption vo;
@@ -260,18 +248,15 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     }
 
     @Override
-    public void validateOptionSelection(FacesContext context,
-            UIComponent component, Object value) {
+    public void validateOptionSelection(FacesContext context, UIComponent component, Object value) {
         if (value != null) {
             // ok
             return;
         }
         String bundleName = context.getApplication().getMessageBundle();
         Locale locale = context.getViewRoot().getLocale();
-        String msg = I18NUtils.getMessageString(bundleName,
-                "error.versioning.none_selected", null, locale);
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                msg, msg);
+        String msg = I18NUtils.getMessageString(bundleName, "error.versioning.none_selected", null, locale);
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg);
 
         throw new ValidatorException(message);
     }
@@ -284,8 +269,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     }
 
     /**
-     * @deprecated since 5.7.3: rendered clause is now evaluated on the widget
-     *             definition instead
+     * @deprecated since 5.7.3: rendered clause is now evaluated on the widget definition instead
      */
     @Deprecated
     public boolean getRendered() {
@@ -304,8 +288,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     }
 
     /**
-     * @deprecated since 5.7.3: rendered clause is now evaluated on the widget
-     *             definition instead
+     * @deprecated since 5.7.3: rendered clause is now evaluated on the widget definition instead
      */
     @Deprecated
     public void setRendered(Boolean rendered) {

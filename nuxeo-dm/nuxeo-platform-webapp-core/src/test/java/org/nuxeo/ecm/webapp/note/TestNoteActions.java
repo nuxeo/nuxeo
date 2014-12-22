@@ -31,8 +31,8 @@ public class TestNoteActions {
             + "<img src=\"http://localhost:8080/nuxeo/nxfile/default/{docId}/files:files/1/file/img.png\" alt=\"\" />"
             + "<a href=\"http://localhost:8080/nuxeo/nxpath/default/default-domain/workspaces/testworskspace1/testfolder1/testnote1@view_documents?tabId=&amp;conversationId=0NXMAIN2\">testNote1</a>";
 
-    protected String simpleNoteWithoutImageLinks = "<p>No image link to translate" +
-            " here</p>"
+    protected String simpleNoteWithoutImageLinks = "<p>No image link to translate"
+            + " here</p>"
             + "<img src=\"http://server:8080/nuxeo/img/img.png\" alt=\"\" />"
             + "<a href=\"http://localhost:8080/nuxeo/nxpath/default/default-domain/workspaces/testworskspace1/testfolder1/testnote1@view_documents?tabId=&amp;conversationId=0NXMAIN2\">testNote1</a>";
 
@@ -46,30 +46,24 @@ public class TestNoteActions {
     @Test
     public void testSimpleNoteWithLink() throws Exception {
         String fromDocId = "live-document-id";
-        String note = simpleNoteWithImageLinks.replaceAll("\\{docId\\}",
-                fromDocId);
+        String note = simpleNoteWithImageLinks.replaceAll("\\{docId\\}", fromDocId);
         assertTrue(noteActions.hasImageLinksToTranslate(note));
 
         String toDocId = "proxy-document-id";
-        String translatedNote = noteActions.translateImageLinks(note,
-                fromDocId, toDocId);
-        String expectedTranslatedNote = simpleNoteWithImageLinks.replaceAll(
-                "\\{docId\\}", toDocId);
+        String translatedNote = noteActions.translateImageLinks(note, fromDocId, toDocId);
+        String expectedTranslatedNote = simpleNoteWithImageLinks.replaceAll("\\{docId\\}", toDocId);
         assertEquals(expectedTranslatedNote, translatedNote);
     }
 
     @Test
     public void testSimpleNoteWithoutLink() throws Exception {
         String fromDocId = "live-document-id";
-        String note = simpleNoteWithoutImageLinks.replaceAll("\\{docId\\}",
-                fromDocId);
+        String note = simpleNoteWithoutImageLinks.replaceAll("\\{docId\\}", fromDocId);
         assertFalse(noteActions.hasImageLinksToTranslate(note));
 
         String toDocId = "proxy-document-id";
-        String translatedNote = noteActions.translateImageLinks(note,
-                fromDocId, toDocId);
-        String expectedTranslatedNote = simpleNoteWithoutImageLinks.replaceAll(
-                "\\{docId\\}", toDocId);
+        String translatedNote = noteActions.translateImageLinks(note, fromDocId, toDocId);
+        String expectedTranslatedNote = simpleNoteWithoutImageLinks.replaceAll("\\{docId\\}", toDocId);
         assertEquals(expectedTranslatedNote, translatedNote);
     }
 

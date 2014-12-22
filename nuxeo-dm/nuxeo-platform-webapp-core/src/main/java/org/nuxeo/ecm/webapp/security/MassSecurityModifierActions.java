@@ -62,7 +62,6 @@ public class MassSecurityModifierActions implements Serializable {
 
     private final SecurityData securityData = null;
 
-
     public Boolean getBlockRightInheritance() {
         return blockRightInheritance;
     }
@@ -78,30 +77,20 @@ public class MassSecurityModifierActions implements Serializable {
         int nbModifiedDocs = 0;
 
         for (DocumentModel doc : docs2Modify) {
-            if (!documentManager.hasPermission(doc.getParentRef(),
-                    SecurityConstants.WRITE_PROPERTIES)) {
+            if (!documentManager.hasPermission(doc.getParentRef(), SecurityConstants.WRITE_PROPERTIES)) {
                 continue;
             }
         }
 
         /*
-        Object[] params = { nb_published_docs };
-        facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
-                + resourcesAccessor.getMessages().get("n_published_docs"),
-                params);
-
-        if (nb_published_docs < docs2Publish.size())
-        {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
-                resourcesAccessor.getMessages().get(
-                        "selection_contains_non_publishable_docs"));
-        }
-*/
+         * Object[] params = { nb_published_docs }; facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 " +
+         * resourcesAccessor.getMessages().get("n_published_docs"), params); if (nb_published_docs <
+         * docs2Publish.size()) { facesMessages.add(FacesMessage.SEVERITY_WARN, resourcesAccessor.getMessages().get(
+         * "selection_contains_non_publishable_docs")); }
+         */
         // check rights on the lists
 
-
         // apply security
-
 
         // navigate
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());

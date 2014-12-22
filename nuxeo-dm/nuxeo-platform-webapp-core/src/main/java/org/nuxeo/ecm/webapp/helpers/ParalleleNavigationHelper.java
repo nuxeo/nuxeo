@@ -63,15 +63,12 @@ public class ParalleleNavigationHelper implements Serializable {
 
     public String getCurrentDocumentFullUrl() {
         String internalURL = navigationContext.getCurrentDocumentFullUrl();
-        return internalURL.replace(DocumentLocator.URL_PREFIX,
-                PARALLELE_URL_PREFIX);
+        return internalURL.replace(DocumentLocator.URL_PREFIX, PARALLELE_URL_PREFIX);
     }
 
     public String getDocumentFullUrl(DocumentRef docRef) {
-        String internalURL = DocumentLocator.getFullDocumentUrl(
-                navigationContext.getCurrentServerLocation(), docRef);
-        return internalURL.replace(DocumentLocator.URL_PREFIX,
-                PARALLELE_URL_PREFIX);
+        String internalURL = DocumentLocator.getFullDocumentUrl(navigationContext.getCurrentServerLocation(), docRef);
+        return internalURL.replace(DocumentLocator.URL_PREFIX, PARALLELE_URL_PREFIX);
     }
 
 }

@@ -66,32 +66,20 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * The LiveEdit bootstrap procedure works as follows:
  * <ul>
- *
- * <li>browsed page calls a JSF function from the DocumentModelFunctions class
- * (edit a document, create new document, etc.) to generate;</li>
- *
- * <li>composing a specific URL as result, triggering the bootstrap addon to
- * popup;</li>
- *
- * <li>the addon come back with the URL composed allowing the present seam
- * component to create the bootstrap file. The file contains various data as
- * requested in the URL;</li>
- *
- * <li>the XML file is now available to addon which presents it to the client
- * plugin.</li>
- *
+ * <li>browsed page calls a JSF function from the DocumentModelFunctions class (edit a document, create new document,
+ * etc.) to generate;</li>
+ * <li>composing a specific URL as result, triggering the bootstrap addon to popup;</li>
+ * <li>the addon come back with the URL composed allowing the present seam component to create the bootstrap file. The
+ * file contains various data as requested in the URL;</li>
+ * <li>the XML file is now available to addon which presents it to the client plugin.</li>
  * </ul>
+ * Please refer to the nuxeo book chapter on desktop integration for details on the format of the nxedit URLs and the
+ * XML bootstrap file.
  *
- * Please refer to the nuxeo book chapter on desktop integration for details on
- * the format of the nxedit URLs and the XML bootstrap file.
- *
- * @author Thierry Delprat NXP-1959 the bootstrap file is managing the 'create
- *         new document [from template]' case too. The URL is containing an
- *         action identifier.
+ * @author Thierry Delprat NXP-1959 the bootstrap file is managing the 'create new document [from template]' case too.
+ *         The URL is containing an action identifier.
  * @author Rux rdarlea@nuxeo.com
- * @author Olivier Grisel ogrisel@nuxeo.com (split url functions into JSF
- *         DocumentModelFunctions module)
- *
+ * @author Olivier Grisel ogrisel@nuxeo.com (split url functions into JSF DocumentModelFunctions module)
  */
 @Scope(EVENT)
 @Name("liveEditHelper")
@@ -179,10 +167,9 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     protected final Map<String, Boolean> cachedEditableBlobs = new HashMap<String, Boolean>();
 
     /**
-     * Creates the bootstrap file. It is called from the browser's addon. The
-     * URL composition tells the case and what to create. The structure is
-     * depicted in the NXP-1881. Rux NXP-1959: add new tag on root level
-     * describing the action: actionEdit, actionNew or actionFromTemplate.
+     * Creates the bootstrap file. It is called from the browser's addon. The URL composition tells the case and what to
+     * create. The structure is depicted in the NXP-1881. Rux NXP-1959: add new tag on root level describing the action:
+     * actionEdit, actionNew or actionFromTemplate.
      *
      * @return the bootstrap file content
      * @throws Exception
@@ -213,18 +200,14 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 if (blobPropertyName != null) {
                     blob = (Blob) doc.getPropertyValue(blobPropertyName);
                     if (blob == null) {
-                        throw new ClientException(
-                                String.format(
-                                        "could not find blob to edit with property '%s'",
-                                        blobPropertyName));
+                        throw new ClientException(String.format("could not find blob to edit with property '%s'",
+                                blobPropertyName));
                     }
                 } else {
                     blob = (Blob) doc.getProperty(schema, blobField);
                     if (blob == null) {
-                        throw new ClientException(
-                                String.format(
-                                        "could not find blob to edit with schema '%s' and field '%s'",
-                                        schema, blobField));
+                        throw new ClientException(String.format(
+                                "could not find blob to edit with schema '%s' and field '%s'", schema, blobField));
                     }
                 }
                 mimetype = blob.getMimeType();
@@ -238,33 +221,26 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 // request parameters
             } else if (ACTION_CREATE_DOCUMENT_FROM_TEMPLATE.equals(action)) {
                 // fetch the template blob to get its mimetype
-                templateDoc = templateSession.getDocument(new IdRef(
-                        templateDocRef));
-                Blob blob = (Blob) templateDoc.getProperty(templateSchema,
-                        templateBlobField);
+                templateDoc = templateSession.getDocument(new IdRef(templateDocRef));
+                Blob blob = (Blob) templateDoc.getProperty(templateSchema, templateBlobField);
                 if (blob == null) {
-                    throw new ClientException(
-                            String.format(
-                                    "could not find template blob with schema '%s' and field '%s'",
-                                    templateSchema, templateBlobField));
+                    throw new ClientException(String.format(
+                            "could not find template blob with schema '%s' and field '%s'", templateSchema,
+                            templateBlobField));
                 }
                 mimetype = blob.getMimeType();
                 // leave docType from the request query parameter
             } else {
-                throw new ClientException(
-                        String.format(
-                                "action '%s' is not a valid LiveEdit action: should be one of '%s', '%s' or '%s'",
-                                action, ACTION_CREATE_DOCUMENT,
-                                ACTION_CREATE_DOCUMENT_FROM_TEMPLATE,
-                                ACTION_EDIT_DOCUMENT));
+                throw new ClientException(String.format(
+                        "action '%s' is not a valid LiveEdit action: should be one of '%s', '%s' or '%s'", action,
+                        ACTION_CREATE_DOCUMENT, ACTION_CREATE_DOCUMENT_FROM_TEMPLATE, ACTION_EDIT_DOCUMENT));
             }
 
             FacesContext context = FacesContext.getCurrentInstance();
             HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
             HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
 
-            Element root = DocumentFactory.getInstance().createElement(
-                    liveEditTag);
+            Element root = DocumentFactory.getInstance().createElement(liveEditTag);
             root.addNamespace("", XML_LE_NAMESPACE);
             // RUX NXP-1959: action id
             Element actionInfo = root.addElement(actionSelectorTag);
@@ -309,15 +285,13 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             addTextElement(docInfo, docfileNameTag, filename);
             addTextElement(docInfo, docTypeTag, docType);
             addTextElement(docInfo, docMimetypeTag, mimetype);
-            addTextElement(docInfo, docFileExtensionTag,
-                    getFileExtension(mimetype));
+            addTextElement(docInfo, docFileExtensionTag, getFileExtension(mimetype));
 
             Element docFileAuthorizedExtensions = docInfo.addElement(docFileAuthorizedExtensionsTag);
             List<String> authorizedExtensions = getFileExtensions(mimetype);
             if (authorizedExtensions != null) {
                 for (String extension : authorizedExtensions) {
-                    addTextElement(docFileAuthorizedExtensions,
-                            docFileAuthorizedExtensionTag, extension);
+                    addTextElement(docFileAuthorizedExtensions, docFileAuthorizedExtensionTag, extension);
                 }
             }
 
@@ -341,24 +315,20 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             addTextElement(templateDocInfo, docRepositoryTag, templateRepoID);
             addTextElement(templateDocInfo, docSchemaNameTag, templateSchema);
             addTextElement(templateDocInfo, docFieldNameTag, templateBlobField);
-            addTextElement(templateDocInfo, docBlobFieldNameTag,
-                    templateBlobField);
+            addTextElement(templateDocInfo, docBlobFieldNameTag, templateBlobField);
             docFieldPathT = templateDocInfo.addElement(docfieldPathTag);
             docBlobFieldPathT = templateDocInfo.addElement(docBlobFieldPathTag);
             if (templateSchema != null && templateBlobField != null) {
                 docFieldPathT.setText(templateSchema + ":" + templateBlobField);
-                docBlobFieldPathT.setText(templateSchema + ":"
-                        + templateBlobField);
+                docBlobFieldPathT.setText(templateSchema + ":" + templateBlobField);
             }
             addTextElement(templateDocInfo, docMimetypeTag, mimetype);
-            addTextElement(templateDocInfo, docFileExtensionTag,
-                    getFileExtension(mimetype));
+            addTextElement(templateDocInfo, docFileExtensionTag, getFileExtension(mimetype));
 
             Element templateFileAuthorizedExtensions = templateDocInfo.addElement(docFileAuthorizedExtensionsTag);
             if (authorizedExtensions != null) {
                 for (String extension : authorizedExtensions) {
-                    addTextElement(templateFileAuthorizedExtensions,
-                            docFileAuthorizedExtensionTag, extension);
+                    addTextElement(templateFileAuthorizedExtensions, docFileAuthorizedExtensionTag, extension);
                 }
             }
 
@@ -381,8 +351,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                     headerT.setText(request.getHeader(hName));
                 }
             }
-            addTextElement(requestInfo, requestBaseURLTag,
-                    BaseURL.getBaseURL(request));
+            addTextElement(requestInfo, requestBaseURLTag, BaseURL.getBaseURL(request));
 
             // User related informations
             String username = context.getExternalContext().getUserPrincipal().getName();
@@ -390,8 +359,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             addTextElement(userInfo, userNameTag, username);
             addTextElement(userInfo, userPasswordTag, "");
             addTextElement(userInfo, userTokenTag, "");
-            addTextElement(userInfo, userLocaleTag,
-                    context.getViewRoot().getLocale().toString());
+            addTextElement(userInfo, userLocaleTag, context.getViewRoot().getLocale().toString());
             // Rux NXP-1882: the wsdl locations
             String baseUrl = BaseURL.getBaseURL(request);
             Element wsdlLocations = root.addElement(wsdlLocationsTag);
@@ -456,8 +424,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         return extensions;
     }
 
-    protected static Element addTextElement(Element parent,
-            QName newElementName, String value) {
+    protected static Element addTextElement(Element parent, QName newElementName, String value) {
         Element element = parent.addElement(newElementName);
         if (value != null) {
             element.setText(value);
@@ -466,8 +433,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     }
 
     // TODO: please explain what is the use of the "editId" tag here
-    protected static String getEditId(DocumentModel doc, CoreSession session,
-            String userName) {
+    protected static String getEditId(DocumentModel doc, CoreSession session, String userName) {
         StringBuilder sb = new StringBuilder();
 
         if (doc != null) {
@@ -482,8 +448,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         Calendar modified = null;
         if (doc != null) {
             try {
-                modified = (Calendar) doc.getProperty(DUBLINCORE_SCHEMA,
-                        MODIFIED_FIELD);
+                modified = (Calendar) doc.getProperty(DUBLINCORE_SCHEMA, MODIFIED_FIELD);
             } catch (ClientException e) {
                 modified = null;
             }
@@ -501,9 +466,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     //
 
     /**
-     *
-     * @deprecated use
-     *             {@link #isLiveEditable(DocumentModel doc, String blobXpath)}
+     * @deprecated use {@link #isLiveEditable(DocumentModel doc, String blobXpath)}
      */
     @Deprecated
     public boolean isLiveEditable(Blob blob) throws ClientException {
@@ -515,24 +478,18 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     }
 
     /**
-     *
      * @param document the document to edit.
      * @param blobXPath XPath to the blob property
-     * @return true if the document is immutable and the blob's mime type is
-     *         supported, false otherwise.
-     *
+     * @return true if the document is immutable and the blob's mime type is supported, false otherwise.
      * @throws ClientException
-     *
      * @since 5.4
      */
-    public boolean isLiveEditable(DocumentModel document, Blob blob)
-            throws ClientException {
+    public boolean isLiveEditable(DocumentModel document, Blob blob) throws ClientException {
         if (document.isImmutable()) {
             return false;
         }
         // NXP-14476: Testing lifecycle state is part of the "mutable_document" filter
-        if (document.getCurrentLifeCycleState().equals(
-                LifeCycleConstants.DELETED_STATE)) {
+        if (document.getCurrentLifeCycleState().equals(LifeCycleConstants.DELETED_STATE)) {
             return false;
         }
         if (blob == null) {
@@ -550,14 +507,12 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         return isMimeTypeLiveEditable(mimetype);
     }
 
-    public boolean isMimeTypeLiveEditable(String mimetype)
-            throws ClientException {
+    public boolean isMimeTypeLiveEditable(String mimetype) throws ClientException {
 
         Boolean isEditable = cachedEditableStates.get(mimetype);
         if (isEditable == null) {
 
-            if (liveEditClientConfig.getLiveEditConfigurationPolicy().equals(
-                    LiveEditClientConfig.LE_CONFIG_CLIENTSIDE)) {
+            if (liveEditClientConfig.getLiveEditConfigurationPolicy().equals(LiveEditClientConfig.LE_CONFIG_CLIENTSIDE)) {
                 // only trust client config
                 isEditable = liveEditClientConfig.isMimeTypeLiveEditable(mimetype);
                 cachedEditableStates.put(mimetype, isEditable);
@@ -565,8 +520,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             }
 
             try {
-                MimetypeEntry mimetypeEntry = getMimetypeRegistry().getMimetypeEntryByMimeType(
-                        mimetype);
+                MimetypeEntry mimetypeEntry = getMimetypeRegistry().getMimetypeEntryByMimeType(mimetype);
                 if (mimetypeEntry == null) {
                     isEditable = Boolean.FALSE;
                 } else {
@@ -576,8 +530,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 throw ClientException.wrap(t);
             }
 
-            if (liveEditClientConfig.getLiveEditConfigurationPolicy().equals(
-                    LiveEditClientConfig.LE_CONFIG_BOTHSIDES)) {
+            if (liveEditClientConfig.getLiveEditConfigurationPolicy().equals(LiveEditClientConfig.LE_CONFIG_BOTHSIDES)) {
                 boolean isEditableOnClient = liveEditClientConfig.isMimeTypeLiveEditable(mimetype);
                 isEditable = isEditable && isEditableOnClient;
             }
@@ -617,38 +570,30 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     }
 
     public boolean isCurrentDocumentLiveEditable() throws ClientException {
-        return isDocumentLiveEditable(navigationContext.getCurrentDocument(),
-                DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD);
+        return isDocumentLiveEditable(navigationContext.getCurrentDocument(), DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD);
     }
 
-    public boolean isCurrentDocumentLiveEditable(String schemaName,
-            String fieldName) throws ClientException {
-        return isDocumentLiveEditable(navigationContext.getCurrentDocument(),
-                schemaName, fieldName);
+    public boolean isCurrentDocumentLiveEditable(String schemaName, String fieldName) throws ClientException {
+        return isDocumentLiveEditable(navigationContext.getCurrentDocument(), schemaName, fieldName);
     }
 
-    public boolean isCurrentDocumentLiveEditable(String propertyName)
+    public boolean isCurrentDocumentLiveEditable(String propertyName) throws ClientException {
+        return isDocumentLiveEditable(navigationContext.getCurrentDocument(), propertyName);
+    }
+
+    public boolean isDocumentLiveEditable(DocumentModel documentModel, String schemaName, String fieldName)
             throws ClientException {
-        return isDocumentLiveEditable(navigationContext.getCurrentDocument(),
-                propertyName);
+        return isDocumentLiveEditable(documentModel, schemaName + ":" + fieldName);
     }
 
-    public boolean isDocumentLiveEditable(DocumentModel documentModel,
-            String schemaName, String fieldName) throws ClientException {
-        return isDocumentLiveEditable(documentModel, schemaName + ":"
-                + fieldName);
-    }
-
-    public boolean isDocumentLiveEditable(DocumentModel documentModel,
-            String propertyName) throws ClientException {
+    public boolean isDocumentLiveEditable(DocumentModel documentModel, String propertyName) throws ClientException {
         if (documentModel == null) {
             log.warn("cannot check live editable state of null DocumentModel");
             return false;
         }
 
         // NXP-14476: Testing lifecycle state is part of the "mutable_document" filter
-        if (documentModel.getCurrentLifeCycleState().equals(
-                LifeCycleConstants.DELETED_STATE)) {
+        if (documentModel.getCurrentLifeCycleState().equals(LifeCycleConstants.DELETED_STATE)) {
             return false;
         }
 
@@ -666,25 +611,21 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             }
 
             try {
-                if (!documentManager.hasPermission(documentModel.getRef(),
-                        SecurityConstants.WRITE_PROPERTIES)) {
+                if (!documentManager.hasPermission(documentModel.getRef(), SecurityConstants.WRITE_PROPERTIES)) {
                     // the lock state is check as a extension to the
                     // SecurityPolicyManager
                     return cacheBlobToFalse(cacheKey);
                 }
             } catch (ClientException e) {
                 // the document no longer exist in the core
-                log.warn(String.format(
-                        "document '%s' with reference '%s' no longer exists in the database, "
-                                + "please ensure the indexes are up to date",
-                        documentModel.getTitle(), documentModel.getRef()));
+                log.warn(String.format("document '%s' with reference '%s' no longer exists in the database, "
+                        + "please ensure the indexes are up to date", documentModel.getTitle(), documentModel.getRef()));
                 return cacheBlobToFalse(cacheKey);
             }
 
             Blob blob;
             try {
-                blob = documentModel.getProperty(propertyName).getValue(
-                        Blob.class);
+                blob = documentModel.getProperty(propertyName).getValue(Blob.class);
             } catch (Exception e) {
                 // this document cannot host a live editable blob is the
                 // requested property, ignore

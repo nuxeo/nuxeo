@@ -80,8 +80,7 @@ public class ConversionActionBean implements ConversionAction {
 
     protected String pdfConverterName;
 
-    protected static final ThreadSafeCacheHolder<Boolean> exportableToPDFCache = new ThreadSafeCacheHolder<Boolean>(
-            20);
+    protected static final ThreadSafeCacheHolder<Boolean> exportableToPDFCache = new ThreadSafeCacheHolder<Boolean>(20);
 
     public String display() {
         return "view_file";
@@ -95,12 +94,12 @@ public class ConversionActionBean implements ConversionAction {
         }
     }
 
-    private String getMimetypeFromDocument(String propertyName)
-            throws ClientException {
+    private String getMimetypeFromDocument(String propertyName) throws ClientException {
         Blob blob = (Blob) getDocument().getPropertyValue(propertyName);
         return blob.getMimeType();
     }
 
+    @Override
     public void reCheckConverterAvailability() {
         pdfConverterForTypes.clear();
     }
@@ -117,6 +116,7 @@ public class ConversionActionBean implements ConversionAction {
         }
     }
 
+    @Override
     public boolean isExportableToPDF(Blob blob) {
         if (blob == null) {
             return false;
@@ -145,19 +145,16 @@ public class ConversionActionBean implements ConversionAction {
         try {
             ConverterCheckResult pdfConverterAvailability;
             ConversionService conversionService = Framework.getLocalService(ConversionService.class);
-            Iterator<String> converterNames = conversionService.getConverterNames(
-                    mimetype, PDF_MIMETYPE).iterator();
+            Iterator<String> converterNames = conversionService.getConverterNames(mimetype, PDF_MIMETYPE).iterator();
             while (converterNames.hasNext()) {
                 pdfConverterName = converterNames.next();
-                pdfConverterAvailability = conversionService.isConverterAvailable(
-                        pdfConverterName, true);
+                pdfConverterAvailability = conversionService.isConverterAvailable(pdfConverterName, true);
 
                 // Save the converter availability for all the mime-types the
                 // converter
                 // supports.
                 for (String supMimeType : pdfConverterAvailability.getSupportedInputMimeTypes()) {
-                    pdfConverterForTypes.put(supMimeType,
-                            pdfConverterAvailability);
+                    pdfConverterForTypes.put(supMimeType, pdfConverterAvailability);
                 }
 
                 if (pdfConverterAvailability.isAvailable()) {
@@ -170,12 +167,12 @@ public class ConversionActionBean implements ConversionAction {
         return false;
     }
 
+    @Override
     @WebRemote
     public boolean isFileExportableToPDF(String fieldName) {
         try {
             DocumentModel doc = getDocument();
-            Boolean cacheResult = exportableToPDFCache.getFromCache(doc,
-                    fieldName);
+            Boolean cacheResult = exportableToPDFCache.getFromCache(doc, fieldName);
             boolean isSupported;
             if (cacheResult == null) {
                 String mimetype = getMimetypeFromDocument(fieldName);
@@ -186,9 +183,7 @@ public class ConversionActionBean implements ConversionAction {
             }
             return isSupported;
         } catch (Exception e) {
-            log.error(
-                    "Error while trying to check PDF conversion against a filename",
-                    e);
+            log.error("Error while trying to check PDF conversion against a filename", e);
             return false;
         }
     }
@@ -200,8 +195,7 @@ public class ConversionActionBean implements ConversionAction {
                 return "pdf_generation_error";
             }
 
-            BlobHolder result = Framework.getLocalService(
-                    ConversionService.class).convert(pdfConverterName, bh, null);
+            BlobHolder result = Framework.getLocalService(ConversionService.class).convert(pdfConverterName, bh, null);
 
             if (result == null) {
                 log.error("Transform service didn't return any resulting documents which is not normal.");
@@ -220,8 +214,7 @@ public class ConversionActionBean implements ConversionAction {
             }
             filename += ".pdf";
 
-            return ComponentUtils.download(FacesContext.getCurrentInstance(),
-                    result.getBlob(), filename);
+            return ComponentUtils.download(FacesContext.getCurrentInstance(), result.getBlob(), filename);
         } catch (Exception e) {
             log.error("PDF generation error for file " + filename, e);
         }
@@ -229,11 +222,11 @@ public class ConversionActionBean implements ConversionAction {
 
     }
 
+    @Override
     @WebRemote
     public String generatePdfFile() {
         try {
-            BlobHolder bh = new DocumentBlobHolder(getDocument(),
-                    fileFieldFullName);
+            BlobHolder bh = new DocumentBlobHolder(getDocument(), fileFieldFullName);
             return generatePdfFileFromBlobHolder(bh);
         } catch (Exception e) {
             log.error("PDF generation error for file " + filename, e);

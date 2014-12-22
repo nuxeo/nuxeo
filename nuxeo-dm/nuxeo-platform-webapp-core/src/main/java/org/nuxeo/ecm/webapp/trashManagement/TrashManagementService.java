@@ -44,21 +44,19 @@ public class TrashManagementService extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
-        if ("config".equals(extensionPoint)){
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        if ("config".equals(extensionPoint)) {
             TrashConfigDescriptor descriptor = (TrashConfigDescriptor) contribution;
             trashManagementEnabled = descriptor.enabled;
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         trashManagementEnabled = false;
     }
 
-    public boolean isTrashManagementEnabled(){
+    public boolean isTrashManagementEnabled() {
         return trashManagementEnabled;
     }
 

@@ -36,9 +36,8 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
- * This should not refer other beans that may require heavy initialization. This
- * component is initialized and used earlier than some resources become
- * available.
+ * This should not refer other beans that may require heavy initialization. This component is initialized and used
+ * earlier than some resources become available.
  *
  * @author DM
  */
@@ -68,7 +67,7 @@ public class UserServicesContext implements Serializable {
         return repoLocation != null;
     }
 
-    @Observer(value={EventNames.LOCATION_SELECTION_CHANGED}, create=false)
+    @Observer(value = { EventNames.LOCATION_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void invalidate() {
         repoLocation = null;
@@ -88,8 +87,7 @@ public class UserServicesContext implements Serializable {
     }
 
     /**
-     * Checks if an user has the right to see the vocabularies
-     * management link.
+     * Checks if an user has the right to see the vocabularies management link.
      *
      * @return - true if the user has this right<br>
      *         - false otherwise

@@ -69,8 +69,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("securityActions")
 @Scope(CONVERSATION)
-public class SecurityActionsBean extends InputController implements
-        SecurityActions, Serializable {
+public class SecurityActionsBean extends InputController implements SecurityActions, Serializable {
 
     private static final long serialVersionUID = -7190826911734958662L;
 
@@ -97,11 +96,10 @@ public class SecurityActionsBean extends InputController implements
     @In(create = true)
     protected NuxeoPrincipal currentUser;
 
-    protected static final String[] SEED_PERMISSIONS_TO_CHECK = {
-            SecurityConstants.WRITE_SECURITY, SecurityConstants.READ_SECURITY };
+    protected static final String[] SEED_PERMISSIONS_TO_CHECK = { SecurityConstants.WRITE_SECURITY,
+            SecurityConstants.READ_SECURITY };
 
-    private static final Labeler labeler = new Labeler(
-            "label.security.permission");
+    private static final Labeler labeler = new Labeler("label.security.permission");
 
     protected String[] CACHED_PERMISSION_TO_CHECK;
 
@@ -121,6 +119,7 @@ public class SecurityActionsBean extends InputController implements
 
     protected List<String> selectedEntries;
 
+    @Override
     @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false)
     @BypassInterceptors
     public void resetSecurityData() {
@@ -128,6 +127,7 @@ public class SecurityActionsBean extends InputController implements
         blockRightInheritance = null;
     }
 
+    @Override
     public void rebuildSecurityData() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         try {
@@ -139,8 +139,7 @@ public class SecurityActionsBean extends InputController implements
                 ACP acp = documentManager.getACP(currentDocument.getRef());
 
                 if (null != acp) {
-                    SecurityDataConverter.convertToSecurityData(acp,
-                            securityData);
+                    SecurityDataConverter.convertToSecurityData(acp, securityData);
                 } else {
                     securityData.clear();
                 }
@@ -164,11 +163,10 @@ public class SecurityActionsBean extends InputController implements
     }
 
     /**
-     * Update the dataTableModel from the current {@link SecurityData} this
-     * method is automatically called by rebuildSecurityData method
+     * Update the dataTableModel from the current {@link SecurityData} this method is automatically called by
+     * rebuildSecurityData method
      */
-    protected void reconstructTableModel()
-            throws ClientException {
+    protected void reconstructTableModel() throws ClientException {
         List<String> items = securityData.getCurrentDocumentUsers();
         entries = new PageSelections<String>();
         if (items != null) {
@@ -178,6 +176,7 @@ public class SecurityActionsBean extends InputController implements
         }
     }
 
+    @Override
     public PageSelections<String> getDataTableModel() throws ClientException {
         if (obsoleteSecurityData) {
             // lazy initialization at first time access
@@ -187,6 +186,7 @@ public class SecurityActionsBean extends InputController implements
         return entries;
     }
 
+    @Override
     public SecurityData getSecurityData() throws ClientException {
         if (obsoleteSecurityData) {
             // lazy initialization at first time access
@@ -195,6 +195,7 @@ public class SecurityActionsBean extends InputController implements
         return securityData;
     }
 
+    @Override
     public String updateSecurityOnDocument() throws ClientException {
         try {
             List<UserEntry> modifiableEntries = SecurityDataConverter.convertToUserEntries(securityData);
@@ -234,8 +235,8 @@ public class SecurityActionsBean extends InputController implements
         }
     }
 
-    public String addPermission(String principalName, String permissionName,
-            boolean grant) throws ClientException {
+    @Override
+    public String addPermission(String principalName, String permissionName, boolean grant) throws ClientException {
         if (securityData == null) {
             try {
                 securityData = getSecurityData();
@@ -262,29 +263,23 @@ public class SecurityActionsBean extends InputController implements
 
         if (grant) {
             // remove the opposite rule if any
-            boolean removed = securityData.removeModifiablePrivilege(
-                    principalName, denyPerm, !grant);
+            boolean removed = securityData.removeModifiablePrivilege(principalName, denyPerm, !grant);
             if (!removed) {
-                removed = securityData.removeModifiablePrivilege(principalName,
-                        grantPerm, !grant);
+                removed = securityData.removeModifiablePrivilege(principalName, grantPerm, !grant);
             }
             // add rule only if none was removed
             if (!removed) {
-                securityData.addModifiablePrivilege(principalName, grantPerm,
-                        grant);
+                securityData.addModifiablePrivilege(principalName, grantPerm, grant);
             }
         } else {
             // remove the opposite rule if any
-            boolean removed = securityData.removeModifiablePrivilege(
-                    principalName, grantPerm, !grant);
+            boolean removed = securityData.removeModifiablePrivilege(principalName, grantPerm, !grant);
             if (!removed) {
-                removed = securityData.removeModifiablePrivilege(principalName,
-                        denyPerm, !grant);
+                removed = securityData.removeModifiablePrivilege(principalName, denyPerm, !grant);
             }
             // add rule only if none was removed
             if (!removed) {
-                securityData.addModifiablePrivilege(principalName, denyPerm,
-                        grant);
+                securityData.addModifiablePrivilege(principalName, denyPerm, grant);
             }
         }
 
@@ -296,24 +291,23 @@ public class SecurityActionsBean extends InputController implements
         return null;
     }
 
+    @Override
     public String addPermission() throws ClientException {
         String permissionName = permissionListManager.getSelectedPermission();
-        boolean grant = permissionActionListManager.getSelectedGrant().equals(
-                "Grant");
+        boolean grant = permissionActionListManager.getSelectedGrant().equals("Grant");
         return addPermission(selectedEntry, permissionName, grant);
     }
 
+    @Override
     public String addPermissions() throws ClientException {
         if (selectedEntries == null || selectedEntries.isEmpty()) {
-            String message = ComponentUtils.translate(
-                    FacesContext.getCurrentInstance(),
+            String message = ComponentUtils.translate(FacesContext.getCurrentInstance(),
                     "error.rightsManager.noUsersSelected");
             FacesMessages.instance().add(message);
             return null;
         }
         String permissionName = permissionListManager.getSelectedPermission();
-        boolean grant = permissionActionListManager.getSelectedGrant().equals(
-                "Grant");
+        boolean grant = permissionActionListManager.getSelectedGrant().equals("Grant");
 
         for (String principalName : selectedEntries) {
             addPermission(principalName, permissionName, grant);
@@ -321,32 +315,33 @@ public class SecurityActionsBean extends InputController implements
         return null;
     }
 
+    @Override
     public String addPermissionAndUpdate() throws ClientException {
         addPermission();
         updateSecurityOnDocument();
         return null;
     }
 
+    @Override
     public String addPermissionsAndUpdate() throws ClientException {
         addPermissions();
         updateSecurityOnDocument();
         selectedEntries = null;
-        facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get("message.updated.rights"));
+        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("message.updated.rights"));
         return null;
     }
 
+    @Override
     public String saveSecurityUpdates() throws ClientException {
         updateSecurityOnDocument();
         selectedEntries = null;
-        facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get("message.updated.rights"));
+        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("message.updated.rights"));
         return null;
     }
 
+    @Override
     public String removePermission() {
-        securityData.removeModifiablePrivilege(selectedEntry,
-                permissionListManager.getSelectedPermission(),
+        securityData.removeModifiablePrivilege(selectedEntry, permissionListManager.getSelectedPermission(),
                 permissionActionListManager.getSelectedGrant().equals("Grant"));
 
         try {
@@ -357,14 +352,13 @@ public class SecurityActionsBean extends InputController implements
         return null;
     }
 
+    @Override
     public String removePermissionAndUpdate() throws ClientException {
         removePermission();
 
         if (!checkPermissions()) {
-            facesMessages.add(
-                    StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "message.updated.rights"));
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get("message.updated.rights"));
             return null;
         }
 
@@ -373,14 +367,13 @@ public class SecurityActionsBean extends InputController implements
         return null;
     }
 
+    @Override
     public String removePermissions() throws ClientException {
         for (PageSelection<String> user : getSelectedRows()) {
-            securityData.removeModifiablePrivilege((String)user.getData());
+            securityData.removeModifiablePrivilege(user.getData());
             if (!checkPermissions()) {
-                facesMessages.add(
-                        StatusMessage.Severity.ERROR,
-                        resourcesAccessor.getMessages().get(
-                                "message.error.removeRight"));
+                facesMessages.add(StatusMessage.Severity.ERROR,
+                        resourcesAccessor.getMessages().get("message.error.removeRight"));
                 return null;
             }
         }
@@ -388,33 +381,31 @@ public class SecurityActionsBean extends InputController implements
         return null;
     }
 
+    @Override
     public String removePermissionsAndUpdate() throws ClientException {
         for (PageSelection<String> user : getDataTableModel().getEntries()) {
-            securityData.removeModifiablePrivilege((String)user.getData());
+            securityData.removeModifiablePrivilege(user.getData());
             if (!checkPermissions()) {
-                facesMessages.add(
-                        StatusMessage.Severity.ERROR,
-                        resourcesAccessor.getMessages().get(
-                                "message.error.removeRight"));
+                facesMessages.add(StatusMessage.Severity.ERROR,
+                        resourcesAccessor.getMessages().get("message.error.removeRight"));
                 return null;
             }
         }
         updateSecurityOnDocument();
-        facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get("message.updated.rights"));
+        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("message.updated.rights"));
         // do not redirect to the default folder view
         return null;
     }
 
+    @Override
     public boolean getCanAddSecurityRules() throws ClientException {
-        return documentManager.hasPermission(currentDocument.getRef(),
-                "WriteSecurity");
+        return documentManager.hasPermission(currentDocument.getRef(), "WriteSecurity");
     }
 
+    @Override
     public boolean getCanRemoveSecurityRules() throws ClientException {
         try {
-            return documentManager.hasPermission(currentDocument.getRef(),
-                    "WriteSecurity")
+            return documentManager.hasPermission(currentDocument.getRef(), "WriteSecurity")
                     && !getSelectedRows().isEmpty();
         } catch (Exception e) {
             throw ClientException.wrap(e);
@@ -423,7 +414,6 @@ public class SecurityActionsBean extends InputController implements
 
     /**
      * @return The list of selected rows in the local rights table.
-     *
      * @since 6.0
      */
     private List<PageSelection<String>> getSelectedRows() {
@@ -437,11 +427,9 @@ public class SecurityActionsBean extends InputController implements
         return selectedRows;
     }
 
-    public List<UserVisiblePermission> getVisibleUserPermissions(
-            String documentType) throws ClientException {
+    public List<UserVisiblePermission> getVisibleUserPermissions(String documentType) throws ClientException {
         try {
-            return Framework.getLocalService(PermissionProvider.class).getUserVisiblePermissionDescriptors(
-                    documentType);
+            return Framework.getLocalService(PermissionProvider.class).getUserVisiblePermissionDescriptors(documentType);
         } catch (ClientException e) {
             throw e;
         } catch (Throwable t) {
@@ -449,6 +437,7 @@ public class SecurityActionsBean extends InputController implements
         }
     }
 
+    @Override
     public List<SelectItem> getSettablePermissions() throws ClientException {
         String documentType = navigationContext.getCurrentDocument().getType();
 
@@ -472,63 +461,63 @@ public class SecurityActionsBean extends InputController implements
         List<SelectItem> permissions = new ArrayList<SelectItem>();
         for (String perm : settablePermissions) {
             String label = labeler.makeLabel(perm);
-            SelectItem it = new SelectItem(perm,
-                    resourcesAccessor.getMessages().get(label));
+            SelectItem it = new SelectItem(perm, resourcesAccessor.getMessages().get(label));
             permissions.add(it);
         }
         return permissions;
     }
 
+    @Override
     public Map<String, String> getIconAltMap() {
         return principalListManager.iconAlt;
     }
 
+    @Override
     public Map<String, String> getIconPathMap() {
         return principalListManager.iconPath;
     }
 
+    @Override
     public Boolean getBlockRightInheritance() {
         return blockRightInheritance;
     }
 
+    @Override
     public void setBlockRightInheritance(Boolean blockRightInheritance) {
         this.blockRightInheritance = blockRightInheritance;
     }
 
     public String blockRightInheritance() throws ClientException {
-        Boolean needBlockRightInheritance = this.blockRightInheritance;
+        Boolean needBlockRightInheritance = blockRightInheritance;
 
         if (needBlockRightInheritance) {
             // Block
-            securityData.addModifiablePrivilege(SecurityConstants.EVERYONE,
-                    SecurityConstants.EVERYTHING, false);
+            securityData.addModifiablePrivilege(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false);
             // add user to avoid lock up
             Principal currentUser = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
             if (securityData.getCurrentDocumentUsers() != null
-                    && !securityData.getCurrentDocumentUsers().contains(
-                            currentUser.getName())) {
-                securityData.addModifiablePrivilege(currentUser.getName(),
-                        SecurityConstants.EVERYTHING, true);
+                    && !securityData.getCurrentDocumentUsers().contains(currentUser.getName())) {
+                securityData.addModifiablePrivilege(currentUser.getName(), SecurityConstants.EVERYTHING, true);
                 // add administrators to avoid LockUp
                 List<String> adminGroups = userManager.getAdministratorsGroups();
                 for (String adminGroup : adminGroups) {
-                    securityData.addModifiablePrivilege(adminGroup,
-                            SecurityConstants.EVERYTHING, true);
+                    securityData.addModifiablePrivilege(adminGroup, SecurityConstants.EVERYTHING, true);
                 }
             }
         } else {
-            securityData.removeModifiablePrivilege(SecurityConstants.EVERYONE,
-                    SecurityConstants.EVERYTHING, false);
+            securityData.removeModifiablePrivilege(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false);
         }
         updateSecurityOnDocument();
         selectedEntries = null;
         return null;
     }
 
+    @Override
     public Boolean displayInheritedPermissions() throws ClientException {
         return getDisplayInheritedPermissions();
     }
 
+    @Override
     public boolean getDisplayInheritedPermissions() throws ClientException {
         if (blockRightInheritance == null) {
             rebuildSecurityData();
@@ -539,22 +528,22 @@ public class SecurityActionsBean extends InputController implements
         return !securityData.getParentDocumentsUsers().isEmpty();
     }
 
+    @Override
     public List<String> getCurrentDocumentUsers() throws ClientException {
         List<String> currentUsers = securityData.getCurrentDocumentUsers();
         return validateUserGroupList(currentUsers);
     }
 
+    @Override
     public List<String> getParentDocumentsUsers() throws ClientException {
         List<String> parentUsers = securityData.getParentDocumentsUsers();
         return validateUserGroupList(parentUsers);
     }
 
     /**
-     * Validates user/group against userManager in order to remove obsolete
-     * entries (ie: deleted groups/users).
+     * Validates user/group against userManager in order to remove obsolete entries (ie: deleted groups/users).
      */
-    private List<String> validateUserGroupList(List<String> usersGroups2Validate)
-            throws ClientException {
+    private List<String> validateUserGroupList(List<String> usersGroups2Validate) throws ClientException {
         // TODO :
         // 1 -should add a clean cache system to avoid
         // calling the directory : this can be problematic for big ldaps
@@ -620,8 +609,8 @@ public class SecurityActionsBean extends InputController implements
     }
 
     /**
-     * Checks if the current user can still read and write access rights. If he
-     * can't, then the security data are rebuilt.
+     * Checks if the current user can still read and write access rights. If he can't, then the security data are
+     * rebuilt.
      */
     private boolean checkPermissions() throws ClientException {
         List<String> principals = new ArrayList<String>();
@@ -629,14 +618,14 @@ public class SecurityActionsBean extends InputController implements
         principals.addAll(currentUser.getAllGroups());
 
         ACP acp = currentDocument.getACP();
-        List<UserEntry> modifiableEntries = new SecurityDataConverter().convertToUserEntries(securityData);
+        new SecurityDataConverter();
+        List<UserEntry> modifiableEntries = SecurityDataConverter.convertToUserEntries(securityData);
         if (null == acp) {
             acp = new ACPImpl();
         }
         acp.setRules(modifiableEntries.toArray(new UserEntry[0]));
 
-        final boolean access = acp.getAccess(principals.toArray(new String[0]),
-                getPermissionsToCheck()).toBoolean();
+        final boolean access = acp.getAccess(principals.toArray(new String[0]), getPermissionsToCheck()).toBoolean();
         if (!access) {
             rebuildSecurityData();
         }
@@ -663,18 +652,22 @@ public class SecurityActionsBean extends InputController implements
         return CACHED_PERMISSION_TO_CHECK;
     }
 
+    @Override
     public String getSelectedEntry() {
         return selectedEntry;
     }
 
+    @Override
     public void setSelectedEntry(String selectedEntry) {
         this.selectedEntry = selectedEntry;
     }
 
+    @Override
     public List<String> getSelectedEntries() {
         return selectedEntries;
     }
 
+    @Override
     public void setSelectedEntries(List<String> selectedEntries) {
         this.selectedEntries = selectedEntries;
     }

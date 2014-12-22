@@ -38,33 +38,27 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 public interface DocumentVersioning {
 
     /**
-     * Returns the available versioning options for the document parameter and
-     * state.
+     * Returns the available versioning options for the document parameter and state.
      *
-     * @param document the document for which the versioning options will be
-     *            returned
+     * @param document the document for which the versioning options will be returned
      * @return a collection of option names.
      */
     Collection<VersionModel> getItemVersioningHistory(DocumentModel document);
 
     /**
-     * Returns the available versioning history for the current document and
-     * state.
+     * Returns the available versioning history for the current document and state.
      *
      * @return a collection of option names.
      */
     Collection<VersionModel> getCurrentItemVersioningHistory();
 
     /**
-     * Creates a Map with versioning options (as keys) and labels (as map entry
-     * values).
+     * Creates a Map with versioning options (as keys) and labels (as map entry values).
      */
-    Map<String, String> getVersioningOptionsMap(
-            final DocumentModel documentModel);
+    Map<String, String> getVersioningOptionsMap(final DocumentModel documentModel);
 
     /**
-     * @deprecated since 5.7.3: available versioning options are resolved by
-     *             the widget now
+     * @deprecated since 5.7.3: available versioning options are resolved by the widget now
      */
     @Deprecated
     Map<String, String> getAvailableVersioningOptionsMap();
@@ -72,52 +66,42 @@ public interface DocumentVersioning {
     String getVersionLabel(DocumentModel document) throws ClientException;
 
     /**
-     * @deprecated since 5.7.3: selected option is not kept on this bean
-     *             anymore, it's kept by the JSF component behind widget
-     *             definition
+     * @deprecated since 5.7.3: selected option is not kept on this bean anymore, it's kept by the JSF component behind
+     *             widget definition
      */
     @Deprecated
     String getVersioningOptionInstanceId();
 
     /**
-     * @deprecated since 5.7.3: rendered clause for available versioning
-     *             options are resolved by the widget now
+     * @deprecated since 5.7.3: rendered clause for available versioning options are resolved by the widget now
      */
     @Deprecated
     boolean factoryForRenderVersioningOption();
 
     /**
-     * Web action method to set version increment option to the current
-     * documentModel.
+     * Web action method to set version increment option to the current documentModel.
      *
-     * @deprecated since 5.7.3: document context map is now filled directly by
-     *             the widget
+     * @deprecated since 5.7.3: document context map is now filled directly by the widget
      */
     @Deprecated
     void setVersioningOptionInstanceId(String optionId) throws ClientException;
 
     /**
-     * @deprecated since 5.7.3: document context map is now filled directly by
-     *             the widget
+     * @deprecated since 5.7.3: document context map is now filled directly by the widget
      */
     @Deprecated
-    void setVersioningOptionInstanceId(DocumentModel document, String optionId)
-            throws ClientException;
+    void setVersioningOptionInstanceId(DocumentModel document, String optionId) throws ClientException;
 
     /**
-     * @deprecated since 5.7.3: document context map is now filled directly by
-     *             the widget
+     * @deprecated since 5.7.3: document context map is now filled directly by the widget
      */
     @Deprecated
-    void setVersioningOptionInstanceId(DocumentModel document,
-            VersioningActions option) throws ClientException;
+    void setVersioningOptionInstanceId(DocumentModel document, VersioningActions option) throws ClientException;
 
     /**
-     * Versioning increment options - select radio component validator method.
-     * Check if an option has been selected. This is mandatory since the
-     * component is being displayed.
+     * Versioning increment options - select radio component validator method. Check if an option has been selected.
+     * This is mandatory since the component is being displayed.
      */
-    void validateOptionSelection(FacesContext context, UIComponent component,
-            Object value);
+    void validateOptionSelection(FacesContext context, UIComponent component, Object value);
 
 }

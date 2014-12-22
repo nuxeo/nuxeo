@@ -79,16 +79,14 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("documentActions")
 @Scope(CONVERSATION)
-public class DocumentActionsBean extends InputController implements
-        DocumentActions, Serializable {
+public class DocumentActionsBean extends InputController implements DocumentActions, Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(DocumentActionsBean.class);
 
     /**
-     * @deprecated since 5.6: default layout can now be defined on the
-     *             nxl:documentLayout tag
+     * @deprecated since 5.6: default layout can now be defined on the nxl:documentLayout tag
      */
     @Deprecated
     public static final String DEFAULT_SUMMARY_LAYOUT = "default_summary_layout";
@@ -117,11 +115,9 @@ public class DocumentActionsBean extends InputController implements
     protected transient DeleteActions deleteActions;
 
     /**
-     * Boolean request parameter used to restore current tabs (current tab and
-     * subtab) after edition.
+     * Boolean request parameter used to restore current tabs (current tab and subtab) after edition.
      * <p>
-     * This is useful when editing the document from a layout toggled to edit
-     * mode from summary-like page.
+     * This is useful when editing the document from a layout toggled to edit mode from summary-like page.
      *
      * @since 5.6
      */
@@ -141,8 +137,7 @@ public class DocumentActionsBean extends InputController implements
         if (doc == null) {
             return null;
         }
-        String[] layouts = typeManager.getType(doc.getType()).getLayouts(
-                BuiltinModes.SUMMARY, null);
+        String[] layouts = typeManager.getType(doc.getType()).getLayouts(BuiltinModes.SUMMARY, null);
 
         if (layouts != null && layouts.length > 0) {
             return layouts[0];
@@ -178,8 +173,7 @@ public class DocumentActionsBean extends InputController implements
     @Override
     public String editDocument() throws ClientException {
         navigationContext.setChangeableDocument(navigationContext.getCurrentDocument());
-        return navigationContext.navigateToDocument(
-                navigationContext.getCurrentDocument(), "edit");
+        return navigationContext.navigateToDocument(navigationContext.getCurrentDocument(), "edit");
     }
 
     public String getFileName(DocumentModel doc) throws ClientException {
@@ -234,8 +228,7 @@ public class DocumentActionsBean extends InputController implements
             DocumentLocation docLoc = docView.getDocumentLocation();
             // fix for NXP-1799
             if (documentManager == null) {
-                RepositoryLocation loc = new RepositoryLocation(
-                        docLoc.getServerName());
+                RepositoryLocation loc = new RepositoryLocation(docLoc.getServerName());
                 navigationContext.setCurrentServerLocation(loc);
                 documentManager = navigationContext.getOrCreateDocumentManager();
             }
@@ -258,16 +251,12 @@ public class DocumentActionsBean extends InputController implements
                     bigDownloadURL += "nxbigfile" + "/";
                     bigDownloadURL += doc.getRepositoryName() + "/";
                     bigDownloadURL += doc.getRef().toString() + "/";
-                    bigDownloadURL += docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY)
-                            + "/";
-                    bigDownloadURL += URIUtils.quoteURIPathComponent(filename,
-                            true);
+                    bigDownloadURL += docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY) + "/";
+                    bigDownloadURL += URIUtils.quoteURIPathComponent(filename, true);
                     try {
                         response.sendRedirect(bigDownloadURL);
                     } catch (IOException e) {
-                        log.error(
-                                "Error while redirecting for big file downloader",
-                                e);
+                        log.error("Error while redirecting for big file downloader", e);
                     }
                 } else {
                     ComponentUtils.download(context, blob, filename);
@@ -283,8 +272,7 @@ public class DocumentActionsBean extends InputController implements
     }
 
     @Override
-    public String updateDocument(DocumentModel doc, Boolean restoreCurrentTabs)
-            throws ClientException {
+    public String updateDocument(DocumentModel doc, Boolean restoreCurrentTabs) throws ClientException {
         try {
             String tabId = null;
             String subTabId = null;
@@ -294,15 +282,13 @@ public class DocumentActionsBean extends InputController implements
                 tabId = webActions.getCurrentTabId();
                 subTabId = webActions.getCurrentSubTabId();
             }
-            Events.instance().raiseEvent(EventNames.BEFORE_DOCUMENT_CHANGED,
-                    doc);
+            Events.instance().raiseEvent(EventNames.BEFORE_DOCUMENT_CHANGED, doc);
             doc = documentManager.saveDocument(doc);
             throwUpdateComments(doc);
             documentManager.save();
             // some changes (versioning) happened server-side, fetch new one
             navigationContext.invalidateCurrentDocument();
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get("document_modified"),
+            facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("document_modified"),
                     resourcesAccessor.getMessages().get(doc.getType()));
             EventManager.raiseEventsOnDocumentChange(doc);
             String res = navigationContext.navigateToDocument(doc, "after-edit");
@@ -339,18 +325,14 @@ public class DocumentActionsBean extends InputController implements
     public String updateDocumentAsNewVersion() throws ClientException {
         try {
             DocumentModel changeableDocument = navigationContext.getChangeableDocument();
-            changeableDocument.putContextData(
-                    org.nuxeo.common.collections.ScopeType.REQUEST,
-                    VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY,
-                    Boolean.TRUE);
+            changeableDocument.putContextData(org.nuxeo.common.collections.ScopeType.REQUEST,
+                    VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
             changeableDocument = documentManager.saveDocument(changeableDocument);
 
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get("new_version_created"));
+            facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("new_version_created"));
             // then follow the standard pageflow for edited documents
             EventManager.raiseEventsOnDocumentChange(changeableDocument);
-            return navigationContext.navigateToDocument(changeableDocument,
-                    "after-edit");
+            return navigationContext.navigateToDocument(changeableDocument, "after-edit");
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
@@ -370,13 +352,10 @@ public class DocumentActionsBean extends InputController implements
         typesTool.setSelectedType(docType);
         try {
             Map<String, Object> context = new HashMap<String, Object>();
-            context.put(CoreEventConstants.PARENT_PATH,
-                    navigationContext.getCurrentDocument().getPathAsString());
-            DocumentModel changeableDocument = documentManager.createDocumentModel(
-                    typeName, context);
+            context.put(CoreEventConstants.PARENT_PATH, navigationContext.getCurrentDocument().getPathAsString());
+            DocumentModel changeableDocument = documentManager.createDocumentModel(typeName, context);
             navigationContext.setChangeableDocument(changeableDocument);
-            return navigationContext.getActionResult(changeableDocument,
-                    UserAction.CREATE);
+            return navigationContext.getActionResult(changeableDocument, UserAction.CREATE);
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
@@ -392,15 +371,13 @@ public class DocumentActionsBean extends InputController implements
     protected String parentDocumentPath;
 
     @Override
-    public String saveDocument(DocumentModel newDocument)
-            throws ClientException {
+    public String saveDocument(DocumentModel newDocument) throws ClientException {
         // Document has already been created if it has an id.
         // This will avoid creation of many documents if user hit create button
         // too many times.
         if (newDocument.getId() != null) {
             log.debug("Document " + newDocument.getName() + " already created");
-            return navigationContext.navigateToDocument(newDocument,
-                    "after-create");
+            return navigationContext.navigateToDocument(newDocument, "after-create");
         }
         try {
             PathSegmentService pss;
@@ -419,21 +396,17 @@ public class DocumentActionsBean extends InputController implements
                 }
             }
 
-            newDocument.setPathInfo(parentDocumentPath,
-                    pss.generatePathSegment(newDocument));
+            newDocument.setPathInfo(parentDocumentPath, pss.generatePathSegment(newDocument));
 
             newDocument = documentManager.createDocument(newDocument);
             documentManager.save();
 
             logDocumentWithTitle("Created the document: ", newDocument);
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get("document_saved"),
+            facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("document_saved"),
                     resourcesAccessor.getMessages().get(newDocument.getType()));
 
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                    currentDocument);
-            return navigationContext.navigateToDocument(newDocument,
-                    "after-create");
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
+            return navigationContext.navigateToDocument(newDocument, "after-create");
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
@@ -445,9 +418,7 @@ public class DocumentActionsBean extends InputController implements
         // user profile), public methods of the Nuxeo framework should only
         // check atomic / specific permissions such as WRITE_PROPERTIES,
         // REMOVE, ADD_CHILDREN depending on the action to execute instead
-        return documentManager.hasPermission(
-                navigationContext.getCurrentDocument().getRef(),
-                SecurityConstants.WRITE);
+        return documentManager.hasPermission(navigationContext.getCurrentDocument().getRef(), SecurityConstants.WRITE);
     }
 
     // Send the comment of the update to the Core
@@ -473,11 +444,9 @@ public class DocumentActionsBean extends InputController implements
     public boolean getCanUnpublish() {
         List<DocumentModel> docList = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
 
-        if (!(docList == null || docList.isEmpty())
-                && deleteActions.checkDeletePermOnParents(docList)) {
+        if (!(docList == null || docList.isEmpty()) && deleteActions.checkDeletePermOnParents(docList)) {
             for (DocumentModel document : docList) {
-                if (document.hasFacet(FacetNames.PUBLISH_SPACE)
-                        || document.hasFacet(FacetNames.MASTER_PUBLISH_SPACE)) {
+                if (document.hasFacet(FacetNames.PUBLISH_SPACE) || document.hasFacet(FacetNames.MASTER_PUBLISH_SPACE)) {
                     return false;
                 }
             }
@@ -488,13 +457,11 @@ public class DocumentActionsBean extends InputController implements
 
     @Override
     @Observer(EventNames.BEFORE_DOCUMENT_CHANGED)
-    public void followTransition(DocumentModel changedDocument)
-            throws ClientException {
-        String transitionToFollow = (String) changedDocument.getContextData(
-                ScopeType.REQUEST, LIFE_CYCLE_TRANSITION_KEY);
+    public void followTransition(DocumentModel changedDocument) throws ClientException {
+        String transitionToFollow = (String) changedDocument.getContextData(ScopeType.REQUEST,
+                LIFE_CYCLE_TRANSITION_KEY);
         if (transitionToFollow != null) {
-            documentManager.followTransition(changedDocument.getRef(),
-                    transitionToFollow);
+            documentManager.followTransition(changedDocument.getRef(), transitionToFollow);
             documentManager.save();
         }
     }

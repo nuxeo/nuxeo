@@ -73,8 +73,7 @@ public class LogoHelper implements Serializable {
     private String lastMainConversation = "";
 
     public String getLogoURL() {
-        if (navigationContext == null
-                || navigationContext.getCurrentServerLocation() == null) {
+        if (navigationContext == null || navigationContext.getCurrentServerLocation() == null) {
             lastLogoHolderKey = "";
             lastURL = "";
             return DEFAULT_LOGO;
@@ -126,8 +125,7 @@ public class LogoHelper implements Serializable {
         if (blob == null) {
             return DEFAULT_LOGO;
         }
-        lastURL = PAGE_NAME + "?key=" + key + "&docRef="
-                + doc.getRef().toString() + '&'
+        lastURL = PAGE_NAME + "?key=" + key + "&docRef=" + doc.getRef().toString() + '&'
                 + getConversationPropagationSuffix();
         try {
             lastLogoHolderKey = doc.getCacheKey();
@@ -187,11 +185,9 @@ public class LogoHelper implements Serializable {
         HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
         try {
             if (imgBlob == null
-                    || (imgBlob.getMimeType() != null && !imgBlob.getMimeType().toLowerCase().startsWith(
-                            "image"))) {
+                    || (imgBlob.getMimeType() != null && !imgBlob.getMimeType().toLowerCase().startsWith("image"))) {
                 response.setContentType("image/gif");
-                response.sendRedirect(context.getExternalContext().getRequestContextPath()
-                        + DEFAULT_LOGO);
+                response.sendRedirect(context.getExternalContext().getRequestContextPath() + DEFAULT_LOGO);
                 return null;
             } else {
                 response.addHeader("Cache-Control", "max-age=600");
@@ -229,23 +225,19 @@ public class LogoHelper implements Serializable {
             // tmp hack to handle the case when the logo is rendered
             // just after the page existed the conversation
             cId = getLastOrMainConversationId(cId);
-            suffix += conversationManager.getConversationIdParameter() + '='
-                    + cId;
+            suffix += conversationManager.getConversationIdParameter() + '=' + cId;
             /**
-             * if (conversationManager.isLongRunningConversation()) { suffix +=
-             * '&' + conversationManager.getConversationIsLongRunningParameter()
-             * + "true"; lastMainConversation = cId; }
+             * if (conversationManager.isLongRunningConversation()) { suffix += '&' +
+             * conversationManager.getConversationIsLongRunningParameter() + "true"; lastMainConversation = cId; }
              **/
         } else {
             ConversationEntry conv = conversationManager.getCurrentConversationEntry();
             String convId = conv.getConversationIdStack().get(0);
             convId = getLastOrMainConversationId(convId);
-            suffix += conversationManager.getConversationIdParameter() + '='
-                    + convId;
+            suffix += conversationManager.getConversationIdParameter() + '=' + convId;
             /**
-             * suffix += '&' +
-             * conversationManager.getConversationIsLongRunningParameter() +
-             * "true"; lastMainConversation = convId;
+             * suffix += '&' + conversationManager.getConversationIsLongRunningParameter() + "true";
+             * lastMainConversation = convId;
              **/
         }
 

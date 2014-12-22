@@ -52,9 +52,7 @@ public class NoteActions implements Serializable {
     @In(create = true, required = false)
     protected transient NavigationContext navigationContext;
 
-
-    private static class LiveDocumentRefFinder extends
-            UnrestrictedSessionRunner {
+    private static class LiveDocumentRefFinder extends UnrestrictedSessionRunner {
 
         private String liveDocumentRef;
 
@@ -65,12 +63,12 @@ public class NoteActions implements Serializable {
             this.proxy = proxy;
         }
 
+        @Override
         public void run() throws ClientException {
             liveDocumentRef = proxy.getRef().toString();
             if (proxy.getSourceId() != null) {
                 liveDocumentRef = proxy.getSourceId();
-                DocumentModel version = session.getDocument(new IdRef(
-                        proxy.getSourceId()));
+                DocumentModel version = session.getDocument(new IdRef(proxy.getSourceId()));
                 if (version.getSourceId() != null) {
                     liveDocumentRef = version.getSourceId();
                 }
@@ -87,9 +85,8 @@ public class NoteActions implements Serializable {
     }
 
     /**
-     * Translate the image links referencing attached files to use the docId of
-     * the current proxy or version. Do not translate anything if we are on a
-     * live document.
+     * Translate the image links referencing attached files to use the docId of the current proxy or version. Do not
+     * translate anything if we are on a live document.
      *
      * @param note the note content
      * @return the translated note content
@@ -111,8 +108,7 @@ public class NoteActions implements Serializable {
             docIdToReplace = new LiveDocumentRefFinder(currentDocument).getLiveDocumentRef();
         }
 
-        return translateImageLinks(note, docIdToReplace,
-                currentDocument.getId());
+        return translateImageLinks(note, docIdToReplace, currentDocument.getId());
     }
 
     protected boolean hasImageLinksToTranslate(String note) {
@@ -120,8 +116,7 @@ public class NoteActions implements Serializable {
         return matcher.matches();
     }
 
-    protected String translateImageLinks(String note, String fromDocRef,
-            String toDocRef) {
+    protected String translateImageLinks(String note, String fromDocRef, String toDocRef) {
         String patternToReplace = String.format(PATTERN_TO_REPLACE, fromDocRef);
         Pattern pattern = Pattern.compile(patternToReplace);
         Matcher matcher = pattern.matcher(note);

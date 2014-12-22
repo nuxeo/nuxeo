@@ -27,22 +27,21 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.Action;
 
 /**
- * Interface for an action listener that will provide methods to lock/unlock a
- * document, to lock/unlock the current document and to lock/unlock a list of
- * documents (based on DocumentsListManager).
+ * Interface for an action listener that will provide methods to lock/unlock a document, to lock/unlock the current
+ * document and to lock/unlock a list of documents (based on DocumentsListManager).
  *
  * @author <a href="mailto:bt@nuxeo.com">Bogdan Tatar</a>
  */
 public interface LockActions extends Serializable {
 
-     String LOCKER = "document.locker";
+    String LOCKER = "document.locker";
 
-     /** @deprecated since 5.4.2, use {@link #LOCK_CREATED} instead */
-     @Deprecated
-     String LOCK_TIME = "document.lock.time";
+    /** @deprecated since 5.4.2, use {@link #LOCK_CREATED} instead */
+    @Deprecated
+    String LOCK_TIME = "document.lock.time";
 
-     /** @since 5.4.2 */
-     String LOCK_CREATED = "document.lock.created";
+    /** @since 5.4.2 */
+    String LOCK_CREATED = "document.lock.created";
 
     /**
      * Gets the lock of the current document.
@@ -62,7 +61,6 @@ public interface LockActions extends Serializable {
      * Gets the lock of the document.
      *
      * @param document the document of which lock is to be taken
-     *
      * @throws ClientException
      */
     String lockDocument(DocumentModel document) throws ClientException;
@@ -71,7 +69,6 @@ public interface LockActions extends Serializable {
      * Releases the lock of the document.
      *
      * @param document the document of which lock is to be released
-     *
      * @throws ClientException
      */
     String unlockDocument(DocumentModel document) throws ClientException;
@@ -112,23 +109,18 @@ public interface LockActions extends Serializable {
     Action getLockOrUnlockAction();
 
     /**
-     * Gets the details about the lock of a document,who did the lock and when
-     * the lock took place.
+     * Gets the details about the lock of a document,who did the lock and when the lock took place.
      *
      * @param document the document for which this information is needed
-     * @return the user who took the look and the time when he/she did this in a
-     *         map
+     * @return the user who took the look and the time when he/she did this in a map
      * @throws ClientException
      */
-    Map<String, Serializable> getLockDetails(DocumentModel document)
-            throws ClientException;
+    Map<String, Serializable> getLockDetails(DocumentModel document) throws ClientException;
 
     /**
-     * Gets the details about the lock of the current document, who did the lock
-     * and when the lock took place.
+     * Gets the details about the lock of the current document, who did the lock and when the lock took place.
      *
-     * @return the user who took the look and the time when he/she did this in a
-     *         map
+     * @return the user who took the look and the time when he/she did this in a map
      * @throws ClientException
      */
     Map<String, Serializable> getCurrentDocLockDetails() throws ClientException;

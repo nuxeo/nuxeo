@@ -52,6 +52,11 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 @Scope(ScopeType.CONVERSATION)
 public class OrderableDocumentActions implements Serializable {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     private static final Log log = LogFactory.getLog(OrderableDocumentActions.class);
 
     public static final String SECTION_TYPE = "Section";
@@ -81,25 +86,21 @@ public class OrderableDocumentActions implements Serializable {
             return false;
         }
         if (isSectionType(currentDocument)) {
-            return getCanMoveDown(currentDocument,
-                    CURRENT_DOCUMENT_SECTION_SELECTION);
+            return getCanMoveDown(currentDocument, CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
             return getCanMoveDown(currentDocument, CURRENT_DOCUMENT_SELECTION);
         }
     }
 
-    protected boolean getCanMoveDown(DocumentModel container,
-            String documentsListName) throws ClientException {
+    protected boolean getCanMoveDown(DocumentModel container, String documentsListName) throws ClientException {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(documentsListName);
         if (docs.isEmpty() || docs.size() > 1) {
             return false;
         }
 
         DocumentModel selectedDocument = docs.get(0);
-        List<DocumentRef> children = documentManager.getChildrenRefs(
-                container.getRef(), null);
-        int selectedDocumentIndex = children.indexOf(new IdRef(
-                selectedDocument.getId()));
+        List<DocumentRef> children = documentManager.getChildrenRefs(container.getRef(), null);
+        int selectedDocumentIndex = children.indexOf(new IdRef(selectedDocument.getId()));
         int nextIndex = selectedDocumentIndex + 1;
         if (nextIndex == children.size()) {
             // can't move down the last document
@@ -120,20 +121,15 @@ public class OrderableDocumentActions implements Serializable {
         }
     }
 
-    protected String moveDown(DocumentModel container, String documentsListName)
-            throws ClientException {
-        DocumentModel selectedDocument = documentsListsManager.getWorkingList(
-                documentsListName).get(0);
+    protected String moveDown(DocumentModel container, String documentsListName) throws ClientException {
+        DocumentModel selectedDocument = documentsListsManager.getWorkingList(documentsListName).get(0);
 
-        List<DocumentRef> children = documentManager.getChildrenRefs(
-                container.getRef(), null);
-        int selectedDocumentIndex = children.indexOf(new IdRef(
-                selectedDocument.getId()));
+        List<DocumentRef> children = documentManager.getChildrenRefs(container.getRef(), null);
+        int selectedDocumentIndex = children.indexOf(new IdRef(selectedDocument.getId()));
         int nextIndex = selectedDocumentIndex + 1;
         DocumentRef nextDocumentRef = children.get(nextIndex);
 
-        documentManager.orderBefore(container.getRef(),
-                documentManager.getDocument(nextDocumentRef).getName(),
+        documentManager.orderBefore(container.getRef(), documentManager.getDocument(nextDocumentRef).getName(),
                 selectedDocument.getName());
         documentManager.save();
 
@@ -142,11 +138,9 @@ public class OrderableDocumentActions implements Serializable {
         return null;
     }
 
-    protected void notifyChildrenChanged(DocumentModel containerDocument)
-            throws ClientException {
+    protected void notifyChildrenChanged(DocumentModel containerDocument) throws ClientException {
         if (containerDocument != null) {
-            Events.instance().raiseEvent(DOCUMENT_CHILDREN_CHANGED,
-                    containerDocument);
+            Events.instance().raiseEvent(DOCUMENT_CHILDREN_CHANGED, containerDocument);
         }
     }
 
@@ -156,25 +150,21 @@ public class OrderableDocumentActions implements Serializable {
             return false;
         }
         if (isSectionType(currentDocument)) {
-            return getCanMoveUp(currentDocument,
-                    CURRENT_DOCUMENT_SECTION_SELECTION);
+            return getCanMoveUp(currentDocument, CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
             return getCanMoveUp(currentDocument, CURRENT_DOCUMENT_SELECTION);
         }
     }
 
-    protected boolean getCanMoveUp(DocumentModel container,
-            String documentsListName) throws ClientException {
+    protected boolean getCanMoveUp(DocumentModel container, String documentsListName) throws ClientException {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(documentsListName);
         if (docs.isEmpty() || docs.size() > 1) {
             return false;
         }
 
         DocumentModel selectedDocument = docs.get(0);
-        List<DocumentRef> children = documentManager.getChildrenRefs(
-                container.getRef(), null);
-        int selectedDocumentIndex = children.indexOf(new IdRef(
-                selectedDocument.getId()));
+        List<DocumentRef> children = documentManager.getChildrenRefs(container.getRef(), null);
+        int selectedDocumentIndex = children.indexOf(new IdRef(selectedDocument.getId()));
         int previousIndex = selectedDocumentIndex - 1;
         if (previousIndex < 0) {
             // can't move up the first document
@@ -195,20 +185,15 @@ public class OrderableDocumentActions implements Serializable {
         }
     }
 
-    protected String moveUp(DocumentModel container, String documentsListName)
-            throws ClientException {
-        DocumentModel selectedDocument = documentsListsManager.getWorkingList(
-                documentsListName).get(0);
+    protected String moveUp(DocumentModel container, String documentsListName) throws ClientException {
+        DocumentModel selectedDocument = documentsListsManager.getWorkingList(documentsListName).get(0);
 
-        List<DocumentRef> children = documentManager.getChildrenRefs(
-                container.getRef(), null);
-        int selectedDocumentIndex = children.indexOf(new IdRef(
-                selectedDocument.getId()));
+        List<DocumentRef> children = documentManager.getChildrenRefs(container.getRef(), null);
+        int selectedDocumentIndex = children.indexOf(new IdRef(selectedDocument.getId()));
         int previousIndex = selectedDocumentIndex - 1;
         DocumentRef previousDocumentRef = children.get(previousIndex);
 
-        documentManager.orderBefore(container.getRef(),
-                selectedDocument.getName(),
+        documentManager.orderBefore(container.getRef(), selectedDocument.getName(),
                 documentManager.getDocument(previousDocumentRef).getName());
         documentManager.save();
 
@@ -223,25 +208,21 @@ public class OrderableDocumentActions implements Serializable {
             return false;
         }
         if (isSectionType(currentDocument)) {
-            return getCanMoveToTop(currentDocument,
-                    CURRENT_DOCUMENT_SECTION_SELECTION);
+            return getCanMoveToTop(currentDocument, CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
             return getCanMoveToTop(currentDocument, CURRENT_DOCUMENT_SELECTION);
         }
     }
 
-    protected boolean getCanMoveToTop(DocumentModel container,
-            String documentsListName) throws ClientException {
+    protected boolean getCanMoveToTop(DocumentModel container, String documentsListName) throws ClientException {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(documentsListName);
         if (docs.isEmpty() || docs.size() > 1) {
             return false;
         }
 
         DocumentModel selectedDocument = docs.get(0);
-        List<DocumentRef> children = documentManager.getChildrenRefs(
-                container.getRef(), null);
-        int selectedDocumentIndex = children.indexOf(new IdRef(
-                selectedDocument.getId()));
+        List<DocumentRef> children = documentManager.getChildrenRefs(container.getRef(), null);
+        int selectedDocumentIndex = children.indexOf(new IdRef(selectedDocument.getId()));
         if (selectedDocumentIndex <= 0) {
             // can't move to top the first document
             return false;
@@ -255,23 +236,18 @@ public class OrderableDocumentActions implements Serializable {
             return null;
         }
         if (isSectionType(currentDocument)) {
-            return moveToTop(currentDocument,
-                    CURRENT_DOCUMENT_SECTION_SELECTION);
+            return moveToTop(currentDocument, CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
             return moveToTop(currentDocument, CURRENT_DOCUMENT_SELECTION);
         }
     }
 
-    protected String moveToTop(DocumentModel container, String documentsListName)
-            throws ClientException {
-        DocumentModel selectedDocument = documentsListsManager.getWorkingList(
-                documentsListName).get(0);
-        List<DocumentRef> children = documentManager.getChildrenRefs(
-                container.getRef(), null);
+    protected String moveToTop(DocumentModel container, String documentsListName) throws ClientException {
+        DocumentModel selectedDocument = documentsListsManager.getWorkingList(documentsListName).get(0);
+        List<DocumentRef> children = documentManager.getChildrenRefs(container.getRef(), null);
         DocumentRef firstDocumentRef = children.get(0);
 
-        documentManager.orderBefore(container.getRef(),
-                selectedDocument.getName(),
+        documentManager.orderBefore(container.getRef(), selectedDocument.getName(),
                 documentManager.getDocument(firstDocumentRef).getName());
         documentManager.save();
 
@@ -286,26 +262,21 @@ public class OrderableDocumentActions implements Serializable {
             return false;
         }
         if (isSectionType(currentDocument)) {
-            return getCanMoveToBottom(currentDocument,
-                    CURRENT_DOCUMENT_SECTION_SELECTION);
+            return getCanMoveToBottom(currentDocument, CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
-            return getCanMoveToBottom(currentDocument,
-                    CURRENT_DOCUMENT_SELECTION);
+            return getCanMoveToBottom(currentDocument, CURRENT_DOCUMENT_SELECTION);
         }
     }
 
-    protected boolean getCanMoveToBottom(DocumentModel container,
-            String documentsListName) throws ClientException {
+    protected boolean getCanMoveToBottom(DocumentModel container, String documentsListName) throws ClientException {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(documentsListName);
         if (docs.isEmpty() || docs.size() > 1) {
             return false;
         }
 
         DocumentModel selectedDocument = docs.get(0);
-        List<DocumentRef> children = documentManager.getChildrenRefs(
-                container.getRef(), null);
-        int selectedDocumentIndex = children.indexOf(new IdRef(
-                selectedDocument.getId()));
+        List<DocumentRef> children = documentManager.getChildrenRefs(container.getRef(), null);
+        int selectedDocumentIndex = children.indexOf(new IdRef(selectedDocument.getId()));
         if (selectedDocumentIndex >= children.size() - 1) {
             // can't move to bottom the last document
             return false;
@@ -319,20 +290,16 @@ public class OrderableDocumentActions implements Serializable {
             return null;
         }
         if (isSectionType(currentDocument)) {
-            return moveToBottom(currentDocument,
-                    CURRENT_DOCUMENT_SECTION_SELECTION);
+            return moveToBottom(currentDocument, CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
             return moveToBottom(currentDocument, CURRENT_DOCUMENT_SELECTION);
         }
     }
 
-    protected String moveToBottom(DocumentModel container,
-            String documentsListName) throws ClientException {
+    protected String moveToBottom(DocumentModel container, String documentsListName) throws ClientException {
         DocumentRef containerRef = container.getRef();
-        DocumentModel selectedDocument = documentsListsManager.getWorkingList(
-                documentsListName).get(0);
-        documentManager.orderBefore(containerRef, selectedDocument.getName(),
-                null);
+        DocumentModel selectedDocument = documentsListsManager.getWorkingList(documentsListName).get(0);
+        documentManager.orderBefore(containerRef, selectedDocument.getName(), null);
         documentManager.save();
 
         notifyChildrenChanged(container);
@@ -349,8 +316,7 @@ public class OrderableDocumentActions implements Serializable {
     }
 
     protected void addFacesMessage(String messageLabel) {
-        facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get(messageLabel));
+        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get(messageLabel));
     }
 
 }

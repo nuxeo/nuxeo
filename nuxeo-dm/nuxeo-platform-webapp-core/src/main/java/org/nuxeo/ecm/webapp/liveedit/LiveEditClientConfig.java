@@ -36,34 +36,25 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This Seam component is used to represent the client configuration for
- * LiveEdit.
+ * This Seam component is used to represent the client configuration for LiveEdit.
  * <p>
- * On the client side, the LiveEdit plugin advertise its feature via the Accept
- * Header of the browser. This information may be used to decide if LiveEdit
- * links must be displayed or not.
+ * On the client side, the LiveEdit plugin advertise its feature via the Accept Header of the browser. This information
+ * may be used to decide if LiveEdit links must be displayed or not.
  * <p>
- * The behavior can be configured via the property:
- * org.nuxeo.ecm.platform.liveedit.config
+ * The behavior can be configured via the property: org.nuxeo.ecm.platform.liveedit.config
  * <p>
  * There are 3 possible values :
  * <ul>
- * <li>client : let the client choose what is live editable => use the
- * mime-types send by the client to define what must be live editable
- * <li>server : let the server decide => use the mime-type registry define what
- * types are liveEditable
- * <li>both : use client and server intersection => in order to be liveEditable
- * a type must be advertised by the client and set to liveEditable in the
- * mimetypeRegistry
+ * <li>client : let the client choose what is live editable => use the mime-types send by the client to define what must
+ * be live editable
+ * <li>server : let the server decide => use the mime-type registry define what types are liveEditable
+ * <li>both : use client and server intersection => in order to be liveEditable a type must be advertised by the client
+ * and set to liveEditable in the mimetypeRegistry
  * </ul>
- *
- * Client advertising is done in the Accept header: Accept :
- * application/x-nuxeo-liveedit:mimetype1;mimetype2
- *
- * Starting the 5.2, the addon can send the standardized accept header, as
- * Accept : application/x-nuxeo-liveedit;ext0="mimetype1";ext1="mimetype2"..
- * Also, the addon can still send the old way, so the both forms are accepted.
- * See NXP-3257
+ * Client advertising is done in the Accept header: Accept : application/x-nuxeo-liveedit:mimetype1;mimetype2 Starting
+ * the 5.2, the addon can send the standardized accept header, as Accept :
+ * application/x-nuxeo-liveedit;ext0="mimetype1";ext1="mimetype2".. Also, the addon can still send the old way, so the
+ * both forms are accepted. See NXP-3257
  *
  * @author Thierry Delprat
  * @author rux
@@ -130,13 +121,10 @@ public class LiveEditClientConfig implements Serializable {
                         // application/x-nuxeo-liveedit;ext0="mimetype1";ext1="mimetype2"
                         int equalQuoteIndex = subType.indexOf("=\"");
                         String valueSubType = subType;
-                        if (equalQuoteIndex >= 0
-                                && subType.length() > equalQuoteIndex + 3) {
-                            valueSubType = subType.substring(
-                                    equalQuoteIndex + 2, subType.length() - 1);
+                        if (equalQuoteIndex >= 0 && subType.length() > equalQuoteIndex + 3) {
+                            valueSubType = subType.substring(equalQuoteIndex + 2, subType.length() - 1);
                         }
-                        advertizedLiveEditableMimeTypes.add(valueSubType.replace(
-                                "!", "/"));
+                        advertizedLiveEditableMimeTypes.add(valueSubType.replace("!", "/"));
                     }
                 }
             }
@@ -153,8 +141,7 @@ public class LiveEditClientConfig implements Serializable {
 
     public String getLiveEditConfigurationPolicy() {
         if (liveEditConfigPolicy == null) {
-            liveEditConfigPolicy = Framework.getProperty(LE_CONFIG_PROPERTY,
-                    LE_CONFIG_CLIENTSIDE);
+            liveEditConfigPolicy = Framework.getProperty(LE_CONFIG_PROPERTY, LE_CONFIG_CLIENTSIDE);
         }
         return liveEditConfigPolicy;
     }

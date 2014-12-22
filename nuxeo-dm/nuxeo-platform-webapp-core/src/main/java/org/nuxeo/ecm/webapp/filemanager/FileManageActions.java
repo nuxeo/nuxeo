@@ -34,6 +34,7 @@ public interface FileManageActions extends SimpleFileManager {
      */
     public static final String NUXEO_JSF_TMP_DIR_PROP = "nuxeo.jsf.tmp.dir";
 
+    @Override
     String display();
 
     /**
@@ -52,34 +53,30 @@ public interface FileManageActions extends SimpleFileManager {
     String getFileName();
 
     /**
-     * Setter to get the filename to remove, works in conjunction with
-     * {@link #removeOneOrAllUploadedFiles(ActionEvent)}.
+     * Setter to get the filename to remove, works in conjunction with {@link #removeOneOrAllUploadedFiles(ActionEvent)}
+     * .
      *
      * @since 5.9.2
      */
     void setFileToRemove(String fileToRemove);
 
     /**
-     * Removes one of all uploaded files, depending on previous call to
-     * {@link #setFileToRemove(String)}.
+     * Removes one of all uploaded files, depending on previous call to {@link #setFileToRemove(String)}.
      * <p>
-     * This is useful to remove files in an Ajax context to avoid Seam
-     * remoting, and still get the selected entry from JavaScript variables
-     * (see NXP-13234).
+     * This is useful to remove files in an Ajax context to avoid Seam remoting, and still get the selected entry from
+     * JavaScript variables (see NXP-13234).
      *
      * @since 5.9.2
      * @throws ClientException
      */
-    String removeOneOrAllUploadedFiles(ActionEvent action)
-            throws ClientException;
+    String removeOneOrAllUploadedFiles(ActionEvent action) throws ClientException;
 
     @WebRemote
-    String addFolderFromPlugin(String fullName, String morePath)
-            throws ClientException;
+    String addFolderFromPlugin(String fullName, String morePath) throws ClientException;
 
     @WebRemote
-    String addFileFromPlugin(String content, String mimetype, String fullName,
-            String morePath, Boolean UseBase64) throws ClientException;
+    String addFileFromPlugin(String content, String mimetype, String fullName, String morePath, Boolean UseBase64)
+            throws ClientException;
 
     @WebRemote
     boolean canWrite() throws ClientException;

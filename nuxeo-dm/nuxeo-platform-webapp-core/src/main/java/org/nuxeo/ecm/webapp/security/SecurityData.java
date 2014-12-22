@@ -32,34 +32,27 @@ import org.nuxeo.common.utils.i18n.Labeler;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
- * Holds the formatted security data, ready to be displayed. Holds the data on
- * each map on the following structure: <br>
+ * Holds the formatted security data, ready to be displayed. Holds the data on each map on the following structure: <br>
  * <p>
  * current doc grants: <br>
  * user 1 - perm1, perm2 <br>
  * user 2 - perm1, perm2 <br>
  * user 3 - perm2 <br>
- *
  * current doc denies:<br>
  * ... <br>
- *
  * parent doc grants:<br>
  * ... <br>
- *
  * parent doc denies:<br>
  * ...<br>
  * <p>
- * Also has methods that allow manipulation of the contained data, such as
- * add/remove security privileges. The end result after add/remove has been
- * called will be converted to a backend security DTO and then submitted on
- * backend.
+ * Also has methods that allow manipulation of the contained data, such as add/remove security privileges. The end
+ * result after add/remove has been called will be converted to a backend security DTO and then submitted on backend.
  *
  * @author Razvan Caraghin
  */
 public class SecurityData implements Serializable {
 
-    protected static final Labeler labeler = new Labeler(
-            "label.security.permission");
+    protected static final Labeler labeler = new Labeler("label.security.permission");
 
     private static final long serialVersionUID = -7958330304227141087L;
 
@@ -151,8 +144,7 @@ public class SecurityData implements Serializable {
         return parentDocumentsUsers;
     }
 
-    protected Map<String, List<String>> buildLabelMap(
-            Map<String, List<String>> permissions) {
+    protected Map<String, List<String>> buildLabelMap(Map<String, List<String>> permissions) {
         Map<String, List<String>> labelMap = new HashMap<String, List<String>>();
 
         for (String user : permissions.keySet()) {
@@ -190,11 +182,9 @@ public class SecurityData implements Serializable {
     }
 
     /**
-     * Adds a privilege to the displayed list. This does not submit anything to
-     * the backend.
+     * Adds a privilege to the displayed list. This does not submit anything to the backend.
      */
-    public void addModifiablePrivilege(String principalName,
-            String permissionName, boolean grant) {
+    public void addModifiablePrivilege(String principalName, String permissionName, boolean grant) {
         if (null == principalName || null == permissionName) {
             log.error("Null params received, returning...");
             return;
@@ -255,13 +245,11 @@ public class SecurityData implements Serializable {
     }
 
     /**
-     * Removes a privilege from the displayed list. This does not submit
-     * anything to backend.
+     * Removes a privilege from the displayed list. This does not submit anything to backend.
      *
      * @return true if a privilege was indeed removed
      */
-    public boolean removeModifiablePrivilege(String principalName,
-            String permissionName, boolean grant) {
+    public boolean removeModifiablePrivilege(String principalName, String permissionName, boolean grant) {
 
         if (null == principalName || null == permissionName) {
             log.error("Null params received, returning...");
@@ -273,8 +261,7 @@ public class SecurityData implements Serializable {
         if (grant) {
             if (null != currentDocGrant.get(principalName)) {
                 // we have the specified user, check if we have the right
-                Iterator<String> permissionIterator = currentDocGrant.get(
-                        principalName).iterator();
+                Iterator<String> permissionIterator = currentDocGrant.get(principalName).iterator();
                 while (permissionIterator.hasNext()) {
                     if (permissionIterator.next().equals(permissionName)) {
                         permissionIterator.remove();
@@ -286,8 +273,7 @@ public class SecurityData implements Serializable {
         } else {
             if (null != currentDocDeny.get(principalName)) {
                 // we have the specified user, check if we have the right
-                Iterator<String> permissionIterator = currentDocDeny.get(
-                        principalName).iterator();
+                Iterator<String> permissionIterator = currentDocDeny.get(principalName).iterator();
                 while (permissionIterator.hasNext()) {
                     if (permissionIterator.next().equals(permissionName)) {
                         permissionIterator.remove();
@@ -317,14 +303,12 @@ public class SecurityData implements Serializable {
         if (principalName.equals(SecurityConstants.EVERYONE)) {
 
             final List<String> deniedPerms = currentDocDeny.get(principalName);
-            boolean keepDenyAll = deniedPerms != null ? deniedPerms.contains(SecurityConstants.EVERYTHING)
-                    : false;
+            boolean keepDenyAll = deniedPerms != null ? deniedPerms.contains(SecurityConstants.EVERYTHING) : false;
 
             currentDocDeny.remove(principalName);
 
             if (keepDenyAll) {
-                addModifiablePrivilege(SecurityConstants.EVERYONE,
-                        SecurityConstants.EVERYTHING, false);
+                addModifiablePrivilege(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false);
             }
         } else {
             currentDocDeny.remove(principalName);
@@ -335,12 +319,9 @@ public class SecurityData implements Serializable {
     }
 
     /**
-     * Adds an unmodifiable privilege to the displayed list (these are related
-     * to the parent documents).
-     *
+     * Adds an unmodifiable privilege to the displayed list (these are related to the parent documents).
      */
-    public void addUnModifiablePrivilege(String principalName,
-            String permissionName, boolean grant) {
+    public void addUnModifiablePrivilege(String principalName, String permissionName, boolean grant) {
         if (null == principalName || null == permissionName) {
             log.error("Null params received, returning...");
             return;

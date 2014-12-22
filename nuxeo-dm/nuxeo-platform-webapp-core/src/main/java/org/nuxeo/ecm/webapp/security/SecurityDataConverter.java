@@ -35,8 +35,7 @@ import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 
 /**
- * Attempts to convert the security data received as a list of user entries into
- * a data structure easily displayable.
+ * Attempts to convert the security data received as a list of user entries into a data structure easily displayable.
  *
  * @author Razvan Caraghin
  * @author Florent Guillaume
@@ -62,17 +61,12 @@ public class SecurityDataConverter implements Serializable {
             boolean modifiable = acl.getName().equals(ACL.LOCAL_ACL);
             for (ACE entry : acl.getACEs()) {
                 if (modifiable) {
-                    securityData.addModifiablePrivilege(entry.getUsername(),
-                            entry.getPermission(), entry.isGranted());
+                    securityData.addModifiablePrivilege(entry.getUsername(), entry.getPermission(), entry.isGranted());
                 } else {
-                    securityData.addUnModifiablePrivilege(entry.getUsername(),
-                            entry.getPermission(), entry.isGranted());
+                    securityData.addUnModifiablePrivilege(entry.getUsername(), entry.getPermission(), entry.isGranted());
                 }
-                if (!entry.isGranted()
-                        && entry.getUsername().equals(
-                                SecurityConstants.EVERYONE)
-                        && entry.getPermission().equals(
-                                SecurityConstants.EVERYTHING)) {
+                if (!entry.isGranted() && entry.getUsername().equals(SecurityConstants.EVERYONE)
+                        && entry.getPermission().equals(SecurityConstants.EVERYTHING)) {
                     break;
                 }
             }
@@ -84,11 +78,10 @@ public class SecurityDataConverter implements Serializable {
     }
 
     /**
-     * Reverts back the data contained in SecurityData to a list of user
-     * entries.
+     * Reverts back the data contained in SecurityData to a list of user entries.
      * <p>
-     * This only converts the modifiable permissions to a list of user entries
-     * that is related only to the current document.
+     * This only converts the modifiable permissions to a list of user entries that is related only to the current
+     * document.
      * <p>
      * Does all grants before all denies.
      */
@@ -100,8 +93,7 @@ public class SecurityDataConverter implements Serializable {
 
         Map<String, List<String>> grants = securityData.getCurrentDocGrant();
         Map<String, List<String>> denies = securityData.getCurrentDocDeny();
-        List<UserEntry> entries = new ArrayList<UserEntry>(grants.size()
-                + denies.size());
+        List<UserEntry> entries = new ArrayList<UserEntry>(grants.size() + denies.size());
 
         for (Entry<String, List<String>> e : grants.entrySet()) {
             UserEntry entry = new UserEntryImpl(e.getKey());

@@ -27,8 +27,7 @@ import org.nuxeo.theme.styling.service.ThemeStylingService;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
 
 /**
- * Negotiator that returns the default flavor configured for negotiated theme
- * page.
+ * Negotiator that returns the default flavor configured for negotiated theme page.
  *
  * @see ThemeStylingService
  * @see Flavor
@@ -38,11 +37,11 @@ public class DefaultThemeFlavor implements Scheme {
 
     private static final Log log = LogFactory.getLog(DefaultThemeFlavor.class);
 
+    @Override
     public String getOutcome(Object context) {
         FacesContext faces = (FacesContext) context;
         String theme = (String) faces.getExternalContext().getRequestMap().get(
-                Negotiator.NEGOTIATION_RESULT_PREFIX
-                        + Negotiator.NEGOTIATION_OBJECT.theme.name());
+                Negotiator.NEGOTIATION_RESULT_PREFIX + Negotiator.NEGOTIATION_OBJECT.theme.name());
         if (theme != null) {
             try {
                 ThemeStylingService service = Framework.getService(ThemeStylingService.class);

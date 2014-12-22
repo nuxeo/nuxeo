@@ -44,21 +44,17 @@ import org.nuxeo.ecm.platform.ui.web.pathelements.VersionDocumentPathElement;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
- * The new approach: keep all selected documents into a list. Add new document
- * to the list each time a new document is selected, after rebuilding the path.
- *
+ * The new approach: keep all selected documents into a list. Add new document to the list each time a new document is
+ * selected, after rebuilding the path.
  * <p>
  * Algorithm for rebuilding the path:
  * <p>
  * d1 -> d2 -> d3 -> d4
  * <p>
- * A new document is selected, which is a child of d2, named d2.5. We need to
- * add d2.5 to the list after all unneeded documents have been removed to the
- * list. In the end the list should look like this: d1 -> d2 -> d2.5. We need to
- * remove all the documents in the list after d2, and add d2.5 to the list.
- *
- * TODO: fix bug when selecting an item located on a different branch than the
- * current one so that its parent is not found in the current branch
+ * A new document is selected, which is a child of d2, named d2.5. We need to add d2.5 to the list after all unneeded
+ * documents have been removed to the list. In the end the list should look like this: d1 -> d2 -> d2.5. We need to
+ * remove all the documents in the list after d2, and add d2.5 to the list. TODO: fix bug when selecting an item located
+ * on a different branch than the current one so that its parent is not found in the current branch
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
@@ -106,9 +102,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
         List<PathElement> documentsFormingPath = getBackendPath();
         int nbDocInList = documentsFormingPath.size();
         // if there is the case, remove the starting
-        if (nbDocInList > 0
-                && documentsFormingPath.get(0).getName().equals(
-                        getPathEllipsis())) {
+        if (nbDocInList > 0 && documentsFormingPath.get(0).getName().equals(getPathEllipsis())) {
             documentsFormingPath.remove(0);
         }
 
@@ -136,22 +130,19 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
             DocumentPathElement currentPathELement = (DocumentPathElement) pathElement;
             DocumentModel doc = currentPathELement.getDocumentModel();
 
-            if (documentManager.hasPermission(doc.getParentRef(),
-                    SecurityConstants.READ)) {
+            if (documentManager.hasPermission(doc.getParentRef(), SecurityConstants.READ)) {
                 outcome = navigationContext.navigateToRef(doc.getParentRef());
             } else {
                 outcome = navigateToPathElement(currentPathELement);
             }
-            if (navigationContext.getCurrentDocument().getType().equals(
-                    "CoreRoot")) {
+            if (navigationContext.getCurrentDocument().getType().equals("CoreRoot")) {
                 outcome = getViewDomainsOutcome();
             }
         }
         return outcome;
     }
 
-    protected String navigateToPathElement(PathElement pathElement)
-            throws ClientException {
+    protected String navigateToPathElement(PathElement pathElement) throws ClientException {
         // the bijection is not dynamic, i.e. the variables are injected
         // before the action listener code is called.
         String elementType = pathElement.getType();
@@ -163,8 +154,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
         } else if (elementType == ArchivedVersionsPathElement.TYPE) {
             ArchivedVersionsPathElement docPathElement = (ArchivedVersionsPathElement) pathElement;
             currentDoc = docPathElement.getDocumentModel();
-            return navigationContext.navigateToDocument(currentDoc,
-                    "TAB_CONTENT_HISTORY");
+            return navigationContext.navigateToDocument(currentDoc, "TAB_CONTENT_HISTORY");
         } else if (elementType == VersionDocumentPathElement.TYPE) {
             VersionDocumentPathElement element = (VersionDocumentPathElement) pathElement;
             currentDoc = element.getDocumentModel();
@@ -174,12 +164,11 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
     }
 
     /**
-     * Computes the current path by making calls to backend. TODO: need to
-     * change to compute the path from the seam context state.
+     * Computes the current path by making calls to backend. TODO: need to change to compute the path from the seam
+     * context state.
      * <p>
-     * GR: removed the Factory annotation because it made the method be called
-     * too early in case of processing that involves changing the current
-     * document. Multiple invocation of this method is anyway very cheap.
+     * GR: removed the Factory annotation because it made the method be called too early in case of processing that
+     * involves changing the current document. Multiple invocation of this method is anyway very cheap.
      *
      * @return
      */
@@ -224,9 +213,9 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
             }
         }
         // be sure we have at least one item in the breadcrumb otherwise the upnavigation will fail
-        if (shrinkedPath.size()==0) {
+        if (shrinkedPath.size() == 0) {
             // this means the current document has a title longer than MAX_PATH_CHAR_LEN !
-            shrinkedPath.add(0, paths.get(paths.size()-1));
+            shrinkedPath.add(0, paths.get(paths.size() - 1));
         }
         shrinkedPath.add(0, new TextPathElement(getPathEllipsis()));
         return shrinkedPath;

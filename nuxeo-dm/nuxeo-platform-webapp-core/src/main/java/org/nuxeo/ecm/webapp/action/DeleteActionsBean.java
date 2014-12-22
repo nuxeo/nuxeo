@@ -60,8 +60,7 @@ import org.nuxeo.runtime.api.Framework;
 @Name("deleteActions")
 @Scope(ScopeType.EVENT)
 @Install(precedence = Install.FRAMEWORK)
-public class DeleteActionsBean extends InputController implements
-        DeleteActions, Serializable {
+public class DeleteActionsBean extends InputController implements DeleteActions, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -107,18 +106,20 @@ public class DeleteActionsBean extends InputController implements
         return trashService;
     }
 
-    public boolean getCanDeleteItem(DocumentModel container)
-            throws ClientException {
+    @Override
+    public boolean getCanDeleteItem(DocumentModel container) throws ClientException {
         if (container == null) {
             return false;
         }
         return getTrashService().folderAllowsDelete(container);
     }
 
+    @Override
     public boolean getCanDelete() {
         return getCanDelete(CURRENT_DOCUMENT_SELECTION);
     }
 
+    @Override
     public boolean getCanDelete(String listName) {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(listName);
         try {
@@ -129,6 +130,7 @@ public class DeleteActionsBean extends InputController implements
         }
     }
 
+    @Override
     public boolean getCanDeleteSections() {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SECTION_SELECTION);
         try {
@@ -139,6 +141,7 @@ public class DeleteActionsBean extends InputController implements
         }
     }
 
+    @Override
     public boolean getCanPurge() throws ClientException {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION);
         try {
@@ -149,6 +152,7 @@ public class DeleteActionsBean extends InputController implements
         }
     }
 
+    @Override
     public boolean checkDeletePermOnParents(List<DocumentModel> docs) {
         try {
             return getTrashService().checkDeletePermOnParents(docs);
@@ -158,6 +162,7 @@ public class DeleteActionsBean extends InputController implements
         }
     }
 
+    @Override
     public String deleteSelection() throws ClientException {
         if (!documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_SELECTION)) {
             return deleteSelection(documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION));
@@ -167,6 +172,7 @@ public class DeleteActionsBean extends InputController implements
         }
     }
 
+    @Override
     public String deleteSelectionSections() throws ClientException {
         if (!documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_SECTION_SELECTION)) {
             return deleteSelection(documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SECTION_SELECTION));
@@ -178,16 +184,18 @@ public class DeleteActionsBean extends InputController implements
 
     protected static final int OP_DELETE = 1, OP_PURGE = 2, OP_UNDELETE = 3;
 
-    public String deleteSelection(List<DocumentModel> docs)
-            throws ClientException {
+    @Override
+    public String deleteSelection(List<DocumentModel> docs) throws ClientException {
         int op = isTrashManagementEnabled() ? OP_DELETE : OP_PURGE;
         return actOnSelection(op, docs);
     }
 
+    @Override
     public String purgeSelection() throws ClientException {
         return purgeSelection(CURRENT_DOCUMENT_TRASH_SELECTION);
     }
 
+    @Override
     public String purgeSelection(String listName) throws ClientException {
         if (!documentsListsManager.isWorkingListEmpty(listName)) {
             return purgeSelection(documentsListsManager.getWorkingList(listName));
@@ -197,11 +205,12 @@ public class DeleteActionsBean extends InputController implements
         }
     }
 
-    public String purgeSelection(List<DocumentModel> docs)
-            throws ClientException {
+    @Override
+    public String purgeSelection(List<DocumentModel> docs) throws ClientException {
         return actOnSelection(OP_PURGE, docs);
     }
 
+    @Override
     public String undeleteSelection() throws ClientException {
         if (!documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_TRASH_SELECTION)) {
             return undeleteSelection(documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION));
@@ -211,28 +220,26 @@ public class DeleteActionsBean extends InputController implements
         }
     }
 
-    public String undeleteSelection(List<DocumentModel> docs)
-            throws ClientException {
+    @Override
+    public String undeleteSelection(List<DocumentModel> docs) throws ClientException {
         return actOnSelection(OP_UNDELETE, docs);
 
     }
 
-    protected String actOnSelection(int op, List<DocumentModel> docs)
-            throws ClientException {
+    protected String actOnSelection(int op, List<DocumentModel> docs) throws ClientException {
         if (docs == null) {
             return null;
         }
         TrashInfo info;
         try {
-            info = getTrashService().getTrashInfo(docs, currentUser, false,
-                    false);
+            info = getTrashService().getTrashInfo(docs, currentUser, false, false);
         } catch (ClientException e) {
             log.error("Cannot check delete permission", e);
             return null;
         }
 
-        DocumentModel targetContext = getTrashService().getAboveDocument(
-                navigationContext.getCurrentDocument(), info.rootPaths);
+        DocumentModel targetContext = getTrashService().getAboveDocument(navigationContext.getCurrentDocument(),
+                info.rootPaths);
 
         // remove from all lists
         documentsListsManager.removeFromAllLists(info.docs);
@@ -263,8 +270,7 @@ public class DeleteActionsBean extends InputController implements
         if (op == OP_UNDELETE) {
             // undelete is problematic because it may change undeleted
             // parent's paths... so we refetch the new context
-            targetContext = documentManager.getDocument(new IdRef(
-                    targetContext.getId()));
+            targetContext = documentManager.getDocument(new IdRef(targetContext.getId()));
         }
         navigationContext.setCurrentDocument(targetContext);
 
@@ -274,12 +280,10 @@ public class DeleteActionsBean extends InputController implements
             Events.instance().raiseEvent(DOCUMENT_CHILDREN_CHANGED);
         } else {
             for (DocumentRef parentRef : parentRefs) {
-                if (documentManager.hasPermission(parentRef,
-                        SecurityConstants.READ)) {
+                if (documentManager.hasPermission(parentRef, SecurityConstants.READ)) {
                     DocumentModel parent = documentManager.getDocument(parentRef);
                     if (parent != null) {
-                        Events.instance().raiseEvent(DOCUMENT_CHILDREN_CHANGED,
-                                parent);
+                        Events.instance().raiseEvent(DOCUMENT_CHILDREN_CHANGED, parent);
                     }
                 }
             }
@@ -287,37 +291,39 @@ public class DeleteActionsBean extends InputController implements
 
         // User feedback
         if (info.proxies > 0) {
-            facesMessages.add(StatusMessage.Severity.WARN,
-                    "can_not_delete_proxies");
+            facesMessages.add(StatusMessage.Severity.WARN, "can_not_delete_proxies");
         }
         Object[] params = { Integer.valueOf(info.docs.size()) };
-        facesMessages.add(StatusMessage.Severity.INFO, "#0 "
-                + resourcesAccessor.getMessages().get(msgid), params);
+        facesMessages.add(StatusMessage.Severity.INFO, "#0 " + resourcesAccessor.getMessages().get(msgid), params);
 
         return computeOutcome(DELETE_OUTCOME);
     }
 
+    @Override
     public boolean isTrashManagementEnabled() {
         return trashManager.isTrashManagementEnabled();
     }
 
     public List<Action> getActionsForTrashSelection() {
-        return webActions.getUnfiltredActionsList(CURRENT_DOCUMENT_TRASH_SELECTION
-                + "_LIST");
+        return webActions.getUnfiltredActionsList(CURRENT_DOCUMENT_TRASH_SELECTION + "_LIST");
     }
 
+    @Override
     public void create() {
     }
 
+    @Override
     public void destroy() {
     }
 
+    @Override
     public void restoreCurrentDocument() throws ClientException {
         List<DocumentModel> doc = new ArrayList<DocumentModel>();
         doc.add(navigationContext.getCurrentDocument());
         undeleteSelection(doc);
     }
 
+    @Override
     public boolean getCanRestoreCurrentDoc() throws ClientException {
         DocumentModel doc = navigationContext.getCurrentDocument();
         if (doc == null) {
@@ -327,8 +333,7 @@ public class DeleteActionsBean extends InputController implements
             return false;
         }
         try {
-            return getTrashService().canPurgeOrUndelete(
-                    Collections.singletonList(doc), currentUser);
+            return getTrashService().canPurgeOrUndelete(Collections.singletonList(doc), currentUser);
         } catch (ClientException e) {
             log.error("Cannot check delete permission", e);
             return false;

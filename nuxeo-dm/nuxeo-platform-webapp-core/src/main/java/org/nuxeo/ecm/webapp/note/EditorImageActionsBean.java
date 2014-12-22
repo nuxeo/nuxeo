@@ -48,14 +48,11 @@ import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Seam component implementing actions related to inserting an image in a Note
- * document.
+ * Seam component implementing actions related to inserting an image in a Note document.
  * <p>
- * The uploaded image is stored in the <code>files</code> schema of the
- * document.
+ * The uploaded image is stored in the <code>files</code> schema of the document.
  * <p>
- * After uploading an image, the REST URL for this image can be retrieve through
- * the appropriate method.
+ * After uploading an image, the REST URL for this image can be retrieve through the appropriate method.
  * <p>
  * The search method retrieves only the Picture document of the repository.
  *
@@ -63,8 +60,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("editorImageActions")
 @Scope(CONVERSATION)
-public class EditorImageActionsBean extends InputController implements
-        EditorImageActions, Serializable {
+public class EditorImageActionsBean extends InputController implements EditorImageActions, Serializable {
 
     private static final String FILES_SCHEMA = "files";
 
@@ -173,15 +169,13 @@ public class EditorImageActionsBean extends InputController implements
         }
         final DocumentModel doc = navigationContext.getCurrentDocument();
 
-        final List<Map<String, Object>> filesList = (List<Map<String, Object>>) doc.getProperty(
-                "files", "files");
+        final List<Map<String, Object>> filesList = (List<Map<String, Object>>) doc.getProperty("files", "files");
         final int fileIndex = filesList == null ? 0 : filesList.size();
 
         final Map<String, Object> props = new HashMap<String, Object>();
         uploadedImageName = FileUtils.getCleanFileName(uploadedImageName);
         props.put("filename", uploadedImageName);
-        props.put("file", FileUtils.createSerializableBlob(uploadedImage,
-                uploadedImageName, null));
+        props.put("file", FileUtils.createSerializableBlob(uploadedImage, uploadedImageName, null));
         final ListDiff listDiff = new ListDiff();
         listDiff.add(props);
         doc.setProperty("files", "files", listDiff);
@@ -189,8 +183,7 @@ public class EditorImageActionsBean extends InputController implements
         documentManager.saveDocument(doc);
         documentManager.save();
 
-        imageUrl = DocumentModelFunctions.complexFileUrl("downloadFile", doc,
-                fileIndex, uploadedImageName);
+        imageUrl = DocumentModelFunctions.complexFileUrl("downloadFile", doc, fileIndex, uploadedImageName);
 
         isImageUploaded = true;
 
@@ -271,7 +264,6 @@ public class EditorImageActionsBean extends InputController implements
      *
      * @param typeDocument The type of document to search.
      * @throws ClientException
-     *
      * @since 5.9.5
      */
     @SuppressWarnings("unchecked")
@@ -282,26 +274,22 @@ public class EditorImageActionsBean extends InputController implements
         try {
             PageProviderService ppService = Framework.getService(PageProviderService.class);
             Map<String, Serializable> props = new HashMap<String, Serializable>();
-            props.put(
-                    CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                    (Serializable) documentManager);
+            props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) documentManager);
             PageProvider<DocumentModel> pp = null;
             if (searchKeywords != null) {
                 searchKeywords = searchKeywords.trim();
                 if (searchKeywords.length() > 0) {
                     if (!searchKeywords.equals("*")) {
                         // full text search
-                        pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                                PP_SEARCH_MEDIA_BY_TITLE, null, null, null, props,
-                                new Object[] { typeDocument, searchKeywords });
+                        pp = (PageProvider<DocumentModel>) ppService.getPageProvider(PP_SEARCH_MEDIA_BY_TITLE, null,
+                                null, null, props, new Object[] { typeDocument, searchKeywords });
                     }
                 }
             }
 
             // If the pageprovider is null, we search all medias for the specific type
             if (pp == null) {
-                pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                        PP_SEARCH_MEDIA_ALL, null, null, null,
+                pp = (PageProvider<DocumentModel>) ppService.getPageProvider(PP_SEARCH_MEDIA_ALL, null, null, null,
                         props, new Object[] { typeDocument });
             }
             return pp.getCurrentPage();
@@ -346,7 +334,7 @@ public class EditorImageActionsBean extends InputController implements
         List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) video.getPropertyValue("vid:transcodedVideos");
         int position = 0;
         for (Map<String, Serializable> prop : transcodedVideos) {
-            if (type.equals((String) prop.get("name"))) {
+            if (type.equals(prop.get("name"))) {
                 StorageBlob content = (StorageBlob) prop.get("content");
                 String blobPropertyName = "vid:transcodedVideos/" + position + "/content";
                 return DocumentModelFunctions.bigFileUrl(video, blobPropertyName, content.getFilename());

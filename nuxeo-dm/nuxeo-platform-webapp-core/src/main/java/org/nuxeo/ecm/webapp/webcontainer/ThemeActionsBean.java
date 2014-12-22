@@ -44,6 +44,7 @@ public class ThemeActionsBean implements ThemeActions {
 
     private static final Log log = LogFactory.getLog(ThemeActionsBean.class);
 
+    @Override
     public String getDefaultTheme() {
         FacesContext faces = FacesContext.getCurrentInstance();
         return getDefaultTheme(faces.getExternalContext());
@@ -52,21 +53,21 @@ public class ThemeActionsBean implements ThemeActions {
     protected String getDefaultTheme(ExternalContext ec) {
         // get the negotiation strategy
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        ApplicationType app = (ApplicationType) typeRegistry.lookup(
-                TypeFamily.APPLICATION, ec.getRequestContextPath());
+        ApplicationType app = (ApplicationType) typeRegistry.lookup(TypeFamily.APPLICATION, ec.getRequestContextPath());
         NegotiationDef negotiation = app.getNegotiation();
         return negotiation.getDefaultTheme();
     }
 
+    @Override
     public Logo getLogo() {
         FacesContext faces = FacesContext.getCurrentInstance();
         final ExternalContext ec = faces.getExternalContext();
         String flavor = (String) ec.getRequestMap().get(
-                Negotiator.NEGOTIATION_RESULT_PREFIX
-                        + Negotiator.NEGOTIATION_OBJECT.collection.name());
+                Negotiator.NEGOTIATION_RESULT_PREFIX + Negotiator.NEGOTIATION_OBJECT.collection.name());
         return getLogo(flavor);
     }
 
+    @Override
     public Logo getLogo(String flavorName) {
         if (flavorName == null) {
             return null;
@@ -78,6 +79,7 @@ public class ThemeActionsBean implements ThemeActions {
         return service.getLogo(flavorName);
     }
 
+    @Override
     public Flavor getFlavor(String flavorName) {
         if (flavorName == null) {
             return null;

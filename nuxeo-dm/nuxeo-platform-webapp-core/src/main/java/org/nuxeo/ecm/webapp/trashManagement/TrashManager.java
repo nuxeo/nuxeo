@@ -22,24 +22,21 @@ package org.nuxeo.ecm.webapp.trashManagement;
 /**
  * Seam component used to manage named lists of documents.
  * <p>
- * Managing the DM lists into this component instead of directly inside the Seam
- * context offers the following advantages:
+ * Managing the DM lists into this component instead of directly inside the Seam context offers the following
+ * advantages:
  * <ul>
- * <li> DM Lists life cycle management can be done transparently, the
- * DocumentsListsManager can use internal fields or differently scoped variables
- * (Conversation, Process ...)
- * <li> DocumentsListsManager provides (will) an Extension Point mechanism to
- * register new names lists
- * <li> DocumentsListsManager provides add configurations to each lists
+ * <li>DM Lists life cycle management can be done transparently, the DocumentsListsManager can use internal fields or
+ * differently scoped variables (Conversation, Process ...)
+ * <li>DocumentsListsManager provides (will) an Extension Point mechanism to register new names lists
+ * <li>DocumentsListsManager provides add configurations to each lists
  * <ul>
- * <li> List Name
- * <li> List Icon
- * <li> List append behavior
- * <li> Category of the list
- * <li> ...
+ * <li>List Name
+ * <li>List Icon
+ * <li>List append behavior
+ * <li>Category of the list
+ * <li>...
  * </ul>
- * <li> DocumentsListsManager provides helpers features for merging and
- * resetting lists
+ * <li>DocumentsListsManager provides helpers features for merging and resetting lists
  * </ul>
  *
  * @author tiry

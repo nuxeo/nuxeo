@@ -26,24 +26,21 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
 /**
- * Defines actions that can be invoked from pages or other actions - relative to
- * server.
+ * Defines actions that can be invoked from pages or other actions - relative to server.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
 public interface ServerActions {
 
     /**
-     * Returns the list of available {@link RepositoryLocation}s the user can
-     * connect to.
+     * Returns the list of available {@link RepositoryLocation}s the user can connect to.
      */
     List<Repository> getAvailableRepositories() throws ClientException;
 
     /**
      * Stores the selected location.
      *
-     * @return the page that displays the domains ( found at the selected
-     *         {@link RepositoryLocation}.
+     * @return the page that displays the domains ( found at the selected {@link RepositoryLocation}.
      */
     String selectRepository(String repositoryName) throws ClientException;
 
@@ -53,6 +50,6 @@ public interface ServerActions {
      * @return the RepositoryLocation.
      * @throws ClientException
      */
-    //RepositoryLocation selectFirstLocation() throws ClientException;
+    // RepositoryLocation selectFirstLocation() throws ClientException;
 
 }
