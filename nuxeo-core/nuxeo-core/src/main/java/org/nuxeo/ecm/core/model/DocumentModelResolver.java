@@ -33,8 +33,8 @@ import org.nuxeo.ecm.core.api.local.LocalException;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
 /**
- * This {@link ObjectResolver} allows to manage integrity for fields containing {@link DocumentModel}
- * references (id or path).
+ * This {@link ObjectResolver} allows to manage integrity for fields containing {@link DocumentModel} references (id or
+ * path).
  * <p>
  * Resolved references must be either a path or an id, default mode is id. Storing path keep link with place in the
  * Document hierarchy no matter which Document is referenced. Storing id track the Document no matter where the Document
@@ -57,19 +57,19 @@ import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
  *
  * <pre>
  * {@code
- * <!-- user or group resolver -->
- * <xs:simpleType name="userOrGroupReference">
+ * <!-- default resolver is an id based resolver -->
+ * <xs:simpleType name="favoriteDocument1">
  *   <xs:restriction base="xs:string" ref:resolver="documentResolver" />
  * </xs:simpleType>
- *
- * <!-- user resolver -->
- * <xs:simpleType name="userReference">
- *   <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:type="user" />
+ * 
+ * <!-- store id -->
+ * <xs:simpleType name="favoriteDocument2">
+ *   <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="id" />
  * </xs:simpleType>
- *
- * <!-- group resolver -->
- * <xs:simpleType name="groupReference">
- *   <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:type="group" />
+ * 
+ * <!-- store path -->
+ * <xs:simpleType name="bestDocumentRepositoryPlace">
+ *   <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="path" />
  * </xs:simpleType>
  * }
  * </pre>

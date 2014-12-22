@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
+ */
+
 package org.nuxeo.ecm.directory;
 
 import java.io.Serializable;
@@ -11,6 +28,26 @@ import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * This {@link ObjectResolver} allows to manage integrity for fields containing references to directory's entry.
+ * <p>
+ * References contains the directory entry id.
+ * </p>
+ * <p>
+ * To use it, put the following code in your schema XSD (don't forget the directory name):
+ * </p>
+ *
+ * <pre>
+ * {@code
+ * <xs:element name="carBrand">
+ *   <xs:simpleType>
+ *     <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="carBrandsDirectory" />
+ *   </xs:simpleType>
+ * </xs:element>
+ * </pre>
+ *
+ * @since 7.1
+ */
 public class DirectoryEntryResolver implements ObjectResolver {
 
     public static final String NAME = "directoryResolver";
