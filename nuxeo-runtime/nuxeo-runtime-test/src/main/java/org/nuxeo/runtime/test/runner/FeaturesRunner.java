@@ -139,6 +139,15 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     }
 
+    @Override
+    protected List<FrameworkMethod> computeTestMethods() {
+        List<FrameworkMethod> methods = super.computeTestMethods();
+        // sort a copy
+        methods = new ArrayList<FrameworkMethod>(methods);
+        MethodSorter.sortMethodsUsingSourceOrder(methods);
+        return methods;
+    }
+
     protected void initialize() throws Exception {
         for (RunnerFeature each : getFeatures()) {
             each.initialize(this);
