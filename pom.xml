@@ -20,6 +20,7 @@
     <module>nuxeo-routing-dashboard</module>
     <module>nuxeo-routing-default</module>
     <module>nuxeo-routing-test</module>
+    <module>nuxeo-routing-restAPI</module>
   </modules>
 
   <developers>
