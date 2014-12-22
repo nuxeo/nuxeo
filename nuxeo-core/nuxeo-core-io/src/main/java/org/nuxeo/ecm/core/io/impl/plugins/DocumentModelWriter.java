@@ -102,7 +102,9 @@ public class DocumentModelWriter extends AbstractDocumentModelWriter {
 
         DocumentLocation source = xdoc.getSourceLocation();
         DocumentTranslationMap map = new DocumentTranslationMapImpl(source.getServerName(), doc.getRepositoryName());
-        map.put(source.getDocRef(), doc.getRef());
+        if (source.getDocRef() != null && source.getDocRef().reference() != null) {
+            map.put(source.getDocRef(), doc.getRef());
+        }
         return map;
     }
 
