@@ -29,6 +29,8 @@ import java.util.TreeSet;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
@@ -36,6 +38,8 @@ import org.osgi.framework.BundleContext;
  * @since 7.1
  */
 public class BodyFactoryScanner {
+
+    protected static final Log log = LogFactory.getLog(BodyFactoryScanner.class);
 
     public Set<BodyFactory> getFactories(BundleContext ctx) {
         Set<BodyFactory> result = new TreeSet<BodyFactory>(new BodyFactoryComparator());
@@ -47,20 +51,25 @@ public class BodyFactoryScanner {
         List<BodyFactory> result = new ArrayList<BodyFactory>();
         Enumeration entries = bundle.findEntries("/", "*.class", true);
         String rootPath = bundle.getEntry("/").getPath();
+        log.warn("rootPAth : " + rootPath);
         while (entries.hasMoreElements()) {
             String entryPath = ((URL) entries.nextElement()).getPath();
+            log.warn(entryPath);
             String entryName = entryPath.substring(rootPath.length() + 1, entryPath.length() - ".class".length()).replace(
                     '/', '.');
-            System.out.println(entryName);
+            log.warn(entryName);
             try {
                 Class<?> entryClass = bundle.loadClass(entryName);
                 if (BodyFactory.class.isAssignableFrom(entryClass) && !entryClass.isAnonymousClass() && !entryClass.isInterface()) {
-                    System.out.println("Discovered BodyFactory : " + entryName);
+                    log.warn("Discovered BodyFactory : " + entryName);
                     result.add((BodyFactory) entryClass.newInstance());
                 }
             } catch (ClassNotFoundException e) {
+                log.warn(e.getMessage());
             } catch (InstantiationException e) {
+                log.warn(e.getMessage());
             } catch (IllegalAccessException e) {
+                log.warn(e.getMessage());
             }
         }
         return result;
