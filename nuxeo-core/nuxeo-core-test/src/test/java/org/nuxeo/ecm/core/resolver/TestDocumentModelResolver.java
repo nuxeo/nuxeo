@@ -415,7 +415,7 @@ public class TestDocumentModelResolver {
         doc.setPropertyValue(PATH_XPATH, "BAD path !");
         assertNull(doc.getProperty(PATH_XPATH).getObjectResolver().fetch());
         assertFalse(doc.getProperty(PATH_XPATH).getObjectResolver().validate());
-        assertEquals(2, validator.validate(doc).numberOfErros());
+        assertEquals(2, validator.validate(doc).numberOfErrors());
     }
 
     @Test

@@ -46,7 +46,7 @@ public class DocumentValidationException extends ClientException {
     public String getMessage() {
         if (report.hasError()) {
             String violationMessage = report.asList().get(0).getMessage(null);
-            String message = String.format(MESSAGE, report.numberOfErros(), violationMessage);
+            String message = String.format(MESSAGE, report.numberOfErrors(), violationMessage);
             return message;
         } else {
             return super.getMessage();

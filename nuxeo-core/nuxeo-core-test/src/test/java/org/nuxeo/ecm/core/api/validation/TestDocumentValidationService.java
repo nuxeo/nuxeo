@@ -372,10 +372,10 @@ public class TestDocumentValidationService {
         violations = validator.validate("vs:users:user:firstname", "Bob");
         assertFalse(violations.hasError());
         violations = validator.validate("vs:users:user:firstname", null);
-        assertEquals(1, violations.numberOfErros());
+        assertEquals(1, violations.numberOfErrors());
         assertTrue(violations.asList().get(0).getConstraint() instanceof NotNullConstraint);
         violations = validator.validate("vs:users:user:firstname", "   ");
-        assertEquals(1, violations.numberOfErros());
+        assertEquals(1, violations.numberOfErrors());
         assertTrue(violations.asList().get(0).getConstraint() instanceof PatternConstraint);
     }
 

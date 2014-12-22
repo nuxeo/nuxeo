@@ -38,7 +38,7 @@ public class DocumentValidationReport {
         return !violations.isEmpty();
     }
 
-    public int numberOfErros() {
+    public int numberOfErrors() {
         return violations.size();
     }
 
