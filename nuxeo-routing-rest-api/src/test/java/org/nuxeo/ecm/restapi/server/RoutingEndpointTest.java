@@ -19,24 +19,37 @@
 package org.nuxeo.ecm.restapi.server;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import javax.servlet.RequestDispatcher;
+import java.io.ByteArrayOutputStream;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
 
+import org.codehaus.jackson.JsonGenerator;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
+import org.nuxeo.ecm.restapi.server.jaxrs.RoutingRequest;
 import org.nuxeo.ecm.restapi.test.BaseTest;
+import org.nuxeo.ecm.restapi.test.RestServerFeature;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.Jetty;
 
 import com.sun.jersey.api.client.ClientResponse;
 
 /**
  * @since 7.1
  */
-public class WorkflowEndpointTest extends BaseTest {
+@RunWith(FeaturesRunner.class)
+@Jetty(port = 18090)
+@Features(RestServerFeature.class)
+@Deploy("org.nuxeo.ecm.platform.restapi.server.routing")
+public class RoutingEndpointTest extends BaseTest {
 
     HttpServletRequest req = mock(HttpServletRequest.class);
 
@@ -45,8 +58,12 @@ public class WorkflowEndpointTest extends BaseTest {
     @Test
     public void testWorkflowEndpoint() throws Exception {
 
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        JsonGenerator jg = JsonHelper.createJsonGenerator(out);
+        jg.writeObject(new RoutingRequest());
+
         // When i do a get request on the workflow endpoint
-        ClientResponse response = getResponse(RequestType.GET, "/workflow");
+        ClientResponse response = getResponse(RequestType.POST, "/workflow", out.toString());
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 

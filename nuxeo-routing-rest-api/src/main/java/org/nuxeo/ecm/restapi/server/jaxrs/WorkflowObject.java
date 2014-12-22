@@ -28,20 +28,16 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.directory.Directory;
-import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * @since 7.1
+ */
 @WebObject(type = "workflow")
 @Produces(MediaType.APPLICATION_JSON)
 public class WorkflowObject extends DefaultObject {
@@ -53,11 +49,12 @@ public class WorkflowObject extends DefaultObject {
         documentRoutingService = Framework.getLocalService(DocumentRoutingService.class);
     }
 
-
     @POST
-    @Consumes({"application/json" })
-    public Response startWorkflow(ExecutionRequest excReq) {
-        return Response.ok(null).status(Status.CREATED).build();
+    @Consumes({"application/json+nxentity" })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response startWorkflow(RoutingRequest rr) {
+        String routeId = ""; //= documentRoutingService.createNewInstance(routingRequest.getRoutingId(), routingRequest.getDocumentIds(), ctx.getCoreSession(), routingRequest.isShouldStart());
+        return Response.ok(routeId).status(Status.CREATED).build();
     }
 
     @GET

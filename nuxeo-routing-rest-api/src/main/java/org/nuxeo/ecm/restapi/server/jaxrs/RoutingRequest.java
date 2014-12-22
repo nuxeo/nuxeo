@@ -21,12 +21,39 @@ package org.nuxeo.ecm.restapi.server.jaxrs;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.DocumentRef;
-
+/**
+ * @since 7.1
+ */
 public class RoutingRequest {
 
     public boolean shouldStart;
 
-    public final List<DocumentRef> documentRefs = new ArrayList<DocumentRef>();
+    public List<String> documentIds = new ArrayList<String>();
+
+    public String routingId;
+
+    public String getRoutingId() {
+        return routingId;
+    }
+
+    public void setRoutingId(String routingId) {
+        this.routingId = routingId;
+    }
+
+    public List<String> getDocumentIds() {
+        return documentIds;
+    }
+
+    public boolean isShouldStart() {
+        return shouldStart;
+    }
+
+    public void setDocumentIds(List<String> documentIds) {
+        this.documentIds = documentIds;
+    }
+
+    public void setShouldStart(boolean shouldStart) {
+        this.shouldStart = shouldStart;
+    }
 
 }
