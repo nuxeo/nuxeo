@@ -24,7 +24,6 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -119,6 +118,7 @@ public class TestImportExportWithComplexXSD {
         Assert.assertEquals("MySegment", segment.get("name"));
         Assert.assertEquals("SomeTarget", segment.get("target"));
         Assert.assertEquals("rawVariable", segment.get("variableType"));
+        Assert.assertNull(segment.get("dataType"));
 
         List<String> roles = (List<String>) segment.get("roles");
 

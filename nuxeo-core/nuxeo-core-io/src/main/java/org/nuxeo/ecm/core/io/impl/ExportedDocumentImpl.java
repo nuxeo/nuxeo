@@ -285,12 +285,12 @@ public class ExportedDocumentImpl implements ExportedDocument {
 
     protected void readProperty(Element parent, Namespace targetNs, Field field, Object value, boolean inlineBlobs)
             throws IOException {
-        Type type = field.getType();
-        QName name = QName.get(field.getName().getLocalName(), targetNs.prefix, targetNs.uri);
-        Element element = parent.addElement(name);
         if (value == null) {
             return; // have no content
         }
+        Type type = field.getType();
+        QName name = QName.get(field.getName().getLocalName(), targetNs.prefix, targetNs.uri);
+        Element element = parent.addElement(name);
 
         // extract the element content
         if (type.isSimpleType()) {
