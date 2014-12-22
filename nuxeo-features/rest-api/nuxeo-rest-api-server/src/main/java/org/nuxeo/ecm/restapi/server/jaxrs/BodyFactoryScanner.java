@@ -16,7 +16,7 @@
  *
  */
 
-package org.nuxeo.ecm.restapi.server;
+package org.nuxeo.ecm.restapi.server.jaxrs;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,10 +29,8 @@ import java.util.TreeSet;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
-import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 
 /**
  * @since 7.1
@@ -68,7 +66,7 @@ public class BodyFactoryScanner {
         return result;
     }
 
-    protected BodyFactory scan(BundleContext context) {
+    public BodyFactory scan(BundleContext context) {
         final Set<MessageBodyReader<?>> messageBodyReaders = new LinkedHashSet<MessageBodyReader<?>>();
         final Set<MessageBodyWriter<?>> messageBodyWriters = new LinkedHashSet<MessageBodyWriter<?>>();
         for (BodyFactory bf : getFactories(context)) {

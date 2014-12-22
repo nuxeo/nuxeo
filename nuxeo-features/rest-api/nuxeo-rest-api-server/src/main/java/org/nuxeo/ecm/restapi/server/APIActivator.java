@@ -30,12 +30,9 @@ public class APIActivator implements BundleActivator {
 
     public BundleContext context;
 
-    public BodyFactory bodyFactory = null;
-
     @Override
     public void start(BundleContext context) throws Exception {
         this.context = context;
-        this.bodyFactory = new BodyFactoryScanner().scan(context);
         instance = this;
     }
 

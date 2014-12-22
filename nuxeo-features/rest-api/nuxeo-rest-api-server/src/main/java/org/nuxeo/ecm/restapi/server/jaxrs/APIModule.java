@@ -112,8 +112,9 @@ public class APIModule extends WebEngineModule {
         result.add(new FacetWriter());
         result.add(new FacetsWriter());
 
-        result.addAll(APIActivator.instance.bodyFactory.getMessageBodyReaders());
-        result.addAll(APIActivator.instance.bodyFactory.getMessageBodyWriters());
+        BodyFactory factory = new BodyFactoryScanner().scan(APIActivator.instance.context);
+        result.addAll(factory.getMessageBodyReaders());
+        result.addAll(factory.getMessageBodyWriters());
 
         return result;
     }

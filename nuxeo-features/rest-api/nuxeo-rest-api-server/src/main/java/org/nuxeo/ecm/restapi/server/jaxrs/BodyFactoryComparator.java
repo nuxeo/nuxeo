@@ -16,7 +16,7 @@
  *
  */
 
-package org.nuxeo.ecm.restapi.server;
+package org.nuxeo.ecm.restapi.server.jaxrs;
 
 import java.util.Comparator;
 
