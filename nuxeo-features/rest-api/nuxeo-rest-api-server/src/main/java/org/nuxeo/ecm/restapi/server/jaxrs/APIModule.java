@@ -19,6 +19,8 @@ package org.nuxeo.ecm.restapi.server.jaxrs;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.ws.rs.ext.Provider;
+
 import org.nuxeo.ecm.automation.jaxrs.io.JsonAdapterWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonLoginInfoWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonRecordSetWriter;
@@ -55,7 +57,6 @@ import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoGroupWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoPrincipalListWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoPrincipalReader;
 import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoPrincipalWriter;
-import org.nuxeo.ecm.restapi.server.APIActivator;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 
 /**
@@ -111,10 +112,6 @@ public class APIModule extends WebEngineModule {
         result.add(new DocumentTypesWriter());
         result.add(new FacetWriter());
         result.add(new FacetsWriter());
-
-        BodyFactory factory = new BodyFactoryScanner().scan(APIActivator.instance.context);
-        result.addAll(factory.getMessageBodyReaders());
-        result.addAll(factory.getMessageBodyWriters());
 
         return result;
     }
