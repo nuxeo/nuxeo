@@ -56,6 +56,11 @@ public class APIRoot extends ModuleRoot {
         return newObject("repo");
     }
 
+    @Path("/{unknonwPath}")
+    public Object doGetUknown(@PathParam("unknonwPath") String unknonwPath) {
+        return newObject(unknonwPath);
+    }
+
     @Path("/user")
     public Object doGetUser() {
         return newObject("users");

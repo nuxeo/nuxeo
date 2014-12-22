@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.nuxeo.ecm.automation.jaxrs.io.JsonAdapterWriter;
@@ -55,6 +55,7 @@ import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoGroupWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoPrincipalListWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoPrincipalReader;
 import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoPrincipalWriter;
+import org.nuxeo.ecm.restapi.server.APIActivator;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 
 /**
@@ -74,7 +75,7 @@ public class APIModule extends WebEngineModule {
 
     @Override
     public Set<Object> getSingletons() {
-        Set<Object> result = new HashSet<Object>();
+        Set<Object> result = new LinkedHashSet<Object>();
 
         result.add(new JsonRequestReader());
         result.add(new JsonAutomationInfoWriter());
@@ -110,6 +111,9 @@ public class APIModule extends WebEngineModule {
         result.add(new DocumentTypesWriter());
         result.add(new FacetWriter());
         result.add(new FacetsWriter());
+
+        result.addAll(APIActivator.instance.bodyFactory.getMessageBodyReaders());
+        result.addAll(APIActivator.instance.bodyFactory.getMessageBodyWriters());
 
         return result;
     }

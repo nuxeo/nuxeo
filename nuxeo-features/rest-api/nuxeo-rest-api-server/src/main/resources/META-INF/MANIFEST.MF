@@ -2,6 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
 Bundle-Name: nuxeo-restapi-server 
 Bundle-SymbolicName: org.nuxeo.ecm.platform.restapi.server;singleton:=true
+Bundle-Activator: org.nuxeo.ecm.restapi.server.APIActivator
 Bundle-Vendor: Nuxeo
 Bundle-Version: 1.0.0
 Nuxeo-WebModule: org.nuxeo.ecm.restapi.server.jaxrs.APIModule;name=api;extends=automation;package=org/nuxeo/ecm/restapi/server/jaxrs;headless=true
