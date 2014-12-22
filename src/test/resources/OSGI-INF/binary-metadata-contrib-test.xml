@@ -3,9 +3,9 @@
   <extension target="org.nuxeo.binary.metadata.api.service"
              point="metadataMappings">
     <metadataMapping id="File" processor="exifTool" blobXPath="file:content">
-      <metadata name="EXIF:Orientation" xpath="dc:description"/>
-      <metadata name="EXIF:ImageHeight" xpath="dc:title"/>
-      <metadata name="EXIF:Software" xpath="dc:source"/>
+      <metadata name="File:FileSize" xpath="dc:description"/>
+      <metadata name="PDF:Language" xpath="dc:title"/>
+      <metadata name="PDF:Producer" xpath="dc:source"/>
     </metadataMapping>
   </extension>
 

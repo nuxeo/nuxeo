@@ -43,10 +43,7 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(FeaturesRunner.class)
 @Features(BinaryMetadataFeature.class)
-@LocalDeploy({ "org.nuxeo.binary.metadata" +
-        ".test:OSGI-INF/binary-metadata-contrib-test.xml",
-        "org.nuxeo.binary.metadata" +
-                ".test:OSGI-INF/binary-metadata-file-contrib-test.xml" })
+@LocalDeploy({ "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-contrib-test.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD,
         init = BinaryMetadataServerInit.class)
 public class TestBinaryMetadataService {
@@ -89,7 +86,7 @@ public class TestBinaryMetadataService {
         Map<String, Object> blobProperties = binaryMetadataService
                 .readMetadata(musicBlobHolder.getBlob());
         assertNotNull(blobProperties);
-        assertEquals(49, blobProperties.size());
+        assertEquals(48, blobProperties.size());
         assertEquals("Twist", blobProperties.get("ID3:Title").toString());
         assertEquals("Divine Recordings", blobProperties.get("ID3:Publisher")
                 .toString());
@@ -103,9 +100,7 @@ public class TestBinaryMetadataService {
         Map<String, Object> blobProperties = binaryMetadataService
                 .readMetadata(musicBlobHolder.getBlob(), musicMetadata);
         assertNotNull(blobProperties);
-        // 5 properties cause: SourceFile is a mandatory property extracted
-        // by ExifTool - to be excluded post execution.
-        assertEquals(5, blobProperties.size());
+        assertEquals(4, blobProperties.size());
         assertEquals("Twist", blobProperties.get("ID3:Title").toString());
         assertEquals("Divine Recordings", blobProperties.get("ID3:Publisher")
                 .toString());
@@ -122,7 +117,7 @@ public class TestBinaryMetadataService {
                 .readMetadata(psdBlobHolder.getBlob(), PSDMetadata);
         assertNotNull(blobProperties);
         assertNotNull(blobProperties);
-        assertEquals(3, blobProperties.size());
+        assertEquals(2, blobProperties.size());
         assertEquals(100, blobProperties.get("EXIF:ImageHeight"));
         assertEquals("Adobe Photoshop CS4 Macintosh",
                 blobProperties.get("EXIF:Software")
@@ -137,7 +132,7 @@ public class TestBinaryMetadataService {
                 .readMetadata(psdBlobHolder.getBlob(), PSDMetadata);
         assertNotNull(blobProperties);
         assertNotNull(blobProperties);
-        assertEquals(3, blobProperties.size());
+        assertEquals(2, blobProperties.size());
         assertEquals(200, blobProperties.get("EXIF:ImageHeight"));
         assertEquals("Nuxeo", blobProperties.get("EXIF:Software")
                 .toString());
@@ -145,14 +140,15 @@ public class TestBinaryMetadataService {
 
     @Test
     public void itShouldWriteDocPropertiesFromBinaryWithMapping() {
-        // Get the document with PSD attached
-        DocumentModel psdDoc = BinaryMetadataServerInit.getFile(3, session);
+        // Get the document with PDF attached
+        DocumentModel pdfDoc = BinaryMetadataServerInit.getFile(1, session);
         // Copy into the document according to metadata mapping contribution.
-        binaryMetadataService.writeMetadata(psdDoc);
-        // Check if the document has been overwritten
-        psdDoc = BinaryMetadataServerInit.getFile(3, session);
-        assertEquals("100",psdDoc.getPropertyValue("dc:title"));
-        assertEquals("Adobe Photoshop CS4 Macintosh",psdDoc.getPropertyValue("dc:source"));
-        assertEquals("Horizontal (normal)",psdDoc.getPropertyValue("dc:description"));
+        binaryMetadataService.writeMetadata(pdfDoc);
+        // Check if the document has been overwritten by binary metadata.
+        pdfDoc = BinaryMetadataServerInit.getFile(1, session);
+        assertEquals("en-US", pdfDoc.getPropertyValue("dc:title"));
+        assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue
+                ("dc:source"));
+        assertEquals("30 kB",pdfDoc.getPropertyValue("dc:description"));
     }
 }
