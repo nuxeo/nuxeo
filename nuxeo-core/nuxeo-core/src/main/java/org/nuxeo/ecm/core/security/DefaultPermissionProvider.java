@@ -56,7 +56,8 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
     }
 
     @Override
-    public List<UserVisiblePermission> getUserVisiblePermissionDescriptors(String typeName) throws ClientException {
+    public synchronized List<UserVisiblePermission> getUserVisiblePermissionDescriptors(String typeName)
+            throws ClientException {
         if (mergedPermissionsVisibility == null) {
             computeMergedPermissionsVisibility();
         }
@@ -77,7 +78,8 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         return getUserVisiblePermissionDescriptors("");
     }
 
-    private void computeMergedPermissionsVisibility() {
+    // called synchronized
+    protected void computeMergedPermissionsVisibility() {
         mergedPermissionsVisibility = new HashMap<String, PermissionVisibilityDescriptor>();
         for (PermissionVisibilityDescriptor pvd : registeredPermissionsVisibility) {
             PermissionVisibilityDescriptor mergedPvd = mergedPermissionsVisibility.get(pvd.getTypeName());
@@ -98,18 +100,19 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
     }
 
     @Override
-    public String[] getSubPermissions(String perm) throws ClientException {
+    public synchronized String[] getSubPermissions(String perm) throws ClientException {
         List<String> permissions = getPermission(perm).getSubPermissions();
         return permissions.toArray(new String[permissions.size()]);
     }
 
     @Override
-    public String[] getAliasPermissions(String perm) throws ClientException {
+    public synchronized String[] getAliasPermissions(String perm) throws ClientException {
         List<String> permissions = getPermission(perm).getSubPermissions();
         return permissions.toArray(new String[permissions.size()]);
     }
 
-    private MergedPermissionDescriptor getPermission(String perm) throws ClientException {
+    // called synchronized
+    protected MergedPermissionDescriptor getPermission(String perm) throws ClientException {
         if (mergedPermissions == null) {
             computeMergedPermissions();
         }
@@ -122,7 +125,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
 
     // OG: this is an awkward method prototype left unchanged for BBB
     @Override
-    public String[] getPermissionGroups(String perm) {
+    public synchronized String[] getPermissionGroups(String perm) {
         if (mergedGroups == null) {
             computeMergedGroups();
         }
@@ -134,7 +137,8 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         return null;
     }
 
-    protected synchronized void computeMergedGroups() {
+    // called synchronized
+    protected void computeMergedGroups() {
         if (mergedPermissions == null) {
             computeMergedPermissions();
         }
@@ -167,6 +171,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         }
     }
 
+    // called synchronized
     protected Set<String> computeAllGroups(String permissionName, Set<String> alreadyProcessed) {
         Set<String> allGroups = mergedGroups.get(permissionName);
         if (allGroups == null) {
@@ -187,7 +192,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
 
     // OG: this is an awkward method prototype left unchanged for BBB
     @Override
-    public String[] getPermissions() {
+    public synchronized String[] getPermissions() {
         if (mergedPermissions == null) {
             computeMergedPermissions();
         }
@@ -195,7 +200,8 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         return mergedPermissions.keySet().toArray(new String[mergedPermissions.size()]);
     }
 
-    protected synchronized void computeMergedPermissions() {
+    // called synchronized
+    protected void computeMergedPermissions() {
         mergedPermissions = new HashMap<String, MergedPermissionDescriptor>();
         for (PermissionDescriptor pd : registeredPermissions) {
             MergedPermissionDescriptor mpd = mergedPermissions.get(pd.getName());
