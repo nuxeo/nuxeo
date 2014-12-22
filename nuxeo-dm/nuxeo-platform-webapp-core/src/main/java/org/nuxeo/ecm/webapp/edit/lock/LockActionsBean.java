@@ -101,6 +101,7 @@ public class LockActionsBean implements LockActions {
 
     private String documentId;
 
+    @Override
     public Boolean getCanLockDoc(DocumentModel document) {
         boolean canLock;
         if (document == null) {
@@ -128,6 +129,7 @@ public class LockActionsBean implements LockActions {
         return documentManager.hasPermission(ref, EVERYTHING);
     }
 
+    @Override
     @Factory(value = "currentDocumentCanBeLocked", scope = ScopeType.EVENT)
     public Boolean getCanLockCurrentDoc() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -145,6 +147,7 @@ public class LockActionsBean implements LockActions {
         }
     }
 
+    @Override
     public Boolean getCanUnlockDoc(DocumentModel document) {
         boolean canUnlock = false;
         if (document == null) {
@@ -171,18 +174,21 @@ public class LockActionsBean implements LockActions {
         return canUnlock;
     }
 
+    @Override
     @Factory(value = "currentDocumentCanBeUnlocked", scope = ScopeType.EVENT)
     public Boolean getCanUnlockCurrentDoc() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return getCanUnlockDoc(currentDocument);
     }
 
+    @Override
     public String lockCurrentDocument() throws ClientException {
         String view = lockDocument(navigationContext.getCurrentDocument());
         navigationContext.invalidateCurrentDocument();
         return view;
     }
 
+    @Override
     public String lockDocument(DocumentModel document) throws ClientException {
         log.debug("Lock a document ...");
         resetEventContext();
@@ -201,6 +207,7 @@ public class LockActionsBean implements LockActions {
         return null;
     }
 
+    @Override
     public String unlockCurrentDocument() throws ClientException {
         String view = unlockDocument(navigationContext.getCurrentDocument());
         navigationContext.invalidateCurrentDocument();
@@ -227,6 +234,7 @@ public class LockActionsBean implements LockActions {
         }
     }
 
+    @Override
     public String unlockDocument(DocumentModel document) throws ClientException {
         log.debug("Unlock a document ...");
         resetEventContext();
@@ -273,6 +281,7 @@ public class LockActionsBean implements LockActions {
         return null;
     }
 
+    @Override
     public Action getLockOrUnlockAction() {
         log.debug("Get lock or unlock action ...");
         Action lockOrUnlockAction = null;
@@ -283,6 +292,7 @@ public class LockActionsBean implements LockActions {
         return lockOrUnlockAction;
     }
 
+    @Override
     @Factory(value = "currentDocumentLockDetails", scope = ScopeType.EVENT)
     public Map<String, Serializable> getCurrentDocLockDetails() throws ClientException {
         Map<String, Serializable> details = null;
@@ -292,6 +302,7 @@ public class LockActionsBean implements LockActions {
         return details;
     }
 
+    @Override
     public Map<String, Serializable> getLockDetails(DocumentModel document) throws ClientException {
         if (lockDetails == null || !StringUtils.equals(documentId, document.getId())) {
             lockDetails = new HashMap<String, Serializable>();
@@ -308,6 +319,7 @@ public class LockActionsBean implements LockActions {
         return lockDetails;
     }
 
+    @Override
     @BypassInterceptors
     public void resetLockState() {
         lockDetails = null;

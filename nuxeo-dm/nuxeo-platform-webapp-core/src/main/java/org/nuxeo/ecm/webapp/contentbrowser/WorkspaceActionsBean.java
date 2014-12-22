@@ -116,10 +116,12 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
     }
 
     // Flag for indicating if template will be used
+    @Override
     public void setUseTemplate(Boolean value) {
         useTemplateFlag = value;
     }
 
+    @Override
     public Boolean getUseTemplate() {
         if (availableTemplates == null) {
             return false;
@@ -131,21 +133,25 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
     }
 
     // initialize pageflow context using Factories
+    @Override
     @Factory(value = "selectedTemplateId")
     public ContextStringWrapper FactoryForSelectedTemplateId() {
         return new ContextStringWrapper("none");
     }
 
+    @Override
     @Factory(value = "selectedSecurityModel")
     public ContextStringWrapper FactoryForSelectSecurityModel() {
         return new ContextStringWrapper("inherit");
     }
 
+    @Override
     @Factory(value = "selectedOwnerModel")
     public ContextStringWrapper FactoryForSelectSecurityOwner() {
         return new ContextStringWrapper("me");
     }
 
+    @Override
     @Begin(pageflow = "createWorkspace", nested = true)
     @Factory(value = "tmpWorkspace")
     public DocumentModel getTmpWorkspace() {
@@ -160,16 +166,19 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
         return tmpWorkspace;
     }
 
+    @Override
     @Factory(value = "availableWorkspaceTemplates")
     public DocumentModelList getTemplates() throws ClientException {
         availableTemplates = documentTemplatesActions.getTemplates("Workspace");
         return availableTemplates;
     }
 
+    @Override
     public String finishPageFlow() {
         return "done";
     }
 
+    @Override
     public String getSelectedTemplateDescription() {
         if (selectedTemplateId == null) {
             return "";
@@ -192,6 +201,7 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
         return "";
     }
 
+    @Override
     public DocumentModel getSelectedTemplate() {
         if (selectedTemplateId == null) {
             return null;
@@ -215,6 +225,7 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
     }
 
     // @End(beforeRedirect = true)
+    @Override
     @End
     public String createWorkspace() throws ClientException {
         String navResult = null;
@@ -326,11 +337,13 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
         return res;
     }
 
+    @Override
     @End(beforeRedirect = true)
     public String exitWizard() throws ClientException {
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
     }
 
+    @Override
     public String getA4JHackingURL() {
         String url = BaseURL.getBaseURL() + "wizards/createWorkspace/a4jUploadHack.faces?";
         url = conversationManager.encodeConversationId(url);

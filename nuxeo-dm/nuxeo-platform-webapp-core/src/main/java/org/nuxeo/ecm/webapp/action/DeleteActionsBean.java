@@ -106,6 +106,7 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
         return trashService;
     }
 
+    @Override
     public boolean getCanDeleteItem(DocumentModel container) throws ClientException {
         if (container == null) {
             return false;
@@ -113,10 +114,12 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
         return getTrashService().folderAllowsDelete(container);
     }
 
+    @Override
     public boolean getCanDelete() {
         return getCanDelete(CURRENT_DOCUMENT_SELECTION);
     }
 
+    @Override
     public boolean getCanDelete(String listName) {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(listName);
         try {
@@ -127,6 +130,7 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
         }
     }
 
+    @Override
     public boolean getCanDeleteSections() {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SECTION_SELECTION);
         try {
@@ -137,6 +141,7 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
         }
     }
 
+    @Override
     public boolean getCanPurge() throws ClientException {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION);
         try {
@@ -162,6 +167,7 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
         return false;
     }
 
+    @Override
     public boolean checkDeletePermOnParents(List<DocumentModel> docs) {
         try {
             return getTrashService().checkDeletePermOnParents(docs);
@@ -171,6 +177,7 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
         }
     }
 
+    @Override
     public String deleteSelection() throws ClientException {
         if (!documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_SELECTION)) {
             return deleteSelection(documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION));
@@ -180,6 +187,7 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
         }
     }
 
+    @Override
     public String deleteSelectionSections() throws ClientException {
         if (!documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_SECTION_SELECTION)) {
             return deleteSelection(documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SECTION_SELECTION));
@@ -191,6 +199,7 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
 
     protected static final int OP_DELETE = 1, OP_PURGE = 2, OP_UNDELETE = 3;
 
+    @Override
     public String deleteSelection(List<DocumentModel> docs) throws ClientException {
         int op = isTrashManagementEnabled() ? OP_DELETE : OP_PURGE;
         return actOnSelection(op, docs);
@@ -201,10 +210,12 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
         return purgeSelection(currentTrashDocuments);
     }
 
+    @Override
     public String purgeSelection() throws ClientException {
         return purgeSelection(CURRENT_DOCUMENT_TRASH_SELECTION);
     }
 
+    @Override
     public String purgeSelection(String listName) throws ClientException {
         if (!documentsListsManager.isWorkingListEmpty(listName)) {
             return purgeSelection(documentsListsManager.getWorkingList(listName));
@@ -214,10 +225,12 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
         }
     }
 
+    @Override
     public String purgeSelection(List<DocumentModel> docs) throws ClientException {
         return actOnSelection(OP_PURGE, docs);
     }
 
+    @Override
     public String undeleteSelection() throws ClientException {
         if (!documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_TRASH_SELECTION)) {
             return undeleteSelection(documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION));
@@ -227,6 +240,7 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
         }
     }
 
+    @Override
     public String undeleteSelection(List<DocumentModel> docs) throws ClientException {
         return actOnSelection(OP_UNDELETE, docs);
 
@@ -305,6 +319,7 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
         return computeOutcome(DELETE_OUTCOME);
     }
 
+    @Override
     public boolean isTrashManagementEnabled() {
         return trashManager.isTrashManagementEnabled();
     }
@@ -313,18 +328,22 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
         return webActions.getUnfiltredActionsList(CURRENT_DOCUMENT_TRASH_SELECTION + "_LIST");
     }
 
+    @Override
     public void create() {
     }
 
+    @Override
     public void destroy() {
     }
 
+    @Override
     public void restoreCurrentDocument() throws ClientException {
         List<DocumentModel> doc = new ArrayList<DocumentModel>();
         doc.add(navigationContext.getCurrentDocument());
         undeleteSelection(doc);
     }
 
+    @Override
     public boolean getCanRestoreCurrentDoc() throws ClientException {
         DocumentModel doc = navigationContext.getCurrentDocument();
         if (doc == null) {

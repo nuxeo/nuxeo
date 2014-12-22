@@ -352,10 +352,12 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
         return null;
     }
 
+    @Override
     public String getSelectedVersionId() {
         return selectedVersionId;
     }
 
+    @Override
     public void setSelectedVersionId(String selectedVersionId) {
         this.selectedVersionId = selectedVersionId;
     }

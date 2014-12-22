@@ -36,6 +36,7 @@ public class DefaultDashboardNavigationHelper implements DashboardNavigationHelp
     @In(create = true)
     protected transient WebActions webActions;
 
+    @Override
     public String navigateToDashboard() {
         webActions.setCurrentTabIds(HOME_TAB);
         return DASHBOARD_VIEW;

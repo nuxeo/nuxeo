@@ -28,8 +28,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
@@ -59,7 +57,6 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -122,16 +119,19 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
+    @Override
     @Create
     public void init() {
         parents = null;
     }
 
+    @Override
     @BypassInterceptors
     public DocumentModel getCurrentDocument() {
         return currentDocument;
     }
 
+    @Override
     public String getCurrentDomainPath() throws ClientException {
         if (currentDomain != null) {
             return currentDomain.getPathAsString();
@@ -156,6 +156,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         }
     }
 
+    @Override
     public void setCurrentDocument(DocumentModel documentModel) throws ClientException {
         if (log.isDebugEnabled()) {
             log.debug("Setting current document to " + documentModel);
@@ -182,11 +183,13 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         }
     }
 
+    @Override
     @BypassInterceptors
     public DocumentModel getChangeableDocument() {
         return changeableDocument;
     }
 
+    @Override
     public void setChangeableDocument(DocumentModel changeableDocument) {
         if (log.isDebugEnabled()) {
             log.debug("Setting changeable document to: " + changeableDocument);
@@ -195,6 +198,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         Contexts.getEventContext().set("changeableDocument", changeableDocument);
     }
 
+    @Override
     public DocumentModelList getCurrentPath() throws ClientException {
         DocumentModelList parentDocsList = new DocumentModelListImpl();
 
@@ -206,6 +210,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return parentDocsList;
     }
 
+    @Override
     public DocumentModel getCurrentSuperSpace() throws ClientException {
         if (currentSuperSpace == null && currentDocument != null) {
             if (currentDocument.hasFacet(FacetNames.SUPER_SPACE)) {
@@ -217,6 +222,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return currentSuperSpace;
     }
 
+    @Override
     public void invalidateCurrentDocument() throws ClientException {
         if (currentDocument != null) {
             currentDocument = documentManager.getDocument(currentDocument.getRef());
@@ -224,11 +230,13 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         }
     }
 
+    @Override
     @BypassInterceptors
     public DocumentModel getCurrentDomain() {
         return currentDomain;
     }
 
+    @Override
     public void setCurrentDomain(DocumentModel domainDocModel) throws ClientException {
         if (!checkIfUpdateNeeded(currentDomain, domainDocModel)) {
             return;
@@ -285,6 +293,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         }
     }
 
+    @Override
     public void saveCurrentDocument() throws ClientException {
         if (currentDocument == null) {
             // cannot call saveDocument with null arg => nasty stateful bean
@@ -295,6 +304,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         documentManager.save();
     }
 
+    @Override
     public List<PathElement> getCurrentPathList() throws ClientException {
         if (parents == null) {
             resetCurrentPath();
@@ -306,6 +316,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return (ServerContextBean) Component.getInstance("serverLocator");
     }
 
+    @Override
     public RepositoryLocation getCurrentServerLocation() {
         return getServerLocator().getCurrentServerLocation();
     }
@@ -313,6 +324,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     /**
      * @deprecated use getCurrentServerLocation() instead
      */
+    @Override
     @Deprecated
     public RepositoryLocation getSelectedServerLocation() {
         return getServerLocator().getCurrentServerLocation();
@@ -321,6 +333,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     /**
      * Switches to a new server location by updating the context and updating to the CoreSession (DocumentManager).
      */
+    @Override
     public void setCurrentServerLocation(RepositoryLocation serverLocation) throws ClientException {
         if (serverLocation == null) {
             log.warn("Setting ServerLocation to null, is this normal ?");
@@ -346,6 +359,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     /**
      * Returns the current documentManager if any or create a new session to the current location.
      */
+    @Override
     public CoreSession getOrCreateDocumentManager() throws ClientException {
         if (documentManager != null) {
             return documentManager;
@@ -371,6 +385,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return documentManager;
     }
 
+    @Override
     @BypassInterceptors
     public DocumentModel getCurrentWorkspace() {
         return currentWorkspace;
@@ -379,36 +394,43 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     // Factories to make navigation related data
     // available in the context
 
+    @Override
     @Factory(value = "currentDocument", scope = EVENT)
     public DocumentModel factoryCurrentDocument() {
         return currentDocument;
     }
 
+    @Override
     @Factory(value = "changeableDocument", scope = EVENT)
     public DocumentModel factoryChangeableDocument() {
         return changeableDocument;
     }
 
+    @Override
     @Factory(value = "currentDomain", scope = EVENT)
     public DocumentModel factoryCurrentDomain() {
         return currentDomain;
     }
 
+    @Override
     @Factory(value = "currentWorkspace", scope = EVENT)
     public DocumentModel factoryCurrentWorkspace() {
         return currentWorkspace;
     }
 
+    @Override
     @Factory(value = "currentContentRoot", scope = EVENT)
     public DocumentModel factoryCurrentContentRoot() {
         return currentContentRoot;
     }
 
     // @Factory(value = "currentServerLocation", scope = EVENT)
+    @Override
     public RepositoryLocation factoryCurrentServerLocation() {
         return getCurrentServerLocation();
     }
 
+    @Override
     @Factory(value = "currentSuperSpace", scope = EVENT)
     public DocumentModel factoryCurrentSuperSpace() throws ClientException {
         return getCurrentSuperSpace();
@@ -438,6 +460,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         }
     }
 
+    @Override
     public void updateDocumentContext(DocumentModel doc) throws ClientException {
         setCurrentDocument(doc);
     }
@@ -517,6 +540,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return schemaManager.hasSuperType(targetDocType, superType);
     }
 
+    @Override
     public void resetCurrentContext() {
         // flush event context
         Context eventContext = Contexts.getEventContext();
@@ -534,6 +558,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     // (edition) and decide what's the next view, let's just handle context
     // setting and redirection + this should be callable from templates i.e use
     // view as a string.
+    @Override
     public String getActionResult(DocumentModel doc, UserAction action) throws ClientException {
 
         TypesTool typesTool = (TypesTool) Component.getInstance("typesTool");
@@ -579,12 +604,14 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return result;
     }
 
+    @Override
     public String goHome() {
         resetCurrentContext();
         EventManager.raiseEventsOnGoingHome();
         return "home";
     }
 
+    @Override
     public String goBack() throws ClientException {
         if (currentDocument != null) {
             setChangeableDocument(null);
@@ -594,6 +621,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         }
     }
 
+    @Override
     public String navigateToId(String documentId) throws ClientException {
         if (documentManager == null) {
             throw new IllegalStateException("documentManager not initialized");
@@ -603,6 +631,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return navigateToDocument(doc, "view");
     }
 
+    @Override
     public String navigateToRef(DocumentRef docRef) throws ClientException {
         if (documentManager == null) {
             throw new IllegalStateException("documentManager not initialized");
@@ -613,10 +642,12 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return navigateToDocument(doc, "view");
     }
 
+    @Override
     public String navigateToDocument(DocumentModel doc) throws ClientException {
         return navigateToDocument(doc, "view");
     }
 
+    @Override
     public String navigateToDocument(DocumentModel doc, String viewId) throws ClientException {
         if (doc != null) {
             updateDocumentContext(doc);
@@ -646,15 +677,18 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return chosenView;
     }
 
+    @Override
     public String navigateToDocumentWithView(DocumentModel doc, String viewId) throws ClientException {
         return navigateToDocument(doc, viewId);
     }
 
+    @Override
     public String navigateToDocument(DocumentModel docModel, VersionModel versionModel) throws ClientException {
         DocumentModel docVersion = documentManager.getDocumentWithVersion(docModel.getRef(), versionModel);
         return navigateToDocument(docVersion);
     }
 
+    @Override
     public void selectionChanged() {
         final String logPrefix = "<selectionChanged> ";
         try {
@@ -664,6 +698,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         }
     }
 
+    @Override
     public String getCurrentDocumentUrl() {
         if (currentDocument == null) {
             log.error("current document is null");
@@ -672,6 +707,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return DocumentLocator.getDocumentUrl(getCurrentServerLocation(), currentDocument.getRef());
     }
 
+    @Override
     public String getCurrentDocumentFullUrl() {
         if (currentDocument == null) {
             log.error("current document is null");
@@ -681,6 +717,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     }
 
     // start a new conversation if needed, join main if possible
+    @Override
     @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
     public String navigateTo(RepositoryLocation serverLocation, DocumentRef docRef) throws ClientException {
         // re-connect only if there is another repository specified
@@ -691,6 +728,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     }
 
     // start a new conversation if needed, join main if possible
+    @Override
     @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
     public String navigateToURL(String documentUrl) throws ClientException {
         final DocumentLocation docLoc;
@@ -711,6 +749,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     /**
      * @see NavigationContext#navigateToURL()
      */
+    @Override
     @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
     public String navigateToURL() throws ClientException {
         if (docRef == null) {
@@ -757,10 +796,12 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return new DocumentPathElement(doc);
     }
 
+    @Override
     public DocumentModel getCurrentContentRoot() {
         return currentContentRoot;
     }
 
+    @Override
     public void setCurrentContentRoot(DocumentModel crDocumentModel) {
 
         if (!checkIfUpdateNeeded(currentContentRoot, crDocumentModel)) {

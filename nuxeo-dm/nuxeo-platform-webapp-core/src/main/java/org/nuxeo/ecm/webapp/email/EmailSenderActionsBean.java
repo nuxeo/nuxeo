@@ -83,6 +83,7 @@ public class EmailSenderActionsBean extends InputController implements EmailSend
     @Out(required = false)
     private List<NuxeoPrincipal> toEmail;
 
+    @Override
     public void send() {
         if (mailSubject == null || mailSubject.trim().length() == 0) {
             facesMessages.add(StatusMessage.Severity.ERROR,
@@ -128,18 +129,22 @@ public class EmailSenderActionsBean extends InputController implements EmailSend
         }
     }
 
+    @Override
     public String getMailContent() {
         return mailContent;
     }
 
+    @Override
     public void setMailContent(String mailContent) {
         this.mailContent = mailContent;
     }
 
+    @Override
     public String getMailSubject() {
         return mailSubject;
     }
 
+    @Override
     public void setMailSubject(String mailSubject) {
         this.mailSubject = mailSubject;
     }

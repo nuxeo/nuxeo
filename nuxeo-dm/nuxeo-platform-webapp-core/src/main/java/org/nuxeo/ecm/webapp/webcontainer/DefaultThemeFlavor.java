@@ -37,6 +37,7 @@ public class DefaultThemeFlavor implements Scheme {
 
     private static final Log log = LogFactory.getLog(DefaultThemeFlavor.class);
 
+    @Override
     public String getOutcome(Object context) {
         FacesContext faces = (FacesContext) context;
         String theme = (String) faces.getExternalContext().getRequestMap().get(

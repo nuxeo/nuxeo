@@ -63,6 +63,7 @@ public class NoteActions implements Serializable {
             this.proxy = proxy;
         }
 
+        @Override
         public void run() throws ClientException {
             liveDocumentRef = proxy.getRef().toString();
             if (proxy.getSourceId() != null) {

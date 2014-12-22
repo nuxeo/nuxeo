@@ -52,6 +52,11 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 @Scope(ScopeType.CONVERSATION)
 public class OrderableDocumentActions implements Serializable {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     private static final Log log = LogFactory.getLog(OrderableDocumentActions.class);
 
     public static final String SECTION_TYPE = "Section";

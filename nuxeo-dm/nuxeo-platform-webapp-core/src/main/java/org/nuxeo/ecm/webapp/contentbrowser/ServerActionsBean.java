@@ -60,6 +60,7 @@ public class ServerActionsBean implements ServerActions, Serializable {
     /**
      * Retrieves the available locations.
      */
+    @Override
     @Factory("availableCoreRepositories")
     public List<Repository> getAvailableRepositories() throws ClientException {
         try {
@@ -70,6 +71,7 @@ public class ServerActionsBean implements ServerActions, Serializable {
         }
     }
 
+    @Override
     public String selectRepository(String repositoryName) throws ClientException {
         try {
             boolean found = false;

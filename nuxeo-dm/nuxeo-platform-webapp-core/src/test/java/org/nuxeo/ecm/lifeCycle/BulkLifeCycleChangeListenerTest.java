@@ -38,6 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class BulkLifeCycleChangeListenerTest extends SQLRepositoryTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -45,6 +46,7 @@ public class BulkLifeCycleChangeListenerTest extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();

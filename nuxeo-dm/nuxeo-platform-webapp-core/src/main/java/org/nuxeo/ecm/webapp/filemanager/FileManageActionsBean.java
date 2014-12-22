@@ -691,6 +691,7 @@ public class FileManageActionsBean implements FileManageActions {
         return removeAllUploadedFile();
     }
 
+    @Override
     public void setFileToRemove(String fileToRemove) {
         this.fileToRemove = fileToRemove;
     }

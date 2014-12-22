@@ -56,14 +56,17 @@ public class EditorLinkActionsBean extends InputController implements EditorLink
     @In(create = true, required = false)
     private CoreSession documentManager;
 
+    @Override
     public boolean getHasSearchResults() {
         return hasSearchResults;
     }
 
+    @Override
     public List<DocumentModel> getSearchDocumentResults() {
         return resultDocuments;
     }
 
+    @Override
     public String searchDocuments() throws ClientException {
         log.debug("Entering searchDocuments with keywords: " + searchKeywords);
 
@@ -94,10 +97,12 @@ public class EditorLinkActionsBean extends InputController implements EditorLink
         return "editor_link_search_document";
     }
 
+    @Override
     public String getSearchKeywords() {
         return searchKeywords;
     }
 
+    @Override
     public void setSearchKeywords(String searchKeywords) {
         this.searchKeywords = searchKeywords;
     }

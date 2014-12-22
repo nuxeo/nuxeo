@@ -44,6 +44,7 @@ public class ThemeActionsBean implements ThemeActions {
 
     private static final Log log = LogFactory.getLog(ThemeActionsBean.class);
 
+    @Override
     public String getDefaultTheme() {
         FacesContext faces = FacesContext.getCurrentInstance();
         return getDefaultTheme(faces.getExternalContext());
@@ -57,6 +58,7 @@ public class ThemeActionsBean implements ThemeActions {
         return negotiation.getDefaultTheme();
     }
 
+    @Override
     public Logo getLogo() {
         FacesContext faces = FacesContext.getCurrentInstance();
         final ExternalContext ec = faces.getExternalContext();
@@ -65,6 +67,7 @@ public class ThemeActionsBean implements ThemeActions {
         return getLogo(flavor);
     }
 
+    @Override
     public Logo getLogo(String flavorName) {
         if (flavorName == null) {
             return null;
@@ -76,6 +79,7 @@ public class ThemeActionsBean implements ThemeActions {
         return service.getLogo(flavorName);
     }
 
+    @Override
     public Flavor getFlavor(String flavorName) {
         if (flavorName == null) {
             return null;

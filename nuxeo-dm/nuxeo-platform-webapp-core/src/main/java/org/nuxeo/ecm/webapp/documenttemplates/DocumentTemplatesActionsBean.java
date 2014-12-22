@@ -91,6 +91,7 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
 
     private String targetType = "Workspace";
 
+    @Override
     @Factory(value = "availableTemplates", scope = EVENT)
     public DocumentModelList templatesListFactory() {
         try {
@@ -101,6 +102,7 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
         return templates;
     }
 
+    @Override
     public DocumentModelList getTemplates(String targetTypeName) throws ClientException {
         if (documentManager == null) {
             log.error("Unable to access documentManager");
@@ -127,6 +129,7 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
         return templates;
     }
 
+    @Override
     public DocumentModelList getTemplates() throws ClientException {
         if (targetType == null || targetType.equals("")) {
             targetType = typesTool.getSelectedType().getId();
@@ -134,11 +137,13 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
         return getTemplates(targetType);
     }
 
+    @Override
     public String createDocumentFromTemplate(DocumentModel doc, String templateId) throws ClientException {
         selectedTemplateId = templateId;
         return createDocumentFromTemplate(doc);
     }
 
+    @Override
     public String createDocumentFromTemplate(DocumentModel doc) throws ClientException {
 
         if (documentManager == null) {
@@ -201,26 +206,32 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
         }
     }
 
+    @Override
     public String createDocumentFromTemplate() throws ClientException {
         return createDocumentFromTemplate(changeableDocument);
     }
 
+    @Override
     public String getSelectedTemplateId() {
         return selectedTemplateId;
     }
 
+    @Override
     public void setSelectedTemplateId(String requestedId) {
         selectedTemplateId = requestedId;
     }
 
+    @Override
     public String getTargetType() {
         return targetType;
     }
 
+    @Override
     public void setTargetType(String targetType) {
         this.targetType = targetType;
     }
 
+    @Override
     @Observer(value = { DOCUMENT_CHILDREN_CHANGED }, create = false)
     @BypassInterceptors
     public void documentChildrenChanged() {
@@ -229,6 +240,7 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
         }
     }
 
+    @Override
     @Observer(value = { DOMAIN_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void domainChanged() {

@@ -34,6 +34,7 @@ public interface FileManageActions extends SimpleFileManager {
      */
     public static final String NUXEO_JSF_TMP_DIR_PROP = "nuxeo.jsf.tmp.dir";
 
+    @Override
     String display();
 
     /**

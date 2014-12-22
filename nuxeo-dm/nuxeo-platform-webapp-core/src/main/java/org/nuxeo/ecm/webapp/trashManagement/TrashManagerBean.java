@@ -32,14 +32,17 @@ public class TrashManagerBean implements TrashManager {
     @In(create = true)
     ConversationTrashManager conversationTrashManager;
 
+    @Override
     public void destroy() {
     }
 
+    @Override
     public void initTrashManager() {
     }
 
+    @Override
     public boolean isTrashManagementEnabled() {
-        return conversationTrashManager.isTrashManagementEnabled();
+        return ConversationTrashManager.isTrashManagementEnabled();
     }
 
 }

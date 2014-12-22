@@ -99,6 +99,7 @@ public class ConversionActionBean implements ConversionAction {
         return blob.getMimeType();
     }
 
+    @Override
     public void reCheckConverterAvailability() {
         pdfConverterForTypes.clear();
     }
@@ -115,6 +116,7 @@ public class ConversionActionBean implements ConversionAction {
         }
     }
 
+    @Override
     public boolean isExportableToPDF(Blob blob) {
         if (blob == null) {
             return false;
@@ -165,6 +167,7 @@ public class ConversionActionBean implements ConversionAction {
         return false;
     }
 
+    @Override
     @WebRemote
     public boolean isFileExportableToPDF(String fieldName) {
         try {
@@ -219,6 +222,7 @@ public class ConversionActionBean implements ConversionAction {
 
     }
 
+    @Override
     @WebRemote
     public String generatePdfFile() {
         try {

@@ -119,6 +119,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
 
     protected List<String> selectedEntries;
 
+    @Override
     @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false)
     @BypassInterceptors
     public void resetSecurityData() {
@@ -126,6 +127,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         blockRightInheritance = null;
     }
 
+    @Override
     public void rebuildSecurityData() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         try {
@@ -174,6 +176,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         }
     }
 
+    @Override
     public PageSelections<String> getDataTableModel() throws ClientException {
         if (obsoleteSecurityData) {
             // lazy initialization at first time access
@@ -183,6 +186,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         return entries;
     }
 
+    @Override
     public SecurityData getSecurityData() throws ClientException {
         if (obsoleteSecurityData) {
             // lazy initialization at first time access
@@ -191,6 +195,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         return securityData;
     }
 
+    @Override
     public String updateSecurityOnDocument() throws ClientException {
         try {
             List<UserEntry> modifiableEntries = SecurityDataConverter.convertToUserEntries(securityData);
@@ -230,6 +235,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         }
     }
 
+    @Override
     public String addPermission(String principalName, String permissionName, boolean grant) throws ClientException {
         if (securityData == null) {
             try {
@@ -285,12 +291,14 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         return null;
     }
 
+    @Override
     public String addPermission() throws ClientException {
         String permissionName = permissionListManager.getSelectedPermission();
         boolean grant = permissionActionListManager.getSelectedGrant().equals("Grant");
         return addPermission(selectedEntry, permissionName, grant);
     }
 
+    @Override
     public String addPermissions() throws ClientException {
         if (selectedEntries == null || selectedEntries.isEmpty()) {
             String message = ComponentUtils.translate(FacesContext.getCurrentInstance(),
@@ -307,12 +315,14 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         return null;
     }
 
+    @Override
     public String addPermissionAndUpdate() throws ClientException {
         addPermission();
         updateSecurityOnDocument();
         return null;
     }
 
+    @Override
     public String addPermissionsAndUpdate() throws ClientException {
         addPermissions();
         updateSecurityOnDocument();
@@ -321,6 +331,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         return null;
     }
 
+    @Override
     public String saveSecurityUpdates() throws ClientException {
         updateSecurityOnDocument();
         selectedEntries = null;
@@ -328,6 +339,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         return null;
     }
 
+    @Override
     public String removePermission() {
         securityData.removeModifiablePrivilege(selectedEntry, permissionListManager.getSelectedPermission(),
                 permissionActionListManager.getSelectedGrant().equals("Grant"));
@@ -340,6 +352,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         return null;
     }
 
+    @Override
     public String removePermissionAndUpdate() throws ClientException {
         removePermission();
 
@@ -354,9 +367,10 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         return null;
     }
 
+    @Override
     public String removePermissions() throws ClientException {
         for (PageSelection<String> user : getSelectedRows()) {
-            securityData.removeModifiablePrivilege((String) user.getData());
+            securityData.removeModifiablePrivilege(user.getData());
             if (!checkPermissions()) {
                 facesMessages.add(StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get("message.error.removeRight"));
@@ -367,9 +381,10 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         return null;
     }
 
+    @Override
     public String removePermissionsAndUpdate() throws ClientException {
         for (PageSelection<String> user : getDataTableModel().getEntries()) {
-            securityData.removeModifiablePrivilege((String) user.getData());
+            securityData.removeModifiablePrivilege(user.getData());
             if (!checkPermissions()) {
                 facesMessages.add(StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get("message.error.removeRight"));
@@ -382,10 +397,12 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         return null;
     }
 
+    @Override
     public boolean getCanAddSecurityRules() throws ClientException {
         return documentManager.hasPermission(currentDocument.getRef(), "WriteSecurity");
     }
 
+    @Override
     public boolean getCanRemoveSecurityRules() throws ClientException {
         try {
             return documentManager.hasPermission(currentDocument.getRef(), "WriteSecurity")
@@ -420,6 +437,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         }
     }
 
+    @Override
     public List<SelectItem> getSettablePermissions() throws ClientException {
         String documentType = navigationContext.getCurrentDocument().getType();
 
@@ -449,24 +467,28 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         return permissions;
     }
 
+    @Override
     public Map<String, String> getIconAltMap() {
         return principalListManager.iconAlt;
     }
 
+    @Override
     public Map<String, String> getIconPathMap() {
         return principalListManager.iconPath;
     }
 
+    @Override
     public Boolean getBlockRightInheritance() {
         return blockRightInheritance;
     }
 
+    @Override
     public void setBlockRightInheritance(Boolean blockRightInheritance) {
         this.blockRightInheritance = blockRightInheritance;
     }
 
     public String blockRightInheritance() throws ClientException {
-        Boolean needBlockRightInheritance = this.blockRightInheritance;
+        Boolean needBlockRightInheritance = blockRightInheritance;
 
         if (needBlockRightInheritance) {
             // Block
@@ -490,10 +512,12 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         return null;
     }
 
+    @Override
     public Boolean displayInheritedPermissions() throws ClientException {
         return getDisplayInheritedPermissions();
     }
 
+    @Override
     public boolean getDisplayInheritedPermissions() throws ClientException {
         if (blockRightInheritance == null) {
             rebuildSecurityData();
@@ -504,11 +528,13 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         return !securityData.getParentDocumentsUsers().isEmpty();
     }
 
+    @Override
     public List<String> getCurrentDocumentUsers() throws ClientException {
         List<String> currentUsers = securityData.getCurrentDocumentUsers();
         return validateUserGroupList(currentUsers);
     }
 
+    @Override
     public List<String> getParentDocumentsUsers() throws ClientException {
         List<String> parentUsers = securityData.getParentDocumentsUsers();
         return validateUserGroupList(parentUsers);
@@ -592,7 +618,8 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         principals.addAll(currentUser.getAllGroups());
 
         ACP acp = currentDocument.getACP();
-        List<UserEntry> modifiableEntries = new SecurityDataConverter().convertToUserEntries(securityData);
+        new SecurityDataConverter();
+        List<UserEntry> modifiableEntries = SecurityDataConverter.convertToUserEntries(securityData);
         if (null == acp) {
             acp = new ACPImpl();
         }
@@ -625,18 +652,22 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         return CACHED_PERMISSION_TO_CHECK;
     }
 
+    @Override
     public String getSelectedEntry() {
         return selectedEntry;
     }
 
+    @Override
     public void setSelectedEntry(String selectedEntry) {
         this.selectedEntry = selectedEntry;
     }
 
+    @Override
     public List<String> getSelectedEntries() {
         return selectedEntries;
     }
 
+    @Override
     public void setSelectedEntries(List<String> selectedEntries) {
         this.selectedEntries = selectedEntries;
     }
