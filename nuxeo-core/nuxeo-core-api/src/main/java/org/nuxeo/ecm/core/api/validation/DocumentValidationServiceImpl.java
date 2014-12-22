@@ -49,12 +49,18 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
 
     private SchemaManager schemaManager;
 
+    protected SchemaManager getSchemaManager() {
+        if (schemaManager == null) {
+            schemaManager = Framework.getService(SchemaManager.class);
+        }
+        return schemaManager;
+    }
+
     private Map<String, Boolean> validationActivations = new HashMap<String, Boolean>();
 
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        schemaManager = Framework.getService(SchemaManager.class);
     }
 
     @Override
@@ -107,7 +113,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
         DocumentType docType = document.getDocumentType();
         if (dirtyOnly) {
             for (DataModel dataModel : document.getDataModels().values()) {
-                Schema schemaDef = schemaManager.getSchema(dataModel.getSchema());
+                Schema schemaDef = getSchemaManager().getSchema(dataModel.getSchema());
                 for (String fieldName : dataModel.getDirtyFields()) {
                     Field field = schemaDef.getField(fieldName);
                     Property property = document.getProperty(field.getName().getPrefixedName());
@@ -130,7 +136,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
     @Override
     public DocumentValidationReport validate(Field field, Object value) {
         String prefix = field.getName().getPrefix();
-        Schema schema = schemaManager.getSchemaFromPrefix(prefix);
+        Schema schema = getSchemaManager().getSchemaFromPrefix(prefix);
         return new DocumentValidationReport(validate(schema, field, value));
     }
 
@@ -143,7 +149,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
     @Override
     public DocumentValidationReport validate(String xpath, Object value) {
         QName name = QName.valueOf(xpath);
-        Schema schemaDef = schemaManager.getSchemaFromPrefix(name.getPrefix());
+        Schema schemaDef = getSchemaManager().getSchemaFromPrefix(name.getPrefix());
         Field fieldDef = schemaDef.getField(name.getLocalName());
         return new DocumentValidationReport(validate(schemaDef, fieldDef, value));
     }
