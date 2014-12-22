@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.api.validation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -363,6 +364,19 @@ public class TestDocumentValidationService {
         assertTrue(found3);
         assertTrue(found4);
         assertTrue(found5);
+    }
+
+    @Test
+    public void testValidateDeepFieldUsingXpath() {
+        DocumentValidationReport violations;
+        violations = validator.validate("vs:users:user:firstname", "Bob");
+        assertFalse(violations.hasError());
+        violations = validator.validate("vs:users:user:firstname", null);
+        assertEquals(1, violations.numberOfErros());
+        assertTrue(violations.asList().get(0).getConstraint() instanceof NotNullConstraint);
+        violations = validator.validate("vs:users:user:firstname", "   ");
+        assertEquals(1, violations.numberOfErros());
+        assertTrue(violations.asList().get(0).getConstraint() instanceof PatternConstraint);
     }
 
     // //////////////////////////////////////

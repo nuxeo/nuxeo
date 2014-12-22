@@ -36,7 +36,6 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
-import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.constraints.NotNullConstraint;
@@ -147,11 +146,35 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
     }
 
     @Override
-    public DocumentValidationReport validate(String xpath, Object value) {
-        QName name = QName.valueOf(xpath);
-        Schema schemaDef = getSchemaManager().getSchemaFromPrefix(name.getPrefix());
-        Field fieldDef = schemaDef.getField(name.getLocalName());
-        return new DocumentValidationReport(validate(schemaDef, fieldDef, value));
+    public DocumentValidationReport validate(String xpath, Object value) throws IllegalArgumentException {
+        String[] splitted = xpath.split(":");
+        if (splitted.length < 2) {
+            throw new IllegalArgumentException("Invalid xpath " + xpath);
+        }
+        Schema schemaDef = getSchemaManager().getSchemaFromPrefix(splitted[0]);
+        if (schemaDef == null) {
+            throw new IllegalArgumentException("Invalid xpath " + xpath);
+        }
+        Field field = schemaDef.getField(splitted[1]);
+        if (field == null) {
+            throw new IllegalArgumentException("Invalid xpath " + xpath);
+        }
+        for (int i = 2; i < splitted.length; i++) {
+            if (field.getType().isListType()) {
+                ListType listType = (ListType) field.getType();
+                if (!splitted[i].equals(listType.getFieldName())) {
+                    throw new IllegalArgumentException("Invalid xpath " + xpath);
+                }
+                field = listType.getField();
+            } else if (field.getType().isComplexType()) {
+                ComplexType complexType = (ComplexType) field.getType();
+                field = complexType.getField(splitted[i]);
+                if (field == null) {
+                    throw new IllegalArgumentException("Invalid xpath " + xpath);
+                }
+            }
+        }
+        return new DocumentValidationReport(validate(schemaDef, field, value));
     }
 
     // ///////////////////

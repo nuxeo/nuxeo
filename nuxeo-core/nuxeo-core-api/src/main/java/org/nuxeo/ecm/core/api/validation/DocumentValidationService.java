@@ -107,7 +107,9 @@ public interface DocumentValidationService {
     /**
      * Validates a value according to some {@link Field} definition.
      *
-     * @param xpath schema:fieldName, for example dc:title.
+     * @param xpath schema:fieldName, for example dc:title - the xpath could also be a value that match a complex
+     *            property field (for example, an field of a complex type in a list: schema:list:complex:field).
+     * @throws IllegalArgumentException If the xpath does not match any field.
      * @since 7.1
      */
     DocumentValidationReport validate(String xpath, Object value);
