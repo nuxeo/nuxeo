@@ -41,6 +41,8 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
 
     private static final Log log = LogFactory.getLog(ExifToolProcessor.class);
 
+    private static final String META_NON_USED_SOURCE_FILE = "SourceFile";
+
     protected final ObjectMapper jacksonMapper;
 
     public ExifToolProcessor() {
@@ -150,10 +152,13 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
             sb.append(line);
         }
         String jsonOutput = sb.toString();
-        List<Map<String, Object>> map = jacksonMapper.readValue(jsonOutput,
+        List<Map<String, Object>> resultList = jacksonMapper.readValue(jsonOutput,
                 new TypeReference<List<HashMap<String, Object>>>() {
                 });
-        return map.get(0);
+        Map<String, Object> resultMap = resultList.get(0);
+        // Remove the SourceFile metadata injected automatically by ExifTool.
+        resultMap.remove(META_NON_USED_SOURCE_FILE);
+        return resultMap;
     }
 
     protected String getCommandTags(List<String> metadataList) {
