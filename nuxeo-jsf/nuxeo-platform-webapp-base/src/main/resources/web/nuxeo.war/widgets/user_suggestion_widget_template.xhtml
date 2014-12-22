@@ -46,7 +46,7 @@
       <h:column>
         <nxu:set var="info"
           value="#{widgetProperty_prefixed ? userSuggestionActions.getPrefixedUserInfo(item) : userSuggestionActions.getUserInfo(item)}"
-          cache="true">
+          cache="false">
           <ui:include src="user_group_display_template.xhtml" />
         </nxu:set>
       </h:column>
