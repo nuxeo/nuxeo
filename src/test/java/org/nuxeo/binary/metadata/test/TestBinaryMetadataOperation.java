@@ -19,14 +19,19 @@ package org.nuxeo.binary.metadata.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.binary.metadata.api.operation.ReadMetadataFromBinary;
+import org.nuxeo.binary.metadata.api.operation.TriggerMetadataMappingOnDocument;
+import org.nuxeo.binary.metadata.api.operation.WriteMetadataToBinaryFromContext;
+import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -45,8 +50,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(BinaryMetadataFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
-@LocalDeploy({ "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-contrib-test.xml",
-        "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-file-contrib-test.xml" })
+@LocalDeploy({ "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-contrib-test.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = BinaryMetadataServerInit.class)
 public class TestBinaryMetadataOperation {
 
@@ -57,7 +61,29 @@ public class TestBinaryMetadataOperation {
     OperationContext operationContext;
 
     @Inject
+    BinaryMetadataService binaryMetadataService;
+
+    @Inject
     CoreSession session;
+
+    private static final Map<String, Object> triggerParameters;
+
+    static {
+        triggerParameters = new HashMap<>();
+        triggerParameters.put("metadataMappingId", "File");
+    }
+
+    private static final Properties jpgMetadata;
+
+    private static final Map<String, Object> jpgParameters;
+
+    static {
+        jpgParameters = new HashMap<>();
+        jpgMetadata = new Properties();
+        jpgMetadata.put("EXIF:Model", "Platform");
+        jpgMetadata.put("EXIF:Make", "Nuxeo");
+        jpgParameters.put("metadata", jpgMetadata);
+    }
 
     @Test
     public void itShouldExtractBinaryMetadata() throws OperationException {
@@ -68,9 +94,45 @@ public class TestBinaryMetadataOperation {
         Map<String, Object> blobProperties = (Map<String, Object>) automationService.run(operationContext,
                 ReadMetadataFromBinary.ID);
         assertNotNull(blobProperties);
-        assertEquals(49, blobProperties.size());
+        assertEquals(48, blobProperties.size());
         assertEquals("Twist", blobProperties.get("ID3:Title").toString());
         assertEquals("Divine Recordings", blobProperties.get("ID3:Publisher").toString());
+    }
+
+    @Test
+    public void itShouldApplyMetadataMapping() throws OperationException {
+        // Get PDF document.
+        DocumentModel pdfDoc = BinaryMetadataServerInit.getFile(1, session);
+        operationContext.setInput(pdfDoc);
+        operationContext.setCoreSession(session);
+        automationService.run(operationContext, TriggerMetadataMappingOnDocument.ID, triggerParameters);
+        pdfDoc = BinaryMetadataServerInit.getFile(1, session);
+        assertEquals("en-US", pdfDoc.getPropertyValue("dc:title"));
+        assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:source"));
+        assertEquals("30 kB", pdfDoc.getPropertyValue("dc:description"));
+    }
+
+    @Test
+    public void itShouldWriteMetadataOnBinary() throws OperationException {
+        // Get PSD Document
+        DocumentModel jpgFile = BinaryMetadataServerInit.getFile(4, session);
+        BlobHolder jpgBlobHolder = jpgFile.getAdapter(BlobHolder.class);
+
+        // Check the content
+        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(jpgBlobHolder.getBlob());
+        assertNotNull(blobProperties);
+        assertEquals("Google", blobProperties.get("EXIF:Make"));
+        assertEquals("Nexus", blobProperties.get("EXIF:Model").toString());
+
+        operationContext.setInput(jpgBlobHolder.getBlob());
+        operationContext.setCoreSession(session);
+        automationService.run(operationContext, WriteMetadataToBinaryFromContext.ID, jpgParameters);
+
+        // Check the content
+        blobProperties = binaryMetadataService.readMetadata(jpgBlobHolder.getBlob());
+        assertNotNull(blobProperties);
+        assertEquals("Nuxeo", blobProperties.get("EXIF:Make"));
+        assertEquals("Platform", blobProperties.get("EXIF:Model").toString());
     }
 
 }

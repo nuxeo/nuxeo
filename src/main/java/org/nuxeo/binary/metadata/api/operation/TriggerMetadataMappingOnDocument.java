@@ -17,6 +17,7 @@
 package org.nuxeo.binary.metadata.api.operation;
 
 import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -37,16 +38,16 @@ public class TriggerMetadataMappingOnDocument {
     protected BinaryMetadataService binaryMetadataService;
 
     @Context
-    protected CoreSession coreSession;
+    protected OperationContext operationContext;
 
-    @Param(name = "Processor", required = false, description = "The processor to execute for reading blobs metadata.")
+    @Param(name = "processor", required = false, description = "The processor to execute for reading blobs metadata.")
     protected String processor = "exifTool";
 
-    @Param(name = "Metadata Mapping Id", required = true, description = "The metadata mapping id to apply on the input document.")
+    @Param(name = "metadataMappingId", required = true, description = "The metadata mapping id to apply on the input document.")
     protected String metadataMappingId;
 
     @OperationMethod
     public void run(DocumentModel document) {
-        binaryMetadataService.writeMetadata(document, coreSession, metadataMappingId);
+        binaryMetadataService.writeMetadata(document, operationContext.getCoreSession(), metadataMappingId);
     }
 }

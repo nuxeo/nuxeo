@@ -119,7 +119,6 @@ public class TestBinaryMetadataService {
         // Check the content
         Map<String, Object> blobProperties = binaryMetadataService.readMetadata(psdBlobHolder.getBlob(), PSDMetadata);
         assertNotNull(blobProperties);
-        assertNotNull(blobProperties);
         assertEquals(2, blobProperties.size());
         assertEquals(100, blobProperties.get("EXIF:ImageHeight"));
         assertEquals("Adobe Photoshop CS4 Macintosh", blobProperties.get("EXIF:Software").toString());
@@ -130,7 +129,6 @@ public class TestBinaryMetadataService {
         // Check the content
         blobProperties = binaryMetadataService.readMetadata(psdBlobHolder
                 .getBlob(), PSDMetadata);
-        assertNotNull(blobProperties);
         assertNotNull(blobProperties);
         assertEquals(2, blobProperties.size());
         assertEquals(200, blobProperties.get("EXIF:ImageHeight"));

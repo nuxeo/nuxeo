@@ -53,6 +53,6 @@ public class WriteMetadataToBinaryFromContext {
         for (Map.Entry<String, String> entry : metadata.entrySet()) {
             metadataMap.put(entry.getKey(), entry.getValue());
         }
-        binaryMetadataService.writeMetadata(blob, metadataMap);
+        binaryMetadataService.writeMetadata(processor, blob, metadataMap);
     }
 }
