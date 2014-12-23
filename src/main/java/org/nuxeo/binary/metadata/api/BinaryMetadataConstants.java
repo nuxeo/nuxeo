@@ -34,8 +34,4 @@ public class BinaryMetadataConstants {
     public static final String METADATA_RULES_EP = "metadataRules";
 
     public static final String EXIF_TOOL_CONTRIBUTION_ID = "exifTool";
-
-    public static final String READ_METADATA_METHOD = "readMetadata";
-
-    public static final String WRITE_METADATA_METHOD = "writeMetadata";
 }

@@ -73,10 +73,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     @Override
     public Map<String, Object> readMetadata(String processorName, Blob blob, List<String> metadataNames) {
         try {
-            Class[] params = {Blob.class, List.class};
-            Method method = getProcessorMethod(processorName, BinaryMetadataConstants.READ_METADATA_METHOD, params);
-            return (Map<String, Object>) processorMethodInvoker(processorName, method, blob, metadataNames);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(processorName).newInstance();
+            return processor.readMetadata(blob,metadataNames);
+        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
             throw new BinaryMetadataException(e);
         }
     }
@@ -87,10 +86,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     @Override
     public Map<String, Object> readMetadata(Blob blob, List<String> metadataNames) {
         try {
-            Class[] params = {Blob.class, List.class};
-            Method method = getProcessorMethod(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, BinaryMetadataConstants.READ_METADATA_METHOD, params);
-            return (Map<String, Object>) processorMethodInvoker(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, method, blob, metadataNames);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID).newInstance();
+            return processor.readMetadata(blob,metadataNames);
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
             throw new BinaryMetadataException(e);
         }
     }
@@ -98,10 +96,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     @Override
     public Map<String, Object> readMetadata(Blob blob) {
         try {
-            Class[] paramBlob = {Blob.class};
-            Method method = getProcessorMethod(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, BinaryMetadataConstants.READ_METADATA_METHOD, paramBlob);
-            return (Map<String, Object>) processorMethodInvoker(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, method, blob);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID).newInstance();
+            return processor.readMetadata(blob);
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
             throw new BinaryMetadataException(e);
         }
     }
@@ -109,10 +106,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     @Override
     public Map<String, Object> readMetadata(String processorName, Blob blob) {
         try {
-            Class[] paramBlob = {Blob.class};
-            Method method = getProcessorMethod(processorName, BinaryMetadataConstants.READ_METADATA_METHOD, paramBlob);
-            return (Map<String, Object>) processorMethodInvoker(processorName, method, blob);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(processorName).newInstance();
+            return processor.readMetadata(blob);
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
             throw new BinaryMetadataException(e);
         }
     }
@@ -123,10 +119,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     @Override
     public boolean writeMetadata(String processorName, Blob blob, Map<String, Object> metadata) {
         try {
-            Class[] params = {Blob.class, Map.class};
-            Method method = getProcessorMethod(processorName, BinaryMetadataConstants.WRITE_METADATA_METHOD, params);
-            return (boolean) processorMethodInvoker(processorName, method, blob, metadata);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(processorName).newInstance();
+            return processor.writeMetadata(blob, metadata);
+        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
             throw new BinaryMetadataException(e);
         }
     }
@@ -137,10 +132,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     @Override
     public boolean writeMetadata(Blob blob, Map<String, Object> metadata) {
         try {
-            Class[] params = {Blob.class, Map.class};
-            Method method = getProcessorMethod(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, BinaryMetadataConstants.WRITE_METADATA_METHOD, params);
-            return (boolean) processorMethodInvoker(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, method, blob, metadata);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID).newInstance();
+            return processor.writeMetadata(blob, metadata);
+        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
             throw new BinaryMetadataException(e);
         }
     }
@@ -149,9 +143,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
      * {@inheritDoc}
      */
     @Override
-    public void writeMetadata(DocumentModel doc) {
-        CoreSession session = doc.getCoreSession();
-
+    public void writeMetadata(DocumentModel doc, CoreSession session) {
         // Check if rules applying for this document.
         ActionContext actionContext = createActionContext(doc);
         List<String> mappingDescriptorIds = checkFilter(actionContext);
@@ -171,8 +163,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     }
 
     @Override
-    public void writeMetadata(DocumentModel doc, CoreSession session, 
-            String mappingDescriptorId) {
+    public void writeMetadata(DocumentModel doc, CoreSession session, String mappingDescriptorId) {
         // Creating mapping properties Map.
         Map<String, Object> metadataMapping = new HashMap<>();
         List<String> blobMetadata = new ArrayList<>();
@@ -199,7 +190,6 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
             doc.setPropertyValue(metadataMapping.get(metadata).toString(), blobMetadataOutput.get(metadata).toString());
         }
         session.saveDocument(doc);
-        session.save();
     }
 
     protected List<String> checkFilter(ActionContext actionContext) {
@@ -221,14 +211,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         return actionContext;
     }
 
-    protected Object processorMethodInvoker(String processorId, Method method, Object... args)
-            throws IllegalAccessException, InvocationTargetException {
-        return method.invoke(binaryMetadataProcessorInstances.get(processorId), args);
-    }
-
-    protected Method getProcessorMethod(String processorId, String methodId, Class[] params)
+    protected Class getProcessor(String processorId)
             throws NoSuchMethodException {
-        return binaryMetadataProcessorInstances.get(processorId).getClass().getDeclaredMethod(methodId, params);
+        return binaryMetadataProcessorInstances.get(processorId).getClass();
     }
 
     /*--------------------- Registry Service -----------------------*/

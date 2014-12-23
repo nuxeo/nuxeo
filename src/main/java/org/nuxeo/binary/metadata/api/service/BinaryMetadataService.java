@@ -91,7 +91,7 @@ public interface BinaryMetadataService {
      *
      * @param doc Nuxeo Document which metadata are written.
      */
-    public void writeMetadata(DocumentModel doc);
+    public void writeMetadata(DocumentModel doc, CoreSession session);
 
     /**
      * Apply metadata mapping and override document properties according to the contribution.
