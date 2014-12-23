@@ -21,9 +21,11 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 
 import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -47,7 +49,11 @@ public class BinaryMetadataListener implements EventListener {
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         if (ABOUT_TO_CREATE.equals(event.getName())) {
             DocumentModel doc = docCtx.getSourceDocument();
-            CoreSession session = docCtx.getCoreSession();
+            BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
+            Blob blob = blobHolder.getBlob();
+            if (blob != null) {
+                binaryMetadataService.writeMetadata(doc, docCtx.getCoreSession());
+            }
         } else if (BEFORE_DOC_UPDATE.equals(event.getName())) {
             DocumentModel doc = docCtx.getSourceDocument();
             CoreSession session = docCtx.getCoreSession();

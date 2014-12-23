@@ -32,13 +32,13 @@ import org.nuxeo.ecm.core.api.Blob;
 /**
  * @since 7.1
  */
-@Operation(id = WriteMetadataToContextFromBinary.ID, category = Constants.CAT_EXECUTION, label = "Write Metadata To "
-        + "Context From Binary", description = "Write Metadata To Context From "
-        + "Binary given in input and given metadata to inject into the "
+@Operation(id = ReadMetadataFromBinaryToContext.ID, category = Constants.CAT_EXECUTION, label = "Read Metadata From "
+        + "Binary to Context", description = "Read Metadata From binary to Context "
+        + "for a given input blob and given metadata to inject into the "
         + "Operation context (if not specified, all metadata will be injected) " + "", since = "7.1", addToStudio = true)
-public class WriteMetadataToContextFromBinary {
+public class ReadMetadataFromBinaryToContext {
 
-    public static final String ID = "Context.WriteMetadataFromBinary";
+    public static final String ID = "Context.ReadMetadataFromBinary";
 
     @Context
     protected BinaryMetadataService binaryMetadataService;
@@ -46,10 +46,10 @@ public class WriteMetadataToContextFromBinary {
     @Context
     protected OperationContext operationContext;
 
-    @Param(name = "processor", required = false, description = "The processor.")
+    @Param(name = "processor", required = false, description = "The processor to execute for overriding the input blob.")
     protected String processor = "exifTool";
 
-    @Param(name = "metadata", required = false, description = "The processor.")
+    @Param(name = "metadata", required = false, description = "Metadata list to filter on the blob.")
     protected StringList metadata;
 
     @OperationMethod

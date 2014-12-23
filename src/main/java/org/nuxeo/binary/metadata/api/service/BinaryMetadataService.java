@@ -98,7 +98,8 @@ public interface BinaryMetadataService {
      *
      * @param doc The input document.
      * @param session core session.
-     * @param mappingDescriptorId The metadata mapping to apply on the input.
+     * @param mappingDescriptorId The metadata mapping to apply on the document.
      */
     public void writeMetadata(DocumentModel doc, CoreSession session, String mappingDescriptorId);
+
 }

@@ -10,7 +10,7 @@
     <operation
             class="org.nuxeo.binary.metadata.api.operation.TriggerMetadataMappingOnDocument"/>
     <operation
-            class="org.nuxeo.binary.metadata.api.operation.WriteMetadataToContextFromBinary"/>
+            class="org.nuxeo.binary.metadata.api.operation.ReadMetadataFromBinaryToContext"/>
     <operation
             class="org.nuxeo.binary.metadata.api.operation.ReadMetadataFromBinary"/>
 

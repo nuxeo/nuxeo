@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.api.Blob;
         + "From Binary with the default Nuxeo processor.", since = "7.1", addToStudio = false)
 public class ReadMetadataFromBinary {
 
-    public static final String ID = "Binary.ReadMetadataFromBinary";
+    public static final String ID = "Binary.ReadMetadata";
 
     @Context
     protected BinaryMetadataService binaryMetadataService;
