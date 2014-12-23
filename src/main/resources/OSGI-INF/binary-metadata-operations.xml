@@ -8,7 +8,7 @@
     <operation
             class="org.nuxeo.binary.metadata.api.operation.WriteMetadataToBinaryFromContext"/>
     <operation
-            class="org.nuxeo.binary.metadata.api.operation.WriteMetadataToDocumentFromBinary"/>
+            class="org.nuxeo.binary.metadata.api.operation.TriggerMetadataMappingOnDocument"/>
     <operation
             class="org.nuxeo.binary.metadata.api.operation.WriteMetadataToContextFromBinary"/>
     <operation

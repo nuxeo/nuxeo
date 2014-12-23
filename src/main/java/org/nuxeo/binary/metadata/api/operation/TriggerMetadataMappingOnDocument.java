@@ -22,24 +22,31 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @since 7.1
  */
-@Operation(id = WriteMetadataToDocumentFromBinary.ID, category = Constants.CAT_BLOB, label = "Write Metadata To Document From Binary", description = "", since = "7.1", addToStudio = true)
-public class WriteMetadataToDocumentFromBinary {
+@Operation(id = TriggerMetadataMappingOnDocument.ID, category = Constants.CAT_BLOB, label = "Trigger Metadata Mapping", description = "Write Metadata To Document From Binary according to metadata mapping.", since = "7.1", addToStudio = true)
+public class TriggerMetadataMappingOnDocument {
 
-    public static final String ID = "Document.WriteMetadataFromBinary";
+    public static final String ID = "Document.TriggerMetadataMapping";
 
     @Context
     protected BinaryMetadataService binaryMetadataService;
 
-    @Param(name = "processor", required = false, description = "The processor.")
+    @Context
+    protected CoreSession coreSession;
+
+    @Param(name = "Processor", required = false, description = "The processor to execute for reading blobs metadata.")
     protected String processor = "exifTool";
 
+    @Param(name = "Metadata Mapping Id", required = true, description = "The metadata mapping id to apply on the input document.")
+    protected String metadataMappingId;
+
     @OperationMethod
-    public DocumentModelList run() {
-        return null;
+    public void run(DocumentModel document) {
+        binaryMetadataService.writeMetadata(document, coreSession, metadataMappingId);
     }
 }
