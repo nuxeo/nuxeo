@@ -19,7 +19,9 @@ package org.nuxeo.binary.metadata.api.service;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.binary.metadata.contribution.MetadataMappingDescriptor;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -90,4 +92,14 @@ public interface BinaryMetadataService {
      * @param doc Nuxeo Document which metadata are written.
      */
     public void writeMetadata(DocumentModel doc);
+
+    /**
+     * Apply metadata mapping and override document properties according to the contribution.
+     *
+     * @param doc The input document.
+     * @param session core session.
+     * @param mappingDescriptorId The metadata mapping to apply on the input.
+     */
+    public void writeMetadata(DocumentModel doc, CoreSession session,
+            String mappingDescriptorId);
 }

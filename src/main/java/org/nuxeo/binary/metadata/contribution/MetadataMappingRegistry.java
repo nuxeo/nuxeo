@@ -32,7 +32,7 @@ public class MetadataMappingRegistry extends ContributionFragmentRegistry<Metada
 
     private static final Log log = LogFactory.getLog(MetadataMappingRegistry.class);
 
-    protected Map<String, MetadataMappingDescriptor> processorDescriptorMap = new HashMap<>();
+    protected Map<String, MetadataMappingDescriptor> mappingDescriptorMap = new HashMap<>();
 
     @Override
     public String getContributionId(MetadataMappingDescriptor metadataMappingDescriptor) {
@@ -42,17 +42,19 @@ public class MetadataMappingRegistry extends ContributionFragmentRegistry<Metada
     @Override
     public void contributionUpdated(String s, MetadataMappingDescriptor metadataMappingDescriptor,
             MetadataMappingDescriptor metadataMappingDescriptor2) {
-        this.processorDescriptorMap.put(metadataMappingDescriptor.getId(), metadataMappingDescriptor2);
+        this.mappingDescriptorMap.put(metadataMappingDescriptor.getId(),
+                metadataMappingDescriptor2);
     }
 
     @Override
     public void contributionRemoved(String s, MetadataMappingDescriptor metadataMappingDescriptor) {
-        this.processorDescriptorMap.remove(metadataMappingDescriptor.getId());
+        this.mappingDescriptorMap.remove(metadataMappingDescriptor.getId());
     }
 
     @Override
     public synchronized void addContribution(MetadataMappingDescriptor metadataMappingDescriptor) {
-        this.processorDescriptorMap.put(metadataMappingDescriptor.getId(), metadataMappingDescriptor);
+        this.mappingDescriptorMap.put(metadataMappingDescriptor.getId(),
+                metadataMappingDescriptor);
     }
 
     /**
@@ -72,11 +74,12 @@ public class MetadataMappingRegistry extends ContributionFragmentRegistry<Metada
         throw new UnsupportedOperationException();
     }
 
-    public Map<String, MetadataMappingDescriptor> getProcessorDescriptorMap() {
-        return processorDescriptorMap;
+    public Map<String, MetadataMappingDescriptor> getMappingDescriptorMap() {
+        return mappingDescriptorMap;
     }
 
-    public void setProcessorDescriptorMap(Map<String, MetadataMappingDescriptor> processorDescriptorMap) {
-        this.processorDescriptorMap = processorDescriptorMap;
+    public void setMappingDescriptorMap(Map<String,
+            MetadataMappingDescriptor> mappingDescriptorMap) {
+        this.mappingDescriptorMap = mappingDescriptorMap;
     }
 }

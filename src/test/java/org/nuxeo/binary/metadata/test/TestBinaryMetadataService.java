@@ -17,9 +17,15 @@
 package org.nuxeo.binary.metadata.test;
 
 import com.google.inject.Inject;
+import org.apache.log4j.Appender;
+import org.apache.log4j.Layout;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
+import org.apache.log4j.WriterAppender;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
+import org.nuxeo.binary.metadata.api.service.BinaryMetadataServiceImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -29,6 +35,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -140,15 +147,35 @@ public class TestBinaryMetadataService {
 
     @Test
     public void itShouldWriteDocPropertiesFromBinaryWithMapping() {
-        // Get the document with PDF attached
+        // Fetch logs for binary service.
+        Logger logger = Logger.getLogger(BinaryMetadataServiceImpl.class);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Layout layout = new SimpleLayout();
+        Appender appender = new WriterAppender(layout, out);
+        logger.addAppender(appender);
+
+        // Get the document with PDF attached.
         DocumentModel pdfDoc = BinaryMetadataServerInit.getFile(1, session);
+
         // Copy into the document according to metadata mapping contribution.
         binaryMetadataService.writeMetadata(pdfDoc);
+
         // Check if the document has been overwritten by binary metadata.
         pdfDoc = BinaryMetadataServerInit.getFile(1, session);
         assertEquals("en-US", pdfDoc.getPropertyValue("dc:title"));
         assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue
                 ("dc:source"));
         assertEquals("30 kB",pdfDoc.getPropertyValue("dc:description"));
+
+        // Check if logs are displayed.
+        try {
+            String logMsg = out.toString();
+            assertNotNull(logMsg);
+            assertEquals("WARN - Missing binary metadata descriptor with id " +
+                    "'hello'. Or check your rule contribution with proper " +
+                    "metadataMapping-id.\n",logMsg);
+        } finally {
+            logger.removeAppender(appender);
+        }
     }
 }

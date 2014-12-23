@@ -14,11 +14,36 @@
     <rule id="default" order="0" enabled="true" async="false">
       <metadataMappings>
         <metadataMapping-id>File</metadataMapping-id>
+        <!-- check not failing on false contribution and logging it -->
+        <metadataMapping-id>hello</metadataMapping-id>
       </metadataMappings>
       <filters>
-        <filter-id>hasFileFacet</filter-id>
+        <filter-id>hasFileType</filter-id>
       </filters>
     </rule>
+    <!-- check if can be disabled -->
+    <rule id="disable" order="1" enabled="false" async="false">
+      <metadataMappings>
+        <metadataMapping-id>File</metadataMapping-id>
+      </metadataMappings>
+      <filters>
+        <filter-id>hasNoFileType</filter-id>
+      </filters>
+    </rule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+             point="filters">
+    <filter id="hasFileType">
+      <rule grant="true">
+        <type>File</type>
+      </rule>
+    </filter>
+    <filter id="hasNoFileType">
+      <rule grant="false">
+        <type>File</type>
+      </rule>
+    </filter>
   </extension>
 
 </component>

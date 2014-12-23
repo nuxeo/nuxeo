@@ -26,7 +26,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * @since 7.1
  */
-@XObject("mapping")
+@XObject("rule")
 public class MetadataRuleDescriptor {
 
     @XNode("@id")

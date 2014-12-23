@@ -25,7 +25,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * @since 7.1
  */
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.binary.metadata", "org.nuxeo.ecm.platform.commandline.executor" })
+@Deploy({ "org.nuxeo.binary.metadata", "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.actions" })
 public class BinaryMetadataFeature extends SimpleFeature {
 
 }
