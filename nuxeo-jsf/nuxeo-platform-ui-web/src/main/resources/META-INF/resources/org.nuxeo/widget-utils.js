@@ -42,7 +42,7 @@ nuxeo.utils = (function(m) {
     }
   };
 
-  m.select2ifyjSelect = function(eltId, params) {
+  m.select2ifySelect = function(eltId, params) {
     jQuery(document.getElementById(eltId)).select2(params);
   };
 
