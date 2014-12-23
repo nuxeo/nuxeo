@@ -369,12 +369,12 @@ public class TestDocumentValidationService {
     @Test
     public void testValidateDeepFieldUsingXpath() {
         DocumentValidationReport violations;
-        violations = validator.validate("vs:users:user:firstname", "Bob");
+        violations = validator.validate("vs:users/user/firstname", "Bob");
         assertFalse(violations.hasError());
-        violations = validator.validate("vs:users:user:firstname", null);
+        violations = validator.validate("vs:users/user/firstname", null);
         assertEquals(1, violations.numberOfErrors());
         assertTrue(violations.asList().get(0).getConstraint() instanceof NotNullConstraint);
-        violations = validator.validate("vs:users:user:firstname", "   ");
+        violations = validator.validate("vs:users/user/firstname", "   ");
         assertEquals(1, violations.numberOfErrors());
         assertTrue(violations.asList().get(0).getConstraint() instanceof PatternConstraint);
     }

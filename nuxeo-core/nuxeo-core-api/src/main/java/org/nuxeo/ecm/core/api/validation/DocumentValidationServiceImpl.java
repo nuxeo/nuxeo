@@ -147,7 +147,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
 
     @Override
     public DocumentValidationReport validate(String xpath, Object value) throws IllegalArgumentException {
-        String[] splitted = xpath.split(":");
+        String[] splitted = xpath.split(":|/");
         if (splitted.length < 2) {
             throw new IllegalArgumentException("Invalid xpath " + xpath);
         }
