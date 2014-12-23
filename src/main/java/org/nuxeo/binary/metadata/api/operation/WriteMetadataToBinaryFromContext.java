@@ -16,6 +16,9 @@
  */
 package org.nuxeo.binary.metadata.api.operation;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -25,17 +28,12 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @since 7.1
  */
-@Operation(id = WriteMetadataToBinaryFromContext.ID,
-        category = Constants.CAT_BLOB, label = "Write Metadata To Binary From" +
-        " Context", description = "Write Metadata To Binary From Context " +
-        "given a processor name (or the default Nuxeo one) and given metadata" +
-        ".", since = "7.1", addToStudio = true)
+@Operation(id = WriteMetadataToBinaryFromContext.ID, category = Constants.CAT_BLOB, label = "Write Metadata To Binary From"
+        + " Context", description = "Write Metadata To Binary From Context "
+        + "given a processor name (or the default Nuxeo one) and given metadata" + ".", since = "7.1", addToStudio = true)
 public class WriteMetadataToBinaryFromContext {
 
     public static final String ID = "Binary.WriteMetadataFromContext";
@@ -43,10 +41,10 @@ public class WriteMetadataToBinaryFromContext {
     @Context
     protected BinaryMetadataService binaryMetadataService;
 
-    @Param(name = "processor", required = false, description = "The processor.")
+    @Param(name = "processor", required = false, description = "The processor to execute for overriding the input blob.")
     protected String processor = "exifTool";
 
-    @Param(name = "metadata", required = true, description = "The processor.")
+    @Param(name = "metadata", required = true, description = "Metadata to write into the input blob.")
     protected Properties metadata;
 
     @OperationMethod

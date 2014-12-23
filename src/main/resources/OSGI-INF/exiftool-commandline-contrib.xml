@@ -6,21 +6,21 @@
 
     <command name="exiftool-read-taglist" enabled="true">
       <commandLine>exiftool</commandLine>
-      <parameterString> -G -json #{tagList} #{inFilePath}</parameterString>
+      <parameterString>-G -json #{tagList} #{inFilePath}</parameterString>
       <installationDirective>You need to install exiftool
       </installationDirective>
     </command>
 
     <command name="exiftool-read" enabled="true">
       <commandLine>exiftool</commandLine>
-      <parameterString> -G -json #{inFilePath}</parameterString>
+      <parameterString>-G -json #{inFilePath}</parameterString>
       <installationDirective>You need to install exiftool
       </installationDirective>
     </command>
 
     <command name="exiftool-write" enabled="true">
       <commandLine>exiftool</commandLine>
-      <parameterString> -G #{tagList} #{inFilePath}</parameterString>
+      <parameterString>-G #{tagList} #{inFilePath}</parameterString>
       <installationDirective>You need to install exiftool
       </installationDirective>
     </command>

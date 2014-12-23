@@ -16,6 +16,12 @@
  */
 package org.nuxeo.binary.metadata.api.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -27,12 +33,6 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @since 7.1
@@ -51,12 +51,10 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
 
     @Override
     public boolean writeMetadata(Blob blob, Map<String, Object> metadata) {
-        CommandAvailability ca = getCommandLineExecutorService()
-                .getCommandAvailability(BinaryMetadataConstants
-                        .EXIFTOOL_READ_TAGLIST);
+        CommandAvailability ca = getCommandLineExecutorService().getCommandAvailability(
+                BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST);
         if (!ca.isAvailable()) {
-            throw new BinaryMetadataException("Command '" +
-                    BinaryMetadataConstants.EXIFTOOL_WRITE
+            throw new BinaryMetadataException("Command '" + BinaryMetadataConstants.EXIFTOOL_WRITE
                     + "' is not available.");
         }
         try {
@@ -64,20 +62,17 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
             File file = makeFile(blob);
             params.addNamedParameter("inFilePath", file);
             params.addNamedParameter("tagList", getCommandTags(metadata));
-            ExecResult er = getCommandLineExecutorService().execCommand
-                    (BinaryMetadataConstants.EXIFTOOL_WRITE, params,
-                            false);
+            ExecResult er = getCommandLineExecutorService().execCommand(BinaryMetadataConstants.EXIFTOOL_WRITE, params,
+                    false);
             boolean success = er.isSuccessful();
-            if(!success){
-                log.error("There was an error executing " +
-                        "the following command: "
-                        + er.getCommandLine(), er.getError());
+            if (!success) {
+                log.error("There was an error executing " + "the following command: " + er.getCommandLine(),
+                        er.getError());
             }
             return success;
         } catch (CommandNotAvailable commandNotAvailable) {
-            throw new BinaryMetadataException("Command '" + BinaryMetadataConstants
-                    .EXIFTOOL_WRITE + "' is not available.",
-                    commandNotAvailable);
+            throw new BinaryMetadataException("Command '" + BinaryMetadataConstants.EXIFTOOL_WRITE
+                    + "' is not available.", commandNotAvailable);
         } catch (IOException ioException) {
             throw new BinaryMetadataException(ioException);
         }
@@ -85,12 +80,10 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
 
     @Override
     public Map<String, Object> readMetadata(Blob blob, List<String> metadata) {
-        CommandAvailability ca = getCommandLineExecutorService()
-                .getCommandAvailability(BinaryMetadataConstants
-                        .EXIFTOOL_READ_TAGLIST);
+        CommandAvailability ca = getCommandLineExecutorService().getCommandAvailability(
+                BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST);
         if (!ca.isAvailable()) {
-            throw new BinaryMetadataException("Command '" +
-                    BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST
+            throw new BinaryMetadataException("Command '" + BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST
                     + "' is not available.");
         }
         try {
@@ -98,15 +91,13 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
             File file = makeFile(blob);
             params.addNamedParameter("inFilePath", file);
             params.addNamedParameter("tagList", getCommandTags(metadata));
-            ExecResult er = getCommandLineExecutorService().execCommand
-                    (BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST, params,
-                            false);
+            ExecResult er = getCommandLineExecutorService().execCommand(BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST,
+                    params, false);
 
             return returnResultMap(er);
         } catch (CommandNotAvailable commandNotAvailable) {
-            throw new RuntimeException("Command '" + BinaryMetadataConstants
-                    .EXIFTOOL_READ_TAGLIST + "' is not available.",
-                    commandNotAvailable);
+            throw new RuntimeException("Command '" + BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST
+                    + "' is not available.", commandNotAvailable);
         } catch (IOException ioException) {
             throw new BinaryMetadataException(ioException);
         }
@@ -114,24 +105,21 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
 
     @Override
     public Map<String, Object> readMetadata(Blob blob) {
-        CommandAvailability ca = getCommandLineExecutorService()
-                .getCommandAvailability(BinaryMetadataConstants.EXIFTOOL_READ);
+        CommandAvailability ca = getCommandLineExecutorService().getCommandAvailability(
+                BinaryMetadataConstants.EXIFTOOL_READ);
         if (!ca.isAvailable()) {
-            throw new BinaryMetadataException("Command '" +
-                    BinaryMetadataConstants.EXIFTOOL_READ
+            throw new BinaryMetadataException("Command '" + BinaryMetadataConstants.EXIFTOOL_READ
                     + "' is not available.");
         }
         try {
             CmdParameters params = new CmdParameters();
             File file = makeFile(blob);
             params.addNamedParameter("inFilePath", file);
-            ExecResult er = getCommandLineExecutorService().execCommand
-                    (BinaryMetadataConstants.EXIFTOOL_READ, params);
+            ExecResult er = getCommandLineExecutorService().execCommand(BinaryMetadataConstants.EXIFTOOL_READ, params);
 
             return returnResultMap(er);
         } catch (CommandNotAvailable commandNotAvailable) {
-            throw new RuntimeException("Command '" + BinaryMetadataConstants
-                    .EXIFTOOL_READ + "' is not available.",
+            throw new RuntimeException("Command '" + BinaryMetadataConstants.EXIFTOOL_READ + "' is not available.",
                     commandNotAvailable);
         } catch (IOException ioException) {
             throw new BinaryMetadataException(ioException);
@@ -140,11 +128,9 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
 
     /*--------------------------- Utils ------------------------*/
 
-    protected Map<String, Object> returnResultMap(ExecResult er) throws
-            IOException {
+    protected Map<String, Object> returnResultMap(ExecResult er) throws IOException {
         if (!er.isSuccessful()) {
-            throw new BinaryMetadataException("There was an error executing " +
-                    "the following command: "
+            throw new BinaryMetadataException("There was an error executing " + "the following command: "
                     + er.getCommandLine(), er.getError());
         }
         StringBuilder sb = new StringBuilder();
@@ -169,7 +155,7 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
         return sb.toString();
     }
 
-    protected String getCommandTags(Map<String,Object> metadataMap) {
+    protected String getCommandTags(Map<String, Object> metadataMap) {
         StringBuilder sb = new StringBuilder();
         for (String metadata : metadataMap.keySet()) {
             sb.append("-" + metadata + "=" + metadataMap.get(metadata).toString() + " ");

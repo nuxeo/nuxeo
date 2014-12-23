@@ -16,7 +16,16 @@
  */
 package org.nuxeo.binary.metadata.test;
 
-import com.google.inject.Inject;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.Appender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Logger;
@@ -35,15 +44,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import com.google.inject.Inject;
 
 /**
  * @since 7.1
@@ -51,8 +52,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(FeaturesRunner.class)
 @Features(BinaryMetadataFeature.class)
 @LocalDeploy({ "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-contrib-test.xml" })
-@RepositoryConfig(cleanup = Granularity.METHOD,
-        init = BinaryMetadataServerInit.class)
+@RepositoryConfig(cleanup = Granularity.METHOD, init = BinaryMetadataServerInit.class)
 public class TestBinaryMetadataService {
 
     @Inject
@@ -90,13 +90,11 @@ public class TestBinaryMetadataService {
         // Get the document with MP3 attached
         DocumentModel musicFile = BinaryMetadataServerInit.getFile(0, session);
         BlobHolder musicBlobHolder = musicFile.getAdapter(BlobHolder.class);
-        Map<String, Object> blobProperties = binaryMetadataService
-                .readMetadata(musicBlobHolder.getBlob());
+        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(musicBlobHolder.getBlob());
         assertNotNull(blobProperties);
         assertEquals(48, blobProperties.size());
         assertEquals("Twist", blobProperties.get("ID3:Title").toString());
-        assertEquals("Divine Recordings", blobProperties.get("ID3:Publisher")
-                .toString());
+        assertEquals("Divine Recordings", blobProperties.get("ID3:Publisher").toString());
     }
 
     @Test
@@ -104,13 +102,12 @@ public class TestBinaryMetadataService {
         // Get the document with MP3 attached
         DocumentModel musicFile = BinaryMetadataServerInit.getFile(0, session);
         BlobHolder musicBlobHolder = musicFile.getAdapter(BlobHolder.class);
-        Map<String, Object> blobProperties = binaryMetadataService
-                .readMetadata(musicBlobHolder.getBlob(), musicMetadata);
+        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(musicBlobHolder.getBlob(),
+                musicMetadata);
         assertNotNull(blobProperties);
         assertEquals(4, blobProperties.size());
         assertEquals("Twist", blobProperties.get("ID3:Title").toString());
-        assertEquals("Divine Recordings", blobProperties.get("ID3:Publisher")
-                .toString());
+        assertEquals("Divine Recordings", blobProperties.get("ID3:Publisher").toString());
     }
 
     @Test
@@ -119,30 +116,25 @@ public class TestBinaryMetadataService {
         DocumentModel psdFile = BinaryMetadataServerInit.getFile(3, session);
         BlobHolder psdBlobHolder = psdFile.getAdapter(BlobHolder.class);
 
-        //Check the content
-        Map<String, Object> blobProperties = binaryMetadataService
-                .readMetadata(psdBlobHolder.getBlob(), PSDMetadata);
+        // Check the content
+        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(psdBlobHolder.getBlob(), PSDMetadata);
         assertNotNull(blobProperties);
         assertNotNull(blobProperties);
         assertEquals(2, blobProperties.size());
         assertEquals(100, blobProperties.get("EXIF:ImageHeight"));
-        assertEquals("Adobe Photoshop CS4 Macintosh",
-                blobProperties.get("EXIF:Software")
-                .toString());
+        assertEquals("Adobe Photoshop CS4 Macintosh", blobProperties.get("EXIF:Software").toString());
 
         // Write a new content
-        assertTrue(binaryMetadataService.writeMetadata(psdBlobHolder
-                .getBlob(), inputPSDMetadata));
+        assertTrue(binaryMetadataService.writeMetadata(psdBlobHolder.getBlob(), inputPSDMetadata));
 
-        //Check the content
-        blobProperties = binaryMetadataService
-                .readMetadata(psdBlobHolder.getBlob(), PSDMetadata);
+        // Check the content
+        blobProperties = binaryMetadataService.readMetadata(psdBlobHolder
+                .getBlob(), PSDMetadata);
         assertNotNull(blobProperties);
         assertNotNull(blobProperties);
         assertEquals(2, blobProperties.size());
         assertEquals(200, blobProperties.get("EXIF:ImageHeight"));
-        assertEquals("Nuxeo", blobProperties.get("EXIF:Software")
-                .toString());
+        assertEquals("Nuxeo", blobProperties.get("EXIF:Software").toString());
     }
 
     @Test
@@ -163,17 +155,15 @@ public class TestBinaryMetadataService {
         // Check if the document has been overwritten by binary metadata.
         pdfDoc = BinaryMetadataServerInit.getFile(1, session);
         assertEquals("en-US", pdfDoc.getPropertyValue("dc:title"));
-        assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue
-                ("dc:source"));
-        assertEquals("30 kB",pdfDoc.getPropertyValue("dc:description"));
+        assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:source"));
+        assertEquals("30 kB", pdfDoc.getPropertyValue("dc:description"));
 
         // Check if logs are displayed.
         try {
             String logMsg = out.toString();
             assertNotNull(logMsg);
-            assertEquals("WARN - Missing binary metadata descriptor with id " +
-                    "'hello'. Or check your rule contribution with proper " +
-                    "metadataMapping-id.\n",logMsg);
+            assertEquals("WARN - Missing binary metadata descriptor with id "
+                    + "'hello'. Or check your rule contribution with proper " + "metadataMapping-id.\n", logMsg);
         } finally {
             logger.removeAppender(appender);
         }

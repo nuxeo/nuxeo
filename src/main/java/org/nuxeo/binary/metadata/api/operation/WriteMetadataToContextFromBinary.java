@@ -16,6 +16,9 @@
  */
 package org.nuxeo.binary.metadata.api.operation;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -26,18 +29,13 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.Blob;
 
-import java.util.ArrayList;
-import java.util.Map;
-
 /**
  * @since 7.1
  */
-@Operation(id = WriteMetadataToContextFromBinary.ID,
-        category = Constants.CAT_EXECUTION, label = "Write Metadata To " +
-        "Context From Binary", description = "Write Metadata To Context From " +
-        "Binary given in input and given metadata to inject into the " +
-        "Operation context (if not specified, all metadata will be injected) " +
-        "", since = "7.1", addToStudio = true)
+@Operation(id = WriteMetadataToContextFromBinary.ID, category = Constants.CAT_EXECUTION, label = "Write Metadata To "
+        + "Context From Binary", description = "Write Metadata To Context From "
+        + "Binary given in input and given metadata to inject into the "
+        + "Operation context (if not specified, all metadata will be injected) " + "", since = "7.1", addToStudio = true)
 public class WriteMetadataToContextFromBinary {
 
     public static final String ID = "Context.WriteMetadataFromBinary";

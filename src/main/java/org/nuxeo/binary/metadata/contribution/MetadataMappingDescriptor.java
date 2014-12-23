@@ -16,12 +16,12 @@
  */
 package org.nuxeo.binary.metadata.contribution;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @since 7.1

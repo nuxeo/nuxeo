@@ -16,6 +16,11 @@
  */
 package org.nuxeo.binary.metadata.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.binary.metadata.api.operation.ReadMetadataFromBinary;
@@ -33,11 +38,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.Map;
 
 /**
  * @since 7.1
@@ -65,12 +65,12 @@ public class TestBinaryMetadataOperation {
         DocumentModel musicFile = BinaryMetadataServerInit.getFile(0, session);
         BlobHolder musicBlobHolder = musicFile.getAdapter(BlobHolder.class);
         operationContext.setInput(musicBlobHolder.getBlob());
-        Map<String, Object> blobProperties = (Map<String, Object>) automationService.run(operationContext, ReadMetadataFromBinary.ID);
+        Map<String, Object> blobProperties = (Map<String, Object>) automationService.run(operationContext,
+                ReadMetadataFromBinary.ID);
         assertNotNull(blobProperties);
         assertEquals(49, blobProperties.size());
         assertEquals("Twist", blobProperties.get("ID3:Title").toString());
-        assertEquals("Divine Recordings", blobProperties.get("ID3:Publisher")
-                .toString());
+        assertEquals("Divine Recordings", blobProperties.get("ID3:Publisher").toString());
     }
 
 }

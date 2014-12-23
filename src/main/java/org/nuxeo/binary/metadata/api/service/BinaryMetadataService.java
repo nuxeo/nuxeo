@@ -19,7 +19,6 @@ package org.nuxeo.binary.metadata.api.service;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.binary.metadata.contribution.MetadataMappingDescriptor;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -87,7 +86,8 @@ public interface BinaryMetadataService {
     public boolean writeMetadata(Blob blob, Map<String, Object> metadata);
 
     /**
-     * Write metadata (from a binary) into a given Nuxeo Document according to the metadata mapping and rules contributions.
+     * Write metadata (from a binary) into a given Nuxeo Document according to the metadata mapping and rules
+     * contributions.
      *
      * @param doc Nuxeo Document which metadata are written.
      */
@@ -100,6 +100,5 @@ public interface BinaryMetadataService {
      * @param session core session.
      * @param mappingDescriptorId The metadata mapping to apply on the input.
      */
-    public void writeMetadata(DocumentModel doc, CoreSession session,
-            String mappingDescriptorId);
+    public void writeMetadata(DocumentModel doc, CoreSession session, String mappingDescriptorId);
 }

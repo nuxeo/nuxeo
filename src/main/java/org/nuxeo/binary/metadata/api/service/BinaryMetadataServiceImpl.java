@@ -155,13 +155,13 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         // Check if rules applying for this document.
         ActionContext actionContext = createActionContext(doc);
         List<String> mappingDescriptorIds = checkFilter(actionContext);
-        if(mappingDescriptorIds==null || mappingDescriptorIds.isEmpty()){
+        if (mappingDescriptorIds == null || mappingDescriptorIds.isEmpty()) {
             return;
         }
 
         // For each mapping descriptors, overriding mapping document properties.
-        for(String mappingDescriptorId:mappingDescriptorIds) {
-            if(!mappingRegistry.getMappingDescriptorMap().containsKey(mappingDescriptorId)) {
+        for (String mappingDescriptorId : mappingDescriptorIds) {
+            if (!mappingRegistry.getMappingDescriptorMap().containsKey(mappingDescriptorId)) {
                 log.warn("Missing binary metadata descriptor with id '" + mappingDescriptorId
                         + "'. Or check your rule contribution with proper metadataMapping-id.");
                 continue;
