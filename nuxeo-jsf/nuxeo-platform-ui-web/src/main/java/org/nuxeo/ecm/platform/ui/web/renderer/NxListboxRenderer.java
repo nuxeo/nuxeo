@@ -56,7 +56,7 @@ public class NxListboxRenderer extends ListboxRenderer {
             if (width != null) {
                 params.put("width", width);
             }
-            writer.write("jQuery(document).ready(function(){nuxeo.utils.select2ifyjSelect('" + component.getClientId()
+            writer.write("jQuery(document).ready(function(){nuxeo.utils.select2ifySelect('" + component.getClientId()
                     + "', " + new ObjectMapper().writeValueAsString(params) + ")});");
             writer.endElement("script");
         }
