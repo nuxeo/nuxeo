@@ -56,11 +56,6 @@ public class APIRoot extends ModuleRoot {
         return newObject("repo");
     }
 
-    @Path("/{path}")
-    public Object route(@PathParam("path") String path) {
-        return newObject(path);
-    }
-
     @Path("/user")
     public Object doGetUser() {
         return newObject("users");
@@ -107,5 +102,10 @@ public class APIRoot extends ModuleRoot {
         }
         return WebException.newException(
                 cause.getMessage(), unWrapException);
+    }
+
+    @Path("/ext/{otherPath}")
+    public Object route(@PathParam("otherPath") String otherPath) {
+        return newObject(otherPath);
     }
 }

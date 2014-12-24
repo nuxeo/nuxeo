@@ -80,4 +80,9 @@ public class RepositoryObject extends DefaultObject {
         return newObject("bulk", new DocumentModelListImpl(docs));
 
     }
+
+    @Path("{otherPath}")
+    public Object route(@PathParam("otherPath") String otherPath) {
+        return newObject(otherPath);
+    }
 }
