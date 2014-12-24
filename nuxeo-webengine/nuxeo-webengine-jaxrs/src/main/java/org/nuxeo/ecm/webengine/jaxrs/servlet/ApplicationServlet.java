@@ -16,13 +16,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.Enumeration;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Application;
 
 import org.nuxeo.ecm.webengine.jaxrs.ApplicationHost;
 import org.nuxeo.ecm.webengine.jaxrs.ApplicationManager;
@@ -80,7 +80,15 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
             name = ApplicationManager.DEFAULT_HOST;
         }
         app = ApplicationManager.getInstance().getOrCreateApplication(name);
-        container = createServletContainer(new ApplicationAdapter(app));
+        // use init parameters that are booleans as features
+        for (Enumeration<String> en = config.getInitParameterNames(); en.hasMoreElements();) {
+            String n = en.nextElement();
+            String v = config.getInitParameter(n);
+            if (Boolean.TRUE.toString().equals(v) || Boolean.FALSE.toString().equals(v)) {
+                app.getFeatures().put(n, Boolean.valueOf(v));
+            }
+        }
+        container = createServletContainer(app);
 
         initContainer(config);
         app.setRendering(initRendering(config));
@@ -218,10 +226,12 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
         }
     }
 
-    protected ServletContainer createServletContainer(Application app) {
+    protected ServletContainer createServletContainer(ApplicationHost app) {
         ApplicationAdapter adapter = new ApplicationAdapter(app);
         // disable wadl since we got class loader pb in JAXB under equinox
         adapter.getFeatures().put(ResourceConfig.FEATURE_DISABLE_WADL, Boolean.TRUE);
+        // copy all features recorded in app
+        adapter.getFeatures().putAll(app.getFeatures());
         return new ServletContainer(adapter);
     }
 

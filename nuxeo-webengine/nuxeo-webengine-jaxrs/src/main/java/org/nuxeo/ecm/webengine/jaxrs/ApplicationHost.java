@@ -41,6 +41,8 @@ public class ApplicationHost extends Application {
 
     protected final String name;
 
+    protected final Map<String, Boolean> features = new HashMap<String, Boolean>();
+
     protected final List<ApplicationFragment> apps;
 
     protected List<Reloadable> listeners;
@@ -112,6 +114,10 @@ public class ApplicationHost extends Application {
 
     public String getName() {
         return name;
+    }
+
+    public Map<String, Boolean> getFeatures() {
+        return features;
     }
 
     public synchronized void add(ApplicationFragment app) {
