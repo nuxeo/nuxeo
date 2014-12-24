@@ -102,4 +102,11 @@ public interface BinaryMetadataService {
      */
     public void writeMetadata(DocumentModel doc, CoreSession session, String mappingDescriptorId);
 
+    /**
+     * Get the metadata result from the mapping contribution related to this document.
+     *
+     * @param doc the given document.
+     * @return the metadata result from the mapping contribution related to this document.
+     */
+    Map<String, String> getMappingMetadata(DocumentModel doc);
 }

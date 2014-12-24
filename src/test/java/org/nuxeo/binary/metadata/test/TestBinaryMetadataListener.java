@@ -16,8 +16,17 @@
  */
 package org.nuxeo.binary.metadata.test;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.automation.core.util.DocumentHelper;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
@@ -31,12 +40,37 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(BinaryMetadataFeature.class)
-@LocalDeploy({ "org.nuxeo.binary.metadata.test:binary-metadata-contrib-test.xml",
-        "org.nuxeo.binary.metadata.test:binary-metadata-file-contrib-test.xml" })
+@LocalDeploy({ "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-contrib-test.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestBinaryMetadataListener {
 
     @Inject
-    BinaryMetadataService binaryMetadataService;
+    CoreSession session;
+
+    @Test
+    public void testSyncListener() {
+        // Create folder
+        DocumentModel doc = session.createDocumentModel("/", "folder", "Folder");
+        doc.setPropertyValue("dc:title", "Folder");
+        session.createDocument(doc);
+
+        // Create file
+        doc = session.createDocumentModel("/folder", "file", "File");
+        doc.setPropertyValue("dc:title", "file");
+        doc = session.createDocument(doc);
+
+        // Attach PDF
+        File binary = FileUtils.getResourceFileFromContext("data/hello.pdf");
+        FileBlob fb = new FileBlob(binary);
+        fb.setMimeType("application/pdf");
+        DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
+        session.saveDocument(doc);
+
+        DocumentModel pdfDoc = session.getDocument(doc.getRef());
+
+        assertEquals("en-US", pdfDoc.getPropertyValue("dc:title"));
+        assertEquals("OpenOffice.org", pdfDoc.getPropertyValue("dc:source"));
+        assertEquals("30 kB", pdfDoc.getPropertyValue("dc:description"));
+    }
 
 }

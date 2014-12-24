@@ -1,0 +1,9 @@
+<component name="org.nuxeo.binary.metadata.contrib.listener.test">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+             point="listener">
+    <listener name="binarymetadatalistener" enabled="false">
+    </listener>
+  </extension>
+
+</component>

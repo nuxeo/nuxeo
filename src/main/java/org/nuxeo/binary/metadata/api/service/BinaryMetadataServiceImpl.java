@@ -16,8 +16,6 @@
  */
 package org.nuxeo.binary.metadata.api.service;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -192,6 +190,32 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         session.saveDocument(doc);
     }
 
+    @Override
+    public Map<String, String> getMappingMetadata(DocumentModel doc) {
+        // Check if rules applying for this document.
+        ActionContext actionContext = createActionContext(doc);
+        List<String> mappingDescriptorIds = checkFilter(actionContext);
+        if (mappingDescriptorIds == null || mappingDescriptorIds.isEmpty()) {
+            return null;
+        }
+        // For each mapping descriptors, store mapping.
+        Map<String, String> mappingResult = new HashMap<>();
+        for (String mappingDescriptorId : mappingDescriptorIds) {
+            if (!mappingRegistry.getMappingDescriptorMap().containsKey(mappingDescriptorId)) {
+                log.warn("Missing binary metadata descriptor with id '" + mappingDescriptorId
+                        + "'. Or check your rule contribution with proper metadataMapping-id.");
+                continue;
+            }
+            // Creating mapping properties.
+            MetadataMappingDescriptor mappingDescriptor = mappingRegistry.getMappingDescriptorMap().get(mappingDescriptorId);
+            for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor
+                    : mappingDescriptor.getMetadataDescriptors()) {
+                mappingResult.put(metadataDescriptor.getXpath(),metadataDescriptor.getName());
+            }
+        }
+        return mappingResult;
+    }
+
     protected List<String> checkFilter(ActionContext actionContext) {
         ActionManager actionService = Framework.getLocalService(ActionManager.class);
         for (String ruleDescriptorId : ruleRegistry.getMetadataRuleDescriptorMap().keySet()) {
@@ -211,8 +235,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         return actionContext;
     }
 
-    protected Class getProcessor(String processorId)
-            throws NoSuchMethodException {
+    protected Class getProcessor(String processorId) throws NoSuchMethodException {
         return binaryMetadataProcessorInstances.get(processorId).getClass();
     }
 

@@ -66,8 +66,8 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
                     false);
             boolean success = er.isSuccessful();
             if (!success) {
-                log.error("There was an error executing " + "the following command: " + er.getCommandLine(),
-                        er.getError());
+                log.error("There was an error executing " + "the following command: " + er.getCommandLine() + ". \n"
+                        + er.getOutput().get(0));
             }
             return success;
         } catch (CommandNotAvailable commandNotAvailable) {

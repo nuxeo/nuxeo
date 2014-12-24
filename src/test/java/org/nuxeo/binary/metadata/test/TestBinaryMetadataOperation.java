@@ -50,7 +50,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(BinaryMetadataFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
-@LocalDeploy({ "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-contrib-test.xml" })
+@LocalDeploy({ "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-contrib-test.xml",
+        "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-disable-listener.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = BinaryMetadataServerInit.class)
 public class TestBinaryMetadataOperation {
 
@@ -108,7 +109,7 @@ public class TestBinaryMetadataOperation {
         automationService.run(operationContext, TriggerMetadataMappingOnDocument.ID, triggerParameters);
         pdfDoc = BinaryMetadataServerInit.getFile(1, session);
         assertEquals("en-US", pdfDoc.getPropertyValue("dc:title"));
-        assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:source"));
+        assertEquals("OpenOffice.org", pdfDoc.getPropertyValue("dc:source"));
         assertEquals("30 kB", pdfDoc.getPropertyValue("dc:description"));
     }
 
