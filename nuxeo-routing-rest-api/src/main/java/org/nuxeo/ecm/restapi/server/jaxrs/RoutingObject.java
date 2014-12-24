@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
+import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
@@ -68,7 +69,7 @@ public class RoutingObject extends DefaultObject {
     @Consumes({ "application/json+nxentity" })
     @Produces(MediaType.APPLICATION_JSON)
     public Response createWorkflowInstance(RoutingRequest routingRequest) {
-        String workflowInstanceId = documentRoutingService.createNewInstance(routingRequest.getRouteModelId(),
+        final String workflowInstanceId = documentRoutingService.createNewInstance(routingRequest.getRouteModelId(),
                 routingRequest.getDocumentIds(), ctx.getCoreSession(), true);
         DocumentModel result = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));
         return Response.ok(result).status(Status.CREATED).build();
@@ -128,12 +129,19 @@ public class RoutingObject extends DefaultObject {
 
         try {
             if (!currentUser.getName().equals(route.getInitiator())) {
-                throw new WebSecurityException(
-                        "You don't have the permission to cancel this workflow");
+                throw new WebSecurityException("You don't have the permission to cancel this workflow");
             }
         } catch (ClientException e) {
             throw WebException.wrap(e);
         }
+    }
+
+    @GET
+    public Response getRunningWorkflowInstancesLaunchedByCurrentUser() {
+        final String query = String.format("SELECT * FROM %s WHERE docri:initiator = '%s' AND ecm:currentLifeCycleState = '%s'",
+                DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE, getContext().getPrincipal().getName(),
+                DocumentRouteElement.ElementLifeCycleState.running).replaceAll(" ", "%20");
+        return redirect("/api/v1/query?query=" + query);
     }
 
 }

@@ -68,28 +68,43 @@ public class RoutingEndpointTest extends BaseTest {
     @Test
     public void testCreateGetAndCancelWorkflowEndpoint() throws Exception {
 
+        // Check POST /workflow
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         RoutingRequest routingRequest = new RoutingRequest();
         routingRequest.setRouteModelId("SerialDocumentReview");
         objectCodecService.write(out, routingRequest);
-
         ClientResponse response = getResponse(RequestType.POST, "/workflow", out.toString());
-
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         final String createdWorflowInstanceId = node.get("uid").getTextValue();
 
+        // Check GET /workflow/{workflowInstanceId}
         response = getResponse(RequestType.GET, "/workflow/" + createdWorflowInstanceId);
         node = mapper.readTree(response.getEntityInputStream());
-        final String fetchedWorflowInstanceId = node.get("uid").getTextValue();
+        String fetchedWorflowInstanceId = node.get("uid").getTextValue();
+        assertEquals(createdWorflowInstanceId, fetchedWorflowInstanceId);
+
+        // Check GET /workflow .i.e get running workflow initialized by currentUser
+        response = getResponse(RequestType.GET, "/workflow");
+        node = mapper.readTree(response.getEntityInputStream());
+        // we excpect to retrieve the one previously created
+        assertEquals(1, node.get("entries").size());
+        Iterator<JsonNode> elements = node.get("entries").getElements();
+        fetchedWorflowInstanceId = elements.next().get("uid").getTextValue();
         assertEquals(createdWorflowInstanceId, fetchedWorflowInstanceId);
 
         // TODO Check created RouteNode/Tasks
 
+        // Check DELETE /workflow
         response = getResponse(RequestType.DELETE, "/workflow/" + createdWorflowInstanceId);
-
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+
+        // Check GET /workflow
+        response = getResponse(RequestType.GET, "/workflow");
+        node = mapper.readTree(response.getEntityInputStream());
+        // we cancel running workflow, we expect 0 running workflow
+        assertEquals(0, node.get("entries").size());
 
     }
 

@@ -23,7 +23,6 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -38,7 +37,6 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.1
  */
 @Provider
-@Produces(MediaType.APPLICATION_JSON)
 public class RoutingRequestWriter implements MessageBodyWriter<RoutingRequest> {
 
     @Override
