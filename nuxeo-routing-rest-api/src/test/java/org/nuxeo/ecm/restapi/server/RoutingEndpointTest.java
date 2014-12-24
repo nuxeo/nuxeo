@@ -19,22 +19,28 @@
 package org.nuxeo.ecm.restapi.server;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
-import org.nuxeo.ecm.restapi.server.jaxrs.RoutingRequest;
+import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
+import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
+import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.routing.test.WorkflowFeature;
+import org.nuxeo.ecm.restapi.server.jaxrs.routing.RoutingRequest;
 import org.nuxeo.ecm.restapi.test.BaseTest;
-import org.nuxeo.ecm.restapi.test.RestServerFeature;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -46,26 +52,68 @@ import com.sun.jersey.api.client.ClientResponse;
  * @since 7.1
  */
 @RunWith(FeaturesRunner.class)
+@Features({ EmbeddedAutomationServerFeature.class, WorkflowFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 @Jetty(port = 18090)
-@Features(RestServerFeature.class)
-@Deploy("org.nuxeo.ecm.platform.restapi.server.routing")
+@Deploy({ "org.nuxeo.ecm.platform.restapi.server.routing", "org.nuxeo.ecm.automation.test",
+        "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.platform.restapi.io", "org.nuxeo.ecm.platform.restapi.test",
+        "org.nuxeo.ecm.platform.restapi.server", "org.nuxeo.ecm.platform.routing.default",
+        "org.nuxeo.ecm.platform.filemanager.api", "org.nuxeo.ecm.platform.filemanager.core",
+        "org.nuxeo.ecm.platform.mimetype.api", "org.nuxeo.ecm.platform.mimetype.core" })
 public class RoutingEndpointTest extends BaseTest {
 
-    HttpServletRequest req = mock(HttpServletRequest.class);
-
-    HttpServletResponse resp = mock(HttpServletResponse.class);
+    @Inject
+    ObjectCodecService objectCodecService;
 
     @Test
-    public void testWorkflowEndpoint() throws Exception {
+    public void testCreateGetAndCancelWorkflowEndpoint() throws Exception {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        JsonGenerator jg = JsonHelper.createJsonGenerator(out);
-        jg.writeObject(new RoutingRequest());
+        RoutingRequest routingRequest = new RoutingRequest();
+        routingRequest.setRouteModelId("SerialDocumentReview");
+        objectCodecService.write(out, routingRequest);
 
-        // When i do a get request on the workflow endpoint
         ClientResponse response = getResponse(RequestType.POST, "/workflow", out.toString());
+
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        final String createdWorflowInstanceId = node.get("uid").getTextValue();
+
+        response = getResponse(RequestType.GET, "/workflow/" + createdWorflowInstanceId);
+        node = mapper.readTree(response.getEntityInputStream());
+        final String fetchedWorflowInstanceId = node.get("uid").getTextValue();
+        assertEquals(createdWorflowInstanceId, fetchedWorflowInstanceId);
+
+        // TODO Check created RouteNode/Tasks
+
+        response = getResponse(RequestType.DELETE, "/workflow/" + createdWorflowInstanceId);
+
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+
+    }
+
+    @Test
+    public void testGetAllWorkflowEndpoint() throws Exception {
+
+        ClientResponse response = getResponse(RequestType.GET, "/workflow/models");
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(2, node.get("entries").size());
+
+        Iterator<JsonNode> elements = node.get("entries").getElements();
+
+        List<String> expectedPaths = Arrays.asList(new String[] { "/document-route-models-root/SerialDocumentReview",
+                "/document-route-models-root/ParallelDocumentReview" });
+        Collections.sort(expectedPaths);
+        List<String> realPaths = new ArrayList<String>();
+        while (elements.hasNext()) {
+            JsonNode element = elements.next();
+            realPaths.add(element.get("path").getTextValue());
+        }
+        Collections.sort(realPaths);
+        assertEquals(expectedPaths, realPaths);
     }
 }

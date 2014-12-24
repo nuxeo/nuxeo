@@ -184,6 +184,8 @@ public interface DocumentRoutingConstants {
 
     String ROUTING_CATEGORY = "Routing";
 
+    String ROUTING_INITIATOR_ID_KEY = "initiator";
+
     public static final String TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY = "routeInstanceDocId";
 
     public static final String TASK_NODE_ID_KEY = "nodeId";

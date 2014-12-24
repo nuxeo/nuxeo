@@ -9,7 +9,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.restapi.server.jaxrs;
+package org.nuxeo.ecm.restapi.server.jaxrs.routing.io;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +27,7 @@ import javax.ws.rs.ext.Provider;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
+import org.nuxeo.ecm.restapi.server.jaxrs.routing.RoutingRequest;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
 
@@ -41,10 +42,6 @@ public class RoutingRequestReader implements MessageBodyReader<RoutingRequest> {
 
     @Context
     JsonFactory factory;
-
-    public static final MediaType targetMediaTypeNXReq = new MediaType("application", "json+nxroute");
-
-    public static final MediaType targetMediaType = new MediaType("application", "json");
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {

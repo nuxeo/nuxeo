@@ -18,42 +18,11 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @since 7.1
  */
-public class RoutingRequest {
+public interface Constants {
 
-    public boolean shouldStart;
-
-    public List<String> documentIds = new ArrayList<String>();
-
-    public String routingId;
-
-    public String getRoutingId() {
-        return routingId;
-    }
-
-    public void setRoutingId(String routingId) {
-        this.routingId = routingId;
-    }
-
-    public List<String> getDocumentIds() {
-        return documentIds;
-    }
-
-    public boolean isShouldStart() {
-        return shouldStart;
-    }
-
-    public void setDocumentIds(List<String> documentIds) {
-        this.documentIds = documentIds;
-    }
-
-    public void setShouldStart(boolean shouldStart) {
-        this.shouldStart = shouldStart;
-    }
+    public static final String NX_ENTITY_TYPE = "application/json+nxrouting";
 
 }

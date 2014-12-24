@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -57,6 +59,11 @@ public class DocumentRouteImpl extends DocumentRouteStepsContainerImpl implement
     @Override
     public boolean canUndoStep(CoreSession session) {
         return false;
+    }
+
+    @Override
+    public String getInitiator() {
+        return (String) document.getPropertyValue(DocumentRoutingConstants.ROUTING_INITIATOR_ID_KEY);
     }
 
 }
