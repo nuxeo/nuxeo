@@ -223,6 +223,15 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
     }
 
     @Test
+    public void testCreateTextFileWithSemiColon() throws Exception {
+        String name = "newfile;;;.txt"; // name with semicolons
+        String mimeType = "text/plain";
+        byte[] bytes = "Hello, world!".getBytes("UTF-8");
+        String expectedType = "Note";
+        doTestPutFile(name, bytes, mimeType, expectedType);
+    }
+
+    @Test
     // NXP-12735: disabled because failing under windows + pgsql
     public void testOverwriteExistingFile() throws Exception {
         String name = "test.txt"; // this file already exists
