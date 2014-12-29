@@ -351,6 +351,11 @@ author: lkemen@nuxeo.com
 .summary .pictureContainer .fullMaxWidth {
   width: 100% }
 
+.dimensionSeparator:after {
+  content: "x";
+  display: inline-block;
+  padding: 0 .4em }
+
 .summary .note_content_block {
   margin: 0 }
 
