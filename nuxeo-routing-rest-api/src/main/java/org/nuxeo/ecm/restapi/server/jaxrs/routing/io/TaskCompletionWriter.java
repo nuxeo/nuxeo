@@ -31,17 +31,18 @@ import javax.ws.rs.ext.Provider;
 
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.RoutingRequest;
+import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.TaskCompletion;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 7.1
  */
 @Provider
-public class RoutingRequestWriter implements MessageBodyWriter<RoutingRequest> {
+public class TaskCompletionWriter implements MessageBodyWriter<RoutingRequest> {
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return RoutingRequest.class.isAssignableFrom(type);
+        return TaskCompletion.class.isAssignableFrom(type);
     }
 
     @Override

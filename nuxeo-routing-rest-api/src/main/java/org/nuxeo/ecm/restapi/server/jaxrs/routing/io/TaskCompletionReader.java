@@ -1,14 +1,21 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
+ *
  */
+
 package org.nuxeo.ecm.restapi.server.jaxrs.routing.io;
 
 import java.io.IOException;
@@ -27,15 +34,15 @@ import javax.ws.rs.ext.Provider;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
-import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.RoutingRequest;
+import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.TaskCompletion;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @author <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
+ * @since 7.1
  */
 @Provider
-public class RoutingRequestReader implements MessageBodyReader<RoutingRequest> {
+public class TaskCompletionReader implements MessageBodyReader<TaskCompletion> {
 
     @Context
     private HttpServletRequest request;
@@ -45,21 +52,21 @@ public class RoutingRequestReader implements MessageBodyReader<RoutingRequest> {
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return RoutingRequest.class.isAssignableFrom(type);
+        return TaskCompletion.class.isAssignableFrom(type);
     }
 
     @Override
-    public RoutingRequest readFrom(Class<RoutingRequest> type, Type genericType, Annotation[] annotations,
+    public TaskCompletion readFrom(Class<TaskCompletion> type, Type genericType, Annotation[] annotations,
             MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException, WebApplicationException {
         JsonParser jp = factory.createJsonParser(entityStream);
         ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
         try {
-            return (RoutingRequest) codecService.read(jp, Thread.currentThread().getContextClassLoader(),  SessionFactory.getSession(request));
+            return (TaskCompletion) codecService.read(jp, Thread.currentThread().getContextClassLoader(),
+                    SessionFactory.getSession(request));
         } catch (ClassNotFoundException e) {
-           throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException(e);
         }
     }
-
 
 }

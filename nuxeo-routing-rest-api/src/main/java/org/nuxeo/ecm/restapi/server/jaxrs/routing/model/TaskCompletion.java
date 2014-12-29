@@ -16,34 +16,11 @@
  *
  */
 
-package org.nuxeo.ecm.restapi.server.jaxrs.routing;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.nuxeo.ecm.restapi.server.jaxrs.routing.model;
 
 /**
  * @since 7.1
  */
-public class RoutingRequest {
-
-    public List<String> documentIds = new ArrayList<String>();
-
-    public String routeModelId;
-
-    public List<String> getDocumentIds() {
-        return documentIds;
-    }
-
-    public void setDocumentIds(List<String> documentIds) {
-        this.documentIds = documentIds;
-    }
-
-    public String getRouteModelId() {
-        return routeModelId;
-    }
-
-    public void setRouteModelId(String routeModelId) {
-        this.routeModelId = routeModelId;
-    }
+public class TaskCompletion {
 
 }
