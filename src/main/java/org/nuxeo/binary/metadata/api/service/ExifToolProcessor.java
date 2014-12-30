@@ -57,6 +57,9 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
             throw new BinaryMetadataException("Command '" + BinaryMetadataConstants.EXIFTOOL_WRITE
                     + "' is not available.");
         }
+        if (blob == null){
+            throw new BinaryMetadataException("The following command " + ca + " cannot be executed with a null blob");
+        }
         try {
             CmdParameters params = new CmdParameters();
             File file = makeFile(blob);
@@ -85,6 +88,9 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
             throw new BinaryMetadataException("Command '" + BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST
                     + "' is not available.");
         }
+        if (blob == null){
+            throw new BinaryMetadataException("The following command " + ca + " cannot be executed with a null blob");
+        }
         try {
             CmdParameters params = new CmdParameters();
             File file = makeFile(blob);
@@ -109,6 +115,9 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
         if (!ca.isAvailable()) {
             throw new BinaryMetadataException("Command '" + BinaryMetadataConstants.EXIFTOOL_READ
                     + "' is not available.");
+        }
+        if (blob == null){
+            throw new BinaryMetadataException("The following command " + ca + " cannot be executed with a null blob");
         }
         try {
             CmdParameters params = new CmdParameters();

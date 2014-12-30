@@ -137,13 +137,6 @@ public class TestBinaryMetadataService {
 
     @Test
     public void itShouldWriteDocPropertiesFromBinaryWithMapping() {
-        // Fetch logs for binary service.
-        Logger logger = Logger.getLogger(BinaryMetadataServiceImpl.class);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Layout layout = new SimpleLayout();
-        Appender appender = new WriterAppender(layout, out);
-        logger.addAppender(appender);
-
         // Get the document with PDF attached.
         DocumentModel pdfDoc = BinaryMetadataServerInit.getFile(1, session);
 
@@ -156,14 +149,5 @@ public class TestBinaryMetadataService {
         assertEquals("OpenOffice.org", pdfDoc.getPropertyValue("dc:source"));
         assertEquals("30 kB", pdfDoc.getPropertyValue("dc:description"));
 
-        // Check if logs are displayed.
-        try {
-            String logMsg = out.toString();
-            assertNotNull(logMsg);
-            assertEquals("WARN - Missing binary metadata descriptor with id "
-                    + "'hello'. Or check your rule contribution with proper " + "metadataMapping-id.\n", logMsg);
-        } finally {
-            logger.removeAppender(appender);
-        }
     }
 }

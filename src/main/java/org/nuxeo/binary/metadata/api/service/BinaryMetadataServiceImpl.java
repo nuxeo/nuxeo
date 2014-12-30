@@ -18,8 +18,12 @@ package org.nuxeo.binary.metadata.api.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +40,8 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
@@ -138,6 +144,43 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         }
     }
 
+    @Override
+    public boolean writeMetadata(String processorName, Blob blob, String mappingDescriptorId, DocumentModel doc) {
+        try {
+            // Creating mapping properties Map.
+            Map<String, Object> metadataMapping = new HashMap<>();
+            MetadataMappingDescriptor mappingDescriptor = mappingRegistry.getMappingDescriptorMap().get(mappingDescriptorId);
+            for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor
+                    : mappingDescriptor.getMetadataDescriptors()) {
+                metadataMapping.put(metadataDescriptor.getName(),
+                        doc.getPropertyValue(metadataDescriptor.getXpath()));
+            }
+            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(processorName).newInstance();
+            return processor.writeMetadata(blob, metadataMapping);
+        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
+            throw new BinaryMetadataException(e);
+        }
+
+    }
+
+    @Override
+    public boolean writeMetadata(Blob blob, String mappingDescriptorId, DocumentModel doc) {
+        try {
+            // Creating mapping properties Map.
+            Map<String, Object> metadataMapping = new HashMap<>();
+            MetadataMappingDescriptor mappingDescriptor = mappingRegistry.getMappingDescriptorMap().get(mappingDescriptorId);
+            for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor
+                    : mappingDescriptor.getMetadataDescriptors()) {
+                metadataMapping.put(metadataDescriptor.getName(),
+                        doc.getPropertyValue(metadataDescriptor.getXpath()));
+            }
+            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID).newInstance();
+            return processor.writeMetadata(blob, metadataMapping);
+        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
+            throw new BinaryMetadataException(e);
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -145,8 +188,13 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     public void writeMetadata(DocumentModel doc, CoreSession session) {
         // Check if rules applying for this document.
         ActionContext actionContext = createActionContext(doc);
-        List<String> mappingDescriptorIds = checkFilter(actionContext);
-        if (mappingDescriptorIds == null || mappingDescriptorIds.isEmpty()) {
+        Set<MetadataRuleDescriptor> ruleDescriptors = checkFilter(actionContext);
+        Set<String> mappingDescriptorIds = new HashSet<>();
+        for(MetadataRuleDescriptor ruleDescriptor:ruleDescriptors){
+            mappingDescriptorIds.addAll(ruleDescriptor
+                    .getMetadataMappingIdDescriptors());
+        }
+        if (mappingDescriptorIds.isEmpty()) {
             return;
         }
 
@@ -170,68 +218,87 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         Map<String, Object> metadataMapping = new HashMap<>();
         List<String> blobMetadata = new ArrayList<>();
         MetadataMappingDescriptor mappingDescriptor = mappingRegistry.getMappingDescriptorMap().get(mappingDescriptorId);
-        for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor
-                : mappingDescriptor.getMetadataDescriptors()) {
-            metadataMapping.put(metadataDescriptor.getName(),
-                    metadataDescriptor.getXpath());
-            blobMetadata.add(metadataDescriptor.getName());
-        }
 
-        // Extract metadata from binary.
+        // Extract blob from the contributed xpath
         Blob blob = doc.getProperty(mappingDescriptor.getBlobXPath()).getValue(Blob.class);
-        String processorId = mappingDescriptor.getProcessor();
-        Map<String, Object> blobMetadataOutput;
-        if (processorId != null) {
-            blobMetadataOutput = readMetadata(processorId, blob, blobMetadata);
-        } else {
-            blobMetadataOutput = readMetadata(blob, blobMetadata);
-        }
+        if(blob!=null && mappingDescriptor.getMetadataDescriptors()!=null && !mappingDescriptor.getMetadataDescriptors().isEmpty()) {
+            for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor
+                    : mappingDescriptor.getMetadataDescriptors()) {
+                metadataMapping.put(metadataDescriptor.getName(),
+                        metadataDescriptor.getXpath());
+                blobMetadata.add(metadataDescriptor.getName());
+            }
 
-        // Write doc properties from outputs.
-        for (Object metadata : blobMetadataOutput.keySet()) {
-            doc.setPropertyValue(metadataMapping.get(metadata).toString(), blobMetadataOutput.get(metadata).toString());
+            // Extract metadata from binary.
+            String processorId = mappingDescriptor.getProcessor();
+            Map<String, Object> blobMetadataOutput;
+            if (processorId != null) {
+                blobMetadataOutput = readMetadata(processorId, blob, blobMetadata);
+                
+            } else {
+                blobMetadataOutput = readMetadata(blob, blobMetadata);
+            }
+
+            // Write doc properties from outputs.
+            for (Object metadata : blobMetadataOutput.keySet()) {
+                doc.setPropertyValue(metadataMapping.get(metadata).toString(), blobMetadataOutput.get(metadata).toString());
+            }
+            session.saveDocument(doc);
         }
-        session.saveDocument(doc);
+    }
+
+    /*--------------------- Event Service --------------------------*/
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void handleSyncUpdate(DocumentModel doc, DocumentEventContext docCtx) {
+        LinkedList<MetadataMappingDescriptor> syncMappingDescriptors = getSyncMapping(doc, docCtx);
+        if (syncMappingDescriptors != null) {
+            handleUpdate(syncMappingDescriptors, doc, docCtx);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Object> getDirtyMappingMetadata(DocumentModel doc) {
-        // Check if rules applying for this document.
-        ActionContext actionContext = createActionContext(doc);
-        List<String> mappingDescriptorIds = checkFilter(actionContext);
-        if (mappingDescriptorIds == null || mappingDescriptorIds.isEmpty()) {
-            return null;
-        }
-        // For each mapping descriptors, store mapping.
-        Map<String, String> mappingResult = new HashMap<>();
-        for (String mappingDescriptorId : mappingDescriptorIds) {
-            if (!mappingRegistry.getMappingDescriptorMap().containsKey(mappingDescriptorId)) {
-                log.warn("Missing binary metadata descriptor with id '" + mappingDescriptorId
-                        + "'. Or check your rule contribution with proper metadataMapping-id.");
-                continue;
-            }
-            // Creating mapping properties.
-            MetadataMappingDescriptor mappingDescriptor = mappingRegistry.getMappingDescriptorMap().get(mappingDescriptorId);
-            for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor
-                    : mappingDescriptor.getMetadataDescriptors()) {
-                mappingResult.put(metadataDescriptor.getXpath(),metadataDescriptor.getName());
-            }
-        }
-        // Returning only dirty properties
-        Map<String, Object> resultDirtyMapping  =  new HashMap<>();
-        for(String metadata: mappingResult.keySet()){
-            Property property = doc.getProperty(metadata);
-            if(property.isDirty()){
-                resultDirtyMapping.put(mappingResult.get(metadata),doc.getPropertyValue(metadata));
+    public void handleUpdate(LinkedList<MetadataMappingDescriptor> mappingDescriptors, DocumentModel doc,
+            DocumentEventContext docCtx) {
+        for (MetadataMappingDescriptor mappingDescriptor : mappingDescriptors) {
+            Property fileProp = doc.getProperty(mappingDescriptor.getBlobXPath());
+            boolean isDirtyMapping = isDirtyMapping(mappingDescriptor, doc);
+            Blob blob = fileProp.getValue(Blob.class);
+            if (blob != null) {
+                if (fileProp.isDirty()) {
+                    if (isDirtyMapping) {
+                        // if Blob dirty and document metadata dirty, write metadata from doc to Blob
+                        writeMetadata(fileProp.getValue(Blob.class), mappingDescriptor.getId(), doc);
+                    } else {
+                        // if Blob dirty and document metadata not dirty, write metadata from Blob to doc
+                        writeMetadata(doc, docCtx.getCoreSession());
+                    }
+                } else {
+                    if (isDirtyMapping) {
+                        // if Blob not dirty and document metadata dirty, write metadata from doc to Blob
+                        writeMetadata(fileProp.getValue(Blob.class), mappingDescriptor.getId(), doc);
+                    }
+                }
             }
         }
-        return resultDirtyMapping;
     }
 
-    protected List<String> checkFilter(ActionContext actionContext) {
+    /*--------------------- Utils --------------------------*/
+
+    /**
+     * Check for each Binary Rule if the document is accepted or not.
+     *
+     * @return the list of metadata which should be processed sorted by rules order. (high to low priority)
+     */
+    protected Set<MetadataRuleDescriptor> checkFilter(ActionContext
+            actionContext) {
+        Set<MetadataRuleDescriptor> ruleDescriptors = new TreeSet<>();
         ActionManager actionService = Framework.getLocalService(ActionManager.class);
         for (String ruleDescriptorId : ruleRegistry.getMetadataRuleDescriptorMap().keySet()) {
             MetadataRuleDescriptor ruleDescriptor = ruleRegistry.getMetadataRuleDescriptorMap().get(ruleDescriptorId);
@@ -239,9 +306,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                     || !actionService.checkFilters(ruleDescriptor.getFilterIds(), actionContext)) {
                 continue;
             }
-            return ruleDescriptor.getMetadataMappingIdDescriptors();
+            ruleDescriptors.add(ruleDescriptor);
         }
-        return null;
+        return ruleDescriptors;
     }
 
     protected ActionContext createActionContext(DocumentModel doc) {
@@ -254,7 +321,79 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         return binaryMetadataProcessorInstances.get(processorId).getClass();
     }
 
-    /*--------------------- Registry Service -----------------------*/
+    /**
+     * @return Dirty metadata from metadata mapping contribution and handle async processes.
+     */
+    public LinkedList<MetadataMappingDescriptor> getSyncMapping(DocumentModel doc, DocumentEventContext docCtx) {
+        // Check if rules applying for this document.
+        ActionContext actionContext = createActionContext(doc);
+        Set<MetadataRuleDescriptor> ruleDescriptors = checkFilter(actionContext);
+        Set<String> syncMappingDescriptorIds = new HashSet<>();
+        HashSet<String> asyncMappingDescriptorIds = new HashSet<>();
+        for(MetadataRuleDescriptor ruleDescriptor:ruleDescriptors){
+            if(ruleDescriptor.getIsAsync()){
+                asyncMappingDescriptorIds.addAll(ruleDescriptor.getMetadataMappingIdDescriptors());
+            }
+            syncMappingDescriptorIds.addAll(ruleDescriptor
+                    .getMetadataMappingIdDescriptors());
+        }
+
+        // Handle async rules which should be taken into account in async listener.
+        if(!asyncMappingDescriptorIds.isEmpty()){
+            handleAsyncMapping(asyncMappingDescriptorIds, docCtx);
+        }
+
+        if (syncMappingDescriptorIds.isEmpty()) {
+            return null;
+        }
+        return getMapping(syncMappingDescriptorIds);
+    }
+
+    /**
+     * Handle Metadata Rules which should be executed within async listener.
+     */
+    protected void handleAsyncMapping(HashSet<String> asyncMappingDescriptorIds, DocumentEventContext docCtx) {
+        docCtx.setProperty(BinaryMetadataConstants.ASYNC_MAPPING_RESULT, getMapping(asyncMappingDescriptorIds));
+        EventService service = Framework.getService(EventService.class);
+        service.fireEvent(BinaryMetadataConstants.ASYNC_BINARY_METADATA_EVENT, docCtx);
+    }
+
+    protected LinkedList<MetadataMappingDescriptor> getMapping(Set<String>
+            mappingDescriptorIds){
+        // For each mapping descriptors, store mapping.
+        LinkedList<MetadataMappingDescriptor> mappingResult = new LinkedList<>();
+        for (String mappingDescriptorId : mappingDescriptorIds) {
+            if (!mappingRegistry.getMappingDescriptorMap().containsKey(mappingDescriptorId)) {
+                log.warn("Missing binary metadata descriptor with id '" + mappingDescriptorId
+                        + "'. Or check your rule contribution with proper metadataMapping-id.");
+                continue;
+            }
+            mappingResult.add(mappingRegistry.getMappingDescriptorMap().get(mappingDescriptorId));
+        }
+        return mappingResult;
+    }
+
+    /**
+     * Maps inspector only.
+     */
+    protected boolean isDirtyMapping(MetadataMappingDescriptor mappingDescriptor, DocumentModel doc) {
+        Map<String, String> mappingResult = new HashMap<>();
+        for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor
+                : mappingDescriptor.getMetadataDescriptors()) {
+            mappingResult.put(metadataDescriptor.getXpath(),metadataDescriptor.getName());
+        }
+        // Returning only dirty properties
+        HashMap<String, Object> resultDirtyMapping  =  new HashMap<>();
+        for(String metadata: mappingResult.keySet()){
+            Property property = doc.getProperty(metadata);
+            if(property.isDirty()){
+                resultDirtyMapping.put(mappingResult.get(metadata),doc.getPropertyValue(metadata));
+            }
+        }
+        return !resultDirtyMapping.isEmpty();
+    }
+
+    /*--------------------- Registry Services -----------------------*/
 
     protected void addMappingContribution(MetadataMappingDescriptor contribution) {
         this.mappingRegistry.addContribution(contribution);

@@ -20,14 +20,10 @@ package org.nuxeo.binary.metadata.api.listener;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 
-import java.util.Map;
-
+import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
 import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -35,13 +31,18 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Handle document and blob updates according to following rules in an event context: - Define if rule should be
+ * executed in async or sync mode. - If Blob dirty and document metadata dirty, write metadata from doc to Blob. - If
+ * Blob dirty and document metadata not dirty, write metadata from Blob to doc. - If Blob not dirty and document
+ * metadata dirty, write metadata from doc to Blob.
+ *
  * @since 7.1
  */
-public class BinaryMetadataListener implements EventListener {
+public class BinaryMetadataSyncListener implements EventListener {
 
     protected final BinaryMetadataService binaryMetadataService;
 
-    public BinaryMetadataListener() {
+    public BinaryMetadataSyncListener() {
         this.binaryMetadataService = Framework.getLocalService(BinaryMetadataService.class);
     }
 
@@ -54,32 +55,13 @@ public class BinaryMetadataListener implements EventListener {
 
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
-        if (ABOUT_TO_CREATE.equals(event.getName()) && !doc.isProxy()) {
-            BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
-            if (blobHolder != null) {
-                Blob blob = blobHolder.getBlob();
-                if (blob != null) {
-                    binaryMetadataService.writeMetadata(doc, docCtx.getCoreSession());
-
-                }
-            }
-        } else if (BEFORE_DOC_UPDATE.equals(event.getName()) && !doc.isProxy()) {
-            Property fileProp = doc.getProperty("file:content");
-            Map<String, Object> dirtyMetadata = binaryMetadataService.getDirtyMappingMetadata(doc);
-            if (fileProp.isDirty()) {
-                if (dirtyMetadata != null && !dirtyMetadata.isEmpty()) {
-                    // if Blob dirty and document metadata dirty, write metadata from doc to Blob
-                    binaryMetadataService.writeMetadata(fileProp.getValue(Blob.class), dirtyMetadata);
-                } else {
-                    // if Blob dirty and document metadata not dirty, write metadata from Blob to doc
-                    binaryMetadataService.writeMetadata(doc, ctx.getCoreSession());
-                }
-            } else {
-                if (dirtyMetadata != null && !dirtyMetadata.isEmpty()) {
-                    // if Blob not dirty and document metadata dirty, write metadata from doc to Blob
-                    binaryMetadataService.writeMetadata(fileProp.getValue(Blob.class), dirtyMetadata);
-                }
-            }
+        Boolean disable = (Boolean) event.getContext().getProperty(
+                BinaryMetadataConstants.DISABLE_BINARY_METADATA_LISTENER);
+        if (ABOUT_TO_CREATE.equals(event.getName()) && !doc.isProxy() && disable == null) {
+            binaryMetadataService.writeMetadata(doc, docCtx.getCoreSession());
+        } else if (BEFORE_DOC_UPDATE.equals(event.getName()) && !doc.isProxy() && disable == null) {
+            binaryMetadataService.handleSyncUpdate(doc, docCtx);
         }
     }
+
 }

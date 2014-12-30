@@ -34,4 +34,10 @@ public class BinaryMetadataConstants {
     public static final String METADATA_RULES_EP = "metadataRules";
 
     public static final String EXIF_TOOL_CONTRIBUTION_ID = "exifTool";
+
+    public static final String ASYNC_BINARY_METADATA_EVENT = "asyncBinaryMetadataEvent";
+
+    public static final String DISABLE_BINARY_METADATA_LISTENER = "disableBinaryMetadataListener";
+
+    public static final String ASYNC_MAPPING_RESULT = "asyncMappingResult";
 }

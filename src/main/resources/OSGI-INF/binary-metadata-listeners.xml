@@ -2,12 +2,16 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
              point="listener">
-
-    <listener name="binarymetadatalistener" async="false" postCommit="false"
-              class="org.nuxeo.binary.metadata.api.listener.BinaryMetadataListener"
+    <listener name="binaryMetadataSyncListener" async="false" postCommit="false"
+              class="org.nuxeo.binary.metadata.api.listener.BinaryMetadataSyncListener"
               order="100">
       <event>aboutToCreate</event>
       <event>beforeDocumentModification</event>
+    </listener>
+    <listener name="binaryMetadataAsyncListener" async="true" postCommit="true"
+              class="org.nuxeo.binary.metadata.api.listener.BinaryMetadataAsyncListener"
+              order="100">
+      <event>asyncBinaryMetadataEvent</event>
     </listener>
   </extension>
 

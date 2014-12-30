@@ -16,12 +16,15 @@
  */
 package org.nuxeo.binary.metadata.api.service;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.binary.metadata.contribution.MetadataMappingDescriptor;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
  * Read/Write binary metadata services.
@@ -86,6 +89,27 @@ public interface BinaryMetadataService {
     public boolean writeMetadata(Blob blob, Map<String, Object> metadata);
 
     /**
+     * Write given metadata mapping id into a given binary with a Nuxeo default processor.
+     *
+     * @param processorName Name of the contributed processor to run.
+     * @param blob Binary which metadata are written.
+     * @param mappingDescriptorId The metadata mapping to apply on the document.
+     * @param doc Document from properties will be read.
+     * @return success or not.
+     */
+    public boolean writeMetadata(String processorName, Blob blob, String mappingDescriptorId, DocumentModel doc);
+
+    /**
+     * Write given metadata mapping id into a given binary with a Nuxeo default processor.
+     *
+     * @param blob Binary which metadata are written.
+     * @param mappingDescriptorId The metadata mapping to apply on the document.
+     * @param doc Document from properties will be read.
+     * @return success or not.
+     */
+    public boolean writeMetadata(Blob blob, String mappingDescriptorId, DocumentModel doc);
+
+    /**
      * Write metadata (from a binary) into a given Nuxeo Document according to the metadata mapping and rules
      * contributions.
      *
@@ -103,10 +127,21 @@ public interface BinaryMetadataService {
     public void writeMetadata(DocumentModel doc, CoreSession session, String mappingDescriptorId);
 
     /**
-     * Get the metadata result from the mapping contribution related to this document.
-     *
-     * @param doc the given document.
-     * @return the metadata result from the mapping contribution related to this document.
+     * Handle document and blob updates according to following rules in an event context: - Define if rule should be
+     * executed in async or sync mode. - If Blob dirty and document metadata dirty, write metadata from doc to Blob. -
+     * If Blob dirty and document metadata not dirty, write metadata from Blob to doc. - If Blob not dirty and document
+     * metadata dirty, write metadata from doc to Blob.
      */
-    Map<String, Object> getDirtyMappingMetadata(DocumentModel doc);
+    void handleUpdate(LinkedList<MetadataMappingDescriptor>syncMappingDescriptors, DocumentModel doc,
+            DocumentEventContext docCtx);
+
+    /**
+     * Handle document and blob updates according to following rules in an event context: - Define if rule should be
+     * executed in async or sync mode. - If Blob dirty and document metadata dirty, write metadata from doc to Blob. -
+     * If Blob dirty and document metadata not dirty, write metadata from Blob to doc. - If Blob not dirty and document
+     * metadata dirty, write metadata from doc to Blob.
+     */
+    void handleSyncUpdate(DocumentModel doc, DocumentEventContext docCtx);
+
+
 }

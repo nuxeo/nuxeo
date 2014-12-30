@@ -27,7 +27,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 7.1
  */
 @XObject("rule")
-public class MetadataRuleDescriptor {
+public class MetadataRuleDescriptor implements Comparable<MetadataRuleDescriptor> {
 
     @XNode("@id")
     protected String id;
@@ -69,5 +69,10 @@ public class MetadataRuleDescriptor {
 
     public List<String> getFilterIds() {
         return filterIds;
+    }
+
+    @Override
+    public int compareTo(MetadataRuleDescriptor nextMetadataRuleDescriptor) {
+        return this.order.compareTo(nextMetadataRuleDescriptor.getOrder());
     }
 }
