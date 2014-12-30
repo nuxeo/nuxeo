@@ -56,7 +56,7 @@ public abstract class AbstractExecutor implements Executor {
      */
     public static String getParametersString(CommandLineDescriptor cmdDesc, CmdParameters params) {
         String paramString = cmdDesc.getParametersString();
-        Map<String, String> paramsValues = params.getParameters();
+        Map<String, CmdParameters.CmdParameter> paramsValues = params.getCmdParameters();
         paramString = replaceParams(paramsValues, paramString);
         return paramString;
     }
@@ -72,21 +72,27 @@ public abstract class AbstractExecutor implements Executor {
     public static String[] getParametersArray(CommandLineDescriptor cmdDesc, CmdParameters params) {
         List<String> res = new ArrayList<String>();
         String[] paramsArray = cmdDesc.getParametersString().split(" ");
-        Map<String, String> paramsValues = params.getParameters();
+        Map<String, CmdParameters.CmdParameter> paramsValues = params.getCmdParameters();
         for (String paramString : paramsArray) {
             res.add(replaceParams(paramsValues, paramString));
         }
         return res.toArray(new String[] {});
     }
 
-    private static String replaceParams(Map<String, String> paramsValues, String paramString) {
+    private static String replaceParams(Map<String, CmdParameters.CmdParameter> paramsValues, String paramString) {
         CommandLineExecutorService commandLineExecutorService = Framework.getLocalService(CommandLineExecutorService.class);
         for (String pname : paramsValues.keySet()) {
             String param = "#{" + pname + "}";
             if (paramString.contains(param)) {
-                String value = paramsValues.get(pname);
+                CmdParameters.CmdParameter cmdParameter = paramsValues.get
+                        (pname);
+                String value = cmdParameter.getValue();
                 commandLineExecutorService.checkParameter(value);
-                paramString = paramString.replace("#{" + pname + "}", String.format("\"%s\"", value));
+                if(cmdParameter.isQuote()) {
+                    paramString = paramString.replace("#{" + pname + "}", String.format("\"%s\"", value));
+                }else{
+                    paramString = paramString.replace("#{" + pname + "}", String.format("%s", value));
+                }
             }
         }
         return paramString;
