@@ -55,6 +55,7 @@ import org.w3c.dom.NodeList;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.CallbackHolder;
 import org.nuxeo.connect.NuxeoConnectClient;
+import org.nuxeo.connect.connector.ConnectServerError;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
@@ -68,6 +69,7 @@ import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
+import org.nuxeo.connect.update.PackageUtils;
 import org.nuxeo.connect.update.PackageVisibility;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.Version;
@@ -188,7 +190,8 @@ public class ConnectBroker {
     }
 
     protected boolean isRemotePackageId(String pkgId) {
-        return NuxeoConnectClient.getPackageManager().findPackageById(pkgId) != null;
+        return PackageUtils.isValidPackageId(pkgId)
+                && NuxeoConnectClient.getPackageManager().findPackageById(pkgId) != null;
     }
 
     protected String getBestIdForNameInList(String pkgName, List<? extends Package> pkgList) {
@@ -238,7 +241,7 @@ public class ConnectBroker {
     }
 
     protected String getRemotePackageIdFromName(String pkgName) {
-        return getBestIdForNameInList(pkgName, NuxeoConnectClient.getPackageManager().listAllPackages());
+        return getBestIdForNameInList(pkgName, NuxeoConnectClient.getPackageManager().findRemotePackages(pkgName));
     }
 
     /**
@@ -1024,9 +1027,6 @@ public class ConnectBroker {
 
     @SuppressWarnings("unused")
     protected boolean downloadPackages(List<String> packagesToDownload) {
-        if (packagesToDownload == null) {
-            return true;
-        }
         List<String> packagesAlreadyDownloaded = new ArrayList<String>();
         Map<String, String> packagesToRemove = new HashMap<String, String>();
         for (String pkg : packagesToDownload) {
@@ -1066,16 +1066,31 @@ public class ConnectBroker {
         List<DownloadingPackage> pkgs = new ArrayList<DownloadingPackage>();
         // Queue downloads
         log.info("Downloading " + packagesToDownload + "...");
+        boolean downloadOk = true;
         for (String pkg : packagesToDownload) {
+            CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_DOWNLOAD);
+            cmdInfo.param = pkg;
             try {
-                pkgs.add(getPackageManager().download(pkg));
-            } catch (Exception e) {
-                log.error("Download failed for " + pkg, e);
-                return false;
+                DownloadingPackage download = getPackageManager().download(pkg);
+                if (download != null) {
+                    pkgs.add(download);
+                    cmdInfo.param = download.getId();
+                    cmdInfo.newMessage(SimpleLog.LOG_LEVEL_DEBUG, "Downloading " + download);
+                } else {
+                    downloadOk = false;
+                    cmdInfo.exitCode = 1;
+                    cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR,
+                            String.format("Download failed for %s (not found)", pkg));
+                }
+            } catch (ConnectServerError e) {
+                log.debug(e, e);
+                downloadOk = false;
+                cmdInfo.exitCode = 1;
+                cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR,
+                        String.format("Download failed for %s. %s", pkg, e.getMessage()));
             }
         }
         // Check progress
-        boolean downloadOk = true;
         long startTime = new Date().getTime();
         long deltaTime = 0;
         do {
@@ -1164,8 +1179,8 @@ public class ConnectBroker {
                     }
                 }
                 // Check whether we have new installs or upgrades
+                Map<String, DownloadablePackage> allPackagesByID = NuxeoConnectClient.getPackageManager().getAllPackagesByID();
                 for (String pkgToInstall : namesOrIdsToInstall) {
-                    Map<String, DownloadablePackage> allPackagesByID = NuxeoConnectClient.getPackageManager().getAllPackagesByID();
                     DownloadablePackage pkg = allPackagesByID.get(pkgToInstall);
                     if (pkg != null) {
                         // This is a known ID
