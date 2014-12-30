@@ -3806,7 +3806,8 @@
       <dependency>
         <groupId>asm</groupId>
         <artifactId>asm</artifactId>
-        <version>3.0</version>
+        <!-- asm 3.1 required by jersey-server -->
+        <version>3.1</version>
       </dependency>
 
       <dependency>
