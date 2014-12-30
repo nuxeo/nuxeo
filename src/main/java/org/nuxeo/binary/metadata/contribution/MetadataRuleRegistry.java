@@ -32,6 +32,8 @@ public class MetadataRuleRegistry extends ContributionFragmentRegistry<MetadataR
 
     private static final Log log = LogFactory.getLog(MetadataRuleRegistry.class);
 
+    protected Map<String, MetadataRuleDescriptor> metadataRuleDescriptorMap = new HashMap<>();
+
     public Map<String, MetadataRuleDescriptor> getMetadataRuleDescriptorMap() {
         return metadataRuleDescriptorMap;
     }
@@ -39,8 +41,6 @@ public class MetadataRuleRegistry extends ContributionFragmentRegistry<MetadataR
     public void setMetadataRuleDescriptorMap(Map<String, MetadataRuleDescriptor> metadataRuleDescriptorMap) {
         this.metadataRuleDescriptorMap = metadataRuleDescriptorMap;
     }
-
-    protected Map<String, MetadataRuleDescriptor> metadataRuleDescriptorMap = new HashMap<>();
 
     @Override
     public String getContributionId(MetadataRuleDescriptor metadataRuleDescriptor) {

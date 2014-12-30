@@ -160,6 +160,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeMetadata(DocumentModel doc, CoreSession session, String mappingDescriptorId) {
         // Creating mapping properties Map.
@@ -190,6 +193,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         session.saveDocument(doc);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<String, String> getMappingMetadata(DocumentModel doc) {
         // Check if rules applying for this document.

@@ -67,7 +67,7 @@ public interface BinaryMetadataService {
     public Map<String, Object> readMetadata(String processorName, Blob blob);
 
     /**
-     * Write metadata into a given binary with a given processor.
+     * Write given metadata into a given binary with a given processor.
      *
      * @param processorName Name of the contributed processor to run.
      * @param blob Binary which metadata are written.
@@ -77,7 +77,7 @@ public interface BinaryMetadataService {
     public boolean writeMetadata(String processorName, Blob blob, Map<String, Object> metadata);
 
     /**
-     * Write metadata into a given binary with a Nuxeo default processor.
+     * Write given metadata into a given binary with a Nuxeo default processor.
      *
      * @param blob Binary which metadata are written.
      * @param metadata Injected metadata.
