@@ -35,6 +35,7 @@ import org.nuxeo.binary.metadata.contribution.MetadataRuleRegistry;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
@@ -197,7 +198,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
      * {@inheritDoc}
      */
     @Override
-    public Map<String, String> getMappingMetadata(DocumentModel doc) {
+    public Map<String, Object> getDirtyMappingMetadata(DocumentModel doc) {
         // Check if rules applying for this document.
         ActionContext actionContext = createActionContext(doc);
         List<String> mappingDescriptorIds = checkFilter(actionContext);
@@ -219,7 +220,15 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                 mappingResult.put(metadataDescriptor.getXpath(),metadataDescriptor.getName());
             }
         }
-        return mappingResult;
+        // Returning only dirty properties
+        Map<String, Object> resultDirtyMapping  =  new HashMap<>();
+        for(String metadata: mappingResult.keySet()){
+            Property property = doc.getProperty(metadata);
+            if(property.isDirty()){
+                resultDirtyMapping.put(mappingResult.get(metadata),doc.getPropertyValue(metadata));
+            }
+        }
+        return resultDirtyMapping;
     }
 
     protected List<String> checkFilter(ActionContext actionContext) {

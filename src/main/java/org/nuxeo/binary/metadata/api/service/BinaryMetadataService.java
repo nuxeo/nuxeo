@@ -108,5 +108,5 @@ public interface BinaryMetadataService {
      * @param doc the given document.
      * @return the metadata result from the mapping contribution related to this document.
      */
-    Map<String, String> getMappingMetadata(DocumentModel doc);
+    Map<String, Object> getDirtyMappingMetadata(DocumentModel doc);
 }

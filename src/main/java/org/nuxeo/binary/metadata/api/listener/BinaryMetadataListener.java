@@ -20,7 +20,6 @@ package org.nuxeo.binary.metadata.api.listener;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
@@ -66,7 +65,7 @@ public class BinaryMetadataListener implements EventListener {
             }
         } else if (BEFORE_DOC_UPDATE.equals(event.getName()) && !doc.isProxy()) {
             Property fileProp = doc.getProperty("file:content");
-            Map<String, Object> dirtyMetadata = getDirtyMapping(doc);
+            Map<String, Object> dirtyMetadata = binaryMetadataService.getDirtyMappingMetadata(doc);
             if (fileProp.isDirty()) {
                 if (dirtyMetadata != null && !dirtyMetadata.isEmpty()) {
                     // if Blob dirty and document metadata dirty, write metadata from doc to Blob
@@ -82,17 +81,5 @@ public class BinaryMetadataListener implements EventListener {
                 }
             }
         }
-    }
-
-    private Map<String, Object> getDirtyMapping(DocumentModel doc) {
-        Map<String, Object> resultDirtyMapping  =  new HashMap<>();
-        Map<String, String> resultMapping =  this.binaryMetadataService.getMappingMetadata(doc);
-        for(String metadata: resultMapping.keySet()){
-            Property property = doc.getProperty(metadata);
-            if(property.isDirty()){
-                resultDirtyMapping.put(resultMapping.get(metadata),doc.getPropertyValue(metadata));
-            }
-        }
-        return resultDirtyMapping;
     }
 }
