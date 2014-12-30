@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webdav;
 import java.io.File;
 import java.io.IOException;
 
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.UriBuilder;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -41,6 +42,8 @@ import com.sun.grizzly.http.servlet.ServletAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
+import com.sun.jersey.api.core.ApplicationAdapter;
+import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 /**
@@ -99,12 +102,12 @@ public class Server {
         gws = new GrizzlyWebServer(port, path);
 
         ServletAdapter jerseyAdapter = new ServletAdapter();
-        // Using the portable way of registering JAX-RS resources.
-        jerseyAdapter.addInitParameter("javax.ws.rs.Application",
-                Application.class.getCanonicalName());
+        Application app = new org.nuxeo.ecm.webdav.Application();
+        ApplicationAdapter conf = new ApplicationAdapter(app);
+        conf.getFeatures().put(ResourceConfig.FEATURE_MATCH_MATRIX_PARAMS, Boolean.TRUE);
+        jerseyAdapter.setServletInstance(new ServletContainer(conf));
         jerseyAdapter.addRootFolder(path);
         jerseyAdapter.setHandleStaticResources(true);
-        jerseyAdapter.setServletInstance(new ServletContainer());
         jerseyAdapter.setContextPath("");
         // session cleanup
         jerseyAdapter.addFilter(new RequestContextFilter(),

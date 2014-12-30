@@ -25,6 +25,10 @@
         <param-name>application.name</param-name>
         <param-value>nuxeo-webdav</param-value>
       </init-param>
+      <init-param>
+        <param-name>com.sun.jersey.config.feature.IgnoreMatrixParams</param-name>
+        <param-value>true</param-value>
+      </init-param>
     </servlet>
     <servlet-mapping>
       <servlet-name>Nuxeo Webdav Servlet</servlet-name>
