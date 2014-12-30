@@ -447,6 +447,13 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.routing</groupId>
+        <artifactId>nuxeo-routing-core</artifactId>
+        <version>${nuxeo.routing.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.routing</groupId>
         <artifactId>nuxeo-routing-web</artifactId>
         <version>${nuxeo.routing.version}</version>
       </dependency>
