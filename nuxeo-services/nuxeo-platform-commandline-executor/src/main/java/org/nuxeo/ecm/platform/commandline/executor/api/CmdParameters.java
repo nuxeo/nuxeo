@@ -26,7 +26,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Wraps command parameters (String or File).
+ * Wraps command parameters (String or File). Quoted by default. Use {@link #addNamedParameter(String, String, boolean)}
+ * to avoid quotes.
  *
  * @author tiry
  * @author Vincent Dutat
@@ -37,12 +38,18 @@ public class CmdParameters implements Serializable {
 
     protected final Map<String, String> params;
 
+    private final HashMap<String, CmdParameter> cmdParameters;
+
     public CmdParameters() {
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
+        cmdParameters = new HashMap<>();
     }
 
     public void addNamedParameter(String name, String value) {
         params.put(name, value);
+        // Quote by default
+        CmdParameter cmdParameter = new CmdParameter(value, true);
+        cmdParameters.put(name, cmdParameter);
     }
 
     public void addNamedParameter(String name, File file) {
@@ -53,4 +60,49 @@ public class CmdParameters implements Serializable {
         return params;
     }
 
+    /**
+     * @since 7.1
+     */
+    public void addNamedParameter(String name, String value, boolean quote) {
+        params.put(name, value);
+        CmdParameter cmdParameter = new CmdParameter(value, quote);
+        cmdParameters.put(name, cmdParameter);
+    }
+
+    /**
+     * @since 7.1
+     */
+    public void addNamedParameter(String name, File file, boolean quote) {
+        addNamedParameter(name, file.getAbsolutePath(), quote);
+    }
+
+    /**
+     * @since 7.1
+     */
+    public HashMap<String, CmdParameter> getCmdParameters() {
+        return cmdParameters;
+    }
+
+    /**
+     * @since 7.1
+     */
+    public class CmdParameter {
+
+        private final String value;
+
+        private final boolean quote;
+
+        public CmdParameter(String value, boolean quote) {
+            this.value = value;
+            this.quote = quote;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public boolean isQuote() {
+            return quote;
+        }
+    }
 }
