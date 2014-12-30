@@ -130,6 +130,7 @@
       <sourceMimeType>text/html</sourceMimeType>
       <sourceMimeType>text/plain</sourceMimeType>
       <sourceMimeType>text/rtf</sourceMimeType>
+      <sourceMimeType>application/rtf</sourceMimeType>
       <sourceMimeType>text/csv</sourceMimeType>
       <sourceMimeType>text/tsv</sourceMimeType>
       
@@ -206,6 +207,7 @@
       <sourceMimeType>text/html</sourceMimeType>
       <sourceMimeType>text/plain</sourceMimeType>
       <sourceMimeType>text/rtf</sourceMimeType>
+      <sourceMimeType>application/rtf</sourceMimeType>
       <sourceMimeType>text/csv</sourceMimeType>
       <sourceMimeType>text/tsv</sourceMimeType>
 
