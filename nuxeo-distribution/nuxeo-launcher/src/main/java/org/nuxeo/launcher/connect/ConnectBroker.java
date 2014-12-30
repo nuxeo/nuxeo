@@ -799,17 +799,14 @@ public class ConnectBroker {
      *
      * @since 6.0
      * @param packageIdsToInstall The list can contain package IDs and names
-     * @param ignoreMissing If true, doesn't throw an exception on unkown packages
+     * @param ignoreMissing If true, doesn't throw an exception on unknown packages
      * @see #pkgInstall(String)
      */
     public boolean pkgInstall(List<String> packageIdsToInstall, boolean ignoreMissing) {
         log.debug("Installing: " + packageIdsToInstall);
         for (String pkgId : packageIdsToInstall) {
-            if (pkgInstall(pkgId, ignoreMissing) == null) {
-                if (!ignoreMissing) {
-                    log.error("Unable to install package: " + pkgId);
-                    return false;
-                }
+            if (pkgInstall(pkgId, ignoreMissing) == null && !ignoreMissing) {
+                return false;
             }
         }
         return true;
@@ -830,7 +827,7 @@ public class ConnectBroker {
      *
      * @since 6.0
      * @param pkgId Package ID or Name
-     * @param ignoreMissing If true, doesn't throw an exception on unkown packages
+     * @param ignoreMissing If true, doesn't throw an exception on unknown packages
      * @return The installed LocalPackage or null if failed
      */
     public LocalPackage pkgInstall(String pkgId, boolean ignoreMissing) {
@@ -879,7 +876,7 @@ public class ConnectBroker {
             pkg = service.getPackage(pkgId);
             newPackageInfo(cmdInfo, pkg);
             return pkg;
-        } catch (Exception e) {
+        } catch (PackageException e) {
             log.error(String.format("Failed to install package: %s (%s)", pkgId, e.getMessage()));
             log.debug(e, e);
             cmdInfo.exitCode = 1;
@@ -1207,12 +1204,12 @@ public class ConnectBroker {
                 requestPackages.addAll(solverRemove);
                 requestPackages.addAll(solverUpgrade);
                 if (ignoreMissing) {
-                    // Remove unkown packages from the list
+                    // Remove unknown packages from the list
                     Map<String, List<DownloadablePackage>> knownNames = getPackageManager().getAllPackagesByName();
                     List<String> solverInstallCopy = new ArrayList<>(solverInstall);
                     for (String pkgToInstall : solverInstallCopy) {
                         if (!knownNames.containsKey(pkgToInstall)) {
-                            log.warn("Unable to install pacakge: " + pkgToInstall);
+                            log.warn("Unable to install unknown package: " + pkgToInstall);
                             solverInstall.remove(pkgToInstall);
                             requestPackages.remove(pkgToInstall);
                         }
