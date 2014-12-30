@@ -60,10 +60,9 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
         try {
             CmdParameters params = new CmdParameters();
             File file = makeFile(blob);
-            params.addNamedParameter("inFilePath", file);
-            params.addNamedParameter("tagList", getCommandTags(metadata));
-            ExecResult er = getCommandLineExecutorService().execCommand(BinaryMetadataConstants.EXIFTOOL_WRITE, params,
-                    false);
+            params.addNamedParameter("inFilePath", file, true);
+            params.addNamedParameter("tagList", getCommandTags(metadata), false);
+            ExecResult er = getCommandLineExecutorService().execCommand(BinaryMetadataConstants.EXIFTOOL_WRITE, params);
             boolean success = er.isSuccessful();
             if (!success) {
                 log.error("There was an error executing " + "the following command: " + er.getCommandLine() + ". \n"
@@ -89,10 +88,10 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
         try {
             CmdParameters params = new CmdParameters();
             File file = makeFile(blob);
-            params.addNamedParameter("inFilePath", file);
-            params.addNamedParameter("tagList", getCommandTags(metadata));
+            params.addNamedParameter("inFilePath", file, true);
+            params.addNamedParameter("tagList", getCommandTags(metadata), false);
             ExecResult er = getCommandLineExecutorService().execCommand(BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST,
-                    params, false);
+                    params);
 
             return returnResultMap(er);
         } catch (CommandNotAvailable commandNotAvailable) {
@@ -114,7 +113,7 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
         try {
             CmdParameters params = new CmdParameters();
             File file = makeFile(blob);
-            params.addNamedParameter("inFilePath", file);
+            params.addNamedParameter("inFilePath", file, true);
             ExecResult er = getCommandLineExecutorService().execCommand(BinaryMetadataConstants.EXIFTOOL_READ, params);
 
             return returnResultMap(er);
