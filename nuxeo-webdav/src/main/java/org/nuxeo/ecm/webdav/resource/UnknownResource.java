@@ -37,9 +37,8 @@ import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 /**
- * Resource for an unknown (ie non-existing) object.
- * Used so that PUT / MKCOL requests can actually created a document / folder.
- * Other requests will end up with a 404 error.
+ * Resource for an unknown (ie non-existing) object. Used so that PUT / MKCOL requests can actually created a document /
+ * folder. Other requests will end up with a 404 error.
  */
 public class UnknownResource extends AbstractResource {
 
@@ -47,8 +46,7 @@ public class UnknownResource extends AbstractResource {
 
     protected Backend backend;
 
-    public UnknownResource(String path, HttpServletRequest request,
-            Backend backend) throws Exception {
+    public UnknownResource(String path, HttpServletRequest request, Backend backend) throws Exception {
         super(path, request);
         this.backend = backend;
     }
@@ -86,7 +84,7 @@ public class UnknownResource extends AbstractResource {
     public Response mkcol() throws Exception {
         ensureParentExists();
 
-        //We really need this?
+        // We really need this?
         InputStreamSource iss = new InputStreamSource(request.getInputStream());
         if (iss.getString().length() > 0) {
             return Response.status(415).build();

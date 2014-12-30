@@ -68,7 +68,7 @@ public class TestResources extends NXRuntimeTestCase {
 
     @Test
     public void testGetResource() throws Exception {
-        Filter filter=new WSSFilter();
+        Filter filter = new WSSFilter();
         filter.init(null);
 
         FakeRequest request = FakeRequestBuilder.buildFromResource("GetResources.dump");
@@ -76,7 +76,7 @@ public class TestResources extends NXRuntimeTestCase {
 
         filter.doFilter(request, response, null);
 
-        String result= response.getOutput();
+        String result = response.getOutput();
 
         assertTrue(result.startsWith("GIF89"));
 

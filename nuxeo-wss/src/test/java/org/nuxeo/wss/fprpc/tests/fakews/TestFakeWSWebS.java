@@ -64,7 +64,7 @@ public class TestFakeWSWebS extends NXRuntimeTestCase {
     @Test
     public void testHandling() throws Exception {
 
-        Filter filter=new WSSFilter();
+        Filter filter = new WSSFilter();
         filter.init(null);
 
         FakeRequest request = FakeRequestBuilder.buildFromResource("WebUrlFromPageUrl.dump");
@@ -72,9 +72,9 @@ public class TestFakeWSWebS extends NXRuntimeTestCase {
 
         filter.doFilter(request, response, null);
 
-        String result= response.getOutput();
+        String result = response.getOutput();
 
-        //System.out.println(result);
+        // System.out.println(result);
 
         String[] lines = result.split("\n");
 
@@ -85,7 +85,7 @@ public class TestFakeWSWebS extends NXRuntimeTestCase {
     @Test
     public void testHandlingGetWebCollection() throws Exception {
 
-        Filter filter=new WSSFilter();
+        Filter filter = new WSSFilter();
         filter.init(null);
 
         FakeRequest request = FakeRequestBuilder.buildFromResource("GetWebCollection.dump");
@@ -93,15 +93,14 @@ public class TestFakeWSWebS extends NXRuntimeTestCase {
 
         filter.doFilter(request, response, null);
 
-        String result= response.getOutput();
+        String result = response.getOutput();
 
-        //System.out.println(result);
+        // System.out.println(result);
 
-        //String[] lines = result.split("\n");
+        // String[] lines = result.split("\n");
 
-        //assertEquals("<WebUrlFromPageUrlResult>http://localhost/</WebUrlFromPageUrlResult>", lines[4].trim());
+        // assertEquals("<WebUrlFromPageUrlResult>http://localhost/</WebUrlFromPageUrlResult>", lines[4].trim());
 
     }
-
 
 }

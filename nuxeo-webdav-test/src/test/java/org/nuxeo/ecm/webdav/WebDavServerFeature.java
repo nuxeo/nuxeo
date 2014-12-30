@@ -34,18 +34,12 @@ import com.sun.grizzly.http.servlet.ServletAdapter;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 /**
- *
- *
  * @since 5.8
  */
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.platform.dublincore",
-        "org.nuxeo.ecm.platform.mimetype.api",
-        "org.nuxeo.ecm.platform.mimetype.core",
-        "org.nuxeo.ecm.platform.filemanager.api",
-        "org.nuxeo.ecm.platform.filemanager.core" })
+@Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.platform.dublincore",
+        "org.nuxeo.ecm.platform.mimetype.api", "org.nuxeo.ecm.platform.mimetype.core",
+        "org.nuxeo.ecm.platform.filemanager.api", "org.nuxeo.ecm.platform.filemanager.core" })
 public class WebDavServerFeature extends WebEngineFeature {
 
     static boolean DEBUG = false;
@@ -69,33 +63,24 @@ public class WebDavServerFeature extends WebEngineFeature {
 
         ServletAdapter jerseyAdapter = new ServletAdapter();
         // Using the portable way of registering JAX-RS resources.
-        jerseyAdapter.addInitParameter("javax.ws.rs.Application",
-                Application.class.getCanonicalName());
+        jerseyAdapter.addInitParameter("javax.ws.rs.Application", Application.class.getCanonicalName());
         jerseyAdapter.addRootFolder(path);
         jerseyAdapter.setHandleStaticResources(true);
         jerseyAdapter.setServletInstance(new ServletContainer());
         jerseyAdapter.setContextPath("");
         // session cleanup
-        jerseyAdapter.addFilter(new RequestContextFilter(),
-                "RequestContextFilter", null);
-        jerseyAdapter.addFilter(new SessionCleanupFilter(),
-                "SessionCleanupFilter", null);
-        jerseyAdapter.addFilter(new NuxeoAuthenticationFilter(),
-                "NuxeoAuthenticationFilter", null);
-        jerseyAdapter.addFilter(new WebEngineFilter(),
-                "WebEngineFilter", null);
+        jerseyAdapter.addFilter(new RequestContextFilter(), "RequestContextFilter", null);
+        jerseyAdapter.addFilter(new SessionCleanupFilter(), "SessionCleanupFilter", null);
+        jerseyAdapter.addFilter(new NuxeoAuthenticationFilter(), "NuxeoAuthenticationFilter", null);
+        jerseyAdapter.addFilter(new WebEngineFilter(), "WebEngineFilter", null);
 
         if (DEBUG) {
-            jerseyAdapter.addInitParameter(
-                    "com.sun.jersey.spi.container.ContainerRequestFilters",
+            jerseyAdapter.addInitParameter("com.sun.jersey.spi.container.ContainerRequestFilters",
                     "com.sun.jersey.api.container.filter.LoggingFilter");
-            jerseyAdapter.addInitParameter(
-                    "com.sun.jersey.spi.container.ContainerResponseFilters",
+            jerseyAdapter.addInitParameter("com.sun.jersey.spi.container.ContainerResponseFilters",
                     "com.sun.jersey.api.container.filter.LoggingFilter");
         }
-        jerseyAdapter.addInitParameter(
-                "com.sun.jersey.config.feature.logging.DisableEntitylogging",
-                "true");
+        jerseyAdapter.addInitParameter("com.sun.jersey.config.feature.logging.DisableEntitylogging", "true");
 
         gws.addGrizzlyAdapter(jerseyAdapter, new String[] { "" });
 

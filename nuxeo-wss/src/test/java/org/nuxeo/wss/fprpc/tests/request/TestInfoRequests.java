@@ -59,7 +59,7 @@ public class TestInfoRequests extends NXRuntimeTestCase {
 
         filter.doFilter(request, response, null);
 
-        String result= response.getOutput();
+        String result = response.getOutput();
 
         // System.out.println(result);
 
@@ -80,7 +80,7 @@ public class TestInfoRequests extends NXRuntimeTestCase {
 
         filter.doFilter(request, response, null);
 
-        String result= response.getOutput();
+        String result = response.getOutput();
 
         // System.out.println(result);
 
@@ -99,7 +99,7 @@ public class TestInfoRequests extends NXRuntimeTestCase {
 
         filter.doFilter(request, response, null);
 
-        String result= response.getOutput();
+        String result = response.getOutput();
 
         // System.out.println(result);
 
@@ -118,13 +118,10 @@ public class TestInfoRequests extends NXRuntimeTestCase {
 
         filter.doFilter(request, response, null);
 
-        String result= response.getOutput();
+        String result = response.getOutput();
 
         // System.out.println(result);
 
     }
-
-
-
 
 }

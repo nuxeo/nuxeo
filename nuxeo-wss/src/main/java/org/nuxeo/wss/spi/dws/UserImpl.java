@@ -20,10 +20,15 @@ package org.nuxeo.wss.spi.dws;
 public class UserImpl implements User {
 
     protected String id;
+
     protected String login;
+
     protected String name;
+
     protected String email;
+
     protected boolean domainGroup = false;
+
     protected boolean siteAdmin = false;
 
     public UserImpl(String id, String login, String name, String email) {

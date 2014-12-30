@@ -20,7 +20,6 @@ package org.nuxeo.wss;
  * Dedicated Exception class
  *
  * @author Thierry Delprat
- *
  */
 public class WSSException extends Exception {
 

@@ -22,23 +22,23 @@ import org.nuxeo.wss.spi.WSSListItem;
 public class DWSDocument extends AbstractDWSItem {
 
     protected WSSListItem doc;
-    //protected String siteRootPath;
+
+    // protected String siteRootPath;
 
     public DWSDocument(WSSListItem doc, String siteRootPath) {
-        super(doc.getEtag(),doc.getAuthor(), doc.getCreationDate(), doc.getModificationDate(),doc.getRelativeFilePath(siteRootPath));
+        super(doc.getEtag(), doc.getAuthor(), doc.getCreationDate(), doc.getModificationDate(),
+                doc.getRelativeFilePath(siteRootPath));
         this.doc = doc;
-        //this.siteRootPath = siteRootPath;
+        // this.siteRootPath = siteRootPath;
     }
 
     public String getTitle() {
         return doc.getDisplayName();
     }
 
-
     public void setId(String id) {
         this.id = id;
     }
-
 
     public boolean getFolderish() {
         return doc.isFolderish();

@@ -22,8 +22,7 @@ import org.nuxeo.wss.servlet.WSSResponse;
 
 public class FakeLists implements FakeWSHandler {
 
-    public void handleRequest(FakeWSRequest request, WSSResponse response)
-            throws WSSException {
+    public void handleRequest(FakeWSRequest request, WSSResponse response) throws WSSException {
 
         response.addRenderingParameter("request", request);
 
@@ -31,8 +30,6 @@ public class FakeLists implements FakeWSHandler {
 
             response.setRenderingTemplateName("GetListCollection.ftl");
         }
-
-
 
     }
 

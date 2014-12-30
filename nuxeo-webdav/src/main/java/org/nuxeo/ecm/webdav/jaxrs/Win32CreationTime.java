@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlValue;
 public final class Win32CreationTime {
 
     @XmlValue
-	private String value;
+    private String value;
 
     public Win32CreationTime() {
     }

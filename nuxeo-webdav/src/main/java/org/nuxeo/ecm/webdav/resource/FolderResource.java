@@ -64,8 +64,7 @@ public class FolderResource extends ExistingResource {
 
     private static final Log log = LogFactory.getLog(FolderResource.class);
 
-    public FolderResource(String path, DocumentModel doc,
-            HttpServletRequest request, Backend backend) throws Exception {
+    public FolderResource(String path, DocumentModel doc, HttpServletRequest request, Backend backend) throws Exception {
         super(path, doc, request, backend);
     }
 
@@ -96,11 +95,9 @@ public class FolderResource extends ExistingResource {
     }
 
     @PROPFIND
-    public Response propfind(@Context UriInfo uriInfo,
-            @HeaderParam("depth") String depth
-            ) throws Exception {
+    public Response propfind(@Context UriInfo uriInfo, @HeaderParam("depth") String depth) throws Exception {
 
-        if(depth == null){
+        if (depth == null) {
             depth = "1";
         }
 
@@ -127,8 +124,7 @@ public class FolderResource extends ExistingResource {
             return Response.status(207).entity(new MultiStatus(response)).build();
         }
 
-        List<net.java.dev.webdav.jaxrs.xml.elements.Response> responses
-                = new ArrayList<net.java.dev.webdav.jaxrs.xml.elements.Response>();
+        List<net.java.dev.webdav.jaxrs.xml.elements.Response> responses = new ArrayList<net.java.dev.webdav.jaxrs.xml.elements.Response>();
         responses.add(response);
 
         List<DocumentModel> children = backend.getChildren(doc.getRef());
@@ -139,21 +135,19 @@ public class FolderResource extends ExistingResource {
             responses.add(childResponse);
         }
 
-        MultiStatus st = new MultiStatus(responses.toArray(
-                new net.java.dev.webdav.jaxrs.xml.elements.Response[responses.size()]));
-        //printXml(st);
+        MultiStatus st = new MultiStatus(
+                responses.toArray(new net.java.dev.webdav.jaxrs.xml.elements.Response[responses.size()]));
+        // printXml(st);
         return Response.status(207).entity(st).build();
     }
 
-    protected net.java.dev.webdav.jaxrs.xml.elements.Response createResponse(
-            DocumentModel doc, UriInfo uriInfo, Prop prop)
-                    throws ClientException, URIException {
+    protected net.java.dev.webdav.jaxrs.xml.elements.Response createResponse(DocumentModel doc, UriInfo uriInfo,
+            Prop prop) throws ClientException, URIException {
         return createResponse(doc, uriInfo, prop, true);
     }
 
-    protected net.java.dev.webdav.jaxrs.xml.elements.Response createResponse(
-            DocumentModel doc, UriInfo uriInfo, Prop prop, boolean append)
-            throws ClientException, URIException {
+    protected net.java.dev.webdav.jaxrs.xml.elements.Response createResponse(DocumentModel doc, UriInfo uriInfo,
+            Prop prop, boolean append) throws ClientException, URIException {
         PropStatBuilderExt props = getPropStatBuilderExt(doc, uriInfo);
         PropStat propStatFound = props.build();
         PropStat propStatNotFound = null;
@@ -169,24 +163,21 @@ public class FolderResource extends ExistingResource {
         URI uri = uriBuilder.build();
         if (doc.isFolder()) {
             PropStat folderPropStat = new PropStat(
-                    new Prop(new LockDiscovery(), new SupportedLock(), new IsFolder("t")),
-                    new Status(OK));
+                    new Prop(new LockDiscovery(), new SupportedLock(), new IsFolder("t")), new Status(OK));
             if (propStatNotFound != null) {
-                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                        new HRef(uri), null, null, null,
+                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(new HRef(uri), null, null, null,
                         propStatFound, propStatNotFound, folderPropStat);
             } else {
-                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                        new HRef(uri), null, null, null,
+                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(new HRef(uri), null, null, null,
                         propStatFound, folderPropStat);
             }
         } else {
             if (propStatNotFound != null) {
-                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                        new HRef(uri), null, null, null, propStatFound, propStatNotFound);
+                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(new HRef(uri), null, null, null,
+                        propStatFound, propStatNotFound);
             } else {
-                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                        new HRef(uri), null, null, null, propStatFound);
+                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(new HRef(uri), null, null, null,
+                        propStatFound);
             }
         }
         return response;

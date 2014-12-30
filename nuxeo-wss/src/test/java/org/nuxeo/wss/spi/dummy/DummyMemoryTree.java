@@ -27,6 +27,7 @@ import org.nuxeo.wss.spi.WSSListItem;
 public class DummyMemoryTree {
 
     protected WSSListItem root;
+
     protected Map<String, List<WSSListItem>> allitems = new HashMap<String, List<WSSListItem>>();
 
     public static final int DEPTH = 3;
@@ -87,15 +88,18 @@ public class DummyMemoryTree {
         } else {
             if (depth <= DEPTH) {
                 for (int i = 0; i < 5; i++) {
-                    items.add(new DummyWSSListItem("Workspace-" + depth + "-" + i, "This is Dummy Workspace " + i, basePath, null));
+                    items.add(new DummyWSSListItem("Workspace-" + depth + "-" + i, "This is Dummy Workspace " + i,
+                            basePath, null));
                 }
             }
             for (int i = 0; i < 5; i++) {
                 String data = "FakeContent" + i;
-                //ByteArrayInputStream is = new ByteArrayInputStream(data.getBytes());
-                //InputStream is = DummyMemoryTree.class.getClassLoader().getResourceAsStream("sampledoc/hello.doc");
-                //InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("sampledoc/hello.doc");
-                DummyWSSListItem item = new DummyWSSListItem("Document" + "-" + depth + "-" + i + ".doc", "This is Dummy File " + i, basePath, null);
+                // ByteArrayInputStream is = new ByteArrayInputStream(data.getBytes());
+                // InputStream is = DummyMemoryTree.class.getClassLoader().getResourceAsStream("sampledoc/hello.doc");
+                // InputStream is =
+                // Thread.currentThread().getContextClassLoader().getResourceAsStream("sampledoc/hello.doc");
+                DummyWSSListItem item = new DummyWSSListItem("Document" + "-" + depth + "-" + i + ".doc",
+                        "This is Dummy File " + i, basePath, null);
                 item.setBinaryResourcePath("sampledoc/hello.doc");
                 item.setSize(7680);
                 items.add(item);

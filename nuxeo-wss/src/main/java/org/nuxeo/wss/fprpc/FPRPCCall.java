@@ -29,8 +29,11 @@ import java.util.Map;
 public class FPRPCCall {
 
     public static final String DEFAULT_ID = "default";
+
     protected String methodName;
+
     protected String id;
+
     protected Map<String, String> parameters;
 
     public FPRPCCall() {

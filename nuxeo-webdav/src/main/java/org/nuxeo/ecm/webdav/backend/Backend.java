@@ -63,8 +63,7 @@ public interface Backend {
 
     DocumentModel moveItem(DocumentModel source, PathRef targetParentRef) throws ClientException;
 
-    DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name)
-            throws ClientException;
+    DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name) throws ClientException;
 
     DocumentModel updateDocument(DocumentModel doc, String name, Blob content) throws ClientException;
 

@@ -26,21 +26,25 @@ import java.util.UUID;
 public abstract class AbstractDWSItem implements DWSItem {
 
     protected String authorId = "unset";
+
     protected String editorId = "unset";
 
     protected String authorLogin;
+
     protected Date created;
+
     protected Date modified;
+
     protected String fileRef;
+
     protected String id;
 
-
     public AbstractDWSItem(String id, String authorLogin, Date created, Date modified, String fileRef) {
-        this.id=id;
+        this.id = id;
         this.authorLogin = authorLogin;
-        this.created=created;
-        this.modified=modified;
-        this.fileRef=fileRef;
+        this.created = created;
+        this.modified = modified;
+        this.fileRef = fileRef;
     }
 
     protected static DateFormat getDateFormat() {
@@ -61,21 +65,21 @@ public abstract class AbstractDWSItem implements DWSItem {
     }
 
     public String getUniqueId() {
-        return getId() + ";#{" + UUID.randomUUID().toString() +  "}";
+        return getId() + ";#{" + UUID.randomUUID().toString() + "}";
     }
 
     public void updateReferences(List<User> users) {
-        for (int i =0; i< users.size(); i++) {
+        for (int i = 0; i < users.size(); i++) {
             if (users.get(i).getLogin().equals(getAuthorLogin())) {
-                //authorId = ""+ i+1;
+                // authorId = ""+ i+1;
                 authorId = users.get(i).getId();
                 break;
             }
         }
-        for (int i =0; i< users.size(); i++) {
+        for (int i = 0; i < users.size(); i++) {
             if (users.get(i).getLogin().equals(getEditorLogin())) {
-                //editorId = ""+ i+1;
-                editorId =  users.get(i).getId();
+                // editorId = ""+ i+1;
+                editorId = users.get(i).getId();
                 break;
             }
         }
@@ -83,7 +87,7 @@ public abstract class AbstractDWSItem implements DWSItem {
 
     public String getCreatedTS() {
         Date date = getCreated();
-        if (date==null) {
+        if (date == null) {
             date = new Date(System.currentTimeMillis());
         }
         return getDateFormat().format(date);
@@ -91,10 +95,10 @@ public abstract class AbstractDWSItem implements DWSItem {
 
     public String getModifiedTS() {
         Date date = getModified();
-        if (date==null) {
+        if (date == null) {
             date = getCreated();
         }
-        if (date==null) {
+        if (date == null) {
             date = new Date(System.currentTimeMillis());
         }
         return getDateFormat().format(date);

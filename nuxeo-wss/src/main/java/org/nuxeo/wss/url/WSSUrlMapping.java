@@ -20,6 +20,7 @@ package org.nuxeo.wss.url;
 public class WSSUrlMapping {
 
     protected String siteUrl;
+
     protected String resourceUrl;
 
     public WSSUrlMapping(String siteUrl, String resourceUrl) {

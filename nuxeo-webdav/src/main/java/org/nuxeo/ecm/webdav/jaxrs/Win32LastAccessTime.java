@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlValue;
 public final class Win32LastAccessTime {
 
     @XmlValue
-	private String value;
+    private String value;
 
     public Win32LastAccessTime() {
     }

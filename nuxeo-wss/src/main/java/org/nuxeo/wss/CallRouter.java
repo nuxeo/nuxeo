@@ -28,8 +28,7 @@ public class CallRouter {
 
     protected static Map<String, Object> handlers = new HashMap<String, Object>();
 
-    protected static <T> T getHandler(Class<T> handlerClass, String handlerName)
-            throws Exception {
+    protected static <T> T getHandler(Class<T> handlerClass, String handlerName) throws Exception {
 
         Object handler = handlers.get(handlerName);
 

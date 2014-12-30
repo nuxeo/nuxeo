@@ -78,11 +78,9 @@ public abstract class AbstractWSSListItem implements WSSListItem {
         } else {
             String ext = getExtension();
             if (ext != null) {
-                if (ext.toLowerCase().equals("gif") ||
-                        ext.toLowerCase().equals("jpg") ||
-                        ext.toLowerCase().equals("png") ||
-                        ext.toLowerCase().equals("jpeg") ||
-                        ext.toLowerCase().equals("tif")) {
+                if (ext.toLowerCase().equals("gif") || ext.toLowerCase().equals("jpg")
+                        || ext.toLowerCase().equals("png") || ext.toLowerCase().equals("jpeg")
+                        || ext.toLowerCase().equals("tif")) {
                     ext = "image";
                 }
                 return ext + ".gif";
@@ -101,7 +99,6 @@ public abstract class AbstractWSSListItem implements WSSListItem {
     public String getSizeAsString() {
         return "" + getSize();
     }
-
 
     public String getDisplayName() {
         return getName();

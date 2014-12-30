@@ -37,14 +37,14 @@ import org.nuxeo.wss.WSSConfig;
 public class ResourcesHandler {
 
     protected static final int BUFFER_SIZE = 1024 * 10;
+
     public static final DateFormat HTTP_EXPIRES_DATE_FORMAT = httpExpiresDateFormat();
 
     private static final Log log = LogFactory.getLog(ResourcesHandler.class);
 
     private static DateFormat httpExpiresDateFormat() {
         // formatted http Expires: Thu, 01 Dec 1994 16:00:00 GMT
-        DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z",
-                Locale.US);
+        DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
         return df;
     }
@@ -55,7 +55,6 @@ public class ResourcesHandler {
         return is;
     }
 
-
     protected void addCacheHeaders(HttpServletResponse response, int cacheTime) {
         response.addHeader("Cache-Control", "max-age=" + cacheTime);
         response.addHeader("Cache-Control", "public");
@@ -64,11 +63,11 @@ public class ResourcesHandler {
         long newDate = date.getTime() + new Long(cacheTime) * 1000;
         date.setTime(newDate);
 
-        response.setHeader("Expires",
-                HTTP_EXPIRES_DATE_FORMAT.format(date));
+        response.setHeader("Expires", HTTP_EXPIRES_DATE_FORMAT.format(date));
     }
 
-    public void handleResource(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void handleResource(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+            IOException {
         String uri = request.getRequestURI();
         log.debug("Handling resource call on uri = " + uri);
 

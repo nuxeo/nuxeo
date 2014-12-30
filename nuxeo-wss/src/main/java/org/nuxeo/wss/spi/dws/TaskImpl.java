@@ -22,24 +22,28 @@ import java.util.Date;
 public class TaskImpl extends AbstractTask implements Task {
 
     protected String assignee;
+
     protected String body;
+
     protected String title;
+
     protected Date dueDate;
+
     protected String priority;
+
     protected String status;
 
-    public TaskImpl(String id, String authorLogin, Date created, Date modified,
-            String fileRef) {
+    public TaskImpl(String id, String authorLogin, Date created, Date modified, String fileRef) {
         super(id, authorLogin, created, modified, fileRef);
     }
 
     public void setTaskData(String assignee, String title, String body, Date dueDate, String priority, String status) {
-        this.assignee=assignee;
-        this.title=title;
-        this.body=body;
-        this.dueDate=dueDate;
+        this.assignee = assignee;
+        this.title = title;
+        this.body = body;
+        this.dueDate = dueDate;
         this.priority = priority;
-        this.status=status;
+        this.status = status;
     }
 
     public String getAssigneeLogin() {

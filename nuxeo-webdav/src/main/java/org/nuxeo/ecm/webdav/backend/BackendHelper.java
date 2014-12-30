@@ -23,16 +23,14 @@ import org.nuxeo.ecm.webdav.service.WebDavService;
 public class BackendHelper {
 
     /**
-     * For tests. Otherwise the factory is configured through an extension point
-     * in the component.
+     * For tests. Otherwise the factory is configured through an extension point in the component.
      */
     public static void setBackendFactory(BackendFactory backendFactory) {
         WebDavService.instance().setBackendFactory(backendFactory);
     }
 
     public static Backend getBackend(String path, HttpServletRequest request) {
-        return WebDavService.instance().getBackendFactory().getBackend(path,
-                request);
+        return WebDavService.instance().getBackendFactory().getBackend(path, request);
     }
 
 }

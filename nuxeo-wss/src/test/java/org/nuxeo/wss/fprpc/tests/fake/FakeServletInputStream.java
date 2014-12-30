@@ -37,7 +37,6 @@ public class FakeServletInputStream extends ServletInputStream {
         stream = in;
     }
 
-
     @Override
     public int read() throws IOException {
         return stream.read();

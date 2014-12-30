@@ -38,8 +38,8 @@ public class OWSSvrHandler extends AbstractFPRPCHandler implements FPRPCHandler 
     private static final Log log = LogFactory.getLog(OWSSvrHandler.class);
 
     @Override
-    protected void processCall(FPRPCRequest request, FPRPCResponse fpResponse,
-            int callIndex, WSSBackend backend) throws WSSException {
+    protected void processCall(FPRPCRequest request, FPRPCResponse fpResponse, int callIndex, WSSBackend backend)
+            throws WSSException {
 
         FPRPCCall call = request.getCalls().get(callIndex);
 
@@ -52,13 +52,13 @@ public class OWSSvrHandler extends AbstractFPRPCHandler implements FPRPCHandler 
             handleFileDialog(request, fpResponse, call, backend, false);
         } else if ("FileSave".equals(call.getMethodName())) {
             try {
-                fpResponse.getHttpResponse().sendError(
-                        HttpServletResponse.SC_NOT_ACCEPTABLE, "Please use list-document API for save as");
+                fpResponse.getHttpResponse().sendError(HttpServletResponse.SC_NOT_ACCEPTABLE,
+                        "Please use list-document API for save as");
                 return;
             } catch (IOException e) {
                 throw new WSSException("Error while sending error!", e);
             }
-            //handleFileDialog(request, fpResponse, call, backend, true);
+            // handleFileDialog(request, fpResponse, call, backend, true);
         } else if ("SaveForm".equals(call.getMethodName())) {
 
             if ("HEAD".equals(request.getHttpRequest().getMethod())) {
@@ -73,7 +73,8 @@ public class OWSSvrHandler extends AbstractFPRPCHandler implements FPRPCHandler 
         }
     }
 
-    protected void handleFileDialog(FPRPCRequest request, FPRPCResponse response, FPRPCCall call, WSSBackend backend, boolean save) throws WSSException {
+    protected void handleFileDialog(FPRPCRequest request, FPRPCResponse response, FPRPCCall call, WSSBackend backend,
+            boolean save) throws WSSException {
         if ("HEAD".equals(request.getHttpRequest().getMethod())) {
             response.setContentType("text/html");
             return;
@@ -96,7 +97,7 @@ public class OWSSvrHandler extends AbstractFPRPCHandler implements FPRPCHandler 
 
         response.getHttpResponse().addCookie(MSOWebPartCookie);
         if (save) {
-            //response.setRenderingTemplateName("FileSave.ftl");
+            // response.setRenderingTemplateName("FileSave.ftl");
             response.setRenderingTemplateName("FileOpen.ftl");
         } else {
             response.setRenderingTemplateName("FileOpen.ftl");

@@ -63,7 +63,7 @@ public class WSSUrlMapper {
     public static String getUrlWithSitePath(WSSRequest request, String location) {
 
         String sitePath = request.getSitePath();
-        //location = getCleanUrl(location);
+        // location = getCleanUrl(location);
         if (sitePath != null && !"".equals(sitePath)) {
             String fullPath = sitePath;
             if (location.startsWith("/")) {
@@ -84,11 +84,10 @@ public class WSSUrlMapper {
         }
 
         return location;
-        /*if (location.startsWith(WSSConfig.instance().getContextPath())) {
-            return location.replace(WSSConfig.instance().getContextPath(), "");
-        } else {
-            return location;
-        }*/
+        /*
+         * if (location.startsWith(WSSConfig.instance().getContextPath())) { return
+         * location.replace(WSSConfig.instance().getContextPath(), ""); } else { return location; }
+         */
     }
 
     public static String getFirstSegment(String path) {

@@ -25,16 +25,14 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 public class WebDavService extends DefaultComponent {
 
-    public static final ComponentName NAME = new ComponentName(
-            "org.nuxeo.ecm.webdav.service");
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.webdav.service");
 
     public static String BACKEND_FACTORY_XP = "backendFactory";
 
     protected BackendFactory backendFactory = new SearchBackendFactory();
 
     public static WebDavService instance() {
-        return (WebDavService) Framework.getRuntime().getComponent(
-                WebDavService.NAME);
+        return (WebDavService) Framework.getRuntime().getComponent(WebDavService.NAME);
     }
 
     public BackendFactory getBackendFactory() {
@@ -47,8 +45,7 @@ public class WebDavService extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (BACKEND_FACTORY_XP.equals(extensionPoint)) {
             BackendFactoryDescriptor desc = (BackendFactoryDescriptor) contribution;

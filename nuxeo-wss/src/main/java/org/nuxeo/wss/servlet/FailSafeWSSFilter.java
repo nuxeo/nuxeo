@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 public class FailSafeWSSFilter implements Filter {
 
     protected Filter wssFilter;
+
     protected Log log = LogFactory.getLog(FailSafeWSSFilter.class);
 
     @Override
@@ -49,9 +50,9 @@ public class FailSafeWSSFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
-        if (wssFilter!=null) {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
+        if (wssFilter != null) {
             wssFilter.doFilter(request, response, chain);
         } else {
             chain.doFilter(request, response);
@@ -60,7 +61,7 @@ public class FailSafeWSSFilter implements Filter {
 
     @Override
     public void destroy() {
-        if (wssFilter!=null) {
+        if (wssFilter != null) {
             wssFilter.destroy();
         }
     }

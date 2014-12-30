@@ -28,31 +28,35 @@ import java.util.Random;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Jackrabbit includes a WebDAV client library. Let's use it to test our
- * server.
+ * Jackrabbit includes a WebDAV client library. Let's use it to test our server.
  */
 public class ParallelBench implements Runnable {
 
     // Nuxeo / JBoss
     private static final String ROOT_URI = "http://localhost:8080/nuxeo/site/dav/default-domain/workspaces/";
+
     private static final String LOGIN = "Administrator";
+
     private static final String PASSWD = "Administrator";
 
     // JackRabbit
-    //private static final String ROOT_URI = "http://localhost:8080/repository/default/";
+    // private static final String ROOT_URI = "http://localhost:8080/repository/default/";
 
     // Zope
-    //private static final String ROOT_URI = "http://localhost:8080/";
-    //private static final String LOGIN = "admin";
-    //private static final String PASSWD = "admin";
+    // private static final String ROOT_URI = "http://localhost:8080/";
+    // private static final String LOGIN = "admin";
+    // private static final String PASSWD = "admin";
 
     private static final int PORT = 8080;
+
     private static final int NUM_THREADS = 100;
+
     private static final int NUM_DOCS = 10;
 
     private static volatile boolean keepLooping = true;
 
     private Random random;
+
     private final HttpClient client;
 
     public ParallelBench() {
@@ -73,8 +77,8 @@ public class ParallelBench implements Runnable {
             }
             long elapsed = System.currentTimeMillis() - startTime;
             long numOps = NUM_THREADS * NUM_DOCS;
-            System.out.println(String.format("Completed %d operations in %f sec: %f ops/sec",
-                     numOps, elapsed / 1000.0, numOps * 1000.0 / elapsed));
+            System.out.println(String.format("Completed %d operations in %f sec: %f ops/sec", numOps, elapsed / 1000.0,
+                    numOps * 1000.0 / elapsed));
             break;
         }
     }
@@ -99,7 +103,7 @@ public class ParallelBench implements Runnable {
         HostConfiguration hostConfig = new HostConfiguration();
         hostConfig.setHost("localhost", PORT);
 
-        //HttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+        // HttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
         HttpConnectionManager connectionManager = new SimpleHttpConnectionManager(true);
         HttpConnectionManagerParams params = new HttpConnectionManagerParams();
         params.setMaxConnectionsPerHost(hostConfig, 10);
@@ -126,7 +130,7 @@ public class ParallelBench implements Runnable {
         for (int i = 0; i < NUM_DOCS; i++) {
             String uri = folderUri + "/" + i;
             HttpMethod mkcol = new MkColMethod(uri);
-            //System.out.println("creating " + uri);
+            // System.out.println("creating " + uri);
             client.executeMethod(mkcol);
 
             int status = mkcol.getStatusCode();

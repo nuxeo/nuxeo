@@ -52,15 +52,11 @@ import org.nuxeo.wss.spi.Backend;
 import org.nuxeo.wss.spi.WSSBackend;
 
 /**
- * This filter can be used either as a Front End of BackEnd filter
- * It is designed to be either :
- * - instantiated twice :
- * -- on / in rootFilter mode
- * -- on /nuxeo in backend mode
- * - instantiated once in backend mode but behind a WSSFrontFilter
+ * This filter can be used either as a Front End of BackEnd filter It is designed to be either : - instantiated twice :
+ * -- on / in rootFilter mode -- on /nuxeo in backend mode - instantiated once in backend mode but behind a
+ * WSSFrontFilter
  *
  * @author tiry
- *
  */
 public class WSSFilter extends BaseWSSFilter implements Filter {
 
@@ -78,21 +74,16 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
     protected ResourcesHandler resourcesHandler = null;
 
     @Override
-    protected void doForward(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse, FilterBindingConfig config)
-            throws Exception {
+    protected void doForward(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
+            FilterBindingConfig config) throws Exception {
         // To forward to the backend filter, we need to change context
         // but on some App Server (ex: Tomcat 6) default config prohibit this
         ServletContext targetContext = ctx.getContext(getRootFilterTarget());
         if (targetContext != null) {
-            targetContext.getRequestDispatcher(httpRequest.getRequestURI()).forward(
-                    httpRequest, httpResponse);
+            targetContext.getRequestDispatcher(httpRequest.getRequestURI()).forward(httpRequest, httpResponse);
         } else {
-            String newTarget = getRootFilterTarget()
-                    + httpRequest.getRequestURI() + "?"
-                    + httpRequest.getQueryString();
-            if ("VtiHandler".equals(config.getTargetService())
-                    || "SHtmlHandler".equals(config.getTargetService())) {
+            String newTarget = getRootFilterTarget() + httpRequest.getRequestURI() + "?" + httpRequest.getQueryString();
+            if ("VtiHandler".equals(config.getTargetService()) || "SHtmlHandler".equals(config.getTargetService())) {
                 handleWSSCall(httpRequest, httpResponse, config);
             } else {
                 // try to redirect, but this won't work for all cases
@@ -107,8 +98,7 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
      * Init transaction and WebEngine before handling WSS call.
      */
     @Override
-    protected void handleWSSCall(HttpServletRequest request,
-            HttpServletResponse response, FilterBindingConfig config)
+    protected void handleWSSCall(HttpServletRequest request, HttpServletResponse response, FilterBindingConfig config)
             throws Exception {
         boolean tx = false;
         boolean ok = false;
@@ -121,16 +111,14 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
             if (request.getUserPrincipal() == null) {
                 // if we didn't go through the NuxeoAuthenticationFilter
                 // use a dummy user
-                Principal principal = new UserPrincipal(WSS_USERNAME,
-                        new ArrayList<String>(), false, false);
+                Principal principal = new UserPrincipal(WSS_USERNAME, new ArrayList<String>(), false, false);
                 loginContext = Framework.loginAs(principal.getName());
                 request = new NuxeoSecuredRequestWrapper(request, principal);
             }
             // init WebEngine context needed to later get the session
             // in AbstractBackendFactory
             requestContext = new RequestContext(request, response);
-            request.setAttribute(WebContext.class.getName(),
-                    new DefaultContext(request));
+            request.setAttribute(WebContext.class.getName(), new DefaultContext(request));
             // we could use BufferingHttpServletResponse also here
             // do WSS call
             doWSSCall(request, response, config);
@@ -155,9 +143,8 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
         }
     }
 
-    protected void doWSSCall(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse, FilterBindingConfig config)
-            throws Exception {
+    protected void doWSSCall(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
+            FilterBindingConfig config) throws Exception {
 
         httpRequest.setCharacterEncoding("UTF-8");
         httpResponse.setCharacterEncoding("UTF-8");
@@ -169,17 +156,14 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
 
         backend.begin();
 
-        log.debug("Handling WSS call : "
-                + httpRequest.getRequestURL().toString());
+        log.debug("Handling WSS call : " + httpRequest.getRequestURL().toString());
 
         try {
             if (FilterBindingConfig.FP_REQUEST_TYPE.equals(config.getRequestType())) {
-                FPRPCRequest fpRequest = new FPRPCRequest(httpRequest,
-                        config.getSiteName());
+                FPRPCRequest fpRequest = new FPRPCRequest(httpRequest, config.getSiteName());
                 request = fpRequest;
                 response = new FPRPCResponse(httpResponse);
-                FPRPCRouter.handleFPRCPRequest(fpRequest,
-                        (FPRPCResponse) response, config);
+                FPRPCRouter.handleFPRCPRequest(fpRequest, (FPRPCResponse) response, config);
             } else if (FilterBindingConfig.GET_REQUEST_TYPE.equals(config.getRequestType())) {
                 response = new WSSResponse(httpResponse);
                 simpleGetHandler.handleRequest(request, response);
@@ -187,8 +171,7 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
                 resourcesHandler.handleResource(httpRequest, httpResponse);
                 return;
             } else if (FilterBindingConfig.FAKEWS_REQUEST_TYPE.equals(config.getRequestType())) {
-                FakeWSRequest wsRequest = new FakeWSRequest(httpRequest,
-                        config.getSiteName());
+                FakeWSRequest wsRequest = new FakeWSRequest(httpRequest, config.getSiteName());
                 request = wsRequest;
                 response = new WSSResponse(httpResponse);
                 FakeWSRouter.handleFakeWSRequest(wsRequest, response, config);

@@ -41,8 +41,8 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
     private static final Log log = LogFactory.getLog(AuthorHandler.class);
 
     @Override
-    protected void processCall(FPRPCRequest request, FPRPCResponse fpResponse,
-                               int callIndex, WSSBackend backend) throws WSSException {
+    protected void processCall(FPRPCRequest request, FPRPCResponse fpResponse, int callIndex, WSSBackend backend)
+            throws WSSException {
 
         FPRPCCall call = request.getCalls().get(callIndex);
         String methodName = call.getMethodName();
@@ -210,8 +210,7 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
                 return;
             }
 
-        } else if ("create url-directories".equals(methodName)
-                || "create url-directory".equals(methodName)) {
+        } else if ("create url-directories".equals(methodName) || "create url-directory".equals(methodName)) {
             String location;
             if ("create url-directories".equals(methodName)) {
                 String urls = parameters.get("urldirs");
@@ -271,8 +270,7 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
                         } else {
                             removedDocUrls.add(url);
                         }
-                    }
-                    catch (WSSException e) {
+                    } catch (WSSException e) {
                         if (doc.isFolderish()) {
                             failedDirUrls.add(url);
                         } else {
@@ -374,9 +372,7 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
     }
 
     protected String getLockErrorMessage(WSSListItem doc) {
-        return "The file " + doc.getDisplayName()
-                + " is checked out or locked for editing by "
-                + doc.getCheckoutUser();
+        return "The file " + doc.getDisplayName() + " is checked out or locked for editing by " + doc.getCheckoutUser();
     }
 
 }

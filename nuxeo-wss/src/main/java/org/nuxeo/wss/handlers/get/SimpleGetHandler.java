@@ -36,7 +36,7 @@ public class SimpleGetHandler {
         String method = request.getHttpRequest().getMethod();
 
         String[] parts = uri.split("/");
-        String lastSegment = parts[parts.length-1];
+        String lastSegment = parts[parts.length - 1];
         String UA = request.getHttpRequest().getHeader("User-Agent");
 
         log.debug("handling get request on uri = " + uri);
@@ -46,52 +46,35 @@ public class SimpleGetHandler {
             response.getHttpResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
             /*
-            WSSBackend backend = Backend.get(request);
-
-            WSSListItem doc = backend.getItem(uri);
-            if (doc==null) {
-                response.getHttpResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
-                return;
-            } else {
-                HttpServletResponse httpResponse = response.getHttpResponse();
-                httpResponse.addHeader("ETag", "\"{"+ doc.getEtag() + "},4\"");
-                httpResponse.addHeader("ResourceTag", "rt:" + doc.getEtag() + "@00000000004");
-                httpResponse.addHeader("Public-Extension", "http://schemas.microsoft.com/repl-2");
-                httpResponse.setContentLength(doc.getSize());
-
-                if ("HEAD".equals(method)) {
-                    //
-                } else if ("GET".equals(method)) {
-                    httpResponse.getOutputStream();
-
-                    InputStream stream = doc.getStream();
-                    byte[] buffer = new byte[10*1024];
-                    int read;
-                    while ((read = stream.read(buffer)) != -1) {
-                        httpResponse.getOutputStream().write(buffer, 0, read);
-                    }
-                }
-            }*/
+             * WSSBackend backend = Backend.get(request); WSSListItem doc = backend.getItem(uri); if (doc==null) {
+             * response.getHttpResponse().sendError(HttpServletResponse.SC_NOT_FOUND); return; } else {
+             * HttpServletResponse httpResponse = response.getHttpResponse(); httpResponse.addHeader("ETag", "\"{"+
+             * doc.getEtag() + "},4\""); httpResponse.addHeader("ResourceTag", "rt:" + doc.getEtag() + "@00000000004");
+             * httpResponse.addHeader("Public-Extension", "http://schemas.microsoft.com/repl-2");
+             * httpResponse.setContentLength(doc.getSize()); if ("HEAD".equals(method)) { // } else if
+             * ("GET".equals(method)) { httpResponse.getOutputStream(); InputStream stream = doc.getStream(); byte[]
+             * buffer = new byte[10*1024]; int read; while ((read = stream.read(buffer)) != -1) {
+             * httpResponse.getOutputStream().write(buffer, 0, read); } } }
+             */
         } else if ("_vti_inf.html".equals(lastSegment)) {
 
             String prefix = "";
             if (!WSSConfig.instance().isHostFPExtensionAtRoot()) {
                 prefix = WSSConfig.instance().getContextPath();
-                if (prefix==null) {
-                    prefix ="";
+                if (prefix == null) {
+                    prefix = "";
                 } else if (!prefix.equals("")) {
                     if (!prefix.endsWith("/")) {
-                        prefix=prefix + "/";
+                        prefix = prefix + "/";
                     }
                     if (prefix.startsWith("/")) {
-                        prefix=prefix.substring(1);
+                        prefix = prefix.substring(1);
                     }
                 }
             }
 
             response.addRenderingParameter("prefix", prefix);
-            response.getHttpResponse().setHeader(
-                    "Public-Extension", "http://schemas.microsoft.com/repl-2");
+            response.getHttpResponse().setHeader("Public-Extension", "http://schemas.microsoft.com/repl-2");
             response.setRenderingTemplateName(lastSegment);
         }
     }

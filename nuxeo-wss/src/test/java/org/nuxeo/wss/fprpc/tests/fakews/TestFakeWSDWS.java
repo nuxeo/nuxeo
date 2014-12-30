@@ -64,7 +64,7 @@ public class TestFakeWSDWS extends NXRuntimeTestCase {
     @Test
     public void testHandling() throws Exception {
 
-        Filter filter=new WSSFilter();
+        Filter filter = new WSSFilter();
         filter.init(null);
 
         FakeRequest request = FakeRequestBuilder.buildFromResource("GetDwsMetaData.dump");
@@ -72,13 +72,14 @@ public class TestFakeWSDWS extends NXRuntimeTestCase {
 
         filter.doFilter(request, response, null);
 
-        String result= response.getOutput();
+        String result = response.getOutput();
 
         // System.out.println(result);
 
         String[] lines = result.split("\n");
 
-        //assertEquals("&lt;DocUrl&gt;http://localhost/DocLib0/Workspace-1-1/Document-2-1.doc&lt;/DocUrl&gt;", lines[27].trim());
+        // assertEquals("&lt;DocUrl&gt;http://localhost/DocLib0/Workspace-1-1/Document-2-1.doc&lt;/DocUrl&gt;",
+        // lines[27].trim());
 
     }
 

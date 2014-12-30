@@ -28,6 +28,4 @@ public class WSSSecurityException extends WSSException {
         super(message);
     }
 
-
-
 }

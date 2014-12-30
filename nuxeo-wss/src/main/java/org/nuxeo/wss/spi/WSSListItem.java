@@ -52,12 +52,9 @@ public interface WSSListItem {
 
     void setIcon(String icon);
 
-
     String getModifiedTS();
 
-
     String getCreatedTS();
-
 
     int getSize();
 
@@ -68,7 +65,6 @@ public interface WSSListItem {
     void uncheckOut(String userName) throws WSSException;
 
     String getLastModificator();
-
 
     String getCheckoutTS();
 

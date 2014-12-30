@@ -31,15 +31,13 @@ public class TestXmlConfig {
     public void testParsing() throws Exception {
 
         List<FilterBindingConfig> bindings = XmlConfigHandler.getConfigEntries();
-        assertTrue(bindings.size()>0);
+        assertTrue(bindings.size() > 0);
 
         FilterBindingConfig binding = bindings.get(0);
-        assertEquals("(.*)/_vti_inf.html.*",binding.getUrl());
-        assertEquals("GET",binding.getRequestType());
-        assertEquals("VtiHandler",binding.getTargetService());
-        assertEquals(null,binding.getRedirectURL());
-
-
+        assertEquals("(.*)/_vti_inf.html.*", binding.getUrl());
+        assertEquals("GET", binding.getRequestType());
+        assertEquals("VtiHandler", binding.getTargetService());
+        assertEquals(null, binding.getRedirectURL());
 
     }
 }

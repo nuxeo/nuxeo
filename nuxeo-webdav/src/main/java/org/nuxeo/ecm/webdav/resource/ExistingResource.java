@@ -76,8 +76,7 @@ import org.nuxeo.ecm.webdav.jaxrs.Win32LastAccessTime;
 import org.nuxeo.ecm.webdav.jaxrs.Win32LastModifiedTime;
 
 /**
- * An existing resource corresponds to an existing object (folder or file) in
- * the repository.
+ * An existing resource corresponds to an existing object (folder or file) in the repository.
  */
 public class ExistingResource extends AbstractResource {
 
@@ -89,8 +88,8 @@ public class ExistingResource extends AbstractResource {
 
     protected Backend backend;
 
-    protected ExistingResource(String path, DocumentModel doc,
-            HttpServletRequest request, Backend backend) throws Exception {
+    protected ExistingResource(String path, DocumentModel doc, HttpServletRequest request, Backend backend)
+            throws Exception {
         super(path, request);
         this.doc = doc;
         this.backend = backend;
@@ -114,14 +113,14 @@ public class ExistingResource extends AbstractResource {
     }
 
     @COPY
-    public Response copy(@HeaderParam("Destination") String dest,
-            @HeaderParam("Overwrite") String overwrite) throws Exception {
+    public Response copy(@HeaderParam("Destination") String dest, @HeaderParam("Overwrite") String overwrite)
+            throws Exception {
         return copyOrMove("COPY", dest, overwrite);
     }
 
     @MOVE
-    public Response move(@HeaderParam("Destination") String dest,
-            @HeaderParam("Overwrite") String overwrite) throws Exception {
+    public Response move(@HeaderParam("Destination") String dest, @HeaderParam("Overwrite") String overwrite)
+            throws Exception {
         if (backend.isLocked(doc.getRef()) && !backend.canUnlock(doc.getRef())) {
             return Response.status(423).build();
         }
@@ -129,8 +128,7 @@ public class ExistingResource extends AbstractResource {
         return copyOrMove("MOVE", dest, overwrite);
     }
 
-    private static String encode(byte[] bytes, String encoding)
-            throws ClientException {
+    private static String encode(byte[] bytes, String encoding) throws ClientException {
         try {
             return new String(bytes, encoding);
         } catch (UnsupportedEncodingException e) {
@@ -138,8 +136,7 @@ public class ExistingResource extends AbstractResource {
         }
     }
 
-    private Response copyOrMove(String method,
-            @HeaderParam("Destination") String destination,
+    private Response copyOrMove(String method, @HeaderParam("Destination") String destination,
             @HeaderParam("Overwrite") String overwrite) throws Exception {
 
         if (backend.isLocked(doc.getRef()) && !backend.canUnlock(doc.getRef())) {
@@ -154,8 +151,8 @@ public class ExistingResource extends AbstractResource {
         Path destinationPath = new Path(destination);
         String[] segments = destinationPath.segments();
         int removeSegments = 0;
-        for (String segment : segments){
-            if(names.contains(segment)){
+        for (String segment : segments) {
+            if (names.contains(segment)) {
                 break;
             } else {
                 removeSegments++;
@@ -209,37 +206,26 @@ public class ExistingResource extends AbstractResource {
         }
 
         /*
-         * JAXBContext jc = Util.getJaxbContext(); Unmarshaller u =
-         * jc.createUnmarshaller(); PropertyUpdate propertyUpdate; try {
-         * propertyUpdate = (PropertyUpdate)
-         * u.unmarshal(request.getInputStream()); } catch (JAXBException e) {
-         * return Response.status(400).build(); }
+         * JAXBContext jc = Util.getJaxbContext(); Unmarshaller u = jc.createUnmarshaller(); PropertyUpdate
+         * propertyUpdate; try { propertyUpdate = (PropertyUpdate) u.unmarshal(request.getInputStream()); } catch
+         * (JAXBException e) { return Response.status(400).build(); }
          */
         // Util.printAsXml(propertyUpdate);
         /*
-         * List<RemoveOrSet> list = propertyUpdate.list();
-         *
-         * final List<PropStat> propStats = new ArrayList<PropStat>(); for
-         * (RemoveOrSet set : list) { Prop prop = set.getProp(); List<Object>
-         * properties = prop.getProperties(); for (Object property : properties)
-         * { PropStat propStat = new PropStat(new Prop(property), new
-         * Status(OK)); propStats.add(propStat); } }
+         * List<RemoveOrSet> list = propertyUpdate.list(); final List<PropStat> propStats = new ArrayList<PropStat>();
+         * for (RemoveOrSet set : list) { Prop prop = set.getProp(); List<Object> properties = prop.getProperties(); for
+         * (Object property : properties) { PropStat propStat = new PropStat(new Prop(property), new Status(OK));
+         * propStats.add(propStat); } }
          */
 
         // @TODO: patch properties if need.
         // Fake proppatch response
         @SuppressWarnings("deprecation")
         final net.java.dev.webdav.jaxrs.xml.elements.Response response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                new HRef(uriInfo.getRequestUri()),
-                null,
-                null,
-                null,
-                new PropStat(new Prop(new Win32CreationTime()), new Status(OK)),
-                new PropStat(new Prop(new Win32FileAttributes()),
-                        new Status(OK)), new PropStat(new Prop(
-                        new Win32LastAccessTime()), new Status(OK)),
-                new PropStat(new Prop(new Win32LastModifiedTime()), new Status(
-                        OK)));
+                new HRef(uriInfo.getRequestUri()), null, null, null, new PropStat(new Prop(new Win32CreationTime()),
+                        new Status(OK)), new PropStat(new Prop(new Win32FileAttributes()), new Status(OK)),
+                new PropStat(new Prop(new Win32LastAccessTime()), new Status(OK)), new PropStat(new Prop(
+                        new Win32LastModifiedTime()), new Status(OK)));
 
         return Response.status(207).entity(new MultiStatus(response)).build();
     }
@@ -267,8 +253,7 @@ public class ExistingResource extends AbstractResource {
             } else {
                 token = backend.getCheckoutUser(doc.getRef());
                 prop = new Prop(getLockDiscovery(doc, uriInfo));
-                return Response.ok().entity(prop).header("Lock-Token",
-                        "urn:uuid:" + token).build();
+                return Response.ok().entity(prop).header("Lock-Token", "urn:uuid:" + token).build();
             }
         }
 
@@ -282,8 +267,7 @@ public class ExistingResource extends AbstractResource {
         prop = new Prop(getLockDiscovery(doc, uriInfo));
 
         backend.saveChanges();
-        return Response.ok().entity(prop).header("Lock-Token",
-                "urn:uuid:" + token).build();
+        return Response.ok().entity(prop).header("Lock-Token", "urn:uuid:" + token).build();
     }
 
     @UNLOCK
@@ -302,22 +286,19 @@ public class ExistingResource extends AbstractResource {
         }
     }
 
-    protected LockDiscovery getLockDiscovery(DocumentModel doc, UriInfo uriInfo)
-            throws ClientException {
+    protected LockDiscovery getLockDiscovery(DocumentModel doc, UriInfo uriInfo) throws ClientException {
         LockDiscovery lockDiscovery = null;
         if (doc.isLocked()) {
             String token = backend.getCheckoutUser(doc.getRef());
-            lockDiscovery = new LockDiscovery(new ActiveLock(
-                    LockScope.EXCLUSIVE, LockType.WRITE, Depth.ZERO,
-                    new Owner(token), new TimeOut(10000L), new LockToken(
-                            new HRef("urn:uuid:" + token)), new LockRoot(
-                                    new HRef(uriInfo.getRequestUri()))));
+            lockDiscovery = new LockDiscovery(new ActiveLock(LockScope.EXCLUSIVE, LockType.WRITE, Depth.ZERO,
+                    new Owner(token), new TimeOut(10000L), new LockToken(new HRef("urn:uuid:" + token)), new LockRoot(
+                            new HRef(uriInfo.getRequestUri()))));
         }
         return lockDiscovery;
     }
 
-    protected PropStatBuilderExt getPropStatBuilderExt(DocumentModel doc, UriInfo uriInfo)
-            throws ClientException, URIException {
+    protected PropStatBuilderExt getPropStatBuilderExt(DocumentModel doc, UriInfo uriInfo) throws ClientException,
+            URIException {
         Date lastModified = getTimePropertyWrapper(doc, "dc:modified");
         Date creationDate = getTimePropertyWrapper(doc, "dc:created");
         String displayName = URIUtil.encodePath(backend.getDisplayName(doc));
@@ -340,7 +321,7 @@ public class ExistingResource extends AbstractResource {
                     log.error("Unable to get blob Size", e);
                 }
             }
-            if(StringUtils.isEmpty(mimeType) || "???".equals(mimeType) ){
+            if (StringUtils.isEmpty(mimeType) || "???".equals(mimeType)) {
                 mimeType = "application/octet-stream";
             }
             props.isResource(size, mimeType);
@@ -354,8 +335,7 @@ public class ExistingResource extends AbstractResource {
             property = doc.getPropertyValue(name);
         } catch (ClientException e) {
             property = null;
-            log.debug("Can't get property " + name + " from document "
-                    + doc.getId());
+            log.debug("Can't get property " + name + " from document " + doc.getId());
         }
 
         if (property != null) {

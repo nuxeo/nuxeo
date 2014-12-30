@@ -93,9 +93,9 @@ public class WSSVirtualBackendAdapter extends WSSBackendAdapter {
         return getBackend(location).getSite(location);
     }
 
-    protected WSSBackend getBackend(String location){
+    protected WSSBackend getBackend(String location) {
         Backend backend = this.backend.getBackend(cleanLocation(location));
-        if(backend == null){
+        if (backend == null) {
             return new WSSFakeBackend();
         }
         return new WSSBackendAdapter(backend, virtualRoot);

@@ -25,8 +25,8 @@ public class SearchVirtualBackend extends AbstractVirtualBackend {
 
     private String query;
 
-    public SearchVirtualBackend(String name, String rootUrl, String query,
-            CoreSession session, RealBackendFactory realBackendFactory) {
+    public SearchVirtualBackend(String name, String rootUrl, String query, CoreSession session,
+            RealBackendFactory realBackendFactory) {
         super(name, rootUrl, session, realBackendFactory);
         this.query = query;
     }

@@ -55,8 +55,7 @@ public class DummyWSSBackend extends AbstractWSSBackend implements WSSBackend {
         // NOP
     }
 
-    public WSSListItem moveItem(String oldLocation, String newLocation)
-            throws WSSException {
+    public WSSListItem moveItem(String oldLocation, String newLocation) throws WSSException {
         return null;
     }
 
@@ -67,8 +66,7 @@ public class DummyWSSBackend extends AbstractWSSBackend implements WSSBackend {
         return null;
     }
 
-    public WSSListItem createFileItem(String location, String name)
-            throws WSSException {
+    public WSSListItem createFileItem(String location, String name) throws WSSException {
         return null;
     }
 
@@ -88,22 +86,22 @@ public class DummyWSSBackend extends AbstractWSSBackend implements WSSBackend {
         metadata.setUsers(users);
 
         int idx = location.lastIndexOf("/");
-        String parentPath = location.substring(0,idx);
-        List<WSSListItem> documents  = listLeafItems(parentPath);
+        String parentPath = location.substring(0, idx);
+        List<WSSListItem> documents = listLeafItems(parentPath);
         metadata.setDocuments(documents);
 
         Date date = new Date(System.currentTimeMillis());
 
         List<Link> links = new ArrayList<Link>();
-        links.add(new LinkImpl("1","titi",date,date,"", "link comment1", "http://www.google.com"));
-        links.add(new LinkImpl("2","tata",date,date,"", "link comment2", "http://www.nuxeo.com"));
+        links.add(new LinkImpl("1", "titi", date, date, "", "link comment1", "http://www.google.com"));
+        links.add(new LinkImpl("2", "tata", date, date, "", "link comment2", "http://www.nuxeo.com"));
         metadata.setLinks(links);
 
         List<Task> tasks = new ArrayList<Task>();
-        TaskImpl task1 =new TaskImpl("1","titi",date,date,"");
+        TaskImpl task1 = new TaskImpl("1", "titi", date, date, "");
         task1.setTaskData("tata", "My Task1", "Hello", date, "high", "In Progress");
         tasks.add(task1);
-        TaskImpl task2 =new TaskImpl("2","toto",date,date,"");
+        TaskImpl task2 = new TaskImpl("2", "toto", date, date, "");
         task2.setTaskData("titi", "My Task2", "Hello", date, "medium", "In Progress");
         tasks.add(task2);
         metadata.setTasks(tasks);
@@ -112,7 +110,7 @@ public class DummyWSSBackend extends AbstractWSSBackend implements WSSBackend {
     }
 
     public Site getSite(String location) {
-        SiteImpl site  = new SiteImpl("MySite");
+        SiteImpl site = new SiteImpl("MySite");
         site.setAccessUrl("");
         return site;
     }

@@ -36,9 +36,9 @@ public class TestRequestParsing {
     public void testGETParsing() throws Exception {
 
         FakeRequest request = FakeRequestBuilder.buildFromResource("SimpleGETRequest.dump");
-        assertEquals("GET",request.getMethod());
-        assertEquals(3,request.getParameterMap().size());
-        assertEquals("Method_name",request.getParameter("Cmd"));
+        assertEquals("GET", request.getMethod());
+        assertEquals(3, request.getParameterMap().size());
+        assertEquals("Method_name", request.getParameter("Cmd"));
 
         FPRPCRequest fpRequest = new FPRPCRequest(request, null);
 
@@ -47,19 +47,19 @@ public class TestRequestParsing {
         FPRPCCall call = fpRequest.getCalls().get(0);
         assertNotNull(call);
 
-        assertEquals("Method_name",call.getMethodName());
+        assertEquals("Method_name", call.getMethodName());
         assertEquals(2, call.getParameters().size());
-        assertEquals("Value1",call.getParameters().get("Parameter1"));
-        assertEquals("Value2",call.getParameters().get("Parameter2"));
+        assertEquals("Value1", call.getParameters().get("Parameter1"));
+        assertEquals("Value2", call.getParameters().get("Parameter2"));
     }
 
     @Test
     public void testPOSTParsing() throws Exception {
 
         FakeRequest request = FakeRequestBuilder.buildFromResource("SimplePOSTRequest.dump");
-        assertEquals("POST",request.getMethod());
-        assertEquals(15,request.getParameterMap().size());
-        assertEquals("list documents",request.getParameter("method"));
+        assertEquals("POST", request.getMethod());
+        assertEquals(15, request.getParameterMap().size());
+        assertEquals("list documents", request.getParameter("method"));
 
         FPRPCRequest fpRequest = new FPRPCRequest(request, null);
 
@@ -68,10 +68,10 @@ public class TestRequestParsing {
         FPRPCCall call = fpRequest.getCalls().get(0);
         assertNotNull(call);
 
-        assertEquals("list documents",call.getMethodName());
+        assertEquals("list documents", call.getMethodName());
         assertEquals(14, call.getParameters().size());
-        assertEquals("false",call.getParameters().get("listRecurse"));
-        assertEquals("true",call.getParameters().get("listIncludeParent"));
+        assertEquals("false", call.getParameters().get("listRecurse"));
+        assertEquals("true", call.getParameters().get("listIncludeParent"));
 
     }
 
@@ -79,9 +79,9 @@ public class TestRequestParsing {
     public void testCAMLParsing() throws Exception {
 
         FakeRequest request = FakeRequestBuilder.buildFromResource("SimpleCAMLRequest.dump");
-        assertEquals("POST",request.getMethod());
-        assertEquals(1,request.getParameterMap().size());
-        assertEquals("DisplayPost",request.getParameter("Cmd"));
+        assertEquals("POST", request.getMethod());
+        assertEquals(1, request.getParameterMap().size());
+        assertEquals("DisplayPost", request.getParameter("Cmd"));
 
         FPRPCRequest fpRequest = new FPRPCRequest(request, null);
 
@@ -90,16 +90,15 @@ public class TestRequestParsing {
 
         FPRPCCall call = fpRequest.getCalls().get(0);
         assertNotNull(call);
-        assertEquals("NewList",call.getMethodName());
+        assertEquals("NewList", call.getMethodName());
         assertEquals(2, call.getParameters().size());
-        assertEquals("Meeting Topics",call.getParameters().get("Title"));
+        assertEquals("Meeting Topics", call.getParameters().get("Title"));
 
         call = fpRequest.getCalls().get(1);
         assertNotNull(call);
-        assertEquals("NewList",call.getMethodName());
+        assertEquals("NewList", call.getMethodName());
         assertEquals(2, call.getParameters().size());
-        assertEquals("Volunteers",call.getParameters().get("Title"));
-
+        assertEquals("Volunteers", call.getParameters().get("Title"));
 
     }
 
@@ -124,7 +123,7 @@ public class TestRequestParsing {
     public void testVermeerEncodingParsing() throws Exception {
 
         FakeRequest request = FakeRequestBuilder.buildFromResource("VermeerEncodedPost.dump");
-        assertEquals("POST",request.getMethod());
+        assertEquals("POST", request.getMethod());
 
         FPRPCRequest fpRequest = new FPRPCRequest(request, null);
 
@@ -133,7 +132,7 @@ public class TestRequestParsing {
 
         FPRPCCall call = fpRequest.getCalls().get(0);
         assertNotNull(call);
-        assertEquals("put document",call.getMethodName());
+        assertEquals("put document", call.getMethodName());
 
         Map<String, String> params = call.getParameters();
         assertNotNull(params);
@@ -148,13 +147,12 @@ public class TestRequestParsing {
 
         byte[] buffer = new byte[255];
         StringBuffer sb = new StringBuffer();
-        int i ;
-        while ((i = is.read(buffer))>0) {
-            sb.append(new String(buffer,0,i));
+        int i;
+        while ((i = is.read(buffer)) > 0) {
+            sb.append(new String(buffer, 0, i));
         }
 
         assertEquals("AAABBBCCCDDD", sb.toString().replace("\n", ""));
     }
-
 
 }

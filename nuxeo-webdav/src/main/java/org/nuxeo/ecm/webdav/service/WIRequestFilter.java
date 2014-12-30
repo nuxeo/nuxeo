@@ -32,10 +32,8 @@ import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingHttpS
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Windows Integration Request filter, bound to /nuxeo.
- *
- * Allows Windows user agents to bind to the root as the expect (not
- * /nuxeo/site/dav) and still work.
+ * Windows Integration Request filter, bound to /nuxeo. Allows Windows user agents to bind to the root as the expect
+ * (not /nuxeo/site/dav) and still work.
  */
 public class WIRequestFilter implements Filter {
 
@@ -50,8 +48,8 @@ public class WIRequestFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
@@ -96,8 +94,7 @@ public class WIRequestFilter implements Filter {
 
     private boolean isWIRequest(HttpServletRequest request) {
         String ua = request.getHeader("User-Agent");
-        return StringUtils.isNotEmpty(ua)
-                && (ua.contains(WEBDAV_USERAGENT) || ua.contains(MSOFFICE_USERAGENT));
+        return StringUtils.isNotEmpty(ua) && (ua.contains(WEBDAV_USERAGENT) || ua.contains(MSOFFICE_USERAGENT));
     }
 
 }

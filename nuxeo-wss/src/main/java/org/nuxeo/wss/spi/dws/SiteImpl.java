@@ -32,9 +32,9 @@ public class SiteImpl implements Site {
     protected WSSListItem item;
 
     public SiteImpl(String name) {
-        this.name=name;
-        userManagementUrl="";
-        accessUrl="";
+        this.name = name;
+        userManagementUrl = "";
+        accessUrl = "";
     }
 
     public String getName() {
@@ -61,7 +61,6 @@ public class SiteImpl implements Site {
         this.accessUrl = accessUrl;
     }
 
-
     public String getListUUID() {
         return listUUID;
     }
@@ -75,6 +74,6 @@ public class SiteImpl implements Site {
     }
 
     public void setItem(WSSListItem item) {
-        this.item=item;
+        this.item = item;
     }
 }

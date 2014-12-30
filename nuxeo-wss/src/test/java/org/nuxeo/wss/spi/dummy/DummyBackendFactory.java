@@ -27,7 +27,7 @@ public class DummyBackendFactory implements WSSBackendFactory {
 
     public synchronized WSSBackend getBackend(WSSRequest request) {
 
-        if (backend==null) {
+        if (backend == null) {
             backend = new DummyWSSBackend();
         }
         return backend;

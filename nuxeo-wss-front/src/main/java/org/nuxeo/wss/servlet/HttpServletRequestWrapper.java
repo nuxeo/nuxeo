@@ -28,8 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
-public class HttpServletRequestWrapper extends
-        javax.servlet.http.HttpServletRequestWrapper {
+public class HttpServletRequestWrapper extends javax.servlet.http.HttpServletRequestWrapper {
 
     protected final Map<String, String> headers = new HashMap<>();
 
