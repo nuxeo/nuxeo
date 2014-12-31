@@ -66,6 +66,7 @@ import org.nuxeo.ecm.directory.OperationNotAllowedException;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.directory.sql.filter.SQLComplexFilter;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * This class represents a session against an SQLDirectory.
@@ -154,9 +155,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         try {
             if (sqlConnection == null || sqlConnection.isClosed()) {
                 sqlConnection = directory.getConnection();
-                if (!managedSQLSession) {
-                    sqlConnection.setAutoCommit(true);
-                }
+                sqlConnection.setAutoCommit(!TransactionHelper.isTransactionActive());
             }
         } catch (SQLException e) {
             throw new DirectoryException("Cannot connect to SQL directory '"
