@@ -30,15 +30,15 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DownloadablePackageOptions {
 
-    protected List<DownloadablePackageOption> pkgOptions = new ArrayList<DownloadablePackageOption>();
+    protected List<DownloadablePackageOption> pkgOptions = new ArrayList<>();
 
-    protected List<DownloadPackage> pkg4Install = new ArrayList<DownloadPackage>();
+    protected List<DownloadPackage> pkg4Install = new ArrayList<>();
 
-    protected List<DownloadPackage> commonPackages = new ArrayList<DownloadPackage>();
+    protected List<DownloadPackage> commonPackages = new ArrayList<>();
 
-    protected List<DownloadPackage> allPackages = new ArrayList<DownloadPackage>();
+    protected List<DownloadPackage> allPackages = new ArrayList<>();
 
-    protected List<Preset> presets = new ArrayList<Preset>();
+    protected List<Preset> presets = new ArrayList<>();
 
     protected static final Log log = LogFactory.getLog(DownloadablePackageOptions.class);
 
@@ -63,7 +63,7 @@ public class DownloadablePackageOptions {
     }
 
     public void resetSelection() {
-        pkg4Install = new ArrayList<DownloadPackage>();
+        pkg4Install = new ArrayList<>();
         for (DownloadablePackageOption option : pkgOptions) {
             resetSelection(option);
         }
@@ -80,14 +80,14 @@ public class DownloadablePackageOptions {
         for (String id : ids) {
             DownloadablePackageOption option = findById(id, pkgOptions);
             if (option == null) {
-                List<String> newIds = new ArrayList<String>();
+                List<String> newIds = new ArrayList<>();
                 newIds.addAll(ids);
                 newIds.remove(id);
                 return checkSelectionValid(newIds);
             }
             // force selection of parents
             if (option.getParent() != null && !ids.contains(option.getParent().getId())) {
-                List<String> newIds = new ArrayList<String>();
+                List<String> newIds = new ArrayList<>();
                 newIds.addAll(ids);
                 newIds.add(0, option.getParent().getId());
                 return checkSelectionValid(newIds);
@@ -161,7 +161,7 @@ public class DownloadablePackageOptions {
     }
 
     public List<DownloadPackage> getPkg4Install() {
-        List<DownloadPackage> pkgs = new ArrayList<DownloadPackage>(commonPackages);
+        List<DownloadPackage> pkgs = new ArrayList<>(commonPackages);
         pkgs.addAll(pkg4Install);
         return pkgs;
     }

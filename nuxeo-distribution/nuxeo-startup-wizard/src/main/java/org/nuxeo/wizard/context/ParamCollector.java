@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -49,9 +49,9 @@ public class ParamCollector {
         return configurationGenerator;
     }
 
-    protected Map<String, String> configurationParams = new HashMap<String, String>();
+    protected Map<String, String> configurationParams = new HashMap<>();
 
-    protected Map<String, String> connectParams = new HashMap<String, String>();
+    protected Map<String, String> connectParams = new HashMap<>();
 
     public ParamCollector() {
         configurationGenerator = new ConfigurationGenerator();
@@ -101,7 +101,6 @@ public class ParamCollector {
     }
 
     public void collectConfigurationParams(HttpServletRequest req) {
-        @SuppressWarnings("unchecked")
         Enumeration<String> names = req.getParameterNames();
         while (names.hasMoreElements()) {
             String name = names.nextElement();
@@ -119,7 +118,7 @@ public class ParamCollector {
      * @param templateName database template to use
      */
     public void changeDBTemplate(String templateName) {
-        List<String> keys = new ArrayList<String>();
+        List<String> keys = new ArrayList<>();
         configurationGenerator.changeDBTemplate(templateName);
         for (String key : configurationParams.keySet()) {
             if (key.startsWith("nuxeo.db")) {

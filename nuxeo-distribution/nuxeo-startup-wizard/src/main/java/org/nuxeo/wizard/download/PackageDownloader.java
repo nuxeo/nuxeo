@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2017 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -87,7 +87,7 @@ public class PackageDownloader {
 
     public static final String DEFAULT_BASE_URL = "http://cdn.nuxeo.com/"; // nuxeo-XXX/mp
 
-    protected CopyOnWriteArrayList<PendingDownload> pendingDownloads = new CopyOnWriteArrayList<PendingDownload>();
+    protected CopyOnWriteArrayList<PendingDownload> pendingDownloads = new CopyOnWriteArrayList<>();
 
     protected static PackageDownloader instance;
 
@@ -208,7 +208,7 @@ public class PackageDownloader {
     }
 
     protected String getSelectionDigest(List<String> ids) {
-        ArrayList<String> lst = new ArrayList<String>(ids);
+        ArrayList<String> lst = new ArrayList<>(ids);
         Collections.sort(lst);
         StringBuffer sb = new StringBuffer();
         for (String item : lst) {
@@ -380,11 +380,11 @@ public class PackageDownloader {
     }
 
     public void scheduleDownloadedPackagesForInstallation(String installationFilePath) throws IOException {
-        List<String> fileEntries = new ArrayList<String>();
+        List<String> fileEntries = new ArrayList<>();
         fileEntries.add("init");
 
         List<DownloadPackage> pkgs = downloadOptions.getPkg4Install();
-        List<String> pkgInstallIds = new ArrayList<String>();
+        List<String> pkgInstallIds = new ArrayList<>();
         for (DownloadPackage pkg : pkgs) {
             if (pkg.isVirtual()) {
                 log.debug("No install for virtual package: " + pkg.getId());

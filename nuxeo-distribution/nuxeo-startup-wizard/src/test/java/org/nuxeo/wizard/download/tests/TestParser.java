@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -63,7 +63,7 @@ public class TestParser {
         assertNotNull(pkgs.get(1).getChildrenPackages().get(0).getPackage().getBaseUrl());
 
         // test selection DM + DAM + Collab
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
         ids.add(pkgs.get(1).getId()); // DM
         ids.add(pkgs.get(1).getChildrenPackages().get(0).getId()); // DAM
         ids.add(pkgs.get(1).getChildrenPackages().get(1).getId()); // Collab
@@ -74,7 +74,7 @@ public class TestParser {
         assertEquals(4, pkg4Download.size()); // CAP + DM + DAM + COLLAB
 
         // test selection CAP + DAM
-        ids = new ArrayList<String>();
+        ids = new ArrayList<>();
         ids.add(pkgs.get(0).getId()); // CAP
         ids.add(pkgs.get(0).getChildrenPackages().get(0).getId()); // DAM
 
@@ -104,7 +104,7 @@ public class TestParser {
         // System.out.println(pkgs.asJson());
 
         // Check automatic selection of package dependencies
-        List<String> selectedIds = new ArrayList<String>();
+        List<String> selectedIds = new ArrayList<>();
         selectedIds.add("nuxeo-social-collaboration");
 
         pkgs.select(selectedIds);

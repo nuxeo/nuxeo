@@ -52,7 +52,7 @@ public class DownloadDescriptorParser {
 
         DownloadablePackageOptions options = new DownloadablePackageOptions();
 
-        List<DownloadPackage> pkgs = new ArrayList<DownloadPackage>();
+        List<DownloadPackage> pkgs = new ArrayList<>();
         Document document = parse(in);
         if (document != null) {
 

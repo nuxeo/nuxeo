@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,7 +35,7 @@ public class DownloadablePackageOption {
 
     protected String label;
 
-    protected List<DownloadablePackageOption> childrenPackages = new ArrayList<DownloadablePackageOption>();
+    protected List<DownloadablePackageOption> childrenPackages = new ArrayList<>();
 
     protected final String id;
 
@@ -93,7 +93,7 @@ public class DownloadablePackageOption {
 
     public List<DownloadablePackageOption> getSiblingPackages() {
 
-        List<DownloadablePackageOption> siblings = new ArrayList<DownloadablePackageOption>();
+        List<DownloadablePackageOption> siblings = new ArrayList<>();
         if (parent != null) {
             for (DownloadablePackageOption sibling : parent.getChildrenPackages()) {
                 if (sibling.getId() != getId()) {
