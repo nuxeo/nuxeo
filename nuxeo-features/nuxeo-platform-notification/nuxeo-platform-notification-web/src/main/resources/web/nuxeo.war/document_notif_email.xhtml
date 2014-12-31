@@ -101,17 +101,27 @@
               value="#{principalListManager.selectedUsers}"
               rendered="#{!principalListManager.selectedUserListEmpty}">
           <h:column>
-          <f:facet name="header">
-            <h:outputText value="#{messages['label.username']}" />
-          </f:facet>
-          <h:outputText value="#{user}" />
-        </h:column>
-        <h:column>
-          <f:facet name="header">
-            <h:outputText value="#{messages['label.action']}" />
-          </f:facet>
-          <a4j:commandLink value="#{messages['label.security.delUsername']}" action="#{principalListManager.removeFromSelectedUsers(user)}" render="selectedUsersAndGroups"/>
-        </h:column>
+            <f:facet name="header">
+              <h:outputText value="#{messages['label.content.header.type']}" />
+            </f:facet>
+            <h:graphicImage value="icons/#{nxu:test(principalListManager.getPrincipalType(user)=='USER_TYPE', 'user', 'group')}.png"/>
+          </h:column>
+          <h:column>
+            <f:facet name="header">
+              <h:outputText value="#{messages['label.username']}" />
+            </f:facet>
+            <h:outputText value="#{user}" />
+            (
+            <h:outputText value="#{nxu:userFullName(user)}" rendered="#{principalListManager.getPrincipalType(user) == 'USER_TYPE'}"/>
+            <h:outputText value="#{nxu:groupFullName(user)}" rendered="#{principalListManager.getPrincipalType(user)== 'GROUP_TYPE'}"/>
+            )
+          </h:column>
+          <h:column>
+            <f:facet name="header">
+              <h:outputText value="#{messages['label.action']}" />
+            </f:facet>
+            <a4j:commandLink value="#{messages['label.security.delUsername']}" action="#{principalListManager.removeFromSelectedUsers(user)}" render="selectedUsersAndGroups"/>
+          </h:column>
         </h:dataTable>
         <br/>
         <h:outputText value="#{messages['label.security.selectedUserListEmpty']}"
