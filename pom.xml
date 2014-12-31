@@ -48,6 +48,7 @@
     <nuxeo.cmf.version>7.1-SNAPSHOT</nuxeo.cmf.version>
     <nuxeo.poll.version>7.1-SNAPSHOT</nuxeo.poll.version>
     <nuxeo.quota.version>7.1-SNAPSHOT</nuxeo.quota.version>
+    <nuxeo.binary.metadata.version>7.1-SNAPSHOT</nuxeo.binary.metadata.version>
     <nuxeo.web.mobile.version>7.1-SNAPSHOT</nuxeo.web.mobile.version>
     <nuxeo.indexing.gateway.version>7.1-SNAPSHOT</nuxeo.indexing.gateway.version>
     <nuxeo.exalead.connector.version>7.1-SNAPSHOT</nuxeo.exalead.connector.version>
@@ -794,6 +795,13 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-quota-web</artifactId>
         <version>${nuxeo.quota.version}</version>
+      </dependency>
+
+      <!-- Binary Metadata -->
+      <dependency>
+        <groupId>org.nuxeo.binary.metadata</groupId>
+        <artifactId>nuxeo-binary-metadata</artifactId>
+        <version>${nuxeo.binary.metadata.version}</version>
       </dependency>
 
       <!-- Web Mobile -->
