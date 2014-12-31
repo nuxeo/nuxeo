@@ -70,8 +70,8 @@ public class TestPictureConversions {
 
     private static final String PICTURE_CONVERSIONS_FILTERS_COMPONENT_LOCATION = "OSGI-INF/imaging-picture-conversions-filters.xml";
 
-    protected static final List<String> DEFAULT_PICTURE_CONVERSIONS = Arrays.asList("Small", "Medium", "Original",
-            "Thumbnail", "OriginalJpeg");
+    protected static final List<String> DEFAULT_PICTURE_CONVERSIONS = Arrays.asList("Thumbnail", "Small", "Medium",
+            "Original", "OriginalJpeg");
 
     @Inject
     protected CoreSession session;
@@ -102,7 +102,7 @@ public class TestPictureConversions {
 
     @Test
     public void iHaveDefaultPictureConversionsOrder() {
-        String[] defaultPictureConversionsOrder = new String[] { "Medium", "Original", "Small", "Thumbnail",
+        String[] defaultPictureConversionsOrder = new String[] { "Thumbnail", "Small", "Medium", "Original",
                 "OriginalJpeg" };
         List<PictureConversion> pictureConversions = imagingService.getPictureConversions();
 
@@ -115,8 +115,8 @@ public class TestPictureConversions {
     public void iHavePictureConversionsOrder() throws Exception {
         deployContrib(PICTURE_CONVERSIONS_OVERRIDE_MORE_COMPONENT_LOCATION);
 
-        String[] expectedPictureConversionsOrder = new String[] { "ThumbnailMini", "Tiny", "Medium", "OriginalJpeg",
-                "Thumbnail", "Wide", "Small", "Original", "ThumbnailWide" };
+        String[] expectedPictureConversionsOrder = new String[] { "ThumbnailMini", "Tiny", "OriginalJpeg", "Thumbnail",
+                "Wide", "Original", "ThumbnailWide", "Small", "Medium" };
         List<PictureConversion> pictureConversions = imagingService.getPictureConversions();
 
         assertEquals(expectedPictureConversionsOrder.length, pictureConversions.size());
