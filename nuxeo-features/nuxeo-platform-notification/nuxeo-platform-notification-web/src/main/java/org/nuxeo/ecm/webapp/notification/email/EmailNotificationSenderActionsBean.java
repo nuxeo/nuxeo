@@ -57,8 +57,8 @@ import org.nuxeo.runtime.api.Framework;
 
 @Name("emailNotifSenderAction")
 @Scope(EVENT)
-public class EmailNotificationSenderActionsBean extends InputController
-        implements EmailNotificationSenderActions, Serializable {
+public class EmailNotificationSenderActionsBean extends InputController implements EmailNotificationSenderActions,
+        Serializable {
 
     private static final Log log = LogFactory.getLog(EmailNotificationSenderActionsBean.class);
 
@@ -92,22 +92,20 @@ public class EmailNotificationSenderActionsBean extends InputController
     @Out(required = false)
     private List<NuxeoPrincipal> toEmail;
 
+    @Override
     public String send() {
         if (mailSubject == null || mailSubject.trim().length() == 0) {
             facesMessages.add(StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.email.subject.empty"));
+                    resourcesAccessor.getMessages().get("label.email.subject.empty"));
             return null;
         }
         /*
-         * if (mailContent == null || mailContent.trim().length() == 0){
-         * facesMessages.add(FacesMessage.SEVERITY_ERROR, resourcesAccessor
-         * .getMessages().get("label.email.content.empty")); return; }
+         * if (mailContent == null || mailContent.trim().length() == 0){ facesMessages.add(FacesMessage.SEVERITY_ERROR,
+         * resourcesAccessor .getMessages().get("label.email.content.empty")); return; }
          */
         if (principalListManager.getSelectedUserListEmpty()) {
             facesMessages.add(StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.email.nousers.selected"));
+                    resourcesAccessor.getMessages().get("label.email.nousers.selected"));
             return null;
         }
         for (String user : principalListManager.getSelectedUsers()) {
@@ -115,13 +113,11 @@ public class EmailNotificationSenderActionsBean extends InputController
                 sendNotificationEvent(user, mailSubject, mailContent);
             } catch (ClientException e) {
                 facesMessages.add(StatusMessage.Severity.ERROR,
-                        resourcesAccessor.getMessages().get(
-                                "label.email.send.failed"));
+                        resourcesAccessor.getMessages().get("label.email.send.failed"));
                 return null;
             }
         }
-        facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get("label.email.send.ok"));
+        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("label.email.send.ok"));
 
         // redirect to currentDocument default view
         DocumentModel cDoc = navigationContext.getCurrentDocument();
@@ -138,15 +134,14 @@ public class EmailNotificationSenderActionsBean extends InputController
     }
 
     /**
-     * Sends an event that triggers a notification that sends emails to all
-     * selected entities.
+     * Sends an event that triggers a notification that sends emails to all selected entities.
      *
      * @param user
      * @param theMailSubject
      * @param theMailContent
      */
-    private void sendNotificationEvent(String user, String theMailSubject,
-            String theMailContent) throws ClientException {
+    private void sendNotificationEvent(String user, String theMailSubject, String theMailContent)
+            throws ClientException {
 
         Map<String, Serializable> options = new HashMap<String, Serializable>();
 
@@ -154,17 +149,15 @@ public class EmailNotificationSenderActionsBean extends InputController
         String prefix = principalListManager.getPrincipalType(user) == PrincipalListManager.USER_TYPE ? "user:"
                 : "group:";
         String recipient = prefix + user;
-        options.put(NotificationConstants.RECIPIENTS_KEY,
-                new String[] { recipient });
+        options.put(NotificationConstants.RECIPIENTS_KEY, new String[] { recipient });
         options.put("mailSubject", theMailSubject);
         options.put("mailContent", theMailContent);
-        options.put("category",
-                DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY);
+        options.put("category", DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY);
 
         NuxeoPrincipal currentUser = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
 
-        DocumentEventContext ctx = new DocumentEventContext(documentManager,
-                currentUser, navigationContext.getCurrentDocument());
+        DocumentEventContext ctx = new DocumentEventContext(documentManager, currentUser,
+                navigationContext.getCurrentDocument());
         ctx.setProperties(options);
         Event event = ctx.newEvent(DocumentEventTypes.EMAIL_DOCUMENT_SEND);
 
@@ -183,6 +176,7 @@ public class EmailNotificationSenderActionsBean extends InputController
     /**
      * @return the mailContent.
      */
+    @Override
     public String getMailContent() {
         return mailContent;
     }
@@ -190,6 +184,7 @@ public class EmailNotificationSenderActionsBean extends InputController
     /**
      * @param mailContent the mailContent to set.
      */
+    @Override
     public void setMailContent(String mailContent) {
         this.mailContent = mailContent;
     }
@@ -197,6 +192,7 @@ public class EmailNotificationSenderActionsBean extends InputController
     /**
      * @return the mailSubject.
      */
+    @Override
     public String getMailSubject() {
         return mailSubject;
     }
@@ -204,6 +200,7 @@ public class EmailNotificationSenderActionsBean extends InputController
     /**
      * @param mailSubject the mailSubject to set.
      */
+    @Override
     public void setMailSubject(String mailSubject) {
         this.mailSubject = mailSubject;
     }
@@ -218,8 +215,7 @@ public class EmailNotificationSenderActionsBean extends InputController
     /**
      * @param principalListManager the principalListManager to set.
      */
-    public void setPrincipalListManager(
-            PrincipalListManager principalListManager) {
+    public void setPrincipalListManager(PrincipalListManager principalListManager) {
         this.principalListManager = principalListManager;
     }
 

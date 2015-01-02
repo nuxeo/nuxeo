@@ -54,8 +54,7 @@ import org.nuxeo.ecm.webapp.base.InputController;
  */
 @Name("groupsSubscriptionsAction")
 @Scope(ScopeType.PAGE)
-public class GroupsSubscriptionsAction extends InputController implements
-        Serializable {
+public class GroupsSubscriptionsAction extends InputController implements Serializable {
 
     private static final long serialVersionUID = -2440187703248677446L;
 
@@ -92,8 +91,7 @@ public class GroupsSubscriptionsAction extends InputController implements
         for (Notification notification : notifs) {
             String notifName = notification.getName();
             String notifLabel = notification.getLabel();
-            notifsResult.add(new SelectItem(notifName,
-                    resourcesAccessor.getMessages().get(notifLabel)));
+            notifsResult.add(new SelectItem(notifName, resourcesAccessor.getMessages().get(notifLabel)));
         }
         return notifsResult;
     }
@@ -105,10 +103,8 @@ public class GroupsSubscriptionsAction extends InputController implements
         List<String> selectedNotifications = getSelectedNotifications();
         List<String> subscriptions = getSubscriptionsForCurrentUser();
 
-        List<String> newSubscriptions = getDisjunctElements(
-                selectedNotifications, subscriptions);
-        List<String> removedSubscriptions = getDisjunctElements(subscriptions,
-                selectedNotifications);
+        List<String> newSubscriptions = getDisjunctElements(selectedNotifications, subscriptions);
+        List<String> removedSubscriptions = getDisjunctElements(subscriptions, selectedNotifications);
 
         NuxeoPrincipal principal = (NuxeoPrincipal) currentUser;
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
@@ -116,27 +112,23 @@ public class GroupsSubscriptionsAction extends InputController implements
         // removing the unselected subscriptions
         if (!removedSubscriptions.isEmpty()) {
             for (String subscription : removedSubscriptions) {
-                notificationManager.removeSubscription("user:"
-                        + principal.getName(), subscription, currentDoc.getId());
+                notificationManager.removeSubscription("user:" + principal.getName(), subscription, currentDoc.getId());
             }
         }
 
         // adding the newly selected subscriptions
         if (!newSubscriptions.isEmpty()) {
             for (String subscription : newSubscriptions) {
-                notificationManager.addSubscription(
-                        NotificationConstants.USER_PREFIX + principal.getName(),
+                notificationManager.addSubscription(NotificationConstants.USER_PREFIX + principal.getName(),
                         subscription, currentDoc, false, principal, "");
             }
         }
 
         facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get(
-                        "label.notifications.registered"));
+                resourcesAccessor.getMessages().get("label.notifications.registered"));
     }
 
-    private static List<String> getDisjunctElements(List<String> array1,
-            List<String> array2) {
+    private static List<String> getDisjunctElements(List<String> array1, List<String> array2) {
         List<String> result = new ArrayList<String>();
         for (String elem1 : array1) {
 
@@ -160,14 +152,13 @@ public class GroupsSubscriptionsAction extends InputController implements
     /**
      * Returns the notifications that the user already subscribed for.
      */
-    private List<String> getSubscriptionsForCurrentUser()
-            throws ClientException {
+    private List<String> getSubscriptionsForCurrentUser() throws ClientException {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         NuxeoPrincipal principal = (NuxeoPrincipal) currentUser;
         List<String> subscriptions;
         try {
-            subscriptions = notificationManager.getSubscriptionsForUserOnDocument(
-                    "user:" + principal.getName(), currentDoc.getId());
+            subscriptions = notificationManager.getSubscriptionsForUserOnDocument("user:" + principal.getName(),
+                    currentDoc.getId());
         } catch (ClassNotFoundException e) {
             throw new ClientException(e);
         }
@@ -177,26 +168,21 @@ public class GroupsSubscriptionsAction extends InputController implements
     /**
      * Returns the users that subscribed to a notification.
      */
-    public List<String> getSubscribedUsersForNotification(String notification)
-            throws ClientException {
+    public List<String> getSubscribedUsersForNotification(String notification) throws ClientException {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        return notificationManager.getUsersSubscribedToNotificationOnDocument(
-                notification, currentDoc.getId());
+        return notificationManager.getUsersSubscribedToNotificationOnDocument(notification, currentDoc.getId());
     }
 
     /**
-     * Returns a map that contains all users and groups subscribed to
-     * notifications(keys).
+     * Returns a map that contains all users and groups subscribed to notifications(keys).
      */
-    public Map<String, List<String>> getUsersByNotificationsForCurrentDocument()
-            throws ClientException {
+    public Map<String, List<String>> getUsersByNotificationsForCurrentDocument() throws ClientException {
         Map<String, List<String>> result = new HashMap<String, List<String>>();
 
         String superParentType = documentManager.getSuperParentType(navigationContext.getCurrentDocument());
         List<Notification> notifications = notificationManager.getNotificationsForSubscriptions(superParentType);
         for (Notification notification : notifications) {
-            result.put(notification.getLabel(),
-                    getSubscribedUsersForNotification(notification.getName()));
+            result.put(notification.getLabel(), getSubscribedUsersForNotification(notification.getName()));
         }
         return result;
     }
@@ -217,8 +203,7 @@ public class GroupsSubscriptionsAction extends InputController implements
 
         for (String permissionAction : permissionActions) {
             String label = labeler.makeLabel(permissionAction);
-            SelectItem it = new SelectItem(permissionAction,
-                    resourcesAccessor.getMessages().get(label));
+            SelectItem it = new SelectItem(permissionAction, resourcesAccessor.getMessages().get(label));
             jsfModelList.add(it);
         }
 
@@ -244,14 +229,12 @@ public class GroupsSubscriptionsAction extends InputController implements
     }
 
     public boolean getCanAddSubscriptions() throws ClientException {
-        return documentManager.hasPermission(currentDocument.getRef(),
-                "WriteSecurity");
+        return documentManager.hasPermission(currentDocument.getRef(), "WriteSecurity");
     }
 
     public String addSubscriptionsAndUpdate() throws ClientException {
         if (selectedEntries == null || selectedEntries.isEmpty()) {
-            String message = ComponentUtils.translate(
-                    FacesContext.getCurrentInstance(),
+            String message = ComponentUtils.translate(FacesContext.getCurrentInstance(),
                     "error.notifManager.noUserSelected");
             FacesMessages.instance().add(message);
             return null;
@@ -271,24 +254,20 @@ public class GroupsSubscriptionsAction extends InputController implements
         for (String selectedEntry : selectedEntries) {
             if (subscribe) {
                 if (registeredNotifications == null || !registeredNotifications.contains(selectedEntry)) {
-                    notificationManager.addSubscription(selectedEntry,
-                            selectedNotification, currentDoc, true,
+                    notificationManager.addSubscription(selectedEntry, selectedNotification, currentDoc, true,
                             currentPrincipal, notificationName);
                 } else {
                     facesMessages.add(StatusMessage.Severity.WARN,
-                            resourcesAccessor.getMessages().get(
-                                    "label.notifications.alreadyRegistered"), selectedEntry);
+                            resourcesAccessor.getMessages().get("label.notifications.alreadyRegistered"), selectedEntry);
                 }
             } else {
-                notificationManager.removeSubscription(selectedEntry,
-                        selectedNotification, currentDoc.getId());
+                notificationManager.removeSubscription(selectedEntry, selectedNotification, currentDoc.getId());
             }
         }
         // reset
         selectedEntries = null;
         facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get(
-                        "label.notifications.registered"));
+                resourcesAccessor.getMessages().get("label.notifications.registered"));
         return null;
     }
 

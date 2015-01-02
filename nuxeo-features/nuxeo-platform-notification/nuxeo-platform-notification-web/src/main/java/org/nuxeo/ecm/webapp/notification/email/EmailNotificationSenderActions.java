@@ -23,14 +23,17 @@ package org.nuxeo.ecm.webapp.notification.email;
  * Provides email related operations.
  *
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
- *
  */
 public interface EmailNotificationSenderActions {
 
     String send();
+
     String getMailSubject();
+
     void setMailSubject(String mailSubject);
+
     String getMailContent();
+
     void setMailContent(String mailContent);
 
 }
