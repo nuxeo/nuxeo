@@ -57,8 +57,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  */
 @Name("subscriptionAction")
 @Scope(ScopeType.PAGE)
-public class SubscriptionsAction extends InputController implements
-        Serializable {
+public class SubscriptionsAction extends InputController implements Serializable {
 
     private static final long serialVersionUID = -2440187703248677446L;
 
@@ -76,7 +75,7 @@ public class SubscriptionsAction extends InputController implements
     @DataModel("inheritedNotifications")
     private List<Notification> inheritedNotifications;
 
-    @DataModelSelection(value="notificationList")
+    @DataModelSelection(value = "notificationList")
     private SelectableSubscription currentSubscription;
 
     @In(create = true)
@@ -126,32 +125,30 @@ public class SubscriptionsAction extends InputController implements
     public void loadInheritedNotifications() throws ClientException, ClassNotFoundException {
         inheritedNotifications = new ArrayList<Notification>();
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext
-                .getCurrentInstance().getExternalContext().getUserPrincipal();
-        for(String group : principal.getAllGroups()){
-            List<String> notifs = notificationManager.getSubscriptionsForUserOnDocument("group:"+group, currentDoc.getId());
+        NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
+        for (String group : principal.getAllGroups()) {
+            List<String> notifs = notificationManager.getSubscriptionsForUserOnDocument("group:" + group,
+                    currentDoc.getId());
             for (String inheritedNotification : notifs) {
                 Notification notif = notificationManager.getNotificationByName(inheritedNotification);
                 inheritedNotifications.add(notif);
             }
         }
     }
+
     /**
      * Registers the user's choices.
      */
     public void updateSubscriptions() throws ClientException {
 
-        NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext
-                .getCurrentInstance().getExternalContext().getUserPrincipal();
+        NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentSubscription.isSelected()) {
             notificationManager.removeSubscription("user:" + principal.getName(),
-                    currentSubscription.getNotification().getName(),
-                    currentDoc.getId());
+                    currentSubscription.getNotification().getName(), currentDoc.getId());
         } else {
             notificationManager.addSubscription(NotificationConstants.USER_PREFIX + principal.getName(),
-                    currentSubscription.getNotification().getName(),
-                    currentDoc, false, principal, "");
+                    currentSubscription.getNotification().getName(), currentDoc, false, principal, "");
         }
         getNotificationsList();
     }
@@ -163,25 +160,20 @@ public class SubscriptionsAction extends InputController implements
         NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         List<String> userSubscriptions = notificationManager.getSubscriptionsForUserOnDocument(
-                NotificationConstants.USER_PREFIX + principal.getName(),
-                currentDoc.getId());
+                NotificationConstants.USER_PREFIX + principal.getName(), currentDoc.getId());
         if (userSubscriptions.size() == 0) {
-            notificationManager.addSubscriptions(
-                    NotificationConstants.USER_PREFIX + principal.getName(),
-                    currentDoc, false, principal);
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get(CONFIRM_FOLLOW));
+            notificationManager.addSubscriptions(NotificationConstants.USER_PREFIX + principal.getName(), currentDoc,
+                    false, principal);
+            facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get(CONFIRM_FOLLOW));
         } else {
-            notificationManager.removeSubscriptions(
-                    NotificationConstants.USER_PREFIX + principal.getName(),
+            notificationManager.removeSubscriptions(NotificationConstants.USER_PREFIX + principal.getName(),
                     userSubscriptions, currentDoc.getId());
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get(CONFIRM_UNFOLLOW));
+            facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get(CONFIRM_UNFOLLOW));
         }
         getNotificationsList();
     }
 
-    @Observer(value=EventNames.DOCUMENT_SELECTION_CHANGED, create=false)
+    @Observer(value = EventNames.DOCUMENT_SELECTION_CHANGED, create = false)
     @BypassInterceptors
     public void invalidateNotificationsSelection() {
         log.debug("Invalidate archive records.................");
@@ -200,16 +192,14 @@ public class SubscriptionsAction extends InputController implements
     /**
      * Returns the notifications that the user already subscribed for.
      */
-    private List<String> getSubscriptionsForCurrentUser()
-            throws ClientException {
+    private List<String> getSubscriptionsForCurrentUser() throws ClientException {
 
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext
-                .getCurrentInstance().getExternalContext().getUserPrincipal();
+        NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
         List<String> subscriptions;
         try {
-            subscriptions = notificationManager.getSubscriptionsForUserOnDocument("user:"
-                    + principal.getName(), currentDoc.getId());
+            subscriptions = notificationManager.getSubscriptionsForUserOnDocument("user:" + principal.getName(),
+                    currentDoc.getId());
         } catch (ClassNotFoundException e) {
             throw new ClientException(e.getMessage());
         }
@@ -220,8 +210,7 @@ public class SubscriptionsAction extends InputController implements
         return currentSubscription;
     }
 
-    public void setCurrentSubscription(
-            SelectableSubscription currentSubscription) {
+    public void setCurrentSubscription(SelectableSubscription currentSubscription) {
         this.currentSubscription = currentSubscription;
     }
 
@@ -229,8 +218,7 @@ public class SubscriptionsAction extends InputController implements
         return notificationList;
     }
 
-    public void setNotificationList(
-            List<SelectableSubscription> notificationList) {
+    public void setNotificationList(List<SelectableSubscription> notificationList) {
         this.notificationList = notificationList;
     }
 
