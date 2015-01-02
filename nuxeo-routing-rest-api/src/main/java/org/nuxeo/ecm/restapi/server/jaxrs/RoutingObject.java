@@ -18,6 +18,8 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -38,7 +40,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
-import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
@@ -77,12 +78,11 @@ public class RoutingObject extends DefaultObject {
 
     @GET
     @Path("{workflowInstanceId}")
-    public DocumentModel getWorkflowInstance(@PathParam("workflowInstanceId") String workflowInstanceId) {
+    public DocumentRoute getWorkflowInstance(@PathParam("workflowInstanceId") String workflowInstanceId) {
         DocumentModel workflowInstance;
         try {
             workflowInstance = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));
-            workflowInstance.getAdapter(DocumentRoute.class);
-            return workflowInstance;
+            return  workflowInstance.getAdapter(DocumentRoute.class);
         } catch (ClientException e) {
             log.error("Can not get workflow instance with id" + workflowInstanceId);
             throw new ClientException(e);
@@ -137,11 +137,8 @@ public class RoutingObject extends DefaultObject {
     }
 
     @GET
-    public Response getRunningWorkflowInstancesLaunchedByCurrentUser() {
-        final String query = String.format("SELECT * FROM %s WHERE docri:initiator = '%s' AND ecm:currentLifeCycleState = '%s'",
-                DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE, getContext().getPrincipal().getName(),
-                DocumentRouteElement.ElementLifeCycleState.running).replaceAll(" ", "%20");
-        return redirect("/api/v1/query?query=" + query);
+    public List<DocumentRoute> getRunningWorkflowInstancesLaunchedByCurrentUser() {
+        return documentRoutingService.getRunningWorkflowInstancesLaunchedByCurrentUser(getContext().getCoreSession());
     }
 
 }

@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;

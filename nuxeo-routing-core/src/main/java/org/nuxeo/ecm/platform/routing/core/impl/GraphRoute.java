@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 
 /**
@@ -29,7 +30,7 @@ import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
  *
  * @since 5.6
  */
-public interface GraphRoute {
+public interface GraphRoute extends DocumentRoute {
 
     String PROP_VARIABLES_FACET = "docri:variablesFacet";
 

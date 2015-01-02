@@ -18,15 +18,19 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs.routing.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @since 7.1
  */
 public class RoutingRequest {
 
-    public List<String> documentIds = new ArrayList<String>();
+    protected List<String> documentIds = new ArrayList<String>();
+
+    protected Map<String, Serializable> worflowVariables;
 
     public String routeModelId;
 
@@ -34,16 +38,24 @@ public class RoutingRequest {
         return documentIds;
     }
 
-    public void setDocumentIds(List<String> documentIds) {
-        this.documentIds = documentIds;
-    }
-
     public String getRouteModelId() {
         return routeModelId;
     }
 
+    public Map<String, Serializable> getWorflowVariables() {
+        return worflowVariables;
+    }
+
+    public void setDocumentIds(List<String> documentIds) {
+        this.documentIds = documentIds;
+    }
+
     public void setRouteModelId(String routeModelId) {
         this.routeModelId = routeModelId;
+    }
+
+    public void setWorflowVariables(Map<String, Serializable> worflowVariables) {
+        this.worflowVariables = worflowVariables;
     }
 
 }

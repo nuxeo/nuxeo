@@ -79,6 +79,7 @@ import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.listener.RouteModelsInitializator;
 import org.nuxeo.ecm.platform.routing.core.registries.RouteTemplateResourceRegistry;
 import org.nuxeo.ecm.platform.task.Task;
+import org.nuxeo.ecm.platform.task.TaskConstants;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.runtime.api.Framework;
@@ -86,8 +87,6 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
-import org.nuxeo.runtime.transaction.TransactionHelper;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -1184,5 +1183,77 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     public void invalidateRouteModelsCache() {
         modelsChache.invalidateAll();
+    }
+
+    /**
+     * @since 7.1
+     */
+    @Override
+    public List<Task> getUserRelatedWorkflowTasks(String userId, String workflowInstanceId, CoreSession session) {
+        StringBuilder query = new StringBuilder(String.format(
+                "SELECT * FROM Document WHERE ecm:mixinType = '%s' AND ecm:currentLifeCycleState = '%s'",
+                TaskConstants.TASK_FACET_NAME, TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE));
+        if (StringUtils.isNotBlank(userId)) {
+            query.append(String.format(" AND nt:actors = '%s'", userId));
+        }
+        if (StringUtils.isNotBlank(workflowInstanceId)) {
+            query.append(String.format(" AND nt:processId = '%s'", workflowInstanceId));
+        }
+        DocumentModelList documentModelList = session.query(query.toString());
+        List<Task> result = new ArrayList<Task>();
+        for (DocumentModel documentModel : documentModelList) {
+            result.add(documentModel.getAdapter(Task.class));
+        }
+        return result;
+    }
+
+    /**
+     * @since 7.1
+     */
+    @Override
+    public List<Task> getDocumentRelatedWorkflowTasks(DocumentModel document, String workflowInstanceId,
+            CoreSession session) {
+        final String query = String.format(
+                "SELECT * FROM Document WHERE ecm:mixinType = '%s' AND ecm:currentLifeCycleState = '%s' AND nt:targetDocumentId = '%s'",
+                TaskConstants.TASK_FACET_NAME, TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE, document.getId());
+        DocumentModelList documentModelList = session.query(query.toString());
+        List<Task> result = new ArrayList<Task>();
+        for (DocumentModel documentModel : documentModelList) {
+            result.add(documentModel.getAdapter(Task.class));
+        }
+        return result;
+    }
+
+    /**
+     * @since 7.1
+     */
+    @Override
+    public List<DocumentRoute> getDocumentRelatedWorkflows(DocumentModel document, CoreSession session) {
+        final String query = String.format(
+                "SELECT * FROM %s WHERE docri:participatingDocuments = '%s' AND ecm:currentLifeCycleState = '%s'",
+                DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE, document.getId(),
+                DocumentRouteElement.ElementLifeCycleState.running);
+        DocumentModelList documentModelList = session.query(query.toString());
+        List<DocumentRoute> result = new ArrayList<DocumentRoute>();
+        for (DocumentModel documentModel : documentModelList) {
+            result.add(documentModel.getAdapter(GraphRoute.class));
+        }
+        return result;
+    }
+
+    /**
+     * @since 7.1
+     */
+    @Override
+    public List<DocumentRoute> getRunningWorkflowInstancesLaunchedByCurrentUser(CoreSession session) {
+        final String query = String.format("SELECT * FROM %s WHERE docri:initiator = '%s' AND ecm:currentLifeCycleState = '%s'",
+                DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE, session.getPrincipal().getName(),
+                DocumentRouteElement.ElementLifeCycleState.running);
+        DocumentModelList documentModelList = session.query(query.toString());
+        List<DocumentRoute> result = new ArrayList<DocumentRoute>();
+        for (DocumentModel documentModel : documentModelList) {
+            result.add(documentModel.getAdapter(GraphRoute.class));
+        }
+        return result;
     }
 }

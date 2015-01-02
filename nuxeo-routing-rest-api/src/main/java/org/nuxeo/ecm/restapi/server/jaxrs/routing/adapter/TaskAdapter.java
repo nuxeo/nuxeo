@@ -18,13 +18,16 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.core.Response;
 
+import java.util.List;
+
+import javax.ws.rs.GET;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.task.TaskConstants;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 7.1
@@ -35,12 +38,10 @@ public class TaskAdapter extends DefaultAdapter {
     public static final String NAME = "task";
 
     @GET
-    public Response doGet() {
+    public List<Task> doGet() {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
-        final String query = String.format(
-                "SELECT * FROM Document WHERE ecm:mixinType = '%s' AND ecm:currentLifeCycleState = '%s' AND nt:targetDocumentId = '%s'",
-                TaskConstants.TASK_FACET_NAME, TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE, doc.getId()).replaceAll(" ", "%20");
-        return redirect("/api/v1/query?query=" + query);
+        return Framework.getLocalService(DocumentRoutingService.class).getDocumentRelatedWorkflowTasks(doc,
+                null, getContext().getCoreSession());
     }
 
 }

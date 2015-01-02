@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter;
 
 import java.util.Arrays;
+import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -29,10 +30,9 @@ import javax.ws.rs.core.Response.Status;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
-import org.nuxeo.ecm.platform.task.TaskConstants;
+import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.RoutingRequest;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
@@ -57,24 +57,18 @@ public class WorkflowAdapter extends DefaultAdapter {
     }
 
     @GET
-    public Response doGet() {
+    public List<DocumentRoute> doGet() {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
-        final String query = String.format(
-                "SELECT * FROM %s WHERE docri:participatingDocuments = '%s' AND ecm:currentLifeCycleState = '%s'",
-                DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE, doc.getId(),
-                DocumentRouteElement.ElementLifeCycleState.running).replaceAll(" ", "%20");
-        return redirect("/api/v1/query?query=" + query);
+        return Framework.getLocalService(DocumentRoutingService.class).getDocumentRelatedWorkflows(doc,
+                getContext().getCoreSession());
     }
 
     @GET
     @Path("{workflowInstanceId}/task")
-    public Response doGetTasks(@PathParam("workflowInstanceId") String workflowInstanceId) {
+    public List<Task> doGetTasks(@PathParam("workflowInstanceId") String workflowInstanceId) {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
-        final String query = String.format(
-                "SELECT * FROM Document WHERE ecm:mixinType = '%s' AND ecm:currentLifeCycleState = '%s' AND nt:targetDocumentId = '%s' AND nt:processId = '%s'",
-                TaskConstants.TASK_FACET_NAME, TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE, doc.getId(),
-                workflowInstanceId).replaceAll(" ", "%20");
-        return redirect("/api/v1/query?query=" + query);
+        return Framework.getLocalService(DocumentRoutingService.class).getDocumentRelatedWorkflowTasks(doc,
+                workflowInstanceId, getContext().getCoreSession());
     }
 
 }

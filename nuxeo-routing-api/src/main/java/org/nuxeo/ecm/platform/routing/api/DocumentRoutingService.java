@@ -568,4 +568,36 @@ public interface DocumentRoutingService {
      */
     int doCleanupDoneAndCanceledRouteInstances(String reprositoryName, int limit) throws ClientException;
 
+    /**
+     * @param userId
+     * @param workflowInstanceId
+     * @param session
+     * @return
+     * @since 7.1
+     */
+    List<Task> getUserRelatedWorkflowTasks(final String userId, final String workflowInstanceId, final CoreSession session);
+
+    /**
+     * @param document
+     * @param workflowInstanceId
+     * @param session
+     * @return
+     * @since 7.1
+     */
+    List<Task> getDocumentRelatedWorkflowTasks(final DocumentModel document, final String workflowInstanceId, final CoreSession session);
+
+    /**
+     * @param document
+     * @param session
+     * @return
+     * @since 7.1
+     */
+    List<DocumentRoute> getDocumentRelatedWorkflows(final DocumentModel document, final CoreSession session);
+
+    /**
+     * @return
+     * @since 7.1
+     */
+    List<DocumentRoute> getRunningWorkflowInstancesLaunchedByCurrentUser(final CoreSession session);
+
 }

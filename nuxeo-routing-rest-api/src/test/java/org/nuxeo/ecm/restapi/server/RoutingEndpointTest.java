@@ -25,11 +25,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
 import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -91,7 +88,7 @@ public class RoutingEndpointTest extends BaseTest {
         // Check GET /workflow/{workflowInstanceId}
         response = getResponse(RequestType.GET, "/workflow/" + createdWorflowInstanceId);
         node = mapper.readTree(response.getEntityInputStream());
-        String fetchedWorflowInstanceId = node.get("uid").getTextValue();
+        String fetchedWorflowInstanceId = node.get("id").getTextValue();
         assertEquals(createdWorflowInstanceId, fetchedWorflowInstanceId);
 
         // Check GET /workflow .i.e get running workflow initialized by currentUser
@@ -100,27 +97,23 @@ public class RoutingEndpointTest extends BaseTest {
         // we expect to retrieve the one previously created
         assertEquals(1, node.get("entries").size());
         Iterator<JsonNode> elements = node.get("entries").getElements();
-        fetchedWorflowInstanceId = elements.next().get("uid").getTextValue();
+        fetchedWorflowInstanceId = elements.next().get("id").getTextValue();
         assertEquals(createdWorflowInstanceId, fetchedWorflowInstanceId);
 
         // Check GET /task i.e. pending tasks for current user
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put("X-NXDocumentProperties", "dublincore,task");
-        response = getResponse(RequestType.GET, "/task", headers);
+        response = getResponse(RequestType.GET, "/task");
         assertActorIsAdministrator(response);
 
         // Check GET /task/Administrator i.e. pending tasks for Administrator
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.put("userId", Arrays.asList(new String[] { "Administrator" }));
-        response = getResponse(RequestType.GET, "/task", null, queryParams, null, headers);
+        response = getResponse(RequestType.GET, "/task", null, queryParams, null, null);
         assertActorIsAdministrator(response);
 
         // Check GET /task/Administrator/workflow/{workflowInstanceId} i.e. pending tasks for Administrator
         queryParams.put("workflowInstanceId", Arrays.asList(new String[] { createdWorflowInstanceId }));
-        response = getResponse(RequestType.GET, "/task", null, queryParams, null, headers);
+        response = getResponse(RequestType.GET, "/task", null, queryParams, null, null);
         assertActorIsAdministrator(response);
-
-        // TODO Check created RouteNode/Tasks
 
         // Check DELETE /workflow
         response = getResponse(RequestType.DELETE, "/workflow/" + createdWorflowInstanceId);
@@ -133,7 +126,7 @@ public class RoutingEndpointTest extends BaseTest {
         assertEquals(0, node.get("entries").size());
 
         // Check we have no opened tasks
-        response = getResponse(RequestType.GET, "/task", headers);
+        response = getResponse(RequestType.GET, "/task");
         node = mapper.readTree(response.getEntityInputStream());
         assertEquals(0, node.get("entries").size());
 
@@ -143,10 +136,9 @@ public class RoutingEndpointTest extends BaseTest {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(1, node.get("entries").size());
         Iterator<JsonNode> elements = node.get("entries").getElements();
-        JsonNode properties = elements.next().get("properties");
-        JsonNode actors = properties.get("nt:actors");
+        JsonNode actors = elements.next().get("actors");
         assertEquals(1, actors.size());
-        String actor = actors.getElements().next().getTextValue();
+        String actor = actors.getElements().next().get("id").getTextValue();
         assertEquals("Administrator", actor);
     }
 
@@ -194,7 +186,7 @@ public class RoutingEndpointTest extends BaseTest {
         response = getResponse(RequestType.GET, "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME);
         node = mapper.readTree(response.getEntityInputStream());
         assertEquals(1, node.get("entries").size());
-        assertEquals(createdWorflowInstanceId, node.get("entries").getElements().next().get("uid").getTextValue());
+        assertEquals(createdWorflowInstanceId, node.get("entries").getElements().next().get("id").getTextValue());
 
         // Check GET /api/id/{documentId}/@workflow/{workflowInstanceId}/task
         response = getResponse(RequestType.GET, "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME + "/"
@@ -202,14 +194,13 @@ public class RoutingEndpointTest extends BaseTest {
         node = mapper.readTree(response.getEntityInputStream());
         assertEquals(1, node.get("entries").size());
         JsonNode taskNode = node.get("entries").getElements().next();
-        assertEquals("RoutingTask", taskNode.get("type").getTextValue());
-        String taskUid = taskNode.get("uid").getTextValue();
+        String taskUid = taskNode.get("id").getTextValue();
 
         // Check GET /api/id/{documentId}/@task/
         response = getResponse(RequestType.GET, "/id/" + note.getId() + "/@" + TaskAdapter.NAME);
         node = mapper.readTree(response.getEntityInputStream());
         assertEquals(1, node.get("entries").size());
         taskNode = node.get("entries").getElements().next();
-        assertEquals(taskUid, taskNode.get("uid").getTextValue());
+        assertEquals(taskUid, taskNode.get("id").getTextValue());
     }
 }

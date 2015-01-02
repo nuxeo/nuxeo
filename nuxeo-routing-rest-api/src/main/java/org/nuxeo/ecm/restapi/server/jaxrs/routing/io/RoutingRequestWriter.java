@@ -30,27 +30,27 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
-import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.RoutingRequest;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 7.1
  */
 @Provider
-public class RoutingRequestWriter implements MessageBodyWriter<RoutingRequest> {
+public class RoutingRequestWriter implements MessageBodyWriter<DocumentRoute> {
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return RoutingRequest.class.isAssignableFrom(type);
+        return DocumentRoute.class.isAssignableFrom(type);
     }
 
     @Override
-    public long getSize(RoutingRequest t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    public long getSize(DocumentRoute t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
     @Override
-    public void writeTo(RoutingRequest t, Class<?> type, Type genericType, Annotation[] annotations,
+    public void writeTo(DocumentRoute t, Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
             throws IOException, WebApplicationException {
         Framework.getService(ObjectCodecService.class).write(entityStream, t);

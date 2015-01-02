@@ -18,6 +18,8 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -26,16 +28,16 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskConstants;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.TaskCompletion;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 7.1
@@ -59,19 +61,10 @@ public class TaskObject extends DefaultObject {
     }
 
     @GET
-    public Response getUserRelatedWorkflowTasks(@QueryParam("userId") String userId,
+    public List<Task> getUserRelatedWorkflowTasks(@QueryParam("userId") String userId,
             @QueryParam("workflowInstanceId") String workflowInstanceId) {
-        StringBuilder query = new StringBuilder(BASE_QUERY);
-        String.format(
-                "SELECT * FROM Document WHERE ecm:mixinType = '%s' AND nt:processId = '%s' AND nt:actors = '%s' AND ecm:currentLifeCycleState = '%s'",
-                TaskConstants.TASK_FACET_NAME, workflowInstanceId, userId, TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE);
-        if (StringUtils.isNotBlank(userId)) {
-            query.append(String.format(" AND nt:actors = '%s'", userId));
-        }
-        if (StringUtils.isNotBlank(workflowInstanceId)) {
-            query.append(String.format(" AND nt:processId = '%s'", workflowInstanceId));
-        }
-        return redirect("/api/v1/query?query=" + query.toString().replaceAll(" ", "%20"));
+        return Framework.getLocalService(DocumentRoutingService.class).getUserRelatedWorkflowTasks(userId,
+                workflowInstanceId, getContext().getCoreSession());
     }
 
 }
