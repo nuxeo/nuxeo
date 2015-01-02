@@ -368,7 +368,7 @@ public interface GraphNode {
         }
     }
 
-    class Button implements Comparable<Button> {
+    public class Button implements Comparable<Button> {
 
         public GraphNode source;
 

@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
@@ -37,11 +36,12 @@ import javax.ws.rs.ext.Provider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonEncoding;
-import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityListWriter;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.task.Task;
+import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
 /**
  * @since 7.1
@@ -53,13 +53,7 @@ public class TaskListWriter extends EntityListWriter<Task> {
     private static final Log log = LogFactory.getLog(DocumentRouteListWriter.class);
 
     @Context
-    JsonFactory factory;
-
-    @Context
-    protected HttpHeaders headers;
-
-    @Context
-    protected HttpServletRequest request;
+    HttpServletRequest request;
 
     @Override
     protected String getEntityType() {
@@ -84,6 +78,7 @@ public class TaskListWriter extends EntityListWriter<Task> {
     public void writeTo(List<Task> tasks, Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
             throws IOException, WebApplicationException {
+        CoreSession session = SessionFactory.getSession(request);
         try {
             JsonGenerator jg = factory.createJsonGenerator(entityStream, JsonEncoding.UTF8);
             jg.writeStartObject();
@@ -92,7 +87,7 @@ public class TaskListWriter extends EntityListWriter<Task> {
             for (Task docRoute : tasks) {
                 jg.writeStartObject();
                 jg.writeStringField("entity-type", "task");
-                TaskWriter.writeTask(jg, docRoute);
+                TaskWriter.writeTask(jg, docRoute, session);
                 jg.writeEndObject();
             }
             jg.writeEndArray();
