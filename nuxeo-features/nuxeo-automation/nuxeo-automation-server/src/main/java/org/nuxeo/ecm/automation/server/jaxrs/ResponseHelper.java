@@ -48,8 +48,6 @@ public class ResponseHelper {
     private ResponseHelper() {
     }
 
-    protected static int httpStatus = HttpServletResponse.SC_OK;
-
     public static Response notFound() {
         return Response.status(404).build();
     }
@@ -63,6 +61,14 @@ public class ResponseHelper {
     }
 
     public static Response blob(Blob blob) {
+        return blob(blob, HttpServletResponse.SC_OK);
+    }
+
+    public static Response blobs(List<Blob> blobs) throws MessagingException, IOException {
+        return blobs(blobs, HttpServletResponse.SC_OK);
+    }
+
+    public static Response blob(Blob blob, int httpStatus) {
         String type = blob.getMimeType();
         if (type == null || "???".equals(type)) {
             type = MediaType.APPLICATION_OCTET_STREAM;
@@ -71,7 +77,7 @@ public class ResponseHelper {
                 "attachment; filename=" + blob.getFilename()).build();
     }
 
-    public static Response blobs(List<Blob> blobs) throws MessagingException, IOException {
+    public static Response blobs(List<Blob> blobs, int httpStatus) throws MessagingException, IOException {
         MultipartBlobs multipartBlobs = new MultipartBlobs(blobs);
         return Response.status(httpStatus).entity(multipartBlobs).type(
                 new BoundaryMediaType(multipartBlobs.getContentType())).build();
@@ -81,6 +87,16 @@ public class ResponseHelper {
      * @since 5.7.2
      */
     public static Object getResponse(Object result, HttpServletRequest request) throws MessagingException, IOException {
+        return getResponse(result, request, HttpServletResponse.SC_OK);
+    }
+
+    /**
+     * Handle custom http status.
+     *
+     * @since 7.1
+     */
+    public static Object getResponse(Object result, HttpServletRequest request, int httpStatus) throws IOException,
+            MessagingException {
         if (result == null || "true".equals(request.getHeader("X-NXVoidOperation"))) {
             return emptyContent();
         }
@@ -97,17 +113,6 @@ public class ResponseHelper {
         } else { // try to adapt to JSON
             return Response.status(httpStatus).entity(new DefaultJsonAdapter(result)).build();
         }
-    }
-
-    /**
-     * Handle custom http status.
-     *
-     * @since 7.1
-     */
-    public static Object getResponse(Object result, HttpServletRequest request, int httpStatus) throws IOException,
-            MessagingException {
-        ResponseHelper.httpStatus = httpStatus;
-        return getResponse(result, request);
     }
 
     /**
