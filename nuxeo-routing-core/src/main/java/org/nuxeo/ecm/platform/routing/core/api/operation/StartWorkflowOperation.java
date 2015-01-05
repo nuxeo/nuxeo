@@ -62,7 +62,7 @@ public class StartWorkflowOperation {
     @Param(name = "id", required = true)
     protected String id;
 
-    @Param(name = "start", required = false)
+    @Param(name = "start", required = false, values = "true")
     protected Boolean start = true;
 
     // @since 5.7.2
