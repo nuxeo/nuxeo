@@ -543,13 +543,13 @@ author: lkemen@nuxeo.com
 .mce-menu-item.mce-selected,
 .mce-menu-item:focus,
 .mce-toolbar .mce-btn.mce-active {
-  background: #0af }
+  background: #fff }
 
 .mce-menu-item:hover .mce-btn i,
 .mce-menu-item.mce-selected .mce-btn i,
 .mce-menu-item:focus .mce-btn i,
 .mce-toolbar .mce-btn.mce-active i {
-  color: #fff }
+  color: #0af }
 
 .mce-menu-item:hover .mce-text,
 .mce-menu-item.mce-selected .mce-text {
