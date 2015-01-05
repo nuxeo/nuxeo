@@ -85,50 +85,48 @@
                   <div style="display:none">
                     <div id="validation_status_box">
                       <h3>#{messages['label.studio.update.validation.errorTitle']}</h3>
-                      <div class="content">
-                        <div>
-                          <h:outputText value="#{appsViews.getStudioInstallationStatus()}" styleClass="boldLabel"/>
+                      <h:form id="updateStudioSnapshotValidationErrorForm">
+                        <div class="content">
+                          <div>
+                            <h:outputText value="#{appsViews.getStudioInstallationStatus()}" styleClass="boldLabel"/>
+                          </div>
+                          <c:if test="#{not empty vstatus.errors}">
+                            <h5>
+                              <h:outputText value="#{messages['label.studio.update.lastStatus.errors']}" />
+                            </h5>
+                            <ul class="visibleList">
+                              <c:forEach var="error" items="#{vstatus.errors}">
+                                <li><h:outputText value="#{error}" escape="false" /></li>
+                              </c:forEach>
+                            </ul>
+                            <br />
+                          </c:if>
+                          <c:if test="#{not empty vstatus.warnings}">
+                            <h5>
+                              <h:outputText value="#{messages['label.studio.update.lastStatus.warnings']}" />
+                            </h5>
+                            <ul class="visibleList">
+                              <c:forEach var="warn" items="#{vstatus.warnings}">
+                                <li><h:outputText value="#{warn}" escape="false" /></li>
+                              </c:forEach>
+                            </ul>
+                          </c:if>
                         </div>
-                        <c:if test="#{not empty vstatus.errors}">
-                          <h5>
-                            <h:outputText value="#{messages['label.studio.update.lastStatus.errors']}" />
-                          </h5>
-                          <ul class="visibleList">
-                            <c:forEach var="error" items="#{vstatus.errors}">
-                              <li><h:outputText value="#{error}" escape="false" /></li>
-                            </c:forEach>
-                          </ul>
-                          <br />
-                        </c:if>
-                        <c:if test="#{not empty vstatus.warnings}">
-                          <h5>
-                            <h:outputText value="#{messages['label.studio.update.lastStatus.warnings']}" />
-                          </h5>
-                          <ul class="visibleList">
-                            <c:forEach var="warn" items="#{vstatus.warnings}">
-                              <li><h:outputText value="#{warn}" escape="false" /></li>
-                            </c:forEach>
-                          </ul>
-                        </c:if>
-
-                        <h:form id="updateStudioSnapshotValidationErrorForm">
-                          <p class="buttonsGadget">
-                            <h:commandButton
-                              id="updateStudioAnywayButton"
-                              value="#{messages['admCommand.studio.updateAnyway']}"
-                              action="#{appsViews.installStudioSnapshotAndRedirect()}"
-                              onclick="showUpdateInProgress();"
-                              styleClass="button">
-                              <nxu:actionListenerMethod
-                                value="#{appsViews.setValidateStudioSnapshot(false)}" />
-                            </h:commandButton>
-                            <a4j:commandButton styleClass="button"
-                              value="#{messages['command.cancel']}"
-                              oncomplete="jQuery.fancybox.close();" />
-                          </p>
-                        </h:form>
-                      </div>
-
+                        <p class="buttonsGadget">
+                          <h:commandButton
+                             id="updateStudioAnywayButton"
+                             value="#{messages['admCommand.studio.updateAnyway']}"
+                             action="#{appsViews.installStudioSnapshotAndRedirect()}"
+                             onclick="showUpdateInProgress();"
+                             styleClass="button">
+                             <nxu:actionListenerMethod
+                               value="#{appsViews.setValidateStudioSnapshot(false)}" />
+                          </h:commandButton>
+                          <a4j:commandButton styleClass="button"
+                             value="#{messages['command.cancel']}"
+                            oncomplete="jQuery.fancybox.close();" />
+                        </p>
+                      </h:form>
                     </div>
                   </div>
 
