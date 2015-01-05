@@ -143,12 +143,6 @@ public class DownloadHandler extends DefaultObject {
             pm.download(pkgId);
         } catch (ConnectServerError e) {
             return getView("downloadError").arg("e", e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
         return getView("downloadStarted").arg("pkg", getDownloadingPackage(pkgId)).arg("source", source).arg("over",
                 false).arg("install", install).arg("depCheck", depCheck).arg("filterOnPlatform",
@@ -168,12 +162,6 @@ public class DownloadHandler extends DefaultObject {
                     pm.download(Arrays.asList(pkgs));
                 } catch (ConnectServerError e) {
                     log.error(e, e);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                } catch (RuntimeException e) {
-                    throw e;
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
                 }
                 // here we generate a fake progress report so that if some
                 // download are very fast, they will still be visible on the
