@@ -30,6 +30,11 @@
       </c:if>
     </c:if>
 
+    <a4j:jsFunction name="listDocumentsForTag"
+      action="#{tagSelect2Support.listDocumentsForTag}">
+      <a4j:param name="param1" assignTo="#{tagSelect2Support.label}" />
+    </a4j:jsFunction>
+
     <a4j:jsFunction name="addTagging"
       render="#{ajaxReRender}"
       action="#{tagSelect2Support.addTagging}">

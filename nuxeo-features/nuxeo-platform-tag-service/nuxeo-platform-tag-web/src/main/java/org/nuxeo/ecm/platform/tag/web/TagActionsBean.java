@@ -276,6 +276,10 @@ public class TagActionsBean implements Serializable {
         return listLabel;
     }
 
+    public void setListLabel(String listLabel) {
+        this.listLabel = listLabel;
+    }
+
     /**
      * Returns <b>true</b> if the current logged user has permission to modify a
      * tag that is applied on the current document.
@@ -302,7 +306,10 @@ public class TagActionsBean implements Serializable {
         return tagLabel;
     }
 
-    public void setTagLabel(String tagLabel) {
+    /**
+     * @since 7.1
+     */
+    public void setTagLabel(final String tagLabel) {
         this.tagLabel = tagLabel;
     }
 
