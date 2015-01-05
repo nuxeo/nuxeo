@@ -1,8 +1,10 @@
 <%@ include file="includes/header.jsp" %>
 
-
 <%@page import="java.util.List"%>
-<%@page import="org.nuxeo.wizard.download.PendingDownload"%><h1><fmt:message key="label.packagesDownload" /></h1>
+<%@page import="org.nuxeo.wizard.download.PendingDownload"%>
+<%@page import="org.nuxeo.wizard.download.PendingDownloadStatus"%>
+
+<h1><fmt:message key="label.packagesDownload" /></h1>
 
 <%
 String baseUrl = ctx.getBaseUrl();
@@ -33,7 +35,7 @@ String selectedPackageIds="";
   <li><%=pkg.getLabel()%> <div class="detail"><%=pkg.getId()%> &nbsp;
   <%if (pkg.isVirtual()) {%>
     already in local
-  <%} else if (pkg.getFilename() == null || "".equals(pkg.getFilename())) {%>
+  <%} else if (pkg.isLaterDownload()) {%>
     later download
   <%} else if (pkg.isAlreadyInLocal()) {%>
     already in local
@@ -91,30 +93,30 @@ $(document).ready(function(){
      <td>
      <%
      switch (dw.getStatus()) {
-         case PendingDownload.PENDING:
+         case PENDING:
              %><fmt:message key="label.downloadStatus.PENDING"/><%
              break;
-         case PendingDownload.INPROGRESS:
+         case INPROGRESS:
              %><fmt:message key="label.downloadStatus.INPROGRESS"/><%
              break;
-         case PendingDownload.VERIFICATION:
+         case VERIFICATION:
              %><fmt:message key="label.downloadStatus.VERIFICATION"/><%
              break;
-         case PendingDownload.VERIFIED:
+         case VERIFIED:
              %><fmt:message key="label.downloadStatus.VERIFIED"/>
              <img src="<%=contextPath%>/images/pkgok.png" height="18"/><%
              break;
-         case PendingDownload.ABORTED:
+         case ABORTED:
              %><fmt:message key="label.downloadStatus.ABORTED"/><%
              break;
-         case PendingDownload.COMPLETED:
+         case COMPLETED:
              %><fmt:message key="label.downloadStatus.COMPLETED"/><%
              break;
-         case PendingDownload.CORRUPTED:
+         case CORRUPTED:
              %><fmt:message key="label.downloadStatus.CORRUPTED"/>
              <img src="<%=contextPath%>/images/broken.png" height="18"/><%
              break;
-         case PendingDownload.MISSING:
+         case MISSING:
              %><fmt:message key="label.downloadStatus.MISSING"/>
              <img src="<%=contextPath%>/images/broken.png" height="18"/><%
              break;
@@ -124,14 +126,14 @@ $(document).ready(function(){
        <div style="width:200px:height:10px">
        <%
        switch (dw.getStatus()) {
-          case PendingDownload.PENDING:
+          case PENDING:
               %>
               <img src="<%=contextPath%>/images/pause.png" height="18" title="Pending"/>
               <%
               break;
-          case PendingDownload.ABORTED:
-          case PendingDownload.CORRUPTED:
-          case PendingDownload.MISSING:
+          case ABORTED:
+          case CORRUPTED:
+          case MISSING:
               %>
               <A href="#" onclick="navigateTo('<%=currentPage.getAction()%>?reStartDownload=<%=dw.getPkg().getId()%>');">Retry download</A>
               <%
@@ -147,7 +149,7 @@ $(document).ready(function(){
        </div>
       </td>
       <td>
-      <%if (dw.getStatus()==PendingDownload.INPROGRESS) {%>
+      <%if (dw.getStatus()==PendingDownloadStatus.INPROGRESS) {%>
         <%=dw.getProgress()%> %
       <%}%>
       </td>
