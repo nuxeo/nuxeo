@@ -34,21 +34,18 @@ String selectedPackageIds="";
 %>
   <li><%=pkg.getLabel()%> <div class="detail"><%=pkg.getId()%> &nbsp;
   <%if (pkg.isVirtual()) {%>
-    already in local
+    <fmt:message key="label.packagesDownload.alreadyInLocal" />
   <%} else if (pkg.isLaterDownload()) {%>
-    later download
+    <fmt:message key="label.packagesDownload.laterDownload" />
   <%} else if (pkg.isAlreadyInLocal()) {%>
-    already in local
+    <fmt:message key="label.packagesDownload.alreadyInLocal" />
   <%} else {
-     needDownload = true;%>
-    to be downloaded
+    needDownload = true;%>
+    <fmt:message key="label.packagesDownload.toDownload" />
   <%} %></div>
   </li>
 <%}%>
 </ul>
-</td>
-<td>
-<input style="display:none" type="button" class="glossyButton" id="btnDownload" value="<fmt:message key="label.action.downloadStart"/>"  onclick="navigateTo('<%=currentPage.getAction()%>?startDownload=true');"/>
 </td>
 </tr>
 
@@ -135,7 +132,7 @@ $(document).ready(function(){
           case CORRUPTED:
           case MISSING:
               %>
-              <A href="#" onclick="navigateTo('<%=currentPage.getAction()%>?reStartDownload=<%=dw.getPkg().getId()%>');">Retry download</A>
+              <A href="#" onclick="navigateTo('<%=currentPage.getAction()%>?reStartDownload=<%=dw.getPkg().getId()%>');"><fmt:message key="label.downloadStatus.restartDownload"/></A>
               <%
               break;
           default:
@@ -159,13 +156,14 @@ $(document).ready(function(){
 <div style="display:none" id="downloadInProgress"><%=downloadInProgress%></div>
 <div style="display:none" id="downloadCompleted"><%=downloadCompleted%></div>
 <%if (downloadInProgress) {%>
-<div id="downloadWaiter">Download in progress</div>
+<div id="downloadWaiter"><fmt:message key="label.downloadStatus.INPROGRESS"/></div>
 <%}%>
 </div>
 <%}%>
 
  <div class="buttonContainer">
  <input type="button" class="glossyButton" id="btnPrev" value="<fmt:message key="label.action.prev"/>" onclick="navigateTo('<%=currentPage.prev().getAction()%>');"/>
+ <input style="display:none" type="button" class="glossyButton" id="btnDownload" value="<fmt:message key="label.action.downloadStart"/>"  onclick="navigateTo('<%=currentPage.getAction()%>?startDownload=true');"/>
  <input style="display:none" type="submit" class="glossyButton" id="btnNext" value="<fmt:message key="label.action.next"/>"/>
  </div>
 
