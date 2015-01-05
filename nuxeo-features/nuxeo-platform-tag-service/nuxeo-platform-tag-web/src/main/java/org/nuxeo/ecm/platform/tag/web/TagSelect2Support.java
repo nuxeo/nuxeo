@@ -30,6 +30,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.seam.Component;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -215,6 +216,7 @@ public class TagSelect2Support {
         }
         obj.put(Select2Common.OPERATION_ID, "Tag.Suggestion");
         obj.put(Select2Common.WIDTH, "300px");
+        obj.put(Select2Common.SELECTION_FORMATTER, "formatSelectedTags");
         obj.put(Select2Common.SUGGESTION_FORMATTER, "formatSuggestedTags");
         JSONArray tokenSeparator = new JSONArray();
         tokenSeparator.add(",");
@@ -229,6 +231,14 @@ public class TagSelect2Support {
             obj.put(entry.getKey(), entry.getValue().toString());
         }
         return obj;
+    }
+
+    /**
+     * @since 7.1
+     */
+    public void listDocumentsForTag() throws ClientException {
+        final TagActionsBean tagActionsBean = (TagActionsBean) Component.getInstance(TagActionsBean.class);
+        tagActionsBean.setListLabel(label);
     }
 
     public String getLabel() {
