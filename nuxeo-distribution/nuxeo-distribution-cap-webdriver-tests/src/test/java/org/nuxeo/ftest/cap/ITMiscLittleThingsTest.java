@@ -25,13 +25,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.WorkflowsPage;
 import org.nuxeo.functionaltests.pages.workflow.WorkflowGraph;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import com.google.common.base.Function;
 
 /**
  * ITTest class to test very simple things.
@@ -39,6 +44,8 @@ import org.openqa.selenium.WebElement;
  * @since 6.0
  */
 public class ITMiscLittleThingsTest extends AbstractTest {
+
+    private static final String XML_EXPORT_LINK_TEXT = "XML Export";
 
     private static final String EXPECTED_HREF = "http://localhost:8080/nuxeo/nxpath/default/default-domain/workspaces@view_documents?tabIds=%3A";
 
@@ -88,6 +95,33 @@ public class ITMiscLittleThingsTest extends AbstractTest {
         graph = workflowsPage.getSerialDocumentReviewGraph();
         assertEquals(1, graph.getWorkflowStartNodes().size());
         assertEquals(1, graph.getWorkflowEndNodes().size());
+    }
+
+    /**
+     * @since 7.1
+     */
+    @Test
+    public void testPDFExport() {
+        WebElement exportActionPageLink = driver.findElement(By.id("nxw_exportView_form:nxw_exportView"));
+        exportActionPageLink.click();
+        waitForXmlExport();
+        WebElement exportPDFActionLink = driver.findElement(By.linkText(XML_EXPORT_LINK_TEXT));
+        exportPDFActionLink.click();
+        waitForXmlExport();
+    }
+
+    protected void waitForXmlExport() {
+        Locator.waitUntilGivenFunction(new Function<WebDriver,Boolean>() {
+            @Override
+            public Boolean apply(WebDriver input) {
+                try {
+                    driver.findElement(By.linkText(XML_EXPORT_LINK_TEXT));
+                } catch (NoSuchElementException e) {
+                    return false;
+                }
+                return true;
+            }
+        });
     }
 
 }
