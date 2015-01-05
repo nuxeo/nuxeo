@@ -136,6 +136,22 @@ public interface DocumentRoutingService {
     void completeTask(String routeId, String taskId, Map<String, Object> data, String status, CoreSession session);
 
     /**
+     * Completes a task on a give node. If this is the last task the workflow will continue.
+     * <p/>
+     * Called by the UI action corresponding to a task button.
+     *
+     * @param routeId the id of the route instance
+     * @param taskId the id of the task
+     * @param workflowVariables the workflow variables
+     * @param nodeVariables the node variables associated to the taskId
+     * @param comment the comment of the task
+     * @param status the status coming from UI form
+     * @param session the session
+     * @since 7.1
+     *//*
+    void completeTask(String routeId, String taskId, Map<String, String> workflowVariables, Map<String, String> nodeVariables, String comment, String status, CoreSession session);*/
+
+    /**
      * Save a route instance as a new model of route.
      * <p/>
      * The place in which the new instance is persisted and its name depends on {@link DocumentRoutingPersister}. The

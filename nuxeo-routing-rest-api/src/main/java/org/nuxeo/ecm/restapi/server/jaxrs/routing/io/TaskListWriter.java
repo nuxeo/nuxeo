@@ -39,9 +39,7 @@ import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityListWriter;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.task.Task;
-import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
 /**
  * @since 7.1
@@ -78,7 +76,6 @@ public class TaskListWriter extends EntityListWriter<Task> {
     public void writeTo(List<Task> tasks, Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
             throws IOException, WebApplicationException {
-        CoreSession session = SessionFactory.getSession(request);
         try {
             JsonGenerator jg = factory.createJsonGenerator(entityStream, JsonEncoding.UTF8);
             jg.writeStartObject();
@@ -87,7 +84,7 @@ public class TaskListWriter extends EntityListWriter<Task> {
             for (Task docRoute : tasks) {
                 jg.writeStartObject();
                 jg.writeStringField("entity-type", "task");
-                TaskWriter.writeTask(jg, docRoute, session);
+                TaskWriter.writeTask(jg, docRoute, request);
                 jg.writeEndObject();
             }
             jg.writeEndArray();

@@ -112,6 +112,9 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             if (node == null) {
                 throw new DocumentRouteException("Invalid nodeId: " + nodeId);
             }
+            if (!node.hasTaskButton(status)) {
+                throw new DocumentRouteException("Invalid action: " + status);
+            }
             boolean forceResume = (varData != null
                     && varData.get(DocumentRoutingConstants.WORKFLOW_FORCE_RESUME) != null && (Boolean) varData.get(DocumentRoutingConstants.WORKFLOW_FORCE_RESUME));
 
@@ -122,7 +125,6 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 throw new DocumentRouteException("Cannot resume on non-suspended node: " + node);
             }
             node.setAllVariables(varData);
-
             if (StringUtils.isNotEmpty(status)) {
                 node.setButton(status);
             }
@@ -323,7 +325,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
     }
 
     protected void createTask(CoreSession session, GraphRoute graph, GraphNode node) throws DocumentRouteException {
-        DocumentRouteElement routeInstance = (DocumentRouteElement) graph;
+        DocumentRouteElement routeInstance = graph;
         Map<String, String> taskVariables = new HashMap<String, String>();
         taskVariables.put(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY,
                 routeInstance.getDocument().getId());

@@ -777,6 +777,13 @@ public interface GraphNode {
     List<Button> getTaskButtons();
 
     /**
+     * Has the node the given action.
+     *
+     * @since 7.1
+     */
+    boolean hasTaskButton(final String name);
+
+    /**
      * Gets the document representing this node
      *
      * @return

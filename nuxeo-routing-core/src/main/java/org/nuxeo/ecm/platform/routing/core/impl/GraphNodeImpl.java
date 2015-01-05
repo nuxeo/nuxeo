@@ -1077,4 +1077,17 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
             setVariables(nodeVariables);
         }
     }
+
+    /**
+     * @since 7.1
+     */
+    @Override
+    public boolean hasTaskButton(String name) {
+        for (Button button : getTaskButtons()) {
+            if (button.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

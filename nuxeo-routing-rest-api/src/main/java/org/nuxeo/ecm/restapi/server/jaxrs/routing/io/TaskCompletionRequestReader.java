@@ -34,7 +34,7 @@ import javax.ws.rs.ext.Provider;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
-import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.TaskCompletion;
+import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.TaskCompletionRequest;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
 
@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.1
  */
 @Provider
-public class TaskCompletionReader implements MessageBodyReader<TaskCompletion> {
+public class TaskCompletionRequestReader implements MessageBodyReader<TaskCompletionRequest> {
 
     @Context
     private HttpServletRequest request;
@@ -52,17 +52,17 @@ public class TaskCompletionReader implements MessageBodyReader<TaskCompletion> {
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return TaskCompletion.class.isAssignableFrom(type);
+        return TaskCompletionRequest.class.isAssignableFrom(type);
     }
 
     @Override
-    public TaskCompletion readFrom(Class<TaskCompletion> type, Type genericType, Annotation[] annotations,
+    public TaskCompletionRequest readFrom(Class<TaskCompletionRequest> type, Type genericType, Annotation[] annotations,
             MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException, WebApplicationException {
         JsonParser jp = factory.createJsonParser(entityStream);
         ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
         try {
-            return (TaskCompletion) codecService.read(jp, Thread.currentThread().getContextClassLoader(),
+            return (TaskCompletionRequest) codecService.read(jp, Thread.currentThread().getContextClassLoader(),
                     SessionFactory.getSession(request));
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException(e);

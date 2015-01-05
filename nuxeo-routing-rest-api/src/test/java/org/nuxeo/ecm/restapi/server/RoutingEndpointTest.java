@@ -25,8 +25,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -45,6 +48,7 @@ import org.nuxeo.ecm.platform.routing.test.WorkflowFeature;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.TaskAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.WorkflowAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.RoutingRequest;
+import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.TaskCompletionRequest;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -66,7 +70,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
         "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.platform.restapi.io", "org.nuxeo.ecm.platform.restapi.test",
         "org.nuxeo.ecm.platform.restapi.server", "org.nuxeo.ecm.platform.routing.default",
         "org.nuxeo.ecm.platform.filemanager.api", "org.nuxeo.ecm.platform.filemanager.core",
-        "org.nuxeo.ecm.platform.mimetype.api", "org.nuxeo.ecm.platform.mimetype.core" })
+        "org.nuxeo.ecm.platform.mimetype.api", "org.nuxeo.ecm.platform.mimetype.core", "org.nuxeo.ecm.actions" })
 public class RoutingEndpointTest extends BaseTest {
 
     @Inject
@@ -114,6 +118,26 @@ public class RoutingEndpointTest extends BaseTest {
         queryParams.put("workflowInstanceId", Arrays.asList(new String[] { createdWorflowInstanceId }));
         response = getResponse(RequestType.GET, "/task", null, queryParams, null, null);
         assertActorIsAdministrator(response);
+
+        // Complete task
+        response = getResponse(RequestType.GET, "/task", null, queryParams, null, null);
+        node = mapper.readTree(response.getEntityInputStream());
+        elements = node.get("entries").getElements();
+        String taskId = elements.next().get("id").getTextValue();
+
+        out = new ByteArrayOutputStream();
+        TaskCompletionRequest taskCompletionRequest = new TaskCompletionRequest();
+        final Map<String,String> variables = new HashMap<String,String>();
+        variables.put("var1", "value1");
+        variables.put("var2", "value2");
+        taskCompletionRequest.setNodeVariables(variables);
+        taskCompletionRequest.setWorkflowVariables(variables);
+        taskCompletionRequest.setComment("a comment");
+        taskCompletionRequest.setAction("start_review");
+        objectCodecService.write(out, taskCompletionRequest);
+        response = getResponse(RequestType.PUT, "/task/" + taskId + "/start_review", out.toString());
+        // Missing required variables
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
 
         // Check DELETE /workflow
         response = getResponse(RequestType.DELETE, "/workflow/" + createdWorflowInstanceId);
@@ -202,5 +226,15 @@ public class RoutingEndpointTest extends BaseTest {
         assertEquals(1, node.get("entries").size());
         taskNode = node.get("entries").getElements().next();
         assertEquals(taskUid, taskNode.get("id").getTextValue());
+    }
+
+    @Test
+    public void testInvalidNodeAction() throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        RoutingRequest routingRequest = new RoutingRequest();
+        routingRequest.setRouteModelId("SerialDocumentReview");
+        objectCodecService.write(out, routingRequest);
+        ClientResponse response = getResponse(RequestType.POST, "/workflow", out.toString());
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
     }
 }
