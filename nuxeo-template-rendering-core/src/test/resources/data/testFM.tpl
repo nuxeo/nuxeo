@@ -100,3 +100,5 @@ ${core.getParent().dublincore.title}
  [/#if]
 [/#list]
 
+${.lang}
+
