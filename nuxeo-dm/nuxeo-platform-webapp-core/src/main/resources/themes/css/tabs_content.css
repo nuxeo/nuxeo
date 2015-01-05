@@ -348,9 +348,6 @@ author: lkemen@nuxeo.com
   vertical-align: middle;
   width: 100% }
 
-.summary .pictureContainer .fullMaxWidth {
-  width: 100% }
-
 .dimensionSeparator:after {
   content: "x";
   display: inline-block;
