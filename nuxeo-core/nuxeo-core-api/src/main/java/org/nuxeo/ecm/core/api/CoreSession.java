@@ -449,12 +449,12 @@ public interface CoreSession extends AutoCloseable {
      * listener can initialize its content with computed properties.
      *
      * @param parentPath
-     * @param id
+     * @param name The destination name
      * @param typeName
      * @return the initial document model
      * @throws ClientException
      */
-    DocumentModel createDocumentModel(String parentPath, String id, String typeName) throws ClientException;
+    DocumentModel createDocumentModel(String parentPath, String name, String typeName) throws ClientException;
 
     /**
      * Creates a document model using required information.

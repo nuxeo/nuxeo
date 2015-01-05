@@ -69,8 +69,8 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
-import org.nuxeo.ecm.core.api.validation.DocumentValidationReport;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
+import org.nuxeo.ecm.core.api.validation.DocumentValidationReport;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
@@ -643,12 +643,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel createDocumentModel(String parentPath, String id, String typeName) throws ClientException {
+    public DocumentModel createDocumentModel(String parentPath, String name, String typeName) throws ClientException {
         Map<String, Serializable> options = new HashMap<String, Serializable>();
         options.put(CoreEventConstants.PARENT_PATH, parentPath);
-        options.put(CoreEventConstants.DOCUMENT_MODEL_ID, id);
+        options.put(CoreEventConstants.DOCUMENT_MODEL_ID, name);
+        options.put(CoreEventConstants.DESTINATION_NAME, name);
         DocumentModel model = createDocumentModelFromTypeName(typeName, options);
-        model.setPathInfo(parentPath, id);
+        model.setPathInfo(parentPath, name);
         return model;
     }
 
