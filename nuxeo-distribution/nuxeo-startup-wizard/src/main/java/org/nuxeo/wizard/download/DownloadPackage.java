@@ -21,6 +21,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.5
@@ -53,8 +55,6 @@ public class DownloadPackage {
     protected String downloadUrl;
 
     protected String shortLabel;
-
-    protected boolean alreadyInLocal = false;
 
     protected final List<String> impliedDeps = new ArrayList<>();
 
@@ -159,11 +159,7 @@ public class DownloadPackage {
     }
 
     public boolean isAlreadyInLocal() {
-        return alreadyInLocal;
-    }
-
-    public void setAlreadyInLocal(boolean alreadyInLocal) {
-        this.alreadyInLocal = alreadyInLocal;
+        return getLocalFile() != null && getLocalFile().exists();
     }
 
     public List<String> getImpliedDeps() {
@@ -208,6 +204,14 @@ public class DownloadPackage {
      */
     public void setVirtual(boolean virtual) {
         this.virtual = virtual;
+    }
+
+    /**
+     * @return true if can only be downloaded from the Marketplace, not from {@link DownloadPackage#getDownloadUrl()}
+     * @since 7.1
+     */
+    public boolean isLaterDownload() {
+        return StringUtils.isBlank(getDownloadUrl()) || getFilename() == null || "".equals(getFilename());
     }
 
 }

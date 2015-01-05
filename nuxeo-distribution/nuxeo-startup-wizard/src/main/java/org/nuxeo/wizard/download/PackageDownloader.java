@@ -369,12 +369,15 @@ public class PackageDownloader {
 
     public List<DownloadPackage> getSelectedPackages() {
         List<DownloadPackage> pkgs = getPackageOptions().getPkg4Install();
+        File[] listFiles = getDownloadDirectory().listFiles();
         for (DownloadPackage pkg : pkgs) {
-            if (needToDownload(pkg)) {
-                pkg.setAlreadyInLocal(false);
-            } else {
-                pkg.setAlreadyInLocal(true);
+            for (File file : listFiles) {
+                if (file.getName().equals(pkg.getMd5())) {
+                    // recheck md5 ???
+                    pkg.setLocalFile(file);
+                }
             }
+            needToDownload(pkg);
         }
         return pkgs;
     }
@@ -395,7 +398,7 @@ public class PackageDownloader {
             } else {
                 for (PendingDownload download : pendingDownloads) {
                     if (download.getPkg().equals(pkg)) {
-                        if (download.getStatus() == PendingDownload.VERIFIED) {
+                        if (download.getStatus() == PendingDownloadStatus.VERIFIED) {
                             File file = download.getDowloadingFile();
                             fileEntries.add("add file:" + file.getAbsolutePath());
                             fileEntries.add("install " + pkg.getId());
@@ -436,7 +439,8 @@ public class PackageDownloader {
     public void reStartDownload(String id) {
         for (PendingDownload pending : pendingDownloads) {
             if (pending.getPkg().getId().equals(id)) {
-                if (Arrays.asList(PendingDownload.CORRUPTED, PendingDownload.ABORTED).contains(pending.getStatus())) {
+                if (Arrays.asList(PendingDownloadStatus.CORRUPTED, PendingDownloadStatus.ABORTED).contains(
+                        pending.getStatus())) {
                     pendingDownloads.remove(pending);
                     startDownloadPackage(pending.getPkg());
                 }
@@ -459,14 +463,7 @@ public class PackageDownloader {
     }
 
     protected boolean needToDownload(DownloadPackage pkg) {
-        for (File file : getDownloadDirectory().listFiles()) {
-            if (file.getName().equals(pkg.getMd5())) {
-                // recheck md5 ???
-                pkg.setLocalFile(file);
-                return false;
-            }
-        }
-        return true;
+        return !pkg.isVirtual() && !pkg.isLaterDownload() && !pkg.isAlreadyInLocal();
     }
 
     protected void startDownloadPackage(final DownloadPackage pkg) {
@@ -477,7 +474,7 @@ public class PackageDownloader {
                 @Override
                 public void run() {
                     log.info("Starting download on Thread " + Thread.currentThread().getName());
-                    download.setStatus(PendingDownload.INPROGRESS);
+                    download.setStatus(PendingDownloadStatus.INPROGRESS);
                     String url = pkg.getDownloadUrl();
                     if (!url.startsWith("http")) {
                         url = getBaseUrl() + url;
@@ -494,22 +491,22 @@ public class PackageDownloader {
                                 download.setFile(filesize, filePkg);
                             }
                             FileUtils.copyToFile(response.getEntity().getContent(), filePkg);
-                            download.setStatus(PendingDownload.COMPLETED);
+                            download.setStatus(PendingDownloadStatus.COMPLETED);
                         } else if (response.getStatusLine().getStatusCode() == 404) {
                             log.error("Package " + pkg.filename + " not found :" + url);
-                            download.setStatus(PendingDownload.MISSING);
+                            download.setStatus(PendingDownloadStatus.MISSING);
                             EntityUtils.consume(response.getEntity());
                             dw.abort();
                             return;
                         } else {
                             log.error("Received StatusCode " + response.getStatusLine().getStatusCode());
-                            download.setStatus(PendingDownload.ABORTED);
+                            download.setStatus(PendingDownloadStatus.ABORTED);
                             EntityUtils.consume(response.getEntity());
                             dw.abort();
                             return;
                         }
                     } catch (Exception e) {
-                        download.setStatus(PendingDownload.ABORTED);
+                        download.setStatus(PendingDownloadStatus.ABORTED);
                         log.error("Error during download", e);
                         return;
                     }
@@ -525,17 +522,17 @@ public class PackageDownloader {
         Runnable checkRunner = new Runnable() {
             @Override
             public void run() {
-                download.setStatus(PendingDownload.VERIFICATION);
+                download.setStatus(PendingDownloadStatus.VERIFICATION);
                 String expectedDigest = download.getPkg().getMd5();
                 String digest = getDigest(filePkg);
                 if (digest == null || (expectedDigest != null && !expectedDigest.equals(digest))) {
-                    download.setStatus(PendingDownload.CORRUPTED);
-                    log.error("Digest check failed : expected :" + expectedDigest + " computed :" + digest);
+                    download.setStatus(PendingDownloadStatus.CORRUPTED);
+                    log.error("Digest check failed: expected=" + expectedDigest + " computed=" + digest);
                     return;
                 }
                 File newFile = new File(getDownloadDirectory(), digest);
                 filePkg.renameTo(newFile);
-                download.setStatus(PendingDownload.VERIFIED);
+                download.setStatus(PendingDownloadStatus.VERIFIED);
                 download.setFile(newFile.length(), newFile);
             }
         };
@@ -581,7 +578,7 @@ public class PackageDownloader {
             return false;
         }
         for (PendingDownload download : pendingDownloads) {
-            if (download.getStatus() < PendingDownload.VERIFIED) {
+            if (download.getStatus().getValue() < PendingDownloadStatus.VERIFIED.getValue()) {
                 return false;
             }
         }
@@ -597,7 +594,8 @@ public class PackageDownloader {
         }
         int nbInProgress = 0;
         for (PendingDownload download : pendingDownloads) {
-            if (download.getStatus() < PendingDownload.VERIFIED && download.getStatus() >= PendingDownload.PENDING) {
+            if (download.getStatus().getValue() < PendingDownloadStatus.VERIFIED.getValue()
+                    && download.getStatus().getValue() >= PendingDownloadStatus.PENDING.getValue()) {
                 nbInProgress++;
             }
         }

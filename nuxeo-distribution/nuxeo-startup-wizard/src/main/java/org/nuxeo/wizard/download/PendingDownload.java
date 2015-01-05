@@ -21,25 +21,9 @@ import java.io.File;
 
 public class PendingDownload {
 
-    public static final int PENDING = 0;
-
-    public static final int INPROGRESS = 1;
-
-    public static final int COMPLETED = 2;
-
-    public static final int VERIFICATION = 3;
-
-    public static final int VERIFIED = 4;
-
-    public static final int ABORTED = -1;
-
-    public static final int MISSING = -2;
-
-    public static final int CORRUPTED = -3;
-
     protected final DownloadPackage pkg;
 
-    protected int status = PENDING;
+    protected PendingDownloadStatus status = PendingDownloadStatus.PENDING;
 
     protected float expectedLength;
 
@@ -49,11 +33,11 @@ public class PendingDownload {
         this.pkg = pkg;
     }
 
-    public int getStatus() {
+    public PendingDownloadStatus getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(PendingDownloadStatus status) {
         this.status = status;
     }
 
@@ -89,6 +73,13 @@ public class PendingDownload {
 
     public File getDowloadingFile() {
         return dowloadingFile;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("PendingDownload ").append(pkg).append(", status=").append(status);
+        return builder.toString();
     }
 
 }
