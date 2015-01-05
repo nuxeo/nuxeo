@@ -28,11 +28,9 @@
   <div>
     <c:forEach var="username" items="#{field}" varStatus="status">
       <c:if test="#{!status.first}">#{status.last ? andLabel : ', '}</c:if>
-      <span class="#{widget.id}_#{status.index}">
-        <h:outputText value="#{nxu:userFullName(username)}"
-          title="#{username}"
-          styleClass="tipsyShow" />
-      </span>
+      <h:outputText value="#{nxu:userFullName(username)}"
+        title="#{username}"
+        styleClass="tipsyShow #{widget.id}_#{status.index}" />
     </c:forEach>
   </div>
 </c:if>
