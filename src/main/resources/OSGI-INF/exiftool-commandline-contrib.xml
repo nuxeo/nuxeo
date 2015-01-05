@@ -1,5 +1,7 @@
 <component name="org.nuxeo.binary.metadata.exiftool.commandline">
 
+  <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>
+
   <extension
           target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
           point="command">
