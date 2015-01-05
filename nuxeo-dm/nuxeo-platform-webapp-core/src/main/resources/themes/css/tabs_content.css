@@ -428,6 +428,7 @@ author: lkemen@nuxeo.com
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  word-wrap: normal;
   width: 15em }
 
 .bubbleBox.bubbleListing span:not(.documentTitle) {
