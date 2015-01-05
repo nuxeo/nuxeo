@@ -7,6 +7,8 @@
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLink"%>
+<%@ page import="org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants"%>
+<%@ page import="org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter"%>
 <%@ page import="java.lang.Boolean"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Locale"%>
@@ -20,6 +22,11 @@ String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
 String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
 String testerName = Framework.getProperty("org.nuxeo.ecm.tester.name");
 String context = request.getContextPath();
+
+HttpSession httpSession = request.getSession(false);
+if (httpSession!=null && httpSession.getAttribute(NXAuthConstants.USERIDENT_KEY)!=null) {
+  response.sendRedirect(context + "/" + NuxeoAuthenticationFilter.DEFAULT_START_PAGE);
+}
 
 // Read Seam locale cookie
 String localeCookieName = "org.jboss.seam.core.Locale";
