@@ -5,7 +5,7 @@ Style javascript Popups
 author: lkemen@nuxeo.com
 */
 
-/* =FancyBox */
+/* =FancyBox + TinyMce popups style override */
 #fancybox-overlay {
   z-index: 10002 }
 
@@ -24,7 +24,8 @@ author: lkemen@nuxeo.com
 #fancybox-wrap a:active {
   text-decoration: underline }
 
-#fancybox-content h3 {
+#fancybox-content h3,
+.mce-window-head {
   background-color: "neutral.light (__FLAVOR__ background)";
   border-bottom: 1px solid #e7e7e7;
   margin: 0;
@@ -71,6 +72,45 @@ author: lkemen@nuxeo.com
 
 #fancybox-content .dataInput {
   max-width: none }
+
+.mce-window-head .mce-title {
+  color: "title.major (__FLAVOR__ color)";
+  font-size: 1.2em;
+  font-weight: bold;
+  line-height: normal }
+
+.mce-window-head .mce-close {
+  background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+  border: medium none;
+  margin: 0;
+  padding: .2em 0 }
+
+.mce-in .mce-panel,
+.mce-in .mce-foot {
+  background-color: "neutral.light (__FLAVOR__ background)";
+  border-top: 1px solid #e7e7e7 }
+
+.mce-window .mce-widget.mce-btn {
+  border: medium none }
+
+.mce-primary button, .mce-primary button i {
+  background-color: "primary.button (__FLAVOR__ background)";
+  border-color: "primary.button (__FLAVOR__ border)";
+  box-shadow: inset 0px 1px 0px rgba(255,255,255,0.3);
+  color: #fff;
+  text-shadow: none }
+
+.mce-primary button:hover, .mce-primary button:hover i {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 -30px 20px rgba(255, 255, 255, 0.2) inset, inset 0px 1px 0px rgba(255,255,255,0.4);
+  transition: all 150ms ease-in-out 0s }
+
+.mce-primary:focus button {
+  border-color: #2e9cff;
+  box-shadow: 0 0 5px #b5dcff;
+  outline: none }
+
+.mce-textbox {
+  padding: 0 .3em }
 
 /* Override default size from the page */
 #fancybox-frame body,
