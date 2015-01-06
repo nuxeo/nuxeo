@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,6 +15,7 @@ package org.nuxeo.ecm.automation.core.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +32,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 
 /**
  * Helper to handle Complex types decoding from a JSON encoded String entries of a property file
@@ -101,15 +103,22 @@ public class ComplexTypeJSONDecoder {
             if (ct.hasField(nodeEntry.getKey())) {
 
                 Field field = ct.getField(nodeEntry.getKey());
-                if (field.getType().isSimpleType()) {
-                    result.put(nodeEntry.getKey(),
-                            ((SimpleType) field.getType()).decode(nodeEntry.getValue().getValueAsText()));
+                Type fieldType = field.getType();
+                if (fieldType.isSimpleType()) {
+                    Object value;
+                    if (fieldType == DateType.INSTANCE && nodeEntry.getValue().isIntegralNumber()) {
+                        value = Calendar.getInstance();
+                        ((Calendar) value).setTimeInMillis(nodeEntry.getValue().getValueAsLong());
+                    } else {
+                        value = ((SimpleType) fieldType).decode(nodeEntry.getValue().getValueAsText());
+                    }
+                    result.put(nodeEntry.getKey(), value);
                 } else {
                     JsonNode subNode = nodeEntry.getValue();
                     if (subNode.isArray()) {
-                        result.put(nodeEntry.getKey(), decodeList(((ListType) field.getType()), (ArrayNode) subNode));
+                        result.put(nodeEntry.getKey(), decodeList(((ListType) fieldType), (ArrayNode) subNode));
                     } else {
-                        result.put(nodeEntry.getKey(), decode(((ComplexType) field.getType()), (ObjectNode) subNode));
+                        result.put(nodeEntry.getKey(), decode(((ComplexType) fieldType), (ObjectNode) subNode));
                     }
                 }
             }
