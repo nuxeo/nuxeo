@@ -34,6 +34,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyIntegerDef
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyStringDefinitionImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyUriDefinitionImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.RelationshipTypeDefinitionImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.SecondaryTypeDefinitionImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
@@ -44,6 +45,7 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.Namespace;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -126,6 +128,8 @@ public class NuxeoTypeHelper {
 
     private static final String NAMESPACE = "http://ns.nuxeo.org/cmis/type/";
 
+    private static final String NAMESPACE_FACET = "http://ns.nuxeo.org/cmis/facet/";
+
     protected static boolean isComplexPropertiesEnabled() {
         return !Framework.isBooleanPropertyFalse(ENABLE_COMPLEX_PROPERTIES);
     }
@@ -136,18 +140,25 @@ public class NuxeoTypeHelper {
     protected Map<String, String> propertyToSchema;
 
     /**
-     * Helper to construct one type.
+     * Helper to construct one CMIS type from a {@link DocumentType}.
      */
     protected NuxeoTypeHelper(String id, String parentId, BaseTypeId baseTypeId, DocumentType documentType,
             String nuxeoTypeId, boolean creatable) {
         propertyToSchema = new HashMap<String, String>();
-        constructBase(id, parentId, baseTypeId, documentType, nuxeoTypeId, creatable);
+        constructBaseDocumentType(id, parentId, baseTypeId, documentType, nuxeoTypeId, creatable);
+    }
+
+    /**
+     * Helper to construct one CMIS type from a secondary type.
+     */
+    protected NuxeoTypeHelper(String id, String nuxeoTypeId) {
+        propertyToSchema = new HashMap<String, String>();
+        constructBaseSecondaryType(id, nuxeoTypeId);
     }
 
     /**
      * Gets the remapped parent type id, or {@code null} if the type is to be ignored.
      */
-
     public static String getParentTypeId(DocumentType documentType) {
         if (!documentType.hasSchema(NX_DUBLINCORE)) {
             // ignore type without dublincore
@@ -189,7 +200,7 @@ public class NuxeoTypeHelper {
         return parentId;
     }
 
-    public static TypeDefinition construct(DocumentType documentType, String parentId) {
+    public static TypeDefinition constructDocumentType(DocumentType documentType, String parentId) {
         String nuxeoTypeId = documentType.getName();
         String id = mappedId(nuxeoTypeId);
         NuxeoTypeHelper h = new NuxeoTypeHelper(id, parentId, getBaseTypeId(documentType), documentType, nuxeoTypeId,
@@ -201,14 +212,29 @@ public class NuxeoTypeHelper {
         return h.t;
     }
 
+    public static TypeDefinition constructSecondaryType(CompositeType type) {
+        String nuxeoTypeId = type.getName();
+        String id = "facet:" + nuxeoTypeId;
+        NuxeoTypeHelper h = new NuxeoTypeHelper(id, nuxeoTypeId);
+        // Nuxeo Property Definitions
+        for (Schema schema : type.getSchemas()) {
+            h.addSchemaPropertyDefinitions(schema);
+        }
+        return h.t;
+    }
+
     /**
-     * Constructs a base type, not mapped to a Nuxeo type. It has the dublincore schema though. When created, it
-     * actually constructs a File or a Folder.
+     * Constructs a base type, not mapped to a Nuxeo type. If not a secondary, it has the dublincore schema.
      */
     public static TypeDefinition constructCmisBase(BaseTypeId baseTypeId, SchemaManager schemaManager) {
-        NuxeoTypeHelper h = new NuxeoTypeHelper(baseTypeId.value(), null, baseTypeId, null, null, true);
-        DocumentType dt = schemaManager.getDocumentType(NUXEO_FOLDER); // has dc
-        h.addSchemaPropertyDefinitions(dt.getSchema(NX_DUBLINCORE));
+        NuxeoTypeHelper h;
+        if (baseTypeId != BaseTypeId.CMIS_SECONDARY) {
+            h = new NuxeoTypeHelper(baseTypeId.value(), null, baseTypeId, null, null, true);
+            DocumentType dt = schemaManager.getDocumentType(NUXEO_FOLDER); // has dc
+            h.addSchemaPropertyDefinitions(dt.getSchema(NX_DUBLINCORE));
+        } else {
+            h = new NuxeoTypeHelper(baseTypeId.value(), null);
+        }
         return h.t;
     }
 
@@ -273,7 +299,10 @@ public class NuxeoTypeHelper {
         }
     }
 
-    protected void constructBase(String id, String parentId, BaseTypeId baseTypeId, DocumentType documentType,
+    /**
+     * Constructs the base for a {@link DocumentType}.
+     */
+    protected void constructBaseDocumentType(String id, String parentId, BaseTypeId baseTypeId, DocumentType documentType,
             String nuxeoTypeId, boolean creatable) {
         if (baseTypeId == BaseTypeId.CMIS_FOLDER) {
             t = new FolderTypeDefinitionImpl();
@@ -319,6 +348,28 @@ public class NuxeoTypeHelper {
             dt.setContentStreamAllowed(csa);
             addDocumentPropertyDefinitions(dt);
         }
+    }
+
+    /**
+     * Constructs the base for a secondary type.
+     */
+    protected void constructBaseSecondaryType(String id, String nuxeoTypeId) {
+        t = new SecondaryTypeDefinitionImpl();
+        t.setBaseTypeId(BaseTypeId.CMIS_SECONDARY);
+        t.setId(id);
+        t.setParentTypeId(nuxeoTypeId == null ? null : BaseTypeId.CMIS_SECONDARY.value());
+        t.setDescription(id);
+        t.setDisplayName(id);
+        t.setLocalName(nuxeoTypeId == null ? id : nuxeoTypeId);
+        t.setLocalNamespace(NAMESPACE_FACET);
+        t.setQueryName(id);
+        t.setIsCreatable(Boolean.FALSE);
+        t.setIsQueryable(Boolean.TRUE);
+        t.setIsIncludedInSupertypeQuery(Boolean.TRUE);
+        t.setIsFulltextIndexed(Boolean.TRUE);
+        t.setIsControllableAcl(Boolean.FALSE);
+        t.setIsControllablePolicy(Boolean.FALSE);
+        t.setIsFileable(Boolean.FALSE);
     }
 
     protected void addBasePropertyDefinitions() {

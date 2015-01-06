@@ -154,7 +154,7 @@ public class CMISQLtoNXQL {
         } catch (Exception e) {
             throw new QueryParseException(e.getMessage() + " for query: " + cmisql, e);
         }
-        if (query.getTypes().size() != 1) {
+        if (query.getTypes().size() != 1 && query.getJoinedSecondaryTypes() == null) {
             throw new QueryParseException("JOINs not supported in query: " + cmisql);
         }
 
@@ -166,6 +166,11 @@ public class CMISQLtoNXQL {
             recordSelectSelector(sel);
         }
         for (CmisSelector sel : query.getJoinReferences()) {
+            ColumnReference col = ((ColumnReference) sel);
+            if (col.getTypeDefinition().getBaseTypeId() == BaseTypeId.CMIS_SECONDARY) {
+                // ignore reference to ON FACET.cmis:objectId
+                continue;
+            }
             recordSelector(sel, JOIN);
         }
         for (CmisSelector sel : query.getWhereReferences()) {

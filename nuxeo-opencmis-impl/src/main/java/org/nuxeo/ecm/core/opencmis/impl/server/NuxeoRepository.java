@@ -54,6 +54,7 @@ import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -97,6 +98,8 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.DefaultPermissionProvider;
 import org.nuxeo.ecm.core.security.PermissionVisibilityDescriptor;
 import org.nuxeo.runtime.api.Framework;
@@ -189,9 +192,11 @@ public class NuxeoRepository {
         typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(BaseTypeId.CMIS_DOCUMENT, schemaManager));
         typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(BaseTypeId.CMIS_FOLDER, schemaManager));
         typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(BaseTypeId.CMIS_RELATIONSHIP, schemaManager));
+        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(BaseTypeId.CMIS_SECONDARY, schemaManager));
         addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_DOCUMENT, typesChildren, done, schemaManager);
         addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_FOLDER, typesChildren, done, schemaManager);
         addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_RELATION, typesChildren, done, schemaManager);
+        addSecondaryTypes(typeManager, schemaManager);
         return typeManager;
     }
 
@@ -215,7 +220,7 @@ public class NuxeoRepository {
                     parentTypeId = BaseTypeId.CMIS_FOLDER.value();
                 }
             }
-            typeManager.addTypeDefinition(NuxeoTypeHelper.construct(dt, parentTypeId));
+            typeManager.addTypeDefinition(NuxeoTypeHelper.constructDocumentType(dt, parentTypeId));
         }
         // recurse in children
         List<String> children = typesChildren.get(name);
@@ -224,6 +229,12 @@ public class NuxeoRepository {
         }
         for (String sub : children) {
             addTypesRecursively(typeManager, sub, typesChildren, done, schemaManager);
+        }
+    }
+
+    protected static void addSecondaryTypes(TypeManagerImpl typeManager, SchemaManager schemaManager) {
+        for (CompositeType type : schemaManager.getFacets()) {
+            typeManager.addTypeDefinition(NuxeoTypeHelper.constructSecondaryType(type), false);
         }
     }
 

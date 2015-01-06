@@ -11,6 +11,7 @@
 package org.nuxeo.ecm.core.opencmis.impl.server;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -69,6 +70,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -229,6 +231,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
                     Collections.<String> emptyList());
         } else if (NuxeoTypeHelper.NX_FACETS.equals(name)) {
             List<String> facets = new ArrayList<String>(doc.getFacets());
+            facets.remove(FacetNames.IMMUTABLE); // not actually stored or registered
             Collections.sort(facets);
             return (PropertyData<U>) new NuxeoPropertyIdMultiDataFixed((PropertyDefinition<String>) pd, facets);
         } else if (NuxeoTypeHelper.NX_LIFECYCLE_STATE.equals(name)) {

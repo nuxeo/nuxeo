@@ -56,6 +56,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeFalse;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -434,6 +435,17 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     @Test
+    public void testGetTypeChildrenBase() {
+        TypeDefinitionList types = repoService.getTypeChildren(repositoryId, null, Boolean.FALSE, null, null, null);
+        List<String> ids = getTypeIds(types);
+        assertEquals(4, ids.size());
+        assertTrue(ids.contains(BaseTypeId.CMIS_DOCUMENT.value()));
+        assertTrue(ids.contains(BaseTypeId.CMIS_FOLDER.value()));
+        assertTrue(ids.contains(BaseTypeId.CMIS_RELATIONSHIP.value()));
+        assertTrue(ids.contains(BaseTypeId.CMIS_SECONDARY.value()));
+    }
+
+    @Test
     public void testGetTypeChildren() {
         TypeDefinitionList types = repoService.getTypeChildren(repositoryId, "cmis:folder", Boolean.FALSE, null, null,
                 null);
@@ -501,6 +513,24 @@ public class TestCmisBinding extends TestCmisBindingBase {
         } catch (CmisInvalidArgumentException e) {
             // ok
         }
+    }
+
+    @Test
+    public void testGetTypeChildrenSecondary() {
+        TypeDefinitionList types = repoService.getTypeChildren(repositoryId, "cmis:secondary", Boolean.FALSE, null,
+                null, null);
+        for (TypeDefinition type : types.getList()) {
+            Map<String, PropertyDefinition<?>> pd = type.getPropertyDefinitions();
+            assertNotNull(pd);
+            assertEquals(0, pd.size());
+        }
+        List<String> ids = getTypeIds(types);
+        assertTrue(ids.contains("facet:CustomFacetWithMySchema2"));
+        assertTrue(ids.contains("facet:CustomFacetWithoutSchema"));
+        assertTrue(ids.contains("facet:ComplexTest"));
+        assertTrue(ids.contains("facet:HasRelatedText"));
+        assertTrue(ids.contains("facet:Versionable"));
+        assertTrue(ids.contains("facet:Folderish"));
     }
 
     @Test
@@ -2257,6 +2287,38 @@ public class TestCmisBinding extends TestCmisBindingBase {
                 + " WHERE B.cmis:name NOT IN ('testfile3_Title', 'testfile4_Title')";
         ObjectList res = query(statement);
         assertEquals(2, res.getNumItems().intValue());
+    }
+
+    @Test
+    public void testQueryJoinSecondaryType() throws Exception {
+        // this is a JOIN with secondary type, always valid even if JOINs are not supported
+
+        // not implemented for direct CMISQL -> SQL translation
+        assumeFalse("not implemented", supportsJoins());
+
+        DocumentModel doc = coreSession.getDocument(new PathRef("/testfolder1/testfile1"));
+        doc.addFacet("CustomFacetWithMySchema2");
+        doc.setPropertyValue("my2:string", "foo");
+        coreSession.saveDocument(doc);
+        coreSession.save();
+        nextTransaction();
+
+        String statement = "SELECT *" //
+                + " FROM cmis:document D" //
+                + " JOIN facet:CustomFacetWithMySchema2 F" //
+                + " ON D.cmis:objectId = F.cmis:objectId" //
+                + " WHERE D.cmis:name = 'testfile1_Title'" //
+                + " AND F.my2:string = 'foo'";
+        ObjectList res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+
+        statement = "SELECT *" //
+                + " FROM cmis:document D" //
+                + " JOIN facet:CustomFacetWithMySchema2 F" //
+                + " ON D.cmis:objectId = F.cmis:objectId" //
+                + " WHERE F.my2:string = 'notfoo'";
+        res = query(statement);
+        assertEquals(0, res.getNumItems().intValue());
     }
 
     @Test
