@@ -44,8 +44,7 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements Wo
 
     @Override
     public String getTitle() {
-        String title = " ElasticSearch indexing children for cmd " + (cmds.isEmpty() ? "null" : cmds.get(0));
-        return title;
+        return " ElasticSearch indexing children for cmd " + (cmds.isEmpty() ? "null" : cmds.get(0));
     }
 
     @Override

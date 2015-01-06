@@ -19,6 +19,7 @@ package org.nuxeo.elasticsearch.web.admin;
 import static org.jboss.seam.ScopeType.EVENT;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -123,7 +124,7 @@ public class ElasticSearchManager {
                 log.warn(String.format("Re-indexing document: %s and its children on repository: %s", doc,
                         repositoryName));
                 IndexingCommand cmd = new IndexingCommand(doc, false, true);
-                esi.runIndexingWorker(cmd);
+                esi.runIndexingWorker(Arrays.asList(cmd));
             }
         }
     }

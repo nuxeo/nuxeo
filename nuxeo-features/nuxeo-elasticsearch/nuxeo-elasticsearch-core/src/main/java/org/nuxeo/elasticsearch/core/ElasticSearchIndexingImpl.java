@@ -88,11 +88,6 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     @Override
-    public void runIndexingWorker(IndexingCommand cmds) {
-        throw new UnsupportedOperationException("Not implemented");
-    }
-
-    @Override
     public void runReindexingWorker(String repositoryName, String nxql) {
         if (nxql == null || nxql.isEmpty()) {
             throw new IllegalArgumentException("Expecting an NXQL query");
