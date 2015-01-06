@@ -46,7 +46,6 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.base.InputController;
-import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -78,15 +77,13 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
     @Out(required = false)
     private String currentDocumentFullUrl;
 
-    @In(create = true)
-    @Out
-    private PrincipalListManager principalListManager;
-
     @Out(required = false)
     private String fromEmail;
 
     @Out(required = false)
     private List<NuxeoPrincipal> toEmail;
+
+    private List<String> recipients;
 
     public String send() {
         if (mailSubject == null || mailSubject.trim().length() == 0) {
@@ -98,12 +95,12 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
          * if (mailContent == null || mailContent.trim().length() == 0){ facesMessages.add(FacesMessage.SEVERITY_ERROR,
          * resourcesAccessor .getMessages().get("label.email.content.empty")); return; }
          */
-        if (principalListManager.getSelectedUserListEmpty()) {
+        if (recipients == null || recipients.isEmpty()) {
             facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get("label.email.nousers.selected"));
             return null;
         }
-        for (String user : principalListManager.getSelectedUsers()) {
+        for (String user : recipients) {
             try {
                 sendNotificationEvent(user, mailSubject, mailContent);
             } catch (ClientException e) {
@@ -135,15 +132,12 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
      * @param theMailSubject
      * @param theMailContent
      */
-    private void sendNotificationEvent(String user, String theMailSubject, String theMailContent)
+    private void sendNotificationEvent(String recipient, String theMailSubject, String theMailContent)
             throws ClientException {
 
         Map<String, Serializable> options = new HashMap<String, Serializable>();
 
         // options for confirmation email
-        String prefix = principalListManager.getPrincipalType(user) == PrincipalListManager.USER_TYPE ? "user:"
-                : "group:";
-        String recipient = prefix + user;
         options.put(NotificationConstants.RECIPIENTS_KEY, new String[] { recipient });
         options.put("mailSubject", theMailSubject);
         options.put("mailContent", theMailContent);
@@ -190,20 +184,6 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
     }
 
     /**
-     * @return the principalListManager.
-     */
-    public PrincipalListManager getPrincipalListManager() {
-        return principalListManager;
-    }
-
-    /**
-     * @param principalListManager the principalListManager to set.
-     */
-    public void setPrincipalListManager(PrincipalListManager principalListManager) {
-        this.principalListManager = principalListManager;
-    }
-
-    /**
      * @return the fromEmail.
      */
     public String getFromEmail() {
@@ -237,6 +217,20 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
 
     public void setCurrentDocumentFullUrl(String currentDocumentFullUrl) {
         this.currentDocumentFullUrl = currentDocumentFullUrl;
+    }
+
+    /**
+     * @since 7.1
+     */
+    public List<String> getRecipients() {
+        return recipients;
+    }
+
+    /**
+     * @since 7.1
+     */
+    public void setRecipients(List<String> recipients) {
+        this.recipients = recipients;
     }
 
 }

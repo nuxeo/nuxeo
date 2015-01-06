@@ -120,7 +120,8 @@ input[placeholder] {
 
 /* Document creation form */
 #document_create .buttonsGadget,
-#createThread .buttonsGadget {
+#createThread .buttonsGadget,
+#document_send .buttonsGadget {
   border-top: 1px solid #eee;
   margin: 2em -2em -2em;
   padding: 1em 2em .5em }
