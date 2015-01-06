@@ -20,7 +20,7 @@
       <nav role="complementary">
         <a href="http://answers.nuxeo.com/">Answers</a>
         <a href="http://doc.nuxeo.com">Documentation</a>
-        <a href="http://connect.nuxeo.com">nuxeo connect</a>
+        <a href="http://connect.nuxeo.com">Nuxeo Online Services</a>
         <a href="http://www.nuxeo.com">nuxeo.com</a>
        </nav>
     </header>
@@ -106,7 +106,7 @@
        <ul>
          <li><h6>Services</h6>
            <ul>
-             <li><a href="http://www.nuxeo.com/en/services/connect/">Support</a></li>
+             <li><a href="http://www.nuxeo.com/en/services/connect/">Nuxeo Online Services</a></li>
              <li><a href="http://www.nuxeo.com/en/services/training">Training</a></li>
              <li><a href="http://www.nuxeo.com/en/services/consulting">Consulting</a></li>
            </ul>
