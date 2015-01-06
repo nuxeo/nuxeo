@@ -1116,14 +1116,18 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public void copyContent(DocumentModel sourceDoc) throws ClientException {
-        schemas = new HashSet<String>(Arrays.asList(sourceDoc.getSchemas()));
-        facets = new HashSet<String>(sourceDoc.getFacets());
-        instanceFacets = new HashSet<String>(((DocumentModelImpl) sourceDoc).instanceFacets);
-        instanceFacetsOrig = new HashSet<String>(((DocumentModelImpl) sourceDoc).instanceFacetsOrig);
+        computeFacetsAndSchemas(((DocumentModelImpl) sourceDoc).instanceFacets);
         DataModelMap newDataModels = new DataModelMapImpl();
         for (String key : schemas) {
             DataModel oldDM = sourceDoc.getDataModel(key);
-            DataModel newDM = cloneDataModel(oldDM);
+            DataModel newDM;
+            if (oldDM != null) {
+                newDM = cloneDataModel(oldDM);
+            } else {
+                // create an empty datamodel
+                Schema schema = Framework.getService(SchemaManager.class).getSchema(key);
+                newDM = new DataModelImpl(new DocumentPartImpl(schema));
+            }
             newDataModels.put(key, newDM);
         }
         dataModels = newDataModels;
@@ -1572,16 +1576,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
         if ((refreshFlags & (REFRESH_CONTENT | REFRESH_CONTENT_LAZY)) != 0) {
             dataModels.clear();
-            instanceFacets = refresh.instanceFacets;
-            instanceFacetsOrig = new HashSet<String>(instanceFacets);
-            boolean immutable = facets.contains(FacetNames.IMMUTABLE);
-            facets = new HashSet<String>(instanceFacets);
-            facets.addAll(getDocumentType().getFacets());
-            if (immutable) {
-                facets.add(FacetNames.IMMUTABLE);
-            }
-            this.schemas = computeSchemas(getDocumentType(), instanceFacets, isProxy());
-            schemasOrig = new HashSet<String>(this.schemas);
+            computeFacetsAndSchemas(refresh.instanceFacets);
         }
         if ((refreshFlags & REFRESH_CONTENT) != 0) {
             DocumentPart[] parts = refresh.documentParts;
@@ -1592,6 +1587,23 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                 }
             }
         }
+    }
+
+    /**
+     * Recomputes all facets and schemas from the instance facets.
+     *
+     * @since 7.1
+     */
+    protected void computeFacetsAndSchemas(Set<String> instanceFacets) {
+        this.instanceFacets = instanceFacets;
+        instanceFacetsOrig = new HashSet<>(instanceFacets);
+        facets = new HashSet<>(instanceFacets);
+        facets.addAll(getDocumentType().getFacets());
+        if (isImmutable()) {
+            facets.add(FacetNames.IMMUTABLE);
+        }
+        schemas = computeSchemas(getDocumentType(), instanceFacets, isProxy());
+        schemasOrig = new HashSet<>(schemas);
     }
 
     @Override
