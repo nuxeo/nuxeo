@@ -107,10 +107,9 @@ public class SearchUIActions implements Serializable {
 
     public static final String NXQL_SEARCH_CONTENT_VIEW_NAME = "nxql_search";
 
-    public static final String DEFAULT_NXQL_QUERY = "SELECT * FROM Document" +
-            " WHERE ecm:mixinType != 'HiddenInNavigation'" +
-            " AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0" +
-            " AND ecm:currentLifeCycleState != 'deleted'";
+    public static final String DEFAULT_NXQL_QUERY = "SELECT * FROM Document"
+            + " WHERE ecm:mixinType != 'HiddenInNavigation'" + " AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0"
+            + " AND ecm:currentLifeCycleState != 'deleted'";
 
     public static final String CONTENT_VIEW_NAME_PARAMETER = "contentViewName";
 
@@ -172,14 +171,12 @@ public class SearchUIActions implements Serializable {
     }
 
     public void setSearchMainTab(String tabs) {
-        webActions.setCurrentTabIds(!StringUtils.isBlank(tabs) ? tabs
-                : MAIN_TABS_SEARCH);
+        webActions.setCurrentTabIds(!StringUtils.isBlank(tabs) ? tabs : MAIN_TABS_SEARCH);
     }
 
     public String getSearchViewTitle() {
         if (currentSelectedSavedSearchId != null) {
-            DocumentModel savedSearch = documentManager.getDocument(new IdRef(
-                    currentSelectedSavedSearchId));
+            DocumentModel savedSearch = documentManager.getDocument(new IdRef(currentSelectedSavedSearchId));
             return savedSearch.getTitle();
         } else if (currentContentViewName != null) {
             ContentView cv = contentViewActions.getContentView(currentContentViewName);
@@ -209,8 +206,7 @@ public class SearchUIActions implements Serializable {
         return false;
     }
 
-    public String getJSONContentViewState() throws ClientException,
-            UnsupportedEncodingException {
+    public String getJSONContentViewState() throws ClientException, UnsupportedEncodingException {
         ContentView contentView = contentViewActions.getContentView(currentContentViewName);
         ContentViewService contentViewService = Framework.getService(ContentViewService.class);
         ContentViewState state = contentViewService.saveContentView(contentView);
@@ -227,18 +223,15 @@ public class SearchUIActions implements Serializable {
         return currentContentViewName;
     }
 
-    public void setCurrentContentViewName(String contentViewName)
-            throws ClientException {
+    public void setCurrentContentViewName(String contentViewName) throws ClientException {
         this.currentContentViewName = contentViewName;
     }
 
     public String getCurrentSelectedSavedSearchId() {
-        return currentSelectedSavedSearchId != null ? currentSelectedSavedSearchId
-                : currentContentViewName;
+        return currentSelectedSavedSearchId != null ? currentSelectedSavedSearchId : currentContentViewName;
     }
 
-    public void setCurrentSelectedSavedSearchId(String selectedSavedSearchId)
-            throws ClientException {
+    public void setCurrentSelectedSavedSearchId(String selectedSavedSearchId) throws ClientException {
         for (ContentViewHeader contentViewHeader : contentViewHeaders) {
             if (contentViewHeader.getName().equals(selectedSavedSearchId)) {
                 contentViewActions.reset(currentContentViewName);
@@ -247,28 +240,23 @@ public class SearchUIActions implements Serializable {
                 return;
             }
         }
-        DocumentModel savedSearch = documentManager.getDocument(new IdRef(
-                selectedSavedSearchId));
+        DocumentModel savedSearch = documentManager.getDocument(new IdRef(selectedSavedSearchId));
         String contentViewName = (String) savedSearch.getPropertyValue("cvd:contentViewName");
         loadSavedSearch(contentViewName, savedSearch);
     }
 
-    public void loadSavedSearch(String contentViewName,
-            DocumentModel searchDocument) throws ClientException {
-        ContentView contentView = contentViewActions.getContentView(
-                contentViewName, searchDocument);
+    public void loadSavedSearch(String contentViewName, DocumentModel searchDocument) throws ClientException {
+        ContentView contentView = contentViewActions.getContentView(contentViewName, searchDocument);
         if (contentView != null) {
             currentContentViewName = contentViewName;
             currentSelectedSavedSearchId = searchDocument.getId();
         }
     }
 
-    public List<ContentViewHeader> getContentViewHeaders()
-            throws ClientException {
+    public List<ContentViewHeader> getContentViewHeaders() throws ClientException {
         if (contentViewHeaders == null) {
             SearchUIService searchUIService = Framework.getService(SearchUIService.class);
-            contentViewHeaders = searchUIService.getContentViewHeaders(
-                    actionContextProvider.createActionContext(),
+            contentViewHeaders = searchUIService.getContentViewHeaders(actionContextProvider.createActionContext(),
                     navigationContext.getCurrentDocument());
         }
         return contentViewHeaders;
@@ -369,13 +357,11 @@ public class SearchUIActions implements Serializable {
         ContentView contentView = contentViewActions.getContentView(getCurrentContentViewName());
         if (contentView != null) {
             SearchUIService searchUIService = Framework.getService(SearchUIService.class);
-            DocumentModel savedSearch = searchUIService.saveSearch(
-                    documentManager, contentView, savedSearchTitle);
+            DocumentModel savedSearch = searchUIService.saveSearch(documentManager, contentView, savedSearchTitle);
             currentSelectedSavedSearchId = savedSearch.getId();
 
             savedSearchTitle = null;
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    messages.get(SEARCH_SAVED_LABEL));
+            facesMessages.add(StatusMessage.Severity.INFO, messages.get(SEARCH_SAVED_LABEL));
 
             // Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
             // uws);
@@ -392,17 +378,15 @@ public class SearchUIActions implements Serializable {
      * ----- Permanent links -----
      */
 
-    public void setState(String state) throws ClientException,
-            UnsupportedEncodingException {
+    public void setState(String state) throws ClientException, UnsupportedEncodingException {
         if (isNotBlank(state)) {
             Long finalPageSize = null;
             if (!StringUtils.isBlank(pageSize)) {
                 try {
                     finalPageSize = Long.valueOf(pageSize);
                 } catch (NumberFormatException e) {
-                    log.warn(String.format(
-                            "Unable to parse '%s' parameter with value '%s'",
-                            PAGE_SIZE_PARAMETER, pageSize));
+                    log.warn(String.format("Unable to parse '%s' parameter with value '%s'", PAGE_SIZE_PARAMETER,
+                            pageSize));
                 }
             }
 
@@ -411,9 +395,8 @@ public class SearchUIActions implements Serializable {
                 try {
                     finalCurrentPage = Long.valueOf(currentPage);
                 } catch (NumberFormatException e) {
-                    log.warn(String.format(
-                            "Unable to parse '%s' parameter with value '%s'",
-                            CURRENT_PAGE_PARAMETER, currentPage));
+                    log.warn(String.format("Unable to parse '%s' parameter with value '%s'", CURRENT_PAGE_PARAMETER,
+                            currentPage));
                 }
             }
 
@@ -428,8 +411,8 @@ public class SearchUIActions implements Serializable {
                 }
 
                 if (canRestore) {
-                    contentViewActions.restoreContentView(getCurrentContentViewName(),
-                            finalCurrentPage, finalPageSize, null, state);
+                    contentViewActions.restoreContentView(getCurrentContentViewName(), finalCurrentPage, finalPageSize,
+                            null, state);
                 } else {
                     invalidateContentViewsName();
                 }
@@ -453,8 +436,7 @@ public class SearchUIActions implements Serializable {
         this.pageSize = pageSize;
     }
 
-    public void setSearchTerm(String searchTerm) throws ClientException,
-            UnsupportedEncodingException {
+    public void setSearchTerm(String searchTerm) throws ClientException, UnsupportedEncodingException {
         // If the search term is not defined, we don't do the logic
         if (!StringUtils.isEmpty(searchTerm)) {
             // By default, the "simple_search" content view is used
@@ -463,8 +445,7 @@ public class SearchUIActions implements Serializable {
             ContentView cv = contentViewService.getContentView(SIMPLE_SEARCH_CONTENT_VIEW_NAME);
             DocumentModel searchDocumentModel = cv.getSearchDocumentModel();
             // set the search term
-            searchDocumentModel.setPropertyValue("default_search:ecm_fulltext",
-                    searchTerm);
+            searchDocumentModel.setPropertyValue("default_search:ecm_fulltext", searchTerm);
             ContentViewState state = new ContentViewStateImpl();
             state.setSearchDocumentModel(searchDocumentModel);
             state.setContentViewName(getCurrentContentViewName());
@@ -475,8 +456,7 @@ public class SearchUIActions implements Serializable {
     /**
      * Compute a permanent link for the current search.
      */
-    public String getSearchPermanentLinkUrl() throws ClientException,
-            UnsupportedEncodingException {
+    public String getSearchPermanentLinkUrl() throws ClientException, UnsupportedEncodingException {
         // do not try to compute an URL if we don't have any CoreSession
         if (documentManager == null) {
             return null;
@@ -488,8 +468,7 @@ public class SearchUIActions implements Serializable {
     /**
      * @return the URL of the search tab with the search term defined.
      */
-    public String getSearchTabUrl(String searchTerm) throws ClientException,
-            UnsupportedEncodingException {
+    public String getSearchTabUrl(String searchTerm) throws ClientException, UnsupportedEncodingException {
         // do not try to compute an URL if we don't have any CoreSession
         if (documentManager == null) {
             return null;
@@ -505,31 +484,26 @@ public class SearchUIActions implements Serializable {
      *
      * @param withState If set to true, the state is added in the parameters.
      */
-    protected String generateSearchUrl(boolean withState)
-            throws ClientException, UnsupportedEncodingException {
+    protected String generateSearchUrl(boolean withState) throws ClientException, UnsupportedEncodingException {
         String currentContentViewName = getCurrentContentViewName();
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentView docView = computeDocumentView(currentDocument);
         docView.setViewId("search");
-        docView.addParameter(CONTENT_VIEW_NAME_PARAMETER,
-                currentContentViewName);
+        docView.addParameter(CONTENT_VIEW_NAME_PARAMETER, currentContentViewName);
         // Add the state if needed
         if (withState) {
-            docView.addParameter(CONTENT_VIEW_STATE_PARAMETER,
-                    getJSONContentViewState());
+            docView.addParameter(CONTENT_VIEW_STATE_PARAMETER, getJSONContentViewState());
         }
 
         DocumentViewCodecManager documentViewCodecManager = Framework.getService(DocumentViewCodecManager.class);
-        String url = documentViewCodecManager.getUrlFromDocumentView(
-                SEARCH_CODEC, docView, true, BaseURL.getBaseURL());
+        String url = documentViewCodecManager.getUrlFromDocumentView(SEARCH_CODEC, docView, true, BaseURL.getBaseURL());
 
         return RestHelper.addCurrentConversationParameters(url);
     }
 
     protected DocumentView computeDocumentView(DocumentModel doc) {
-        return new DocumentViewImpl(new DocumentLocationImpl(
-                documentManager.getRepositoryName(), doc != null ? new PathRef(
-                        doc.getPathAsString()) : null));
+        return new DocumentViewImpl(new DocumentLocationImpl(documentManager.getRepositoryName(),
+                doc != null ? new PathRef(doc.getPathAsString()) : null));
     }
 
     /*
@@ -543,13 +517,10 @@ public class SearchUIActions implements Serializable {
         this.simpleSearchKeywords = simpleSearchKeywords;
     }
 
-    public void validateSimpleSearchKeywords(FacesContext context,
-                                             UIComponent component, Object value) {
-        if (!(value instanceof String)
-                || StringUtils.isEmpty(((String) value).trim())) {
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                    context, "feedback.search.noKeywords"), null);
+    public void validateSimpleSearchKeywords(FacesContext context, UIComponent component, Object value) {
+        if (!(value instanceof String) || StringUtils.isEmpty(((String) value).trim())) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                    "feedback.search.noKeywords"), null);
             // also add global message
             context.addMessage(null, message);
             throw new ValidatorException(message);
@@ -558,9 +529,8 @@ public class SearchUIActions implements Serializable {
         for (String keyword : keywords) {
             if (keyword.startsWith("*")) {
                 // Can't begin search with * character
-                FacesMessage message = new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                        context, "feedback.search.star"), null);
+                FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                        "feedback.search.star"), null);
                 // also add global message
                 context.addMessage(null, message);
                 throw new ValidatorException(message);
@@ -594,8 +564,7 @@ public class SearchUIActions implements Serializable {
     }
 
     @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
-    public String loadPermanentLink(DocumentView docView)
-            throws ClientException {
+    public String loadPermanentLink(DocumentView docView) throws ClientException {
         restHelper.initContextFromRestRequest(docView);
         return "search";
     }

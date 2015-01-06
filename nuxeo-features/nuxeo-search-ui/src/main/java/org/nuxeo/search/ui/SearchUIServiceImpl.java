@@ -60,8 +60,7 @@ public class SearchUIServiceImpl implements SearchUIService {
     public static final String SHARED_SEARCHES_PROVIDER_NAME = "SHARED_SAVED_SEARCHES";
 
     @Override
-    public List<ContentViewHeader> getContentViewHeaders(
-            ActionContext actionContext) {
+    public List<ContentViewHeader> getContentViewHeaders(ActionContext actionContext) {
         return getContentViewHeaders(actionContext, null);
     }
 
@@ -94,64 +93,52 @@ public class SearchUIServiceImpl implements SearchUIService {
     }
 
     /**
-     * Returns the filtered content view names based on the local configuration
-     * if any.
+     * Returns the filtered content view names based on the local configuration if any.
      */
-    protected List<String> filterContentViewNames(
-            List<String> contentViewNames, DocumentModel currentDoc) {
+    protected List<String> filterContentViewNames(List<String> contentViewNames, DocumentModel currentDoc) {
         SearchConfiguration searchConfiguration = getSearchConfiguration(currentDoc);
         return searchConfiguration == null ? contentViewNames
                 : searchConfiguration.filterAllowedContentViewNames(contentViewNames);
     }
 
-    protected SearchConfiguration getSearchConfiguration(
-            DocumentModel currentDoc) {
+    protected SearchConfiguration getSearchConfiguration(DocumentModel currentDoc) {
         LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
-        return localConfigurationService.getConfiguration(
-                SearchConfiguration.class, SEARCH_CONFIGURATION_FACET,
+        return localConfigurationService.getConfiguration(SearchConfiguration.class, SEARCH_CONFIGURATION_FACET,
                 currentDoc);
     }
 
-    public DocumentModel saveSearch(CoreSession session,
-            ContentView searchContentView, String title) {
+    public DocumentModel saveSearch(CoreSession session, ContentView searchContentView, String title) {
         UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
-        DocumentModel uws = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                session, null);
+        DocumentModel uws = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
 
         DocumentModel searchDoc = searchContentView.getSearchDocumentModel();
-        searchDoc.setPropertyValue("cvd:contentViewName",
-                searchContentView.getName());
+        searchDoc.setPropertyValue("cvd:contentViewName", searchContentView.getName());
         searchDoc.setPropertyValue("dc:title", title);
         PathSegmentService pathService = Framework.getLocalService(PathSegmentService.class);
-        searchDoc.setPathInfo(uws.getPathAsString(),
-                pathService.generatePathSegment(searchDoc));
+        searchDoc.setPathInfo(uws.getPathAsString(), pathService.generatePathSegment(searchDoc));
         searchDoc = session.createDocument(searchDoc);
         session.save();
 
         return searchDoc;
     }
 
-    public List<DocumentModel> getCurrentUserSavedSearches(CoreSession session)
-            throws ClientException {
-        return getDocuments(SAVED_SEARCHES_PROVIDER_NAME, session,
-                session.getPrincipal().getName());
+    public List<DocumentModel> getCurrentUserSavedSearches(CoreSession session) throws ClientException {
+        return getDocuments(SAVED_SEARCHES_PROVIDER_NAME, session, session.getPrincipal().getName());
     }
 
     @SuppressWarnings("unchecked")
-    protected List<DocumentModel> getDocuments(String pageProviderName,
-            CoreSession session, Object... parameters) throws ClientException {
+    protected List<DocumentModel> getDocuments(String pageProviderName, CoreSession session, Object... parameters)
+            throws ClientException {
         PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("coreSession", (Serializable) session);
-        return ((PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                pageProviderName, null, null, null, properties, parameters)).getCurrentPage();
+        return ((PageProvider<DocumentModel>) pageProviderService.getPageProvider(pageProviderName, null, null, null,
+                properties, parameters)).getCurrentPage();
 
     }
 
-    public List<DocumentModel> getSharedSavedSearches(CoreSession session)
-            throws ClientException {
-        return getDocuments(SHARED_SEARCHES_PROVIDER_NAME, session,
-                session.getPrincipal().getName());
+    public List<DocumentModel> getSharedSavedSearches(CoreSession session) throws ClientException {
+        return getDocuments(SHARED_SEARCHES_PROVIDER_NAME, session, session.getPrincipal().getName());
     }
 
 }
