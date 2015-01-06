@@ -22,7 +22,7 @@
       <event name="documentCreated"/>
     </notification>
 
-    <notification name="Publication" channel="email" enabled="true" availableIn="Section"
+    <notification name="Publication" channel="email" enabled="true" availableIn="Section" subjectTemplate="docPublishingSubject"
       autoSubscribed="true" template="publish" subject="Document published" label="label.nuxeo.notifications.publication">
       <event name="documentPublicationApproved"/>
       <event name="documentPublicationRejected"/>
@@ -73,6 +73,7 @@
     <template name="subscriptionsUpdated" src="templates/subscriptionsUpdated.ftl" />
     <template name="modif" src="templates/modif.ftl" />
     <template name="publish" src="templates/publish.ftl" />
+    <template name="docPublishingSubject" src="templates/docPublishingSubject.ftl" />
     <template name="auto" src="templates/auto.ftl" />
     <template name="workflow" src="templates/workflow.ftl" />
     <template name="aprobationWorkflowStarted" src="templates/appReviewStarted.ftl" />
