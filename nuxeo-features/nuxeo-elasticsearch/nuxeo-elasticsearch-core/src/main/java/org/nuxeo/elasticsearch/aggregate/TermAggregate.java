@@ -101,7 +101,7 @@ public class TermAggregate extends AggregateEsBase<BucketTerm> {
     @JsonIgnore
     @Override
     public void parseEsBuckets(Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
-        List<BucketTerm> nxBuckets = new ArrayList<BucketTerm>(buckets.size());
+        List<BucketTerm> nxBuckets = new ArrayList<>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
             nxBuckets.add(new BucketTerm(bucket.getKey(), bucket.getDocCount()));
         }

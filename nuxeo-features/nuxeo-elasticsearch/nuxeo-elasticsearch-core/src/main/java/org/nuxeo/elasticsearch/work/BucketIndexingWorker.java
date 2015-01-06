@@ -31,10 +31,11 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
+import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 import org.nuxeo.runtime.api.Framework;
 
-/**œ
- * Worker to index a bucket of documents
+/**
+ * œ Worker to index a bucket of documents
  *
  * @since 7.1
  */
@@ -51,7 +52,7 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
 
     public BucketIndexingWorker(String repositoryName, List<String> docIds, boolean isLast) {
         super();
-        setDocuments(repositoryName, (List<String>) docIds);
+        setDocuments(repositoryName, docIds);
         documentCount = docIds.size();
         this.isLast = isLast;
     }
@@ -90,7 +91,7 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
     private List<IndexingCommand> getIndexingCommands(CoreSession session, List<String> ids) {
         List<IndexingCommand> ret = new ArrayList<>(ids.size());
         for (DocumentModel doc : fetchDocuments(session, ids)) {
-            IndexingCommand cmd = new IndexingCommand(doc, false, false);
+            IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT, false, false);
             ret.add(cmd);
         }
         return ret;

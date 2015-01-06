@@ -231,7 +231,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
         if (log.isDebugEnabled()) {
             log.debug(String.format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                    esa.getRepositoryIndex(cmd.getRepositoryName()), DOC_TYPE, cmd.getDocId(),
+                    esa.getRepositoryIndex(cmd.getRepositoryName()), DOC_TYPE, cmd.getTargetDocumentId(),
                     request.request().toString()));
         }
         request.execute().actionGet();
@@ -247,10 +247,10 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     void processDeleteCommandNonRecursive(IndexingCommand cmd) {
         String indexName = esa.getRepositoryIndex(cmd.getRepositoryName());
-        DeleteRequestBuilder request = esa.getClient().prepareDelete(indexName, DOC_TYPE, cmd.getDocId());
+        DeleteRequestBuilder request = esa.getClient().prepareDelete(indexName, DOC_TYPE, cmd.getTargetDocumentId());
         if (log.isDebugEnabled()) {
             log.debug(String.format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s'", indexName,
-                    DOC_TYPE, cmd.getDocId()));
+                    DOC_TYPE, cmd.getTargetDocumentId()));
         }
         request.execute().actionGet();
     }
@@ -259,7 +259,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         String indexName = esa.getRepositoryIndex(cmd.getRepositoryName());
         // we don't want to rely on target document because the document can be
         // already removed
-        String docPath = getPathOfDocFromEs(cmd.getRepositoryName(), cmd.getDocId());
+        String docPath = getPathOfDocFromEs(cmd.getRepositoryName(), cmd.getTargetDocumentId());
         if (docPath == null) {
             if (!Framework.isTestModeSet()) {
                 log.warn("Trying to delete a non existing doc: " + cmd.toString());
@@ -319,9 +319,9 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
             JsonESDocumentWriter.writeESDocument(jsonGen, doc, cmd.getSchemas(), null);
             return esa.getClient().prepareIndex(esa.getRepositoryIndex(cmd.getRepositoryName()), DOC_TYPE,
-                    cmd.getDocId()).setSource(builder);
+                    cmd.getTargetDocumentId()).setSource(builder);
         } catch (IOException e) {
-            throw new ClientException("Unable to create index request for Document " + cmd.getDocId(), e);
+            throw new ClientException("Unable to create index request for Document " + cmd.getTargetDocumentId(), e);
         }
     }
 

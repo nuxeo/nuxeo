@@ -40,7 +40,7 @@ public abstract class AbstractIndexingWorker extends BaseIndexingWorker {
         this.cmds = new ArrayList<>(1);
         this.cmds.add(cmd);
         this.repositoryName = cmd.getRepositoryName();
-        this.docId = cmd.getDocId();
+        this.docId = cmd.getTargetDocumentId();
     }
 
     public AbstractIndexingWorker(String repositoryName, List<IndexingCommand> cmds) {
@@ -48,7 +48,7 @@ public abstract class AbstractIndexingWorker extends BaseIndexingWorker {
         this.cmds = cmds;
         this.repositoryName = repositoryName;
         if (! cmds.isEmpty()) {
-            this.docId = cmds.get(0).getDocId();
+            this.docId = cmds.get(0).getTargetDocumentId();
         }
     }
 

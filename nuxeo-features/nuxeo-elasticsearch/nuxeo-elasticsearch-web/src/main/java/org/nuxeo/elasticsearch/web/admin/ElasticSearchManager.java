@@ -42,6 +42,7 @@ import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
+import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
@@ -123,7 +124,7 @@ public class ElasticSearchManager {
                 DocumentModel doc = session.getDocument(ref);
                 log.warn(String.format("Re-indexing document: %s and its children on repository: %s", doc,
                         repositoryName));
-                IndexingCommand cmd = new IndexingCommand(doc, false, true);
+                IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT, false, true);
                 esi.runIndexingWorker(Arrays.asList(cmd));
             }
         }

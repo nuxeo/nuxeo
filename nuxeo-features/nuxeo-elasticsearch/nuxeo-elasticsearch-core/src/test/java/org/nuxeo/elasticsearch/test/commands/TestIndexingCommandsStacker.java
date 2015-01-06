@@ -35,6 +35,11 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
         return commands;
     }
 
+    @Override
+    protected boolean isSyncIndexingByDefault() {
+        return false;
+    }
+
     @Before
     public void reset() {
         flushedSyncCommands = new ArrayList<>();

@@ -94,7 +94,7 @@ public class DateRangeAggregate extends AggregateEsBase<BucketRangeDate> {
     @JsonIgnore
     @Override
     public void parseEsBuckets(Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
-        List<BucketRangeDate> nxBuckets = new ArrayList<BucketRangeDate>(buckets.size());
+        List<BucketRangeDate> nxBuckets = new ArrayList<>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
             DateRange.Bucket rangeBucket = (DateRange.Bucket) bucket;
             nxBuckets.add(new BucketRangeDate(bucket.getKey(), getDateTime(rangeBucket.getFromAsDate()),

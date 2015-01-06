@@ -92,7 +92,7 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
             }
             EsResult ret = ess.queryAndAggregate(nxQuery);
             DocumentModelList dmList = ret.getDocuments();
-            currentAggregates = new HashMap<String, Aggregate<? extends Bucket>>(ret.getAggregates().size());
+            currentAggregates = new HashMap<>(ret.getAggregates().size());
             for (Aggregate<Bucket> agg : ret.getAggregates()) {
                 currentAggregates.put(agg.getId(), agg);
             }
@@ -105,7 +105,7 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
     }
 
     private List<AggregateEsBase<? extends Bucket>> buildAggregates() {
-        ArrayList<AggregateEsBase<? extends Bucket>> ret = new ArrayList<AggregateEsBase<? extends Bucket>>(
+        ArrayList<AggregateEsBase<? extends Bucket>> ret = new ArrayList<>(
                 getAggregateDefinitions().size());
         for (AggregateDefinition def : getAggregateDefinitions()) {
             ret.add(AggregateFactory.create(def, getSearchDocumentModel()));

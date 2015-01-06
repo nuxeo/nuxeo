@@ -55,16 +55,8 @@ public class IndexingCommands {
         this.targetDocument = targetDocument;
     }
 
-    public void add(Type command, boolean sync, boolean recurse) {
-        IndexingCommand cmd;
-        if (sync && recurse) {
-            // split into 2 commands one sync and an async recurse
-            cmd = new IndexingCommand(targetDocument, command, true, false);
-            add(cmd);
-            cmd = new IndexingCommand(targetDocument, command, false, true);
-        } else {
-            cmd = new IndexingCommand(targetDocument, command, sync, recurse);
-        }
+    public void add(Type type, boolean sync, boolean recurse) {
+        IndexingCommand cmd = new IndexingCommand(targetDocument, type, sync, recurse);
         add(cmd);
     }
 
@@ -116,42 +108,6 @@ public class IndexingCommands {
 
     public boolean contains(Type command) {
         return commandTypes.contains(command);
-    }
-
-    public String toJSON() throws IOException {
-        StringWriter out = new StringWriter();
-        JsonFactory factory = new JsonFactory();
-        JsonGenerator jsonGen = factory.createJsonGenerator(out);
-        jsonGen.writeStartArray();
-        for (IndexingCommand cmd : commands) {
-            cmd.toJSON(jsonGen);
-        }
-        jsonGen.writeEndArray();
-        out.flush();
-        jsonGen.close();
-        return out.toString();
-    }
-
-    public static IndexingCommands fromJSON(String json) throws ClientException {
-        JsonFactory jsonFactory = new JsonFactory();
-        ObjectMapper mapper = new ObjectMapper(jsonFactory);
-        try {
-            return fromJSON(mapper.readTree(json));
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Invalid JSON: " + json, e);
-        }
-    }
-
-    protected static IndexingCommands fromJSON(JsonNode jsonNode) throws IOException {
-        IndexingCommands ret = new IndexingCommands();
-        if (!jsonNode.isArray()) {
-            throw new IOException("Expecting an Array");
-        }
-        for (int i = 0; i < jsonNode.size(); i++) {
-            IndexingCommand cmd = IndexingCommand.fromJSON(jsonNode.get(i));
-            ret.add(cmd);
-        }
-        return ret;
     }
 
     public List<IndexingCommand> getCommands() {

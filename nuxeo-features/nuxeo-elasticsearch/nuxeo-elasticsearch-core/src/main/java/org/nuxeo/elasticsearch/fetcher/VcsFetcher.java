@@ -44,7 +44,7 @@ public class VcsFetcher extends Fetcher {
     @Override
     public DocumentModelListImpl fetchDocuments() {
         Map<String, List<String>> repoHits = getHitsPerRepository();
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
+        List<DocumentModel> docs = new ArrayList<>();
         String openSessionRepository = getSession().getRepositoryName();
         boolean closeSession;
         CoreSession session;
@@ -73,12 +73,12 @@ public class VcsFetcher extends Fetcher {
     }
 
     private Map<String, List<String>> getHitsPerRepository() {
-        Map<String, List<String>> ret = new HashMap<String, List<String>>();
+        Map<String, List<String>> ret = new HashMap<>();
         for (SearchHit hit : getResponse().getHits()) {
             String repoName = getRepoForIndex(hit.getIndex());
             List<String> docIds = ret.get(repoName);
             if (docIds == null) {
-                docIds = new ArrayList<String>();
+                docIds = new ArrayList<>();
                 ret.put(repoName, docIds);
             }
             docIds.add(hit.getId());
@@ -100,7 +100,7 @@ public class VcsFetcher extends Fetcher {
     }
 
     private void sortResults(List<DocumentModel> docs) {
-        final List<String> ids = new ArrayList<String>();
+        final List<String> ids = new ArrayList<>();
         for (SearchHit hit : getResponse().getHits()) {
             ids.add(getRepoForIndex(hit.getIndex()) + hit.getId());
         }

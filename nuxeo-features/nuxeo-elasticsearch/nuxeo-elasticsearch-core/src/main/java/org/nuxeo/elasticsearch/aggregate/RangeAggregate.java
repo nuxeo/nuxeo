@@ -87,7 +87,7 @@ public class RangeAggregate extends AggregateEsBase<BucketRange> {
     @JsonIgnore
     @Override
     public void parseEsBuckets(Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
-        List<BucketRange> nxBuckets = new ArrayList<BucketRange>(buckets.size());
+        List<BucketRange> nxBuckets = new ArrayList<>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
             Range.Bucket rangeBucket = (Range.Bucket) bucket;
             nxBuckets.add(new BucketRange(bucket.getKey(), rangeBucket.getFrom(), rangeBucket.getTo(),
