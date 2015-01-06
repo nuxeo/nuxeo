@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 
 /**
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
@@ -79,7 +80,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
         userInfo.setPropertyValue("userinfo:login", templogin);
         userInfo.setPropertyValue("userinfo:firstName", "John");
         userInfo.setPropertyValue("userinfo:lastName", "Olivier");
-        userInfo.setPropertyValue("userinfo:email", "oolivier@dummy.com");
+        userInfo.setPropertyValue("userinfo:email", templogin + "@dummy.com");
 
         assertEquals(0, userManager.searchUsers(templogin).size());
         assertEquals(0, userManager.searchUsers(newUser).size());
@@ -92,5 +93,27 @@ public class TestUserRegistration extends AbstractUserRegistration {
 
         assertEquals(0, userManager.searchUsers(templogin).size());
         assertEquals(1, userManager.searchUsers(newUser).size());
+    }
+
+    @Test(expected = UserAlreadyExistsException.class)
+    public void testMultipleRegistrationWithSameEmail() throws ClientException {
+        UserRegistrationConfiguration configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(DEFAULT_CONFIGURATION_NAME);
+        // User info
+        DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
+        String templogin = "templogin";
+        String newUser = "newUser";
+
+        userInfo.setPropertyValue("userinfo:login", templogin);
+        userInfo.setPropertyValue("userinfo:firstName", "John");
+        userInfo.setPropertyValue("userinfo:lastName", "Olivier");
+        userInfo.setPropertyValue("userinfo:email", templogin + "@dummy.com");
+
+        userRegistrationService.submitRegistrationRequest(userInfo, new HashMap<String, Serializable>(0),
+                UserInvitationService.ValidationMethod.NONE, true);
+
+        userInfo.setPropertyValue("userinfo:login", templogin + '1');
+        // Must throw a UserAlreadyExistsException
+        userRegistrationService.submitRegistrationRequest(userInfo, new HashMap<String, Serializable>(0),
+                UserInvitationService.ValidationMethod.NONE, true);
     }
 }

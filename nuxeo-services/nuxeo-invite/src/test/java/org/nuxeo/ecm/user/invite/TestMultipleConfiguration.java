@@ -88,6 +88,7 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
 
         // Invite second user with test conf
         userInfo.setPropertyValue("userinfo:login", "testUser2");
+        userInfo.setPropertyValue("userinfo:email", "dummy2@test.com");
         requestId = userRegistrationService.submitRegistrationRequest("test", userInfo,
                 new HashMap<String, Serializable>(), UserInvitationService.ValidationMethod.NONE, true);
         userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());

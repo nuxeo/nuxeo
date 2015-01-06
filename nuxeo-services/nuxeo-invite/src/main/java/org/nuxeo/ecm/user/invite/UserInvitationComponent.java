@@ -16,6 +16,7 @@
 
 package org.nuxeo.ecm.user.invite;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.nuxeo.ecm.user.invite.RegistrationRules.FACET_REGISTRATION_CONFIGURATION;
 import static org.nuxeo.ecm.user.invite.RegistrationRules.FIELD_CONFIGURATION_NAME;
 import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod.EMAIL;
@@ -62,7 +63,9 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
+import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -466,7 +469,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     }
 
     protected static boolean isTestModeSet() {
-        return Framework.isTestModeSet() || !StringUtils.isBlank(Framework.getProperty("org.nuxeo.ecm.tester.name"));
+        return Framework.isTestModeSet() || !isBlank(Framework.getProperty("org.nuxeo.ecm.tester.name"));
     }
 
     protected boolean checkUserFromRegistrationExistence(DocumentModel registrationDoc) throws ClientException {
@@ -484,7 +487,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(session.getProperty("mail.from")));
         msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destination, false));
-        if (!StringUtils.isBlank(copy)) {
+        if (!isBlank(copy)) {
             msg.addRecipient(Message.RecipientType.CC, new InternetAddress(copy, false));
         }
 
@@ -522,17 +525,37 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         return registrationDocs;
     }
 
+    protected static boolean isEmailExist(UserRegistrationConfiguration configuration, DocumentModel userRegistration) {
+        String email = (String) userRegistration.getPropertyValue(configuration.getUserInfoEmailField());
+        if (isBlank(email)) {
+            return false;
+        }
+
+        Map<String, Serializable> filter = new HashMap<>(1);
+        filter.put(UserConfig.EMAIL_COLUMN, email);
+
+        DocumentModelList users = Framework.getLocalService(UserManager.class).searchUsers(filter, null);
+        return !users.isEmpty();
+    }
+
     @Override
     public String submitRegistrationRequest(String configurationName, DocumentModel userRegistrationModel,
             Map<String, Serializable> additionnalInfo, ValidationMethod validationMethod, boolean autoAccept)
-            throws ClientException, UserRegistrationException {
+            throws ClientException {
         RegistrationCreator creator = new RegistrationCreator(configurationName, userRegistrationModel,
                 additionnalInfo, validationMethod);
         creator.runUnrestricted();
         String registrationUuid = creator.getRegistrationUuid();
 
+        UserRegistrationConfiguration currentConfig = getConfiguration(configurationName);
         boolean userAlreadyExists = null != Framework.getLocalService(UserManager.class).getPrincipal(
-                (String) userRegistrationModel.getPropertyValue(getConfiguration(configurationName).getUserInfoUsernameField()));
+                (String) userRegistrationModel.getPropertyValue(currentConfig.getUserInfoUsernameField()));
+
+        if (!userAlreadyExists && isEmailExist(currentConfig, userRegistrationModel)) {
+            log.info("Trying to submit a registration from an existing email with a different username.");
+            throw new UserAlreadyExistsException();
+        }
+
         // Directly accept registration if the configuration allow it and the
         // user already exists
         RegistrationRules registrationRules = getRegistrationRules(configurationName);
@@ -546,11 +569,11 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             if (!additionnalInfo.containsKey("enterPasswordUrl")) {
                 String baseUrl = Framework.getProperty(NUXEO_URL_KEY);
 
-                baseUrl = StringUtils.isBlank(baseUrl) ? "/" : baseUrl;
+                baseUrl = isBlank(baseUrl) ? "/" : baseUrl;
                 if (!baseUrl.endsWith("/")) {
                     baseUrl += "/";
                 }
-                String enterPasswordUrl = getConfiguration(configurationName).getEnterPasswordUrl();
+                String enterPasswordUrl = currentConfig.getEnterPasswordUrl();
                 if (enterPasswordUrl.startsWith("/")) {
                     enterPasswordUrl = enterPasswordUrl.substring(1);
                 }
