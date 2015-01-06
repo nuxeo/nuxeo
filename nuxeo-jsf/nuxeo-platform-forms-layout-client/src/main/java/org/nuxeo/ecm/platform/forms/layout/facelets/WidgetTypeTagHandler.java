@@ -144,13 +144,13 @@ public class WidgetTypeTagHandler extends TagHandler {
         // compute field definitions
         List<FieldDefinition> fieldsValue = new ArrayList<FieldDefinition>();
         if (field != null) {
-            Object fieldValue = field.getValue(ctx);
+            Object fieldValue = field.getObject(ctx, Object.class);
             if (fieldValue instanceof FieldDefinition) {
                 fieldsValue.add((FieldDefinition) fieldValue);
             } else if (fieldValue instanceof String) {
                 fieldsValue.add(new FieldDefinitionImpl(null, (String) fieldValue));
             } else {
-                log.error("Invalid field item => discard: " + fieldValue);
+                fieldsValue.add(new FieldDefinitionImpl(null, field.getValue()));
             }
         }
         if (fields != null) {
