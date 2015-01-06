@@ -68,4 +68,20 @@ public class UserConfig implements Serializable {
 
     public String schemaName = SCHEMA_NAME;
 
+    @Override
+    public UserConfig clone()
+    {
+        UserConfig usrCfg = new UserConfig();
+        usrCfg.companyKey = companyKey;
+        usrCfg.emailKey = emailKey;
+        usrCfg.firstNameKey = firstNameKey;
+        usrCfg.groupsKey = groupsKey;
+        usrCfg.lastNameKey = lastNameKey;
+        usrCfg.nameKey = nameKey;
+        usrCfg.passwordKey = passwordKey;
+        usrCfg.schemaName = schemaName;
+
+        return usrCfg;
+    }
+
 }
