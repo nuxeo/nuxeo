@@ -108,7 +108,7 @@ public class HistogramAggregate extends AggregateEsBase<BucketRange> {
     @JsonIgnore
     @Override
     public void parseEsBuckets(Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
-        List<BucketRange> nxBuckets = new ArrayList<BucketRange>(buckets.size());
+        List<BucketRange> nxBuckets = new ArrayList<>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
             Histogram.Bucket histoBucket = (Histogram.Bucket) bucket;
             nxBuckets.add(new BucketRange(bucket.getKey(), histoBucket.getKeyAsNumber(),

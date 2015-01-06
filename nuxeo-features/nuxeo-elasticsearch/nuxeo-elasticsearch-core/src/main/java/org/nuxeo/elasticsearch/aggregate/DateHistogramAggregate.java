@@ -143,7 +143,7 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
     @JsonIgnore
     @Override
     public void parseEsBuckets(Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
-        List<BucketRangeDate> nxBuckets = new ArrayList<BucketRangeDate>(buckets.size());
+        List<BucketRangeDate> nxBuckets = new ArrayList<>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
             DateHistogram.Bucket dateHistoBucket = (DateHistogram.Bucket) bucket;
             DateTime from = getDateTime(dateHistoBucket.getKeyAsDate());

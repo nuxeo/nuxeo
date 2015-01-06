@@ -53,7 +53,7 @@ public interface ElasticSearchAdmin {
     void dropAndInitRepositoryIndex(String repositoryName);
 
     /**
-     * List repository names that has Elasticsearch support.
+     * List repository names that have Elasticsearch support.
      *
      * @since 7.1
      */

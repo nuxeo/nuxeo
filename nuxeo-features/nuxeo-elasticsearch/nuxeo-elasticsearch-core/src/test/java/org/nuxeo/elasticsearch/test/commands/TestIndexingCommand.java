@@ -23,6 +23,7 @@ import org.junit.rules.ExpectedException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
+import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 
 public class TestIndexingCommand {
     @Rule
@@ -31,13 +32,13 @@ public class TestIndexingCommand {
     @Test
     public void testConstructorOk() throws Exception {
         DocumentModel doc = new MockDocumentModel("foo");
-        IndexingCommand cmd = new IndexingCommand(doc, false, false);
-        cmd = new IndexingCommand(doc, true, false);
+        IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT, false, false);
+        cmd = new IndexingCommand(doc, Type.INSERT, true, false);
         Assert.assertTrue(cmd.isSync());
         Assert.assertFalse(cmd.isRecurse());
-        cmd = new IndexingCommand(doc, false, true);
+        cmd = new IndexingCommand(doc, Type.INSERT, false, true);
         // delete recurse and sync is accepted
-        cmd = new IndexingCommand(doc, IndexingCommand.Type.DELETE, true, true);
+        cmd = new IndexingCommand(doc, Type.DELETE, true, true);
         Assert.assertTrue(cmd.isSync());
         Assert.assertTrue(cmd.isRecurse());
 
@@ -47,26 +48,26 @@ public class TestIndexingCommand {
     public void testConstructorWithRecurseSync() throws Exception {
         DocumentModel doc = new MockDocumentModel("foo");
         exception.expect(IllegalArgumentException.class);
-        IndexingCommand cmd = new IndexingCommand(doc, true, true);
+        IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT, true, true);
     }
 
     @Test
     public void testConstructorWithNullDoc() throws Exception {
         exception.expect(IllegalArgumentException.class);
-        IndexingCommand cmd = new IndexingCommand(null, true, false);
+        IndexingCommand cmd = new IndexingCommand(null, Type.INSERT, true, false);
     }
 
     @Test
     public void testConstructorWithNullDocId() throws Exception {
         DocumentModel doc = new MockDocumentModel(null);
         exception.expect(IllegalArgumentException.class);
-        IndexingCommand cmd = new IndexingCommand(doc, true, false);
+        IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT, true, false);
     }
 
     @Test
     public void testAddSchemas() throws Exception {
         DocumentModel doc = new MockDocumentModel("foo");
-        IndexingCommand cmd = new IndexingCommand(doc, true, false);
+        IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT, true, false);
         Assert.assertNull(cmd.getSchemas());
         cmd.addSchemas("mySchema");
         Assert.assertEquals(1, cmd.getSchemas().length);
@@ -76,15 +77,15 @@ public class TestIndexingCommand {
     public void testMakeSync() throws Exception {
         DocumentModel doc = new MockDocumentModel("foo");
         // ok for non recursive command
-        IndexingCommand cmd = new IndexingCommand(doc, false, false);
+        IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT, false, false);
         cmd.makeSync();
         Assert.assertTrue(cmd.isSync());
         // recursive command can not be turned into sync
-        cmd = new IndexingCommand(doc, false, true);
+        cmd = new IndexingCommand(doc, Type.INSERT, false, true);
         cmd.makeSync();
         Assert.assertFalse(cmd.isSync());
         // except for deletion
-        cmd = new IndexingCommand(doc, IndexingCommand.Type.DELETE, false, true);
+        cmd = new IndexingCommand(doc, Type.DELETE, false, true);
         cmd.makeSync();
         Assert.assertTrue(cmd.isSync());
     }
@@ -92,7 +93,7 @@ public class TestIndexingCommand {
     @Test
     public void testJson() throws Exception {
         DocumentModel doc = new MockDocumentModel("foo");
-        IndexingCommand cmd = new IndexingCommand(doc, false, true);
+        IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT, false, true);
         String json = cmd.toJSON();
         IndexingCommand cmd2 = IndexingCommand.fromJSON(json);
         String json2 = cmd2.toJSON();
@@ -103,7 +104,7 @@ public class TestIndexingCommand {
     @Test
     public void testInvalidJson() throws Exception {
         DocumentModel doc = new MockDocumentModel("foo");
-        IndexingCommand cmd = new IndexingCommand(doc, false, true);
+        IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT, false, true);
         exception.expect(IllegalArgumentException.class);
         String json = "{" + cmd.toJSON();
         IndexingCommand.fromJSON(json);

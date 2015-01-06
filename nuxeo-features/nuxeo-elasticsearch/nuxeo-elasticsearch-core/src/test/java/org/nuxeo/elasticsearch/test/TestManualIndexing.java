@@ -27,11 +27,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
-import org.nuxeo.elasticsearch.listener.EventConstants;
+import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -105,13 +106,13 @@ public class TestManualIndexing {
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
         doc.setPropertyValue("dc:title", "TestMe");
         // disable automatic indexing to control manually the indexing command
-        doc.putContextData(EventConstants.DISABLE_AUTO_INDEXING, Boolean.TRUE);
+        doc.putContextData(ElasticSearchConstants.DISABLE_AUTO_INDEXING, Boolean.TRUE);
         doc = session.createDocument(doc);
         session.save();
 
         startCountingCommandProcessed();
         // sync non recursive
-        IndexingCommand cmd = new IndexingCommand(doc, true, false);
+        IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT,  true, false);
         esi.indexNonRecursive(cmd);
         assertNumberOfCommandProcessed(1);
 
@@ -137,18 +138,18 @@ public class TestManualIndexing {
         session.save();
 
         // but ask to index it right now
-        IndexingCommand cmd0 = new IndexingCommand(doc0, true, false);
+        IndexingCommand cmd0 = new IndexingCommand(doc0, Type.INSERT, true, false);
         esi.indexNonRecursive(cmd0);
 
         // create another doc without the automatic indexing
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
         doc.setPropertyValue("dc:title", "TestMe");
-        doc.putContextData(EventConstants.DISABLE_AUTO_INDEXING, Boolean.TRUE);
+        doc.putContextData(ElasticSearchConstants.DISABLE_AUTO_INDEXING, Boolean.TRUE);
         doc = session.createDocument(doc);
         session.save();
 
         // schedule the indexing in sync (i.e in postcommit)
-        IndexingCommand cmd = new IndexingCommand(doc, true, false);
+        IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT, true, false);
         startCountingCommandProcessed();
         esi.indexNonRecursive(cmd);
         assertNumberOfCommandProcessed(1);
@@ -187,12 +188,12 @@ public class TestManualIndexing {
         session.save();
 
         // init index
-        IndexingCommand cmd0 = new IndexingCommand(doc0, true, false);
+        IndexingCommand cmd0 = new IndexingCommand(doc0, Type.INSERT, true, false);
         esi.indexNonRecursive(cmd0);
 
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
         doc.setPropertyValue("dc:title", "TestMe");
-        doc.putContextData(EventConstants.DISABLE_AUTO_INDEXING, Boolean.TRUE);
+        doc.putContextData(ElasticSearchConstants.DISABLE_AUTO_INDEXING, Boolean.TRUE);
         doc = session.createDocument(doc);
         session.save();
 
@@ -210,7 +211,7 @@ public class TestManualIndexing {
         TransactionHelper.commitOrRollbackTransaction();
         // ask for async indexing
         startCountingCommandProcessed();
-        IndexingCommand cmd = new IndexingCommand(doc, false, false);
+        IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT, false, false);
         esi.runIndexingWorker(Arrays.asList(cmd));
         esa.refresh();
         assertNumberOfCommandProcessed(0);

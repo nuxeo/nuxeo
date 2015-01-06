@@ -74,11 +74,11 @@ final public class NxqlQueryConverter {
     }
 
     public static QueryBuilder toESQueryBuilder(final String nxql) {
-        final LinkedList<ExpressionBuilder> builders = new LinkedList<ExpressionBuilder>();
+        final LinkedList<ExpressionBuilder> builders = new LinkedList<>();
         SQLQuery nxqlQuery = getSqlQuery(nxql);
         final ExpressionBuilder ret = new ExpressionBuilder(null);
         builders.add(ret);
-        final ArrayList<String> fromList = new ArrayList<String>();
+        final ArrayList<String> fromList = new ArrayList<>();
         nxqlQuery.accept(new DefaultQueryVisitor() {
 
             private static final long serialVersionUID = 1L;

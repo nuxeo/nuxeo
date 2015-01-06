@@ -65,9 +65,9 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     final AtomicInteger totalCommandRunning = new AtomicInteger(0);
 
-    private final Map<String, String> indexNames = new HashMap<String, String>();
+    private final Map<String, String> indexNames = new HashMap<>();
 
-    private final Map<String, String> repoNames = new HashMap<String, String>();
+    private final Map<String, String> repoNames = new HashMap<>();
 
     private final Map<String, ElasticSearchIndexConfig> indexConfig;
 
@@ -208,7 +208,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                 log.info("Associate index " + conf.getName() + " with repository: " + conf.getRepositoryName());
                 indexNames.put(conf.getRepositoryName(), conf.getName());
                 repoNames.put(conf.getName(), conf.getRepositoryName());
-                Set<String> set = new LinkedHashSet<String>();
+                Set<String> set = new LinkedHashSet<>();
                 if (includeSourceFields != null) {
                     set.addAll(Arrays.asList(includeSourceFields));
                 }
@@ -305,7 +305,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     @Override
     public List<String> getRepositoryNames() {
-        return Collections.unmodifiableList(new ArrayList<String>(indexNames.keySet()));
+        return Collections.unmodifiableList(new ArrayList<>(indexNames.keySet()));
     }
 
     void initIndex(ElasticSearchIndexConfig conf, boolean dropIfExists) {

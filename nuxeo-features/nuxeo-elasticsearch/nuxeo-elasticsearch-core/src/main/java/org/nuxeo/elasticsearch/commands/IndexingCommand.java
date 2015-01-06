@@ -12,8 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     tdelprat
- *     bdelbosc
+ *     Thierry Delprat
+ *     Benoit Delbosc
  */
 package org.nuxeo.elasticsearch.commands;
 
@@ -38,16 +38,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.impl.EventContextImpl;
-import org.nuxeo.elasticsearch.listener.EventConstants;
 
 /**
  * Holds information about what type of indexing operation must be processed. IndexingCommands are create "on the fly"
  * via a Synchronous event listener and at post commit time the system will merge the commands and execute worker to
- * process commands.
- *
- * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * process them.
  */
 public class IndexingCommand implements Serializable {
 
@@ -61,32 +56,36 @@ public class IndexingCommand implements Serializable {
 
     public static final String PREFIX = "IndexingCommand-";
 
+    protected String id;
+
     protected Type type;
 
     protected boolean sync;
 
     protected boolean recurse;
 
-    protected String uid;
+    protected String targetDocumentId;
 
     protected String path;
 
     protected String repositoryName;
-
-    protected String id;
 
     protected List<String> schemas;
 
     protected transient String sessionId;
 
     protected IndexingCommand() {
-        //
     }
 
-    public IndexingCommand(DocumentModel document, boolean sync, boolean recurse) {
-        this(document, Type.INSERT, sync, recurse);
-    }
-
+    /**
+     * Create an indexing command
+     *
+     * @param document the target document
+     * @param commandType the type of command
+     * @param sync if true the command will be processed on the same thread after transaction completion and the
+     *            Elasticsearch index will be refresh
+     * @param recurse the command affect the document and all its descendants
+     */
     public IndexingCommand(DocumentModel document, Type commandType, boolean sync, boolean recurse) {
         id = PREFIX + UUID.randomUUID().toString();
         type = commandType;
@@ -102,10 +101,10 @@ public class IndexingCommand implements Serializable {
         }
         DocumentModel targetDocument = getValidTargetDocument(document);
         repositoryName = targetDocument.getRepositoryName();
-        uid = targetDocument.getId();
+        targetDocumentId = targetDocument.getId();
         sessionId = targetDocument.getSessionId();
         path = targetDocument.getPathAsString();
-        if (uid == null) {
+        if (targetDocumentId == null) {
             throw new IllegalArgumentException("Target document has a null uid: " + this);
         }
     }
@@ -153,7 +152,7 @@ public class IndexingCommand implements Serializable {
         if (session == null) {
             throw new IllegalStateException("Command is not attached to a valid session: " + this);
         }
-        IdRef idref = new IdRef(uid);
+        IdRef idref = new IdRef(targetDocumentId);
         if (!session.exists(idref)) {
             // Doc was deleted : no way we can fetch it
             return null;
@@ -219,7 +218,7 @@ public class IndexingCommand implements Serializable {
         jsonGen.writeStartObject();
         jsonGen.writeStringField("id", id);
         jsonGen.writeStringField("type", String.format("%s", type));
-        jsonGen.writeStringField("docId", getDocId());
+        jsonGen.writeStringField("docId", getTargetDocumentId());
         jsonGen.writeStringField("path", path);
         jsonGen.writeStringField("repo", getRepositoryName());
         jsonGen.writeBooleanField("recurse", recurse);
@@ -255,7 +254,7 @@ public class IndexingCommand implements Serializable {
             if ("type".equals(key)) {
                 cmd.type = Type.valueOf(value.getTextValue());
             } else if ("docId".equals(key)) {
-                cmd.uid = value.getTextValue();
+                cmd.targetDocumentId = value.getTextValue();
             } else if ("path".equals(key)) {
                 cmd.path = value.getTextValue();
             } else if ("repo".equals(key)) {
@@ -268,7 +267,7 @@ public class IndexingCommand implements Serializable {
                 cmd.sync = value.getBooleanValue();
             }
         }
-        if (cmd.uid == null) {
+        if (cmd.targetDocumentId == null) {
             throw new IllegalArgumentException("Document uid is null: " + cmd);
         }
         if (cmd.type == null) {
@@ -281,8 +280,8 @@ public class IndexingCommand implements Serializable {
         return id;
     }
 
-    public String getDocId() {
-        return uid;
+    public String getTargetDocumentId() {
+        return targetDocumentId;
     }
 
     public IndexingCommand clone(DocumentModel newDoc) {
@@ -329,31 +328,20 @@ public class IndexingCommand implements Serializable {
         }
     }
 
-    public Event asIndexingEvent() throws IOException {
-        if (sessionId == null) {
-            // check if Framework.isInitialized ??
-            throw new IllegalStateException(String.format("Unable to generate event, no session found for cmd:" + this));
-        }
-        CoreSession session = CoreInstance.getInstance().getSession(sessionId);
-        EventContextImpl context = new EventContextImpl(session, session.getPrincipal());
-        context.getProperties().put(getId(), toJSON());
-        return context.newEvent(EventConstants.ES_INDEX_EVENT_SYNC);
-    }
-
     /**
      * Return a key that represent an indexing command signature
      */
     public String getWorkKey() {
-        String action = type.toString();
+        String action;
         switch (type) {
         case UPDATE:
         case INSERT:
             action = Type.INSERT.toString();
             break;
         default:
-            type.toString();
+            action = type.toString();
         }
-        return repositoryName + ":" + uid + ":" + recurse + ":" + action;
+        return repositoryName + ":" + targetDocumentId + ":" + recurse + ":" + action;
     }
 
 }

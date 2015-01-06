@@ -65,11 +65,11 @@ public class NxQueryBuilder {
 
     private final CoreSession session;
 
-    private final List<SortInfo> sortInfos = new ArrayList<SortInfo>();
+    private final List<SortInfo> sortInfos = new ArrayList<>();
 
-    private final List<String> repositories = new ArrayList<String>();
+    private final List<String> repositories = new ArrayList<>();
 
-    private final List<AggregateEsBase<? extends Bucket>> aggregates = new ArrayList<AggregateEsBase<? extends Bucket>>();
+    private final List<AggregateEsBase<? extends Bucket>> aggregates = new ArrayList<>();
 
     private int offset = 0;
 

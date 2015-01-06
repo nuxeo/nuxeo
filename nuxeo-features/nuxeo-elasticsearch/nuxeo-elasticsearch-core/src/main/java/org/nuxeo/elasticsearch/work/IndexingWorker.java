@@ -50,6 +50,9 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
             case UPDATE:
             case UPDATE_SECURITY:
                 return true;
+            case DELETE:
+                // recurse deletion is done atomically
+                return false;
             }
         }
         return false;
