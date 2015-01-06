@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -63,8 +63,8 @@ public class UpdateManager {
     protected File serverRoot;
 
     public UpdateManager(File serverRoot, File regFile) {
-        this.file = regFile;
-        this.backupRoot = new File(file.getParentFile(), "backup");
+        file = regFile;
+        backupRoot = new File(file.getParentFile(), "backup");
         backupRoot.mkdirs();
         this.serverRoot = serverRoot;
     }
@@ -129,7 +129,7 @@ public class UpdateManager {
         }
         Version v = entry.getVersion(opt.version);
         boolean newVersion = v == null;
-        if (newVersion) {
+        if (v == null) {
             v = entry.addVersion(new Version(opt.getVersion()));
             v.setPath(getVersionPath(opt));
         }
@@ -363,6 +363,9 @@ public class UpdateManager {
 
     /**
      * Create a new entry in the registry given the entry key. A base version will be automatically created if needed.
+     *
+     * @param key
+     * @throws Exception
      */
     public Entry createEntry(String key) throws PackageException {
         Entry entry = new Entry(key);
