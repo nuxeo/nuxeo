@@ -2,7 +2,7 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
              point="listener">
-    <listener name="binarymetadatalistener" enabled="false">
+    <listener name="binaryMetadataSyncListener" enabled="false">
     </listener>
   </extension>
 

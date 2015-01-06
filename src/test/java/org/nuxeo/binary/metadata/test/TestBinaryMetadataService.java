@@ -146,8 +146,7 @@ public class TestBinaryMetadataService {
         // Check if the document has been overwritten by binary metadata.
         pdfDoc = BinaryMetadataServerInit.getFile(1, session);
         assertEquals("en-US", pdfDoc.getPropertyValue("dc:title"));
-        assertEquals("OpenOffice.org", pdfDoc.getPropertyValue("dc:source"));
-        assertEquals("30 kB", pdfDoc.getPropertyValue("dc:description"));
+        assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:source"));
 
     }
 }

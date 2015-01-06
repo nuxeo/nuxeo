@@ -69,8 +69,7 @@ public class TestBinaryMetadataListener {
         DocumentModel pdfDoc = session.getDocument(doc.getRef());
 
         assertEquals("en-US", pdfDoc.getPropertyValue("dc:title"));
-        assertEquals("OpenOffice.org", pdfDoc.getPropertyValue("dc:source"));
-        assertEquals("30 kB", pdfDoc.getPropertyValue("dc:description"));
+        assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:source"));
     }
 
 }

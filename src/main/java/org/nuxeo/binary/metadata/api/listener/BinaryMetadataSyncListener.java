@@ -60,6 +60,7 @@ public class BinaryMetadataSyncListener implements EventListener {
         if (ABOUT_TO_CREATE.equals(event.getName()) && !doc.isProxy() && disable == null) {
             binaryMetadataService.writeMetadata(doc, docCtx.getCoreSession());
         } else if (BEFORE_DOC_UPDATE.equals(event.getName()) && !doc.isProxy() && disable == null) {
+            doc.putContextData(BinaryMetadataConstants.DISABLE_BINARY_METADATA_LISTENER, Boolean.TRUE);
             binaryMetadataService.handleSyncUpdate(doc, docCtx);
         }
     }

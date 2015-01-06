@@ -1,4 +1,4 @@
-<component name="org.nuxeo.binary.metadata.contrib.test">
+<component name="org.nuxeo.binary.metadata.contrib.test.bis">
 
   <require>org.nuxeo.binary.metadata.contrib.pdf.test</require>
 
@@ -7,14 +7,14 @@
     <rule id="default" order="0" enabled="true" async="false">
       <metadataMappings>
         <metadataMapping-id>PDF</metadataMapping-id>
-        <metadataMapping-id>PDFBIS</metadataMapping-id>
       </metadataMappings>
       <filters>
         <filter-id>hasFileType</filter-id>
       </filters>
     </rule>
-    <rule id="other" order="10" enabled="true" async="false">
+    <rule id="other" order="0" enabled="true" async="true">
       <metadataMappings>
+        <metadataMapping-id>PDFBIS</metadataMapping-id>
         <metadataMapping-id>PDFTRIS</metadataMapping-id>
       </metadataMappings>
       <filters>
