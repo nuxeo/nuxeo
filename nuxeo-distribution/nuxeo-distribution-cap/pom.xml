@@ -398,6 +398,12 @@
       <artifactId>nuxeo-platform-login-digest</artifactId>
     </dependency>
 
+    <!-- Binary Metadata -->
+    <dependency>
+      <groupId>org.nuxeo.binary.metadata</groupId>
+      <artifactId>nuxeo-binary-metadata</artifactId>
+    </dependency>
+
     <!-- Collections -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
