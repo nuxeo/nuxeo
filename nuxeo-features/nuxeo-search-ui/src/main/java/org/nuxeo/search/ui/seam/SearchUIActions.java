@@ -71,6 +71,7 @@ import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.webapp.action.ActionContextProvider;
+import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.search.ui.SearchUIService;
@@ -141,6 +142,9 @@ public class SearchUIActions implements Serializable {
 
     @In(create = true)
     protected ContentViewService contentViewService;
+
+    @In(create = true)
+    protected DocumentsListsManager documentsListsManager;
 
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
@@ -232,6 +236,8 @@ public class SearchUIActions implements Serializable {
     }
 
     public void setCurrentSelectedSavedSearchId(String selectedSavedSearchId) throws ClientException {
+        resetCurrentContentViewWorkingList();
+
         for (ContentViewHeader contentViewHeader : contentViewHeaders) {
             if (contentViewHeader.getName().equals(selectedSavedSearchId)) {
                 contentViewActions.reset(currentContentViewName);
@@ -243,6 +249,13 @@ public class SearchUIActions implements Serializable {
         DocumentModel savedSearch = documentManager.getDocument(new IdRef(selectedSavedSearchId));
         String contentViewName = (String) savedSearch.getPropertyValue("cvd:contentViewName");
         loadSavedSearch(contentViewName, savedSearch);
+    }
+
+    protected void resetCurrentContentViewWorkingList() {
+        if (currentContentViewName != null) {
+            ContentView contentView = contentViewActions.getContentView(currentContentViewName);
+            documentsListsManager.resetWorkingList(contentView.getSelectionListName());
+        }
     }
 
     public void loadSavedSearch(String contentViewName, DocumentModel searchDocument) throws ClientException {
@@ -265,16 +278,21 @@ public class SearchUIActions implements Serializable {
     public void clearSearch() throws ClientException {
         if (currentContentViewName != null) {
             contentViewActions.reset(currentContentViewName);
+            resetCurrentContentViewWorkingList();
         }
     }
 
     public void refreshAndRewind() throws ClientException {
-        contentViewActions.refreshAndRewind(getCurrentContentViewName());
+        String contentViewName = getCurrentContentViewName();
+        if (contentViewName != null) {
+            contentViewActions.refreshAndRewind(contentViewName);
+            resetCurrentContentViewWorkingList();
+        }
     }
 
     public void refreshAndRewindAndResetAggregates() throws ClientException {
         contentViewActions.resetAggregates(getCurrentContentViewName());
-        contentViewActions.refreshAndRewind(getCurrentContentViewName());
+        refreshAndRewind();
     }
 
     /*
