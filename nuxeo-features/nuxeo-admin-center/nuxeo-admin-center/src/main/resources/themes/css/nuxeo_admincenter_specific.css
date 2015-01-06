@@ -19,7 +19,7 @@ author: lkemen@nuxeo.com
   vertical-align: top }
 .actionBar label, .actionBar input[type="checkbox"] { vertical-align: middle }
 
-/* =Marketplace, Nuxeo Connect & Updates */
+/* =Marketplace, Nuxeo Online Services & Updates */
 .marketplace { background-color: #fbfbfb }
 .marketplace .marketplaceLogo {}
 
@@ -33,7 +33,7 @@ author: lkemen@nuxeo.com
 .hostInfos pre { font-size: 135%; padding: 1em }
 .hostInfos pre.bubbleBox { white-space: pre-line }
 
-/* Connect registration boxes */
+/* Online Services registration boxes */
 .nxconnectBox {
   font-size: 105%;
   margin-bottom: 2em;

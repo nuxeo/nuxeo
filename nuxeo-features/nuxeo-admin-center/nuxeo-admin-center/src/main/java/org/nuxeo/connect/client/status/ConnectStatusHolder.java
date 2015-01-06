@@ -89,19 +89,19 @@ public class ConnectStatusHolder {
                     instanceStatus = new SubscriptionStatusWrapper(getService().getConnector().getConnectStatus());
                 } catch (CanNotReachConnectServer e) {
                     log.warn("can not reach connect server", e);
-                    instanceStatus = new SubscriptionStatusWrapper("Nuxeo Connect Server is not reachable");
+                    instanceStatus = new SubscriptionStatusWrapper("Nuxeo Online Services is not reachable");
                     instanceStatus.canNotReachConnectServer = true;
                 } catch (ConnectClientVersionMismatchError e) {
                     log.warn(
-                            "Connect Client does not have the required version to communicate with Nuxeo Connect Server",
+                            "Nuxeo Connect Client does not have the required version to communicate with Nuxeo Online Services",
                             e);
                     instanceStatus = new SubscriptionStatusWrapper(e.getMessage());
                     instanceStatus.versionMismatch = true;
                 } catch (ConnectSecurityError e) {
-                    log.warn("Can not authenticated against Connect Server", e);
+                    log.warn("Can not authenticated against Nuxeo Online Services", e);
                     instanceStatus = new SubscriptionStatusWrapper(e);
                 } catch (ConnectServerError e) {
-                    log.error("Error while calling connect server", e);
+                    log.error("Error while calling Nuxeo Online Services", e);
                     instanceStatus = new SubscriptionStatusWrapper(e.getMessage());
                 }
             } else {
