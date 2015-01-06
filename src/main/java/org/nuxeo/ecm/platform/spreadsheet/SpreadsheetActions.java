@@ -36,9 +36,6 @@ import org.nuxeo.ecm.platform.contentview.json.JSONContentViewState;
 import org.nuxeo.ecm.platform.forms.layout.io.Base64;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
-import javax.faces.context.FacesContext;
-import javax.servlet.ServletRequest;
-
 /**
  * Restful actions for Nuxeo Spreadsheet
  *
@@ -66,9 +63,7 @@ public class SpreadsheetActions implements Serializable {
             params.put("cv", encoded);
         }
 
-        ServletRequest request = (ServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-
-        return VirtualHostHelper.getBaseURL(request) + "spreadsheet?"
-                + Joiner.on('&').withKeyValueSeparator("=").join(params);
+        return VirtualHostHelper.getContextPathProperty() + "/spreadsheet/index.html?"
+            + Joiner.on('&').withKeyValueSeparator("=").join(params);
     }
 }
