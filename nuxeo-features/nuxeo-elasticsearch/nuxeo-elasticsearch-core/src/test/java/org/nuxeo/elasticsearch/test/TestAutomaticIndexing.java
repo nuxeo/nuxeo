@@ -95,8 +95,8 @@ public class TestAutomaticIndexing {
     private Priority consoleThresold;
 
     public void startCountingCommandProcessed() {
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(0, esa.getPendingWorkerCount());
+        Assert.assertEquals(0, esa.getPendingCommandCount());
         commandProcessed = esa.getTotalCommandProcessed();
     }
 
@@ -112,10 +112,9 @@ public class TestAutomaticIndexing {
             Thread.sleep(100);
         }
         if (esa.isIndexingInProgress()) {
-            String msg = String.format("Indexing in progress, giveup, pending: %s, docs: %s, runnning %s",
-                    esa.getPendingCommands(), esa.getPendingDocs(), esa.getRunningCommands());
+            String msg = String.format("Indexing in progress, giveup, pending: %s, running %s",
+                    esa.getPendingWorkerCount(), esa.getRunningWorkerCount());
             System.out.println(msg);
-
             Assert.fail(msg);
         }
         esa.refresh();

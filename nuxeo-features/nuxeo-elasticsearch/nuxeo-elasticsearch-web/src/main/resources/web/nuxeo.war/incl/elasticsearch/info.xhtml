@@ -19,10 +19,11 @@
   </c:choose>
 
   <h3>Indexing state</h3>
-  <div class="detail">An indexing command is an Elasticsearch operation that can insert, update or delete one or many Nuxeo documents.</div>
+  <div class="detail">An indexing command is an Elasticsearch operation that can insert, update or delete one or many Nuxeo documents.
+  Commands are processed by a pool of indexing worker.</div>
   <pre class="bubbleBox">
-Indexing command running: <h:outputText value="#{esAdmin.runningCommands}"/>
-Indexing command or job pending: <h:outputText value="#{esAdmin.pendingCommands}"/>
+Indexing worker running: <h:outputText value="#{esAdmin.runningWorkerCount}"/>
+Indexing worker pending: <h:outputText value="#{esAdmin.pendingWorkerCount}"/>
 Number of command processed since Nuxeo instance startup: <h:outputText value="#{esAdmin.totalCommandProcessed}"/>
   </pre>
 

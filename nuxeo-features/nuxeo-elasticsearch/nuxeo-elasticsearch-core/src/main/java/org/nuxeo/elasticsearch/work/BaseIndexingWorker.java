@@ -28,14 +28,21 @@ public abstract class BaseIndexingWorker extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
-    private static final AtomicInteger activeWorker = new AtomicInteger(0);
+    private static final AtomicInteger pendingWorkerCount = new AtomicInteger(0);
 
-    public static int getRunningWorkers() {
-        return activeWorker.get();
+    private static final AtomicInteger runningWorkerCount = new AtomicInteger(0);
+
+
+    public static int getPendingWorkerCount() {
+        return pendingWorkerCount.get();
+    }
+
+    public static int getRunningWorkerCount() {
+        return runningWorkerCount.get();
     }
 
     public BaseIndexingWorker() {
-        activeWorker.incrementAndGet();
+        pendingWorkerCount.incrementAndGet();
     }
 
     @Override
@@ -44,13 +51,15 @@ public abstract class BaseIndexingWorker extends AbstractWork {
     }
 
     @Override
-    public void work() throws Exception {
+    public void work() {
+        runningWorkerCount.incrementAndGet();
+        pendingWorkerCount.decrementAndGet();
         try {
             doWork();
         } finally {
-            activeWorker.decrementAndGet();
+            runningWorkerCount.decrementAndGet();
         }
     }
 
-    protected abstract void doWork() throws Exception;
+    protected abstract void doWork();
 }

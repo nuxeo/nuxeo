@@ -100,26 +100,25 @@ public interface ElasticSearchAdmin {
     void flushRepositoryIndex(String repositoryName);
 
     /**
-     * Returns the number of documents that are waiting for being indexed.
+     * Returns the number of command scheduled for indexing.
      *
-     * @since 5.9.3
+     * @since 7.1
      */
-    int getPendingDocs();
+    int getPendingCommandCount();
 
     /**
-     * Returns the number of indexing command that are waiting to be processed. This include the recursive asynchronous
-     * activities.
+     * Returns the number of indexing worker pending waiting to be executed.
      *
-     * @since 5.9.3
+     * @since 7.1
      */
-    int getPendingCommands();
+    int getPendingWorkerCount();
 
     /**
-     * Returns the number of indexing command that are currently running
+     * Returns the number of indexing worker that are currently running.
      *
-     * @since 5.9.5
+     * @since 7.1
      */
-    int getRunningCommands();
+    int getRunningWorkerCount();
 
     /**
      * Returns the total number of command processed by Elasticsearch. Useful for test assertion.

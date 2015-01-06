@@ -329,9 +329,9 @@ public class IndexingCommand implements Serializable {
     }
 
     /**
-     * Return a key that represent an indexing command signature
+     * Return a command signature used for deduplication
      */
-    public String getWorkKey() {
+    public String getSignature() {
         String action;
         switch (type) {
         case UPDATE:

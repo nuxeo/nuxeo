@@ -56,10 +56,10 @@ public class TestService {
         Client client = esa.getClient();
         Assert.assertNotNull(client);
 
-        Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(0, esa.getPendingCommandCount());
         Assert.assertEquals(0, esa.getTotalCommandProcessed());
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getRunningCommands());
+        Assert.assertEquals(0, esa.getPendingWorkerCount());
+        Assert.assertEquals(0, esa.getRunningWorkerCount());
         Assert.assertFalse(esa.isIndexingInProgress());
         Assert.assertEquals(1, esa.getRepositoryNames().size());
         Assert.assertEquals("test", esa.getRepositoryNames().get(0));

@@ -160,8 +160,8 @@ public class RestESDocumentsTest extends BaseTest {
         ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(0, esa.getPendingWorkerCount());
+        Assert.assertEquals(0, esa.getPendingCommandCount());
         esa.refresh();
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
         // Given a repository, when I perform a ESQL pageprovider on it

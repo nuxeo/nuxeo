@@ -75,8 +75,8 @@ public class TestManualIndexing {
     private boolean syncMode = false;
 
     public void startCountingCommandProcessed() {
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(0, esa.getPendingWorkerCount());
+        Assert.assertEquals(0, esa.getPendingCommandCount());
         commandProcessed = esa.getTotalCommandProcessed();
     }
 
