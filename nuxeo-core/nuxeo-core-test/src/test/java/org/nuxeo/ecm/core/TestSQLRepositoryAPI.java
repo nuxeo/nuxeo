@@ -2615,6 +2615,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         f.put("file", new StringBlob("myfile", "text/test", "UTF-8"));
         files.add(f);
         doc.setProperty("files", "files", files);
+        // add a dynamic facet too
+        doc.addFacet("Aged");
+        doc.setPropertyValue("age:age", "123");
         doc = session.createDocument(doc);
         session.save();
 
@@ -2644,6 +2647,33 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
             throw new ClientException(e);
         }
         assertEquals("myfile", content);
+        // check dynamic facet
+        assertTrue(copy.hasFacet("Aged"));
+        assertEquals("123", copy.getPropertyValue("age:age"));
+    }
+
+    @Test
+    public void testCopyContentTransTyping() throws ClientException {
+        DocumentModel note = session.createDocumentModel("/", "original", "Note");
+        note.setPropertyValue("dc:title", "a title");
+        note.setPropertyValue("note:note", "this is a note");
+        note.setPropertyValue("note:mime_type", "text/plain");
+        // add a dynamic facet too
+        note.addFacet("Aged");
+        note.setPropertyValue("age:age", "123");
+        note = session.createDocument(note);
+        session.save();
+
+        DocumentModel copy = session.createDocumentModel("/", "copy", "File");
+        copy.copyContent(note);
+        copy = session.createDocument(copy);
+        session.save();
+
+        assertEquals("a title", copy.getPropertyValue("dc:title"));
+        // the note schema was dropped as it's not present in File
+        // check dynamic facet
+        assertTrue(copy.hasFacet("Aged"));
+        assertEquals("123", copy.getPropertyValue("age:age"));
     }
 
     // ------------------------------------
