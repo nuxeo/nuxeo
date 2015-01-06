@@ -297,8 +297,8 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     @Override
     public void runIndexingWorker(List<IndexingCommand> cmds) {
-        List<IndexingCommand> syncCommands = new ArrayList<>();
-        List<IndexingCommand> asyncCommands = new ArrayList<>();
+        Map<String, List<IndexingCommand>> syncCommands = new HashMap<>();
+        Map<String, List<IndexingCommand>> asyncCommands = new HashMap<>();
         for (IndexingCommand cmd : cmds) {
             if (isAlreadyScheduled(cmd)) {
                 if (log.isDebugEnabled()) {
@@ -309,37 +309,52 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
             pendingCommands.add(cmd.getId());
             pendingWork.add(cmd.getWorkKey());
             if (cmd.isSync()) {
-                syncCommands.add(cmd);
-            } else {
-                asyncCommands.add(cmd);
-            }
-        }
-        // TODO implement multi repositories
-        if (!syncCommands.isEmpty()) {
-            String repositoryName = syncCommands.get(0).getRepositoryName();
-            Transaction transaction = TransactionHelper.suspendTransaction();
-            IndexingWorker idxWork = new IndexingWorker(repositoryName, syncCommands);
-            try {
-                idxWork.run();
-            } finally {
-                if (transaction != null) {
-                    TransactionHelper.resumeTransaction(transaction);
+                List<IndexingCommand> syncCmds = syncCommands.get(cmd.getRepositoryName());
+                if (syncCmds == null) {
+                    syncCmds = new ArrayList<>();
                 }
+                syncCmds.add(cmd);
+                syncCommands.put(cmd.getRepositoryName(), syncCmds);
+            } else {
+                List<IndexingCommand> asyncCmds = asyncCommands.get(cmd.getRepositoryName());
+                if (asyncCmds == null) {
+                    asyncCmds = new ArrayList<>();
+                }
+                asyncCmds.add(cmd);
+                asyncCommands.put(cmd.getRepositoryName(), asyncCmds);
             }
         }
-        if (!asyncCommands.isEmpty()) {
-            String repositoryName = asyncCommands.get(0).getRepositoryName();
-            IndexingWorker idxWork = new IndexingWorker(repositoryName, asyncCommands);
-            WorkManager wm = Framework.getLocalService(WorkManager.class);
+        runIndexingSyncWorker(syncCommands);
+        scheduleIndexingAsyncWorker(asyncCommands);
+    }
+
+    protected void scheduleIndexingAsyncWorker(Map<String, List<IndexingCommand>> asyncCommands) {
+        if (asyncCommands.isEmpty()) {
+            return;
+        }
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        for (String repositoryName : asyncCommands.keySet()) {
+            IndexingWorker idxWork = new IndexingWorker(repositoryName, asyncCommands.get(repositoryName));
             wm.schedule(idxWork, false);
         }
     }
 
-    @Override
-    public void runIndexingWorker(IndexingCommand cmd) {
-        List<IndexingCommand> cmds = new ArrayList<>(1);
-        cmds.add(cmd);
-        runIndexingWorker(cmds);
+    protected void runIndexingSyncWorker(Map<String, List<IndexingCommand>> syncCommands) {
+        if (syncCommands.isEmpty()) {
+            return;
+        }
+        Transaction transaction = TransactionHelper.suspendTransaction();
+        try {
+            for (String repositoryName : syncCommands.keySet()) {
+                IndexingWorker idxWork = new IndexingWorker(repositoryName, syncCommands.get(repositoryName));
+                idxWork.run();
+            }
+        } finally {
+            if (transaction != null) {
+                TransactionHelper.resumeTransaction(transaction);
+            }
+
+        }
     }
 
     @Override

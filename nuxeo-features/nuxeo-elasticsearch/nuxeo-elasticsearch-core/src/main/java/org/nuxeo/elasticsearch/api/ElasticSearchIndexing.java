@@ -30,7 +30,7 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand;
 public interface ElasticSearchIndexing {
 
     /**
-     * Run a worker to process the {@link IndexingCommand}, the target document must be committed.
+     * Run a worker to process the {@link IndexingCommand}.
      * <p>
      * Asynchronous command schedules an indexing job and return.
      * </p>
@@ -38,21 +38,16 @@ public interface ElasticSearchIndexing {
      * Synchronous command execute an indexing job using a new Tx then refresh the index so the document is searchable
      * immediately. if the command is also recursive the children are processed asynchronously.
      * </p>
-     *
-     * @since 7.1
-     */
-    void runIndexingWorker(IndexingCommand cmd);
-
-    /**
-     * Same as {@link ElasticSearchIndexing#runIndexingWorker(org.nuxeo.elasticsearch.commands.IndexingCommand)} but use
-     * a bulk request to process a list of commands.
+     * <p>
+     * If there is more than one cmd the elasticsearch request is done in bulk mode.
+     * </p>
      *
      * @since 7.1
      */
     void runIndexingWorker(List<IndexingCommand> cmds);
 
     /**
-     * Reindex documents matching the NXQL query,
+     * Reindex documents matching the NXQL query, This is asynchronous.
      *
      * @since 7.1
      */

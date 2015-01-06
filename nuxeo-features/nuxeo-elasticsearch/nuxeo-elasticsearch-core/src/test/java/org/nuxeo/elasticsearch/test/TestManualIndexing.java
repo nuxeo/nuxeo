@@ -40,6 +40,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
+import java.util.Arrays;
+
 /**
  * Test servcie declaration as well as basic indexing API
  *
@@ -209,7 +211,7 @@ public class TestManualIndexing {
         // ask for async indexing
         startCountingCommandProcessed();
         IndexingCommand cmd = new IndexingCommand(doc, false, false);
-        esi.runIndexingWorker(cmd);
+        esi.runIndexingWorker(Arrays.asList(cmd));
         esa.refresh();
         assertNumberOfCommandProcessed(0);
 
