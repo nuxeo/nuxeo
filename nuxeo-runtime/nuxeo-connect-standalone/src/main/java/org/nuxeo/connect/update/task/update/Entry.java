@@ -1,14 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * http://www.gnu.org/licenses/lgpl-2.1
  * Lesser General Public License for more details.
  *
  * Contributors:
@@ -23,15 +19,11 @@ import java.util.List;
 import org.nuxeo.common.utils.FileVersion;
 
 /**
- * Versions are stored in the same order they are registered (in historical
- * package install order).
- *
- * That means when rollbacking an update the file system will be modified
- * only if the last version was rollbacked. And the version that will become the
- * current version will be the last version in the version list.
+ * Versions are stored in the same order they are registered (in historical package install order). That means when
+ * rollbacking an update the file system will be modified only if the last version was rollbacked. And the version that
+ * will become the current version will be the last version in the version list.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Entry implements Iterable<Version> {
 
@@ -60,7 +52,7 @@ public class Entry implements Iterable<Version> {
 
     /**
      * @param includeUpgradeOnly
-     * @return Last version with a package not deploying it in upgradeOnly mode
+     * @return Last version not deployed in upgradeOnly mode
      * @since 5.7
      */
     public Version getLastVersion(boolean includeUpgradeOnly) {
@@ -112,8 +104,7 @@ public class Entry implements Iterable<Version> {
     public Version getVersion(String version) {
         for (Version v : versions) {
             String ov = v.getVersion();
-            if ((ov != null && ov.equals(version))
-                    || (ov == null && version == null)) {
+            if ((ov != null && ov.equals(version)) || (ov == null && version == null)) {
                 return v;
             }
         }
@@ -124,9 +115,9 @@ public class Entry implements Iterable<Version> {
         Version result = null;
         FileVersion fv = null;
         for (Version v : versions) {
-            if (result == null) {
-                result = v;
+            if (fv == null) {
                 fv = v.getFileVersion();
+                result = v;
             } else {
                 FileVersion fv2 = v.getFileVersion();
                 if (fv.lessThan(fv2)) {
