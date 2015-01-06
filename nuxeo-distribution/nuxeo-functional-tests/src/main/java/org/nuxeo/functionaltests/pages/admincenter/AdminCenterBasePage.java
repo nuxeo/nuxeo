@@ -48,7 +48,7 @@ public class AdminCenterBasePage extends AbstractPage {
     @FindBy(linkText = "Monitoring")
     public WebElement monitoringLink;
 
-    @FindBy(linkText = "Nuxeo Connect")
+    @FindBy(linkText = "Nuxeo Online Services")
     public WebElement nuxeoConnectLink;
 
     @FindBy(linkText = "Vocabularies")
