@@ -66,7 +66,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
     protected static final String CONNECT_PROJECT_SELECTOR_UUID = "575954be-6027-45b7-8cd1-77a6bcb0832d";
 
-    public static final String CONNECT_FORM_TITLE = "Nuxeo Connect & Nuxeo Studio";
+    public static final String CONNECT_FORM_TITLE = "Nuxeo Online Services";
 
     @Ignore("NXP-15177: failing randomly")
     @Test
@@ -195,7 +195,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         // ok, let's try to skip the screen
         WizardPage connectSkip = connectPage1.navByLink(WizardPage.class, "Or skip and don't register", true);
         assertNotNull(connectSkip);
-        assertEquals("You have not signed up for a free trial of Nuxeo Connect.", connectSkip.getTitle2());
+        assertEquals("You have not signed up for a free trial of Nuxeo Online Services.", connectSkip.getTitle2());
 
         // ok, let's register
         connectWizardPage = connectSkip.navById(WizardPage.class, "btnRetry", true);
@@ -224,7 +224,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         // connectProjectPage.fillInput("project", CONNECT_PROJECT_SELECTOR);
 
         // **********************
-        // Exit Connect Form and Display Packages selection
+        // Exit Online Registration Form and Display Packages selection
         WizardPage packageSelectiondPage = connectSignIn.nav(WizardPage.class, "Continue");
 
         assertNotNull(packageSelectiondPage);
@@ -294,7 +294,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         assertTrue(smtpPage.selectOption("mail.transport.auth", "false"));
 
         // **********************
-        // Connect Form
+        // Online Registration Form
 
         WizardPage connectWizardPage = smtpPage.next(WizardPage.class);
 
@@ -348,7 +348,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         AdminCenterBasePage adminHome = home.getAdminCenter();
         assertNotNull(adminHome);
 
-        // Check registration on connect Home
+        // Check registration on Online Registration Home
         ConnectHomePage connectHome = adminHome.getConnectHomePage();
         assertNotNull(connectHome);
         assertEquals("Connect registration OK", connectHome.getConnectStatus());
