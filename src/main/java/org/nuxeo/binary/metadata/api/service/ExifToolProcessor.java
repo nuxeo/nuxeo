@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -166,7 +167,11 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
     protected String getCommandTags(Map<String, Object> metadataMap) {
         StringBuilder sb = new StringBuilder();
         for (String metadata : metadataMap.keySet()) {
-            sb.append("-" + metadata + "=" + metadataMap.get(metadata).toString() + " ");
+            Object metadataValue = metadataMap.get(metadata);
+            if (metadataValue == null) {
+                metadataValue = StringUtils.EMPTY;
+            }
+            sb.append("-" + metadata + "=" + metadataValue.toString() + " ");
         }
         return sb.toString();
     }
