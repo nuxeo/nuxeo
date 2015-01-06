@@ -88,7 +88,7 @@ public class ConnectStatusHolder {
                 try {
                     instanceStatus = new SubscriptionStatusWrapper(getService().getConnector().getConnectStatus());
                 } catch (CanNotReachConnectServer e) {
-                    log.warn("can not reach connect server", e);
+                    log.warn("can not reach Nuxeo Online Services", e);
                     instanceStatus = new SubscriptionStatusWrapper("Nuxeo Online Services is not reachable");
                     instanceStatus.canNotReachConnectServer = true;
                 } catch (ConnectClientVersionMismatchError e) {
