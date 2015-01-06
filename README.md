@@ -6,45 +6,9 @@ The **Nuxeo** addon _binary-metadata_ gives the ability to extract and rewrite b
 - Use by default [Exif Tool|http://www.sno.phy.queensu.ca/~phil/exiftool/]
 - Let contributing other metadata processors
 
-### Getting Started
+### Documentation
 
-- [Download a Nuxeo server](http://www.nuxeo.com/en/downloads) (the zip version)
-
-- Unzip it
-
-- Install nuxeo-binary-metadata plugin from command line
-  - Linux/Mac:
-    - `NUXEO_HOME/bin/nuxeoctl mp-init`
-    - `NUXEO_HOME/bin/nuxeoctl mp-install nuxeo-binary-metadata`
-    - `NUXEO_HOME/bin/nuxeoctl start`
-  - Windows:
-    - `NUXEO_HOME\bin\nuxeoctl.bat mp-init`
-    - `NUXEO_HOME\bin\nuxeoctl.bat mp-install nuxeo-binary-metadata`
-    - `NUXEO_HOME\bin\nuxeoctl.bat start`
-
-- From your browser, go to `http://localhost:8080/nuxeo`
-
-- Follow Nuxeo Wizard by clicking 'Next' buttons, re-start once completed
-
-- Check Nuxeo correctly re-started `http://localhost:8080/nuxeo`
-  - username: Administrator
-  - password: Administrator
-
-- You can now use the Binary Metadata addon with this running Nuxeo server.
-
-###API Usage Examples:
-
-######Services:
-
-_work-in-progress_
-
-######Operations:
-
-_work-in-progress_
-
-###Binary Metadata examples:
-
-_work-in-progress_
+[Nuxeo Binary Metadata Documentation](http://doc.nuxeo.com/x/w4JkAQ)
 
 ###Report & Contribute
 
