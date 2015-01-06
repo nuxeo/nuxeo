@@ -243,7 +243,6 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
             for (Object metadata : blobMetadataOutput.keySet()) {
                 doc.setPropertyValue(metadataMapping.get(metadata).toString(), blobMetadataOutput.get(metadata).toString());
             }
-            session.saveDocument(doc);
         }
     }
 
