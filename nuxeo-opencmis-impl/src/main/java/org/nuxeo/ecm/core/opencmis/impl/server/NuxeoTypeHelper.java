@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Nuxeo Type Utilities.
@@ -118,10 +119,16 @@ public class NuxeoTypeHelper {
 
     public static final String NX_PATH_SEGMENT = "nuxeo:pathSegment";
 
+    public static final String ENABLE_COMPLEX_PROPERTIES = "org.nuxeo.cmis.enableComplexProperties";
+
     /** @since 6.0 */
     public static final String NX_POS = "nuxeo:pos";
 
     private static final String NAMESPACE = "http://ns.nuxeo.org/cmis/type/";
+
+    protected static boolean isComplexPropertiesEnabled() {
+        return !Framework.isBooleanPropertyFalse(ENABLE_COMPLEX_PROPERTIES);
+    }
 
     protected AbstractTypeDefinition t;
 
@@ -212,17 +219,35 @@ public class NuxeoTypeHelper {
             Type fieldType = field.getType();
             String schemaName = schema.getName();
             if (fieldType.isComplexType()) {
-                // complex type
-                log.debug("Ignoring complex type: " + schemaName + '/' + field.getName() + " in type: " + t.getId());
-                continue;
+                if (isComplexPropertiesEnabled()) {
+                    // content is specifically excluded from the properties
+                    if ("content".equals(fieldType.getName())) {
+                        log.debug("Ignoring complex type: " + schemaName + '/' + field.getName() + " in type: "
+                                + t.getId());
+                        continue;
+                    }
+                    // complex types get exposed to CMIS as a single string value;
+                    // the NuxeoPropertyData class will marshal/unmarshal them as JSON.
+                    cardinality = Cardinality.SINGLE;
+                    propertyType = PropertyType.STRING;
+                } else {
+                    log.debug("Ignoring complex type: " + schemaName + '/' + field.getName() + " in type: " + t.getId());
+                    continue;
+                }
             } else {
                 if (fieldType.isListType()) {
                     Type listFieldType = ((ListType) fieldType).getFieldType();
                     if (!listFieldType.isSimpleType()) {
-                        // complex list
-                        log.debug("Ignoring complex list: " + schemaName + '/' + field.getName() + " in type: "
-                                + t.getId());
-                        continue;
+                        if (isComplexPropertiesEnabled()) {
+                            // complex lists get exposed to CMIS as a list of string values;
+                            // the NuxeoPropertyData class will marshal/unmarshal them as JSON.
+                            cardinality = Cardinality.MULTI;
+                            propertyType = PropertyType.STRING;
+                        } else {
+                            log.debug("Ignoring complex type: " + schemaName + '/' + field.getName() + "in type: "
+                                    + t.getId());
+                            continue;
+                        }
                     } else {
                         // array: use a collection table
                         cardinality = Cardinality.MULTI;

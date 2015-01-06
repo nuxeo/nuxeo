@@ -26,6 +26,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -51,15 +53,24 @@ import org.apache.chemistry.opencmis.client.api.QueryResult;
 import org.apache.chemistry.opencmis.client.api.Relationship;
 import org.apache.chemistry.opencmis.client.api.Rendition;
 import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.chemistry.opencmis.client.api.SessionFactory;
+import org.apache.chemistry.opencmis.client.bindings.CmisBindingFactory;
+import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
+import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.AllowableActions;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.Principal;
+import org.apache.chemistry.opencmis.commons.data.Properties;
+import org.apache.chemistry.opencmis.commons.data.PropertyData;
+import org.apache.chemistry.opencmis.commons.data.PropertyString;
 import org.apache.chemistry.opencmis.commons.data.RenditionData;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.enums.Action;
+import org.apache.chemistry.opencmis.commons.enums.BindingType;
+import org.apache.chemistry.opencmis.commons.enums.DateTimeFormat;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
@@ -70,6 +81,7 @@ import org.apache.chemistry.opencmis.commons.impl.Base64;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlEntryImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlPrincipalDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
+import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.commons.httpclient.util.DateUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -79,6 +91,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.Lock;
@@ -92,14 +105,18 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
+import org.nuxeo.ecm.core.opencmis.tests.StatusLoggingDefaultHttpInvoker;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -111,6 +128,10 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CmisFeature.class)
+@Deploy({ "org.nuxeo.ecm.webengine.core", //
+        "org.nuxeo.ecm.automation.core" //
+})
+@LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 public class CmisSuiteSession {
 
@@ -1141,6 +1162,84 @@ public class CmisSuiteSession {
                 }
             }
         }
+    }
+
+    @Test
+    public void testComplexProperties() throws Exception {
+        // Enable complex properties
+        String ENABLE_COMPLEX_PROPERTIES = "org.nuxeo.cmis.enableComplexProperties";
+        Framework.getProperties().setProperty(ENABLE_COMPLEX_PROPERTIES, "true");
+
+        cmisFeatureSession.tearDownCmisSession();
+        Thread.sleep(1000); // otherwise sometimes fails to set up again
+        session = cmisFeatureSession.setUpCmisSession(coreSession.getRepositoryName());
+
+        String complexStringProp = "\"stringProp\":\"testString1\"";
+        String complexDatePropMillis = "\"dateProp\":1234500000000";
+        String complexDatePropW3C = "\"dateProp\":\"2009-02-13T04:40:00.00Z\"";
+        String complexMiscProps = "\"boolProp\":null,\"enumProp\":null,\"arrayProp\":[],\"intProp\":null,\"floatProp\":null";
+        String expectedPropsMillis = String.format("{%s,%s,%s}", complexStringProp, complexDatePropMillis,
+                complexMiscProps);
+        String expectedPropsW3C = String.format("{%s,%s,%s}", complexStringProp, complexDatePropW3C, complexMiscProps);
+        Map<String, Serializable> properties = new HashMap<>();
+        properties.put(PropertyIds.OBJECT_TYPE_ID, "ComplexFile");
+        properties.put(PropertyIds.NAME, "complexfile");
+        properties.put("complexTest:complexItem", "{" + complexStringProp + "," + complexDatePropMillis + "}");
+        Document doc;
+        List<String> docIds = new ArrayList<String>();
+        doc = session.getRootFolder().createDocument(properties, null, null, null, null, null,
+                NuxeoSession.DEFAULT_CONTEXT);
+        docIds.add(doc.getId());
+        properties.put("complexTest:complexItem", "{" + complexStringProp + "," + complexDatePropW3C + "}");
+        doc = session.getRootFolder().createDocument(properties, null, null, null, null, null,
+                NuxeoSession.DEFAULT_CONTEXT);
+        docIds.add(doc.getId());
+        String expectedProps = (isBrowser) ? expectedPropsMillis : expectedPropsW3C;
+        for (String docId : docIds) {
+            doc = (Document) session.getObject(docId);
+            assertEquals(expectedProps, doc.getPropertyValue("complexTest:complexItem"));
+        }
+
+        if (!isBrowser) {
+            return;
+        }
+
+        session = createBrowserCmisSession(coreSession.getRepositoryName(),
+                ((CmisFeatureSessionHttp) cmisFeatureSession).serverURI);
+        try {
+            for (String docId : docIds) {
+                doc = (Document) session.getObject(docId);
+                assertEquals(expectedPropsW3C, doc.getPropertyValue("complexTest:complexItem"));
+            }
+        } finally {
+            session.clear();
+        }
+    }
+
+    private Session createBrowserCmisSession(String repositoryName, URI serverURI) {
+
+        SessionFactory sf = SessionFactoryImpl.newInstance();
+        Map<String, String> params = new HashMap<String, String>();
+
+        params.put(SessionParameter.AUTHENTICATION_PROVIDER_CLASS, CmisBindingFactory.STANDARD_AUTHENTICATION_PROVIDER);
+
+        params.put(SessionParameter.CACHE_SIZE_REPOSITORIES, "10");
+        params.put(SessionParameter.CACHE_SIZE_TYPES, "100");
+        params.put(SessionParameter.CACHE_SIZE_OBJECTS, "100");
+
+        params.put(SessionParameter.REPOSITORY_ID, repositoryName);
+        params.put(SessionParameter.USER, USERNAME);
+        params.put(SessionParameter.PASSWORD, PASSWORD);
+
+        params.put(SessionParameter.HTTP_INVOKER_CLASS, StatusLoggingDefaultHttpInvoker.class.getName());
+
+        params.put(SessionParameter.BINDING_TYPE, BindingType.BROWSER.value());
+        params.put(SessionParameter.BROWSER_URL, serverURI.toString());
+
+        params.put(SessionParameter.BROWSER_DATETIME_FORMAT, DateTimeFormat.EXTENDED.value());
+
+        session = sf.createSession(params);
+        return session;
     }
 
 }
