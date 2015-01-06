@@ -132,12 +132,12 @@ public abstract class SharedFilesTest extends PackageTestCase {
 
     protected void ensureFiles(String... names) throws Exception {
         HashSet<String> set = new HashSet<String>(Arrays.asList(bundles.list()));
-        assertEquals(set.size(), names.length);
+        assertEquals("Number of files in " + bundles.toString(), names.length, set.size());
         for (String name : names) {
-            assertTrue(set.contains(name));
+            assertTrue("Missing file: " + name, set.contains(name));
         }
         for (String name : names) {
-            assertEquals(name, FileUtils.readFile(new File(bundles, name)));
+            assertEquals("Wrong file content for " + name, name, FileUtils.readFile(new File(bundles, name)));
         }
     }
 

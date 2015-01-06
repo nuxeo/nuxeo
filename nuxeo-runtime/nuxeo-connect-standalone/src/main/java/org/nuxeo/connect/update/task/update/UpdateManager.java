@@ -277,7 +277,9 @@ public class UpdateManager {
             removeBackup = true;
         }
 
-        Version versionToRollback = entry.getLastVersion(false);
+        // Include upgradeOnly versions only if there is a base version or a non-upgradeOnly version
+        boolean includeUpgradeOnly = entry.hasBaseVersion() || entry.getLastVersion(false) != null;
+        Version versionToRollback = entry.getLastVersion(includeUpgradeOnly);
         if (versionToRollback == null) {
             // no more versions - remove entry and rollback base version if any
             if (entry.isEmpty()) {
