@@ -21,11 +21,11 @@
     </script>
     <h:selectBooleanCheckbox id="immediate_creation"
       title="#{messages['label.immediateCreation']}"
-      valueChangeListener="#{userManagementActions.changeTypeUserModel}"
       value="#{userManagementActions.immediateCreation}">
-      <f:ajax event="change"
+      <f:ajax event="click"
         render="createUser"
-        execute="@this" />
+        listener="#{userManagementActions.changeTypeUserModel}"
+        execute="@form" />
     </h:selectBooleanCheckbox>
     <h:outputLabel for="immediate_creation" value="#{messages['label.immediateCreation']}" />
 
