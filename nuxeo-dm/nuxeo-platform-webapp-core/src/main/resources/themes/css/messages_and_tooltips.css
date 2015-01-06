@@ -88,8 +88,7 @@ a.ambiance-close {
 .successMessage {
   display: block;
   font-weight: bold;
-  padding: 0;
-  max-width: 25em }
+  padding: 0 }
 
 .info,
 .avert,
