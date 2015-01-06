@@ -92,14 +92,9 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         if (nxql == null || nxql.isEmpty()) {
             throw new IllegalArgumentException("Expecting an NXQL query");
         }
-        esa.totalCommandRunning.incrementAndGet();
-        try {
-            ScrollingIndexingWorker worker = new ScrollingIndexingWorker(repositoryName, nxql);
-            WorkManager wm = Framework.getLocalService(WorkManager.class);
-            wm.schedule(worker);
-        } finally {
-            esa.totalCommandRunning.decrementAndGet();
-        }
+        ScrollingIndexingWorker worker = new ScrollingIndexingWorker(repositoryName, nxql);
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        wm.schedule(worker);
     }
 
     @Override
@@ -109,19 +104,15 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             indexNonRecursive(cmds.get(0));
             return;
         }
-        esa.totalCommandRunning.addAndGet(nbCommands);
+        // simulate long indexing
+        // try {Thread.sleep(1000);} catch (InterruptedException e) { }
+
+        processBulkDeleteCommands(cmds);
+        Context stopWatch = bulkIndexTimer.time();
         try {
-            // simulate long indexing
-            // try {Thread.sleep(1000);} catch (InterruptedException e) { }
-            processBulkDeleteCommands(cmds);
-            Context stopWatch = bulkIndexTimer.time();
-            try {
-                processBulkIndexCommands(cmds);
-            } finally {
-                stopWatch.stop();
-            }
+            processBulkIndexCommands(cmds);
         } finally {
-            esa.totalCommandRunning.addAndGet(-nbCommands);
+            stopWatch.stop();
         }
         esa.totalCommandProcessed.addAndGet(nbCommands);
         refreshIfNeeded(cmds);
@@ -190,27 +181,22 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     @Override
     public void indexNonRecursive(IndexingCommand cmd) throws ClientException {
-        esa.totalCommandRunning.incrementAndGet();
-        if (cmd.getType() == Type.DELETE) {
-            Context stopWatch = deleteTimer.time();
-            try {
+        Context stopWatch = null;
+        try {
+            if (cmd.getType() == Type.DELETE) {
+                stopWatch = deleteTimer.time();
                 processDeleteCommand(cmd);
-            } finally {
-                stopWatch.stop();
-                esa.totalCommandProcessed.addAndGet(1);
-                esa.totalCommandRunning.decrementAndGet();
-            }
-        } else {
-            Context stopWatch = indexTimer.time();
-            try {
+            } else {
+                stopWatch = indexTimer.time();
                 processIndexCommand(cmd);
-            } finally {
-                stopWatch.stop();
-                esa.totalCommandProcessed.addAndGet(1);
-                esa.totalCommandRunning.decrementAndGet();
             }
+            refreshIfNeeded(cmd);
+        } finally {
+            if (stopWatch != null) {
+                stopWatch.stop();
+            }
+            esa.totalCommandProcessed.incrementAndGet();
         }
-        refreshIfNeeded(cmd);
     }
 
     void processIndexCommand(IndexingCommand cmd) {

@@ -67,24 +67,21 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class ElasticSearchComponent extends DefaultComponent implements ElasticSearchAdmin, ElasticSearchIndexing,
         ElasticSearchService {
 
+    private static final Log log = LogFactory.getLog(ElasticSearchComponent.class);
+
     private static final String EP_REMOTE = "elasticSearchRemote";
 
     private static final String EP_LOCAL = "elasticSearchLocal";
 
     private static final String EP_INDEX = "elasticSearchIndex";
 
-    private static final Log log = LogFactory.getLog(ElasticSearchComponent.class);
+    // List command signature used for deduplicate indexing command, this does not work at cluster level
+    private final Set<String> scheduledCommands = Collections.synchronizedSet(new HashSet<String>());
 
-    // temporary hack until we are able to list pending indexing jobs cluster
-    // wide
-    private final Set<String> pendingWork = Collections.synchronizedSet(new HashSet<String>());
-
-    private final Set<String> pendingCommands = Collections.synchronizedSet(new HashSet<String>());
+    // Indexing commands that where received before the index initialization
+    private final List<IndexingCommand> stackedCommands = new ArrayList<>();
 
     private final Map<String, ElasticSearchIndexConfig> indexConfig = new HashMap<>();
-
-    // indexing command that where received before the index initialization
-    private final List<IndexingCommand> stackedCommands = new ArrayList<>();
 
     private ElasticSearchLocalConfig localConfig;
 
@@ -220,18 +217,18 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     @Override
-    public int getPendingDocs() {
-        return pendingWork.size();
+    public int getPendingCommandCount() {
+        return scheduledCommands.size();
     }
 
     @Override
-    public int getPendingCommands() {
-        return pendingCommands.size() + BaseIndexingWorker.getRunningWorkers();
+    public int getPendingWorkerCount() {
+        return BaseIndexingWorker.getPendingWorkerCount();
     }
 
     @Override
-    public int getRunningCommands() {
-        return esa.getRunningCommands();
+    public int getRunningWorkerCount() {
+        return BaseIndexingWorker.getRunningWorkerCount();
     }
 
     @Override
@@ -241,7 +238,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     @Override
     public boolean isIndexingInProgress() {
-        return (getRunningCommands() > 0 || getPendingCommands() > 0);
+        return (getPendingWorkerCount() > 0 || getRunningWorkerCount() > 0);
     }
 
     @Override
@@ -268,7 +265,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     @Override
     public boolean isAlreadyScheduled(IndexingCommand cmd) {
-        return pendingCommands.contains(cmd.getId()) || pendingWork.contains(cmd.getWorkKey());
+        return scheduledCommands.contains(cmd.getSignature());
     }
 
     @Override
@@ -306,8 +303,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
                 }
                 continue;
             }
-            pendingCommands.add(cmd.getId());
-            pendingWork.add(cmd.getWorkKey());
+            scheduledCommands.add(cmd.getSignature());
             if (cmd.isSync()) {
                 List<IndexingCommand> syncCmds = syncCommands.get(cmd.getRepositoryName());
                 if (syncCmds == null) {
@@ -398,8 +394,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     int markCommandInProgress(List<IndexingCommand> cmds) {
         int ret = 0;
         for (IndexingCommand cmd : cmds) {
-            pendingWork.remove(cmd.getWorkKey());
-            if (pendingCommands.remove(cmd.getId())) {
+            if (scheduledCommands.remove(cmd.getSignature())) {
                 ret += 1;
             }
         }

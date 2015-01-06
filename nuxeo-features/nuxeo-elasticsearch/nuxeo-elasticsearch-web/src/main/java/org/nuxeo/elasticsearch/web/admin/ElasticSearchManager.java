@@ -160,12 +160,12 @@ public class ElasticSearchManager {
         return esa.isIndexingInProgress();
     }
 
-    public String getPendingCommands() {
-        return Integer.valueOf(esa.getPendingCommands()).toString();
+    public String getPendingWorkerCount() {
+        return Integer.valueOf(esa.getPendingWorkerCount()).toString();
     }
 
-    public String getRunningCommands() {
-        return Integer.valueOf(esa.getRunningCommands()).toString();
+    public String getRunningWorkerCount() {
+        return Integer.valueOf(esa.getRunningWorkerCount()).toString();
     }
 
     public String getTotalCommandProcessed() {

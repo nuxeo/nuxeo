@@ -72,8 +72,8 @@ public class TestPageProvider {
 
     private void startCountingCommandProcessed() {
         Assert.assertNotNull(esa);
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(0, esa.getPendingWorkerCount());
+        Assert.assertEquals(0, esa.getPendingCommandCount());
         commandProcessed = esa.getTotalCommandProcessed();
     }
 
@@ -81,8 +81,8 @@ public class TestPageProvider {
         Assert.assertNotNull(esa);
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(0, esa.getPendingWorkerCount());
+        Assert.assertEquals(0, esa.getPendingCommandCount());
         Assert.assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
     }
 

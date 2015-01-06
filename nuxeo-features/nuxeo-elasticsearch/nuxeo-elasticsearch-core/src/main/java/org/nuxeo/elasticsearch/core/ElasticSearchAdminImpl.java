@@ -63,8 +63,6 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     final AtomicInteger totalCommandProcessed = new AtomicInteger(0);
 
-    final AtomicInteger totalCommandRunning = new AtomicInteger(0);
-
     private final Map<String, String> indexNames = new HashMap<>();
 
     private final Map<String, String> repoNames = new HashMap<>();
@@ -350,13 +348,19 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     }
 
     @Override
-    public int getPendingDocs() {
+    public int getPendingCommandCount() {
         // impl of scheduling is left to the ESService
         throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
-    public int getPendingCommands() {
+    public int getPendingWorkerCount() {
+        // impl of scheduling is left to the ESService
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public int getRunningWorkerCount() {
         // impl of scheduling is left to the ESService
         throw new UnsupportedOperationException("Not implemented");
     }
@@ -364,11 +368,6 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     @Override
     public int getTotalCommandProcessed() {
         return totalCommandProcessed.get();
-    }
-
-    @Override
-    public int getRunningCommands() {
-        return totalCommandRunning.get();
     }
 
     @Override
