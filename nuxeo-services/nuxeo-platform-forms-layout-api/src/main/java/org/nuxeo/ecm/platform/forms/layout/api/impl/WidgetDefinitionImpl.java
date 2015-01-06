@@ -568,4 +568,28 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return clone;
     }
 
+    /**
+     * @since 7.1
+     */
+    @Override
+    public String toString() {
+        final StringBuilder buf = new StringBuilder();
+
+        buf.append("WidgetDefinitionImpl");
+        buf.append(" {");
+        buf.append(" name=");
+        buf.append(name);
+        buf.append(", type=");
+        buf.append(type);
+        buf.append(", typeCategory=");
+        buf.append(typeCategory);
+        buf.append(", properties=");
+        buf.append(properties);
+        buf.append(", controls=");
+        buf.append(controls);
+        buf.append('}');
+
+        return buf.toString();
+    }
+
 }

@@ -60,4 +60,22 @@ public class FieldDefinitionImpl implements FieldDefinition {
         return new FieldDefinitionImpl(schema, field);
     }
 
+    /**
+     * @since 7.1
+     */
+    @Override
+    public String toString() {
+        final StringBuilder buf = new StringBuilder();
+
+        buf.append("FieldDefinitionImpl");
+        buf.append(" {");
+        buf.append(" schema=");
+        buf.append(schema);
+        buf.append(", field=");
+        buf.append(field);
+        buf.append('}');
+
+        return buf.toString();
+    }
+
 }
