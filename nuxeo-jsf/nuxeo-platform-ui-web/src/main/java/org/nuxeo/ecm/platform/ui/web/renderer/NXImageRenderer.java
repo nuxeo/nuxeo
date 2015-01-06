@@ -92,12 +92,41 @@ public class NXImageRenderer extends ImageRenderer {
                         "Do not render empty img tag with empty src value for component " + component.getId());
             }
         } else {
+            Map<String, Object> attrs = component.getAttributes();
+
+            // Get the attributes
+            String width = (String) attrs.get("width");
+            String height = (String) attrs.get("height");
+            String enableContainer = (String) attrs.get("enableContainer");
+
+            boolean hasDivContainer = false;
+            if (enableContainer != null && Boolean.parseBoolean(enableContainer) == true) {
+                hasDivContainer = true;
+            }
+
+            if (hasDivContainer) {
+                writer.startElement("div", component);
+                writer.writeAttribute("class", "pictureContainer", "class");
+
+                StringBuilder styleBuilder = new StringBuilder();
+                if (!StringUtils.isEmpty(width)) {
+                    styleBuilder.append("width:");
+                    styleBuilder.append(width);
+                    styleBuilder.append("px;");
+                }
+                if (!StringUtils.isEmpty(height)) {
+                    styleBuilder.append("height:");
+                    styleBuilder.append(height);
+                    styleBuilder.append("px;");
+                }
+                if (styleBuilder.length() > 0) {
+                    writer.writeAttribute("style", styleBuilder.toString(), "style");
+                }
+            }
 
             writer.startElement("img", component);
             writeIdAttributeIfNecessary(context, writer, component);
             writer.writeURIAttribute("src", src, "value");
-
-            Map<String, Object> attrs = component.getAttributes();
 
             // if we're writing XHTML and we have a null alt attribute
             if (writer.getContentType().equals(RIConstants.XHTML_CONTENT_TYPE) && null == attrs.get("alt")) {
@@ -106,15 +135,6 @@ public class NXImageRenderer extends ImageRenderer {
             }
 
             RenderKitUtils.renderPassThruAttributes(context, writer, component, ATTRIBUTES);
-            // add back height and width attributes if any
-            String width = (String) attrs.get("width");
-            String height = (String) attrs.get("height");
-            if (!StringUtils.isBlank(width)) {
-                writer.writeAttribute("width", width, "width");
-            }
-            if (!StringUtils.isBlank(height)) {
-                writer.writeAttribute("height", height, "height");
-            }
 
             RenderKitUtils.renderXHTMLStyleBooleanAttributes(writer, component);
 
@@ -124,6 +144,10 @@ public class NXImageRenderer extends ImageRenderer {
             }
 
             writer.endElement("img");
+
+            if (hasDivContainer) {
+                writer.endElement("div");
+            }
         }
 
         if (logger.isLoggable(Level.FINER)) {
