@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.rendition.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,7 +27,6 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -55,7 +55,8 @@ import com.google.inject.Inject;
 @RepositoryConfig(init = DefaultRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
         "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.rendition.api",
-        "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.automation.core" })
+        "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.automation.core",
+        "org.nuxeo.ecm.platform.mimetype.api", "org.nuxeo.ecm.platform.mimetype.core" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.rendition.core:test-renditionprovider-contrib.xml" })
 public class TestRenditionProvider {
 
@@ -77,7 +78,7 @@ public class TestRenditionProvider {
 
     @Test
     public void testDummyRendition() throws Exception {
-        DocumentModel file = createBlobFile();
+        DocumentModel file = createBlobDoc("File");
         Renderable renderable = file.getAdapter(Renderable.class);
         assertNotNull(renderable);
 
@@ -101,7 +102,7 @@ public class TestRenditionProvider {
 
     @Test
     public void testPdfRendition() throws Exception {
-        DocumentModel file = createBlobFile();
+        DocumentModel file = createBlobDoc("File");
         Renderable renderable = file.getAdapter(Renderable.class);
         assertNotNull(renderable);
 
@@ -124,25 +125,36 @@ public class TestRenditionProvider {
         assertEquals("application/pdf", blob.getMimeType());
     }
 
-    protected DocumentModel createBlobFile() throws ClientException {
-        Blob blob = createTextBlob("Dummy text", "dummy.txt");
-        DocumentModel file = createFileWithBlob(blob, "dummy-file");
-        assertNotNull(file);
-        return file;
+    @Test
+    public void testPdfRenditionStoredFromNote() throws Exception {
+        DocumentModel note = createBlobDoc("Note");
+        Renderable renderable = note.getAdapter(Renderable.class);
+        assertNotNull(renderable);
+
+        List<RenditionDefinition> defs = renderable.getAvailableRenditionDefinitions();
+        assertEquals(2, defs.size());
+
+        Collections.sort(defs, RENDITION_DEFINITION_CMP);
+        RenditionDefinition def = defs.get(1);
+        assertEquals("pdf", def.getName());
+        assertEquals("application/pdf", def.getContentType());
+
+        ConversionService conversionService = Framework.getService(ConversionService.class);
+        ConverterCheckResult check = conversionService.isConverterAvailable("any2pdf");
+        assumeTrue("converter any2pdf not available", check.isAvailable());
+        Rendition ren = renditionService.getRendition(note, "pdf", true); // store
+        assertNotNull(ren);
+        Blob blob = ren.getBlob();
+        assertEquals("application/pdf", blob.getMimeType());
     }
 
-    protected DocumentModel createFileWithBlob(Blob blob, String name) throws ClientException {
-        DocumentModel file = session.createDocumentModel("/", name, "File");
+    protected DocumentModel createBlobDoc(String typeName) {
+        DocumentModel file = session.createDocumentModel("/", "dummy-file", typeName);
         BlobHolder bh = file.getAdapter(BlobHolder.class);
+        Blob blob = new StringBlob("Dummy text", "text/plain");
+        blob.setFilename("dummy.txt");
         bh.setBlob(blob);
-        file = session.createDocument(file);
-        return file;
-    }
-
-    protected Blob createTextBlob(String content, String filename) {
-        Blob blob = new StringBlob(content, "text/plain");
-        blob.setFilename(filename);
-        return blob;
+        return session.createDocument(file);
     }
 
 }
