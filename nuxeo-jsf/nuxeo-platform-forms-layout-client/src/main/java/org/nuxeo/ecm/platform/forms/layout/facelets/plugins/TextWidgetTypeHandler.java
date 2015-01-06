@@ -35,6 +35,7 @@ import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
@@ -42,6 +43,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
 import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 import com.sun.faces.facelets.tag.TagAttributesImpl;
 
@@ -104,13 +106,21 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
         FieldDefinition[] fields = widget.getFieldDefinitions();
         if (fields != null && fields.length > 0) {
             FieldDefinition field = fields[0];
-            String bareExpression = ValueExpressionHelper.createBareExpressionString(widget.getValueName(), field);
-            String bundleName = ctx.getFacesContext().getApplication().getMessageBundle();
-            String localizedExpression = String.format("%s[%s]", bundleName, bareExpression);
-            String expression = String.format("#{%s ? %s : %s}", "widget.properties.localize", localizedExpression,
-                    bareExpression);
-            TagAttribute valueAttr = helper.createAttribute("value", expression);
-            attrs.add(valueAttr);
+            String pname = field != null ? field.getPropertyName() : null;
+            if (ComponentTagUtils.isValueReference(pname)) {
+                // do not override value for localization in this case, see NXP-13456
+                TagAttribute valueAttr = helper.createAttribute("value",
+                        ValueExpressionHelper.createExpressionString(widget.getValueName(), field));
+                attrs.add(valueAttr);
+            } else {
+                String bareExpression = ValueExpressionHelper.createBareExpressionString(widget.getValueName(), field);
+                String bundleName = ctx.getFacesContext().getApplication().getMessageBundle();
+                String localizedExpression = String.format("%s[%s]", bundleName, bareExpression);
+                String expression = String.format("#{%s ? %s : %s}", "widget.properties.localize", localizedExpression,
+                        bareExpression);
+                TagAttribute valueAttr = helper.createAttribute("value", expression);
+                attrs.add(valueAttr);
+            }
         }
 
         // fill with widget properties
