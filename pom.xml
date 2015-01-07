@@ -5071,6 +5071,12 @@
             </licenseMerges>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>io.repaint.maven</groupId>
+          <artifactId>tiles-maven-plugin</artifactId>
+          <version>1.8</version>
+          <extensions>true</extensions>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
