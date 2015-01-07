@@ -25,8 +25,9 @@ import org.nuxeo.binary.metadata.contribution.MetadataMappingDescriptor;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 
@@ -38,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 7.1
  */
-public class BinaryMetadataAsyncListener implements EventListener {
+public class BinaryMetadataAsyncListener implements PostCommitEventListener {
 
     protected final BinaryMetadataService binaryMetadataService;
 
@@ -47,18 +48,28 @@ public class BinaryMetadataAsyncListener implements EventListener {
     }
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
-        EventContext ctx = event.getContext();
-        if (!(ctx instanceof DocumentEventContext)) {
+    public void handleEvent(EventBundle events) throws ClientException {
+        if (!events.containsEventName(BinaryMetadataConstants.ASYNC_BINARY_METADATA_EVENT)) {
             return;
         }
-
-        DocumentEventContext docCtx = (DocumentEventContext) ctx;
-        DocumentModel doc = docCtx.getSourceDocument();
-        if (BinaryMetadataConstants.ASYNC_BINARY_METADATA_EVENT.equals(event.getName()) && !doc.isProxy()) {
-            LinkedList<MetadataMappingDescriptor> syncMappingDescriptors = (LinkedList<MetadataMappingDescriptor>) docCtx.getProperty(BinaryMetadataConstants.ASYNC_MAPPING_RESULT);
-            doc.putContextData(BinaryMetadataConstants.DISABLE_BINARY_METADATA_LISTENER, Boolean.TRUE);
-            binaryMetadataService.handleUpdate(syncMappingDescriptors, doc, docCtx);
+        for (Event event : events) {
+            if (!BinaryMetadataConstants.ASYNC_BINARY_METADATA_EVENT.equals(event.getName())) {
+                continue;
+            }
+            EventContext ctx = event.getContext();
+            if (!(ctx instanceof DocumentEventContext)) {
+                continue;
+            }
+            DocumentEventContext docCtx = (DocumentEventContext) ctx;
+            DocumentModel doc = docCtx.getSourceDocument();
+            if (doc.isProxy()) {
+                continue;
+            }
+            if (BinaryMetadataConstants.ASYNC_BINARY_METADATA_EVENT.equals(event.getName())) {
+                LinkedList<MetadataMappingDescriptor> syncMappingDescriptors = (LinkedList<MetadataMappingDescriptor>) docCtx.getProperty(BinaryMetadataConstants.ASYNC_MAPPING_RESULT);
+                doc.putContextData(BinaryMetadataConstants.DISABLE_BINARY_METADATA_LISTENER, Boolean.TRUE);
+                binaryMetadataService.handleUpdate(syncMappingDescriptors, doc, docCtx);
+            }
         }
     }
 }
