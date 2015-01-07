@@ -929,9 +929,11 @@ public class ConnectBroker {
                     String oldAccept = accept;
                     String oldRelax = relax;
                     accept = "true";
-                    relax = "true";
-                    boolean success = pkgRequest(pkgsToAdd, pkgsToInstall,
-                            pkgsToUninstall, pkgsToRemove);
+                    if ("ask".equalsIgnoreCase(relax)) {
+                        log.info("Relax mode changed from 'ask' to 'false' for executing the pending actions.");
+                        relax = "false";
+                    }
+                    boolean success = pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall, pkgsToRemove);
                     accept = oldAccept;
                     relax = oldRelax;
                     if (!success) {
