@@ -8,10 +8,11 @@
     </metadataMapping>
     <metadataMapping id="PDFBIS" processor="exifTool" blobXPath="file:content">
       <metadata name="PDF:Author" xpath="dc:creator"/>
-      <metadata name="PDF:FileName" xpath="dc:description"/>
+      <metadata name="PDF:Linearized" xpath="dc:description"/>
     </metadataMapping>
     <metadataMapping id="PDFTRIS" processor="exifTool" blobXPath="file:content">
       <metadata name="PDF:Creator" xpath="dc:coverage"/>
+      <metadata name="PDF:Producer" xpath="dc:description"/>
     </metadataMapping>
   </extension>
 

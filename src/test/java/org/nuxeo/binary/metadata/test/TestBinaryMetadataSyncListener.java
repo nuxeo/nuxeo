@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -44,13 +44,13 @@ import com.google.inject.Inject;
 @Features(BinaryMetadataFeature.class)
 @LocalDeploy({ "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-contrib-test.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-public class TestBinaryMetadataListener {
+public class TestBinaryMetadataSyncListener {
 
     @Inject
     CoreSession session;
 
     @Test
-    public void testSyncListener() {
+    public void testListener() {
         // Create folder
         DocumentModel doc = session.createDocumentModel("/", "folder", "Folder");
         doc.setPropertyValue("dc:title", "Folder");
@@ -72,6 +72,11 @@ public class TestBinaryMetadataListener {
 
         assertEquals("en-US", pdfDoc.getPropertyValue("dc:title"));
         assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:source"));
+        assertEquals("Writer", pdfDoc.getPropertyValue("dc:coverage"));
+        assertEquals("Mirko Nasato", pdfDoc.getPropertyValue("dc:creator"));
+
+        // Test if description has been overriden by higher order contribution
+        assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:description"));
     }
 
 }

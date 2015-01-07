@@ -195,7 +195,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     @Override
     public void writeMetadata(DocumentModel doc, CoreSession session, String mappingDescriptorId) {
         // Creating mapping properties Map.
-        Map<String, Object> metadataMapping = new HashMap<>();
+        Map<String, String> metadataMapping = new HashMap<>();
         List<String> blobMetadata = new ArrayList<>();
         MetadataMappingDescriptor mappingDescriptor = mappingRegistry.getMappingDescriptorMap().get(mappingDescriptorId);
 
@@ -221,7 +221,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
 
             // Write doc properties from outputs.
             for (Object metadata : blobMetadataOutput.keySet()) {
-                doc.setPropertyValue(metadataMapping.get(metadata).toString(), blobMetadataOutput.get(metadata).toString());
+                doc.setPropertyValue(metadataMapping.get(metadata), blobMetadataOutput.get(metadata).toString());
             }
             if(session.exists(doc.getRef())) {
                 session.saveDocument(doc);

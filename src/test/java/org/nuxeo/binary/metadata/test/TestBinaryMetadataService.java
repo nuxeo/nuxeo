@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -142,6 +142,11 @@ public class TestBinaryMetadataService {
         pdfDoc = BinaryMetadataServerInit.getFile(1, session);
         assertEquals("en-US", pdfDoc.getPropertyValue("dc:title"));
         assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:source"));
+        assertEquals("Writer", pdfDoc.getPropertyValue("dc:coverage"));
+        assertEquals("Mirko Nasato", pdfDoc.getPropertyValue("dc:creator"));
+
+        // Test if description has been overriden by higher order contribution
+        assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:description"));
 
     }
 }

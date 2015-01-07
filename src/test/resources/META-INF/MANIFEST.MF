@@ -10,5 +10,5 @@ Bundle-SymbolicName: org.nuxeo.binary.metadata.test
 Nuxeo-Component: OSGI-INF/binary-metadata-contrib-test.xml,
  OSGI-INF/binary-metadata-disable-listener.xml,
  OSGI-INF/binary-metadata-contrib-pdf-test.xml,
- OSGI-INF/binary-metadata-contrib-test-bis.xml
+ OSGI-INF/binary-metadata-contrib-async-test.xml
 
