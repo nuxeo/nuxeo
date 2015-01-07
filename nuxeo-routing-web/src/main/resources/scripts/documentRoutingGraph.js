@@ -1,15 +1,15 @@
 //jsPlumb options
-var dynamicAnchors = [ [ 0.5, 1, 0, 1 ], [ 0.33, 1, 0, 1 ], [ 0.66, 1, 0, 1 ],
-		[ 0, 1, 0, 1 ], [ 1, 1, 0, 1 ], [ 0.2, 1, 0, 1 ], [ 0.8, 1, 0, 1 ],
-		[ 0.1, 1, 0, 1 ], [ 0.9, 1, 0, 1 ] ];
+var dynamicAnchors = [ [ 0.5, 1, 0, 1 ], [ 0.25, 1, 0, 1 ], [ 0.75, 1, 0, 1 ],
+		[ 0, 1, 0, 1 ], [ 1, 1, 0, 1 ], [ 0.375, 1, 0, 1 ], [ 0.625, 1, 0, 1 ],
+		[ 0.125, 1, 0, 1 ], [ 0.875, 1, 0, 1 ] ];
 
-var connectionColors = [ "#F78181", "#F7BE81", "#BDBDBD", "#5882FA", "#E1F5A9",
+var connectionColors = [ "#92e1aa", "#F7BE81", "#BDBDBD", "#5882FA", "#E1F5A9",
 		"#FA5858", "#FFFF00", "#FF0000", "#D8F781" ];
 
 var sourceEndpointOptions = {
-	connector : [ "Flowchart" ],
+	connector : [ "Flowchart", { cornerRadius: 5 } ],
 	paintStyle : {
-		fillStyle : '#F78181'
+		fillStyle : '#92e1aa'
 	},
 	isSource : true,
 	isTarget : false,
@@ -19,7 +19,7 @@ var sourceEndpointOptions = {
 
 var targetEndpointOptions = {
 	paintStyle : {
-		fillStyle : '#B23838'
+		fillStyle : '#003f7d'
 	},
 	isSource : false,
 	isTarget : true,
@@ -35,20 +35,21 @@ function jsPlumbInitializeDefault() {
 			cursor : "pointer",
 			zIndex : 2000
 		},
+		PaintStyle : {
+			strokeStyle : "#92e1aa",
+			lineWidth : 3,
+			outlineWidth : 2,
+			outlineColor : "white",
+			joinstyle : "round"
+		},
 		Endpoint : [ "Dot", {
 			radius : 6
 		} ],
-		HoverPaintStyle : {
-			strokeStyle : "#ec9f2e"
-		},
-		EndpointHoverStyle : {
-			fillStyle : "#ec9f2e"
-		},
 		ConnectionOverlays : [ [ "Arrow", {
 			location : 0.8
 		}, {
 			foldback : 0.9,
-			fillStyle : "#F78181",
+			fillStyle : "#92e1aa",
 			width : 14
 		} ] ]
 	});
@@ -58,11 +59,11 @@ function getConnectionOverlayLabel(colour, condition) {
 		location : 0.8
 	}, {
 		foldback : 0.9,
-		fillStyle : colour,
+		fillStyle : "#92e1aa",
 		width : 14
 	} ], [ "Label", {
 		label : "<span title=\"" + condition + "\">" + condition + "</span>",
-		cssClass : "node_connection_label",
+		cssClass : "workflow_connection_label",
 		location : 0.6
 	} ] ];
 }
@@ -78,26 +79,26 @@ function countElement(item, array) {
 };
 function displayGraph(data, divContainerTargetId) {
 	jQuery.each(data['nodes'], function() {
-		var node = '<div class="node" id="' + this.id + '">' + this.title
+		var node = '<div class="workflow_node" id="' + this.id + '">' + this.title
 				+ '</div>';
 		var el = jQuery(node).appendTo('#' + divContainerTargetId).css(
 				'position', 'absolute').css('left', this.x).css('top', this.y);
 
 		if (this.isStartNode) {
-			el.addClass('start_node');
+			el.addClass('workflow_start_node');
 		} else if (this.isEndNode) {
-			el.addClass('end_node');
+			el.addClass('workflow_end_node');
 		} else if (this.isMerge) {
-			el.addClass('merge_node');
+			el.addClass('workflow_merge_node');
 		} else if (this.isMultiTask) {
-			el.addClass('multiple_task');
+			el.addClass('workflow_multiple_task');
 		} else if (this.hasSubWorkflow) {
-			el.addClass('subworkflow_task');
+			el.addClass('workflow_subworkflow_task');
 		} else {
-			el.addClass('simple_node');
+			el.addClass('workflow_simple_task');
 		}
 		if (this.state == 'suspended') {
-			el.addClass('node_suspended');
+			el.addClass('workflow_node_suspended');
 		}
 
 	});
@@ -125,9 +126,13 @@ function displayGraph(data, divContainerTargetId) {
 			overlays : getConnectionOverlayLabel(connectionColors[anchorIndex],
 					this.label),
 			paintStyle : {
-				lineWidth : 1,
-				strokeStyle : connectionColors[anchorIndex]
-			}
+				lineWidth : 3,
+				strokeStyle : connectionColors[anchorIndex],
+				outlineWidth : 2,
+				outlineColor : "white",
+				joinstyle : "round"
+			},
+			detachable:false
 		});
 	});
 	jQuery(document.getElementById(divContainerTargetId)).append(
