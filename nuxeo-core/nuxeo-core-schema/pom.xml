@@ -22,6 +22,10 @@
     </dependency>
 
     <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.sun.xsom</groupId>
       <artifactId>xsom</artifactId>
     </dependency>

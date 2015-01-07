@@ -22,5 +22,9 @@
       <groupId>org.nuxeo.lib.runtime</groupId>
       <artifactId>nuxeo-runtime-launcher</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+    </dependency>
   </dependencies>
 </project>

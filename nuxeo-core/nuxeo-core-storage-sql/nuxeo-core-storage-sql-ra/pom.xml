@@ -15,11 +15,6 @@
     <!-- setting direct dependency in provided scope do not filter indirect dependencies
       in assembly -->
     <dependency>
-      <groupId>cglib</groupId>
-      <artifactId>cglib-nodep</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>com.sun.xml</groupId>
       <artifactId>relaxngDatatype</artifactId>
       <scope>provided</scope>
@@ -225,12 +220,22 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-jtajca</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

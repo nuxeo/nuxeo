@@ -1634,6 +1634,11 @@
         <version>2.0</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-pool2</artifactId>
+        <version>2.0</version>
+      </dependency>
+      <dependency>
         <groupId>commons-httpclient</groupId>
         <artifactId>commons-httpclient</artifactId>
         <version>3.1</version>
@@ -2183,6 +2188,13 @@
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-plus</artifactId>
         <version>${jetty.mortbay.version}</version>
+        <exclusions>
+          <!-- we use official javax.transaction:jta instead -->
+          <exclusion>
+            <groupId>geronimo-spec</groupId>
+            <artifactId>geronimo-spec-jta</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
@@ -2460,10 +2472,17 @@
       <dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-core</artifactId>
-        <scope>test</scope>
         <version>1.3</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-library</artifactId>
+        <version>1.3</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <!-- should not be used anymore, use hamcrest-core + hamcrest-library instead -->
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-all</artifactId>
         <scope>test</scope>
@@ -2635,20 +2654,17 @@
       </dependency>
       <dependency>
         <groupId>org.jmock</groupId>
+        <artifactId>jmock</artifactId>
+        <version>2.5.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jmock</groupId>
         <artifactId>jmock-junit4</artifactId>
         <version>2.5.1</version>
         <exclusions>
           <exclusion>
             <groupId>junit</groupId>
             <artifactId>junit-dep</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-core</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -2697,11 +2713,6 @@
         <artifactId>xpp3</artifactId>
         <version>1.1.4c</version>
         <classifier>clean</classifier>
-      </dependency>
-      <dependency>
-        <groupId>cglib</groupId>
-        <artifactId>cglib-nodep</artifactId>
-        <version>2.1_3</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
@@ -3502,6 +3513,13 @@
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-catalina</artifactId>
         <version>${tomcat.version}</version>
+        <exclusions>
+          <!-- we use official javax.servlet:javax.servlet-api instead -->
+          <exclusion>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-servlet-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.tomcat</groupId>
@@ -4165,6 +4183,11 @@
         <artifactId>jedis</artifactId>
         <version>2.4.1</version>
       </dependency>
+      <dependency>
+        <groupId>org.jooq</groupId>
+        <artifactId>joor</artifactId>
+        <version>0.9.3</version>
+      </dependency>
 
       <dependency>
         <groupId>com.lordofthejars</groupId>
@@ -4178,6 +4201,7 @@
         <artifactId>luaj-jse</artifactId>
         <version>3.0</version>
       </dependency>
+
 
       <dependency>
         <groupId>org.apache.cxf</groupId>

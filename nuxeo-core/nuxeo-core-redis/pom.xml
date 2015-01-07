@@ -21,8 +21,16 @@
       <artifactId>nuxeo-runtime</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
+    </dependency>
+    <dependency>
       <groupId>redis.clients</groupId>
       <artifactId>jedis</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -36,6 +44,32 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-cache</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-pool2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-event</artifactId>
@@ -50,15 +84,27 @@
       <artifactId>nuxeo-core-cache</artifactId>
       <type>test-jar</type>
     </dependency>
-  <dependency>
-    <groupId>com.lordofthejars</groupId>
-    <artifactId>nosqlunit-redis</artifactId>
-  </dependency>
+    <dependency>
+      <!-- put before com.lordofthejars:nosqlunit-redis, which depends on cglib:cglib-nodep -->
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.lordofthejars</groupId>
+      <artifactId>nosqlunit-redis</artifactId>
+      <scope>test</scope>
+    </dependency>
    <dependency>
       <groupId>org.luaj</groupId>
       <artifactId>luaj-jse</artifactId>
       <scope>test</scope>
    </dependency>
+    <dependency>
+      <groupId>org.jooq</groupId>
+      <artifactId>joor</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 

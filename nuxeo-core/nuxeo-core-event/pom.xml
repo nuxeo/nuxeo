@@ -61,6 +61,14 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-metrics</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+    </dependency>
 
     <!-- only for tests -->
     <dependency>
