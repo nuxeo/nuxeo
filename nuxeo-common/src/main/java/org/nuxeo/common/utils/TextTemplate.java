@@ -54,7 +54,7 @@ import java.util.regex.Pattern;
  */
 public class TextTemplate {
 
-    private static final Pattern PATTERN = Pattern.compile("\\$\\{([a-zA-Z_0-9\\-\\.]+)(:=(.*))?\\}");
+    private static final Pattern PATTERN = Pattern.compile("(?<!\\$)\\$\\{([a-zA-Z_0-9\\-\\.]+)(:=(.*))?\\}");
 
     private final Properties vars;
 
@@ -135,7 +135,7 @@ public class TextTemplate {
             }
         }
         m.appendTail(sb);
-        return sb.toString();
+        return sb.toString().replaceAll("\\$\\$", "\\$");
     }
 
     public String process(InputStream in) throws IOException {

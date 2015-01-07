@@ -29,6 +29,7 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.launcher.commons.text.TextTemplate;
 
 public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     /**
@@ -110,6 +111,13 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         assertEquals("Wrong old value", "test.prop.value", oldValue);
         assertEquals("Property not unset", null,
                 configGenerator.getUserConfig().getProperty("test.prop.key"));
+    }
+
+    @Test
+    public void testEscapeVariable() throws ConfigurationException {
+        TextTemplate templates = new TextTemplate();
+        templates.setVariable("pfouh", "bar");
+        assertEquals("bar${pfouh}", templates.processText("${pfouh}$${pfouh}"));
     }
 
     @Test

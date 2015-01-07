@@ -126,7 +126,7 @@ public abstract class ServerConfigurator {
         final FilenameFilter filter = new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return !"nuxeo.defaults".equals(name);
+                return !ConfigurationGenerator.NUXEO_DEFAULT_CONF.equals(name);
             }
         };
         final TextTemplate templateParser = new TextTemplate(config);
