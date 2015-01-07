@@ -44,9 +44,9 @@ public class WorkflowGraph extends AbstractPage {
         super(driver);
     }
 
-    protected static final String END_NODE_CSS_CLASS = "end_node";
+    protected static final String END_NODE_CSS_CLASS = "workflow_end_node";
 
-    protected static final String START_NODE_CSS_CLASS = "start_node";
+    protected static final String START_NODE_CSS_CLASS = "workflow_start_node";
 
     public List<WebElement> getWorkflowEndNodes() {
         return element.findElements(By.cssSelector("." + END_NODE_CSS_CLASS));
