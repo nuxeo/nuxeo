@@ -80,8 +80,7 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
         if (o instanceof File) {
             blob = new FileBlob((File) o, "application/octet-stream");
         } else if (o instanceof InputStream) {
-            blob = new InputStreamBlob((InputStream) o,
-                    "application/octet-stream");
+            blob = new InputStreamBlob((InputStream) o, "application/octet-stream");
         } else if (o instanceof Blob) {
             blob = (Blob) o;
         }
@@ -112,13 +111,11 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
     }
 
     @SuppressWarnings("unchecked")
-    public MultiviewPictureAdapter(DocumentModel docModel)
-            throws ClientException {
+    public MultiviewPictureAdapter(DocumentModel docModel) throws ClientException {
         this.docModel = docModel;
         Object o = docModel.getProperty("picture", "views");
 
-        List<Map<String, Object>> list = (List<Map<String, Object>>) docModel.getProperty(
-                "picture", "views");
+        List<Map<String, Object>> list = (List<Map<String, Object>>) docModel.getProperty("picture", "views");
         if (list != null) {
             for (Map<String, Object> map : list) {
                 PictureView view = mapToView(map);

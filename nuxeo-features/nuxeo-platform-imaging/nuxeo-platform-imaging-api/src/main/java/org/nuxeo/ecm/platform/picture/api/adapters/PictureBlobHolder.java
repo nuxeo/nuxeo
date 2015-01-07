@@ -58,8 +58,7 @@ public class PictureBlobHolder extends DocumentBlobHolder {
         CoreSession session = doc.getCoreSession();
         DocumentModel parent;
         if (session.exists(doc.getRef())) {
-            parent = session.getParentDocument(
-                    doc.getRef());
+            parent = session.getParentDocument(doc.getRef());
         } else {
             Path parentPath = doc.getPath().removeLastSegments(1);
             parent = session.getDocument(new PathRef(parentPath.toString()));
@@ -67,8 +66,7 @@ public class PictureBlobHolder extends DocumentBlobHolder {
 
         if (parent != null && ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME.equals(parent.getType())) {
             // use PictureBook Properties
-            pictureTemplates = (ArrayList<Map<String, Object>>) parent.getPropertyValue(
-                    "picturebook:picturetemplates");
+            pictureTemplates = (ArrayList<Map<String, Object>>) parent.getPropertyValue("picturebook:picturetemplates");
             if (pictureTemplates.isEmpty()) {
                 pictureTemplates = null;
             }

@@ -21,8 +21,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
- * Object to store the definition of a picture template, to be used when
- * computing views for a given image.
+ * Object to store the definition of a picture template, to be used when computing views for a given image.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
@@ -37,8 +36,7 @@ public class PictureTemplate {
 
     protected final int maxSize;
 
-    public PictureTemplate(String title, String description, String tag,
-            int maxSize) {
+    public PictureTemplate(String title, String description, String tag, int maxSize) {
         this.title = title;
         this.description = description;
         this.tag = tag;
@@ -73,8 +71,7 @@ public class PictureTemplate {
 
     @Override
     public String toString() {
-        return String.format(
-                "PictureTemplate [title=%s, description=%s, tag=%s, maxSize=%d]",
-                title, description, tag, maxSize);
+        return String.format("PictureTemplate [title=%s, description=%s, tag=%s, maxSize=%d]", title, description, tag,
+                maxSize);
     }
 }

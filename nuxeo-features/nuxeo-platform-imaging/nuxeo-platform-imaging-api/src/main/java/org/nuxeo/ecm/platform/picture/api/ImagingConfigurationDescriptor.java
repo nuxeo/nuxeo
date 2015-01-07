@@ -27,8 +27,7 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Descriptor for configuration information contribution that will be used by
- * the ImagingService.
+ * Descriptor for configuration information contribution that will be used by the ImagingService.
  *
  * @author btatar
  */

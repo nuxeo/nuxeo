@@ -211,85 +211,57 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             depth = imageInfo.getDepth();
             imageInfoUsed = true;
         }
-        Map<String, Object> metadata = getImagingService().getImageMetadata(
-                fileContent);
+        Map<String, Object> metadata = getImagingService().getImageMetadata(fileContent);
         description = (String) metadata.get(META_DESCRIPTION);
         if (!imageInfoUsed) {
             width = (Integer) metadata.get(META_WIDTH);
             height = (Integer) metadata.get(META_HEIGHT);
         }
-        doc.setPropertyValue("picture:" + FIELD_BYLINE,
-                (String) metadata.get(META_BY_LINE));
-        doc.setPropertyValue("picture:" + FIELD_CAPTION,
-                (String) metadata.get(META_CAPTION));
-        doc.setPropertyValue("picture:" + FIELD_CREDIT,
-                (String) metadata.get(META_CREDIT));
+        doc.setPropertyValue("picture:" + FIELD_BYLINE, (String) metadata.get(META_BY_LINE));
+        doc.setPropertyValue("picture:" + FIELD_CAPTION, (String) metadata.get(META_CAPTION));
+        doc.setPropertyValue("picture:" + FIELD_CREDIT, (String) metadata.get(META_CREDIT));
         if (metadata.containsKey(META_DATE_CREATED)) {
-            doc.setPropertyValue("picture:" + FIELD_DATELINE,
-                    metadata.get(META_DATE_CREATED).toString());
+            doc.setPropertyValue("picture:" + FIELD_DATELINE, metadata.get(META_DATE_CREATED).toString());
         }
-        doc.setPropertyValue("picture:" + FIELD_HEADLINE,
-                (String) metadata.get(META_HEADLINE));
-        doc.setPropertyValue("picture:" + FIELD_LANGUAGE,
-                (String) metadata.get(META_LANGUAGE));
-        doc.setPropertyValue("picture:" + FIELD_ORIGIN,
-                (String) metadata.get(META_OBJECT_NAME));
-        doc.setPropertyValue("picture:" + FIELD_SOURCE,
-                (String) metadata.get(META_SOURCE));
+        doc.setPropertyValue("picture:" + FIELD_HEADLINE, (String) metadata.get(META_HEADLINE));
+        doc.setPropertyValue("picture:" + FIELD_LANGUAGE, (String) metadata.get(META_LANGUAGE));
+        doc.setPropertyValue("picture:" + FIELD_ORIGIN, (String) metadata.get(META_OBJECT_NAME));
+        doc.setPropertyValue("picture:" + FIELD_SOURCE, (String) metadata.get(META_SOURCE));
 
         // Set EXIF info
-        doc.setPropertyValue("imd:image_description",
-                (String) metadata.get(META_DESCRIPTION));
-        doc.setPropertyValue("imd:user_comment",
-                (String) metadata.get(META_COMMENT));
-        doc.setPropertyValue("imd:equipment",
-                (String) metadata.get(META_EQUIPMENT));
+        doc.setPropertyValue("imd:image_description", (String) metadata.get(META_DESCRIPTION));
+        doc.setPropertyValue("imd:user_comment", (String) metadata.get(META_COMMENT));
+        doc.setPropertyValue("imd:equipment", (String) metadata.get(META_EQUIPMENT));
         Date dateTimeOriginal = (Date) metadata.get(META_ORIGINALDATE);
         if (dateTimeOriginal != null) {
             Calendar calendar = new GregorianCalendar();
             calendar.setTime(dateTimeOriginal);
             doc.setPropertyValue("imd:date_time_original", calendar);
         }
-        doc.setPropertyValue("imd:xresolution",
-                (Integer) metadata.get(META_HRESOLUTION));
-        doc.setPropertyValue("imd:yresolution",
-                (Integer) metadata.get(META_VRESOLUTION));
-        doc.setPropertyValue("imd:pixel_xdimension",
-                (Integer) metadata.get(META_PIXEL_XDIMENSION));
-        doc.setPropertyValue("imd:pixel_ydimension",
-                (Integer) metadata.get(META_PIXEL_YDIMENSION));
-        doc.setPropertyValue("imd:copyright",
-                (String) metadata.get(META_COPYRIGHT));
-        doc.setPropertyValue("imd:exposure_time",
-                (String) metadata.get(META_EXPOSURE));
-        doc.setPropertyValue("imd:iso_speed_ratings",
-                (String) metadata.get(META_ISOSPEED));
-        doc.setPropertyValue("imd:focal_length",
-                (Double) metadata.get(META_FOCALLENGTH));
-        doc.setPropertyValue("imd:color_space",
-                (String) metadata.get(META_COLORSPACE));
-        doc.setPropertyValue("imd:white_balance",
-                (String) metadata.get(META_WHITEBALANCE));
+        doc.setPropertyValue("imd:xresolution", (Integer) metadata.get(META_HRESOLUTION));
+        doc.setPropertyValue("imd:yresolution", (Integer) metadata.get(META_VRESOLUTION));
+        doc.setPropertyValue("imd:pixel_xdimension", (Integer) metadata.get(META_PIXEL_XDIMENSION));
+        doc.setPropertyValue("imd:pixel_ydimension", (Integer) metadata.get(META_PIXEL_YDIMENSION));
+        doc.setPropertyValue("imd:copyright", (String) metadata.get(META_COPYRIGHT));
+        doc.setPropertyValue("imd:exposure_time", (String) metadata.get(META_EXPOSURE));
+        doc.setPropertyValue("imd:iso_speed_ratings", (String) metadata.get(META_ISOSPEED));
+        doc.setPropertyValue("imd:focal_length", (Double) metadata.get(META_FOCALLENGTH));
+        doc.setPropertyValue("imd:color_space", (String) metadata.get(META_COLORSPACE));
+        doc.setPropertyValue("imd:white_balance", (String) metadata.get(META_WHITEBALANCE));
         ICC_Profile iccProfile = (ICC_Profile) metadata.get(META_ICCPROFILE);
         if (iccProfile != null) {
             doc.setPropertyValue("imd:icc_profile", iccProfile.toString());
         }
-        doc.setPropertyValue("imd:orientation",
-                (String) metadata.get(META_ORIENTATION));
+        doc.setPropertyValue("imd:orientation", (String) metadata.get(META_ORIENTATION));
         doc.setPropertyValue("imd:fnumber", (Double) metadata.get(META_FNUMBER));
 
         // Set IPTC info
-        doc.setPropertyValue("iptc:by_line",
-                (String) metadata.get(META_BY_LINE));
-        doc.setPropertyValue("iptc:by_line_title",
-                (String) metadata.get(META_BY_LINE_TITLE));
-        doc.setPropertyValue("iptc:caption",
-                (String) metadata.get(META_CAPTION));
-        doc.setPropertyValue("iptc:category",
-                (String) metadata.get(META_CATEGORY));
+        doc.setPropertyValue("iptc:by_line", (String) metadata.get(META_BY_LINE));
+        doc.setPropertyValue("iptc:by_line_title", (String) metadata.get(META_BY_LINE_TITLE));
+        doc.setPropertyValue("iptc:caption", (String) metadata.get(META_CAPTION));
+        doc.setPropertyValue("iptc:category", (String) metadata.get(META_CATEGORY));
         doc.setPropertyValue("iptc:city", (String) metadata.get(META_CITY));
-        doc.setPropertyValue("iptc:copyright_notice",
-                (String) metadata.get(META_COPYRIGHT_NOTICE));
+        doc.setPropertyValue("iptc:copyright_notice", (String) metadata.get(META_COPYRIGHT_NOTICE));
         doc.setPropertyValue("iptc:country_or_primary_location",
                 (String) metadata.get(META_COUNTRY_OR_PRIMARY_LOCATION));
         doc.setPropertyValue("iptc:credit", (String) metadata.get(META_CREDIT));
@@ -299,39 +271,27 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             calendar.setTime(dateCreated);
             doc.setPropertyValue("iptc:date_created", calendar);
         }
-        doc.setPropertyValue("iptc:headline",
-                (String) metadata.get(META_HEADLINE));
-        doc.setPropertyValue("iptc:keywords",
-                (String) metadata.get(META_KEYWORDS));
-        doc.setPropertyValue("iptc:language",
-                (String) metadata.get(META_LANGUAGE));
-        doc.setPropertyValue("iptc:object_name",
-                (String) metadata.get(META_OBJECT_NAME));
+        doc.setPropertyValue("iptc:headline", (String) metadata.get(META_HEADLINE));
+        doc.setPropertyValue("iptc:keywords", (String) metadata.get(META_KEYWORDS));
+        doc.setPropertyValue("iptc:language", (String) metadata.get(META_LANGUAGE));
+        doc.setPropertyValue("iptc:object_name", (String) metadata.get(META_OBJECT_NAME));
         doc.setPropertyValue("iptc:original_transmission_ref",
                 (String) metadata.get(META_ORIGINAL_TRANSMISSION_REFERENCE));
-        doc.setPropertyValue("iptc:originating_program",
-                (String) metadata.get(META_ORIGINATING_PROGRAM));
-        doc.setPropertyValue("iptc:province_or_state",
-                (String) metadata.get(META_PROVINCE_OR_STATE));
-        doc.setPropertyValue("iptc:record_version",
-                (String) metadata.get(META_RECORD_VERSION));
+        doc.setPropertyValue("iptc:originating_program", (String) metadata.get(META_ORIGINATING_PROGRAM));
+        doc.setPropertyValue("iptc:province_or_state", (String) metadata.get(META_PROVINCE_OR_STATE));
+        doc.setPropertyValue("iptc:record_version", (String) metadata.get(META_RECORD_VERSION));
         Date releaseDate = (Date) metadata.get(META_RELEASE_DATE);
         if (releaseDate != null) {
             Calendar calendar = new GregorianCalendar();
             calendar.setTime(releaseDate);
             doc.setPropertyValue("iptc:release_date", calendar);
         }
-        doc.setPropertyValue("iptc:release_time",
-                (String) metadata.get(META_RELEASE_TIME));
+        doc.setPropertyValue("iptc:release_time", (String) metadata.get(META_RELEASE_TIME));
         doc.setPropertyValue("iptc:source", (String) metadata.get(META_SOURCE));
-        doc.setPropertyValue("iptc:special_instructions",
-                (String) metadata.get(META_SPECIAL_INSTRUCTIONS));
-        doc.setPropertyValue("iptc:supplemental_categories",
-                (String) metadata.get(META_SUPPLEMENTAL_CATEGORIES));
-        doc.setPropertyValue("iptc:time_created",
-                (String) metadata.get(META_TIME_CREATED));
-        doc.setPropertyValue("iptc:urgency",
-                (String) metadata.get(META_URGENCY));
+        doc.setPropertyValue("iptc:special_instructions", (String) metadata.get(META_SPECIAL_INSTRUCTIONS));
+        doc.setPropertyValue("iptc:supplemental_categories", (String) metadata.get(META_SUPPLEMENTAL_CATEGORIES));
+        doc.setPropertyValue("iptc:time_created", (String) metadata.get(META_TIME_CREATED));
+        doc.setPropertyValue("iptc:urgency", (String) metadata.get(META_URGENCY));
         doc.setPropertyValue("iptc:writer", (String) metadata.get(META_WRITER));
     }
 
@@ -340,8 +300,8 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         doc.getProperty(VIEWS_PROPERTY).setValue(viewsList);
     }
 
-    protected void addViews(List<Map<String, Object>> pictureTemplates,
-            String filename, String title) throws IOException, ClientException {
+    protected void addViews(List<Map<String, Object>> pictureTemplates, String filename, String title)
+            throws IOException, ClientException {
         doc.setProperty("dublincore", "title", title);
         if (pictureTemplates != null) {
             // Use PictureBook Properties
@@ -352,32 +312,26 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
                 } else {
                     maxsize = ((Long) view.get("maxsize")).intValue();
                 }
-                createPictureimpl((String) view.get("description"),
-                        (String) view.get("tag"), (String) view.get("title"),
-                        maxsize, filename, width, height, depth, fileContent);
+                createPictureimpl((String) view.get("description"), (String) view.get("tag"),
+                        (String) view.get("title"), maxsize, filename, width, height, depth, fileContent);
             }
         } else {
             // Default properties When PictureBook doesn't exist
-            createPictureimpl("Medium Size", "medium", "Medium", MEDIUM_SIZE,
-                    filename, width, height, depth, fileContent);
-            createPictureimpl(description, "original", "Original", null,
-                    filename, width, height, depth, fileContent);
-            createPictureimpl("Small Size", "small", "Small", SMALL_SIZE,
-                    filename, width, height, depth, fileContent);
-            createPictureimpl("Thumbnail Size", "thumb", "Thumbnail",
-                    THUMB_SIZE, filename, width, height, depth, fileContent);
-            createPictureimpl("Original Picture in JPEG format",
-                    "originalJpeg", "OriginalJpeg", null, filename, width,
+            createPictureimpl("Medium Size", "medium", "Medium", MEDIUM_SIZE, filename, width, height, depth,
+                    fileContent);
+            createPictureimpl(description, "original", "Original", null, filename, width, height, depth, fileContent);
+            createPictureimpl("Small Size", "small", "Small", SMALL_SIZE, filename, width, height, depth, fileContent);
+            createPictureimpl("Thumbnail Size", "thumb", "Thumbnail", THUMB_SIZE, filename, width, height, depth,
+                    fileContent);
+            createPictureimpl("Original Picture in JPEG format", "originalJpeg", "OriginalJpeg", null, filename, width,
                     height, depth, fileContent);
 
         }
     }
 
     @SuppressWarnings({ "unchecked" })
-    public void createPictureimpl(String description, String tag, String title,
-            Integer maxsize, String filename, Integer width, Integer height,
-            Integer depth, Blob fileContent) throws IOException,
-            ClientException {
+    public void createPictureimpl(String description, String tag, String title, Integer maxsize, String filename,
+            Integer width, Integer height, Integer depth, Blob fileContent) throws IOException, ClientException {
         if (fileContent.getFilename() == null) {
             fileContent.setFilename(filename);
         }
@@ -385,10 +339,8 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             maxsize = 0;
         }
 
-        PictureTemplate pictureTemplate = new PictureTemplate(title,
-                description, tag, maxsize);
-        PictureView view = getImagingService().computeViewFor(fileContent,
-                pictureTemplate, getImageInfo(), true);
+        PictureTemplate pictureTemplate = new PictureTemplate(title, description, tag, maxsize);
+        PictureView view = getImagingService().computeViewFor(fileContent, pictureTemplate, getImageInfo(), true);
 
         List<Map<String, Serializable>> views = (List<Map<String, Serializable>>) doc.getPropertyValue(VIEWS_PROPERTY);
         if (views == null) {
@@ -449,8 +401,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         return (Blob) doc.getPropertyValue(String.format(CONTENT_XPATH, i));
     }
 
-    protected FileBlob crop(Blob blob, Map<String, Serializable> coords)
-            throws ClientException {
+    protected FileBlob crop(Blob blob, Map<String, Serializable> coords) throws ClientException {
         try {
             BlobHolder bh = new SimpleBlobHolder(blob);
             String type = blob.getMimeType();

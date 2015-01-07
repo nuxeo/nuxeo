@@ -47,8 +47,7 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
             session = CoreInstance.openCoreSession(doc.getRepositoryName());
         }
         try {
-            DocumentModelList docs = session.getChildren(doc.getRef(),
-                    "Picture");
+            DocumentModelList docs = session.getChildren(doc.getRef(), "Picture");
             if (docs.isEmpty()) {
                 return null;
             }
@@ -79,8 +78,7 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
             session = CoreInstance.openCoreSession(doc.getRepositoryName());
         }
         try {
-            DocumentModelList docList = session.getChildren(doc.getRef(),
-                    "Picture");
+            DocumentModelList docList = session.getChildren(doc.getRef(), "Picture");
             List<Blob> blobList = new ArrayList<Blob>(docList.size());
             for (DocumentModel documentModel : docList) {
                 PictureResourceAdapter picture = documentModel.getAdapter(PictureResourceAdapter.class);

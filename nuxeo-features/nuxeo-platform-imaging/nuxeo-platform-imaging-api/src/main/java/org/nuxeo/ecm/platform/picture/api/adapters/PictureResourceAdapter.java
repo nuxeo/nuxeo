@@ -36,49 +36,40 @@ public interface PictureResourceAdapter {
 
     /**
      * @deprecated since 5.7. Use
-     *             {@link #fillPictureViews(org.nuxeo.ecm.core.api.Blob, String, String, java.util.ArrayList)}
-     *             instead.
+     *             {@link #fillPictureViews(org.nuxeo.ecm.core.api.Blob, String, String, java.util.ArrayList)} instead.
      */
     @Deprecated
     boolean createPicture(Blob fileContent, String filename, String title,
-            ArrayList<Map<String, Object>> pictureTemplates)
-            throws IOException, ClientException;
+            ArrayList<Map<String, Object>> pictureTemplates) throws IOException, ClientException;
 
     /**
-     * Fill this Picture views using the given {@code pictureTemplates} and
-     * {@code blob} to compute the picture views.
+     * Fill this Picture views using the given {@code pictureTemplates} and {@code blob} to compute the picture views.
      * <p>
      * The {@code blob} is converted to fit the defined {@code pictureTemplates}.
      *
      * @since 5.7
      */
-    boolean fillPictureViews(Blob blob, String filename, String title,
-            ArrayList<Map<String, Object>> pictureTemplates)
+    boolean fillPictureViews(Blob blob, String filename, String title, ArrayList<Map<String, Object>> pictureTemplates)
             throws IOException, ClientException;
 
     /**
-     * Pre-fill this Picture views using the given {@code pictureTemplates} and
-     * {@code blob}.
+     * Pre-fill this Picture views using the given {@code pictureTemplates} and {@code blob}.
      * <p>
-     * The {@code blob} is not converted and just stored as the Blob of the
-     * picture views.
+     * The {@code blob} is not converted and just stored as the Blob of the picture views.
      *
      * @since 5.7
      */
-    void preFillPictureViews(Blob blob,
-            List<Map<String, Object>> pictureTemplates, ImageInfo imageInfo)
+    void preFillPictureViews(Blob blob, List<Map<String, Object>> pictureTemplates, ImageInfo imageInfo)
             throws IOException, ClientException;
 
     void doRotate(int angle) throws ClientException;
 
     void doCrop(String coords) throws ClientException;
 
-    Blob getPictureFromTitle(String title) throws PropertyException,
-            ClientException;
+    Blob getPictureFromTitle(String title) throws PropertyException, ClientException;
 
     /**
-     * Returns the XPath of the given view name, or {@code null} if the view is
-     * not found on the Picture.
+     * Returns the XPath of the given view name, or {@code null} if the view is not found on the Picture.
      *
      * @param viewName the view name
      */

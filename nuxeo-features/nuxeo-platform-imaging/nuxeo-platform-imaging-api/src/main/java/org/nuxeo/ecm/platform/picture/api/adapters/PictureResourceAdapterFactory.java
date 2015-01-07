@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
 /**
  * Factory instantiating {@link PictureResourceAdapter} adapter.
- *
  */
 public class PictureResourceAdapterFactory implements DocumentAdapterFactory {
 

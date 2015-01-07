@@ -59,15 +59,13 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
     @Override
     public boolean createPicture(Blob blob, String filename, String title,
-            ArrayList<Map<String, Object>> pictureTemplates)
-            throws IOException, ClientException {
+            ArrayList<Map<String, Object>> pictureTemplates) throws IOException, ClientException {
         return fillPictureViews(blob, filename, title, pictureTemplates);
     }
 
     @Override
     public boolean fillPictureViews(Blob blob, String filename, String title,
-            ArrayList<Map<String, Object>> pictureTemplates)
-            throws IOException, ClientException {
+            ArrayList<Map<String, Object>> pictureTemplates) throws IOException, ClientException {
         if (blob == null) {
             clearViews();
             return true;
@@ -75,21 +73,18 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
         file = BlobHelper.getFileFromBlob(blob);
         CommandLineExecutorService commandLineExecutorService = Framework.getLocalService(CommandLineExecutorService.class);
-        boolean validFilename = file == null
-                || commandLineExecutorService.isValidParameter(file.getName());
+        boolean validFilename = file == null || commandLineExecutorService.isValidParameter(file.getName());
         if (file == null || !validFilename) {
             String extension = ".jpg";
-            if (file!=null) {
-                extension = "."+FileUtils.getFileExtension(file.getName());
+            if (file != null) {
+                extension = "." + FileUtils.getFileExtension(file.getName());
             }
             file = File.createTempFile("nuxeoImage", extension);
             Framework.trackFile(file, this);
             blob.transferTo(file);
             // use a persistent blob with our file
             if (!blob.isPersistent() || !validFilename) {
-                blob = new FileBlob(file, blob.getMimeType(),
-                        blob.getEncoding(), blob.getFilename(),
-                        blob.getDigest());
+                blob = new FileBlob(file, blob.getMimeType(), blob.getEncoding(), blob.getFilename(), blob.getDigest());
             }
         }
 
@@ -107,8 +102,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         try {
             setMetadata();
         } catch (Exception e) {
-            log.debug("An error occured while trying to set metadata for "
-                    + filename, e);
+            log.debug("An error occured while trying to set metadata for " + filename, e);
         }
         if (width != null && height != null) {
             clearViews();
@@ -118,15 +112,12 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
     }
 
     @Override
-    public void preFillPictureViews(Blob blob,
-            List<Map<String, Object>> pictureTemplates, ImageInfo imageInfo)
+    public void preFillPictureViews(Blob blob, List<Map<String, Object>> pictureTemplates, ImageInfo imageInfo)
             throws IOException, ClientException {
         List<PictureTemplate> templates = new ArrayList<PictureTemplate>();
         if (pictureTemplates != null) {
             for (Map<String, Object> template : pictureTemplates) {
-                templates.add(new PictureTemplate(
-                        (String) template.get("title"),
-                        (String) template.get("description"),
+                templates.add(new PictureTemplate((String) template.get("title"), (String) template.get("description"),
                         (String) template.get("tag"), 0));
             }
         } else {
@@ -134,8 +125,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         }
 
         ImagingService imagingService = getImagingService();
-        List<PictureView> pictureViews = imagingService.computeViewsFor(blob,
-                templates, imageInfo, false);
+        List<PictureView> pictureViews = imagingService.computeViewsFor(blob, templates, imageInfo, false);
         List<Map<String, Serializable>> views = new ArrayList<Map<String, Serializable>>();
         for (PictureView pictureView : pictureViews) {
             views.add(pictureView.asMap());
@@ -148,10 +138,8 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         templates.add(new PictureTemplate("Medium", "Medium Size", "medium", 0));
         templates.add(new PictureTemplate("Original", "Original", "original", 0));
         templates.add(new PictureTemplate("Small", "Small Size", "small", 0));
-        templates.add(new PictureTemplate("Thumbnail", "Thumbnail Size",
-                "thumb", 0));
-        templates.add(new PictureTemplate("OriginalJpeg",
-                "Original Picture in JPEG format", "originalJpeg", 0));
+        templates.add(new PictureTemplate("Thumbnail", "Thumbnail Size", "thumb", 0));
+        templates.add(new PictureTemplate("OriginalJpeg", "Original Picture in JPEG format", "originalJpeg", 0));
         return templates;
     }
 
@@ -161,16 +149,12 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         for (int i = 0; i < size; i++) {
             String xpath = "picture:views/view[" + i + "]/";
             try {
-                BlobHolder blob = new SimpleBlobHolder(doc.getProperty(
-                        xpath + "content").getValue(Blob.class));
+                BlobHolder blob = new SimpleBlobHolder(doc.getProperty(xpath + "content").getValue(Blob.class));
                 String type = blob.getBlob().getMimeType();
                 if (type != "image/png") {
                     Map<String, Serializable> options = new HashMap<String, Serializable>();
-                    options.put(ImagingConvertConstants.OPTION_ROTATE_ANGLE,
-                            angle);
-                    blob = getConversionService().convert(
-                            ImagingConvertConstants.OPERATION_ROTATE, blob,
-                            options);
+                    options.put(ImagingConvertConstants.OPTION_ROTATE_ANGLE, angle);
+                    blob = getConversionService().convert(ImagingConvertConstants.OPERATION_ROTATE, blob, options);
                     doc.getProperty(xpath + "content").setValue(blob.getBlob());
                     Long height = (Long) doc.getProperty(xpath + "height").getValue();
                     Long width = (Long) doc.getProperty(xpath + "width").getValue();
@@ -189,8 +173,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
     }
 
     @Override
-    public Blob getPictureFromTitle(String title) throws PropertyException,
-            ClientException {
+    public Blob getPictureFromTitle(String title) throws PropertyException, ClientException {
         if (title == null) {
             return null;
         }
