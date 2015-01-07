@@ -172,7 +172,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         // Check if rules applying for this document.
         ActionContext actionContext = createActionContext(doc);
         Set<MetadataRuleDescriptor> ruleDescriptors = checkFilter(actionContext);
-        Set<String> mappingDescriptorIds = new HashSet<>();
+        List<String> mappingDescriptorIds = new ArrayList<>();
         for(MetadataRuleDescriptor ruleDescriptor:ruleDescriptors){
             mappingDescriptorIds.addAll(ruleDescriptor
                     .getMetadataMappingIdDescriptors());
