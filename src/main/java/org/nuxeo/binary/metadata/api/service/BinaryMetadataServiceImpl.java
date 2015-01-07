@@ -49,8 +49,6 @@ import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * {@inheritDoc}
- *
  * @since 7.1
  */
 public class BinaryMetadataServiceImpl implements BinaryMetadataService {
@@ -72,9 +70,6 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         this.binaryMetadataProcessorInstances = new HashMap<>();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Map<String, Object> readMetadata(String processorName, Blob blob, List<String> metadataNames) {
         try {
@@ -85,9 +80,6 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Map<String, Object> readMetadata(Blob blob, List<String> metadataNames) {
         try {
@@ -118,9 +110,6 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean writeMetadata(String processorName, Blob blob, Map<String, Object> metadata) {
         try {
@@ -131,9 +120,6 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean writeMetadata(Blob blob, Map<String, Object> metadata) {
         try {
@@ -181,9 +167,6 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void writeMetadata(DocumentModel doc, CoreSession session) {
         // Check if rules applying for this document.
@@ -209,9 +192,6 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void writeMetadata(DocumentModel doc, CoreSession session, String mappingDescriptorId) {
         // Creating mapping properties Map.
@@ -248,9 +228,6 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
 
     /*--------------------- Event Service --------------------------*/
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleSyncUpdate(DocumentModel doc, DocumentEventContext docCtx) {
         LinkedList<MetadataMappingDescriptor> syncMappingDescriptors = getSyncMapping(doc, docCtx);
@@ -259,9 +236,6 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleUpdate(LinkedList<MetadataMappingDescriptor> mappingDescriptors, DocumentModel doc,
             DocumentEventContext docCtx) {
