@@ -26,11 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.Layout;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
-import org.apache.log4j.WriterAppender;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
@@ -49,6 +45,7 @@ import com.google.inject.Inject;
 /**
  * @since 7.1
  */
+@Ignore("NXBT-876")
 @RunWith(FeaturesRunner.class)
 @Features(BinaryMetadataFeature.class)
 @LocalDeploy({ "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-contrib-test.xml",
