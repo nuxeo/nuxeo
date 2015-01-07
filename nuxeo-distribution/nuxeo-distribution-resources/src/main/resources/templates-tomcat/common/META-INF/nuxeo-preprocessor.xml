@@ -33,5 +33,6 @@
     <!-- create here the tree directory structure if needed -->
     <mkdir path="${war}" />
     <copy from="META-INF/templates/jboss-deployment-structure.xml" to="${war}/WEB-INF/jboss-deployment-structure.xml"/>
+    <copy from="META-INF/templates/jboss-web.xml" to="${war}/WEB-INF/jboss-web.xml"/>
   </install>
 </container>
