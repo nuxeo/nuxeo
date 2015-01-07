@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -80,6 +81,11 @@ public interface GraphNode {
     String PROP_TRANS_CHAIN = "chain";
 
     String PROP_TRANS_LABEL = "label";
+
+    /**
+     * @since 7.1 a transition can hold a custom path
+     */
+    String PROP_TRANS_PATH = "path";
 
     String PROP_TASK_ASSIGNEES = "rnode:taskAssignees";
 
@@ -258,6 +264,21 @@ public interface GraphNode {
         }
     }
 
+    /**
+     * @since 7.1
+     */
+    class Point {
+
+        public double x;
+
+        public double y;
+
+        public Point(double x, double y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
     class Transition implements Comparable<Transition> {
 
         public GraphNode source;
@@ -275,6 +296,11 @@ public interface GraphNode {
         public String label;
 
         public boolean result;
+
+        /**
+         * @since 7.1
+         */
+        public List<Point> path;
 
         /** Computed by graph. */
         public boolean loop;
@@ -318,6 +344,27 @@ public interface GraphNode {
 
         public String getLabel() {
             return label;
+        }
+
+        /**
+         * @since 7.1
+         */
+        public List<Point> getPath() {
+            if (path == null) {
+                path = computePath();
+            }
+            return path;
+        }
+
+        protected List<Point> computePath() {
+            ListProperty props = (ListProperty) prop.get(PROP_TRANS_PATH);
+            List<Point> points = new ArrayList<>(props.size());
+            for (Property p : props) {
+                points.add(new Point(
+                    (Double) p.get("x").getValue(),
+                    (Double) p.get("y").getValue()));
+            }
+            return points;
         }
     }
 

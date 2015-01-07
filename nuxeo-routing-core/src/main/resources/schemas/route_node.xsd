@@ -63,6 +63,7 @@
       <xs:element name="condition" type="xs:string" />
       <xs:element name="result" type="xs:boolean" /> <!-- runtime -->
       <xs:element name="chain" type="xs:string" />
+      <xs:element name="path" type="node:path" />
     </xs:sequence>
   </xs:complexType>
 
@@ -113,6 +114,20 @@
     <xs:sequence>
       <xs:element name="key" type="xs:string" />
       <xs:element name="value" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="path">
+    <xs:sequence>
+      <xs:element name="pathpoint" type="node:pathpoint" minOccurs="0"
+                  maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="pathpoint">
+    <xs:sequence>
+      <xs:element name="x" type="xs:float" />
+      <xs:element name="y" type="xs:float" />
     </xs:sequence>
   </xs:complexType>
 

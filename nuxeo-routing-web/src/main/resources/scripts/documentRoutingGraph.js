@@ -120,6 +120,16 @@ function displayGraph(data, divContainerTargetId) {
 		var endPointTarget = jsPlumb.addEndpoint(this.nodeTargetId, {
 			anchor : "TopCenter"
 		}, targetEndpointOptions);
+		// prepare the transition's path
+		if (this.path && this.path.length) {
+			var segments = [];
+			for (var i = 1; i < this.path.length; i++) {
+				segments.push({
+					start: [this.path[i - 1].x, this.path[i - 1].y],
+					end: [this.path[i].x, this.path[i].y]
+				});
+			}
+		}
 		jsPlumb.connect({
 			source : endPointSource,
 			target : endPointTarget,
@@ -132,7 +142,8 @@ function displayGraph(data, divContainerTargetId) {
 				outlineColor : "white",
 				joinstyle : "round"
 			},
-			detachable:false
+			detachable:false,
+			path: segments
 		});
 	});
 	jQuery(document.getElementById(divContainerTargetId)).append(

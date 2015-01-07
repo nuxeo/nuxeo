@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Point;
 
 /**
  * Returns a json representation of the graph route
@@ -79,19 +80,18 @@ public class GetGraphOperation {
         try {
             Map<String, Object> graph = new HashMap<String, Object>();
             List<NodeView> nodeViews = new ArrayList<NodeView>();
-            Map<String, TransitionView> tranViews = new HashMap<String, TransitionView>();
+            List<TransitionView> tranViews = new ArrayList<TransitionView>();
 
             for (GraphNode node : route.getNodes()) {
                 nodeViews.add(new NodeView(node, locale));
                 List<Transition> transitions = node.getOutputTransitions();
                 for (Transition transition : transitions) {
                     GraphNode targetNode = route.getNode(transition.getTarget());
-                    tranViews.put(transition.getId(),
-                            new TransitionView(node.getId(), targetNode.getId(), transition.getLabel(), locale));
+                    tranViews.add(new TransitionView(node.getId(), targetNode.getId(), transition, locale));
                 }
             }
             graph.put("nodes", nodeViews);
-            graph.put("transitions", tranViews.values());
+            graph.put("transitions", tranViews);
 
             ObjectMapper mapper = new ObjectMapper();
             StringWriter writer = new StringWriter();
@@ -204,10 +204,11 @@ class NodeView {
 
 class TransitionView {
 
-    public TransitionView(String nodeSourceId, String nodeTargetId, String label, Locale locale) {
+    public TransitionView(String nodeSourceId, String nodeTargetId, Transition transition, Locale locale) {
         this.nodeSourceId = nodeSourceId;
         this.nodeTargetId = nodeTargetId;
-        this.label = GetGraphOperation.getI18nLabel(label, locale);
+        this.label = GetGraphOperation.getI18nLabel(transition.getLabel(), locale);
+        this.path = transition.getPath();
     }
 
     public String nodeSourceId;
@@ -215,6 +216,8 @@ class TransitionView {
     public String nodeTargetId;
 
     public String label;
+
+    public List<Point> path;
 
     public String getNodeSourceId() {
         return nodeSourceId;
@@ -228,4 +231,7 @@ class TransitionView {
         return label;
     }
 
+    public List<Point> getPath() {
+        return path;
+    }
 }
