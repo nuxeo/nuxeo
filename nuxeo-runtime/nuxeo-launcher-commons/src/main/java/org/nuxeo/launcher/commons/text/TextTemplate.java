@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.FilterWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -63,7 +64,7 @@ public class TextTemplate {
 
     private static final Log log = LogFactory.getLog(TextTemplate.class);
 
-    private static final Pattern PATTERN = Pattern.compile("\\$\\{([a-zA-Z_0-9\\-\\.]+)\\}");
+    private static final Pattern PATTERN = Pattern.compile("(?<!\\$)\\$\\{([a-zA-Z_0-9\\-\\.]+)\\}");
 
     private static final int MAX_RECURSION_LEVEL = 10;
 
@@ -176,7 +177,19 @@ public class TextTemplate {
                 break;
             }
         }
-        return newVars;
+        return unescape(newVars);
+    }
+
+    protected Properties unescape(Properties props) {
+        // unescape variables
+        for (Object key:props.keySet()) {
+            props.put(key, unescape((String)props.get(key)));
+        }
+        return props;
+    }
+
+    protected String unescape(String value) {
+        return value.replaceAll("\\$\\$", "\\$");
     }
 
     public String processText(CharSequence text) {
@@ -209,7 +222,7 @@ public class TextTemplate {
             }
         }
         m.appendTail(sb);
-        return sb.toString();
+        return unescape(sb.toString());
     }
 
     public String processText(InputStream in) throws IOException {
@@ -272,21 +285,52 @@ public class TextTemplate {
         }
         freemarkerConfiguration.setDirectoryForTemplateLoading(in.getParentFile());
         Template nxtpl = freemarkerConfiguration.getTemplate(in.getName());
-        Writer outWriter = new FileWriter(out);
-        nxtpl.process(freemarkerVars, outWriter);
-        outWriter.close();
+        try (Writer writer = new EscapeVariableFilter(new FileWriter(out))) {
+            nxtpl.process(freemarkerVars, writer);
+        }
+    }
+
+    protected static class EscapeVariableFilter extends FilterWriter {
+
+        protected static final int DOLLAR_SIGN = "$".codePointAt(0);
+
+        protected int last;
+
+        public EscapeVariableFilter(Writer out) {
+            super(out);
+        }
+
+        public @Override void write(int b) throws IOException {
+            if (b == DOLLAR_SIGN && last == DOLLAR_SIGN) {
+                return;
+            }
+            out.write(b);
+            last = b;
+        }
+
+        @Override
+        public void write(char[] cbuf, int off, int len) throws IOException {
+            for (int i = 0; i < len; ++i) {
+                write(cbuf[off + i]);
+            }
+        }
+
+        @Override
+        public void write(char[] cbuf) throws IOException {
+            write(cbuf, 0, cbuf.length);
+        }
+
     }
 
     /**
-     * Recursive call {@link #process(InputStream, OutputStream, boolean)} on each file from "in" directory to "out"
-     * directory.
+     * Recursive call {@link #process(InputStream, OutputStream, boolean)} on
+     * each file from "in" directory to "out" directory.
      *
      * @param in Directory to read files from
      * @param out Directory to write files to
      * @return copied files list
      */
-    public List<String> processDirectory(File in, File out) throws FileNotFoundException, IOException,
-            TemplateException {
+    public List<String> processDirectory(File in, File out) throws FileNotFoundException, IOException, TemplateException {
         List<String> newFiles = new ArrayList<String>();
         if (in.isFile()) {
             if (out.isDirectory()) {

@@ -42,7 +42,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
-
 import org.nuxeo.launcher.commons.text.TextTemplate;
 
 import freemarker.template.TemplateException;
@@ -118,7 +117,7 @@ public abstract class ServerConfigurator {
         final FilenameFilter filter = new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return !"nuxeo.defaults".equals(name);
+                return !ConfigurationGenerator.NUXEO_DEFAULT_CONF.equals(name);
             }
         };
         final TextTemplate templateParser = new TextTemplate(config);
