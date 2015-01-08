@@ -8,6 +8,4 @@ Bundle-Version: 1.0.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.binary.metadata
 Nuxeo-Component: OSGI-INF/binary-metadata-service.xml,
- OSGI-INF/exiftool-commandline-contrib.xml,
- OSGI-INF/binary-metadata-default-contrib.xml,
- OSGI-INF/binary-metadata-operations.xml
+ OSGI-INF/binary-metadata-default-contrib.xml
