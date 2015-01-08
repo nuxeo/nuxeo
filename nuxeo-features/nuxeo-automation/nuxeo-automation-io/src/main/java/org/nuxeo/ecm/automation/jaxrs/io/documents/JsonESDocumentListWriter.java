@@ -148,7 +148,7 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
                             + documentViewCodecManager.getUrlFromDocumentView(codecName, docView, false, null);
                     contextParameters.put("ecm:documentUrl", documentURL);
                 }
-                JsonESDocumentWriter.writeESDocument(jg, doc, schemas, contextParameters);
+                new JsonESDocumentWriter().writeESDocument(jg, doc, schemas, contextParameters);
                 jg.writeRaw('\n');
             }
         } else {
@@ -159,7 +159,7 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
             response.setHeader(HEADER_PAGE_SIZE, Integer.valueOf(docs.size()).toString());
             response.setHeader(HEADER_HAS_ERROR, "false");
             for (DocumentModel doc : docs) {
-                JsonESDocumentWriter.writeESDocument(jg, doc, schemas, null);
+                new JsonESDocumentWriter().writeESDocument(jg, doc, schemas, null);
                 jg.writeRaw('\n');
             }
         }

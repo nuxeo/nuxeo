@@ -74,12 +74,23 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     private final Timer bulkIndexTimer;
 
+    private JsonESDocumentWriter jsonESDocumentWriter;
+
     public ElasticSearchIndexingImpl(ElasticSearchAdminImpl esa) {
         this.esa = esa;
         MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
         indexTimer = registry.timer(MetricRegistry.name("nuxeo", "elasticsearch", "service", "index"));
         deleteTimer = registry.timer(MetricRegistry.name("nuxeo", "elasticsearch", "service", "delete"));
         bulkIndexTimer = registry.timer(MetricRegistry.name("nuxeo", "elasticsearch", "service", "bulkIndex"));
+        this.jsonESDocumentWriter = new JsonESDocumentWriter();// default writer
+    }
+
+    /**
+     * @since 7.2
+     */
+    public ElasticSearchIndexingImpl(ElasticSearchAdminImpl esa, JsonESDocumentWriter jsonESDocumentWriter) {
+        this(esa);
+        this.jsonESDocumentWriter = jsonESDocumentWriter;
     }
 
     @Override
@@ -303,7 +314,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             JsonFactory factory = new JsonFactory();
             XContentBuilder builder = jsonBuilder();
             JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
-            JsonESDocumentWriter.writeESDocument(jsonGen, doc, cmd.getSchemas(), null);
+            jsonESDocumentWriter.writeESDocument(jsonGen, doc, cmd.getSchemas(), null);
             return esa.getClient().prepareIndex(esa.getRepositoryIndex(cmd.getRepositoryName()), DOC_TYPE,
                     cmd.getTargetDocumentId()).setSource(builder);
         } catch (IOException e) {

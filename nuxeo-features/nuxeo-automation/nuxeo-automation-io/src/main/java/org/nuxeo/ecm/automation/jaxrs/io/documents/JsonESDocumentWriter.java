@@ -47,10 +47,21 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
         return super.isWriteable(type, genericType, annotations, mediaType) && MIME_TYPE.equals(mediaType.toString());
     }
 
-    public static void writeDoc(JsonGenerator jg, DocumentModel doc, String[] schemas,
-            Map<String, String> contextParameters, HttpHeaders headers) throws IOException {
+    public void writeDoc(JsonGenerator jg, DocumentModel doc, String[] schemas, Map<String, String> contextParameters,
+            HttpHeaders headers) throws IOException {
 
         jg.writeStartObject();
+        writeSystemProperties(jg, doc);
+        writeSchemas(jg, doc, schemas);
+        writeContextParameters(jg, doc, contextParameters);
+        jg.writeEndObject();
+        jg.flush();
+    }
+
+    /**
+     * @since 7.2
+     */
+    protected void writeSystemProperties(JsonGenerator jg, DocumentModel doc) throws IOException {
         jg.writeStringField("ecm:repository", doc.getRepositoryName());
         jg.writeStringField("ecm:uuid", doc.getId());
         jg.writeStringField("ecm:name", doc.getName());
@@ -117,19 +128,30 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
                 }
             }
         }
+    }
+
+    /**
+     * @since 7.2
+     */
+    protected void writeSchemas(JsonGenerator jg, DocumentModel doc, String[] schemas) throws IOException {
         if (schemas == null || (schemas.length == 1 && "*".equals(schemas[0]))) {
             schemas = doc.getSchemas();
         }
         for (String schema : schemas) {
             writeProperties(jg, doc, schema, null);
         }
+    }
+
+    /**
+     * @since 7.2
+     */
+    protected void writeContextParameters(JsonGenerator jg, DocumentModel doc, Map<String, String> contextParameters)
+            throws IOException {
         if (contextParameters != null && !contextParameters.isEmpty()) {
             for (Map.Entry<String, String> parameter : contextParameters.entrySet()) {
                 jg.writeStringField(parameter.getKey(), parameter.getValue());
             }
         }
-        jg.writeEndObject();
-        jg.flush();
     }
 
     @Override
@@ -138,9 +160,8 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
         writeDoc(factory.createJsonGenerator(out, JsonEncoding.UTF8), doc, schemas, contextParameters, headers);
     }
 
-    public static void writeESDocument(JsonGenerator jg, DocumentModel doc, String[] schemas,
+    public void writeESDocument(JsonGenerator jg, DocumentModel doc, String[] schemas,
             Map<String, String> contextParameters) throws IOException {
         writeDoc(jg, doc, schemas, contextParameters, null);
     }
-
 }
