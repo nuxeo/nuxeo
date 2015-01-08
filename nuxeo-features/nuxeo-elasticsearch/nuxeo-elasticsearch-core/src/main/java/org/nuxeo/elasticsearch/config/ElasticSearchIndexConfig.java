@@ -58,7 +58,8 @@ public class ElasticSearchIndexConfig {
     @XNode("settings")
     protected String settings;
 
-    final public static String DEFAULT_SETTING = "{\n" + "   \"analysis\" : {\n" + "      \"filter\" : {\n"
+    final public static String DEFAULT_SETTING = "{\n" + "   \"number_of_shards\" : 1,\n" +
+            "   \"number_of_replicas\" : 0,\n" +"   \"analysis\" : {\n" + "      \"filter\" : {\n"
             + "         \"en_stem_filter\" : {\n" + "            \"name\" : \"minimal_english\",\n"
             + "            \"type\" : \"stemmer\"\n" + "         },\n" + "         \"en_stop_filter\" : {\n"
             + "            \"stopwords\" : [\n" + "               \"_english_\"\n" + "            ],\n"

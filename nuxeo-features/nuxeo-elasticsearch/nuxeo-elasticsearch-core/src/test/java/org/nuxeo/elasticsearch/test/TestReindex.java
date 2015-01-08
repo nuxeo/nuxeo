@@ -21,6 +21,7 @@ import java.util.Arrays;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -115,6 +116,11 @@ public class TestReindex {
         syncMode = true;
     }
 
+    @Before
+    public void setupIndex() throws Exception {
+        esa.initIndexes(true);
+    }
+
     @After
     public void disableSynchronousMode() {
         ElasticSearchInlineListener.useSyncIndexing.set(false);
@@ -128,11 +134,6 @@ public class TestReindex {
         if (!TransactionHelper.isTransactionActive()) {
             TransactionHelper.startTransaction();
         }
-    }
-
-    @After
-    public void cleanupIndexed() throws Exception {
-        esa.initIndexes(true);
     }
 
     @Test

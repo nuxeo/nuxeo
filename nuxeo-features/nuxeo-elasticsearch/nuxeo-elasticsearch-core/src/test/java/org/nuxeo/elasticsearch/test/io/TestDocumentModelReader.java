@@ -8,8 +8,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
@@ -45,8 +45,8 @@ public class TestDocumentModelReader {
     @Inject
     ElasticSearchAdmin esa;
 
-    @After
-    public void cleanupIndexed() throws Exception {
+    @Before
+    public void setupIndex() throws Exception {
         esa.initIndexes(true);
     }
 

@@ -101,6 +101,11 @@ public class TestCompareCoreWithES {
         TransactionHelper.startTransaction();
     }
 
+    @Before
+    public void setupIndex() throws Exception {
+        esa.initIndexes(true);
+    }
+
     @After
     public void cleanWorkingDocuments() throws Exception {
         // prevent NXP-14686 bug that prevent cleanupSession to remove version
