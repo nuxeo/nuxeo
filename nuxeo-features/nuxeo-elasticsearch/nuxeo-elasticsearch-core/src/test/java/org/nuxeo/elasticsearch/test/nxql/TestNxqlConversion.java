@@ -228,8 +228,9 @@ public class TestNxqlConversion {
     @Test
     public void testConverterILIKE() throws Exception {
         String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where f1 ILIKE 'Foo%'").toString();
-        Assert.assertEquals("{\n" + "  \"match\" : {\n" + "    \"f1.lowercase\" : {\n" + "      \"query\" : \"foo\",\n"
-                + "      \"type\" : \"phrase_prefix\"\n" + "    }\n" + "  }\n" + "}", es);
+        assertEqualsEvenUnderWindows("{\n" + "  \"match\" : {\n" + "    \"f1.lowercase\" : {\n"
+                + "      \"query\" : \"foo\",\n" + "      \"type\" : \"phrase_prefix\"\n" + "    }\n" + "  }\n" + "}",
+                es);
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where f1 ILIKE '%Foo%'").toString();
         assertEqualsEvenUnderWindows("{\n" + "  \"wildcard\" : {\n" + "    \"f1.lowercase\" : {\n"
                 + "      \"wildcard\" : \"*foo*\"\n" + "    }\n" + "  }\n" + "}", es);
@@ -284,7 +285,7 @@ public class TestNxqlConversion {
                 + "      \"term\" : {\n" + "        \"ecm:isVersion\" : \"1\"\n" + "      }\n" + "    }\n" + "  }\n"
                 + "}", es);
         String es2 = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:isCheckedInVersion = 1").toString();
-        Assert.assertEquals(es, es2);
+        assertEqualsEvenUnderWindows(es, es2);
     }
 
     @Test
