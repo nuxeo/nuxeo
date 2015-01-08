@@ -27,7 +27,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  */
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.binary.metadata", "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.actions" })
-@LocalDeploy({ "org.nuxeo.binary.metadata:OSGI-INF/binary-metadata-contrib-pdf-test.xml" })
+@LocalDeploy({ "org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml" })
 public class BinaryMetadataFeature extends SimpleFeature {
 
 }

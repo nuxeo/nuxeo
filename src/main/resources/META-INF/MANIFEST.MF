@@ -10,5 +10,4 @@ Bundle-SymbolicName: org.nuxeo.binary.metadata
 Nuxeo-Component: OSGI-INF/binary-metadata-service.xml,
  OSGI-INF/exiftool-commandline-contrib.xml,
  OSGI-INF/binary-metadata-default-contrib.xml,
- OSGI-INF/binary-metadata-listeners.xml,
  OSGI-INF/binary-metadata-operations.xml

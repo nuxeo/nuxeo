@@ -44,7 +44,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, BinaryMetadataFeature.class })
-@LocalDeploy({ "org.nuxeo.binary.metadata:OSGI-INF/binary-metadata-contrib-async-test.xml" })
+@LocalDeploy({ "org.nuxeo.binary.metadata:binary-metadata-contrib-async-test.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 public class TestBinaryMetadataAsyncListener {
 

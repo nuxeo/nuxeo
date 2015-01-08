@@ -16,31 +16,17 @@
  */
 package org.nuxeo.binary.metadata.api;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.streaming.FileSource;
-import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * Class to extends to contribute processor runner. See extension point 'metadataProcessors'.
  *
  * @since 7.1
  */
-public abstract class BinaryMetadataProcessor {
-
-    protected final CommandLineExecutorService commandLineExecutorService;
-
-    protected BinaryMetadataProcessor() {
-        this.commandLineExecutorService = Framework.getService(CommandLineExecutorService.class);
-    }
+public interface BinaryMetadataProcessor {
 
     /**
      * Write given metadata into given blob.
@@ -49,7 +35,7 @@ public abstract class BinaryMetadataProcessor {
      * @param metadata Metadata to inject.
      * @return success or not.
      */
-    public abstract boolean writeMetadata(Blob blob, Map<String, Object> metadata);
+    public boolean writeMetadata(Blob blob, Map<String, Object> metadata);
 
     /**
      * Read from a given blob given metadata map.
@@ -58,7 +44,7 @@ public abstract class BinaryMetadataProcessor {
      * @param metadata Metadata to extract.
      * @return Metadata map.
      */
-    public abstract Map<String, Object> readMetadata(Blob blob, List<String> metadata);
+    public Map<String, Object> readMetadata(Blob blob, List<String> metadata);
 
     /**
      * Read all metadata from a given blob.
@@ -66,32 +52,7 @@ public abstract class BinaryMetadataProcessor {
      * @param blob Blob to read.
      * @return Metadata map.
      */
-    public abstract Map<String, Object> readMetadata(Blob blob);
+    public Map<String, Object> readMetadata(Blob blob);
 
-    public CommandLineExecutorService getCommandLineExecutorService() {
-        return commandLineExecutorService;
-    }
 
-    /*--------------------- Utils -----------------------*/
-
-    public File makeFile(Blob blob) throws IOException {
-        File sourceFile = getFileFromBlob(blob);
-        if (sourceFile == null) {
-            String filename = blob.getFilename();
-            sourceFile = File.createTempFile(filename, ".tmp");
-            blob.transferTo(sourceFile);
-            Framework.trackFile(sourceFile, this);
-        }
-        return sourceFile;
-    }
-
-    public File getFileFromBlob(Blob blob) {
-        if (blob instanceof FileBlob) {
-            return ((FileBlob) blob).getFile();
-        } else if (blob instanceof SQLBlob) {
-            StreamSource source = ((SQLBlob) blob).getBinary().getStreamSource();
-            return ((FileSource) source).getFile();
-        }
-        return null;
-    }
 }

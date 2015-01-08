@@ -20,14 +20,14 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * Registry for {@link org.nuxeo.binary.metadata.internals.MetadataRuleDescriptor} descriptors.
  *
  * @since 7.1
  */
-public class MetadataRuleRegistry extends ContributionFragmentRegistry<MetadataRuleDescriptor> {
+public class MetadataRuleRegistry extends SimpleContributionRegistry<MetadataRuleDescriptor> {
 
     protected final Set<MetadataRuleDescriptor> contribs = new TreeSet<>(
             new Comparator<MetadataRuleDescriptor>() {
@@ -49,35 +49,8 @@ public class MetadataRuleRegistry extends ContributionFragmentRegistry<MetadataR
         return metadataRuleDescriptor.getId();
     }
 
-    @Override
-    public void contributionUpdated(String s, MetadataRuleDescriptor metadataRuleDescriptor,
-            MetadataRuleDescriptor metadataRuleDescriptor2) {
-        contribs.add(metadataRuleDescriptor2);
+    protected void handleApplicationStarted(){
+        contribs.addAll(currentContribs.values());
     }
 
-    @Override
-    public synchronized void addContribution(MetadataRuleDescriptor metadataRuleDescriptor) {
-        contribs.add(metadataRuleDescriptor);
-    }
-
-    @Override
-    public void contributionRemoved(String s, MetadataRuleDescriptor metadataRuleDescriptor) {
-        contribs.remove(metadataRuleDescriptor);
-    }
-
-    /**
-     * Not supported.
-     */
-    @Override
-    public MetadataRuleDescriptor clone(MetadataRuleDescriptor metadataRuleDescriptor) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Not supported.
-     */
-    @Override
-    public void merge(MetadataRuleDescriptor metadataRuleDescriptor, MetadataRuleDescriptor metadataRuleDescriptor2) {
-        throw new UnsupportedOperationException();
-    }
 }

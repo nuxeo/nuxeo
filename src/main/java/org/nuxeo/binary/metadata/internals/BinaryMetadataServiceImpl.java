@@ -53,15 +53,12 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
 
     private static final Log log = LogFactory.getLog(BinaryMetadataServiceImpl.class);
 
-    protected Map<String, BinaryMetadataProcessor> binaryMetadataProcessorInstances;
-
-
     @Override
     public Map<String, Object> readMetadata(String processorName, Blob blob, List<String> metadataNames) {
         try {
-            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(processorName).newInstance();
+            BinaryMetadataProcessor processor = getProcessor(processorName);
             return processor.readMetadata(blob, metadataNames);
-        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
+        } catch (NoSuchMethodException e) {
             throw new BinaryMetadataException(e);
         }
     }
@@ -69,10 +66,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     @Override
     public Map<String, Object> readMetadata(Blob blob, List<String> metadataNames) {
         try {
-            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(
-                    BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID).newInstance();
+            BinaryMetadataProcessor processor = getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID);
             return processor.readMetadata(blob, metadataNames);
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+        } catch (NoSuchMethodException e) {
             throw new BinaryMetadataException(e);
         }
     }
@@ -80,10 +76,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     @Override
     public Map<String, Object> readMetadata(Blob blob) {
         try {
-            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(
-                    BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID).newInstance();
+            BinaryMetadataProcessor processor = getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID);
             return processor.readMetadata(blob);
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+        } catch (NoSuchMethodException e) {
             throw new BinaryMetadataException(e);
         }
     }
@@ -91,9 +86,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     @Override
     public Map<String, Object> readMetadata(String processorName, Blob blob) {
         try {
-            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(processorName).newInstance();
+            BinaryMetadataProcessor processor = getProcessor(processorName);
             return processor.readMetadata(blob);
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+        } catch (NoSuchMethodException e) {
             throw new BinaryMetadataException(e);
         }
     }
@@ -101,9 +96,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     @Override
     public boolean writeMetadata(String processorName, Blob blob, Map<String, Object> metadata) {
         try {
-            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(processorName).newInstance();
+            BinaryMetadataProcessor processor = getProcessor(processorName);
             return processor.writeMetadata(blob, metadata);
-        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
+        } catch (NoSuchMethodException e) {
             throw new BinaryMetadataException(e);
         }
     }
@@ -111,10 +106,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     @Override
     public boolean writeMetadata(Blob blob, Map<String, Object> metadata) {
         try {
-            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(
-                    BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID).newInstance();
+            BinaryMetadataProcessor processor = getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID);
             return processor.writeMetadata(blob, metadata);
-        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
+        } catch (NoSuchMethodException e) {
             throw new BinaryMetadataException(e);
         }
     }
@@ -129,9 +123,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
             for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor : mappingDescriptor.getMetadataDescriptors()) {
                 metadataMapping.put(metadataDescriptor.getName(), doc.getPropertyValue(metadataDescriptor.getXpath()));
             }
-            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(processorName).newInstance();
+            BinaryMetadataProcessor processor = getProcessor(processorName);
             return processor.writeMetadata(blob, metadataMapping);
-        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
+        } catch (NoSuchMethodException e) {
             throw new BinaryMetadataException(e);
         }
 
@@ -147,10 +141,10 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
             for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor : mappingDescriptor.getMetadataDescriptors()) {
                 metadataMapping.put(metadataDescriptor.getName(), doc.getPropertyValue(metadataDescriptor.getXpath()));
             }
-            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(
-                    BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID).newInstance();
+            BinaryMetadataProcessor processor = getProcessor(
+                    BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID);
             return processor.writeMetadata(blob, metadataMapping);
-        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
+        } catch (NoSuchMethodException e) {
             throw new BinaryMetadataException(e);
         }
     }
@@ -281,8 +275,8 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         return actionContext;
     }
 
-    protected Class<?> getProcessor(String processorId) throws NoSuchMethodException {
-        return binaryMetadataProcessorInstances.get(processorId).getClass();
+    protected BinaryMetadataProcessor getProcessor(String processorId) throws NoSuchMethodException {
+        return BinaryMetadataComponent.self.processorRegistry.getProcessor(processorId);
     }
 
     /**
@@ -353,36 +347,4 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         }
         return !resultDirtyMapping.isEmpty();
     }
-
-    /*--------------------- Registry Services -----------------------*/
-
-    protected void addMappingContribution(MetadataMappingDescriptor contribution) {
-        BinaryMetadataComponent.self.mappingRegistry.addContribution(contribution);
-    }
-
-    protected void addRuleContribution(MetadataRuleDescriptor contribution) {
-        BinaryMetadataComponent.self.ruleRegistry.addContribution(contribution);
-    }
-
-    protected void addProcessorContribution(MetadataProcessorDescriptor contribution) {
-        try {
-            binaryMetadataProcessorInstances.put(contribution.getId(), contribution.getProcessorClass().newInstance());
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new BinaryMetadataException(e);
-        }
-        BinaryMetadataComponent.self.processorRegistry.addContribution(contribution);
-    }
-
-    protected void removeMappingContribution(MetadataMappingDescriptor contribution) {
-        BinaryMetadataComponent.self.mappingRegistry.removeContribution(contribution);
-    }
-
-    protected void removeRuleContribution(MetadataRuleDescriptor contribution) {
-        BinaryMetadataComponent.self.ruleRegistry.removeContribution(contribution);
-    }
-
-    protected void removeProcessorContribution(MetadataProcessorDescriptor contribution) {
-        BinaryMetadataComponent.self.processorRegistry.removeContribution(contribution);
-    }
-
 }

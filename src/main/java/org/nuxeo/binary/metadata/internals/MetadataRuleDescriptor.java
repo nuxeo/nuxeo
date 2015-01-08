@@ -106,5 +106,4 @@ public class MetadataRuleDescriptor {
         return true;
     }
 
-
 }

@@ -16,47 +16,19 @@
  */
 package org.nuxeo.binary.metadata.internals;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+import org.nuxeo.binary.metadata.api.BinaryMetadataProcessor;
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * Registry for {@link org.nuxeo.binary.metadata.internals.MetadataProcessorDescriptor} descriptors.
  *
  * @since 7.1
  */
-public class MetadataProcessorRegistry extends ContributionFragmentRegistry<MetadataProcessorDescriptor> {
-
-    protected Map<String, MetadataProcessorDescriptor> processorDescriptorMap = new HashMap<>();
+public class MetadataProcessorRegistry extends SimpleContributionRegistry<MetadataProcessorDescriptor> {
 
     @Override
     public String getContributionId(MetadataProcessorDescriptor metadataProcessorDescriptor) {
         return metadataProcessorDescriptor.getId();
-    }
-
-    @Override
-    public void contributionUpdated(String s, MetadataProcessorDescriptor metadataProcessorDescriptor,
-            MetadataProcessorDescriptor metadataProcessorDescriptor2) {
-        processorDescriptorMap.put(metadataProcessorDescriptor.getId(), metadataProcessorDescriptor2);
-    }
-
-    @Override
-    public void contributionRemoved(String s, MetadataProcessorDescriptor metadataProcessorDescriptor) {
-        processorDescriptorMap.remove(metadataProcessorDescriptor.getId());
-    }
-
-    @Override
-    public void addContribution(MetadataProcessorDescriptor metadataProcessorDescriptor) {
-        processorDescriptorMap.put(metadataProcessorDescriptor.getId(), metadataProcessorDescriptor);
-    }
-
-    /**
-     * Not supported.
-     */
-    @Override
-    public MetadataProcessorDescriptor clone(MetadataProcessorDescriptor metadataProcessorDescriptor) {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -68,11 +40,7 @@ public class MetadataProcessorRegistry extends ContributionFragmentRegistry<Meta
         throw new UnsupportedOperationException();
     }
 
-    public Map<String, MetadataProcessorDescriptor> getProcessorDescriptorMap() {
-        return processorDescriptorMap;
-    }
-
-    public void setProcessorDescriptorMap(Map<String, MetadataProcessorDescriptor> processorDescriptorMap) {
-        this.processorDescriptorMap = processorDescriptorMap;
+    public BinaryMetadataProcessor getProcessor(String processorId) {
+        return currentContribs.get(processorId).processor;
     }
 }

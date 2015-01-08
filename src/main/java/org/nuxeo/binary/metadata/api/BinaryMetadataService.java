@@ -131,7 +131,7 @@ public interface BinaryMetadataService {
      * If Blob dirty and document metadata not dirty, write metadata from Blob to doc. - If Blob not dirty and document
      * metadata dirty, write metadata from doc to Blob.
      */
-    void handleUpdate(List<MetadataMappingDescriptor>syncMappingDescriptors, DocumentModel doc,
+    void handleUpdate(List<MetadataMappingDescriptor> syncMappingDescriptors, DocumentModel doc,
             DocumentEventContext docCtx);
 
     /**
@@ -141,6 +141,5 @@ public interface BinaryMetadataService {
      * metadata dirty, write metadata from doc to Blob.
      */
     void handleSyncUpdate(DocumentModel doc, DocumentEventContext docCtx);
-
 
 }

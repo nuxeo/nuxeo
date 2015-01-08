@@ -40,19 +40,13 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class BinaryMetadataSyncListener implements EventListener {
 
-    protected final BinaryMetadataService binaryMetadataService;
-
-    public BinaryMetadataSyncListener() {
-        this.binaryMetadataService = Framework.getLocalService(BinaryMetadataService.class);
-    }
-
     @Override
     public void handleEvent(Event event) throws ClientException {
         EventContext ctx = event.getContext();
         if (!(ctx instanceof DocumentEventContext)) {
             return;
         }
-
+        BinaryMetadataService binaryMetadataService = Framework.getLocalService(BinaryMetadataService.class);
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
         Boolean disable = (Boolean) event.getContext().getProperty(

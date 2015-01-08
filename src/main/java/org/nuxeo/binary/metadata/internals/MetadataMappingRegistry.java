@@ -16,66 +16,24 @@
  */
 package org.nuxeo.binary.metadata.internals;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * Registry for {@link org.nuxeo.binary.metadata.internals.MetadataMappingDescriptor} descriptors.
  *
  * @since 7.1
  */
-public class MetadataMappingRegistry extends ContributionFragmentRegistry<MetadataMappingDescriptor> {
-
-    protected Map<String, MetadataMappingDescriptor> mappingDescriptorMap = new HashMap<>();
+public class MetadataMappingRegistry extends SimpleContributionRegistry<MetadataMappingDescriptor> {
 
     @Override
     public String getContributionId(MetadataMappingDescriptor metadataMappingDescriptor) {
         return metadataMappingDescriptor.getId();
     }
 
-    @Override
-    public void contributionUpdated(String s, MetadataMappingDescriptor metadataMappingDescriptor,
-            MetadataMappingDescriptor metadataMappingDescriptor2) {
-        mappingDescriptorMap.put(metadataMappingDescriptor.getId(),
-                metadataMappingDescriptor2);
-    }
-
-    @Override
-    public void contributionRemoved(String s, MetadataMappingDescriptor metadataMappingDescriptor) {
-        mappingDescriptorMap.remove(metadataMappingDescriptor.getId());
-    }
-
-    @Override
-    public synchronized void addContribution(MetadataMappingDescriptor metadataMappingDescriptor) {
-        mappingDescriptorMap.put(metadataMappingDescriptor.getId(),
-                metadataMappingDescriptor);
-    }
-
-    /**
-     * Not supported.
-     */
-    @Override
-    public MetadataMappingDescriptor clone(MetadataMappingDescriptor metadataMappingDescriptor) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Not supported.
-     */
-    @Override
-    public void merge(MetadataMappingDescriptor metadataMappingDescriptor,
-            MetadataMappingDescriptor metadataMappingDescriptor2) {
-        throw new UnsupportedOperationException();
-    }
-
     public Map<String, MetadataMappingDescriptor> getMappingDescriptorMap() {
-        return mappingDescriptorMap;
+        return currentContribs;
     }
 
-    public void setMappingDescriptorMap(Map<String,
-            MetadataMappingDescriptor> mappingDescriptorMap) {
-        this.mappingDescriptorMap = mappingDescriptorMap;
-    }
 }

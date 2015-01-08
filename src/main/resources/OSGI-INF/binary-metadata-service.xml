@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.binary.metadata">
+  <require>org.nuxeo.binary.metadata.exiftool.commandline</require>
   <implementation
           class="org.nuxeo.binary.metadata.internals.BinaryMetadataComponent"/>
   <service>
@@ -47,5 +48,21 @@
       </code>
     </documentation>
   </extension-point>
+
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+             point="listener">
+    <listener name="binaryMetadataSyncListener"
+              class="org.nuxeo.binary.metadata.internals.listeners.BinaryMetadataSyncListener"
+              order="100">
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+    <listener name="binaryMetadataAsyncListener" async="true"
+              class="org.nuxeo.binary.metadata.internals.listeners.BinaryMetadataAsyncListener"
+              order="100">
+      <event>asyncBinaryMetadataEvent</event>
+    </listener>
+  </extension>
 
 </component>

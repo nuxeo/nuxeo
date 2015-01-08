@@ -41,12 +41,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class BinaryMetadataAsyncListener implements PostCommitEventListener {
 
-    protected final BinaryMetadataService binaryMetadataService;
-
-    public BinaryMetadataAsyncListener() {
-        binaryMetadataService = Framework.getLocalService(BinaryMetadataService.class);
-    }
-
     @Override
     public void handleEvent(EventBundle events) throws ClientException {
         if (!events.containsEventName(BinaryMetadataConstants.ASYNC_BINARY_METADATA_EVENT)) {
@@ -65,9 +59,9 @@ public class BinaryMetadataAsyncListener implements PostCommitEventListener {
             if (doc.isProxy()) {
                 continue;
             }
+            BinaryMetadataService binaryMetadataService = Framework.getLocalService(BinaryMetadataService.class);
             if (BinaryMetadataConstants.ASYNC_BINARY_METADATA_EVENT.equals(event.getName())) {
-                List<MetadataMappingDescriptor> syncMappingDescriptors =
-                        (List<MetadataMappingDescriptor>) docCtx.getProperty(BinaryMetadataConstants.ASYNC_MAPPING_RESULT);
+                List<MetadataMappingDescriptor> syncMappingDescriptors = (List<MetadataMappingDescriptor>) docCtx.getProperty(BinaryMetadataConstants.ASYNC_MAPPING_RESULT);
                 doc.putContextData(BinaryMetadataConstants.DISABLE_BINARY_METADATA_LISTENER, Boolean.TRUE);
                 binaryMetadataService.handleUpdate(syncMappingDescriptors, doc, docCtx);
             }

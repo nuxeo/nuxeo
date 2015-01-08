@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -22,13 +22,14 @@ import static org.junit.Assert.assertNotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.binary.metadata.internals.operations.ReadMetadataFromBinary;
-import org.nuxeo.binary.metadata.internals.operations.TriggerMetadataMappingOnDocument;
-import org.nuxeo.binary.metadata.internals.operations.WriteMetadataToBinaryFromContext;
+import org.nuxeo.binary.metadata.internals.operations
+        .TriggerMetadataMappingOnDocument;
+import org.nuxeo.binary.metadata.internals.operations
+        .WriteMetadataToBinaryFromContext;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -48,12 +49,11 @@ import com.google.inject.Inject;
 /**
  * @since 7.1
  */
-@Ignore("NXBT-876")
 @RunWith(FeaturesRunner.class)
 @Features(BinaryMetadataFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
-@LocalDeploy({ "org.nuxeo.binary.metadata:OSGI-INF/binary-metadata-contrib-test.xml",
-        "org.nuxeo.binary.metadata:OSGI-INF/binary-metadata-disable-listener.xml" })
+@LocalDeploy({ "org.nuxeo.binary.metadata:binary-metadata-contrib-test.xml",
+        "org.nuxeo.binary.metadata:binary-metadata-disable-listener.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = BinaryMetadataServerInit.class)
 public class TestBinaryMetadataOperation {
 

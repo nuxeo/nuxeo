@@ -31,15 +31,22 @@ import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
 import org.nuxeo.binary.metadata.api.BinaryMetadataException;
 import org.nuxeo.binary.metadata.api.BinaryMetadataProcessor;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
+import org.nuxeo.ecm.platform.commandline.executor.api
+        .CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.streaming.FileSource;
+import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * @since 7.1
  */
-public class ExifToolProcessor extends BinaryMetadataProcessor {
+public class ExifToolProcessor implements BinaryMetadataProcessor {
 
     private static final Log log = LogFactory.getLog(ExifToolProcessor.class);
 
@@ -47,19 +54,21 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
 
     protected final ObjectMapper jacksonMapper;
 
+    protected final CommandLineExecutorService commandLineService;
+
     public ExifToolProcessor() {
         this.jacksonMapper = new ObjectMapper();
+        this.commandLineService = Framework.getLocalService(CommandLineExecutorService.class);
     }
 
     @Override
     public boolean writeMetadata(Blob blob, Map<String, Object> metadata) {
-        CommandAvailability ca = getCommandLineExecutorService().getCommandAvailability(
-                BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST);
+        CommandAvailability ca = commandLineService.getCommandAvailability(BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST);
         if (!ca.isAvailable()) {
             throw new BinaryMetadataException("Command '" + BinaryMetadataConstants.EXIFTOOL_WRITE
                     + "' is not available.");
         }
-        if (blob == null){
+        if (blob == null) {
             throw new BinaryMetadataException("The following command " + ca + " cannot be executed with a null blob");
         }
         try {
@@ -67,7 +76,7 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
             File file = makeFile(blob);
             params.addNamedParameter("inFilePath", file, true);
             params.addNamedParameter("tagList", getCommandTags(metadata), false);
-            ExecResult er = getCommandLineExecutorService().execCommand(BinaryMetadataConstants.EXIFTOOL_WRITE, params);
+            ExecResult er = commandLineService.execCommand(BinaryMetadataConstants.EXIFTOOL_WRITE, params);
             boolean success = er.isSuccessful();
             if (!success) {
                 log.error("There was an error executing " + "the following command: " + er.getCommandLine() + ". \n"
@@ -84,13 +93,12 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
 
     @Override
     public Map<String, Object> readMetadata(Blob blob, List<String> metadata) {
-        CommandAvailability ca = getCommandLineExecutorService().getCommandAvailability(
-                BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST);
+        CommandAvailability ca = commandLineService.getCommandAvailability(BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST);
         if (!ca.isAvailable()) {
             throw new BinaryMetadataException("Command '" + BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST
                     + "' is not available.");
         }
-        if (blob == null){
+        if (blob == null) {
             throw new BinaryMetadataException("The following command " + ca + " cannot be executed with a null blob");
         }
         try {
@@ -98,8 +106,7 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
             File file = makeFile(blob);
             params.addNamedParameter("inFilePath", file, true);
             params.addNamedParameter("tagList", getCommandTags(metadata), false);
-            ExecResult er = getCommandLineExecutorService().execCommand(BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST,
-                    params);
+            ExecResult er = commandLineService.execCommand(BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST, params);
 
             return returnResultMap(er);
         } catch (CommandNotAvailable commandNotAvailable) {
@@ -112,20 +119,19 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
 
     @Override
     public Map<String, Object> readMetadata(Blob blob) {
-        CommandAvailability ca = getCommandLineExecutorService().getCommandAvailability(
-                BinaryMetadataConstants.EXIFTOOL_READ);
+        CommandAvailability ca = commandLineService.getCommandAvailability(BinaryMetadataConstants.EXIFTOOL_READ);
         if (!ca.isAvailable()) {
             throw new BinaryMetadataException("Command '" + BinaryMetadataConstants.EXIFTOOL_READ
                     + "' is not available.");
         }
-        if (blob == null){
+        if (blob == null) {
             throw new BinaryMetadataException("The following command " + ca + " cannot be executed with a null blob");
         }
         try {
             CmdParameters params = new CmdParameters();
             File file = makeFile(blob);
             params.addNamedParameter("inFilePath", file, true);
-            ExecResult er = getCommandLineExecutorService().execCommand(BinaryMetadataConstants.EXIFTOOL_READ, params);
+            ExecResult er = commandLineService.execCommand(BinaryMetadataConstants.EXIFTOOL_READ, params);
 
             return returnResultMap(er);
         } catch (CommandNotAvailable commandNotAvailable) {
@@ -176,6 +182,27 @@ public class ExifToolProcessor extends BinaryMetadataProcessor {
             sb.append("-" + metadata + "=" + metadataValue + " ");
         }
         return sb.toString();
+    }
+
+    public File makeFile(Blob blob) throws IOException {
+        File sourceFile = getFileFromBlob(blob);
+        if (sourceFile == null) {
+            String filename = blob.getFilename();
+            sourceFile = File.createTempFile(filename, ".tmp");
+            blob.transferTo(sourceFile);
+            Framework.trackFile(sourceFile, this);
+        }
+        return sourceFile;
+    }
+
+    public File getFileFromBlob(Blob blob) {
+        if (blob instanceof FileBlob) {
+            return ((FileBlob) blob).getFile();
+        } else if (blob instanceof SQLBlob) {
+            StreamSource source = ((SQLBlob) blob).getBinary().getStreamSource();
+            return ((FileSource) source).getFile();
+        }
+        return null;
     }
 
 }

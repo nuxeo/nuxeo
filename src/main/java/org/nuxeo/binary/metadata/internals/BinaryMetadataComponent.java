@@ -58,11 +58,11 @@ public class BinaryMetadataComponent extends DefaultComponent {
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (BinaryMetadataConstants.METADATA_MAPPING_EP.equals(extensionPoint)) {
-            metadataService.addMappingContribution((MetadataMappingDescriptor) contribution);
+            mappingRegistry.addContribution((MetadataMappingDescriptor) contribution);
         } else if (BinaryMetadataConstants.METADATA_RULES_EP.equals(extensionPoint)) {
-            metadataService.addRuleContribution((MetadataRuleDescriptor) contribution);
+            ruleRegistry.addContribution((MetadataRuleDescriptor) contribution);
         } else if (BinaryMetadataConstants.METADATA_PROCESSORS_EP.equals(extensionPoint)) {
-            metadataService.addProcessorContribution((MetadataProcessorDescriptor) contribution);
+            processorRegistry.addContribution((MetadataProcessorDescriptor) contribution);
         } else {
             log.error("Unknown extension point " + extensionPoint);
         }
@@ -71,11 +71,11 @@ public class BinaryMetadataComponent extends DefaultComponent {
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (BinaryMetadataConstants.METADATA_MAPPING_EP.equals(extensionPoint)) {
-            metadataService.removeMappingContribution((MetadataMappingDescriptor) contribution);
+            mappingRegistry.removeContribution((MetadataMappingDescriptor) contribution);
         } else if (BinaryMetadataConstants.METADATA_RULES_EP.equals(extensionPoint)) {
-            metadataService.removeRuleContribution((MetadataRuleDescriptor) contribution);
+            ruleRegistry.removeContribution((MetadataRuleDescriptor) contribution);
         } else if (BinaryMetadataConstants.METADATA_PROCESSORS_EP.equals(extensionPoint)) {
-            metadataService.removeProcessorContribution((MetadataProcessorDescriptor) contribution);
+            processorRegistry.removeContribution((MetadataProcessorDescriptor) contribution);
         } else {
             log.error("Unknown extension point " + extensionPoint);
         }
@@ -84,6 +84,7 @@ public class BinaryMetadataComponent extends DefaultComponent {
     @Override
     public void applicationStarted(ComponentContext context) {
         super.applicationStarted(context);
+        ruleRegistry.handleApplicationStarted();
     }
 
     @Override

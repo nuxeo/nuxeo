@@ -26,14 +26,15 @@ public class MetadataProcessorDescriptor {
     @XNode("@id")
     protected String id;
 
+    protected BinaryMetadataProcessor processor;
+
     @XNode("@class")
-    private Class<BinaryMetadataProcessor> processorClass;
+    public void setClass(Class<? extends BinaryMetadataProcessor> aType) throws InstantiationException,
+            IllegalAccessException {
+        processor = aType.newInstance();
+    }
 
     public String getId() {
         return id;
-    }
-
-    public Class<BinaryMetadataProcessor> getProcessorClass() {
-        return processorClass;
     }
 }
