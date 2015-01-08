@@ -74,6 +74,10 @@ public class DocumentStringBlobHolder extends DocumentBlobHolder {
             } catch (IOException e) {
                 throw new ClientException(e);
             }
+            // strip '\0 chars from text
+            if (string.indexOf('\0') >= 0) {
+                string = string.replace("\0", "");
+            }
             doc.getProperty(xPath).setValue(string);
             mt = blob.getMimeType();
         }
