@@ -135,6 +135,16 @@ public class NXImageRenderer extends ImageRenderer {
             }
 
             RenderKitUtils.renderPassThruAttributes(context, writer, component, ATTRIBUTES);
+            // If the container is not activated and the width and/or height are defined, these attributes are set on
+            // the img directly
+            if (!hasDivContainer) {
+                if (!StringUtils.isBlank(width)) {
+                    writer.writeAttribute("width", width, "width");
+                }
+                if (!StringUtils.isBlank(height)) {
+                    writer.writeAttribute("height", height, "height");
+                }
+            }
 
             RenderKitUtils.renderXHTMLStyleBooleanAttributes(writer, component);
 
