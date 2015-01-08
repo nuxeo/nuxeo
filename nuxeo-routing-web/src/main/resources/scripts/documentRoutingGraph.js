@@ -121,7 +121,8 @@ function displayGraph(data, divContainerTargetId) {
 			anchor : "TopCenter"
 		}, targetEndpointOptions);
 		// prepare the transition's path
-		if (this.path && this.path.length) {
+		// ignore paths with only one segment
+		if (this.path && this.path.length > 2) {
 			var segments = [];
 			for (var i = 1; i < this.path.length; i++) {
 				segments.push({
