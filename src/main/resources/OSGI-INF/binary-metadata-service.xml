@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.binary.metadata.api.service">
+<component name="org.nuxeo.binary.metadata">
   <implementation
-          class="org.nuxeo.binary.metadata.api.service.BinaryMetadataComponent"/>
+          class="org.nuxeo.binary.metadata.internals.BinaryMetadataComponent"/>
   <service>
     <provide
-            interface="org.nuxeo.binary.metadata.api.service.BinaryMetadataService"/>
+            interface="org.nuxeo.binary.metadata.api.BinaryMetadataService"/>
   </service>
 
   <extension-point name="metadataProcessors">
-    <object class="org.nuxeo.binary.metadata.contribution.MetadataProcessorDescriptor"/>
+    <object class="org.nuxeo.binary.metadata.internals.MetadataProcessorDescriptor"/>
     <documentation>
       <code>
         <processor id="exifTool"
@@ -19,7 +19,7 @@
 
   <extension-point name="metadataMappings">
     <object
-            class="org.nuxeo.binary.metadata.contribution.MetadataMappingDescriptor"/>
+            class="org.nuxeo.binary.metadata.internals.MetadataMappingDescriptor"/>
     <documentation>
       <code>
         <metadataMapping id="xmp" processor="exifTool" blobXPath="file:content">
@@ -33,7 +33,7 @@
 
   <extension-point name="metadataRules">
     <object
-            class="org.nuxeo.binary.metadata.contribution.MetadataRuleDescriptor"/>
+            class="org.nuxeo.binary.metadata.internals.MetadataRuleDescriptor"/>
     <documentation>
       <code>
         <rule id="default" order="0" enabled="true" async="false">

@@ -1,8 +1,8 @@
-<component name="org.nuxeo.binary.metadata.contrib.test.bis">
+<component name="org.nuxeo.binary.metadata.contribs.tests.async">
 
-  <require>org.nuxeo.binary.metadata.contrib.pdf.test</require>
+  <require>org.nuxeo.binary.metadata.contribs.tests.pdf</require>
 
-  <extension target="org.nuxeo.binary.metadata.api.service"
+  <extension target="org.nuxeo.binary.metadata"
              point="metadataRules">
     <rule id="default" order="0" enabled="true" async="false">
       <metadataMappings>

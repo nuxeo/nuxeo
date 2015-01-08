@@ -14,9 +14,9 @@
  * Contributors:
  *      Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.binary.metadata.contribution;
+package org.nuxeo.binary.metadata.internals;
 
-import org.nuxeo.binary.metadata.api.service.BinaryMetadataProcessor;
+import org.nuxeo.binary.metadata.api.BinaryMetadataProcessor;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 

@@ -14,29 +14,35 @@
  * Contributors:
  *      Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.binary.metadata.contribution;
+package org.nuxeo.binary.metadata.internals;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
- * Registry for {@link org.nuxeo.binary.metadata.contribution.MetadataRuleDescriptor} descriptors.
+ * Registry for {@link org.nuxeo.binary.metadata.internals.MetadataRuleDescriptor} descriptors.
  *
  * @since 7.1
  */
 public class MetadataRuleRegistry extends ContributionFragmentRegistry<MetadataRuleDescriptor> {
 
-    protected Map<String, MetadataRuleDescriptor> metadataRuleDescriptorMap = new HashMap<>();
+    protected final Set<MetadataRuleDescriptor> contribs = new TreeSet<>(
+            new Comparator<MetadataRuleDescriptor>() {
 
-    public Map<String, MetadataRuleDescriptor> getMetadataRuleDescriptorMap() {
-        return metadataRuleDescriptorMap;
-    }
+                @Override
+                public int compare(MetadataRuleDescriptor o1, MetadataRuleDescriptor o2) {
+                    int order = o1.getOrder().compareTo(o2.getOrder());
+                    if (order != 0) {
+                        return order;
+                    }
+                    return o1.getId().compareTo(o2.getId());
+                }
 
-    public void setMetadataRuleDescriptorMap(Map<String, MetadataRuleDescriptor> metadataRuleDescriptorMap) {
-        this.metadataRuleDescriptorMap = metadataRuleDescriptorMap;
-    }
+            });
+
 
     @Override
     public String getContributionId(MetadataRuleDescriptor metadataRuleDescriptor) {
@@ -46,17 +52,17 @@ public class MetadataRuleRegistry extends ContributionFragmentRegistry<MetadataR
     @Override
     public void contributionUpdated(String s, MetadataRuleDescriptor metadataRuleDescriptor,
             MetadataRuleDescriptor metadataRuleDescriptor2) {
-        metadataRuleDescriptorMap.put(metadataRuleDescriptor.getId(), metadataRuleDescriptor2);
+        contribs.add(metadataRuleDescriptor2);
     }
 
     @Override
     public synchronized void addContribution(MetadataRuleDescriptor metadataRuleDescriptor) {
-        metadataRuleDescriptorMap.put(metadataRuleDescriptor.getId(), metadataRuleDescriptor);
+        contribs.add(metadataRuleDescriptor);
     }
 
     @Override
     public void contributionRemoved(String s, MetadataRuleDescriptor metadataRuleDescriptor) {
-        metadataRuleDescriptorMap.remove(metadataRuleDescriptor.getId());
+        contribs.remove(metadataRuleDescriptor);
     }
 
     /**

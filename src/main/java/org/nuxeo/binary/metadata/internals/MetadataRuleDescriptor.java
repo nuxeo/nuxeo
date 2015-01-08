@@ -14,7 +14,7 @@
  * Contributors:
  *      Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.binary.metadata.contribution;
+package org.nuxeo.binary.metadata.internals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +27,13 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 7.1
  */
 @XObject("rule")
-public class MetadataRuleDescriptor implements Comparable<MetadataRuleDescriptor> {
+public class MetadataRuleDescriptor {
 
     @XNode("@id")
     protected String id;
 
     @XNode("@order")
-    protected String order;
+    protected Integer order;
 
     @XNode("@enabled")
     protected Boolean enabled;
@@ -51,7 +51,7 @@ public class MetadataRuleDescriptor implements Comparable<MetadataRuleDescriptor
         return id;
     }
 
-    public String getOrder() {
+    public Integer getOrder() {
         return order;
     }
 
@@ -72,7 +72,39 @@ public class MetadataRuleDescriptor implements Comparable<MetadataRuleDescriptor
     }
 
     @Override
-    public int compareTo(MetadataRuleDescriptor nextMetadataRuleDescriptor) {
-        return this.order.compareTo(nextMetadataRuleDescriptor.getOrder());
+    public String toString() {
+        return "MetadataRuleDescriptor [id=" + id + "]";
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        MetadataRuleDescriptor other = (MetadataRuleDescriptor) obj;
+        if (id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!id.equals(other.id)) {
+            return false;
+        }
+        return true;
+    }
+
+
 }

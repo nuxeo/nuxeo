@@ -14,12 +14,12 @@
  * Contributors:
  *     vpasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.binary.metadata.api.service;
+package org.nuxeo.binary.metadata.api;
 
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.binary.metadata.contribution.MetadataMappingDescriptor;
+import org.nuxeo.binary.metadata.internals.MetadataMappingDescriptor;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;

@@ -14,49 +14,55 @@
  * Contributors:
  *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.binary.metadata.api.service;
+package org.nuxeo.binary.metadata.internals;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
-import org.nuxeo.binary.metadata.contribution.MetadataMappingDescriptor;
-import org.nuxeo.binary.metadata.contribution.MetadataProcessorDescriptor;
-import org.nuxeo.binary.metadata.contribution.MetadataRuleDescriptor;
+import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Binary metadata component which registers all binary metadata contributions.
- * 
+ *
  * @since 7.1
  */
 public class BinaryMetadataComponent extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(BinaryMetadataComponent.class);
 
-    protected BinaryMetadataServiceImpl metadataService;
+    protected static BinaryMetadataComponent self;
+
+    protected final BinaryMetadataServiceImpl metadataService = new BinaryMetadataServiceImpl();
+
+    protected final MetadataMappingRegistry mappingRegistry = new MetadataMappingRegistry();
+
+    protected final MetadataProcessorRegistry processorRegistry = new MetadataProcessorRegistry();
+
+    protected final MetadataRuleRegistry ruleRegistry = new MetadataRuleRegistry();
 
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        this.metadataService = new BinaryMetadataServiceImpl();
+        self = this;
     }
 
     @Override
     public void deactivate(ComponentContext context) {
+        self = null;
         super.deactivate(context);
-        this.metadataService = null;
     }
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (BinaryMetadataConstants.METADATA_MAPPING_EP.equals(extensionPoint)) {
-            this.metadataService.addMappingContribution((MetadataMappingDescriptor) contribution);
+            metadataService.addMappingContribution((MetadataMappingDescriptor) contribution);
         } else if (BinaryMetadataConstants.METADATA_RULES_EP.equals(extensionPoint)) {
-            this.metadataService.addRuleContribution((MetadataRuleDescriptor) contribution);
+            metadataService.addRuleContribution((MetadataRuleDescriptor) contribution);
         } else if (BinaryMetadataConstants.METADATA_PROCESSORS_EP.equals(extensionPoint)) {
-            this.metadataService.addProcessorContribution((MetadataProcessorDescriptor) contribution);
+            metadataService.addProcessorContribution((MetadataProcessorDescriptor) contribution);
         } else {
             log.error("Unknown extension point " + extensionPoint);
         }
@@ -65,11 +71,11 @@ public class BinaryMetadataComponent extends DefaultComponent {
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (BinaryMetadataConstants.METADATA_MAPPING_EP.equals(extensionPoint)) {
-            this.metadataService.removeMappingContribution((MetadataMappingDescriptor) contribution);
+            metadataService.removeMappingContribution((MetadataMappingDescriptor) contribution);
         } else if (BinaryMetadataConstants.METADATA_RULES_EP.equals(extensionPoint)) {
-            this.metadataService.removeRuleContribution((MetadataRuleDescriptor) contribution);
+            metadataService.removeRuleContribution((MetadataRuleDescriptor) contribution);
         } else if (BinaryMetadataConstants.METADATA_PROCESSORS_EP.equals(extensionPoint)) {
-            this.metadataService.removeProcessorContribution((MetadataProcessorDescriptor) contribution);
+            metadataService.removeProcessorContribution((MetadataProcessorDescriptor) contribution);
         } else {
             log.error("Unknown extension point " + extensionPoint);
         }

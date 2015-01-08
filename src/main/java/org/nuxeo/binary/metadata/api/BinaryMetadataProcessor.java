@@ -14,7 +14,7 @@
  * Contributors:
  *      Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.binary.metadata.api.service;
+package org.nuxeo.binary.metadata.api;
 
 import java.io.File;
 import java.io.IOException;

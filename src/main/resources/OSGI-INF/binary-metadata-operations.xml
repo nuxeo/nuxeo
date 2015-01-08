@@ -4,15 +4,15 @@
              point="operations">
 
     <operation
-            class="org.nuxeo.binary.metadata.api.operation.WriteMetadataToBinaryFromDocument"/>
+            class="org.nuxeo.binary.metadata.internals.operations.WriteMetadataToBinaryFromDocument"/>
     <operation
-            class="org.nuxeo.binary.metadata.api.operation.WriteMetadataToBinaryFromContext"/>
+            class="org.nuxeo.binary.metadata.internals.operations.WriteMetadataToBinaryFromContext"/>
     <operation
-            class="org.nuxeo.binary.metadata.api.operation.TriggerMetadataMappingOnDocument"/>
+            class="org.nuxeo.binary.metadata.internals.operations.TriggerMetadataMappingOnDocument"/>
     <operation
-            class="org.nuxeo.binary.metadata.api.operation.ReadMetadataFromBinaryToContext"/>
+            class="org.nuxeo.binary.metadata.internals.operations.ReadMetadataFromBinaryToContext"/>
     <operation
-            class="org.nuxeo.binary.metadata.api.operation.ReadMetadataFromBinary"/>
+            class="org.nuxeo.binary.metadata.internals.operations.ReadMetadataFromBinary"/>
 
   </extension>
 </component>

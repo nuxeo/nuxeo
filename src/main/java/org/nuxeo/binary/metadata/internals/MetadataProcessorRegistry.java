@@ -14,7 +14,7 @@
  * Contributors:
  *      Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.binary.metadata.contribution;
+package org.nuxeo.binary.metadata.internals;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +22,7 @@ import java.util.Map;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
- * Registry for {@link org.nuxeo.binary.metadata.contribution.MetadataProcessorDescriptor} descriptors.
+ * Registry for {@link org.nuxeo.binary.metadata.internals.MetadataProcessorDescriptor} descriptors.
  *
  * @since 7.1
  */

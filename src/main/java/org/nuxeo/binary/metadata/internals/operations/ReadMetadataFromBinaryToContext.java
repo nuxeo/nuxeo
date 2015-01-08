@@ -14,10 +14,11 @@
  * Contributors:
  *      Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.binary.metadata.api.operation;
+package org.nuxeo.binary.metadata.internals.operations;
 
 import java.util.ArrayList;
-import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
+
+import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;

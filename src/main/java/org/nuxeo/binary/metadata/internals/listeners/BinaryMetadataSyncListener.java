@@ -15,13 +15,13 @@
  *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
 
-package org.nuxeo.binary.metadata.api.listener;
+package org.nuxeo.binary.metadata.internals.listeners;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 
 import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
-import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
+import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;

@@ -1,9 +1,9 @@
-<component name="org.nuxeo.binary.metadata.contrib">
+<component name="org.nuxeo.binary.metadata.contribs">
 
-  <extension target="org.nuxeo.binary.metadata.api.service"
+  <extension target="org.nuxeo.binary.metadata"
              point="metadataProcessors">
     <processor id="exifTool"
-               class="org.nuxeo.binary.metadata.api.service.ExifToolProcessor"/>
+               class="org.nuxeo.binary.metadata.internals.ExifToolProcessor"/>
   </extension>
 
 </component>

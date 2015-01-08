@@ -14,7 +14,7 @@
  * Contributors:
  *     vpasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.binary.metadata.api.service;
+package org.nuxeo.binary.metadata.internals;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,19 +23,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
 import org.nuxeo.binary.metadata.api.BinaryMetadataException;
-import org.nuxeo.binary.metadata.contribution.MetadataMappingDescriptor;
-import org.nuxeo.binary.metadata.contribution.MetadataMappingRegistry;
-import org.nuxeo.binary.metadata.contribution.MetadataProcessorDescriptor;
-import org.nuxeo.binary.metadata.contribution.MetadataProcessorRegistry;
-import org.nuxeo.binary.metadata.contribution.MetadataRuleDescriptor;
-import org.nuxeo.binary.metadata.contribution.MetadataRuleRegistry;
+import org.nuxeo.binary.metadata.api.BinaryMetadataProcessor;
+import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -48,6 +43,9 @@ import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.runtime.api.Framework;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Sets;
+
 /**
  * @since 7.1
  */
@@ -55,26 +53,14 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
 
     private static final Log log = LogFactory.getLog(BinaryMetadataServiceImpl.class);
 
-    protected MetadataMappingRegistry mappingRegistry;
-
-    protected MetadataProcessorRegistry processorRegistry;
-
-    protected MetadataRuleRegistry ruleRegistry;
-
     protected Map<String, BinaryMetadataProcessor> binaryMetadataProcessorInstances;
 
-    public BinaryMetadataServiceImpl() {
-        mappingRegistry = new MetadataMappingRegistry();
-        ruleRegistry = new MetadataRuleRegistry();
-        processorRegistry = new MetadataProcessorRegistry();
-        binaryMetadataProcessorInstances = new HashMap<>();
-    }
 
     @Override
     public Map<String, Object> readMetadata(String processorName, Blob blob, List<String> metadataNames) {
         try {
             BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(processorName).newInstance();
-            return processor.readMetadata(blob,metadataNames);
+            return processor.readMetadata(blob, metadataNames);
         } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
             throw new BinaryMetadataException(e);
         }
@@ -83,8 +69,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     @Override
     public Map<String, Object> readMetadata(Blob blob, List<String> metadataNames) {
         try {
-            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID).newInstance();
-            return processor.readMetadata(blob,metadataNames);
+            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(
+                    BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID).newInstance();
+            return processor.readMetadata(blob, metadataNames);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
             throw new BinaryMetadataException(e);
         }
@@ -93,7 +80,8 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     @Override
     public Map<String, Object> readMetadata(Blob blob) {
         try {
-            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID).newInstance();
+            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(
+                    BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID).newInstance();
             return processor.readMetadata(blob);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
             throw new BinaryMetadataException(e);
@@ -123,7 +111,8 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     @Override
     public boolean writeMetadata(Blob blob, Map<String, Object> metadata) {
         try {
-            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID).newInstance();
+            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(
+                    BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID).newInstance();
             return processor.writeMetadata(blob, metadata);
         } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
             throw new BinaryMetadataException(e);
@@ -135,11 +124,10 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         try {
             // Creating mapping properties Map.
             Map<String, Object> metadataMapping = new HashMap<>();
-            MetadataMappingDescriptor mappingDescriptor = mappingRegistry.getMappingDescriptorMap().get(mappingDescriptorId);
-            for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor
-                    : mappingDescriptor.getMetadataDescriptors()) {
-                metadataMapping.put(metadataDescriptor.getName(),
-                        doc.getPropertyValue(metadataDescriptor.getXpath()));
+            MetadataMappingDescriptor mappingDescriptor = BinaryMetadataComponent.self.mappingRegistry.getMappingDescriptorMap().get(
+                    mappingDescriptorId);
+            for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor : mappingDescriptor.getMetadataDescriptors()) {
+                metadataMapping.put(metadataDescriptor.getName(), doc.getPropertyValue(metadataDescriptor.getXpath()));
             }
             BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(processorName).newInstance();
             return processor.writeMetadata(blob, metadataMapping);
@@ -154,13 +142,13 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         try {
             // Creating mapping properties Map.
             Map<String, Object> metadataMapping = new HashMap<>();
-            MetadataMappingDescriptor mappingDescriptor = mappingRegistry.getMappingDescriptorMap().get(mappingDescriptorId);
-            for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor
-                    : mappingDescriptor.getMetadataDescriptors()) {
-                metadataMapping.put(metadataDescriptor.getName(),
-                        doc.getPropertyValue(metadataDescriptor.getXpath()));
+            MetadataMappingDescriptor mappingDescriptor = BinaryMetadataComponent.self.mappingRegistry.getMappingDescriptorMap().get(
+                    mappingDescriptorId);
+            for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor : mappingDescriptor.getMetadataDescriptors()) {
+                metadataMapping.put(metadataDescriptor.getName(), doc.getPropertyValue(metadataDescriptor.getXpath()));
             }
-            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID).newInstance();
+            BinaryMetadataProcessor processor = (BinaryMetadataProcessor) getProcessor(
+                    BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID).newInstance();
             return processor.writeMetadata(blob, metadataMapping);
         } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
             throw new BinaryMetadataException(e);
@@ -173,9 +161,8 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         ActionContext actionContext = createActionContext(doc);
         Set<MetadataRuleDescriptor> ruleDescriptors = checkFilter(actionContext);
         List<String> mappingDescriptorIds = new ArrayList<>();
-        for(MetadataRuleDescriptor ruleDescriptor:ruleDescriptors){
-            mappingDescriptorIds.addAll(ruleDescriptor
-                    .getMetadataMappingIdDescriptors());
+        for (MetadataRuleDescriptor ruleDescriptor : ruleDescriptors) {
+            mappingDescriptorIds.addAll(ruleDescriptor.getMetadataMappingIdDescriptors());
         }
         if (mappingDescriptorIds.isEmpty()) {
             return;
@@ -183,7 +170,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
 
         // For each mapping descriptors, overriding mapping document properties.
         for (String mappingDescriptorId : mappingDescriptorIds) {
-            if (!mappingRegistry.getMappingDescriptorMap().containsKey(mappingDescriptorId)) {
+            if (!BinaryMetadataComponent.self.mappingRegistry.getMappingDescriptorMap().containsKey(mappingDescriptorId)) {
                 log.warn("Missing binary metadata descriptor with id '" + mappingDescriptorId
                         + "'. Or check your rule contribution with proper metadataMapping-id.");
                 continue;
@@ -197,15 +184,14 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         // Creating mapping properties Map.
         Map<String, String> metadataMapping = new HashMap<>();
         List<String> blobMetadata = new ArrayList<>();
-        MetadataMappingDescriptor mappingDescriptor = mappingRegistry.getMappingDescriptorMap().get(mappingDescriptorId);
+        MetadataMappingDescriptor mappingDescriptor = BinaryMetadataComponent.self.mappingRegistry.getMappingDescriptorMap().get(mappingDescriptorId);
 
         // Extract blob from the contributed xpath
         Blob blob = doc.getProperty(mappingDescriptor.getBlobXPath()).getValue(Blob.class);
-        if(blob!=null && mappingDescriptor.getMetadataDescriptors()!=null && !mappingDescriptor.getMetadataDescriptors().isEmpty()) {
-            for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor
-                    : mappingDescriptor.getMetadataDescriptors()) {
-                metadataMapping.put(metadataDescriptor.getName(),
-                        metadataDescriptor.getXpath());
+        if (blob != null && mappingDescriptor.getMetadataDescriptors() != null
+                && !mappingDescriptor.getMetadataDescriptors().isEmpty()) {
+            for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor : mappingDescriptor.getMetadataDescriptors()) {
+                metadataMapping.put(metadataDescriptor.getName(), metadataDescriptor.getXpath());
                 blobMetadata.add(metadataDescriptor.getName());
             }
 
@@ -223,7 +209,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
             for (Object metadata : blobMetadataOutput.keySet()) {
                 doc.setPropertyValue(metadataMapping.get(metadata), blobMetadataOutput.get(metadata).toString());
             }
-            if(session.exists(doc.getRef())) {
+            if (session.exists(doc.getRef())) {
                 session.saveDocument(doc);
             }
         }
@@ -272,19 +258,21 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
      *
      * @return the list of metadata which should be processed sorted by rules order. (high to low priority)
      */
-    protected Set<MetadataRuleDescriptor> checkFilter(ActionContext
-            actionContext) {
-        Set<MetadataRuleDescriptor> ruleDescriptors = new TreeSet<>();
-        ActionManager actionService = Framework.getLocalService(ActionManager.class);
-        for (String ruleDescriptorId : ruleRegistry.getMetadataRuleDescriptorMap().keySet()) {
-            MetadataRuleDescriptor ruleDescriptor = ruleRegistry.getMetadataRuleDescriptorMap().get(ruleDescriptorId);
-            if (!ruleDescriptor.getEnabled()
-                    || !actionService.checkFilters(ruleDescriptor.getFilterIds(), actionContext)) {
-                continue;
-            }
-            ruleDescriptors.add(ruleDescriptor);
-        }
-        return ruleDescriptors;
+    protected Set<MetadataRuleDescriptor> checkFilter(final ActionContext actionContext) {
+        final ActionManager actionService = Framework.getLocalService(ActionManager.class);
+        Set<MetadataRuleDescriptor> filtered = Sets.filter(BinaryMetadataComponent.self.ruleRegistry.contribs,
+                new Predicate<MetadataRuleDescriptor>() {
+
+                    @Override
+                    public boolean apply(MetadataRuleDescriptor input) {
+                        if (!input.getEnabled()) {
+                            return false;
+                        }
+                        return actionService.checkFilters(input.getFilterIds(), actionContext);
+                    }
+
+                });
+        return filtered;
     }
 
     protected ActionContext createActionContext(DocumentModel doc) {
@@ -306,16 +294,15 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         Set<MetadataRuleDescriptor> ruleDescriptors = checkFilter(actionContext);
         Set<String> syncMappingDescriptorIds = new HashSet<>();
         HashSet<String> asyncMappingDescriptorIds = new HashSet<>();
-        for(MetadataRuleDescriptor ruleDescriptor:ruleDescriptors){
-            if(ruleDescriptor.getIsAsync()){
+        for (MetadataRuleDescriptor ruleDescriptor : ruleDescriptors) {
+            if (ruleDescriptor.getIsAsync()) {
                 asyncMappingDescriptorIds.addAll(ruleDescriptor.getMetadataMappingIdDescriptors());
             }
-            syncMappingDescriptorIds.addAll(ruleDescriptor
-                    .getMetadataMappingIdDescriptors());
+            syncMappingDescriptorIds.addAll(ruleDescriptor.getMetadataMappingIdDescriptors());
         }
 
         // Handle async rules which should be taken into account in async listener.
-        if(!asyncMappingDescriptorIds.isEmpty()){
+        if (!asyncMappingDescriptorIds.isEmpty()) {
             handleAsyncMapping(asyncMappingDescriptorIds, docCtx);
         }
 
@@ -334,17 +321,16 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         service.fireEvent(BinaryMetadataConstants.ASYNC_BINARY_METADATA_EVENT, docCtx);
     }
 
-    protected LinkedList<MetadataMappingDescriptor> getMapping(Set<String>
-            mappingDescriptorIds){
+    protected LinkedList<MetadataMappingDescriptor> getMapping(Set<String> mappingDescriptorIds) {
         // For each mapping descriptors, store mapping.
         LinkedList<MetadataMappingDescriptor> mappingResult = new LinkedList<>();
         for (String mappingDescriptorId : mappingDescriptorIds) {
-            if (!mappingRegistry.getMappingDescriptorMap().containsKey(mappingDescriptorId)) {
+            if (!BinaryMetadataComponent.self.mappingRegistry.getMappingDescriptorMap().containsKey(mappingDescriptorId)) {
                 log.warn("Missing binary metadata descriptor with id '" + mappingDescriptorId
                         + "'. Or check your rule contribution with proper metadataMapping-id.");
                 continue;
             }
-            mappingResult.add(mappingRegistry.getMappingDescriptorMap().get(mappingDescriptorId));
+            mappingResult.add(BinaryMetadataComponent.self.mappingRegistry.getMappingDescriptorMap().get(mappingDescriptorId));
         }
         return mappingResult;
     }
@@ -354,16 +340,15 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
      */
     protected boolean isDirtyMapping(MetadataMappingDescriptor mappingDescriptor, DocumentModel doc) {
         Map<String, String> mappingResult = new HashMap<>();
-        for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor
-                : mappingDescriptor.getMetadataDescriptors()) {
-            mappingResult.put(metadataDescriptor.getXpath(),metadataDescriptor.getName());
+        for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor : mappingDescriptor.getMetadataDescriptors()) {
+            mappingResult.put(metadataDescriptor.getXpath(), metadataDescriptor.getName());
         }
         // Returning only dirty properties
-        HashMap<String, Object> resultDirtyMapping  =  new HashMap<>();
-        for(String metadata: mappingResult.keySet()){
+        HashMap<String, Object> resultDirtyMapping = new HashMap<>();
+        for (String metadata : mappingResult.keySet()) {
             Property property = doc.getProperty(metadata);
-            if(property.isDirty()){
-                resultDirtyMapping.put(mappingResult.get(metadata),doc.getPropertyValue(metadata));
+            if (property.isDirty()) {
+                resultDirtyMapping.put(mappingResult.get(metadata), doc.getPropertyValue(metadata));
             }
         }
         return !resultDirtyMapping.isEmpty();
@@ -372,32 +357,32 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     /*--------------------- Registry Services -----------------------*/
 
     protected void addMappingContribution(MetadataMappingDescriptor contribution) {
-        mappingRegistry.addContribution(contribution);
+        BinaryMetadataComponent.self.mappingRegistry.addContribution(contribution);
     }
 
     protected void addRuleContribution(MetadataRuleDescriptor contribution) {
-        ruleRegistry.addContribution(contribution);
+        BinaryMetadataComponent.self.ruleRegistry.addContribution(contribution);
     }
 
     protected void addProcessorContribution(MetadataProcessorDescriptor contribution) {
         try {
-            binaryMetadataProcessorInstances.put(contribution.getId(),contribution.getProcessorClass().newInstance());
+            binaryMetadataProcessorInstances.put(contribution.getId(), contribution.getProcessorClass().newInstance());
         } catch (InstantiationException | IllegalAccessException e) {
             throw new BinaryMetadataException(e);
         }
-        processorRegistry.addContribution(contribution);
+        BinaryMetadataComponent.self.processorRegistry.addContribution(contribution);
     }
 
     protected void removeMappingContribution(MetadataMappingDescriptor contribution) {
-        mappingRegistry.removeContribution(contribution);
+        BinaryMetadataComponent.self.mappingRegistry.removeContribution(contribution);
     }
 
     protected void removeRuleContribution(MetadataRuleDescriptor contribution) {
-        ruleRegistry.removeContribution(contribution);
+        BinaryMetadataComponent.self.ruleRegistry.removeContribution(contribution);
     }
 
     protected void removeProcessorContribution(MetadataProcessorDescriptor contribution) {
-        processorRegistry.removeContribution(contribution);
+        BinaryMetadataComponent.self.processorRegistry.removeContribution(contribution);
     }
 
 }

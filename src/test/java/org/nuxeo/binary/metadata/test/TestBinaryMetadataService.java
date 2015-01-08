@@ -28,7 +28,7 @@ import java.util.Map;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
+import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -46,8 +46,8 @@ import com.google.inject.Inject;
 @Ignore("NXBT-876")
 @RunWith(FeaturesRunner.class)
 @Features(BinaryMetadataFeature.class)
-@LocalDeploy({ "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-contrib-test.xml",
-        "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-disable-listener.xml" })
+@LocalDeploy({ "org.nuxeo.binary.metadata:OSGI-INF/binary-metadata-contrib-test.xml",
+        "org.nuxeo.binary.metadata:OSGI-INF/binary-metadata-disable-listener.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = BinaryMetadataServerInit.class)
 public class TestBinaryMetadataService {
 

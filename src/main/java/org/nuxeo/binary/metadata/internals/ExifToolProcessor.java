@@ -14,7 +14,7 @@
  * Contributors:
  *     vpasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.binary.metadata.api.service;
+package org.nuxeo.binary.metadata.internals;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +29,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
 import org.nuxeo.binary.metadata.api.BinaryMetadataException;
+import org.nuxeo.binary.metadata.api.BinaryMetadataProcessor;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;

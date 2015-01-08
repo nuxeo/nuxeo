@@ -14,7 +14,7 @@
  * Contributors:
  *      Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.binary.metadata.contribution;
+package org.nuxeo.binary.metadata.internals;
 
 import java.util.ArrayList;
 import java.util.List;
