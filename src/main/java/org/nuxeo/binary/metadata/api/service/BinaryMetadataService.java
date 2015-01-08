@@ -16,7 +16,6 @@
  */
 package org.nuxeo.binary.metadata.api.service;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -132,7 +131,7 @@ public interface BinaryMetadataService {
      * If Blob dirty and document metadata not dirty, write metadata from Blob to doc. - If Blob not dirty and document
      * metadata dirty, write metadata from doc to Blob.
      */
-    void handleUpdate(LinkedList<MetadataMappingDescriptor>syncMappingDescriptors, DocumentModel doc,
+    void handleUpdate(List<MetadataMappingDescriptor>syncMappingDescriptors, DocumentModel doc,
             DocumentEventContext docCtx);
 
     /**

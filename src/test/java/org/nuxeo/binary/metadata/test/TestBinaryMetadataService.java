@@ -58,6 +58,9 @@ public class TestBinaryMetadataService {
     CoreSession session;
 
     List<String> musicMetadata = new ArrayList<String>() {
+
+        private static final long serialVersionUID = 1L;
+
         {
             add("ID3:Title");
             add("ID3:Lyrics-por");
@@ -67,6 +70,9 @@ public class TestBinaryMetadataService {
     };
 
     List<String> PSDMetadata = new ArrayList<String>() {
+
+        private static final long serialVersionUID = 1L;
+
         {
             add("EXIF:ImageHeight");
             add("EXIF:Software");

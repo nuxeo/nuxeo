@@ -19,18 +19,14 @@ package org.nuxeo.binary.metadata.contribution;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
  * Registry for {@link org.nuxeo.binary.metadata.contribution.MetadataProcessorDescriptor} descriptors.
- * 
+ *
  * @since 7.1
  */
 public class MetadataProcessorRegistry extends ContributionFragmentRegistry<MetadataProcessorDescriptor> {
-
-    private static final Log log = LogFactory.getLog(MetadataProcessorRegistry.class);
 
     protected Map<String, MetadataProcessorDescriptor> processorDescriptorMap = new HashMap<>();
 
@@ -42,12 +38,12 @@ public class MetadataProcessorRegistry extends ContributionFragmentRegistry<Meta
     @Override
     public void contributionUpdated(String s, MetadataProcessorDescriptor metadataProcessorDescriptor,
             MetadataProcessorDescriptor metadataProcessorDescriptor2) {
-        this.processorDescriptorMap.put(metadataProcessorDescriptor.getId(), metadataProcessorDescriptor2);
+        processorDescriptorMap.put(metadataProcessorDescriptor.getId(), metadataProcessorDescriptor2);
     }
 
     @Override
     public void contributionRemoved(String s, MetadataProcessorDescriptor metadataProcessorDescriptor) {
-        this.processorDescriptorMap.remove(metadataProcessorDescriptor.getId());
+        processorDescriptorMap.remove(metadataProcessorDescriptor.getId());
     }
 
     @Override

@@ -17,8 +17,6 @@
 package org.nuxeo.binary.metadata.api.operation;
 
 import java.util.ArrayList;
-import java.util.Map;
-
 import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -63,7 +61,7 @@ public class ReadMetadataFromBinaryToContext {
                 metadataList.add(meta);
             }
             operationContext.put("binaryMetadata", binaryMetadataService
-                    .writeMetadata(blob, (Map<String, Object>) metadataList));
+                    .readMetadata(blob, metadataList));
         }
     }
 }

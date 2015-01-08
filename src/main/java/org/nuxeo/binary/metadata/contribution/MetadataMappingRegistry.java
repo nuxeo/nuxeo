@@ -19,18 +19,14 @@ package org.nuxeo.binary.metadata.contribution;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
  * Registry for {@link org.nuxeo.binary.metadata.contribution.MetadataMappingDescriptor} descriptors.
- * 
+ *
  * @since 7.1
  */
 public class MetadataMappingRegistry extends ContributionFragmentRegistry<MetadataMappingDescriptor> {
-
-    private static final Log log = LogFactory.getLog(MetadataMappingRegistry.class);
 
     protected Map<String, MetadataMappingDescriptor> mappingDescriptorMap = new HashMap<>();
 
@@ -42,18 +38,18 @@ public class MetadataMappingRegistry extends ContributionFragmentRegistry<Metada
     @Override
     public void contributionUpdated(String s, MetadataMappingDescriptor metadataMappingDescriptor,
             MetadataMappingDescriptor metadataMappingDescriptor2) {
-        this.mappingDescriptorMap.put(metadataMappingDescriptor.getId(),
+        mappingDescriptorMap.put(metadataMappingDescriptor.getId(),
                 metadataMappingDescriptor2);
     }
 
     @Override
     public void contributionRemoved(String s, MetadataMappingDescriptor metadataMappingDescriptor) {
-        this.mappingDescriptorMap.remove(metadataMappingDescriptor.getId());
+        mappingDescriptorMap.remove(metadataMappingDescriptor.getId());
     }
 
     @Override
     public synchronized void addContribution(MetadataMappingDescriptor metadataMappingDescriptor) {
-        this.mappingDescriptorMap.put(metadataMappingDescriptor.getId(),
+        mappingDescriptorMap.put(metadataMappingDescriptor.getId(),
                 metadataMappingDescriptor);
     }
 

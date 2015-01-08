@@ -17,7 +17,7 @@
 
 package org.nuxeo.binary.metadata.api.listener;
 
-import java.util.LinkedList;
+import java.util.List;
 
 import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
 import org.nuxeo.binary.metadata.api.service.BinaryMetadataService;
@@ -44,7 +44,7 @@ public class BinaryMetadataAsyncListener implements PostCommitEventListener {
     protected final BinaryMetadataService binaryMetadataService;
 
     public BinaryMetadataAsyncListener() {
-        this.binaryMetadataService = Framework.getLocalService(BinaryMetadataService.class);
+        binaryMetadataService = Framework.getLocalService(BinaryMetadataService.class);
     }
 
     @Override
@@ -66,7 +66,8 @@ public class BinaryMetadataAsyncListener implements PostCommitEventListener {
                 continue;
             }
             if (BinaryMetadataConstants.ASYNC_BINARY_METADATA_EVENT.equals(event.getName())) {
-                LinkedList<MetadataMappingDescriptor> syncMappingDescriptors = (LinkedList<MetadataMappingDescriptor>) docCtx.getProperty(BinaryMetadataConstants.ASYNC_MAPPING_RESULT);
+                List<MetadataMappingDescriptor> syncMappingDescriptors =
+                        (List<MetadataMappingDescriptor>) docCtx.getProperty(BinaryMetadataConstants.ASYNC_MAPPING_RESULT);
                 doc.putContextData(BinaryMetadataConstants.DISABLE_BINARY_METADATA_LISTENER, Boolean.TRUE);
                 binaryMetadataService.handleUpdate(syncMappingDescriptors, doc, docCtx);
             }

@@ -20,7 +20,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -43,7 +42,6 @@ import com.google.inject.Inject;
 /**
  * @since 7.1
  */
-@Ignore("NXBT-876")
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, BinaryMetadataFeature.class })
 @LocalDeploy({ "org.nuxeo.binary.metadata.test:OSGI-INF/binary-metadata-contrib-async-test.xml" })

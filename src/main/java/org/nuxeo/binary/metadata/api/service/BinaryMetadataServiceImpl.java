@@ -64,10 +64,10 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     protected Map<String, BinaryMetadataProcessor> binaryMetadataProcessorInstances;
 
     public BinaryMetadataServiceImpl() {
-        this.mappingRegistry = new MetadataMappingRegistry();
-        this.ruleRegistry = new MetadataRuleRegistry();
-        this.processorRegistry = new MetadataProcessorRegistry();
-        this.binaryMetadataProcessorInstances = new HashMap<>();
+        mappingRegistry = new MetadataMappingRegistry();
+        ruleRegistry = new MetadataRuleRegistry();
+        processorRegistry = new MetadataProcessorRegistry();
+        binaryMetadataProcessorInstances = new HashMap<>();
     }
 
     @Override
@@ -214,7 +214,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
             Map<String, Object> blobMetadataOutput;
             if (processorId != null) {
                 blobMetadataOutput = readMetadata(processorId, blob, blobMetadata);
-                
+
             } else {
                 blobMetadataOutput = readMetadata(blob, blobMetadata);
             }
@@ -240,7 +240,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     }
 
     @Override
-    public void handleUpdate(LinkedList<MetadataMappingDescriptor> mappingDescriptors, DocumentModel doc,
+    public void handleUpdate(List<MetadataMappingDescriptor> mappingDescriptors, DocumentModel doc,
             DocumentEventContext docCtx) {
         for (MetadataMappingDescriptor mappingDescriptor : mappingDescriptors) {
             Property fileProp = doc.getProperty(mappingDescriptor.getBlobXPath());
@@ -293,7 +293,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         return actionContext;
     }
 
-    protected Class getProcessor(String processorId) throws NoSuchMethodException {
+    protected Class<?> getProcessor(String processorId) throws NoSuchMethodException {
         return binaryMetadataProcessorInstances.get(processorId).getClass();
     }
 
@@ -372,32 +372,32 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     /*--------------------- Registry Services -----------------------*/
 
     protected void addMappingContribution(MetadataMappingDescriptor contribution) {
-        this.mappingRegistry.addContribution(contribution);
+        mappingRegistry.addContribution(contribution);
     }
 
     protected void addRuleContribution(MetadataRuleDescriptor contribution) {
-        this.ruleRegistry.addContribution(contribution);
+        ruleRegistry.addContribution(contribution);
     }
 
     protected void addProcessorContribution(MetadataProcessorDescriptor contribution) {
         try {
-            this.binaryMetadataProcessorInstances.put(contribution.getId(),contribution.getProcessorClass().newInstance());
+            binaryMetadataProcessorInstances.put(contribution.getId(),contribution.getProcessorClass().newInstance());
         } catch (InstantiationException | IllegalAccessException e) {
             throw new BinaryMetadataException(e);
         }
-        this.processorRegistry.addContribution(contribution);
+        processorRegistry.addContribution(contribution);
     }
 
     protected void removeMappingContribution(MetadataMappingDescriptor contribution) {
-        this.mappingRegistry.removeContribution(contribution);
+        mappingRegistry.removeContribution(contribution);
     }
 
     protected void removeRuleContribution(MetadataRuleDescriptor contribution) {
-        this.ruleRegistry.removeContribution(contribution);
+        ruleRegistry.removeContribution(contribution);
     }
 
     protected void removeProcessorContribution(MetadataProcessorDescriptor contribution) {
-        this.processorRegistry.removeContribution(contribution);
+        processorRegistry.removeContribution(contribution);
     }
 
 }

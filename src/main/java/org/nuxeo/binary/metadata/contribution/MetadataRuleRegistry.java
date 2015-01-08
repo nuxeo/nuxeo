@@ -19,18 +19,14 @@ package org.nuxeo.binary.metadata.contribution;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
  * Registry for {@link org.nuxeo.binary.metadata.contribution.MetadataRuleDescriptor} descriptors.
- * 
+ *
  * @since 7.1
  */
 public class MetadataRuleRegistry extends ContributionFragmentRegistry<MetadataRuleDescriptor> {
-
-    private static final Log log = LogFactory.getLog(MetadataRuleRegistry.class);
 
     protected Map<String, MetadataRuleDescriptor> metadataRuleDescriptorMap = new HashMap<>();
 
@@ -50,7 +46,7 @@ public class MetadataRuleRegistry extends ContributionFragmentRegistry<MetadataR
     @Override
     public void contributionUpdated(String s, MetadataRuleDescriptor metadataRuleDescriptor,
             MetadataRuleDescriptor metadataRuleDescriptor2) {
-        this.metadataRuleDescriptorMap.put(metadataRuleDescriptor.getId(), metadataRuleDescriptor2);
+        metadataRuleDescriptorMap.put(metadataRuleDescriptor.getId(), metadataRuleDescriptor2);
     }
 
     @Override
@@ -60,7 +56,7 @@ public class MetadataRuleRegistry extends ContributionFragmentRegistry<MetadataR
 
     @Override
     public void contributionRemoved(String s, MetadataRuleDescriptor metadataRuleDescriptor) {
-        this.metadataRuleDescriptorMap.remove(metadataRuleDescriptor.getId());
+        metadataRuleDescriptorMap.remove(metadataRuleDescriptor.getId());
     }
 
     /**

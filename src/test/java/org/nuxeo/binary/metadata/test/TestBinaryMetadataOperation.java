@@ -94,6 +94,7 @@ public class TestBinaryMetadataOperation {
         DocumentModel musicFile = BinaryMetadataServerInit.getFile(0, session);
         BlobHolder musicBlobHolder = musicFile.getAdapter(BlobHolder.class);
         operationContext.setInput(musicBlobHolder.getBlob());
+        @SuppressWarnings("unchecked")
         Map<String, Object> blobProperties = (Map<String, Object>) automationService.run(operationContext,
                 ReadMetadataFromBinary.ID);
         assertNotNull(blobProperties);
