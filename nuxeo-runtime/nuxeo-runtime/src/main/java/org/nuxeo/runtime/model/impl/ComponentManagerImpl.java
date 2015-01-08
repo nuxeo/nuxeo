@@ -204,22 +204,17 @@ public class ComponentManagerImpl implements ComponentManager {
     @Override
     public ComponentInstance getComponentProvidingService(Class<?> serviceClass) {
         RegistrationInfoImpl ri = services.get(serviceClass.getName());
-        if (ri != null && ri.isActivated()) {
+        if (ri == null) {
+            return null;
+        }
+        if (ri.isResolved()) {
+            // activate it first
+            ri.activate();
+        }
+        if (ri.isActivated()) {
             return ri.getComponent();
         }
-        synchronized (this) {
-            if (ri != null && !ri.isActivated()) {
-                if (ri.isResolved()) {
-                    ri.activate();
-                    return ri.getComponent();
-                } else {
-                    // Hack to avoid messages during TypeService activation
-                    if (!serviceClass.getSimpleName().equals("TypeProvider")) {
-                        log.debug("The component exposing the service " + serviceClass + " is not resolved");
-                    }
-                }
-            }
-        }
+        log.debug("The component exposing the service " + serviceClass + " is not resolved");
         return null;
     }
 
