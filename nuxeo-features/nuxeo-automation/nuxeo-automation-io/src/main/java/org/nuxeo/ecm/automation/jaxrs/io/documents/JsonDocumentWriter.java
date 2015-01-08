@@ -254,7 +254,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
     }
 
     protected static void writeProperties(JsonGenerator jg, DocumentModel doc,
-            String schema, ServletRequest request) throws Exception {
+            String schema, ServletRequest request) throws IOException {
         DocumentPart part = doc.getPart(schema);
         if (part == null) {
             return;

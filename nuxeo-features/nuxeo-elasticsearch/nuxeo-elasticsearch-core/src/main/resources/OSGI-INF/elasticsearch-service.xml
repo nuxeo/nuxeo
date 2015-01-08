@@ -126,4 +126,17 @@
     <object class="org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig" />
   </extension-point>
 
+  <extension-point name="elasticSearchDocWriter">
+    <documentation>
+       Extension point used to setup the writer used when a document is indexed.
+       Must extend the JsonESDocumentWriter class. 
+       
+       <code>
+         <writer class="org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter" />
+       </code>
+       
+    </documentation>
+    <object class="org.nuxeo.elasticsearch.config.ElasticSearchDocWriterDescriptor" />
+  </extension-point>
+   
 </component>

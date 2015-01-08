@@ -20,8 +20,6 @@ import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.automation.core.util.Paginable;
-import org.nuxeo.ecm.automation.core.util.PaginableDocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -52,11 +50,22 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
                 && MIME_TYPE.equals(mediaType.toString());
     }
 
-    public static void writeDoc(JsonGenerator jg, DocumentModel doc,
-            String[] schemas, Map<String, String> contextParameters,
-            HttpHeaders headers) throws Exception {
-
+    public void writeDoc(JsonGenerator jg, DocumentModel doc, String[] schemas,
+            Map<String, String> contextParameters, HttpHeaders headers)
+            throws IOException {
         jg.writeStartObject();
+        writeSystemProperties(jg, doc);
+        writeSchemas(jg, doc, schemas);
+        writeContextParameters(jg, doc, contextParameters);
+        jg.writeEndObject();
+        jg.flush();
+    }
+
+    /**
+     * @since 7.2
+     */
+    protected void writeSystemProperties(JsonGenerator jg, DocumentModel doc)
+            throws IOException {
         jg.writeStringField("ecm:repository", doc.getRepositoryName());
         jg.writeStringField("ecm:uuid", doc.getId());
         jg.writeStringField("ecm:name", doc.getName());
@@ -93,8 +102,7 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
             jg.writeNumberField("ecm:pos", pos);
         }
         // Add a positive ACL only
-        SecurityService securityService = Framework
-                .getService(SecurityService.class);
+        SecurityService securityService = Framework.getService(SecurityService.class);
         List<String> browsePermissions = new ArrayList<String>(
                 Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
         ACP acp = doc.getACP();
@@ -127,20 +135,31 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
                 }
             }
         }
+    }
+
+    /**
+     * @since 7.2
+     */
+    protected void writeSchemas(JsonGenerator jg, DocumentModel doc,
+            String[] schemas) throws IOException {
         if (schemas == null || (schemas.length == 1 && "*".equals(schemas[0]))) {
             schemas = doc.getSchemas();
         }
         for (String schema : schemas) {
             writeProperties(jg, doc, schema, null);
         }
+    }
+
+    /**
+     * @since 7.2
+     */
+    protected void writeContextParameters(JsonGenerator jg, DocumentModel doc,
+            Map<String, String> contextParameters) throws IOException {
         if (contextParameters != null && !contextParameters.isEmpty()) {
-            for (Map.Entry<String, String> parameter : contextParameters
-                    .entrySet()) {
+            for (Map.Entry<String, String> parameter : contextParameters.entrySet()) {
                 jg.writeStringField(parameter.getKey(), parameter.getValue());
             }
         }
-        jg.writeEndObject();
-        jg.flush();
     }
 
     @Override
@@ -151,10 +170,9 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
                 schemas, contextParameters, headers);
     }
 
-    public static void writeESDocument(JsonGenerator jg, DocumentModel doc,
+    public void writeESDocument(JsonGenerator jg, DocumentModel doc,
             String[] schemas, Map<String, String> contextParameters)
-            throws Exception {
+            throws IOException {
         writeDoc(jg, doc, schemas, contextParameters, null);
     }
-
 }

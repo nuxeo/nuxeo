@@ -113,7 +113,7 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
         if (esType == null) {
             esType = DEFAULT_ES_TYPE;
         }
-
+        JsonESDocumentWriter jsonESDocumentWriter = new JsonESDocumentWriter();
         if (docs instanceof PaginableDocumentModelList) {
             PaginableDocumentModelList provider = (PaginableDocumentModelList) docs;
             response.setHeader(HEADER_CURRENT_PAGE_INDEX,
@@ -162,8 +162,7 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
                                     codecName, docView, false, null);
                     contextParameters.put("ecm:documentUrl", documentURL);
                 }
-                JsonESDocumentWriter.writeESDocument(jg, doc, schemas,
-                        contextParameters);
+                jsonESDocumentWriter.writeESDocument(jg, doc, schemas, contextParameters);
                 jg.writeRaw('\n');
             }
         } else {
@@ -176,7 +175,7 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
                     Integer.valueOf(docs.size()).toString());
             response.setHeader(HEADER_HAS_ERROR, "false");
             for (DocumentModel doc : docs) {
-                JsonESDocumentWriter.writeESDocument(jg, doc, schemas, null);
+                new JsonESDocumentWriter().writeESDocument(jg, doc, schemas, null);
                 jg.writeRaw('\n');
             }
         }
