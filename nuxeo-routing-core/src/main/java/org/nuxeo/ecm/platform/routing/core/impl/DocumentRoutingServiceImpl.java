@@ -1186,7 +1186,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     /**
-     * @since 7.1
+     * @since 7.2
      */
     @Override
     public List<Task> getUserRelatedWorkflowTasks(String userId, String workflowInstanceId, CoreSession session) {
@@ -1208,7 +1208,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     /**
-     * @since 7.1
+     * @since 7.2
      */
     @Override
     public List<Task> getDocumentRelatedWorkflowTasks(DocumentModel document, String workflowInstanceId,
@@ -1225,7 +1225,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     /**
-     * @since 7.1
+     * @since 7.2
      */
     @Override
     public List<DocumentRoute> getDocumentRelatedWorkflows(DocumentModel document, CoreSession session) {
@@ -1242,7 +1242,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     /**
-     * @since 7.1
+     * @since 7.2
      */
     @Override
     public List<DocumentRoute> getRunningWorkflowInstancesLaunchedByCurrentUser(CoreSession session) {

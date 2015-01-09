@@ -21,7 +21,7 @@ package org.nuxeo.ecm.restapi.server.jaxrs.routing.model;
 import java.util.Map;
 
 /**
- * @since 7.1
+ * @since 7.2
  */
 public class TaskCompletionRequest {
 

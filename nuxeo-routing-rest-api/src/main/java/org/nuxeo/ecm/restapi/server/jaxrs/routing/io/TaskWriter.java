@@ -54,7 +54,7 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since 7.1
+ * @since 7.2
  */
 @Provider
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })

@@ -44,7 +44,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 
 /**
- * @since 7.1
+ * @since 7.2
  */
 @Provider
 @Produces({ "application/json+nxentity", "application/json" })

@@ -1084,7 +1084,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     }
 
     /**
-     * @since 7.1
+     * @since 7.2
      */
     @Override
     public boolean hasTaskButton(String name) {

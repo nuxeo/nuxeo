@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @since 7.1
+ * @since 7.2
  */
 public class RoutingRequest {
 

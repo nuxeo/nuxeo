@@ -46,7 +46,7 @@ public interface DocumentRoute extends DocumentRouteStepsContainer {
     /**
      * Get the username of the initiator.
      *
-     * @since 7.1
+     * @since 7.2
      */
     String getInitiator();
 

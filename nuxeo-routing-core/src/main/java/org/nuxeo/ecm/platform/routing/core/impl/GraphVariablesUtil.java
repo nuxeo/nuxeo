@@ -50,7 +50,7 @@ public class GraphVariablesUtil {
     }
 
     /**
-     * @since 7.1
+     * @since 7.2
      */
     public static Map<String, Serializable> getVariables(DocumentModel doc, String facetProp, boolean mapToJSON) {
         try {

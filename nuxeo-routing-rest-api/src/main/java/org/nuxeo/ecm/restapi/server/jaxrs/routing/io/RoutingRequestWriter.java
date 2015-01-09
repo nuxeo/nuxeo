@@ -34,7 +34,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since 7.1
+ * @since 7.2
  */
 @Provider
 public class RoutingRequestWriter implements MessageBodyWriter<DocumentRoute> {

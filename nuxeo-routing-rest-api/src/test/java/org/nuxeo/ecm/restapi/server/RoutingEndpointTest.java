@@ -63,7 +63,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
- * @since 7.1
+ * @since 7.2
  */
 @RunWith(FeaturesRunner.class)
 @Features({ EmbeddedAutomationServerFeature.class, WorkflowFeature.class, AuditFeature.class })

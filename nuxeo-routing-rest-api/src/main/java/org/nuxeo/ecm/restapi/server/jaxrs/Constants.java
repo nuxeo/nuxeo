@@ -19,7 +19,7 @@
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
 /**
- * @since 7.1
+ * @since 7.2
  */
 public interface Constants {
 

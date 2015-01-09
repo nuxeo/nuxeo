@@ -48,7 +48,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since 7.1
+ * @since 7.2
  */
 @WebObject(type = "task")
 @Produces(MediaType.APPLICATION_JSON)

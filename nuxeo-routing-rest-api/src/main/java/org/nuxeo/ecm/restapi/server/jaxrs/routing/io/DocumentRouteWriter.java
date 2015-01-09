@@ -34,7 +34,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 
 /**
- * @since 7.1
+ * @since 7.2
  */
 @Provider
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })

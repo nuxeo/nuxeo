@@ -39,7 +39,7 @@ import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since 7.1
+ * @since 7.2
  */
 @Provider
 public class TaskCompletionRequestReader implements MessageBodyReader<TaskCompletionRequest> {

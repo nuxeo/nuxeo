@@ -779,7 +779,7 @@ public interface GraphNode {
     /**
      * Has the node the given action.
      *
-     * @since 7.1
+     * @since 7.2
      */
     boolean hasTaskButton(final String name);
 

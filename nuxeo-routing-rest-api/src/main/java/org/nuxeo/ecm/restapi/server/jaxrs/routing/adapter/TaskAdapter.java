@@ -30,7 +30,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since 7.1
+ * @since 7.2
  */
 @WebAdapter(name = TaskAdapter.NAME, type = "taskAdapter")
 public class TaskAdapter extends DefaultAdapter {
