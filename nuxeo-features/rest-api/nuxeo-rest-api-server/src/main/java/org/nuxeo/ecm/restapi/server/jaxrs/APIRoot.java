@@ -104,6 +104,9 @@ public class APIRoot extends ModuleRoot {
                 cause.getMessage(), unWrapException);
     }
 
+    /**
+     * @since 7.2
+     */
     @Path("/ext/{otherPath}")
     public Object route(@PathParam("otherPath") String otherPath) {
         return newObject(otherPath);

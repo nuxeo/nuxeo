@@ -81,6 +81,9 @@ public class RepositoryObject extends DefaultObject {
 
     }
 
+    /**
+     * @since 7.2
+     */
     @Path("{otherPath}")
     public Object route(@PathParam("otherPath") String otherPath) {
         return newObject(otherPath);
