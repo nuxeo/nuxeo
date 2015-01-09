@@ -12,7 +12,7 @@
   <description>Anonymous File Sharing</description>
 
   <properties>
-    <easyshare.studio.version>1.0.5-6</easyshare.studio.version>
+    <easyshare.studio.version>1.0.6</easyshare.studio.version>
   </properties>
 
   <dependencies>
