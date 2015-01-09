@@ -39,6 +39,8 @@ public class ReadMetadataFromBinaryToContext {
 
     public static final String ID = "Context.ReadMetadataFromBinary";
 
+    public static final String CTX_BINARY_METADATA = "binaryMetadata";
+
     @Context
     protected BinaryMetadataService binaryMetadataService;
 
@@ -53,15 +55,15 @@ public class ReadMetadataFromBinaryToContext {
 
     @OperationMethod
     public void run(Blob blob) {
-        if (metadata != null && metadata.isEmpty()) {
-            operationContext.put("binaryMetadata", binaryMetadataService
+        if (metadata == null || metadata.isEmpty()) {
+            operationContext.put(CTX_BINARY_METADATA, binaryMetadataService
                     .readMetadata(blob));
         } else {
             ArrayList<String> metadataList = new ArrayList<>();
             for (String meta : metadata) {
                 metadataList.add(meta);
             }
-            operationContext.put("binaryMetadata", binaryMetadataService
+            operationContext.put(CTX_BINARY_METADATA, binaryMetadataService
                     .readMetadata(blob, metadataList));
         }
     }

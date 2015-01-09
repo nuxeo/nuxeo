@@ -18,6 +18,7 @@ package org.nuxeo.binary.metadata.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,8 @@ import org.junit.runner.RunWith;
 import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.binary.metadata.internals.operations.ReadMetadataFromBinary;
 import org.nuxeo.binary.metadata.internals.operations
+        .ReadMetadataFromBinaryToContext;
+import org.nuxeo.binary.metadata.internals.operations
         .TriggerMetadataMappingOnDocument;
 import org.nuxeo.binary.metadata.internals.operations
         .WriteMetadataToBinaryFromContext;
@@ -35,6 +38,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.util.Properties;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -138,6 +142,31 @@ public class TestBinaryMetadataOperation {
         assertNotNull(blobProperties);
         assertEquals("Nuxeo", blobProperties.get("EXIF:Make"));
         assertEquals("Platform", blobProperties.get("EXIF:Model").toString());
+    }
+
+    @Test
+    public void itShouldPutBinaryMetadataInAutomationCtx() throws OperationException {
+        // Get mp3 file
+        DocumentModel musicFile = BinaryMetadataServerInit.getFile(0, session);
+        BlobHolder musicBlobHolder = musicFile.getAdapter(BlobHolder.class);
+        operationContext.setInput(musicBlobHolder.getBlob());
+        automationService.run(operationContext, ReadMetadataFromBinaryToContext.ID);
+        assertNotNull(operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA));
+        assertEquals("Metal",
+                ((Map) operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA)).get("ID3:Genre"));
+
+        // Run the same operation with specific properties listing
+        operationContext.setInput(musicBlobHolder.getBlob());
+        Map<String,Object> parameters = new HashMap<>();
+        StringList metadata = new StringList();
+        metadata.add("ID3:Title");
+        metadata.add("ID3:Year");
+        parameters.put("metadata", metadata);
+        automationService.run(operationContext, ReadMetadataFromBinaryToContext.ID, parameters);
+        assertNotNull(operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA));
+        assertNull(((Map) operationContext.get(ReadMetadataFromBinaryToContext
+                .CTX_BINARY_METADATA)).get("ID3:Genre"));
+        assertEquals(2,((Map) operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA)).size());
     }
 
 }
