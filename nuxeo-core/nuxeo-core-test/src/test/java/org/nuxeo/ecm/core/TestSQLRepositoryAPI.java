@@ -3804,63 +3804,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 "documentCheckedOut");
     }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testInvalidationEvents() throws Exception {
-        Event event;
-        Set<String> set;
-        deployContrib("org.nuxeo.ecm.core.test.tests",
-                "OSGI-INF/test-listeners-invalidations-contrib.xml");
-
-        DocumentModel root = session.getRootDocument();
-        session.save();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
-                "doc", "File");
-        doc = session.createDocument(doc);
-
-        waitForAsyncCompletion();
-        DummyTestListener.clearForThisThread();
-        session.save(); // should send invalidations
-        waitForAsyncCompletion(); // for fulltext
-        assertEquals(1, DummyTestListener.EVENTS_RECEIVED.size());
-        event = DummyTestListener.EVENTS_RECEIVED.get(0);
-        // NXP-5808 cannot distinguish cluster invalidations
-        // local = (Boolean) event.getContext().getProperty(
-        // EventConstants.INVAL_LOCAL);
-        // assertEquals(Boolean.TRUE, local);
-        set = (Set<String>) event.getContext().getProperty(
-                EventConstants.INVAL_MODIFIED_DOC_IDS);
-        assertEquals(1, set.size()); // doc created seen as modified
-        assertEquals(doc.getId(), set.iterator().next());
-        set = (Set<String>) event.getContext().getProperty(
-                EventConstants.INVAL_MODIFIED_PARENT_IDS);
-        // root has a new child, which has a complex prop also
-        assertEquals(2, set.size());
-        assertTrue(set.contains(root.getId()));
-
-        // change just one property
-        doc.setProperty("dublincore", "title", "t1");
-        doc = session.saveDocument(doc);
-
-        waitForAsyncCompletion();
-        DummyTestListener.clearForThisThread();
-        session.save(); // should send invalidations
-        waitForAsyncCompletion(); // for fulltext
-        assertEquals(1, DummyTestListener.EVENTS_RECEIVED.size());
-        event = DummyTestListener.EVENTS_RECEIVED.get(0);
-        // NXP-5808 cannot distinguish cluster invalidations
-        // local = (Boolean) event.getContext().getProperty(
-        // EventConstants.INVAL_LOCAL);
-        // assertEquals(Boolean.TRUE, local);
-        set = (Set<String>) event.getContext().getProperty(
-                EventConstants.INVAL_MODIFIED_DOC_IDS);
-        assertEquals(1, set.size());
-        assertEquals(doc.getId(), set.iterator().next());
-        set = (Set<String>) event.getContext().getProperty(
-                EventConstants.INVAL_MODIFIED_PARENT_IDS);
-        assertEquals(0, set.size());
-    }
-
     @Test
     public void testPlacelessDocument() throws Exception {
         DocumentModel doc = new DocumentModelImpl((String) null, "mydoc",
