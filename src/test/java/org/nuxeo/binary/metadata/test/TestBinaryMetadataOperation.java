@@ -34,6 +34,8 @@ import org.nuxeo.binary.metadata.internals.operations
         .TriggerMetadataMappingOnDocument;
 import org.nuxeo.binary.metadata.internals.operations
         .WriteMetadataToBinaryFromContext;
+import org.nuxeo.binary.metadata.internals.operations
+        .WriteMetadataToBinaryFromDocument;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -123,6 +125,9 @@ public class TestBinaryMetadataOperation {
 
     @Test
     public void itShouldWriteMetadataOnBinary() throws OperationException {
+
+        /* FROM BLOB INPUT */
+
         // Get PSD Document
         DocumentModel jpgFile = BinaryMetadataServerInit.getFile(4, session);
         BlobHolder jpgBlobHolder = jpgFile.getAdapter(BlobHolder.class);
@@ -142,6 +147,21 @@ public class TestBinaryMetadataOperation {
         assertNotNull(blobProperties);
         assertEquals("Nuxeo", blobProperties.get("EXIF:Make"));
         assertEquals("Platform", blobProperties.get("EXIF:Model").toString());
+
+        /* FROM DOCUMENT INPUT */
+
+        jpgMetadata.put("EXIF:Model", "Google");
+        jpgMetadata.put("EXIF:Make", "Nexus");
+        jpgParameters.put("metadata", jpgMetadata);
+        operationContext.setInput(jpgFile);
+        operationContext.setCoreSession(session);
+        automationService.run(operationContext, WriteMetadataToBinaryFromDocument.ID, jpgParameters);
+
+        // Check the content
+        blobProperties = binaryMetadataService.readMetadata(jpgBlobHolder.getBlob());
+        assertNotNull(blobProperties);
+        assertEquals("Nexus", blobProperties.get("EXIF:Make"));
+        assertEquals("Google", blobProperties.get("EXIF:Model").toString());
     }
 
     @Test
@@ -168,5 +188,4 @@ public class TestBinaryMetadataOperation {
                 .CTX_BINARY_METADATA)).get("ID3:Genre"));
         assertEquals(2,((Map) operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA)).size());
     }
-
 }

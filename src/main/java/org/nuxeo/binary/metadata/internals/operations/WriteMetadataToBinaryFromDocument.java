@@ -62,7 +62,7 @@ public class WriteMetadataToBinaryFromDocument {
            blob = doc.getProperty(blobXPath).getValue(Blob.class);
        }else{
            BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
-            blob = blobHolder.getBlob();
+           blob = blobHolder.getBlob();
        }
         if(blob!= null) {
             binaryMetadataService.writeMetadata(processor, blob, metadataMap);
