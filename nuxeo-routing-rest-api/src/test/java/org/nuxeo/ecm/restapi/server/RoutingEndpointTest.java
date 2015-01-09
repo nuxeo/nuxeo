@@ -89,6 +89,21 @@ public class RoutingEndpointTest extends BaseTest {
         assertEquals("Administrator", actor);
     }
 
+    protected ByteArrayOutputStream getBodyForStartReviewTaskCompletion() throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        TaskCompletionRequest taskCompletionRequest = new TaskCompletionRequest();
+        final Map<String, String> variables = new HashMap<String, String>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.YEAR, 1);
+        variables.put("end_date", DateParser.formatW3CDateTime(calendar.getTime()));
+        variables.put("participants", "[\"user:Administrator\"]");
+        taskCompletionRequest.setNodeVariables(variables);
+        taskCompletionRequest.setWorkflowVariables(variables);
+        taskCompletionRequest.setComment("a comment");
+        objectCodecService.write(out, taskCompletionRequest);
+        return out;
+    }
+
     protected String getCreateAndStartWorkflowBodyContent(String workflowName, List<String> docIds) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         RoutingRequest routingRequest = new RoutingRequest();
@@ -98,6 +113,19 @@ public class RoutingEndpointTest extends BaseTest {
         }
         objectCodecService.write(out, routingRequest);
         return out.toString();
+    }
+
+    protected String getCurrentTask(final String createdWorflowInstanceId) throws IOException, JsonProcessingException {
+        ClientResponse response;
+        JsonNode node;
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.put("workflowInstanceId", Arrays.asList(new String[] { createdWorflowInstanceId }));
+        response = getResponse(RequestType.GET, "/task", null, queryParams, null, null);
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(1, node.get("entries").size());
+        Iterator<JsonNode> elements = node.get("entries").getElements();
+        String taskId = elements.next().get("id").getTextValue();
+        return taskId;
     }
 
     @Test
@@ -136,82 +164,11 @@ public class RoutingEndpointTest extends BaseTest {
         assertEquals(1, node.get("entries").size());
         taskNode = node.get("entries").getElements().next();
         assertEquals(taskUid, taskNode.get("id").getTextValue());
-    }
 
-    /**
-     * Start and terminate ParallelDocumentReview workflow by completing all its tasks.
-     */
-    @Test
-    public void testTerminateParallelDocumentReviewWorkflow() throws JsonProcessingException, IOException {
-
-        // Start SerialDocumentReview on Note 0
-        DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(RequestType.POST, "/workflow",
-                getCreateAndStartWorkflowBodyContent("ParallelDocumentReview", Arrays.asList(new String[] {note.getId()})));
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        final String createdWorflowInstanceId = node.get("uid").getTextValue();
-
-        // Complete first task
-        String taskId = getCurrentTask(createdWorflowInstanceId);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        TaskCompletionRequest taskCompletionRequest = new TaskCompletionRequest();
-        final Map<String, String> variables = new HashMap<String, String>();
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.YEAR, 1);
-        variables.put("end_date", DateParser.formatW3CDateTime(calendar.getTime()));
-        variables.put("participants", "[\"user:Administrator\"]");
-        taskCompletionRequest.setNodeVariables(variables);
-        taskCompletionRequest.setWorkflowVariables(variables);
-        taskCompletionRequest.setComment("a comment");
-        objectCodecService.write(out, taskCompletionRequest);
-        response = getResponse(RequestType.PUT, "/task/" + taskId + "/start_review", out.toString());
-        // Missing required variables
+        // Complete task via task adapter
+        response = getResponse(RequestType.PUT, "/id/" + note.getId() + "/@" + TaskAdapter.NAME + "/" + taskUid
+                + "/start_review", getBodyForStartReviewTaskCompletion().toString());
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-
-        // Complete second task
-        taskId = getCurrentTask(createdWorflowInstanceId);
-        out = new ByteArrayOutputStream();
-        taskCompletionRequest = new TaskCompletionRequest();
-        objectCodecService.write(out, taskCompletionRequest);
-        response = getResponse(RequestType.PUT, "/task/" + taskId + "/approve", out.toString());
-        // Missing required variables
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-
-        // Complete third task
-        taskId = getCurrentTask(createdWorflowInstanceId);
-        out = new ByteArrayOutputStream();
-        taskCompletionRequest = new TaskCompletionRequest();
-        objectCodecService.write(out, taskCompletionRequest);
-        response = getResponse(RequestType.PUT, "/task/" + taskId + "/validate", out.toString());
-        // Missing required variables
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-
-        // Worfklow must be terminated now
-        // Check there are no running workflow
-        response = getResponse(RequestType.GET, "/workflow");
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(0, node.get("entries").size());
-
-        // Check we have no opened tasks
-        response = getResponse(RequestType.GET, "/task");
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(0, node.get("entries").size());
-
-    }
-
-    protected String getCurrentTask(final String createdWorflowInstanceId) throws IOException, JsonProcessingException {
-        ClientResponse response;
-        JsonNode node;
-        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.put("workflowInstanceId", Arrays.asList(new String[] { createdWorflowInstanceId }));
-        response = getResponse(RequestType.GET, "/task", null, queryParams, null, null);
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(1, node.get("entries").size());
-        Iterator<JsonNode> elements = node.get("entries").getElements();
-        String taskId = elements.next().get("id").getTextValue();
-        return taskId;
     }
 
     @Test
@@ -303,5 +260,62 @@ public class RoutingEndpointTest extends BaseTest {
         objectCodecService.write(out, routingRequest);
         ClientResponse response = getResponse(RequestType.POST, "/workflow", out.toString());
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+    }
+
+    /**
+     * Start and terminate ParallelDocumentReview workflow by completing all its tasks.
+     */
+    @Test
+    public void testTerminateParallelDocumentReviewWorkflow() throws JsonProcessingException, IOException {
+
+        // Start SerialDocumentReview on Note 0
+        DocumentModel note = RestServerInit.getNote(0, session);
+        ClientResponse response = getResponse(
+                RequestType.POST,
+                "/workflow",
+                getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
+                        Arrays.asList(new String[] { note.getId() })));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        final String createdWorflowInstanceId = node.get("uid").getTextValue();
+
+        // Complete first task
+        String taskId = getCurrentTask(createdWorflowInstanceId);
+        TaskCompletionRequest taskCompletionRequest;
+        ByteArrayOutputStream out = getBodyForStartReviewTaskCompletion();
+        response = getResponse(RequestType.PUT, "/task/" + taskId + "/start_review", out.toString());
+        // Missing required variables
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // Complete second task
+        taskId = getCurrentTask(createdWorflowInstanceId);
+        out = new ByteArrayOutputStream();
+        taskCompletionRequest = new TaskCompletionRequest();
+        objectCodecService.write(out, taskCompletionRequest);
+        response = getResponse(RequestType.PUT, "/task/" + taskId + "/approve", out.toString());
+        // Missing required variables
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // Complete third task
+        taskId = getCurrentTask(createdWorflowInstanceId);
+        out = new ByteArrayOutputStream();
+        taskCompletionRequest = new TaskCompletionRequest();
+        objectCodecService.write(out, taskCompletionRequest);
+        response = getResponse(RequestType.PUT, "/task/" + taskId + "/validate", out.toString());
+        // Missing required variables
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // Worfklow must be terminated now
+        // Check there are no running workflow
+        response = getResponse(RequestType.GET, "/workflow");
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(0, node.get("entries").size());
+
+        // Check we have no opened tasks
+        response = getResponse(RequestType.GET, "/task");
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(0, node.get("entries").size());
+
     }
 }

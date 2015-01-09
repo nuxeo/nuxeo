@@ -18,7 +18,13 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs.routing.model;
 
+import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 
 /**
  * @since 7.2
@@ -59,4 +65,18 @@ public class TaskCompletionRequest {
         this.workflowVariables = workflowVariables;
     }
 
+    public  Map<String, Object> getDataMap() {
+        Map<String, Object> data = new HashMap<String, Object>();
+        if (getWorkflowVariables() != null) {
+            data.put(Constants.VAR_WORKFLOW, getWorkflowVariables());
+        }
+        if (getNodeVariables() != null) {
+            data.put(Constants.VAR_WORKFLOW_NODE, getNodeVariables());
+        }
+        data.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, Boolean.TRUE);
+        if (StringUtils.isNotBlank(getComment())) {
+            data.put(GraphNode.NODE_VARIABLE_COMMENT, getComment());
+        }
+        return data;
+    }
 }

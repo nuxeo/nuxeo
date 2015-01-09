@@ -18,7 +18,6 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs.routing;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,13 +32,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
-import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskConstants;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.TaskCompletionRequest;
@@ -63,20 +58,10 @@ public class TaskObject extends DefaultObject {
     @Consumes({ "application/json+nxentity" })
     @Produces(MediaType.APPLICATION_JSON)
     public Response completeTask(@PathParam("taskId") String taskId, @PathParam("action") String action, TaskCompletionRequest taskCompletionRequest) {
-        Map<String, Object> data = new HashMap<String, Object>();
-        if (taskCompletionRequest.getWorkflowVariables() != null) {
-            data.put(Constants.VAR_WORKFLOW, taskCompletionRequest.getWorkflowVariables());
-        }
-        if (taskCompletionRequest.getNodeVariables() != null) {
-            data.put(Constants.VAR_WORKFLOW_NODE, taskCompletionRequest.getNodeVariables());
-        }
-        data.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, Boolean.TRUE);
-        if (StringUtils.isNotBlank(taskCompletionRequest.getComment())) {
-            data.put(GraphNode.NODE_VARIABLE_COMMENT, taskCompletionRequest.getComment());
-        }
+        Map<String, Object> data = taskCompletionRequest.getDataMap();
         CoreSession session = getContext().getCoreSession();
         Framework.getLocalService(DocumentRoutingService.class).endTask(session, session.getDocument(new IdRef(taskId)).getAdapter(Task.class), data, action);
-        return Response.ok(null).status(Status.OK).build();
+        return Response.ok("completed").status(Status.OK).build();
     }
 
     @GET
