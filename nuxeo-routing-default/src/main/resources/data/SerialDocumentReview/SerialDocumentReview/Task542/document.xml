@@ -63,6 +63,24 @@
         <chain><![CDATA[]]></chain>
         <condition><![CDATA[NodeVariables["button"] =="cancel"]]></condition>
         <name><![CDATA[sdr_cancelationTask542]]></name>
+        <path>
+          <pathpoint>
+            <y><![CDATA[0.0]]></y>
+            <x><![CDATA[200.0]]></x>
+          </pathpoint>
+          <pathpoint>
+            <y><![CDATA[200.0]]></y>
+            <x><![CDATA[200.0]]></x>
+          </pathpoint>
+          <pathpoint>
+            <y><![CDATA[200.0]]></y>
+            <x><![CDATA[0.0]]></x>
+          </pathpoint>
+          <pathpoint>
+            <y><![CDATA[280.0]]></y>
+            <x><![CDATA[0.0]]></x>
+          </pathpoint>
+        </path>
         <targetId><![CDATA[Task5c1]]></targetId>
         <label><![CDATA[sdr_cancelation]]></label>
       </transition>
@@ -70,6 +88,32 @@
         <chain><![CDATA[]]></chain>
         <condition><![CDATA[NodeVariables["button"] =="submit"]]></condition>
         <name><![CDATA[sdr_submissionTask542]]></name>
+        <path>
+          <pathpoint>
+            <y><![CDATA[80.0]]></y>
+            <x><![CDATA[360.0]]></x>
+          </pathpoint>
+          <pathpoint>
+            <y><![CDATA[117.0]]></y>
+            <x><![CDATA[360.0]]></x>
+          </pathpoint>
+          <pathpoint>
+            <y><![CDATA[117.0]]></y>
+            <x><![CDATA[122.0]]></x>
+          </pathpoint>
+          <pathpoint>
+            <y><![CDATA[-18.0]]></y>
+            <x><![CDATA[122.0]]></x>
+          </pathpoint>
+          <pathpoint>
+            <y><![CDATA[-18.0]]></y>
+            <x><![CDATA[0.0]]></x>
+          </pathpoint>
+          <pathpoint>
+            <y><![CDATA[0.0]]></y>
+            <x><![CDATA[0.0]]></x>
+          </pathpoint>
+        </path>
         <targetId><![CDATA[Task6d8]]></targetId>
         <label><![CDATA[sdr_submission]]></label>
       </transition>
@@ -81,9 +125,9 @@
     <rnode:subRouteVariables/>
     <rnode:taskAssignees/>
     <rnode:taskAssigneesExpr><![CDATA[workflowInitiator]]></rnode:taskAssigneesExpr>
-    <rnode:taskY><![CDATA[253]]></rnode:taskY>
+    <rnode:taskY><![CDATA[280]]></rnode:taskY>
     <rnode:count/>
-    <rnode:taskX><![CDATA[50]]></rnode:taskX>
+    <rnode:taskX><![CDATA[620]]></rnode:taskX>
     <rnode:taskAssigneesPermission/>
     <rnode:subRouteInstanceId/>
     <rnode:taskDueDateExpr><![CDATA[CurrentDate.days(5)]]></rnode:taskDueDateExpr>

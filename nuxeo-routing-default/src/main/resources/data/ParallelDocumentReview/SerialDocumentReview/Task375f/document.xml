@@ -62,9 +62,9 @@
     <rnode:subRouteVariables/>
     <rnode:taskAssignees/>
     <rnode:taskAssigneesExpr/>
-    <rnode:taskY><![CDATA[49]]></rnode:taskY>
+    <rnode:taskY><![CDATA[0]]></rnode:taskY>
     <rnode:count/>
-    <rnode:taskX><![CDATA[415]]></rnode:taskX>
+    <rnode:taskX><![CDATA[440]]></rnode:taskX>
     <rnode:taskAssigneesPermission/>
     <rnode:subRouteInstanceId/>
     <rnode:taskDueDateExpr/>

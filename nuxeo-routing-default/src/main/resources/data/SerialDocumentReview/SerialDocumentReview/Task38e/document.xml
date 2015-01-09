@@ -72,6 +72,24 @@
         <chain><![CDATA[]]></chain>
         <condition><![CDATA[NodeVariables["button"] =="start_review"]]></condition>
         <name><![CDATA[sdr_start_reviewTask38e]]></name>
+        <path>
+          <pathpoint>
+            <y><![CDATA[0.0]]></y>
+            <x><![CDATA[160.0]]></x>
+          </pathpoint>
+          <pathpoint>
+            <y><![CDATA[20.0]]></y>
+            <x><![CDATA[160.0]]></x>
+          </pathpoint>
+          <pathpoint>
+            <y><![CDATA[20.0]]></y>
+            <x><![CDATA[0.0]]></x>
+          </pathpoint>
+          <pathpoint>
+            <y><![CDATA[100.0]]></y>
+            <x><![CDATA[0.0]]></x>
+          </pathpoint>
+        </path>
         <targetId><![CDATA[Task6d8]]></targetId>
         <label><![CDATA[sdr_start_review]]></label>
       </transition>
@@ -83,9 +101,9 @@
     <rnode:subRouteVariables/>
     <rnode:taskAssignees/>
     <rnode:taskAssigneesExpr><![CDATA[workflowInitiator]]></rnode:taskAssigneesExpr>
-    <rnode:taskY><![CDATA[136]]></rnode:taskY>
+    <rnode:taskY><![CDATA[100]]></rnode:taskY>
     <rnode:count/>
-    <rnode:taskX><![CDATA[518]]></rnode:taskX>
+    <rnode:taskX><![CDATA[420]]></rnode:taskX>
     <rnode:taskAssigneesPermission/>
     <rnode:subRouteInstanceId/>
     <rnode:taskDueDateExpr><![CDATA[CurrentDate.days(5)]]></rnode:taskDueDateExpr>
