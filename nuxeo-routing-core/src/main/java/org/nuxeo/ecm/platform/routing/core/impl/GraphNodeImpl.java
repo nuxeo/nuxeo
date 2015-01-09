@@ -299,6 +299,11 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     }
 
     @Override
+    public Map<String, Serializable> getJsonVariables() {
+        return GraphVariablesUtil.getVariables(document, PROP_VARIABLES_FACET, true);
+    }
+
+    @Override
     public void setVariables(Map<String, Serializable> map) {
         if (map.containsKey(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON)
                 && (Boolean) map.get(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON)) {
@@ -335,8 +340,8 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         }
 
         // get variables from node and graph
-        Map<String, Serializable> graphVariables = graph.getVariables();
-        Map<String, Serializable> nodeVariables = getVariables();
+        Map<String, Serializable> graphVariables = mapToJSON ? graph.getJsonVariables() : graph.getVariables();
+        Map<String, Serializable> nodeVariables = mapToJSON ? getJsonVariables() : getVariables();
 
         // set variables back into node and graph
         boolean changedNodeVariables = false;

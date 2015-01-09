@@ -224,6 +224,11 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
     }
 
     @Override
+    public Map<String, Serializable> getJsonVariables() {
+        return GraphVariablesUtil.getVariables(document, PROP_VARIABLES_FACET, true);
+    }
+
+    @Override
     public void setVariables(Map<String, Serializable> map) {
         if (map.containsKey(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON)
                 && (Boolean) map.get(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON)) {
@@ -292,4 +297,5 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
             throw new ClientRuntimeException(e);
         }
     }
+
 }

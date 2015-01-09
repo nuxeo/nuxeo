@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -48,7 +49,10 @@ public class GraphVariablesUtil {
         return Framework.getLocalService(SchemaManager.class);
     }
 
-    public static Map<String, Serializable> getVariables(DocumentModel doc, String facetProp) {
+    /**
+     * @since 7.1
+     */
+    public static Map<String, Serializable> getVariables(DocumentModel doc, String facetProp, boolean mapToJSON) {
         try {
             String facet = (String) doc.getPropertyValue(facetProp);
             Map<String, Serializable> map = new LinkedHashMap<String, Serializable>();
@@ -64,14 +68,26 @@ public class GraphVariablesUtil {
                 String name = f.getName().getLocalName();
                 Serializable value = hasFacet ? doc.getPropertyValue(name) : null;
                 if (value instanceof Calendar) {
-                    value = ((Calendar) value).getTime();
+                    if (mapToJSON) {
+                        value = ((Calendar) value).getTime();
+                    } else {
+                        value = DateParser.formatW3CDateTime(((Calendar) value).getTime());
+                    }
                 }
-                map.put(name, value);
+                if (mapToJSON) {
+                    map.put(name, value != null ? value.toString() : null);
+                } else {
+                    map.put(name, value);
+                }
             }
             return map;
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
+    }
+
+    public static Map<String, Serializable> getVariables(DocumentModel doc, String facetProp) {
+        return getVariables(doc, facetProp, false);
     }
 
     public static void setVariables(DocumentModel doc, String facetProp, Map<String, Serializable> map) {

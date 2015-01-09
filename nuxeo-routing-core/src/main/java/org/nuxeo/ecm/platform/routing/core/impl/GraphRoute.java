@@ -72,6 +72,14 @@ public interface GraphRoute extends DocumentRoute {
     Map<String, Serializable> getVariables();
 
     /**
+     * Gets the Json formatted graph variables.
+     *
+     * @return the map of variables
+     * @since 7.2
+     */
+    Map<String, Serializable> getJsonVariables();
+
+    /**
      * Sets the graph variables.
      *
      * @param map the map of variables

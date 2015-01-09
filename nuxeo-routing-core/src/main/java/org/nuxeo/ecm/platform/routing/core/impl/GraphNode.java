@@ -798,6 +798,14 @@ public interface GraphNode {
     Map<String, Serializable> getVariables();
 
     /**
+     * Gets a map containing the Json formatted variables currently defined on this node
+     *
+     * @return
+     * @since 7.2
+     */
+    Map<String, Serializable> getJsonVariables();
+
+    /**
      * Sets the property button on the node, keeping the id of the last action executed by the user on the associated
      * task if any
      *
