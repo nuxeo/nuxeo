@@ -16,7 +16,7 @@
  *
  */
 
-package org.nuxeo.ecm.restapi.server.jaxrs;
+package org.nuxeo.ecm.restapi.server.jaxrs.routing;
 
 import java.util.HashMap;
 import java.util.List;
