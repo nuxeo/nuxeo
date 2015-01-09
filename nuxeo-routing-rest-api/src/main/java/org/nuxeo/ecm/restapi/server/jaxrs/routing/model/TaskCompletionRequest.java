@@ -25,9 +25,11 @@ import java.util.Map;
  */
 public class TaskCompletionRequest {
 
-    protected String comment;
+    public TaskCompletionRequest() {
+        super();
+    }
 
-    protected String action;
+    protected String comment;
 
     protected Map<String, String> nodeVariables;
 
@@ -41,10 +43,6 @@ public class TaskCompletionRequest {
         return nodeVariables;
     }
 
-    public String getAction() {
-        return action;
-    }
-
     public Map<String, String> getWorkflowVariables() {
         return workflowVariables;
     }
@@ -55,10 +53,6 @@ public class TaskCompletionRequest {
 
     public void setNodeVariables(Map<String, String> nodeVariables) {
         this.nodeVariables = nodeVariables;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
     }
 
     public void setWorkflowVariables(Map<String, String> workflowVariables) {

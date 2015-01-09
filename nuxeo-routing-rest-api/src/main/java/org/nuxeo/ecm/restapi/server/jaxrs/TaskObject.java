@@ -33,12 +33,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskConstants;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.TaskCompletionRequest;
@@ -57,16 +58,11 @@ public class TaskObject extends DefaultObject {
             "SELECT * FROM Document WHERE ecm:mixinType = '%s' AND ecm:currentLifeCycleState = '%s'",
             TaskConstants.TASK_FACET_NAME, TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE);
 
-    private static Log log = LogFactory.getLog(TaskObject.class);
-
     @PUT
     @Path("{taskId}/{action}")
     @Consumes({ "application/json+nxentity" })
     @Produces(MediaType.APPLICATION_JSON)
     public Response completeTask(@PathParam("taskId") String taskId, @PathParam("action") String action, TaskCompletionRequest taskCompletionRequest) {
-        String routeId = getContext().getCoreSession().getDocument(new IdRef(taskId)).getAdapter(Task.class).getProcessId();
-        // the service expects an unique map containing both worflow and
-        // nodeVariables
         Map<String, Object> data = new HashMap<String, Object>();
         if (taskCompletionRequest.getWorkflowVariables() != null) {
             data.put(Constants.VAR_WORKFLOW, taskCompletionRequest.getWorkflowVariables());
@@ -75,7 +71,11 @@ public class TaskObject extends DefaultObject {
             data.put(Constants.VAR_WORKFLOW_NODE, taskCompletionRequest.getNodeVariables());
         }
         data.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, Boolean.TRUE);
-        Framework.getLocalService(DocumentRoutingService.class).completeTask(routeId, taskId, data, action, getContext().getCoreSession());
+        if (StringUtils.isNotBlank(taskCompletionRequest.getComment())) {
+            data.put(GraphNode.NODE_VARIABLE_COMMENT, taskCompletionRequest.getComment());
+        }
+        CoreSession session = getContext().getCoreSession();
+        Framework.getLocalService(DocumentRoutingService.class).endTask(session, session.getDocument(new IdRef(taskId)).getAdapter(Task.class), data, action);
         return Response.ok(null).status(Status.OK).build();
     }
 

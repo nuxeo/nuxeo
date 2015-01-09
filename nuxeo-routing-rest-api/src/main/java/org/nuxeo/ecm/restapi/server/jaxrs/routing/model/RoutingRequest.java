@@ -34,6 +34,10 @@ public class RoutingRequest {
 
     public String routeModelId;
 
+    public RoutingRequest() {
+        super();
+    }
+
     public List<String> getDocumentIds() {
         return documentIds;
     }
