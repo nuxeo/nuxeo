@@ -358,6 +358,9 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     protected boolean facetFactoryMatches(FileSystemItemFactoryWrapper factory, DocumentModel doc,
             boolean relaxSyncRootConstraint) throws ClientException {
         if (!StringUtils.isEmpty(factory.getFacet())) {
+            if (log.isTraceEnabled()) {
+                log.trace(String.format("Facets of doc %s: %s", doc, doc.getFacets()));
+            }
             for (String docFacet : doc.getFacets()) {
                 if (factory.getFacet().equals(docFacet)) {
                     // Handle synchronization root case
@@ -385,7 +388,13 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     protected boolean syncRootFactoryMatches(DocumentModel doc, boolean relaxSyncRootConstraint) throws ClientException {
         String userName = doc.getCoreSession().getPrincipal().getName();
         List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) doc.getPropertyValue(NuxeoDriveManagerImpl.DRIVE_SUBSCRIPTIONS_PROPERTY);
+        if (log.isTraceEnabled()) {
+            log.trace(String.format("Subscriptions for doc %s: %s", doc, subscriptions));
+        }
         for (Map<String, Object> subscription : subscriptions) {
+            if (log.isTraceEnabled()) {
+                log.trace(String.format("Subscription: %s", subscription));
+            }
             if (Boolean.TRUE.equals(subscription.get("enabled"))
                     && (userName.equals(subscription.get("username")) || relaxSyncRootConstraint)) {
                 if (log.isTraceEnabled()) {
