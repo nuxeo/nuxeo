@@ -175,7 +175,7 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
                     Integer.valueOf(docs.size()).toString());
             response.setHeader(HEADER_HAS_ERROR, "false");
             for (DocumentModel doc : docs) {
-                new JsonESDocumentWriter().writeESDocument(jg, doc, schemas, null);
+                jsonESDocumentWriter.writeESDocument(jg, doc, schemas, null);
                 jg.writeRaw('\n');
             }
         }
