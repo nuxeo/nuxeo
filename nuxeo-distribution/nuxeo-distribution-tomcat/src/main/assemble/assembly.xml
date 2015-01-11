@@ -269,7 +269,7 @@ install nuxeo-dam</echo>
     <nx:rmdups dir="${distribution.dir}/nxserver/lib" />
     <nx:rmdups dir="${distribution.dir}/lib" />
 
-    <!-- Move JAX libraries more recent than those from JDK6 into endorsed -->
+    <!-- Move JAX libraries more recent than those from JDK into endorsed -->
     <move todir="${distribution.dir}/endorsed">
       <fileset dir="${distribution.dir}/nxserver/lib">
         <include name="jaxb-api-*" />
