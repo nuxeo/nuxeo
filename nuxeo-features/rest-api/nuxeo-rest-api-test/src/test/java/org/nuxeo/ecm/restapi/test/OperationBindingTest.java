@@ -62,6 +62,8 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class OperationBindingTest extends BaseTest {
 
+    private static final Integer TIMEOUT = Integer.valueOf(1000 * 60 * 5); // 5min
+
     private static String PARAMS = "{\"params\":{\"one\":\"1\",\"two\": 2}}";
 
     @Inject
@@ -164,6 +166,8 @@ public class OperationBindingTest extends BaseTest {
     public void automationResourceIsAlsoAvailableBehindAPIRoot() throws Exception {
         ClientConfig config = new DefaultClientConfig();
         Client client = Client.create(config);
+        client.setConnectTimeout(TIMEOUT);
+        client.setReadTimeout(TIMEOUT);
         client.addFilter(new HTTPBasicAuthFilter("Administrator", "Administrator"));
         WebResource wr = client.resource("http://localhost:18090/api/v1/automation/doc");
 

@@ -55,6 +55,8 @@ import com.sun.jersey.multipart.impl.MultiPartWriter;
  */
 public class BaseTest {
 
+    private static final Integer TIMEOUT = Integer.valueOf(1000 * 60 * 5); // 5min
+
     protected static enum RequestType {
         GET, POST, DELETE, PUT, POSTREQUEST, GETES
     }
@@ -81,6 +83,8 @@ public class BaseTest {
         ClientConfig config = new DefaultClientConfig();
         config.getClasses().add(MultiPartWriter.class);
         Client client = Client.create(config);
+        client.setConnectTimeout(TIMEOUT);
+        client.setReadTimeout(TIMEOUT);
         client.addFilter(new HTTPBasicAuthFilter(user, password));
 
         return client.resource("http://localhost:18090/api/v1/");

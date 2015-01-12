@@ -22,12 +22,11 @@ import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -45,6 +44,8 @@ public class TestOauth2Challenge {
 
     protected static final String BASE_URL = "http://localhost:18090";
 
+    private static final Integer TIMEOUT = Integer.valueOf(1000 * 60 * 5); // 5min
+
     @Inject
     protected ClientRegistry clientRegistry;
 
@@ -58,10 +59,11 @@ public class TestOauth2Challenge {
             assertTrue(clientRegistry.registerClient(oauthClient));
         }
 
-        ClientConfig config = new DefaultClientConfig();
-        config.getProperties().put(ClientConfig.PROPERTY_FOLLOW_REDIRECTS, false);
         // First client to request like a "Client" as OAuth RFC describe it
-        client = Client.create(config);
+        client = Client.create();
+        client.setConnectTimeout(TIMEOUT);
+        client.setReadTimeout(TIMEOUT);
+        client.setFollowRedirects(Boolean.FALSE);
 
         TestAuthorizationRequest.getRequests().clear();
     }
