@@ -33,6 +33,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.task.Task;
@@ -69,6 +70,12 @@ public class TaskObject extends DefaultObject {
             @QueryParam("workflowInstanceId") String workflowInstanceId) {
         return Framework.getLocalService(DocumentRoutingService.class).getUserRelatedWorkflowTasks(userId,
                 workflowInstanceId, getContext().getCoreSession());
+    }
+
+    @GET
+    public Task getTaskById(@QueryParam("taskId") String taskId) {
+        DocumentModel docModel = getContext().getCoreSession().getDocument(new IdRef(taskId));
+        return docModel.getAdapter(Task.class);
     }
 
 }
