@@ -27,10 +27,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
@@ -40,7 +38,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.RoutingRequest;
@@ -72,8 +69,9 @@ public class RoutingObject extends DefaultObject {
     public Response createWorkflowInstance(RoutingRequest routingRequest) {
         final String workflowInstanceId = documentRoutingService.createNewInstance(routingRequest.getRouteModelId(),
                 routingRequest.getDocumentIds(), ctx.getCoreSession(), true);
-        DocumentModel result = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));
-        return Response.ok(result).status(Status.CREATED).build();
+        DocumentModel workflowInstance = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));
+        DocumentRoute route = workflowInstance.getAdapter(DocumentRoute.class);
+        return Response.ok(route).status(Status.CREATED).build();
     }
 
     @GET
@@ -87,21 +85,6 @@ public class RoutingObject extends DefaultObject {
             log.error("Can not get workflow instance with id" + workflowInstanceId);
             throw new ClientException(e);
         }
-    }
-
-    @GET
-    @Path("models")
-    public Response getWorkflowModels(@Context UriInfo uriInfo) {
-        String query = String.format("SELECT * FROM %s", DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE).replaceAll(
-                " ", "%20");
-        return redirect("/api/v1/query?query=" + query);
-    }
-
-    @GET
-    @Path("models/{modelId}")
-    public DocumentModel getWorkflowModel(@PathParam("modelId") String modelId) {
-        DocumentRoute result = documentRoutingService.getRouteModelWithId(getContext().getCoreSession(), modelId);
-        return result.getDocument();
     }
 
     @DELETE

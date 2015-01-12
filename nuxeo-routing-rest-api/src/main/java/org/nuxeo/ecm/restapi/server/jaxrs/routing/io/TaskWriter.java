@@ -60,7 +60,7 @@ import org.nuxeo.runtime.api.Framework;
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
 public class TaskWriter extends EntityWriter<Task> {
 
-    public static final String ENTITY_TYPE = "documentRoute";
+    public static final String ENTITY_TYPE = "task";
 
     @Context
     HttpServletRequest request;

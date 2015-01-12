@@ -179,7 +179,7 @@ public class RoutingEndpointTest extends BaseTest {
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        final String createdWorflowInstanceId = node.get("uid").getTextValue();
+        final String createdWorflowInstanceId = node.get("id").getTextValue();
 
         // Check GET /workflow/{workflowInstanceId}
         response = getResponse(RequestType.GET, "/workflow/" + createdWorflowInstanceId);
@@ -231,7 +231,7 @@ public class RoutingEndpointTest extends BaseTest {
     @Test
     public void testGetAllWorkflowEndpoint() throws Exception {
 
-        ClientResponse response = getResponse(RequestType.GET, "/workflow/models");
+        ClientResponse response = getResponse(RequestType.GET, "/workflowModel");
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
@@ -278,7 +278,7 @@ public class RoutingEndpointTest extends BaseTest {
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        final String createdWorflowInstanceId = node.get("uid").getTextValue();
+        final String createdWorflowInstanceId = node.get("id").getTextValue();
 
         // Complete first task
         String taskId = getCurrentTask(createdWorflowInstanceId);
