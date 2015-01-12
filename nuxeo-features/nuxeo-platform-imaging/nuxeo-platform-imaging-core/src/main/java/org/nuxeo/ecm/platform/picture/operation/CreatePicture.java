@@ -9,7 +9,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.platform.picture.convert.operation;
+package org.nuxeo.ecm.platform.picture.operation;
 
 import java.io.IOException;
 import java.util.ArrayList;

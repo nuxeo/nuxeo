@@ -9,7 +9,7 @@
  * Contributors:
  *     Nuxeo
  */
-package org.nuxeo.ecm.platform.picture.convert.operation;
+package org.nuxeo.ecm.platform.picture.operation;
 
 import java.io.Serializable;
 import java.util.HashMap;

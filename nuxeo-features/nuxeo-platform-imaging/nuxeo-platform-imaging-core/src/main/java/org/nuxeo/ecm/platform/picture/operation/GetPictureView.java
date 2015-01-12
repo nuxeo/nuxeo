@@ -9,7 +9,7 @@
  * Contributors:
  *     Nuxeo
  */
-package org.nuxeo.ecm.platform.picture.convert.operation;
+package org.nuxeo.ecm.platform.picture.operation;
 
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
