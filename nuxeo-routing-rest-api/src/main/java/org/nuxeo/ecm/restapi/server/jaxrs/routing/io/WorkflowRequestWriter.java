@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.2
  */
 @Provider
-public class RoutingRequestWriter implements MessageBodyWriter<DocumentRoute> {
+public class WorkflowRequestWriter implements MessageBodyWriter<DocumentRoute> {
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {

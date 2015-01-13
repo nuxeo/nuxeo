@@ -38,9 +38,9 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
  */
 @Provider
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
-public class DocumentRouteWriter extends EntityWriter<DocumentRoute> {
+public class WorkflowWriter extends EntityWriter<DocumentRoute> {
 
-    public static final String ENTITY_TYPE = "documentRoute";
+    public static final String ENTITY_TYPE = "workflow";
 
     @Override
     protected void writeEntityBody(JsonGenerator jg, DocumentRoute item) throws IOException, ClientException {

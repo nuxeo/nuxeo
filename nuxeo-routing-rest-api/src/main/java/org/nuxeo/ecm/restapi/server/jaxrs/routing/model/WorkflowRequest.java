@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * @since 7.2
  */
-public class RoutingRequest {
+public class WorkflowRequest {
 
     protected List<String> documentIds = new ArrayList<String>();
 
@@ -34,7 +34,7 @@ public class RoutingRequest {
 
     public String routeModelId;
 
-    public RoutingRequest() {
+    public WorkflowRequest() {
         super();
     }
 

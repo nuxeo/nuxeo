@@ -40,7 +40,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
-import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.RoutingRequest;
+import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.WorkflowRequest;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
@@ -52,9 +52,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 @WebObject(type = "workflow")
 @Produces(MediaType.APPLICATION_JSON)
-public class RoutingObject extends DefaultObject {
+public class WorkflowObject extends DefaultObject {
 
-    private static Log log = LogFactory.getLog(RoutingObject.class);
+    private static Log log = LogFactory.getLog(WorkflowObject.class);
 
     private DocumentRoutingService documentRoutingService;
 
@@ -66,7 +66,7 @@ public class RoutingObject extends DefaultObject {
     @POST
     @Consumes({ "application/json+nxentity" })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createWorkflowInstance(RoutingRequest routingRequest) {
+    public Response createWorkflowInstance(WorkflowRequest routingRequest) {
         final String workflowInstanceId = documentRoutingService.createNewInstance(routingRequest.getRouteModelId(),
                 routingRequest.getDocumentIds(), ctx.getCoreSession(), true);
         DocumentModel workflowInstance = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));

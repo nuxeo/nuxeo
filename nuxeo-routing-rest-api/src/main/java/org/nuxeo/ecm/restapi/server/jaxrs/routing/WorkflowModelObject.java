@@ -40,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 @WebObject(type = "workflowModel")
 @Produces(MediaType.APPLICATION_JSON)
-public class RoutingModelObject extends DefaultObject {
+public class WorkflowModelObject extends DefaultObject {
 
     @GET
     public Response getWorkflowModels(@Context UriInfo uriInfo) {

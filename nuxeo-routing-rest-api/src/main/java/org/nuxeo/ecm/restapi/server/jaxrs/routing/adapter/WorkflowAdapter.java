@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.task.Task;
-import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.RoutingRequest;
+import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.WorkflowRequest;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
@@ -47,7 +47,7 @@ public class WorkflowAdapter extends DefaultAdapter {
     public static final String NAME = "workflow";
 
     @POST
-    public Response doPost(RoutingRequest routingRequest) {
+    public Response doPost(WorkflowRequest routingRequest) {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         final String workflowInstanceId = Framework.getLocalService(DocumentRoutingService.class).createNewInstance(
                 routingRequest.getRouteModelId(), Arrays.asList(new String[] { doc.getId() }), ctx.getCoreSession(),

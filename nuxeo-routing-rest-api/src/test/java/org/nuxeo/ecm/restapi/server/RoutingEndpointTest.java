@@ -49,7 +49,7 @@ import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.routing.test.WorkflowFeature;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.TaskAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.WorkflowAdapter;
-import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.RoutingRequest;
+import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.WorkflowRequest;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.TaskCompletionRequest;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
@@ -106,7 +106,7 @@ public class RoutingEndpointTest extends BaseTest {
 
     protected String getCreateAndStartWorkflowBodyContent(String workflowName, List<String> docIds) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        RoutingRequest routingRequest = new RoutingRequest();
+        WorkflowRequest routingRequest = new WorkflowRequest();
         routingRequest.setRouteModelId(workflowName);
         if (docIds != null) {
             routingRequest.setDocumentIds(docIds);
@@ -134,7 +134,7 @@ public class RoutingEndpointTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
         // Check POST /api/id/{documentId}/@workflow/
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        RoutingRequest routingRequest = new RoutingRequest();
+        WorkflowRequest routingRequest = new WorkflowRequest();
         routingRequest.setRouteModelId("SerialDocumentReview");
         objectCodecService.write(out, routingRequest);
         ClientResponse response = getResponse(RequestType.POST, "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME,
@@ -255,7 +255,7 @@ public class RoutingEndpointTest extends BaseTest {
     @Test
     public void testInvalidNodeAction() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        RoutingRequest routingRequest = new RoutingRequest();
+        WorkflowRequest routingRequest = new WorkflowRequest();
         routingRequest.setRouteModelId("SerialDocumentReview");
         objectCodecService.write(out, routingRequest);
         ClientResponse response = getResponse(RequestType.POST, "/workflow", out.toString());
