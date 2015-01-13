@@ -136,7 +136,7 @@
 },
 
 "taskAction" : {
-      "id": "action",
+      "id": "taskAction",
       "uniqueItems": false,
       "properties": {
         "url": {

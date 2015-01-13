@@ -55,10 +55,10 @@ public class TaskObject extends DefaultObject {
             TaskConstants.TASK_FACET_NAME, TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE);
 
     @PUT
-    @Path("{taskId}/{action}")
+    @Path("{taskId}/{taskAction}")
     @Consumes({ "application/json+nxentity" })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response completeTask(@PathParam("taskId") String taskId, @PathParam("action") String action, TaskCompletionRequest taskCompletionRequest) {
+    public Response completeTask(@PathParam("taskId") String taskId, @PathParam("taskAction") String action, TaskCompletionRequest taskCompletionRequest) {
         Map<String, Object> data = taskCompletionRequest.getDataMap();
         CoreSession session = getContext().getCoreSession();
         Framework.getLocalService(DocumentRoutingService.class).endTask(session, session.getDocument(new IdRef(taskId)).getAdapter(Task.class), data, action);

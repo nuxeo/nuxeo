@@ -126,7 +126,7 @@ public class TaskWriter extends EntityWriter<Task> {
             GraphNode node = route.getNode(item.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY));
 
             final ActionManager actionManager = Framework.getService(ActionManager.class);
-            jg.writeArrayFieldStart("actions");
+            jg.writeArrayFieldStart("taskActions");
             for (Button button : node.getTaskButtons()) {
                 if (StringUtils.isBlank(button.getFilter()) || actionManager.checkFilter(button.getFilter(), createActionContext(session))) {
                     jg.writeStartObject();
