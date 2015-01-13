@@ -130,7 +130,7 @@ public class TaskWriter extends EntityWriter<Task> {
             for (Button button : node.getTaskButtons()) {
                 if (StringUtils.isBlank(button.getFilter()) || actionManager.checkFilter(button.getFilter(), createActionContext(session))) {
                     jg.writeStartObject();
-                    jg.writeStringField("url", button.getName());
+                    jg.writeStringField("url", "/api/v1/task" + item.getDocument().getId() + "/" + button.getName());
                     jg.writeStringField("label", button.getLabel());
                     jg.writeEndObject();
                 }

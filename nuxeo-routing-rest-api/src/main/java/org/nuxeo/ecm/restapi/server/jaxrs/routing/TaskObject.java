@@ -73,6 +73,7 @@ public class TaskObject extends DefaultObject {
     }
 
     @GET
+    @Path("{taskId}")
     public Task getTaskById(@QueryParam("taskId") String taskId) {
         DocumentModel docModel = getContext().getCoreSession().getDocument(new IdRef(taskId));
         return docModel.getAdapter(Task.class);
