@@ -41,6 +41,4 @@ public interface UserAdapter {
     List<String> getGroups() throws ClientException;
 
     String getSchemaName() throws ClientException;
-
-    UserConfig getConfig();
 }

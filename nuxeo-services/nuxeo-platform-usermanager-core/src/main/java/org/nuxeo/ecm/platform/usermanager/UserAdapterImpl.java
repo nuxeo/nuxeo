@@ -59,24 +59,6 @@ public class UserAdapterImpl implements UserAdapter {
         }
     }
 
-    public UserAdapterImpl(DocumentModel doc, UserConfig userConfig) {
-        this.doc = doc;
-        if (userConfig != null) {
-            this.userConfig = userConfig;
-        } else {
-            this.userConfig = UserConfig.DEFAULT;
-        }
-        try {
-            dataModel = doc.getDataModel(userConfig.schemaName);
-        } catch (ClientException e) {
-            log.error(
-                    "Unable to get data model for schema " + userConfig.schemaName + ". Building an empty data model",
-                    e);
-            // empty data model to avoid error
-            dataModel = new DataModelImpl(userConfig.schemaName);
-        }
-    }
-
     @Override
     public String getName() throws ClientException {
         return (String) dataModel.getValue(userConfig.nameKey);
@@ -111,10 +93,5 @@ public class UserAdapterImpl implements UserAdapter {
     @Override
     public String getSchemaName() throws ClientException {
         return userConfig.schemaName;
-    }
-
-    @Override
-    public UserConfig getConfig() {
-        return userConfig.clone();
     }
 }
