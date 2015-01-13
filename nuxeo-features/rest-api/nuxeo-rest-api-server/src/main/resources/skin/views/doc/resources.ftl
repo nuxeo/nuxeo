@@ -53,6 +53,14 @@
         {
             "path": "/boAdapter.{format}",
             "description": "Business object adapter on a document"
+        },
+        {
+            "path": "/workflow.{format}",
+            "description": "Workflow"
+        },
+        {
+            "path": "/task.{format}",
+            "description": "Task"
         }
     ],
     "authorizations": {
