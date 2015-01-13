@@ -384,6 +384,7 @@ public class CmisSuiteSession {
     }
 
     @Test
+    @RandomBug.Repeat(issue = "NXP-16198")
     public void testContentStream() throws Exception {
         Document file = (Document) session.getObjectByPath("/testfolder1/testfile1");
 
