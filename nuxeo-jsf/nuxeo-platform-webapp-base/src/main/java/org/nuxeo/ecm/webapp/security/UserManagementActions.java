@@ -32,7 +32,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
-import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.validator.ValidatorException;
 
 import org.apache.commons.lang.StringUtils;
@@ -53,10 +52,8 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserAdapter;
 import org.nuxeo.ecm.platform.usermanager.UserAdapterImpl;
-import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.ecm.user.invite.UserInvitationService;
-import org.nuxeo.ecm.user.invite.UserRegistrationConfiguration;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -147,13 +144,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
 
     public DocumentModel getNewUser() throws ClientException {
         if (newUser == null) {
-
-            if (immediateCreation) {
-                newUser = userManager.getBareUserModel();
-            } else {
-                UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
-                newUser = userRegistrationService.getUserRegistrationModel(null);
-            }
+            newUser = userManager.getBareUserModel();
         }
         return newUser;
     }
@@ -391,10 +382,15 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         try {
             Map<String, Serializable> additionnalInfo = new HashMap<String, Serializable>();
             UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
-            userRegistrationService.submitRegistrationRequest(newUser, additionnalInfo, EMAIL, true);
+
+            // Create a new doc with the right schema
+            UserAdapter newUserAdapter = new UserAdapterImpl(newUser, userManager);
+            DocumentModel userRegistrationDoc = wrapToUserRegistration(newUserAdapter);
+            userRegistrationService.submitRegistrationRequest(userRegistrationDoc, additionnalInfo, EMAIL, true);
             newUser = null;
+
             // Set the default value for the creation
-            immediateCreation = false;
+            // immediateCreation = false;
             facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get("info.userManager.userInvited"));
             // Set the flags used for the display
@@ -409,6 +405,27 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
             facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get("error.userManager.userAlreadyExists"));
         }
+    }
+
+    private DocumentModel wrapToUserRegistration(UserAdapter newUserAdapter) {
+        UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
+        DocumentModel newUserRegistration = userRegistrationService.getUserRegistrationModel(null);
+
+        // Map the values from the object filled in the form
+        newUserRegistration.setPropertyValue(userRegistrationService.getConfiguration().getUserInfoUsernameField(),
+                newUserAdapter.getName());
+        newUserRegistration.setPropertyValue(userRegistrationService.getConfiguration().getUserInfoFirstnameField(),
+                newUserAdapter.getFirstName());
+        newUserRegistration.setPropertyValue(userRegistrationService.getConfiguration().getUserInfoLastnameField(),
+                newUserAdapter.getLastName());
+        newUserRegistration.setPropertyValue(userRegistrationService.getConfiguration().getUserInfoEmailField(),
+                newUserAdapter.getEmail());
+        newUserRegistration.setPropertyValue(userRegistrationService.getConfiguration().getUserInfoGroupsField(),
+                newUserAdapter.getGroups().toArray());
+        newUserRegistration.setPropertyValue(userRegistrationService.getConfiguration().getUserInfoCompanyField(),
+                newUserAdapter.getCompany());
+
+        return newUserRegistration;
     }
 
     @Factory(value = "notReadOnly", scope = APPLICATION)
@@ -514,18 +531,6 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         this.immediateCreation = immediateCreation;
     }
 
-    private UserConfig wrapUserRegistrationConfig(UserRegistrationConfiguration userInfoConfig) {
-        UserConfig userRegConfig = new UserConfig();
-        userRegConfig.nameKey = userInfoConfig.getUserInfoUsernameField();
-        userRegConfig.companyKey = userInfoConfig.getUserInfoCompanyField();
-        userRegConfig.emailKey = userInfoConfig.getUserInfoEmailField();
-        userRegConfig.firstNameKey = userInfoConfig.getUserInfoFirstnameField();
-        userRegConfig.lastNameKey = userInfoConfig.getUserInfoLastnameField();
-        userRegConfig.passwordKey = userInfoConfig.getUserInfoPasswordField();
-        userRegConfig.schemaName = userInfoConfig.getUserInfoSchemaName();
-
-        return userRegConfig;
-    }
 
     /**
      * Changes the type of newUser depending of the value defined in the checkbox "Set for immediate creation". Sets
@@ -534,39 +539,39 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
      * @param event
      * @since 5.9.3
      */
-    public void changeTypeUserModel(AjaxBehaviorEvent event) throws ClientException {
-        Object newValue = true;
-        if (newValue instanceof Boolean) {
-            DocumentModel previousNewUser = newUser;
-            UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
-            UserAdapter previousUserAdapter = null;
-            UserConfig previousUserConfig = null;
-            UserConfig newUserConfig = null;
-
-            if ((Boolean) newValue) {
-                previousUserConfig = wrapUserRegistrationConfig(userRegistrationService.getConfiguration());
-                previousUserAdapter = new UserAdapterImpl(previousNewUser, previousUserConfig);
-
-                newUser = userManager.getBareUserModel();
-                newUserConfig = new UserAdapterImpl(newUser, userManager).getConfig();
-            } else {
-                previousUserAdapter = new UserAdapterImpl(previousNewUser, userManager);
-                previousUserConfig = previousUserAdapter.getConfig();
-
-                newUser = userRegistrationService.getUserRegistrationModel(null);
-                newUserConfig = wrapUserRegistrationConfig(userRegistrationService.getConfiguration());
-            }
-
-            if (previousNewUser != null) {
-                // Get the values previously filled
-                newUser.setPropertyValue(newUserConfig.nameKey, previousUserAdapter.getName());
-                newUser.setPropertyValue(newUserConfig.firstNameKey, previousUserAdapter.getFirstName());
-                newUser.setPropertyValue(newUserConfig.lastNameKey, previousUserAdapter.getLastName());
-                newUser.setPropertyValue(newUserConfig.emailKey, previousUserAdapter.getEmail());
-                newUser.setPropertyValue(newUserConfig.groupsKey, previousUserAdapter.getGroups().toArray());
-                newUser.setPropertyValue(newUserConfig.companyKey, previousUserAdapter.getCompany());
-
-            }
-        }
-    }
+    // public void changeTypeUserModel(AjaxBehaviorEvent event) throws ClientException {
+    // Object newValue = true;
+    // if (newValue instanceof Boolean) {
+    // DocumentModel previousNewUser = newUser;
+    // UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
+    // UserAdapter previousUserAdapter = null;
+    // UserConfig previousUserConfig = null;
+    // UserConfig newUserConfig = null;
+    //
+    // if ((Boolean) newValue) {
+    // previousUserConfig = wrapUserRegistrationConfig(userRegistrationService.getConfiguration());
+    // previousUserAdapter = new UserAdapterImpl(previousNewUser, previousUserConfig);
+    //
+    // newUser = userManager.getBareUserModel();
+    // newUserConfig = new UserAdapterImpl(newUser, userManager).getConfig();
+    // } else {
+    // previousUserAdapter = new UserAdapterImpl(previousNewUser, userManager);
+    // previousUserConfig = previousUserAdapter.getConfig();
+    //
+    // newUser = userRegistrationService.getUserRegistrationModel(null);
+    // newUserConfig = wrapUserRegistrationConfig(userRegistrationService.getConfiguration());
+    // }
+    //
+    // if (previousNewUser != null) {
+    // // Get the values previously filled
+    // newUser.setPropertyValue(newUserConfig.nameKey, previousUserAdapter.getName());
+    // newUser.setPropertyValue(newUserConfig.firstNameKey, previousUserAdapter.getFirstName());
+    // newUser.setPropertyValue(newUserConfig.lastNameKey, previousUserAdapter.getLastName());
+    // newUser.setPropertyValue(newUserConfig.emailKey, previousUserAdapter.getEmail());
+    // newUser.setPropertyValue(newUserConfig.groupsKey, previousUserAdapter.getGroups().toArray());
+    // newUser.setPropertyValue(newUserConfig.companyKey, previousUserAdapter.getCompany());
+    //
+    // }
+    // }
+    // }
 }
