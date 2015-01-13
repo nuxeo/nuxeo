@@ -19,17 +19,8 @@
         jQuery('#createUserView\\:createUser').focusFirst();
       });
     </script>
-    <h:selectBooleanCheckbox id="immediate_creation"
-      title="#{messages['label.immediateCreation']}"
-      value="#{userManagementActions.immediateCreation}">
-      <f:ajax event="click"
-        render="createUser"
-        listener="#{userManagementActions.changeTypeUserModel}"
-        execute="@form" />
-    </h:selectBooleanCheckbox>
-    <h:outputLabel for="immediate_creation" value="#{messages['label.immediateCreation']}" />
 
-    <nxl:layout name="#{userManagementActions.immediateCreation ? 'user' : 'user_registration'}"
+    <nxl:layout name="user"
       mode="create" value="#{userManagementActions.newUser}" />
 
     <table class="dataInput">
