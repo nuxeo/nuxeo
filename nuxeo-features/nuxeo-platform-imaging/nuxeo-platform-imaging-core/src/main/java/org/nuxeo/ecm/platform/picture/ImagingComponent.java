@@ -484,8 +484,8 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
     }
 
     @Override
-    public List<PictureView> computeViewsFor(DocumentModel doc, Blob blob, ImageInfo imageInfo, boolean convert) throws ClientException,
-            IOException {
+    public List<PictureView> computeViewsFor(DocumentModel doc, Blob blob, ImageInfo imageInfo, boolean convert)
+            throws ClientException, IOException {
         List<PictureConversion> pictureConversions = getPictureConversions();
         List<PictureView> pictureViews = new ArrayList<>(pictureConversions.size());
 

@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.pictures.tiles.api.adapter;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -33,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default implementation for the PictureTilesAdapter. This implementation simply uses a xPath to get the target blob.
- * 
+ *
  * @author tiry
  */
 public class PictureTilesAdapterImpl implements PictureTilesAdapter {

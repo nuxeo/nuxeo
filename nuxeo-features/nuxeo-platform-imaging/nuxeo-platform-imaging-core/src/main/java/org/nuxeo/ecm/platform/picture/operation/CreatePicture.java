@@ -37,9 +37,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
-import org.nuxeo.ecm.platform.picture.listener.PictureChangedListener;
-
-import static org.nuxeo.ecm.platform.picture.listener.PictureChangedListener.DISABLE_PICTURE_CHANGED_LISTENER;
 
 /**
  * Create a Picture document into the input document
