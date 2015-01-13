@@ -129,7 +129,7 @@
     <nuxeo.webengine.version>6.0-HF04-SNAPSHOT</nuxeo.webengine.version>
     <nuxeo.features.version>6.0-HF04-SNAPSHOT</nuxeo.features.version>
 
-    <nuxeo.connect.client.version>1.4.18-SNAPSHOT</nuxeo.connect.client.version>
+    <nuxeo.connect.client.version>1.4.18</nuxeo.connect.client.version>
     <!-- nuxeo-distribution-tools is still used as a dependency -->
     <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
@@ -4814,7 +4814,7 @@
                 <excludes>
                   <!-- <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude> -->
                   <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
-                  <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
+                  <!-- <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> -->
                   <!-- <exclude>org.jboss.seam:*</exclude> -->
                 </excludes>
               </requireReleaseDeps>
@@ -5794,3 +5794,4 @@
   </distributionManagement>
 
 </project>
+
