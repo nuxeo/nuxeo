@@ -86,11 +86,9 @@ public class MultiTenantHelper {
     public static String getCurrentTenantId(Principal principal)
             throws ClientException {
         if (principal instanceof SystemPrincipal) {
-            UserManager userManager = Framework.getLocalService(UserManager.class);
             String originatingUser = ((SystemPrincipal) principal).getOriginatingUser();
             if (originatingUser != null) {
-                NuxeoPrincipal nuxeoPrincipal = userManager.getPrincipal(originatingUser);
-                return nuxeoPrincipal.getTenantId();
+                return getTenantId(originatingUser);
             } else {
                 return null;
             }
@@ -106,8 +104,7 @@ public class MultiTenantHelper {
      */
     public static String getTenantId(String username) throws ClientException {
         UserManager userManager = Framework.getLocalService(UserManager.class);
-        NuxeoPrincipal nuxeoPrincipal = userManager.getPrincipal(username);
-        return nuxeoPrincipal != null ? nuxeoPrincipal.getTenantId() : null;
+        return (String) userManager.getUserModel(username).getPropertyValue("user:tenantId");
     }
 
     /**
