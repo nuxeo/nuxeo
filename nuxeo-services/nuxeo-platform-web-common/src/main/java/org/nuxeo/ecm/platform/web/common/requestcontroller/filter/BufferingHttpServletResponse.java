@@ -59,4 +59,12 @@ public class BufferingHttpServletResponse extends HttpServletResponseWrapper {
         bufferingOutputStream.stopBuffering();
     }
 
+    /**
+     * Don't flush if we are still buffering.
+     */
+    @Override
+    public void flushBuffer() throws IOException {
+        bufferingOutputStream.flush();
+    }
+
 }
