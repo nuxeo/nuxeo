@@ -25,11 +25,6 @@ import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTUR
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_TYPE_NAME;
 
 import java.io.File;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,17 +62,6 @@ public class TestPictureBlobHolder {
         return file;
     }
 
-    private static List<Map<String, Serializable>> createViews() {
-        List<Map<String, Serializable>> views = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
-        map.put("title", "Original");
-        map.put("content", new FileBlob(getFileFromPath("images/exif_sample.jpg"), "image/jpeg", null, "mysample.jpg",
-                null));
-        map.put("filename", "mysample.jpg");
-        views.add(map);
-        return views;
-    }
-
     @Test
     public void testBasics() {
         DocumentModel pictureDoc = new DocumentModelImpl(PICTURE_TYPE_NAME);
@@ -102,10 +86,12 @@ public class TestPictureBlobHolder {
         DocumentModel picturebook = new DocumentModelImpl("/", "picturebook", PICTUREBOOK_TYPE_NAME);
         session.createDocument(picturebook);
         DocumentModel picture = new DocumentModelImpl(picturebook.getPathAsString(), "pic1", PICTURE_TYPE_NAME);
-        picture.setPropertyValue("picture:views", (Serializable) createViews());
+        picture.setPropertyValue("file:content", new FileBlob(getFileFromPath("images/exif_sample.jpg"), "image/jpeg",
+                null, "mysample.jpg", null));
         picture = session.createDocument(picture);
         DocumentModel picture2 = new DocumentModelImpl(picturebook.getPathAsString(), "pic2", PICTURE_TYPE_NAME);
-        picture2.setPropertyValue("picture:views", (Serializable) createViews());
+        picture2.setPropertyValue("file:content", new FileBlob(getFileFromPath("images/exif_sample.jpg"), "image/jpeg",
+                null, "mysample.jpg", null));
         session.createDocument(picture2);
         session.save();
 

@@ -76,13 +76,11 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
         if (blobProperty != null) {
             try {
                 return getPictureTilesAdapter(doc, blobProperty);
-            } catch (PropertyException e) {
-                return getPictureTilesAdapterForPicture(doc);
-            } catch (IndexOutOfBoundsException e) {
+            } catch (PropertyException | IndexOutOfBoundsException e) {
                 return getPictureTilesAdapterForPicture(doc);
             }
         }
-        return null;
+        return getPictureTilesAdapterForPicture(doc);
     }
 
     private PictureTilesAdapter getPictureTilesAdapterForPicture(DocumentModel doc) throws ClientException {

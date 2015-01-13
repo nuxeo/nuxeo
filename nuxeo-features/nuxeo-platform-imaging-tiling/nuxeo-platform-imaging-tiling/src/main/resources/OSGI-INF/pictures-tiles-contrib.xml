@@ -66,11 +66,4 @@
     <imageToConvert extension="ppm" mimeType="image/x-portable-pixmap" />
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent"
-    point="blobProperties">
-    <blobProperties>
-      <blobProperty docType="Picture">picture:views/item[4]/content</blobProperty>
-    </blobProperties>
-  </extension>
-
 </component>

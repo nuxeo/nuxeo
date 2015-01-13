@@ -113,17 +113,17 @@ public class TestImagingAdapter {
             assertEquals("Thumbnail_" + computedFilename, pictureView.getBlob().getFilename());
 
             /*
-             * Test original
+             * Test Small
              */
 
-            pictureView = adaptedChild.getView("Original");
+            pictureView = adaptedChild.getView("Small");
             assertNotNull(pictureView);
-            assertEquals("Original_" + filename, pictureView.getFilename());
-            assertEquals("Original_" + filename, pictureView.getBlob().getFilename());
+            assertEquals("Small_" + computedFilename, pictureView.getFilename());
+            assertEquals("Small_" + computedFilename, pictureView.getBlob().getFilename());
 
-            pictureView = multiview.getView("Original");
-            assertEquals("Original_" + filename, pictureView.getFilename());
-            assertEquals("Original_" + filename, pictureView.getBlob().getFilename());
+            pictureView = multiview.getView("Small");
+            assertEquals("Small_" + computedFilename, pictureView.getFilename());
+            assertEquals("Small_" + computedFilename, pictureView.getBlob().getFilename());
             assertNotNull(pictureView);
         }
     }

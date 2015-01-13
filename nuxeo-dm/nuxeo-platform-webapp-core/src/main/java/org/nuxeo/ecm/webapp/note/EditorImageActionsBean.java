@@ -79,7 +79,7 @@ public class EditorImageActionsBean extends InputController implements EditorIma
         SIZES = new ArrayList<Map<String, String>>();
         Map<String, String> m = new HashMap<String, String>();
         m.put("label", "label.imageUpload.originalSize");
-        m.put("value", "Original");
+        m.put("value", "OriginalJpeg");
         SIZES.add(m);
         m = new HashMap<String, String>();
         m.put("label", "label.imageUpload.mediumSize");
@@ -125,7 +125,7 @@ public class EditorImageActionsBean extends InputController implements EditorIma
 
     private String searchKeywords;
 
-    private String selectedSize = "Original";
+    private String selectedSize = "OriginalJpeg";
 
     @Override
     public String getSelectedTab() {

@@ -17,14 +17,9 @@
 
 package org.nuxeo.ecm.platform.picture.core.test;
 
-import java.io.File;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import static org.junit.Assert.assertEquals;
 
-import junit.framework.Assert;
+import java.io.File;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,22 +59,11 @@ public class TestPictureThumbnail {
         return FileUtils.getResourceFileFromContext(path);
     }
 
-    private List<Map<String, Serializable>> createViews() {
-        List<Map<String, Serializable>> views = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
-        map.put("title", "Original");
-        map.put("content", new FileBlob(getFileFromPath("images/cat.gif"), "image/gif", null, "cat.gif", null));
-        map.put("filename", "cat.gif");
-        views.add(map);
-        return views;
-    }
-
     @Test
     public void testPictureThumbnail() throws Exception {
         // Init test
         DocumentModel root = session.getRootDocument();
         DocumentModel picture = new DocumentModelImpl(root.getPathAsString(), "pic", "Picture");
-        picture.setPropertyValue("picture:views", (Serializable) createViews());
         picture = session.createDocument(picture);
         session.save();
         // Create 4 views
@@ -94,6 +78,6 @@ public class TestPictureThumbnail {
         Blob pictureUsualThumbnail = thumbnailView.getBlob();
         // Thumbnail service should return the default picture thumbnail
         ThumbnailAdapter pictureThumbnail = picture.getAdapter(ThumbnailAdapter.class);
-        Assert.assertEquals(pictureUsualThumbnail.getFilename(), pictureThumbnail.getThumbnail(session).getFilename());
+        assertEquals(pictureUsualThumbnail.getFilename(), pictureThumbnail.getThumbnail(session).getFilename());
     }
 }

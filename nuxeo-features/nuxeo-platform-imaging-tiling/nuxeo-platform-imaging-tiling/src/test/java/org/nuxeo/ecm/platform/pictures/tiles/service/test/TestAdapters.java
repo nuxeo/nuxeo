@@ -156,16 +156,6 @@ public class TestAdapters extends SQLRepositoryTestCase {
         map.put("content", image);
         viewsList.add(map);
         map = new HashMap<String, Object>();
-        map.put("title", "Original");
-        map.put("description", "Original Size");
-        map.put("filename", "test.jpg");
-        map.put("tag", "original");
-        map.put("width", 3872);
-        map.put("height", 2592);
-        image.setFilename("Original" + "_" + "test.jpg");
-        map.put("content", image);
-        viewsList.add(map);
-        map = new HashMap<String, Object>();
         map.put("title", "Thumbnail");
         map.put("description", "Thumbnail Size");
         map.put("filename", "test.jpg");

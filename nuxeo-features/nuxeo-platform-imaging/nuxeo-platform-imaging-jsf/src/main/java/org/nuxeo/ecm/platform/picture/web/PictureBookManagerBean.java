@@ -125,12 +125,6 @@ public class PictureBookManagerBean extends InputController implements PictureBo
         map.put("description", "MediumSize Picture");
         views.add(map);
         map = new HashMap<String, Object>();
-        map.put("title", "Original");
-        map.put("maxsize", null);
-        map.put("tag", "original");
-        map.put("description", "Original Picture");
-        views.add(map);
-        map = new HashMap<String, Object>();
         map.put("title", "Thumbnail");
         map.put("maxsize", AbstractPictureAdapter.THUMB_SIZE);
         map.put("tag", "thumbnail");

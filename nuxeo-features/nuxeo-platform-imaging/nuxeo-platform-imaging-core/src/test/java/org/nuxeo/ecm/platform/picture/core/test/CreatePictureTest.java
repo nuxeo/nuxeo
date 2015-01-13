@@ -74,7 +74,6 @@ public class CreatePictureTest {
 
         Properties templates = new Properties();
 
-        templates.put("Original", "{\"title\" : \"Original\"}");
         for (int i = 1; i < 5; i++) {
             StringBuffer sb = new StringBuffer("{");
             sb.append("\"description\": \"Desc " + i + "\",");
@@ -94,9 +93,9 @@ public class CreatePictureTest {
         MultiviewPicture mvp = picture.getAdapter(MultiviewPicture.class);
         assertNotNull(mvp);
 
-        assertEquals(5, mvp.getViews().length);
+        assertEquals(4, mvp.getViews().length);
 
-        for (int i = 1; i < 5; i++) {
+        for (int i = 1; i < 4; i++) {
             String title = "Title" + i;
 
             PictureView pv = mvp.getView(title);

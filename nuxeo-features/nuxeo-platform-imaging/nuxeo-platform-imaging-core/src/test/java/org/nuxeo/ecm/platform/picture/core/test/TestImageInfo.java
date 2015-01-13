@@ -19,12 +19,6 @@ package org.nuxeo.ecm.platform.picture.core.test;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,22 +68,13 @@ public class TestImageInfo {
         assertNotNull(root);
     }
 
-    private List<Map<String, Serializable>> createViews() {
-        List<Map<String, Serializable>> views = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
-        map.put("title", "Original");
-        map.put("content",
-                StreamingBlob.createFromURL(this.getClass().getClassLoader().getResource("images/exif_sample.jpg")));
-        views.add(map);
-        return views;
-    }
-
     @Test
     public void testGetImageInfo() throws ClientException {
         DocumentModel picturebook = new DocumentModelImpl(root.getPathAsString(), "picturebook", "PictureBook");
         session.createDocument(picturebook);
         DocumentModel picture = new DocumentModelImpl(picturebook.getPathAsString(), "pic1", "Picture");
-        picture.setPropertyValue("picture:views", (Serializable) createViews());
+        picture.setPropertyValue("file:content",
+                StreamingBlob.createFromURL(this.getClass().getClassLoader().getResource("images/exif_sample.jpg")));
         session.createDocument(picture);
         session.save();
 

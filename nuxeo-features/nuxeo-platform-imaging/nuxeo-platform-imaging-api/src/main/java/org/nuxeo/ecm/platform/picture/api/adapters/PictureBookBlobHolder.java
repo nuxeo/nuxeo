@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 
 public class PictureBookBlobHolder extends DocumentBlobHolder {
@@ -55,8 +56,8 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
             if (documentModel == null) {
                 return null;
             }
-            PictureResourceAdapter picture = documentModel.getAdapter(PictureResourceAdapter.class);
-            return picture.getPictureFromTitle("Original");
+            BlobHolder bh = documentModel.getAdapter(BlobHolder.class);
+            return bh.getBlob();
         } finally {
             if (sessionOpened) {
                 session.close();
@@ -81,8 +82,13 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
             DocumentModelList docList = session.getChildren(doc.getRef(), "Picture");
             List<Blob> blobList = new ArrayList<Blob>(docList.size());
             for (DocumentModel documentModel : docList) {
-                PictureResourceAdapter picture = documentModel.getAdapter(PictureResourceAdapter.class);
-                blobList.add(picture.getPictureFromTitle(title));
+                if ("Original".equals(title)) {
+                    BlobHolder bh = documentModel.getAdapter(BlobHolder.class);
+                    blobList.add(bh.getBlob());
+                } else {
+                    PictureResourceAdapter picture = documentModel.getAdapter(PictureResourceAdapter.class);
+                    blobList.add(picture.getPictureFromTitle(title));
+                }
             }
             return blobList;
         } finally {
