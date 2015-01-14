@@ -55,7 +55,6 @@
       <replacementChain>
         <plugin>AUTOMATION_BASIC_AUTH</plugin>
         <plugin>TOKEN_AUTH</plugin>
-        <plugin>ANONYMOUS_AUTH</plugin>
       </replacementChain>
     </specificAuthenticationChain>
 
@@ -66,7 +65,6 @@
       <replacementChain>
         <plugin>AUTOMATION_BASIC_AUTH</plugin>
         <plugin>TOKEN_AUTH</plugin>
-        <plugin>ANONYMOUS_AUTH</plugin>
       </replacementChain>
     </specificAuthenticationChain>
 
