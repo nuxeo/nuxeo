@@ -1,5 +1,5 @@
-"routingRequest" : {
-    "id": "routingRequest",
+"workflowRequest" : {
+    "id": "workflowRequest",
     "type": "any",
     "required": false,
     "uniqueItems": false,
@@ -9,7 +9,7 @@
             "type": "string",
             "required": true
         },
-        "routeModelId": {
+        "workflowModelId": {
             "uniqueItems": false,
             "type": "string",
             "required": false

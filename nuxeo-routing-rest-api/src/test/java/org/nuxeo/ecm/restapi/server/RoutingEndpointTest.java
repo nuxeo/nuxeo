@@ -107,7 +107,7 @@ public class RoutingEndpointTest extends BaseTest {
     protected String getCreateAndStartWorkflowBodyContent(String workflowName, List<String> docIds) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         WorkflowRequest routingRequest = new WorkflowRequest();
-        routingRequest.setRouteModelId(workflowName);
+        routingRequest.setWorkflowModelId(workflowName);
         if (docIds != null) {
             routingRequest.setDocumentIds(docIds);
         }
@@ -135,7 +135,7 @@ public class RoutingEndpointTest extends BaseTest {
         // Check POST /api/id/{documentId}/@workflow/
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         WorkflowRequest routingRequest = new WorkflowRequest();
-        routingRequest.setRouteModelId("SerialDocumentReview");
+        routingRequest.setWorkflowModelId("SerialDocumentReview");
         objectCodecService.write(out, routingRequest);
         ClientResponse response = getResponse(RequestType.POST, "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME,
                 out.toString());
@@ -256,7 +256,7 @@ public class RoutingEndpointTest extends BaseTest {
     public void testInvalidNodeAction() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         WorkflowRequest routingRequest = new WorkflowRequest();
-        routingRequest.setRouteModelId("SerialDocumentReview");
+        routingRequest.setWorkflowModelId("SerialDocumentReview");
         objectCodecService.write(out, routingRequest);
         ClientResponse response = getResponse(RequestType.POST, "/workflow", out.toString());
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());

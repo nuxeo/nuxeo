@@ -31,18 +31,33 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
  */
 public class TaskCompletionRequest {
 
-    public TaskCompletionRequest() {
-        super();
-    }
-
     protected String comment;
 
     protected Map<String, String> nodeVariables;
 
     protected Map<String, String> workflowVariables;
 
+    public TaskCompletionRequest() {
+        super();
+    }
+
     public String getComment() {
         return comment;
+    }
+
+    public Map<String, Object> getDataMap() {
+        Map<String, Object> data = new HashMap<String, Object>();
+        if (getWorkflowVariables() != null) {
+            data.put(Constants.VAR_WORKFLOW, getWorkflowVariables());
+        }
+        if (getNodeVariables() != null) {
+            data.put(Constants.VAR_WORKFLOW_NODE, getNodeVariables());
+        }
+        data.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, Boolean.TRUE);
+        if (StringUtils.isNotBlank(getComment())) {
+            data.put(GraphNode.NODE_VARIABLE_COMMENT, getComment());
+        }
+        return data;
     }
 
     public Map<String, String> getNodeVariables() {
@@ -63,20 +78,5 @@ public class TaskCompletionRequest {
 
     public void setWorkflowVariables(Map<String, String> workflowVariables) {
         this.workflowVariables = workflowVariables;
-    }
-
-    public  Map<String, Object> getDataMap() {
-        Map<String, Object> data = new HashMap<String, Object>();
-        if (getWorkflowVariables() != null) {
-            data.put(Constants.VAR_WORKFLOW, getWorkflowVariables());
-        }
-        if (getNodeVariables() != null) {
-            data.put(Constants.VAR_WORKFLOW_NODE, getNodeVariables());
-        }
-        data.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, Boolean.TRUE);
-        if (StringUtils.isNotBlank(getComment())) {
-            data.put(GraphNode.NODE_VARIABLE_COMMENT, getComment());
-        }
-        return data;
     }
 }

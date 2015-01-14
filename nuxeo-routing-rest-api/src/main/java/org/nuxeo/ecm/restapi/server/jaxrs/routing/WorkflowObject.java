@@ -66,9 +66,9 @@ public class WorkflowObject extends DefaultObject {
     @POST
     @Consumes({ "application/json+nxentity" })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createWorkflowInstance(WorkflowRequest routingRequest) {
-        final String workflowInstanceId = documentRoutingService.createNewInstance(routingRequest.getRouteModelId(),
-                routingRequest.getDocumentIds(), ctx.getCoreSession(), true);
+    public Response createWorkflowInstance(WorkflowRequest workflowRequest) {
+        final String workflowInstanceId = documentRoutingService.createNewInstance(workflowRequest.getWorkflowModelId(),
+                workflowRequest.getDocumentIds(), ctx.getCoreSession(), true);
         DocumentModel workflowInstance = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));
         DocumentRoute route = workflowInstance.getAdapter(DocumentRoute.class);
         return Response.ok(route).status(Status.CREATED).build();
@@ -77,6 +77,19 @@ public class WorkflowObject extends DefaultObject {
     @GET
     @Path("{workflowInstanceId}")
     public DocumentRoute getWorkflowInstance(@PathParam("workflowInstanceId") String workflowInstanceId) {
+        DocumentModel workflowInstance;
+        try {
+            workflowInstance = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));
+            return  workflowInstance.getAdapter(DocumentRoute.class);
+        } catch (ClientException e) {
+            log.error("Can not get workflow instance with id" + workflowInstanceId);
+            throw new ClientException(e);
+        }
+    }
+
+    @GET
+    @Path("{workflowInstanceId}/graph")
+    public DocumentRoute getWorkflowGraph(@PathParam("workflowInstanceId") String workflowInstanceId) {
         DocumentModel workflowInstance;
         try {
             workflowInstance = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));

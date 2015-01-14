@@ -48,9 +48,9 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
  */
 @Provider
 @Produces({ "application/json+nxentity", "application/json" })
-public class WorkflowListWriter extends EntityListWriter<DocumentRoute> {
+public class DocumentRouteListWriter extends EntityListWriter<DocumentRoute> {
 
-    private static final Log log = LogFactory.getLog(WorkflowListWriter.class);
+    private static final Log log = LogFactory.getLog(DocumentRouteListWriter.class);
 
     @Context
     JsonFactory factory;
@@ -63,7 +63,7 @@ public class WorkflowListWriter extends EntityListWriter<DocumentRoute> {
 
     @Override
     protected String getEntityType() {
-        return "documentRoutes";
+        return "workflows";
     }
 
     @Override
@@ -92,7 +92,7 @@ public class WorkflowListWriter extends EntityListWriter<DocumentRoute> {
             for (DocumentRoute docRoute : docRoutes) {
                 jg.writeStartObject();
                 jg.writeStringField("entity-type", "workflow");
-                WorkflowWriter.writeDocumentRoute(jg, docRoute);
+                DocumentRouteWriter.writeDocumentRoute(jg, docRoute);
                 jg.writeEndObject();
             }
             jg.writeEndArray();

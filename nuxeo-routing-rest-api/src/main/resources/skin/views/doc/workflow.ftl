@@ -9,7 +9,7 @@
         {
           "method":"GET",
           "nickname":"getWorkflowInstanceById",
-          "type":"documentRoute",
+          "type":"workflow",
           <@params names = ["workflowInstanceId"]/>,
           "summary":"Find a workflow instance by its id",
           "notes": "Only workflow instance which you have permission to see will be returned",
@@ -26,8 +26,8 @@
         {
           "method":"POST",
           "nickname":"createWorkflowInstanceById",
-          "type":"routingRequest",
-          <@params names = ["routingRequestBody"]/>,
+          "type":"workflowRequest",
+          <@params names = ["workflowRequestBody"]/>,
           "summary":"Start a workflow instance",
           "notes": "",
           <#include "views/doc/errorresponses.ftl"/>
@@ -43,7 +43,7 @@
         {
           "method":"GET",
           "nickname":"getRunningWorkflowInstancesLaunchedByCurrentUser",
-          "type":"documentRoutes",
+          "type":"workflows",
           "summary":"Get the workflow instances launched by the current user",
           "notes": "Only workflow instances launched by current user will be returned",
           <#include "views/doc/errorresponses.ftl"/>
@@ -58,7 +58,7 @@
         {
           "method":"GET",
           "nickname":"getDocumentWorkflow",
-          "type":"documentRoutes",
+          "type":"workflows",
           "summary":"Get the workflow instances launched on the given document",
           "notes": "Only workflow instances launched by current user will be returned",
           <#include "views/doc/errorresponses.ftl"/>
@@ -66,8 +66,8 @@
         {
           "method":"POST",
           "nickname":"createWorkflowInstanceOnDocument",
-          "type":"routingRequest",
-          <@params names = ["routingRequestBody"]/>,
+          "type":"workflowRequest",
+          <@params names = ["workflowBody"]/>,
           "summary":"Start a workflow instance on the given document",
           "notes": "",
           <#include "views/doc/errorresponses.ftl"/>
@@ -81,7 +81,7 @@
         {
           "method":"GET",
           "nickname":"getDocumentWorkflow",
-          "type":"documentRoutes",
+          "type":"workflows",
           "summary":"Get the workflow instances launched on the given document",
           "notes": "Only workflow instances launched by current user will be returned",
           <#include "views/doc/errorresponses.ftl"/>
@@ -89,8 +89,8 @@
         {
           "method":"POST",
           "nickname":"createWorkflowInstanceOnDocument",
-          "type":"routingRequest",
-          <@params names = ["routingRequestBody"]/>,
+          "type":"workflowRequest",
+          <@params names = ["workflowRequestBody"]/>,
           "summary":"Start a workflow instance on the given document",
           "notes": "",
           <#include "views/doc/errorresponses.ftl"/>
@@ -104,7 +104,7 @@
 </@block>
 
 <@block name="models">
-  <#include "views/doc/datatypes/documentRoute.ftl"/>
-  <#include "views/doc/datatypes/routingRequest.ftl"/>
+  <#include "views/doc/datatypes/workflow.ftl"/>
+  <#include "views/doc/datatypes/workflowRequest.ftl"/>
 </@block>
 </@extends>

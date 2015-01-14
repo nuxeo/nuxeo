@@ -50,7 +50,7 @@ public class WorkflowAdapter extends DefaultAdapter {
     public Response doPost(WorkflowRequest routingRequest) {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         final String workflowInstanceId = Framework.getLocalService(DocumentRoutingService.class).createNewInstance(
-                routingRequest.getRouteModelId(), Arrays.asList(new String[] { doc.getId() }), ctx.getCoreSession(),
+                routingRequest.getWorkflowModelId(), Arrays.asList(new String[] { doc.getId() }), ctx.getCoreSession(),
                 true);
         DocumentModel result = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));
         return Response.ok(result).status(Status.CREATED).build();

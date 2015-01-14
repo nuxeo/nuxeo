@@ -48,7 +48,7 @@ import org.nuxeo.ecm.platform.task.Task;
 @Produces({ "application/json+nxentity", "application/json" })
 public class TaskListWriter extends EntityListWriter<Task> {
 
-    private static final Log log = LogFactory.getLog(WorkflowListWriter.class);
+    private static final Log log = LogFactory.getLog(TaskListWriter.class);
 
     @Context
     HttpServletRequest request;
