@@ -19,9 +19,12 @@ package org.nuxeo.ecm.tokenauth;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -62,8 +65,12 @@ public class TestTokenAuthenticator {
     public void testAuthenticator() throws Exception {
 
         // Get client session using a bad token, should be as Guest
-        Session clientSession = automationClient.getSession("badToken");
-        assertEquals("Guest", clientSession.getLogin().getUsername());
+        try {
+            automationClient.getSession("badToken");
+            fail("Getting an Automation client session with a bad token should throw a RemoteException with HTTP 401 status code");
+        } catch (RemoteException e) {
+            assertEquals(HttpStatus.SC_UNAUTHORIZED, e.getStatus());
+        }
 
         // Mock token authentication callback
         TokenAuthenticationCallback cb = new TokenAuthenticationCallback(
@@ -73,7 +80,7 @@ public class TestTokenAuthenticator {
 
         // Get client session using callback, should acquire a remote token,
         // store it locally and return a session as Administrator
-        clientSession = automationClient.getSession(cb);
+        Session clientSession = automationClient.getSession(cb);
         assertNotNull(cb.getLocalToken());
         assertEquals("Administrator", clientSession.getLogin().getUsername());
 
