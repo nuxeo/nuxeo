@@ -90,7 +90,7 @@ public class TestBlobHolderSet {
         BlobHolder bh = picture.getAdapter(BlobHolder.class);
         assertNotNull(bh);
         Blob blob = bh.getBlob();
-        assertNotNull(blob);
+        assertNull(blob);
         assertEquals(1, bh.getBlobs().size());
 
         // test write

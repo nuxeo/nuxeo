@@ -37,16 +37,8 @@ import org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants;
 
 public class PictureBlobHolder extends DocumentBlobHolder {
 
-    public static final String ORIGINAL_VIEW_TITLE = "Original";
-
     public PictureBlobHolder(DocumentModel doc, String path) {
         super(doc, path);
-    }
-
-    @Override
-    public Blob getBlob() throws ClientException {
-        Blob blob = super.getBlob();
-        return blob != null ? blob : getBlob(ORIGINAL_VIEW_TITLE);
     }
 
     @SuppressWarnings("unchecked")
@@ -87,22 +79,24 @@ public class PictureBlobHolder extends DocumentBlobHolder {
 
     @Override
     public List<Blob> getBlobs() throws ClientException {
-        List<Blob> blobList = new ArrayList<Blob>();
-        blobList.add(getBlob());
+        List<Blob> blobList = new ArrayList<>();
+
+        Blob mainBlob = getBlob();
+        if (mainBlob != null) {
+            blobList.add(getBlob());
+        }
+
         Collection<Property> views = doc.getProperty("picture:views").getChildren();
         for (Property property : views) {
-            String viewName = (String) property.getValue("title");
-            if (!ORIGINAL_VIEW_TITLE.equals(viewName)) {
-                blobList.add((Blob) property.getValue("content"));
-            }
+            blobList.add((Blob) property.getValue("content"));
         }
         return blobList;
     }
 
     public List<Blob> getBlobs(String... viewNames) throws ClientException {
-        List<Blob> blobList = new ArrayList<Blob>();
-        for (int i = 0; i < viewNames.length; i++) {
-            blobList.add(getBlob(viewNames[i]));
+        List<Blob> blobList = new ArrayList<>();
+        for (String viewName : viewNames) {
+            blobList.add(getBlob(viewName));
         }
         return blobList;
     }

@@ -42,6 +42,10 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
 
     protected static final String ORIGINAL_JPEG_VIEW_NAME = "OriginalJpeg";
 
+    /**
+     * @deprecated since 7.2. The Original view does not exist anymore. See NXP-16070.
+     */
+    @Deprecated
     protected static final String ORIGINAL_VIEW_NAME = "Original";
 
     public Object getAdapter(DocumentModel doc, Class itf) {
@@ -87,12 +91,7 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
         if (doc.hasSchema("picture")) {
             PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
             // try OriginalJpeg view xpath
-            String blobProperty = adapter.getViewXPath(ORIGINAL_JPEG_VIEW_NAME);
-            if (blobProperty == null) {
-                // fallback on old Original view xpath
-                blobProperty = adapter.getViewXPath(ORIGINAL_VIEW_NAME);
-            }
-            blobProperty += "content";
+            String blobProperty = adapter.getViewXPath(ORIGINAL_JPEG_VIEW_NAME) + "content";
             return getPictureTilesAdapter(doc, blobProperty);
         }
         return null;

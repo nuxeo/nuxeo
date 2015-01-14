@@ -47,6 +47,10 @@ public class TiledImagePreviewer extends AbstractPreviewer implements MimeTypePr
 
     protected static final String ORIGINAL_JPEG_VIEW_NAME = "OriginalJpeg";
 
+    /**
+     * @deprecated since 7.2. The Original view does not exist anymore. See NXP-16070.
+     */
+    @Deprecated
     protected static final String ORIGINAL_VIEW_NAME = "Original";
 
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {

@@ -94,7 +94,7 @@ public class PictureBookManagerBean extends InputController implements PictureBo
 
     protected List<SelectItem> selectItems;
 
-    protected String[] selectedViews = { "Original" };
+    protected String[] selectedViews = { "OriginalJpeg" };
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
