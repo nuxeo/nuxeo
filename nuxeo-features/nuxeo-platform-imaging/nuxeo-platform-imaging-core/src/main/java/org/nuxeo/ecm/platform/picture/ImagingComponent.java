@@ -70,6 +70,7 @@ import org.nuxeo.ecm.platform.picture.api.PictureViewImpl;
 import org.nuxeo.ecm.platform.picture.core.libraryselector.LibrarySelector;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -87,6 +88,8 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
     protected PictureConversionRegistry pictureConversionRegistry = new PictureConversionRegistry();
 
     private LibrarySelector librarySelector;
+
+    protected final PictureMigrationHandler pictureMigrationHandler = new PictureMigrationHandler();
 
     @Override
     public List<PictureConversion> getPictureConversions() {
@@ -560,5 +563,15 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
             allViews.add(computeViewsFor(blob, pictureConversions, imageInfo, convert));
         }
         return allViews;
+    }
+
+    @Override
+    public void activate(ComponentContext context) {
+        pictureMigrationHandler.install();
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) {
+        pictureMigrationHandler.uninstall();
     }
 }

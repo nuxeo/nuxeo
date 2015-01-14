@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.platform.picture.listener;
 
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
@@ -75,7 +76,7 @@ public class PictureChangedListener implements EventListener {
         DocumentModel doc = docCtx.getSourceDocument();
         if (doc.hasFacet(PICTURE_FACET) && !doc.isProxy()) {
             Property fileProp = doc.getProperty("file:content");
-            if (DOCUMENT_CREATED.equals(event.getName()) || fileProp.isDirty()) {
+            if (ABOUT_TO_CREATE.equals(event.getName()) || fileProp.isDirty()) {
                 Property viewsProp = doc.getProperty(AbstractPictureAdapter.VIEWS_PROPERTY);
                 // if the views are dirty, assume they're up to date
                 if (viewsProp == null || !viewsProp.isDirty()) {
