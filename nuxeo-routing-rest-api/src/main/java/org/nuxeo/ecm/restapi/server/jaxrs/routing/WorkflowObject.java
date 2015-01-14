@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.restapi.server.jaxrs.routing;
 
 import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -40,6 +39,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
+import org.nuxeo.ecm.platform.routing.core.impl.jsongraph.JsonGraphRoute;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.WorkflowRequest;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -89,13 +89,11 @@ public class WorkflowObject extends DefaultObject {
 
     @GET
     @Path("{workflowInstanceId}/graph")
-    public DocumentRoute getWorkflowGraph(@PathParam("workflowInstanceId") String workflowInstanceId) {
-        DocumentModel workflowInstance;
+    public JsonGraphRoute getWorkflowGraph(@PathParam("workflowInstanceId") String workflowInstanceId) {
         try {
-            workflowInstance = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));
-            return  workflowInstance.getAdapter(DocumentRoute.class);
+            return new JsonGraphRoute(getContext().getCoreSession(), workflowInstanceId, getContext().getLocale());
         } catch (ClientException e) {
-            log.error("Can not get workflow instance with id" + workflowInstanceId);
+            log.error("Can not get workflow instance graph with id" + workflowInstanceId);
             throw new ClientException(e);
         }
     }
