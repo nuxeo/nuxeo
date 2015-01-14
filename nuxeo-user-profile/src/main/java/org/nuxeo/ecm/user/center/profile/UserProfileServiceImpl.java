@@ -65,8 +65,9 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
     public DocumentModel getUserProfileDocument(CoreSession session) throws ClientException {
         DocumentModel userWorkspace = getUserWorkspaceService().getCurrentUserPersonalWorkspace(session, null);
         String uid = profileUidCache.getIfPresent(session.getPrincipal().getName());
-        if (uid != null) {
-            return session.getDocument(new IdRef(uid));
+        final IdRef ref = new IdRef(uid);
+        if (uid != null && session.exists(ref)) {
+            return session.getDocument(ref);
         } else {
             DocumentModel profile = new UserProfileDocumentGetter(session, userWorkspace).getOrCreate();
             profileUidCache.put(session.getPrincipal().getName(), profile.getId());
@@ -80,8 +81,9 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
                 session.getRootDocument());
 
         String uid = profileUidCache.getIfPresent(userName);
-        if (uid != null) {
-            return session.getDocument(new IdRef(uid));
+        final IdRef ref = new IdRef(uid);
+        if (uid != null && session.exists(ref)) {
+            return session.getDocument(ref);
         } else {
             DocumentModel profile = new UserProfileDocumentGetter(session, userWorkspace).getOrCreate();
             profileUidCache.put(userName, profile.getId());
