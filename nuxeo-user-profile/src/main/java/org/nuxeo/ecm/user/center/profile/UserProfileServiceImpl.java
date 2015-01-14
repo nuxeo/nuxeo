@@ -69,8 +69,9 @@ public class UserProfileServiceImpl extends DefaultComponent implements
         DocumentModel userWorkspace = getUserWorkspaceService().getCurrentUserPersonalWorkspace(
                 session, null);
         String uid = profileUidCache.getIfPresent(session.getPrincipal().getName());
-        if (uid != null) {
-            return session.getDocument(new IdRef(uid));
+        final IdRef ref = new IdRef(uid);
+        if (uid != null && session.exists(ref)) {
+            return session.getDocument(ref);
         } else {
             DocumentModel profile = new UserProfileDocumentGetter(session,
                     userWorkspace).getOrCreate();
@@ -87,8 +88,9 @@ public class UserProfileServiceImpl extends DefaultComponent implements
                 userName, session.getRootDocument());
 
         String uid = profileUidCache.getIfPresent(userName);
-        if (uid != null) {
-            return session.getDocument(new IdRef(uid));
+        final IdRef ref = new IdRef(uid);
+        if (uid != null && session.exists(ref)) {
+            return session.getDocument(ref);
         } else {
             DocumentModel profile = new UserProfileDocumentGetter(session,
                     userWorkspace).getOrCreate();
