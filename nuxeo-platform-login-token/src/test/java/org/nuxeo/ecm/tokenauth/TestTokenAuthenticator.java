@@ -64,7 +64,7 @@ public class TestTokenAuthenticator {
     @Test
     public void testAuthenticator() throws Exception {
 
-        // Get client session using a bad token, should be as Guest
+        // Try to get client session using a bad token, should throw a RemoteException with HTTP 401 status code
         try {
             automationClient.getSession("badToken");
             fail("Getting an Automation client session with a bad token should throw a RemoteException with HTTP 401 status code");
