@@ -36,9 +36,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -60,6 +62,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 import com.mongodb.QueryOperators;
 import com.mongodb.ServerAddress;
 import com.mongodb.WriteResult;
@@ -137,10 +140,16 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     // used also by unit tests
     public static MongoClient newMongoClient(MongoDBRepositoryDescriptor descriptor) throws UnknownHostException {
-        ServerAddress addr = new ServerAddress(descriptor.server);
-        // TODO sharding options
-        // TODO mongoClient.setWriteConcern
-        return new MongoClient(addr);
+        String server = descriptor.server;
+        if (StringUtils.isBlank(server)) {
+            throw new NuxeoException("Missing <server> in MongoDB repository descriptor");
+        }
+        if (server.startsWith("mongodb://")) {
+            // allow mongodb:// URI syntax for the server, to pass everything in one string
+            return new MongoClient(new MongoClientURI(server));
+        } else {
+            return new MongoClient(new ServerAddress(server));
+        }
     }
 
     protected static DBCollection getCollection(MongoClient mongoClient, String name) {

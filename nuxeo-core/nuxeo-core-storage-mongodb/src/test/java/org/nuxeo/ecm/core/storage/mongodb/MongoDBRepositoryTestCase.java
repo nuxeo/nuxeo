@@ -92,7 +92,7 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
     protected void initRepository() throws Exception {
         descriptor = new MongoDBRepositoryDescriptor();
         descriptor.name = repositoryName;
-        descriptor.server = null; // use defaults
+        descriptor.server = "localhost:27017";
         MongoDBRepositoryService repositoryService = Framework.getLocalService(MongoDBRepositoryService.class);
         repositoryService.addContribution(descriptor);
 
