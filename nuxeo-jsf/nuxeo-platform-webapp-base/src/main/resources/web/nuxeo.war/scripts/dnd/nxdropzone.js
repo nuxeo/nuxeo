@@ -517,6 +517,21 @@ var NXDropZone = {
     document.body.ondragleave = function (event) {
       removeHighlights(event, ids)
     };
+    document.body.ondrop = function (event) {
+      var dt = event.dataTransfer;
+      if (dt && dt.files != null && dt.files.length == 0) {
+        jQuery.each(ids, function (idx, id) {
+          var dzone = jQuery("#" + id);
+          dzone.removeClass("dropzoneTarget");
+          dzone.removeClass("dropzoneTargetExtended");
+          var dragoverTimer = dzone.data("dragoverTimer");
+          if (dragoverTimer) {
+            window.clearTimeout(dragoverTimer);
+            dzone.removeData("dragoverTimer");
+          }
+        });
+      }
+    };
   };
 
   function isFileDndEvent(event) {
