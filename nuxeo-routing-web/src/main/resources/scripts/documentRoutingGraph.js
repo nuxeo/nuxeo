@@ -158,9 +158,10 @@ function displayGraph(data, divContainerTargetId) {
 };
 
 function invokeGetGraphOp(routeId, currentLang, divContainerTargetId) {
-	var ctx = {};
-	var getGraphNodesExec = jQuery().automation('Document.Routing.GetGraph');
-	getGraphNodesExec.setContext(ctx);
+	var automationCtx = {};
+	var options = {repository : ctx.repository };
+	var getGraphNodesExec = jQuery().automation('Document.Routing.GetGraph', options);
+	getGraphNodesExec.setContext(automationCtx);
 	getGraphNodesExec.addParameter("routeDocId", routeId);
 	getGraphNodesExec.addParameter("language", currentLang);
 	getGraphNodesExec.executeGetBlob(function(data, status, xhr) {
@@ -172,6 +173,6 @@ function invokeGetGraphOp(routeId, currentLang, divContainerTargetId) {
 };
 
 function loadGraph(routeDocId, currentLang, divContainerTargetId) {
-	jsPlumbInitializeDefault();
-	invokeGetGraphOp(routeDocId, currentLang, divContainerTargetId);
+    jsPlumbInitializeDefault();
+    invokeGetGraphOp(routeDocId, currentLang, divContainerTargetId);
 };
