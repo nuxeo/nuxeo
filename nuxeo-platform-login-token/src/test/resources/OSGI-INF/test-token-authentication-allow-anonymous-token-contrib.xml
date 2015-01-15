@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.login.token.allow.anonymous.contrib.test">
+
+  <require>org.nuxeo.ecm.login.token.authentication.contrib</require>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="authenticators">
+
+    <authenticationPlugin name="TOKEN_AUTH">
+      <parameters>
+        <parameter name="allowAnonymous">true</parameter>
+      </parameters>
+    </authenticationPlugin>
+
+  </extension>
+
+</component>
