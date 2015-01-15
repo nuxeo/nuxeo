@@ -121,7 +121,7 @@ public class EmailSenderActionsBean extends InputController implements EmailSend
                 renderer.render("/mail_template.xhtml");
                 facesMessages.add(StatusMessage.Severity.INFO,
                         resourcesAccessor.getMessages().get("label.email.send.ok"));
-            } catch (Exception e) {
+            } catch (RuntimeException e) { // stupid Seam FaceletsRenderer throws RuntimeException
                 facesMessages.add(StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get("label.email.send.failed"));
                 log.error("Email sending failed:" + e.getMessage());

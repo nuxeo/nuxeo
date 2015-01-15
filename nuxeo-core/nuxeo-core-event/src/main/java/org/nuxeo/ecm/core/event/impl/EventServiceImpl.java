@@ -30,7 +30,6 @@ import javax.transaction.SystemException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.event.Event;
@@ -197,8 +196,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
                     // break loop
                     return;
                 }
-            } catch (Exception e) { // deals with interrupt below
-                ExceptionUtils.checkInterrupt(e);
+            } catch (RuntimeException e) {
                 // get message
                 String message = "Exception during " + desc.getName() + " sync listener execution, ";
                 if (event.isBubbleException()) {
@@ -220,14 +218,17 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
                 }
                 // rethrow or swallow
                 if (event.isBubbleException()) {
-                    throw ExceptionUtils.runtimeException(e);
+                    throw e;
                 } else if (event.isMarkedForRollBack()) {
+                    Exception ee;
                     if (event.getRollbackException() != null) {
-                        e = event.getRollbackException();
+                        ee = event.getRollbackException();
+                    } else {
+                        ee = e;
                     }
                     // when marked for rollback, throw a generic
                     // RuntimeException to make sure nobody catches it
-                    throw new RuntimeException(message, e);
+                    throw new RuntimeException(message, ee);
                 } else {
                     // swallow exception
                 }

@@ -82,15 +82,23 @@ public class RequestContext extends HashMap<String, Object> {
     public void dispose() {
         request.removeAttribute(RequestContext.class.getName());
         CTX.remove();
+        RuntimeException suppressed = null;
         for (RequestCleanupHandler handler : cleanupHandlers) {
             try {
                 handler.cleanup(request);
-            } catch (Throwable t) {
-                // do nothing to allow other cleanup handlers to do their work
+            } catch (RuntimeException e) {
+                // allow other cleanup handlers to do their work
+                if (suppressed == null) {
+                    suppressed = new RuntimeException("Exceptions during cleanup");
+                }
+                suppressed.addSuppressed(e);
             }
         }
         cleanupHandlers = null;
         request = null;
         response = null;
+        if (suppressed != null) {
+            throw suppressed;
+        }
     }
 }

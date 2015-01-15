@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.common.utils.StringUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -60,9 +59,8 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
                     // check only bundles containing nuxeo comp.
                     try {
                         runtime.createContext(bundle);
-                    } catch (Exception e) { // deals with interrupt below
-                        ExceptionUtils.checkInterrupt(e);
-                        // except for interruptions, don't raise this exception,
+                    } catch (RuntimeException e) {
+                        // don't raise this exception,
                         // we want to isolate bundle errors from other bundles
                         log.warn("Failed to load components for bundle: " + name, e);
                     }
@@ -114,8 +112,7 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
                 }
                 break;
             }
-        } catch (Exception e) { // deals with interrupt below
-            ExceptionUtils.checkInterrupt(e);
+        } catch (RuntimeException e) {
             log.error(e, e);
         }
     }

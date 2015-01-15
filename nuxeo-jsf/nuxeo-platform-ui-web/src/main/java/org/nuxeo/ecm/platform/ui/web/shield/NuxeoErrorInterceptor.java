@@ -38,6 +38,7 @@ import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.contexts.FacesLifecycle;
 import org.jboss.seam.faces.Redirect;
 import org.jboss.seam.transaction.Transaction;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
@@ -72,7 +73,8 @@ public class NuxeoErrorInterceptor implements Serializable {
         try {
             // log.debug("Before invocation...");
             return invocation.proceed();
-        } catch (Throwable t) {
+        } catch (Exception t) { // deals with interrupt below
+            ExceptionUtils.checkInterrupt(t);
 
             if (Transaction.instance().isActive()) {
                 Transaction.instance().setRollbackOnly();
@@ -139,9 +141,9 @@ public class NuxeoErrorInterceptor implements Serializable {
                 } else {
                     redirectToViewId = GENERIC_ERROR_VIEW_ID;
                 }
-            } catch (Throwable e) {
+            } catch (RuntimeException e) {
                 // might be the case when session context is null
-                log.error(e);
+                log.error(e, e);
                 redirectToViewId = UNTHEMED_ERROR_VIEW_ID;
             }
 

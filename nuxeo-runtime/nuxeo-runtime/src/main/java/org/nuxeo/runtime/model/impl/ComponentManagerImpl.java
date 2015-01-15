@@ -26,7 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ListenerList;
-import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.ComponentListener;
 import org.nuxeo.runtime.RuntimeService;
@@ -163,9 +162,8 @@ public class ComponentManagerImpl implements ComponentManager {
                 log.info("Registration delayed for component: " + name + ". Waiting for: "
                         + reg.getMissingDependencies(ri.getName()));
             }
-        } catch (Exception e) { // deals with interrupt below
-            ExceptionUtils.checkInterrupt(e);
-            // except for interruptions, don't raise this exception,
+        } catch (RuntimeException e) {
+            // don't raise this exception,
             // we want to isolate component errors from other components
             String msg = "Failed to register component: " + name;
             log.error(msg, e);
@@ -185,8 +183,7 @@ public class ComponentManagerImpl implements ComponentManager {
         try {
             log.info("Unregistering component: " + name);
             reg.removeComponent(name);
-        } catch (Exception e) { // deals with interrupt below
-            ExceptionUtils.checkInterrupt(e);
+        } catch (RuntimeException e) {
             log.error("Failed to unregister component: " + name, e);
         }
     }

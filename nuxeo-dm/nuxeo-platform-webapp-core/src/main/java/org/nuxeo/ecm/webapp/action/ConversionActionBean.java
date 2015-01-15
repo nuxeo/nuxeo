@@ -42,8 +42,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
+import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
+import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.cache.ThreadSafeCacheHolder;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -161,7 +163,7 @@ public class ConversionActionBean implements ConversionAction {
                     return true;
                 }
             }
-        } catch (Exception e) {
+        } catch (ConverterNotRegistered e) {
             log.error("Error while testing PDF converter availability", e);
         }
         return false;
@@ -182,7 +184,7 @@ public class ConversionActionBean implements ConversionAction {
                 isSupported = cacheResult;
             }
             return isSupported;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while trying to check PDF conversion against a filename", e);
             return false;
         }
@@ -215,7 +217,7 @@ public class ConversionActionBean implements ConversionAction {
             filename += ".pdf";
 
             return ComponentUtils.download(FacesContext.getCurrentInstance(), result.getBlob(), filename);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("PDF generation error for file " + filename, e);
         }
         return "pdf_generation_error";
@@ -228,7 +230,7 @@ public class ConversionActionBean implements ConversionAction {
         try {
             BlobHolder bh = new DocumentBlobHolder(getDocument(), fileFieldFullName);
             return generatePdfFileFromBlobHolder(bh);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("PDF generation error for file " + filename, e);
         }
         return "pdf_generation_error";

@@ -167,7 +167,7 @@ public class NuxeoRequestControllerFilter implements Filter {
                 }
             }
             chain.doFilter(request, response);
-        } catch (Exception e) {
+        } catch (RuntimeException | IOException | ServletException e) {
             if (txStarted) {
                 if (log.isDebugEnabled()) {
                     log.debug(doFormatLogMessage(httpRequest, "Marking transaction for RollBack"));

@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.WrappedException;
@@ -134,8 +135,10 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                 log.error("Cannot forward to error page: " + "response is already committed");
             }
             parameters.getListener().afterDispatch(unwrappedException, request, response);
-        } catch (Throwable newError) {
-            throw new ServletException(newError);
+        } catch (ServletException e) {
+            throw e;
+        } catch (RuntimeException | IOException e) {
+            throw new ServletException(e);
         }
     }
 

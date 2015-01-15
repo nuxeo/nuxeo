@@ -63,35 +63,27 @@ public class ServerActionsBean implements ServerActions, Serializable {
     @Override
     @Factory("availableCoreRepositories")
     public List<Repository> getAvailableRepositories() throws ClientException {
-        try {
-            RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-            return new ArrayList<Repository>(repositoryManager.getRepositories());
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
+        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
+        return new ArrayList<Repository>(repositoryManager.getRepositories());
     }
 
     @Override
     public String selectRepository(String repositoryName) throws ClientException {
-        try {
-            boolean found = false;
-            RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-            for (String name : repositoryManager.getRepositoryNames()) {
-                if (name.equals(repositoryName)) {
-                    found = true;
-                    break;
-                }
+        boolean found = false;
+        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
+        for (String name : repositoryManager.getRepositoryNames()) {
+            if (name.equals(repositoryName)) {
+                found = true;
+                break;
             }
-            if (found) {
-                log.debug("Selected core name: " + repositoryName);
-                RepositoryLocation selectedLocation = new RepositoryLocation(repositoryName);
-                navigationContext.setCurrentServerLocation(selectedLocation);
-                return DEFAULT_VIEW;
-            } else {
-                return null;
-            }
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
+        }
+        if (found) {
+            log.debug("Selected core name: " + repositoryName);
+            RepositoryLocation selectedLocation = new RepositoryLocation(repositoryName);
+            navigationContext.setCurrentServerLocation(selectedLocation);
+            return DEFAULT_VIEW;
+        } else {
+            return null;
         }
     }
 

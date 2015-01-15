@@ -130,35 +130,31 @@ public class SecurityActionsBean extends InputController implements SecurityActi
     @Override
     public void rebuildSecurityData() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        try {
-            if (null != currentDocument) {
-                if (null == securityData) {
-                    securityData = new SecurityData();
-                    securityData.setDocumentType(currentDocument.getType());
-                }
-                ACP acp = documentManager.getACP(currentDocument.getRef());
-
-                if (null != acp) {
-                    SecurityDataConverter.convertToSecurityData(acp, securityData);
-                } else {
-                    securityData.clear();
-                }
-
-                reconstructTableModel();
-
-                // Check if the inherited rights are activated
-                List<String> deniedPerms = securityData.getCurrentDocDeny().get(SecurityConstants.EVERYONE);
-                if (deniedPerms != null && deniedPerms.contains(SecurityConstants.EVERYTHING)) {
-                    blockRightInheritance = true;
-                }
-
-                if (blockRightInheritance == null) {
-                    blockRightInheritance = false;
-                }
-                obsoleteSecurityData = false;
+        if (currentDocument != null) {
+            if (securityData == null) {
+                securityData = new SecurityData();
+                securityData.setDocumentType(currentDocument.getType());
             }
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
+            ACP acp = documentManager.getACP(currentDocument.getRef());
+
+            if (acp != null) {
+                SecurityDataConverter.convertToSecurityData(acp, securityData);
+            } else {
+                securityData.clear();
+            }
+
+            reconstructTableModel();
+
+            // Check if the inherited rights are activated
+            List<String> deniedPerms = securityData.getCurrentDocDeny().get(SecurityConstants.EVERYONE);
+            if (deniedPerms != null && deniedPerms.contains(SecurityConstants.EVERYTHING)) {
+                blockRightInheritance = Boolean.TRUE;
+            }
+
+            if (blockRightInheritance == null) {
+                blockRightInheritance = Boolean.FALSE;
+            }
+            obsoleteSecurityData = false;
         }
     }
 
@@ -197,42 +193,33 @@ public class SecurityActionsBean extends InputController implements SecurityActi
 
     @Override
     public String updateSecurityOnDocument() throws ClientException {
-        try {
-            List<UserEntry> modifiableEntries = SecurityDataConverter.convertToUserEntries(securityData);
-            ACP acp = currentDocument.getACP();
+        List<UserEntry> modifiableEntries = SecurityDataConverter.convertToUserEntries(securityData);
+        ACP acp = currentDocument.getACP();
 
-            if (null == acp) {
-                acp = new ACPImpl();
-            }
-
-            acp.setRules(modifiableEntries.toArray(new UserEntry[0]));
-
-            currentDocument.setACP(acp, true);
-            documentManager.save();
-            Events.instance().raiseEvent(EventNames.DOCUMENT_SECURITY_CHANGED);
-
-            // Reread data from the backend to be sure the current bean
-            // state is uptodate w.r.t. the real backend state
-            rebuildSecurityData();
-
-            // Type currentType =
-            // typeManager.getType(currentDocument.getType());
-            // return applicationController
-            // .getPageOnEditedDocumentType(currentType);
-
-            // Forward to default view, that's not what we want
-            // return navigationContext.getActionResult(currentDocument,
-            // UserAction.AFTER_EDIT);
-
-            // Temporary fix, to avoid forward to default_view.
-            // The same page is reloaded after submit.
-            // May use UserAction, with new kind of action (AFTER_EDIT_RIGHTS)
-            // ?
-            return null;
-
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
+        if (acp == null) {
+            acp = new ACPImpl();
         }
+
+        acp.setRules(modifiableEntries.toArray(new UserEntry[0]));
+
+        currentDocument.setACP(acp, true);
+        documentManager.save();
+        Events.instance().raiseEvent(EventNames.DOCUMENT_SECURITY_CHANGED);
+
+        // Reread data from the backend to be sure the current bean
+        // state is uptodate w.r.t. the real backend state
+        rebuildSecurityData();
+
+        // Type currentType = typeManager.getType(currentDocument.getType());
+        // return applicationController.getPageOnEditedDocumentType(currentType);
+
+        // Forward to default view, that's not what we want
+        // return navigationContext.getActionResult(currentDocument, UserAction.AFTER_EDIT);
+
+        // Temporary fix, to avoid forward to default_view.
+        // The same page is reloaded after submit.
+        // May use UserAction, with new kind of action (AFTER_EDIT_RIGHTS)?
+        return null;
     }
 
     @Override
@@ -404,12 +391,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
 
     @Override
     public boolean getCanRemoveSecurityRules() throws ClientException {
-        try {
-            return documentManager.hasPermission(currentDocument.getRef(), "WriteSecurity")
-                    && !getSelectedRows().isEmpty();
-        } catch (Exception e) {
-            throw ClientException.wrap(e);
-        }
+        return documentManager.hasPermission(currentDocument.getRef(), "WriteSecurity") && !getSelectedRows().isEmpty();
     }
 
     /**
@@ -428,13 +410,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
     }
 
     public List<UserVisiblePermission> getVisibleUserPermissions(String documentType) throws ClientException {
-        try {
-            return Framework.getLocalService(PermissionProvider.class).getUserVisiblePermissionDescriptors(documentType);
-        } catch (ClientException e) {
-            throw e;
-        } catch (Throwable t) {
-            throw new ClientException("Unable to get PermissionProvider", t);
-        }
+        return Framework.getService(PermissionProvider.class).getUserVisiblePermissionDescriptors(documentType);
     }
 
     @Override
@@ -634,20 +610,16 @@ public class SecurityActionsBean extends InputController implements SecurityActi
 
     protected String[] getPermissionsToCheck() throws ClientException {
         if (CACHED_PERMISSION_TO_CHECK == null) {
-            try {
-                PermissionProvider pprovider = Framework.getService(PermissionProvider.class);
-                List<String> aggregatedPerms = new LinkedList<String>();
-                for (String seedPerm : SEED_PERMISSIONS_TO_CHECK) {
-                    aggregatedPerms.add(seedPerm);
-                    String[] compoundPerms = pprovider.getPermissionGroups(seedPerm);
-                    if (compoundPerms != null) {
-                        aggregatedPerms.addAll(Arrays.asList(compoundPerms));
-                    }
+            PermissionProvider pprovider = Framework.getService(PermissionProvider.class);
+            List<String> aggregatedPerms = new LinkedList<String>();
+            for (String seedPerm : SEED_PERMISSIONS_TO_CHECK) {
+                aggregatedPerms.add(seedPerm);
+                String[] compoundPerms = pprovider.getPermissionGroups(seedPerm);
+                if (compoundPerms != null) {
+                    aggregatedPerms.addAll(Arrays.asList(compoundPerms));
                 }
-                CACHED_PERMISSION_TO_CHECK = aggregatedPerms.toArray(new String[aggregatedPerms.size()]);
-            } catch (Exception e) {
-                throw new ClientException(e);
             }
+            CACHED_PERMISSION_TO_CHECK = aggregatedPerms.toArray(new String[aggregatedPerms.size()]);
         }
         return CACHED_PERMISSION_TO_CHECK;
     }

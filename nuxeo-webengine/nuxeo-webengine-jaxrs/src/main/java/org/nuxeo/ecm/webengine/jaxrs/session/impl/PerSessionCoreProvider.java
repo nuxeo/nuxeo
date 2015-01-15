@@ -111,13 +111,14 @@ public class PerSessionCoreProvider extends CoreSessionProvider<Ref> implements 
         try {
             lc = Framework.login();
             destroy();
-        } catch (Throwable e) {
-            log.error(e);
+        } catch (LoginException e) {
+            log.error(e, e);
         } finally {
             if (lc != null) {
                 try {
                     lc.logout();
                 } catch (LoginException e) {
+                    log.error(e, e);
                 }
             }
         }

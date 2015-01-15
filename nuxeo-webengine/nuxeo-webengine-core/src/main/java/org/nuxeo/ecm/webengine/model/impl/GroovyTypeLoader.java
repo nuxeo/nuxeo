@@ -82,14 +82,14 @@ public class GroovyTypeLoader {
                 }
             } else {
                 cache.getParentFile().mkdirs();
-                Writer w = new BufferedWriter(new FileWriter(cache));
-                try {
+                boolean completedAbruptly = true;
+                try (Writer w = new BufferedWriter(new FileWriter(cache))) {
                     scan(root, null, w);
-                    w.close();
-                } catch (Throwable t) {
-                    w.close();
-                    cache.delete();
-                    throw WebException.wrap(t);
+                    completedAbruptly = false;
+                } finally {
+                    if (completedAbruptly) {
+                        cache.delete();
+                    }
                 }
             }
         } catch (IOException | ClassNotFoundException e) {

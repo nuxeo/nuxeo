@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.helpers;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import javax.faces.context.FacesContext;
@@ -199,7 +200,7 @@ public class LogoHelper implements Serializable {
                 context.responseComplete();
             }
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("error while sending logo: ", e);
         }
 

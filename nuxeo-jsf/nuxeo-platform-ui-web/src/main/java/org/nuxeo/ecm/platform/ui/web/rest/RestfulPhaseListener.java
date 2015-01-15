@@ -33,11 +33,12 @@ import javax.faces.event.PhaseListener;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.transaction.Transaction;
-import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -95,8 +96,7 @@ public class RestfulPhaseListener implements PhaseListener {
                 // to be restored first.
                 service.applyRequestParameters(context);
             }
-        } catch (Exception e) { // deals with interrupt below
-            ExceptionUtils.checkInterrupt(e);
+        } catch (RuntimeException | SystemException | NotSupportedException e) {
             handleException(context, e);
         }
     }

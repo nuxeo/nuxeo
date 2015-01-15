@@ -34,7 +34,7 @@ public class Defaults {
             info.printStackTrace(new PrintStream(bos));
             return bos.toString();
         } catch (IOException e) {
-            throw new Error("Cannot write stack to byte array", e);
+            throw new RuntimeException("Cannot write stack to byte array", e);
         }
     }
 }

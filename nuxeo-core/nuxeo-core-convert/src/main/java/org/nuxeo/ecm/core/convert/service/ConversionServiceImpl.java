@@ -234,7 +234,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     protected final Map<String, ConverterCheckResult> checkResultCache = new HashMap<>();
 
     @Override
-    public ConverterCheckResult isConverterAvailable(String converterName, boolean refresh) throws ConversionException {
+    public ConverterCheckResult isConverterAvailable(String converterName, boolean refresh) throws ConverterNotRegistered {
 
         if (!refresh) {
             if (checkResultCache.containsKey(converterName)) {

@@ -23,6 +23,7 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.nuxeo.ecm.webapp.helpers.EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.core.util.DataModelProperties;
@@ -76,6 +78,7 @@ import org.nuxeo.ecm.webapp.filemanager.FileManageActions;
 import org.nuxeo.ecm.webapp.filemanager.NxUploadedFile;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.event.FileUploadEvent;
+import org.richfaces.model.UploadedFile;
 
 /**
  * @since 6.0
@@ -324,7 +327,7 @@ public class ImportActions implements Serializable {
                 chain.add(params);
                 return (List<DocumentModel>) as.run(ctx, chain);
             }
-        } catch (Exception e) {
+        } catch (OperationException e) {
             log.error("Error while executing automation batch ", e);
             throw ClientException.wrap(e);
         } finally {
@@ -382,11 +385,12 @@ public class ImportActions implements Serializable {
             } else {
                 file = File.createTempFile("ImportActions", null);
             }
-            InputStream in = uploadEvent.getUploadedFile().getInputStream();
-            org.nuxeo.common.utils.FileUtils.copyToFile(in, file);
-            uploadedFiles.add(new NxUploadedFile(uploadEvent.getUploadedFile().getName(),
-                    uploadEvent.getUploadedFile().getContentType(), file));
-        } catch (Exception e) {
+            UploadedFile uploadedFile = uploadEvent.getUploadedFile();
+            try (InputStream in = uploadedFile.getInputStream()) {
+                org.nuxeo.common.utils.FileUtils.copyToFile(in, file);
+            }
+            uploadedFiles.add(new NxUploadedFile(uploadedFile.getName(), uploadedFile.getContentType(), file));
+        } catch (IOException e) {
             log.error(e, e);
         }
     }

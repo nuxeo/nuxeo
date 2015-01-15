@@ -21,7 +21,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.management.api.Probe;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
@@ -186,8 +185,7 @@ public class ProbeManagerImpl implements ProbeManager {
                     probeInfoImpl.failureCount += 1;
                     probeInfoImpl.lastFailureDate = probeInfoImpl.lastRunnedDate;
                 }
-            } catch (Exception e) { // deals with interrupt below
-                ExceptionUtils.checkInterrupt(e);
+            } catch (RuntimeException e) {
                 probeInfoImpl.failureCount += 1;
                 probeInfoImpl.lastFailureDate = new Date();
                 probeInfoImpl.lastFailureStatus = ProbeStatus.newError(e);

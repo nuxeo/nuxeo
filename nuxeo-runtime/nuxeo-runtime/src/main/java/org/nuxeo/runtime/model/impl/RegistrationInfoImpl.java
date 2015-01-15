@@ -21,7 +21,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -288,8 +287,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     protected ComponentInstance createComponentInstance() {
         try {
             return new ComponentInstanceImpl(this);
-        } catch (Exception e) { // deals with interrupt below
-            ExceptionUtils.checkInterrupt(e);
+        } catch (RuntimeException e) {
             String msg = "Failed to instantiate component: " + implementation;
             log.error(msg, e);
             msg += " (" + e.toString() + ')';
@@ -323,8 +321,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             if (ci instanceof Component) {
                 try {
                     ((Component) ci).applicationStarted(component);
-                } catch (Exception e) { // deals with interrupt below
-                    ExceptionUtils.checkInterrupt(e);
+                } catch (RuntimeException e) {
                     log.error("Component notification of application started failed.", e);
                     state = RESOLVED;
                 }
@@ -356,8 +353,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 xt.setComponent(component);
                 try {
                     manager.registerExtension(xt);
-                } catch (Exception e) { // deals with interrupt below
-                    ExceptionUtils.checkInterrupt(e);
+                } catch (RuntimeException e) {
                     String msg = "Failed to register extension to: " + xt.getTargetComponent() + ", xpoint: "
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
@@ -376,8 +372,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 ComponentManagerImpl.loadContributions(this, xt);
                 try {
                     component.registerExtension(xt);
-                } catch (Exception e) { // deals with interrupt below
-                    ExceptionUtils.checkInterrupt(e);
+                } catch (RuntimeException e) {
                     String msg = "Failed to register extension to: " + xt.getTargetComponent() + ", xpoint: "
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
@@ -402,8 +397,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             for (Extension xt : extensions) {
                 try {
                     manager.unregisterExtension(xt);
-                } catch (Exception e) { // deals with interrupt below
-                    ExceptionUtils.checkInterrupt(e);
+                } catch (RuntimeException e) {
                     log.error(
                             "Failed to unregister extension. Contributor: " + xt.getComponent() + " to "
                                     + xt.getTargetComponent() + "; xpoint: " + xt.getExtensionPoint(), e);

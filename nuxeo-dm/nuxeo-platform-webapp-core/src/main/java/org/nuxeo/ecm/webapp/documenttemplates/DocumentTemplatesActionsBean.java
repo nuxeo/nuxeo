@@ -166,44 +166,35 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
         // Remove this once it is available from the context
         DocumentRef currentDocRef = navigationContext.getCurrentDocument().getRef();
 
-        try {
-            PathSegmentService pss;
-            try {
-                pss = Framework.getService(PathSegmentService.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
-            String name = pss.generatePathSegment(doc);
-            DocumentModel created = documentManager.copy(new IdRef(selectedTemplateId), currentDocRef, name);
+        PathSegmentService pss = Framework.getService(PathSegmentService.class);
+        String name = pss.generatePathSegment(doc);
+        DocumentModel created = documentManager.copy(new IdRef(selectedTemplateId), currentDocRef, name);
 
-            // Update from user input.
-            // This part is for now harcoded for Workspace type.
-            String title = (String) doc.getProperty("dublincore", "title");
-            created.setProperty("dublincore", "title", title);
+        // Update from user input.
+        // This part is for now harcoded for Workspace type.
+        String title = (String) doc.getProperty("dublincore", "title");
+        created.setProperty("dublincore", "title", title);
 
-            String descr = (String) doc.getProperty("dublincore", "description");
-            created.setProperty("dublincore", "description", descr);
+        String descr = (String) doc.getProperty("dublincore", "description");
+        created.setProperty("dublincore", "description", descr);
 
-            Blob blob = (Blob) doc.getProperty("file", "content");
-            if (blob != null) {
-                created.setProperty("file", "content", blob);
-                String fname = (String) doc.getProperty("file", "filename");
-                created.setProperty("file", "filename", fname);
-            }
-
-            created = documentManager.saveDocument(created);
-            documentManager.save();
-
-            selectedTemplateId = "";
-
-            logDocumentWithTitle("Created the document: ", created);
-            facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("document_saved"),
-                    resourcesAccessor.getMessages().get(created.getType()));
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
-            return navigationContext.navigateToDocument(created, "after-create");
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
+        Blob blob = (Blob) doc.getProperty("file", "content");
+        if (blob != null) {
+            created.setProperty("file", "content", blob);
+            String fname = (String) doc.getProperty("file", "filename");
+            created.setProperty("file", "filename", fname);
         }
+
+        created = documentManager.saveDocument(created);
+        documentManager.save();
+
+        selectedTemplateId = "";
+
+        logDocumentWithTitle("Created the document: ", created);
+        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("document_saved"),
+                resourcesAccessor.getMessages().get(created.getType()));
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
+        return navigationContext.navigateToDocument(created, "after-create");
     }
 
     @Override

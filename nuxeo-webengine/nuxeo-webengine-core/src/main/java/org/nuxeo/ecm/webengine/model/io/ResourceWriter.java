@@ -40,12 +40,7 @@ public class ResourceWriter implements MessageBodyWriter<Resource> {
 
     public void writeTo(Resource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
-
-        try {
-            t.getView("index").render(entityStream);
-        } catch (Throwable e) {
-            throw WebException.wrap("Failed to render resource", e);
-        }
+        t.getView("index").render(entityStream);
     }
 
     public long getSize(Resource arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {

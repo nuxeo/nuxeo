@@ -97,11 +97,7 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
 
     protected TrashService getTrashService() {
         if (trashService == null) {
-            try {
-                trashService = Framework.getService(TrashService.class);
-            } catch (Exception e) {
-                throw new RuntimeException("TrashService not available", e);
-            }
+            trashService = Framework.getService(TrashService.class);
         }
         return trashService;
     }

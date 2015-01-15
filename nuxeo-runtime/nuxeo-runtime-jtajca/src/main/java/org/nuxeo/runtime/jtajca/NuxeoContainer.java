@@ -197,8 +197,7 @@ public class NuxeoContainer {
             for (ConnectionManagerWrapper cm : connectionManagers.values()) {
                 try {
                     cm.dispose();
-                } catch (Exception cause) { // deals with interrupt below
-                    ExceptionUtils.checkInterrupt(cause);
+                } catch (RuntimeException cause) {
                     errors.addSuppressed(cause);
                 }
             }
@@ -421,8 +420,7 @@ public class NuxeoContainer {
         for (String name : connectionManagers.keySet()) {
             try {
                 resetConnectionManager(name);
-            } catch (Exception cause) { // deals with interrupt below
-                ExceptionUtils.checkInterrupt(cause);
+            } catch (RuntimeException cause) {
                 errors.addSuppressed(cause);
             }
         }

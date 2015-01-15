@@ -181,8 +181,8 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
                 } else {
                     log.error(String.format("Class %s should follow %s interface", filterClass, Filter.class.getName()));
                 }
-            } catch (Throwable e) {
-                log.error(e);
+            } catch (ReflectiveOperationException e) {
+                log.error(e, e);
             }
         }
 
@@ -209,8 +209,8 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
             } else {
                 log.error(String.format("Class %s should follow %s interface", leafFilterClass, Filter.class.getName()));
             }
-        } catch (Throwable e) {
-            log.error(e);
+        } catch (ReflectiveOperationException e) {
+            log.error(e, e);
         }
         return null;
     }
@@ -236,8 +236,8 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
                 } else {
                     log.error(String.format("Class %s should follow %s interface", sorterClass, Sorter.class.getName()));
                 }
-            } catch (Throwable e) {
-                log.error(e);
+            } catch (ReflectiveOperationException e) {
+                log.error(e, e);
             }
         }
 

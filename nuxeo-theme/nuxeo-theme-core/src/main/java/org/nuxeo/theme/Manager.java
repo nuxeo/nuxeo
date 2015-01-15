@@ -96,11 +96,7 @@ public final class Manager {
                 return null;
             }
         };
-        try {
-            URLStreamHandlerFactoryInstaller.installURLStreamHandlerFactory(shf);
-        } catch (Throwable e) {
-            throw new Error("Cannot install nxtheme protocol handler");
-        }
+        URLStreamHandlerFactoryInstaller.installURLStreamHandlerFactory(shf);
     }
 
     public static void resetProtocols() {

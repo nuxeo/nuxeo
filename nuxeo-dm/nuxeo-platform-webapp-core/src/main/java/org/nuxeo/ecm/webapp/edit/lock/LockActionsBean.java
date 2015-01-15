@@ -116,7 +116,7 @@ public class LockActionsBean implements LockActions {
                 canLock = lock == null
                         && (userName.isAdministrator() || isManagerOnDocument(document.getRef()) || documentManager.hasPermission(
                                 document.getRef(), WRITE_PROPERTIES)) && !document.isVersion();
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 log.debug("evaluation of document lock " + document.getName() + " failed (" + e.getMessage()
                         + ": returning false");
                 canLock = false;
@@ -165,7 +165,7 @@ public class LockActionsBean implements LockActions {
                                     document.getRef(), WRITE_PROPERTIES)))
                             && !document.isVersion();
                 }
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 log.debug("evaluation of document lock " + document.getName() + " failed (" + e.getMessage()
                         + ": returning false");
                 canUnlock = false;
@@ -248,22 +248,15 @@ public class LockActionsBean implements LockActions {
                     || userName.getName().equals(lockDetails.get(LOCKER))) {
 
                 if (!documentManager.hasPermission(document.getRef(), WRITE_PROPERTIES)) {
+                    // Here administrator should always be able to unlock so
+                    // we need to grant him this possibility even if it
+                    // doesn't have the write permission.
 
-                    try {
-                        // Here administrator should always be able to unlock
-                        // so
-                        // we need to grant him this possibility even if it
-                        // doesn't have the write permission.
+                    new UnrestrictedUnlocker(document.getRef()).runUnrestricted();
 
-                        new UnrestrictedUnlocker(document.getRef()).runUnrestricted();
+                    documentManager.save(); // process invalidations from unrestricted session
 
-                        documentManager.save(); // process invalidations from
-                                                // unrestricted session
-
-                        message = "document.unlock";
-                    } catch (Exception e) {
-                        throw new ClientException(e.getMessage());
-                    }
+                    message = "document.unlock";
                 } else {
                     documentManager.removeLock(document.getRef());
                     documentManager.save();

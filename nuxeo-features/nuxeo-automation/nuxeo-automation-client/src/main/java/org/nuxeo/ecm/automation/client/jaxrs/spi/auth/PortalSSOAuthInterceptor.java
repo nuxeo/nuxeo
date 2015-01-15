@@ -60,7 +60,7 @@ public class PortalSSOAuthInterceptor extends RequestInterceptor {
         try {
             hashedToken = MessageDigest.getInstance("MD5").digest(clearToken.getBytes());
         } catch (NoSuchAlgorithmException e) {
-            throw new Error("Cannot compute token", e);
+            throw new RuntimeException("Cannot compute token", e);
         }
 
         String base64HashedToken = Base64.encode(hashedToken);

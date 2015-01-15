@@ -40,6 +40,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -1520,7 +1521,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 }
             }
         } catch (ClientException e2) {
-            throw new Error("An unexpected error occured", e2);
+            throw new ClientRuntimeException("An unexpected error occured", e2);
         }
 
         for (ACE ace : filteredACEbyPerm) {
@@ -1552,8 +1553,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                     usernames.removeAll(users);
                 }
             } catch (ClientException e) {
-                // Unexpected: throwing a runtime exception
-                throw new Error("An unexpected error occured while getting user ids", e);
+                throw new ClientRuntimeException("An unexpected error occured while getting user ids", e);
             }
 
         }

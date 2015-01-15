@@ -75,7 +75,7 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
         try {
             return object.clone();
         } catch (CloneNotSupportedException e) {
-            throw new Error("Must never happens");
+            throw new RuntimeException("Must never happens");
         }
     }
 

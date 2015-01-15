@@ -146,24 +146,16 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
     }
 
     public void updateGroup() throws ClientException {
-        try {
-            userManager.updateGroup(selectedGroup);
-            detailsMode = DETAILS_VIEW_MODE;
-            fireSeamEvent(GROUPS_LISTING_CHANGED);
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
+        userManager.updateGroup(selectedGroup);
+        detailsMode = DETAILS_VIEW_MODE;
+        fireSeamEvent(GROUPS_LISTING_CHANGED);
     }
 
     public void deleteGroup() throws ClientException {
-        try {
-            userManager.deleteGroup(selectedGroup);
-            selectedGroup = null;
-            showUserOrGroup = false;
-            fireSeamEvent(GROUPS_LISTING_CHANGED);
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
+        userManager.deleteGroup(selectedGroup);
+        selectedGroup = null;
+        showUserOrGroup = false;
+        fireSeamEvent(GROUPS_LISTING_CHANGED);
     }
 
     public boolean getAllowCreateGroup() throws ClientException {

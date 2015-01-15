@@ -44,17 +44,9 @@ public class URLWriter implements MessageBodyWriter<URL> {
 
     public void writeTo(URL t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
-        InputStream in = null;
-        try {
-            in = t.openStream();
+        try (InputStream in = t.openStream()) {
             FileUtils.copy(in, entityStream);
             entityStream.flush();
-        } catch (Throwable e) {
-            throw WebException.wrap("Failed to render resource", e);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 

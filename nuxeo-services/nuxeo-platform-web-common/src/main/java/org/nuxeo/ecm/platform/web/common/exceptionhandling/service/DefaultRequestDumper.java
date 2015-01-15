@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.ExceptionUtils;
 
 /**
  * @author arussel
@@ -49,8 +48,7 @@ public class DefaultRequestDumper implements RequestDumper {
             try {
                 Object obj = request.getAttribute(name);
                 builder.append(obj.toString());
-            } catch (Exception exc) { // TODO what exactly is caught?
-                ExceptionUtils.checkInterrupt(exc);
+            } catch (RuntimeException exc) {
                 // avoid errors when printing the error dump
                 log.error("ERROR TRYING TO GET THIS REQUEST ATTRIBUTE VALUE: " + name);
                 builder.append("ERROR TRYING TO GET THIS REQUEST ATTRIBUTE VALUE");

@@ -61,7 +61,7 @@ public interface ConversionService {
      * <li>Error Message / Installation message if converter dependencies are not available an successful check.
      * </ul>
      */
-    ConverterCheckResult isConverterAvailable(String converterName, boolean refresh) throws ConversionException;
+    ConverterCheckResult isConverterAvailable(String converterName, boolean refresh) throws ConverterNotRegistered;
 
     /**
      * Checks for converter availability.

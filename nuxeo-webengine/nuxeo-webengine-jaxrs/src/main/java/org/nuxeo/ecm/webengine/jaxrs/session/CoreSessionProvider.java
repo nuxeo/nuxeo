@@ -17,8 +17,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -27,8 +25,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class CoreSessionProvider<REF extends SessionRef> {
-
-    private static final Log log = LogFactory.getLog(CoreSessionProvider.class);
 
     protected Map<String, REF> sessions;
 
@@ -81,11 +77,7 @@ public abstract class CoreSessionProvider<REF extends SessionRef> {
 
     protected void destroy() {
         for (SessionRef ref : getSessions()) {
-            try {
-                ref.destroy();
-            } catch (Throwable t) {
-                log.error("Failed to destroy core session", t);
-            }
+            ref.destroy();
         }
         sessions = null;
     }

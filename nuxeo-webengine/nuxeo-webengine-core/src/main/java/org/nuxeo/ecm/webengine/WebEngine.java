@@ -77,7 +77,7 @@ public class WebEngine implements ResourceLocator {
             p.load(in);
             mimeTypes.putAll(p);
         } catch (IOException e) {
-            throw new Error("Failed to load mime types");
+            throw new RuntimeException("Failed to load mime types", e);
         } finally {
             IOUtils.closeQuietly(in);
         }

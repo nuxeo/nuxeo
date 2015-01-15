@@ -1914,7 +1914,7 @@ class CUP$parser$actions {
 
             /* . . . . . . */
         default:
-            throw new Exception("Invalid action number found in internal parse table");
+            throw new RuntimeException("Invalid action number found in internal parse table");
 
         }
     }

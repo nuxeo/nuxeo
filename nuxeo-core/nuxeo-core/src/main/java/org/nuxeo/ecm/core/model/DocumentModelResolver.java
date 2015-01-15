@@ -61,12 +61,12 @@ import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
  * <xs:simpleType name="favoriteDocument1">
  *   <xs:restriction base="xs:string" ref:resolver="documentResolver" />
  * </xs:simpleType>
- * 
+ *
  * <!-- store id -->
  * <xs:simpleType name="favoriteDocument2">
  *   <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="id" />
  * </xs:simpleType>
- * 
+ *
  * <!-- store path -->
  * <xs:simpleType name="bestDocumentRepositoryPlace">
  *   <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="path" />
@@ -135,26 +135,15 @@ public class DocumentModelResolver implements ObjectResolver {
         if (value != null && value instanceof String) {
             REF ref = REF.fromValue((String) value);
             if (ref != null) {
-                CoreSession session = null;
-                try {
-                    session = CoreInstance.openCoreSession(ref.repo);
+                try (CoreSession session = CoreInstance.openCoreSession(ref.repo)) {
                     switch (mode) {
                     case ID_REF:
                         return session.exists(new IdRef(ref.ref));
                     case PATH_REF:
                         return session.exists(new PathRef(ref.ref));
                     }
-                } catch (LocalException le) {
+                } catch (LocalException le) { // no such repo
                     return false;
-                } finally {
-                    if (session != null) {
-                        try {
-                            session.close();
-                            session = null;
-                        } catch (Exception e) {
-                            session = null;
-                        }
-                    }
                 }
             }
         }
@@ -167,9 +156,7 @@ public class DocumentModelResolver implements ObjectResolver {
         if (value != null && value instanceof String) {
             REF ref = REF.fromValue((String) value);
             if (ref != null) {
-                CoreSession session = null;
-                try {
-                    session = CoreInstance.openCoreSession(ref.repo);
+                try (CoreSession session = CoreInstance.openCoreSession(ref.repo)) {
                     try {
                         switch (mode) {
                         case ID_REF:
@@ -182,17 +169,8 @@ public class DocumentModelResolver implements ObjectResolver {
                             return null;
                         }
                     }
-                } catch (LocalException le) {
+                } catch (LocalException le) { // no such repo
                     return null;
-                } finally {
-                    if (session != null) {
-                        try {
-                            session.close();
-                            session = null;
-                        } catch (Exception e) {
-                            session = null;
-                        }
-                    }
                 }
             }
         }

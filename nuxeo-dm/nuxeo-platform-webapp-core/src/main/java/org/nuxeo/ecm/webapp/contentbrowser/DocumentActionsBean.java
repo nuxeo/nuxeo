@@ -177,49 +177,40 @@ public class DocumentActionsBean extends InputController implements DocumentActi
     }
 
     public String getFileName(DocumentModel doc) throws ClientException {
-        try {
-            String name = null;
-            if (filename != null && !"".equals(filename)) {
-                name = filename;
-            } else {
-                // try to fetch it from given field
-                if (filenameFieldFullName != null) {
-                    String[] s = filenameFieldFullName.split(":");
-                    try {
-                        name = (String) doc.getProperty(s[0], s[1]);
-                    } catch (ArrayIndexOutOfBoundsException err) {
-                        // ignore, filename is not really set
-                    }
-                }
-                // try to fetch it from title
-                if (name == null || "".equals(name)) {
-                    name = (String) doc.getProperty("dublincore", "title");
+        String name = null;
+        if (filename != null && !"".equals(filename)) {
+            name = filename;
+        } else {
+            // try to fetch it from given field
+            if (filenameFieldFullName != null) {
+                String[] s = filenameFieldFullName.split(":");
+                try {
+                    name = (String) doc.getProperty(s[0], s[1]);
+                } catch (ArrayIndexOutOfBoundsException err) {
+                    // ignore, filename is not really set
                 }
             }
-            return name;
-
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
+            // try to fetch it from title
+            if (name == null || "".equals(name)) {
+                name = (String) doc.getProperty("dublincore", "title");
+            }
         }
+        return name;
     }
 
     @Deprecated
     @Override
     public String download() throws ClientException {
-        try {
-            if (fileFieldFullName == null) {
-                return null;
-            }
-
-            String[] s = fileFieldFullName.split(":");
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
-            Blob blob = (Blob) currentDocument.getProperty(s[0], s[1]);
-            String filename = getFileName(currentDocument);
-            FacesContext context = FacesContext.getCurrentInstance();
-            return ComponentUtils.download(context, blob, filename);
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
+        if (fileFieldFullName == null) {
+            return null;
         }
+
+        String[] s = fileFieldFullName.split(":");
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        Blob blob = (Blob) currentDocument.getProperty(s[0], s[1]);
+        String filename = getFileName(currentDocument);
+        FacesContext context = FacesContext.getCurrentInstance();
+        return ComponentUtils.download(context, blob, filename);
     }
 
     @Override
@@ -273,34 +264,30 @@ public class DocumentActionsBean extends InputController implements DocumentActi
 
     @Override
     public String updateDocument(DocumentModel doc, Boolean restoreCurrentTabs) throws ClientException {
-        try {
-            String tabId = null;
-            String subTabId = null;
-            boolean restoreTabs = Boolean.TRUE.equals(restoreCurrentTabs);
-            if (restoreTabs) {
-                // save current tabs
-                tabId = webActions.getCurrentTabId();
-                subTabId = webActions.getCurrentSubTabId();
-            }
-            Events.instance().raiseEvent(EventNames.BEFORE_DOCUMENT_CHANGED, doc);
-            doc = documentManager.saveDocument(doc);
-            throwUpdateComments(doc);
-            documentManager.save();
-            // some changes (versioning) happened server-side, fetch new one
-            navigationContext.invalidateCurrentDocument();
-            facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("document_modified"),
-                    resourcesAccessor.getMessages().get(doc.getType()));
-            EventManager.raiseEventsOnDocumentChange(doc);
-            String res = navigationContext.navigateToDocument(doc, "after-edit");
-            if (restoreTabs) {
-                // restore previously stored tabs;
-                webActions.setCurrentTabId(tabId);
-                webActions.setCurrentSubTabId(subTabId);
-            }
-            return res;
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
+        String tabId = null;
+        String subTabId = null;
+        boolean restoreTabs = Boolean.TRUE.equals(restoreCurrentTabs);
+        if (restoreTabs) {
+            // save current tabs
+            tabId = webActions.getCurrentTabId();
+            subTabId = webActions.getCurrentSubTabId();
         }
+        Events.instance().raiseEvent(EventNames.BEFORE_DOCUMENT_CHANGED, doc);
+        doc = documentManager.saveDocument(doc);
+        throwUpdateComments(doc);
+        documentManager.save();
+        // some changes (versioning) happened server-side, fetch new one
+        navigationContext.invalidateCurrentDocument();
+        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("document_modified"),
+                resourcesAccessor.getMessages().get(doc.getType()));
+        EventManager.raiseEventsOnDocumentChange(doc);
+        String res = navigationContext.navigateToDocument(doc, "after-edit");
+        if (restoreTabs) {
+            // restore previously stored tabs;
+            webActions.setCurrentTabId(tabId);
+            webActions.setCurrentSubTabId(subTabId);
+        }
+        return res;
     }
 
     // kept for BBB
@@ -323,19 +310,15 @@ public class DocumentActionsBean extends InputController implements DocumentActi
 
     @Override
     public String updateDocumentAsNewVersion() throws ClientException {
-        try {
-            DocumentModel changeableDocument = navigationContext.getChangeableDocument();
-            changeableDocument.putContextData(org.nuxeo.common.collections.ScopeType.REQUEST,
-                    VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
-            changeableDocument = documentManager.saveDocument(changeableDocument);
+        DocumentModel changeableDocument = navigationContext.getChangeableDocument();
+        changeableDocument.putContextData(org.nuxeo.common.collections.ScopeType.REQUEST,
+                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        changeableDocument = documentManager.saveDocument(changeableDocument);
 
-            facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("new_version_created"));
-            // then follow the standard pageflow for edited documents
-            EventManager.raiseEventsOnDocumentChange(changeableDocument);
-            return navigationContext.navigateToDocument(changeableDocument, "after-edit");
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
+        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("new_version_created"));
+        // then follow the standard pageflow for edited documents
+        EventManager.raiseEventsOnDocumentChange(changeableDocument);
+        return navigationContext.navigateToDocument(changeableDocument, "after-edit");
     }
 
     @Override
@@ -350,15 +333,11 @@ public class DocumentActionsBean extends InputController implements DocumentActi
         // we cannot use typesTool as intermediary since the DataModel callback
         // will alter whatever type we set
         typesTool.setSelectedType(docType);
-        try {
-            Map<String, Object> context = new HashMap<String, Object>();
-            context.put(CoreEventConstants.PARENT_PATH, navigationContext.getCurrentDocument().getPathAsString());
-            DocumentModel changeableDocument = documentManager.createDocumentModel(typeName, context);
-            navigationContext.setChangeableDocument(changeableDocument);
-            return navigationContext.getActionResult(changeableDocument, UserAction.CREATE);
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
+        Map<String, Object> context = new HashMap<String, Object>();
+        context.put(CoreEventConstants.PARENT_PATH, navigationContext.getCurrentDocument().getPathAsString());
+        DocumentModel changeableDocument = documentManager.createDocumentModel(typeName, context);
+        navigationContext.setChangeableDocument(changeableDocument);
+        return navigationContext.getActionResult(changeableDocument, UserAction.CREATE);
     }
 
     @Override
@@ -379,37 +358,28 @@ public class DocumentActionsBean extends InputController implements DocumentActi
             log.debug("Document " + newDocument.getName() + " already created");
             return navigationContext.navigateToDocument(newDocument, "after-create");
         }
-        try {
-            PathSegmentService pss;
-            try {
-                pss = Framework.getService(PathSegmentService.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
+        PathSegmentService pss = Framework.getService(PathSegmentService.class);
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (parentDocumentPath == null) {
+            if (currentDocument == null) {
+                // creating item at the root
+                parentDocumentPath = documentManager.getRootDocument().getPathAsString();
+            } else {
+                parentDocumentPath = navigationContext.getCurrentDocument().getPathAsString();
             }
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
-            if (parentDocumentPath == null) {
-                if (currentDocument == null) {
-                    // creating item at the root
-                    parentDocumentPath = documentManager.getRootDocument().getPathAsString();
-                } else {
-                    parentDocumentPath = navigationContext.getCurrentDocument().getPathAsString();
-                }
-            }
-
-            newDocument.setPathInfo(parentDocumentPath, pss.generatePathSegment(newDocument));
-
-            newDocument = documentManager.createDocument(newDocument);
-            documentManager.save();
-
-            logDocumentWithTitle("Created the document: ", newDocument);
-            facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("document_saved"),
-                    resourcesAccessor.getMessages().get(newDocument.getType()));
-
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
-            return navigationContext.navigateToDocument(newDocument, "after-create");
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
         }
+
+        newDocument.setPathInfo(parentDocumentPath, pss.generatePathSegment(newDocument));
+
+        newDocument = documentManager.createDocument(newDocument);
+        documentManager.save();
+
+        logDocumentWithTitle("Created the document: ", newDocument);
+        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("document_saved"),
+                resourcesAccessor.getMessages().get(newDocument.getType()));
+
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
+        return navigationContext.navigateToDocument(newDocument, "after-create");
     }
 
     @Override

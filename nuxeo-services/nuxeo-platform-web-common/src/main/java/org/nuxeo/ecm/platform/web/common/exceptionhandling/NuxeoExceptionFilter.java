@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -63,22 +64,22 @@ public class NuxeoExceptionFilter implements Filter {
         return exceptionHandler;
     }
 
-    private void handleException(HttpServletRequest request, HttpServletResponse response, Throwable t)
+    private void handleException(HttpServletRequest request, HttpServletResponse response, Exception e)
             throws IOException, ServletException {
-        getHandler().handleException(request, response, t);
+        getHandler().handleException(request, response, e);
     }
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
         try {
             chain.doFilter(request, response);
-        } catch (Throwable t) {
+        } catch (RuntimeException | IOException | ServletException e) {
             try {
-                handleException((HttpServletRequest) request, (HttpServletResponse) response, t);
-            } catch (ServletException e) {
-                throw e;
-            } catch (Throwable newThrowable) {
-                throw new ServletException(newThrowable);
+                handleException((HttpServletRequest) request, (HttpServletResponse) response, e);
+            } catch (ServletException ee) {
+                throw ee;
+            } catch (RuntimeException | IOException ee) {
+                throw new ServletException(ee);
             }
         }
     }

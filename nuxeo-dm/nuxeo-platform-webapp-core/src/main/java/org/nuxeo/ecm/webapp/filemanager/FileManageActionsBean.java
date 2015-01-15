@@ -71,6 +71,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
 import org.richfaces.event.FileUploadEvent;
+import org.richfaces.model.UploadedFile;
 
 @Name("FileManageActions")
 @Scope(ScopeType.EVENT)
@@ -138,14 +139,9 @@ public class FileManageActionsBean implements FileManageActions {
 
     protected FileManager fileManager;
 
-    protected FileManager getFileManagerService() throws ClientException {
+    protected FileManager getFileManagerService() {
         if (fileManager == null) {
-            try {
-                fileManager = Framework.getService(FileManager.class);
-            } catch (Exception e) {
-                log.error("Unable to get FileManager service ", e);
-                throw new ClientException("Unable to get FileManager service ", e);
-            }
+            fileManager = Framework.getService(FileManager.class);
         }
         return fileManager;
     }
@@ -253,7 +249,7 @@ public class FileManageActionsBean implements FileManageActions {
         DocumentModel createdDoc;
         try {
             createdDoc = getFileManagerService().createDocumentFromBlob(documentManager, blob, path, true, fullName);
-        } catch (Throwable t) {
+        } catch (ClientException | IOException t) {
             Throwable unwrappedError = ExceptionHelper.unwrapException(t);
             if (ExceptionHelper.isSecurityError(unwrappedError)) {
                 // security check failed
@@ -306,7 +302,7 @@ public class FileManageActionsBean implements FileManageActions {
             DocumentModel createdDoc;
             try {
                 createdDoc = getFileManagerService().createFolder(documentManager, fullName, path);
-            } catch (Throwable t) {
+            } catch (ClientException | IOException t) {
                 Throwable unwrappedError = ExceptionHelper.unwrapException(t);
                 if (ExceptionHelper.isSecurityError(unwrappedError)) {
                     // security check failed
@@ -532,15 +528,16 @@ public class FileManageActionsBean implements FileManageActions {
                 } else {
                     file = File.createTempFile("FileManageActionsFile", null);
                 }
-                InputStream in = uploadEvent.getUploadedFile().getInputStream();
-                org.nuxeo.common.utils.FileUtils.copyToFile(in, file);
-                temp.add(new NxUploadedFile(uploadEvent.getUploadedFile().getName(),
-                        uploadEvent.getUploadedFile().getContentType(), file));
+                UploadedFile uploadedFile = uploadEvent.getUploadedFile();
+                try (InputStream in = uploadedFile.getInputStream()) {
+                    org.nuxeo.common.utils.FileUtils.copyToFile(in, file);
+                }
+                temp.add(new NxUploadedFile(uploadedFile.getName(), uploadedFile.getContentType(), file));
                 fileUploadHolder.setUploadedFiles(temp);
             } else {
                 log.error("Unable to reach fileUploadHolder");
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error(e, e);
         }
     }
@@ -602,7 +599,7 @@ public class FileManageActionsBean implements FileManageActions {
             files.remove(file);
             current.setPropertyValue(FILES_PROPERTY, files);
             documentActions.updateDocument(current, Boolean.TRUE);
-        } catch (Exception e) {
+        } catch (IndexOutOfBoundsException | ClientException e) {
             log.error(e, e);
         }
     }

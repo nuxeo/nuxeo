@@ -92,17 +92,12 @@ public class ThemeActionsBean implements ThemeActions {
     }
 
     protected ThemeStylingService getStylingService() {
-        try {
-            ThemeStylingService service = Framework.getService(ThemeStylingService.class);
-            if (service == null) {
-                log.error("Missing ThemeStylingService");
-                return null;
-            }
-            return service;
-        } catch (Exception e) {
-            log.error(e);
+        ThemeStylingService service = Framework.getService(ThemeStylingService.class);
+        if (service == null) {
+            log.error("Missing ThemeStylingService");
             return null;
         }
+        return service;
     }
 
 }

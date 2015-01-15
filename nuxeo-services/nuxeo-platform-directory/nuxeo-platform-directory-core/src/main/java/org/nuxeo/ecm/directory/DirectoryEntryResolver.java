@@ -118,19 +118,11 @@ public class DirectoryEntryResolver implements ObjectResolver {
         checkConfig();
         if (value != null && value instanceof String) {
             String id = (String) value;
-            Session session = null;
+            Session session = directory.getSession();
             try {
-                session = directory.getSession();
                 return session.hasEntry(id);
             } finally {
-                if (session != null) {
-                    try {
-                        session.close();
-                        session = null;
-                    } catch (Exception e) {
-                        session = null;
-                    }
-                }
+                session.close();
             }
         }
         return false;
@@ -141,19 +133,11 @@ public class DirectoryEntryResolver implements ObjectResolver {
         checkConfig();
         if (value != null && value instanceof String) {
             String id = (String) value;
-            Session session = null;
+            Session session = directory.getSession();
             try {
-                session = directory.getSession();
                 return session.getEntry(id);
             } finally {
-                if (session != null) {
-                    try {
-                        session.close();
-                        session = null;
-                    } catch (Exception e) {
-                        session = null;
-                    }
-                }
+                session.close();
             }
         }
         return null;

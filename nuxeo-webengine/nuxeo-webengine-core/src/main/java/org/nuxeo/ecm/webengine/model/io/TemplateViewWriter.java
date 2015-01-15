@@ -46,12 +46,7 @@ public class TemplateViewWriter implements MessageBodyWriter<TemplateView> {
 
     public void writeTo(TemplateView t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
-        try {
-            t.render(entityStream);
-        } catch (Throwable e) {
-            log.error(e, e);
-            throw WebException.wrap("Failed to render resource", e);
-        }
+        t.render(entityStream);
     }
 
     public long getSize(TemplateView arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {

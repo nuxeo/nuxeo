@@ -203,7 +203,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         }
         // Non OAuth calls can pass through
         else {
-            throw new Error("request is not a outh request");
+            throw new RuntimeException("request is not a outh request");
         }
     }
 

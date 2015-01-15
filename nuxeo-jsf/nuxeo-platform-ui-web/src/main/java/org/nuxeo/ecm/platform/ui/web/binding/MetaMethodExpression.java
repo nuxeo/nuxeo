@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 
 import javax.el.ELContext;
 import javax.el.ELException;
@@ -33,8 +32,6 @@ import javax.el.MethodInfo;
 import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 /**
@@ -56,8 +53,6 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 public class MetaMethodExpression extends MethodExpression implements Serializable {
 
     private static final long serialVersionUID = -2721042412903607760L;
-
-    private static final Log log = LogFactory.getLog(MetaMethodExpression.class);
 
     private MethodExpression originalMethodExpression;
 
@@ -117,14 +112,10 @@ public class MetaMethodExpression extends MethodExpression implements Serializab
                             new Class[0]);
                     try {
                         res = newMeth.invoke(context, null);
-                    } catch (Throwable t) {
-                        if (t instanceof InvocationTargetException) {
-                            // respect the javadoc contract of the overridden
-                            // method
-                            throw new ELException(t.getCause());
-                        } else {
-                            throw new ELException(t);
-                        }
+                    } catch (ELException e) {
+                        throw e;
+                    } catch (RuntimeException e) {
+                        throw new ELException(e);
                     }
                 } else {
                     res = expression;

@@ -57,7 +57,7 @@ public class FileWriter implements MessageBodyWriter<File> {
             in = new FileInputStream(t);
             FileUtils.copy(in, entityStream);
             entityStream.flush();
-        } catch (Throwable e) {
+        } catch (RuntimeException | IOException e) {
             Throwable unwrappedError = ExceptionHelper.unwrapException(e);
             if (ExceptionHelper.isClientAbortError(unwrappedError)) {
                 // ignore but log as warn

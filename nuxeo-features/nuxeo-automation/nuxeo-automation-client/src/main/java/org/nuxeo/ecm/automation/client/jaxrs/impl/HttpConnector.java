@@ -104,7 +104,8 @@ public class HttpConnector implements Connector {
                     try {
                         entity = new StringEntity(obj.toString(), Charsets.UTF_8);
                     } catch (UnsupportedCharsetException e) {
-                        throw new Error("Cannot encode into UTF-8", e);
+                        // cannot happen
+                        throw new RuntimeException("Cannot encode into UTF-8", e);
                     }
                 }
                 post.setEntity(entity);

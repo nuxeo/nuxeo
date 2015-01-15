@@ -284,31 +284,27 @@ public class EditorImageActionsBean extends InputController implements EditorIma
         log.debug("Entering searchDocuments with keywords: " + searchKeywords);
 
         // use page providers
-        try {
-            PageProviderService ppService = Framework.getService(PageProviderService.class);
-            Map<String, Serializable> props = new HashMap<String, Serializable>();
-            props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) documentManager);
-            PageProvider<DocumentModel> pp = null;
-            if (searchKeywords != null) {
-                searchKeywords = searchKeywords.trim();
-                if (searchKeywords.length() > 0) {
-                    if (!searchKeywords.equals("*")) {
-                        // full text search
-                        pp = (PageProvider<DocumentModel>) ppService.getPageProvider(PP_SEARCH_MEDIA_BY_TITLE, null,
-                                null, null, props, new Object[] { typeDocument, searchKeywords });
-                    }
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) documentManager);
+        PageProvider<DocumentModel> pp = null;
+        if (searchKeywords != null) {
+            searchKeywords = searchKeywords.trim();
+            if (searchKeywords.length() > 0) {
+                if (!searchKeywords.equals("*")) {
+                    // full text search
+                    pp = (PageProvider<DocumentModel>) ppService.getPageProvider(PP_SEARCH_MEDIA_BY_TITLE, null, null,
+                            null, props, new Object[] { typeDocument, searchKeywords });
                 }
             }
-
-            // If the pageprovider is null, we search all medias for the specific type
-            if (pp == null) {
-                pp = (PageProvider<DocumentModel>) ppService.getPageProvider(PP_SEARCH_MEDIA_ALL, null, null, null,
-                        props, new Object[] { typeDocument });
-            }
-            return pp.getCurrentPage();
-        } catch (Exception e) {
-            throw new ClientException(e);
         }
+
+        // If the pageprovider is null, we search all medias for the specific type
+        if (pp == null) {
+            pp = (PageProvider<DocumentModel>) ppService.getPageProvider(PP_SEARCH_MEDIA_ALL, null, null, null, props,
+                    new Object[] { typeDocument });
+        }
+        return pp.getCurrentPage();
     }
 
     @Override

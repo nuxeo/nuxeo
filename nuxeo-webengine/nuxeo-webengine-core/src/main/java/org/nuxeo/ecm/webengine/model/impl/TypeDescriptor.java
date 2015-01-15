@@ -109,7 +109,7 @@ public class TypeDescriptor implements Cloneable {
         try {
             return (TypeDescriptor) super.clone();
         } catch (CloneNotSupportedException e) {
-            throw new Error("Canot happen");
+            throw new RuntimeException("Canot happen");
         }
     }
 

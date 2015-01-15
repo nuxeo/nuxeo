@@ -109,9 +109,9 @@ public class MethodValueExpression extends ValueExpression implements Externaliz
         try {
             EvaluationContext evalCtx = new EvaluationContext(arg0, functionMapper, variableMapper);
             return methodExpression.invoke(evalCtx, paramTypesClasses);
-        } catch (Throwable t) {
+        } catch (RuntimeException e) {
             throw new ELException("Error while evaluation MethodValueExpression "
-                    + methodExpression.getExpressionString(), t);
+                    + methodExpression.getExpressionString(), e);
         }
     }
 

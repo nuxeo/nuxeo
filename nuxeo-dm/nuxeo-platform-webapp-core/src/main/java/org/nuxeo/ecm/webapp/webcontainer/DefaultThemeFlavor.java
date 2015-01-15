@@ -18,8 +18,6 @@ package org.nuxeo.ecm.webapp.webcontainer;
 
 import javax.faces.context.FacesContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.negotiation.Negotiator;
 import org.nuxeo.theme.negotiation.Scheme;
@@ -35,20 +33,14 @@ import org.nuxeo.theme.styling.service.descriptors.Flavor;
  */
 public class DefaultThemeFlavor implements Scheme {
 
-    private static final Log log = LogFactory.getLog(DefaultThemeFlavor.class);
-
     @Override
     public String getOutcome(Object context) {
         FacesContext faces = (FacesContext) context;
         String theme = (String) faces.getExternalContext().getRequestMap().get(
                 Negotiator.NEGOTIATION_RESULT_PREFIX + Negotiator.NEGOTIATION_OBJECT.theme.name());
         if (theme != null) {
-            try {
-                ThemeStylingService service = Framework.getService(ThemeStylingService.class);
-                return service.getDefaultFlavorName(theme);
-            } catch (Exception e) {
-                log.error(e);
-            }
+            ThemeStylingService service = Framework.getService(ThemeStylingService.class);
+            return service.getDefaultFlavorName(theme);
         }
         return null;
     }

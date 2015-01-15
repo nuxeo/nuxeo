@@ -25,8 +25,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.View;
 
 /**
@@ -36,17 +35,12 @@ import org.nuxeo.ecm.platform.rendering.api.View;
 @Produces("*/*")
 public class ViewMessageBodyWriter implements MessageBodyWriter<View> {
 
-    private static final Log log = LogFactory.getLog(ViewMessageBodyWriter.class);
-
-    // @ResourceContext private HttpServletRequest request;
-
     @Override
     public void writeTo(View t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         try {
             t.render(entityStream);
-        } catch (Throwable e) {
-            log.error("Failed to render view: " + t, e);
+        } catch (RenderingException e) {
             throw new IOException("Failed to render view: " + t, e);
         }
     }

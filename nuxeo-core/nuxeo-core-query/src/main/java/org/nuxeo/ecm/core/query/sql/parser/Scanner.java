@@ -654,7 +654,7 @@ public class Scanner implements java_cup.runtime.Scanner {
             message = ZZ_ERROR_MSG[ZZ_UNKNOWN_ERROR];
         }
 
-        throw new Error(message);
+        throw new RuntimeException(message);
     }
 
     /**

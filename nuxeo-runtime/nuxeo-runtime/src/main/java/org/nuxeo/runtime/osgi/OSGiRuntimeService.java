@@ -39,7 +39,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.AbstractRuntimeService;
@@ -486,8 +485,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         for (RegistrationInfo ri : ris) {
             try {
                 ri.notifyApplicationStarted();
-            } catch (Exception e) { // deals with interrupt below
-                ExceptionUtils.checkInterrupt(e);
+            } catch (RuntimeException e) {
                 log.error("Failed to notify component '" + ri.getName() + "' on application started", e);
             }
         }
@@ -514,8 +512,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         }
         try {
             persistence.loadPersistedComponents();
-        } catch (Exception e) { // deals with interrupt below
-            ExceptionUtils.checkInterrupt(e);
+        } catch (RuntimeException | IOException e) {
             log.error("Failed to load persisted components", e);
         }
         // deploy a fake component that is marking the end of startup

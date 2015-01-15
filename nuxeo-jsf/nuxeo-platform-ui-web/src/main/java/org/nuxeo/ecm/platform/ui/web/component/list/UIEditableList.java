@@ -49,7 +49,6 @@ import javax.faces.event.PhaseId;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.platform.el.FieldAdapterManager;
@@ -938,8 +937,6 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
                 }
 
             }
-        } catch (Exception e) { // TODO what is caught here?
-            throw ExceptionUtils.runtimeException(e);
         } finally {
             setRowIndex(oldIndex);
             restoreRequestMapModelValue(requestMapValue);
@@ -1137,8 +1134,6 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
                     break;
                 }
             }
-        } catch (Exception e) { // TODO what is caught here?
-            throw ExceptionUtils.runtimeException(e);
         } finally {
             setRowIndex(oldIndex);
             restoreRequestMapModelValue(requestMapValue);
@@ -1192,8 +1187,8 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
                 pushComponentToEL(context, UIComponent.getCompositeComponentParent(this));
                 callback.invokeContextCallback(context, this);
                 return true;
-            } catch (Exception e) { // TODO what is caught here?
-                ExceptionUtils.checkInterrupt(e);
+            } catch (RuntimeException e) {
+                // TODO what is caught here?
                 throw new FacesException(e);
             } finally {
                 popComponentFromEL(context);
@@ -1217,8 +1212,6 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
                     break;
                 }
             }
-        } catch (Exception e) { // TODO what is caught here?
-            throw ExceptionUtils.runtimeException(e);
         } finally {
             setRowIndex(oldIndex);
             restoreRequestMapModelValue(requestMapValue);
