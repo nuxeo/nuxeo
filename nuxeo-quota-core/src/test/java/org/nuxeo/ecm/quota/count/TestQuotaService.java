@@ -22,8 +22,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -72,7 +74,10 @@ public class TestQuotaService {
     @Inject
     protected EventService eventService;
 
+    public static final String NXP14769 = "NXP-14769: NoSuchDocumentException";
+
     @Test
+    @Ignore(NXP14769)
     public void testSetQuotaOnUserWorkspaces() throws Exception {
         DocumentRef uwRef1;
         DocumentRef uwRef2;
