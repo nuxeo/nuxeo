@@ -34,7 +34,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 /**
  * Feature to run tests needing the {@link TokenAuthenticationService} and a Jetty server configured with a webapp
  * deployment descriptor.
- * 
+ *
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
  */
