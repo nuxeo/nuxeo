@@ -88,4 +88,13 @@ public class NuxeoValueHolderBean implements Serializable {
         return values.get(id);
     }
 
+    /**
+     * Returns true if bean holds a value for given id.
+     *
+     * @since 7.2
+     */
+    public boolean hasState(String id) {
+        return values.containsKey(id);
+    }
+
 }

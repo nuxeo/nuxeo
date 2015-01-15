@@ -117,7 +117,7 @@ public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
                 NuxeoValueHolderBean bean = c.lookupBean(faces);
                 if (bean != null) {
                     String fid = c.getFaceletId();
-                    if (fid != null) {
+                    if (fid != null && bean.hasState(fid)) {
                         return bean.getState(fid);
                     }
                 }
