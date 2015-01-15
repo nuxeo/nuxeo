@@ -30,6 +30,10 @@ import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor;
+import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
+import org.nuxeo.ecm.platform.ui.web.auth.token.TokenAuthenticator;
 import org.nuxeo.ecm.tokenauth.TokenAuthenticationException;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
@@ -51,6 +55,8 @@ public class TokenAuthenticationServlet extends HttpServlet {
 
     private static final Log log = LogFactory.getLog(TokenAuthenticationServlet.class);
 
+    protected static final String TOKEN_AUTH_PLUGIN_NAME = "TOKEN_AUTH";
+
     protected static final String APPLICATION_NAME_PARAM = "applicationName";
 
     protected static final String DEVICE_ID_PARAM = "deviceId";
@@ -63,6 +69,22 @@ public class TokenAuthenticationServlet extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        // Don't provide token for anonymous user unless 'allowAnonymous' parameter is explicitly set to true in
+        // the authentication plugin configuration
+        Principal principal = req.getUserPrincipal();
+        if (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAnonymous()) {
+            PluggableAuthenticationService authenticationService = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
+                    PluggableAuthenticationService.NAME);
+            AuthenticationPluginDescriptor tokenAuthPluginDesc = authenticationService.getDescriptor(TOKEN_AUTH_PLUGIN_NAME);
+            if (tokenAuthPluginDesc == null
+                    || !(Boolean.valueOf(tokenAuthPluginDesc.getParameters().get(TokenAuthenticator.ALLOW_ANONYMOUS_KEY)))) {
+                log.debug("Anonymous user is not allowed to acquire an authentication token.");
+                resp.sendError(HttpStatus.SC_UNAUTHORIZED);
+                return;
+            }
+
+        }
 
         // Get request parameters
         String applicationName = req.getParameter(APPLICATION_NAME_PARAM);
@@ -97,7 +119,6 @@ public class TokenAuthenticationServlet extends HttpServlet {
         }
 
         // Get user name from request Principal
-        Principal principal = req.getUserPrincipal();
         if (principal == null) {
             resp.sendError(HttpStatus.SC_UNAUTHORIZED);
             return;
