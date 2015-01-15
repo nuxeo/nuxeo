@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -81,9 +82,15 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin {
                     "No user bound to the token '%s' (maybe it has been revoked), returning null.",
                     token));
             return null;
-        } else {
-            return new UserIdentificationInfo(userName, userName);
         }
+        // Don't retrieve identity for anonymous user unless 'allowAnonymous' parameter is explicitly set to true in
+        // the authentication plugin configuration
+        UserManager userManager = Framework.getService(UserManager.class);
+        if (userManager.getAnonymousUserId().equals(userName) && !allowAnonymous) {
+            log.debug("Anonymous user is not allowed to get authenticated by token, returning null.");
+            return null;
+        }
+        return new UserIdentificationInfo(userName, userName);
     }
 
     /**
