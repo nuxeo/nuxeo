@@ -19,6 +19,9 @@
       principal will be
       created from the userName if the user exists in the user directory.
 
+      Set the allowAnonymous parameter to true to
+      allow token authentication for anonymous user.
+
       @author
       Antoine Taillefer (ataillefer@nuxeo.com)
     </documentation>
@@ -26,6 +29,9 @@
     <authenticationPlugin name="TOKEN_AUTH" enabled="true"
       class="org.nuxeo.ecm.platform.ui.web.auth.token.TokenAuthenticator">
       <loginModulePlugin>Trusting_LM</loginModulePlugin>
+      <parameters>
+        <parameter name="allowAnonymous">false</parameter>
+      </parameters>
     </authenticationPlugin>
 
   </extension>
