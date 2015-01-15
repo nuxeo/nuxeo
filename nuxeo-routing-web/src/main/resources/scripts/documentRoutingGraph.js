@@ -1,7 +1,5 @@
 //jsPlumb options
-var dynamicAnchors = [ [ 0.5, 1, 0, 1 ], [ 0.25, 1, 0, 1 ], [ 0.75, 1, 0, 1 ],
-		[ 0, 1, 0, 1 ], [ 1, 1, 0, 1 ], [ 0.375, 1, 0, 1 ], [ 0.625, 1, 0, 1 ],
-		[ 0.125, 1, 0, 1 ], [ 0.875, 1, 0, 1 ] ];
+var dynamicAnchors = [ 0.5, 0.25, 0.75, 0, 1, 0.375, 0.625, 0.125, 0.875 ];
 
 var connectionColors = [ "#92e1aa", "#F7BE81", "#BDBDBD", "#5882FA", "#E1F5A9",
 		"#FA5858", "#FFFF00", "#FF0000", "#D8F781" ];
@@ -104,6 +102,13 @@ function displayGraph(data, divContainerTargetId) {
 	});
 	// initialize connection source points
 	var nodes = [];
+
+	// determine number of source endpoints per node
+	var sourceEndpoints = {};
+	jQuery.each(data['transitions'], function() {
+		sourceEndpoints[this.nodeSourceId] = (sourceEndpoints[this.nodeSourceId] || 0) + 1;
+	});
+
 	// use fixed dynamic anchors, only 9 items supported, after this everything
 	// is displayed on the center
 	jQuery.each(data['transitions'], function() {
@@ -111,11 +116,12 @@ function displayGraph(data, divContainerTargetId) {
 		if (anchorIndex > 9) {
 			anchorIndex = 0;
 		}
-		;
 		nodes.push(this.nodeSourceId);
+		// determine anchors for this node
+		var anchors = dynamicAnchors.slice(0, sourceEndpoints[this.nodeSourceId]).sort();
 		// increase index
 		var endPointSource = jsPlumb.addEndpoint(this.nodeSourceId, {
-			anchor : dynamicAnchors[anchorIndex]
+			anchor : [ anchors[anchorIndex], 1, 0, 1 ]
 		}, sourceEndpointOptions);
 		var endPointTarget = jsPlumb.addEndpoint(this.nodeTargetId, {
 			anchor : "TopCenter"
