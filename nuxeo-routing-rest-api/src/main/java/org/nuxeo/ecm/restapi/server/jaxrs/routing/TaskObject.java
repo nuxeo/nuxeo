@@ -68,7 +68,7 @@ public class TaskObject extends DefaultObject {
     @GET
     public List<Task> getUserRelatedWorkflowTasks(@QueryParam("userId") String userId,
             @QueryParam("workflowInstanceId") String workflowInstanceId) {
-        return Framework.getLocalService(DocumentRoutingService.class).getUserRelatedWorkflowTasks(userId,
+        return Framework.getService(DocumentRoutingService.class).getUserRelatedWorkflowTasks(userId,
                 workflowInstanceId, getContext().getCoreSession());
     }
 

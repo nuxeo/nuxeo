@@ -74,7 +74,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
         "org.nuxeo.ecm.platform.restapi.server", "org.nuxeo.ecm.platform.routing.default",
         "org.nuxeo.ecm.platform.filemanager.api", "org.nuxeo.ecm.platform.filemanager.core",
         "org.nuxeo.ecm.platform.mimetype.api", "org.nuxeo.ecm.platform.mimetype.core", "org.nuxeo.ecm.actions" })
-public class RoutingEndpointTest extends BaseTest {
+public class WorkflowEndpointTest extends BaseTest {
 
     @Inject
     ObjectCodecService objectCodecService;
@@ -84,7 +84,7 @@ public class RoutingEndpointTest extends BaseTest {
         assertEquals(1, node.get("entries").size());
         Iterator<JsonNode> elements = node.get("entries").getElements();
         JsonNode element = elements.next();
-        String taskId = element.get("id").toString();
+        String taskId = element.get("id").getTextValue();
         JsonNode actors = element.get("actors");
         assertEquals(1, actors.size());
         String actor = actors.getElements().next().get("id").getTextValue();
@@ -203,7 +203,7 @@ public class RoutingEndpointTest extends BaseTest {
         response = getResponse(RequestType.GET, "/task");
         String taskId = assertActorIsAdministrator(response);
 
-        // Check GET /task i.e. pending tasks for current user
+        // Check GET /task/{taskId}
         response = getResponse(RequestType.GET, "/task/" + taskId);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
@@ -247,16 +247,16 @@ public class RoutingEndpointTest extends BaseTest {
 
         Iterator<JsonNode> elements = node.get("entries").getElements();
 
-        List<String> expectedPaths = Arrays.asList(new String[] { "/document-route-models-root/SerialDocumentReview",
-                "/document-route-models-root/ParallelDocumentReview" });
-        Collections.sort(expectedPaths);
-        List<String> realPaths = new ArrayList<String>();
+        List<String> expectedNames = Arrays.asList(new String[] { "wf.serialDocumentReview.SerialDocumentReview",
+                "wf.parallelDocumentReview.ParallelDocumentReview" });
+        Collections.sort(expectedNames);
+        List<String> realNames = new ArrayList<String>();
         while (elements.hasNext()) {
             JsonNode element = elements.next();
-            realPaths.add(element.get("path").getTextValue());
+            realNames.add(element.get("name").getTextValue());
         }
-        Collections.sort(realPaths);
-        assertEquals(expectedPaths, realPaths);
+        Collections.sort(realNames);
+        assertEquals(expectedNames, realNames);
     }
 
     @Test
