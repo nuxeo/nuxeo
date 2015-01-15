@@ -43,7 +43,7 @@ import com.google.inject.Inject;
 
 /**
  * Tests the {@link TokenAuthenticator}.
- *
+ * 
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
  */
@@ -71,9 +71,8 @@ public class TestTokenAuthenticator {
         }
 
         // Mock token authentication callback
-        TokenAuthenticationCallback cb = new TokenAuthenticationCallback(
-                "Administrator", "myFavoriteApp", "Ubuntu box 64 bits",
-                "This is my personal Linux box", "rw");
+        TokenAuthenticationCallback cb = new TokenAuthenticationCallback("Administrator", "myFavoriteApp",
+                "Ubuntu box 64 bits", "This is my personal Linux box", "rw");
         assertNull(cb.getLocalToken());
 
         // Get client session using callback, should acquire a remote token,
@@ -83,10 +82,9 @@ public class TestTokenAuthenticator {
         assertEquals("Administrator", clientSession.getLogin().getUsername());
 
         // Check automation call
-        String testDocId = session.getDocument(
-                new PathRef(TokenAuthenticationRepositoryInit.getTestDocPath())).getId();
-        Document testDoc = (Document) clientSession.newRequest(FetchDocument.ID).setHeader(
-                "X-NXDocumentProperties", "dublincore").set("value", testDocId).execute();
+        String testDocId = session.getDocument(new PathRef(TokenAuthenticationRepositoryInit.getTestDocPath())).getId();
+        Document testDoc = (Document) clientSession.newRequest(FetchDocument.ID).setHeader("X-NXDocumentProperties",
+                "dublincore").set("value", testDocId).execute();
         assertNotNull(testDoc);
         assertEquals("My test doc", testDoc.getTitle());
         assertEquals("For test purpose.", testDoc.getString("dc:description"));
