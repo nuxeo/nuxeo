@@ -67,7 +67,7 @@
           "method":"POST",
           "nickname":"createWorkflowInstanceOnDocument",
           "type":"workflowRequest",
-          <@params names = ["workflowBody"]/>,
+          <@params names = ["workflowRequestBody"]/>,
           "summary":"Start a workflow instance on the given document",
           "notes": "",
           <#include "views/doc/errorresponses.ftl"/>

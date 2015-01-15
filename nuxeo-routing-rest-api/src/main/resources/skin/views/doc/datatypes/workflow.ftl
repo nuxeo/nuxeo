@@ -1,5 +1,5 @@
-"documentRoute" : {
-    "id": "documentRoute",
+"workflow" : {
+    "id": "workflow",
     "type": "any",
     "required": false,
     "uniqueItems": false,
@@ -44,8 +44,8 @@
 
 },
 
- "documentRoutes" : {
-      "id": "documentRoutes",
+ "workflows" : {
+      "id": "workflows",
       "uniqueItems": false,
       "properties": {
         "entity-type": {
@@ -57,7 +57,7 @@
           "uniqueItems": false,
           "type": "array",
           "items": {
-            "$ref":"documentRoute"
+            "$ref":"workflow"
           },
           "required": true
         }
