@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Manages user's authentication token bindings.
- *
+ * 
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
  */
@@ -69,8 +69,7 @@ public class TokenAuthenticationActionsBean implements Serializable {
         tokenAuthenticationService.revokeToken(tokenId);
 
         reset();
-        facesMessages.add(StatusMessage.Severity.INFO,
-                messages.get("label.tokenauth.revoked"));
+        facesMessages.add(StatusMessage.Severity.INFO, messages.get("label.tokenauth.revoked"));
     }
 
     public void refreshAuthTokenBindings() {

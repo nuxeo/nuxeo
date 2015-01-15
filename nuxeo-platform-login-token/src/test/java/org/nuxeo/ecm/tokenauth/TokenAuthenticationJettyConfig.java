@@ -22,9 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Allows to configure the path of the deployment descriptor of the webapp to
- * deploy.
- *
+ * Allows to configure the path of the deployment descriptor of the webapp to deploy.
+ * 
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
  */

@@ -46,7 +46,7 @@ import com.google.inject.Inject;
 
 /**
  * Tests the {@link TokenAuthenticator} in the case of an anonymous user.
- *
+ * 
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 7.2
  */
