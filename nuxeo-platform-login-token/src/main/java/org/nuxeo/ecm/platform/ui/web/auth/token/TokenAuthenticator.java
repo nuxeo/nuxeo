@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * This Authentication Plugin is configured to be used with the Trusting_LM {@link LoginModule} plugin => no password
  * check will be done, a principal will be created from the userName if the user exists in the user directory.
- * 
+ *
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
  */
@@ -76,10 +76,14 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin {
         }
         // Don't retrieve identity for anonymous user unless 'allowAnonymous' parameter is explicitly set to true in
         // the authentication plugin configuration
-        UserManager userManager = Framework.getService(UserManager.class);
-        if (userManager.getAnonymousUserId().equals(userName) && !allowAnonymous) {
-            log.debug("Anonymous user is not allowed to get authenticated by token, returning null.");
-            return null;
+        try {
+            UserManager userManager = Framework.getService(UserManager.class);
+            if (userManager.getAnonymousUserId().equals(userName) && !allowAnonymous) {
+                log.debug("Anonymous user is not allowed to get authenticated by token, returning null.");
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Cannot get UserManager service.");
         }
         return new UserIdentificationInfo(userName, userName);
     }
