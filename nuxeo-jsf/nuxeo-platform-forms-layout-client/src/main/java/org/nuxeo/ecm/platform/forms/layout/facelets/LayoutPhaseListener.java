@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.facelets;
 
-import java.util.Map;
-
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
@@ -44,8 +42,18 @@ public class LayoutPhaseListener implements PhaseListener {
     @Override
     public void beforePhase(PhaseEvent event) {
         FacesContext context = event.getFacesContext();
-        Map<String, Object> requestMap = context.getExternalContext().getRequestMap();
-        requestMap.remove(FaceletHandlerHelper.LAYOUT_ID_COUNTERS);
+        NuxeoLayoutIdManagerBean bean = lookupIdBean(context);
+        bean.resetIds();
+    }
+
+    protected static NuxeoLayoutIdManagerBean lookupIdBean(FacesContext ctx) {
+        String expr = "#{" + NuxeoLayoutIdManagerBean.NAME + "}";
+        NuxeoLayoutIdManagerBean bean = (NuxeoLayoutIdManagerBean) ctx.getApplication().evaluateExpressionGet(ctx,
+                expr, Object.class);
+        if (bean == null) {
+            throw new RuntimeException("Managed bean not found: " + expr);
+        }
+        return bean;
     }
 
     @Override
