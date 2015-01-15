@@ -35,14 +35,21 @@ import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.conn.ConnectionPoolTimeoutException;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.storage.binary.LazyBinary;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.model.ObjectListing;
@@ -61,7 +68,9 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
  * <p>
  * ***** NOTE THAT THE TESTS WILL REMOVE ALL FILES IN THE BUCKET!!! *****
  */
-public class TestS3BinaryManager extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class TestS3BinaryManager {
 
     private static final String CONTENT = "this is a file au caf\u00e9";
 
@@ -75,38 +84,50 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
 
     private static final String CONTENT3_MD5 = "025e4da7edac35ede583f5e8d51aa7ec";
 
-    protected boolean DISABLED = true;
-
     protected S3BinaryManager binaryManager;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        // NOTE THAT THE TESTS WILL REMOVE ALL FILES IN THE BUCKET!!!
-        DISABLED = Framework.getProperty(S3BinaryManager.BUCKET_NAME_KEY) == null;
-        if (!DISABLED) {
-            binaryManager = new S3BinaryManager();
-            binaryManager.initialize(new BinaryManagerDescriptor());
-            removeObjects();
+    @BeforeClass
+    public static void beforeClass() {
+        // this also checks in system properties for the configuration
+        String bucketName = Framework.getProperty(S3BinaryManager.BUCKET_NAME_KEY);
+        if (bucketName == null) {
+            // NOTE THAT THE TESTS WILL REMOVE ALL FILES IN THE BUCKET!!!
+            // ********** NEVER COMMIT THE SECRET KEYS !!! **********
+            bucketName = "CHANGETHIS";
+            String idKey = "CHANGETHIS";
+            String secretKey = "CHANGETHIS";
+            // ********** NEVER COMMIT THE SECRET KEYS !!! **********
+            Properties props = Framework.getProperties();
+            props.setProperty(S3BinaryManager.BUCKET_NAME_KEY, bucketName);
+            props.setProperty(S3BinaryManager.AWS_ID_KEY, idKey);
+            props.setProperty(S3BinaryManager.AWS_SECRET_KEY, secretKey);
         }
+        boolean disabled = bucketName.equals("CHANGETHIS");
+        assumeTrue("No AWS credentials configured", !disabled);
     }
 
-    @Override
+    @AfterClass
+    public static void afterClass() {
+        Properties props = Framework.getProperties();
+        props.remove(S3BinaryManager.CONNECTION_MAX_KEY);
+        props.remove(S3BinaryManager.CONNECTION_RETRY_KEY);
+        props.remove(S3BinaryManager.CONNECTION_TIMEOUT_KEY);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        binaryManager = new S3BinaryManager();
+        binaryManager.initialize(new BinaryManagerDescriptor());
+        removeObjects();
+    }
+
+    @After
     public void tearDown() throws Exception {
-        if (!DISABLED) {
-            removeObjects();
-            Properties props = Framework.getProperties();
-            props.remove(S3BinaryManager.CONNECTION_MAX_KEY);
-            props.remove(S3BinaryManager.CONNECTION_RETRY_KEY);
-            props.remove(S3BinaryManager.CONNECTION_TIMEOUT_KEY);
-        }
-        super.tearDown();
+        removeObjects();
     }
 
     @Test
     public void testS3BinaryManager() throws Exception {
-        assumeTrue(!DISABLED);
-
         Binary binary = binaryManager.getBinary(CONTENT_MD5);
         assertTrue(binary instanceof LazyBinary);
         if (binary.getStream() != null) {
@@ -154,8 +175,6 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
      */
     @Test
     public void testS3BinaryManagerGC() throws Exception {
-        assumeTrue(!DISABLED);
-
         Binary binary = binaryManager.getBinary(CONTENT_MD5);
         assertTrue(binary instanceof LazyBinary);
 
@@ -224,8 +243,6 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
 
     @Test
     public void testS3BinaryManagerOverwrite() throws Exception {
-        assumeTrue(!DISABLED);
-
         // store binary
         byte[] bytes = CONTENT.getBytes("UTF-8");
         Binary binary = binaryManager.getBinary(new ByteArrayInputStream(bytes));
@@ -243,8 +260,6 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
 
     @Test
     public void testS3MaxConnections() throws Exception {
-        assumeTrue(!DISABLED);
-
         // cleaned by tearDown
         Properties props = Framework.getProperties();
         props.put(S3BinaryManager.CONNECTION_MAX_KEY, "1");
