@@ -44,15 +44,21 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class TokenAuthenticator implements NuxeoAuthenticationPlugin {
 
+    public static final String ALLOW_ANONYMOUS_KEY = "allowAnonymous";
+
     private static final Log log = LogFactory.getLog(TokenAuthenticator.class);
 
     protected static final String TOKEN_HEADER = "X-Authentication-Token";
 
+    protected boolean allowAnonymous = false;
+
+    @Override
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse, String baseURL) {
         return false;
     }
 
+    @Override
     public UserIdentificationInfo handleRetrieveIdentity(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
@@ -75,15 +81,19 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin {
         }
     }
 
+    @Override
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
         return false;
     }
 
+    @Override
     public void initPlugin(Map<String, String> parameters) {
-        // Nothing to do as the authenticationPlugin contribution has no
-        // parameters
+        if (parameters.containsKey(ALLOW_ANONYMOUS_KEY)) {
+            allowAnonymous = Boolean.valueOf(parameters.get(ALLOW_ANONYMOUS_KEY));
+        }
     }
 
+    @Override
     public List<String> getUnAuthenticatedURLPrefix() {
         return null;
     }
