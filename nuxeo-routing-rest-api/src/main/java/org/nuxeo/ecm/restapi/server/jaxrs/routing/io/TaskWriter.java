@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jackson.JsonGenerationException;
@@ -48,9 +49,7 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Button;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskComment;
-import org.nuxeo.ecm.webengine.app.DefaultContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
-import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -65,12 +64,16 @@ public class TaskWriter extends EntityWriter<Task> {
     @Context
     HttpServletRequest request;
 
+    @Context
+    UriInfo uriInfo;
+
     @Override
     protected void writeEntityBody(JsonGenerator jg, Task item) throws IOException, ClientException {
-        writeTask(jg, item, request);
+        writeTask(jg, item, request, uriInfo);
     }
 
-    public static void writeTask(JsonGenerator jg, Task item, HttpServletRequest request) throws JsonGenerationException, IOException {
+    public static void writeTask(JsonGenerator jg, Task item, HttpServletRequest request, UriInfo uriInfo)
+            throws JsonGenerationException, IOException {
         jg.writeStringField("id", item.getDocument().getId());
         jg.writeStringField("name", item.getName());
         jg.writeStringField("workflowId", item.getProcessId());
@@ -80,7 +83,6 @@ public class TaskWriter extends EntityWriter<Task> {
         jg.writeStringField("dueDate", DateParser.formatW3CDateTime(item.getDueDate()));
         jg.writeStringField("type", item.getType());
         jg.writeStringField("nodeName", item.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY));
-
 
         jg.writeArrayFieldStart("targetDocumentIds");
         for (String docId : item.getTargetDocumentsIds()) {
@@ -128,25 +130,37 @@ public class TaskWriter extends EntityWriter<Task> {
             final ActionManager actionManager = Framework.getService(ActionManager.class);
             jg.writeArrayFieldStart("taskActions");
             for (Button button : node.getTaskButtons()) {
-                if (StringUtils.isBlank(button.getFilter()) || actionManager.checkFilter(button.getFilter(), createActionContext(session))) {
+                if (StringUtils.isBlank(button.getFilter())
+                        || actionManager.checkFilter(button.getFilter(), createActionContext(session))) {
                     jg.writeStartObject();
-                    jg.writeStringField("url", "/api/v1/task" + item.getDocument().getId() + "/" + button.getName());
+                    jg.writeStringField("name", button.getName());
+                    jg.writeStringField("url", uriInfo.getBaseUri() + "/api/v1/task" + item.getDocument().getId() + "/"
+                            + button.getName());
                     jg.writeStringField("label", button.getLabel());
                     jg.writeEndObject();
                 }
             }
             jg.writeEndArray();
 
+            jg.writeFieldName("layoutResource");
+            jg.writeStartObject();
+            jg.writeStringField("name", node.getTaskLayout());
+            jg.writeStringField("url",
+                    uriInfo.getBaseUri() + "/layout-manager/layouts/?layoutName=" + node.getTaskLayout());
             jg.writeEndObject();
 
-            jg.writeStringField("layoutResource", node.getTaskLayout());
+            jg.writeArrayFieldStart("schemas");
+            for (String schema : node.getDocument().getSchemas()) {
+                jg.writeStartObject();
+                jg.writeStringField("name", schema);
+                jg.writeStringField("url", uriInfo.getBaseUri() + "/api/v1/config/schemas/" + schema);
+                jg.writeEndObject();
+            }
+            jg.writeEndArray();
+
+            jg.writeEndObject();
         }
 
-    }
-
-    protected static String getURL(HttpServletRequest request) {
-        DefaultContext ctx = (DefaultContext) request.getAttribute(WebContext.class.getName());
-        return ctx.getServerURL().toString();
     }
 
     protected static ActionContext createActionContext(CoreSession session) {

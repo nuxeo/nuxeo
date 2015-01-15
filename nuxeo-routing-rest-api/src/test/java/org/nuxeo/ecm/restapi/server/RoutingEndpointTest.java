@@ -79,14 +79,17 @@ public class RoutingEndpointTest extends BaseTest {
     @Inject
     ObjectCodecService objectCodecService;
 
-    protected void assertActorIsAdministrator(ClientResponse response) throws JsonProcessingException, IOException {
+    protected String assertActorIsAdministrator(ClientResponse response) throws JsonProcessingException, IOException {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(1, node.get("entries").size());
         Iterator<JsonNode> elements = node.get("entries").getElements();
-        JsonNode actors = elements.next().get("actors");
+        JsonNode element = elements.next();
+        String taskId = element.get("id").toString();
+        JsonNode actors = element.get("actors");
         assertEquals(1, actors.size());
         String actor = actors.getElements().next().get("id").getTextValue();
         assertEquals("Administrator", actor);
+        return taskId;
     }
 
     protected ByteArrayOutputStream getBodyForStartReviewTaskCompletion() throws IOException {
@@ -198,15 +201,19 @@ public class RoutingEndpointTest extends BaseTest {
 
         // Check GET /task i.e. pending tasks for current user
         response = getResponse(RequestType.GET, "/task");
-        assertActorIsAdministrator(response);
+        String taskId = assertActorIsAdministrator(response);
 
-        // Check GET /task/Administrator i.e. pending tasks for Administrator
+        // Check GET /task i.e. pending tasks for current user
+        response = getResponse(RequestType.GET, "/task/" + taskId);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // Check GET /task?userId=Administrator i.e. pending tasks for Administrator
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.put("userId", Arrays.asList(new String[] { "Administrator" }));
         response = getResponse(RequestType.GET, "/task", null, queryParams, null, null);
         assertActorIsAdministrator(response);
 
-        // Check GET /task/Administrator/workflow/{workflowInstanceId} i.e. pending tasks for Administrator
+        // Check GET /task?workflowInstanceId={workflowInstanceId} i.e. pending tasks for Administrator
         queryParams.put("workflowInstanceId", Arrays.asList(new String[] { createdWorflowInstanceId }));
         response = getResponse(RequestType.GET, "/task", null, queryParams, null, null);
         assertActorIsAdministrator(response);

@@ -46,7 +46,7 @@ public class WorkflowModelObject extends DefaultObject {
     public Response getWorkflowModels(@Context UriInfo uriInfo) {
         String query = String.format("SELECT * FROM %s", DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE).replaceAll(
                 " ", "%20");
-        return redirect("/api/v1/query?query=" + query);
+        return redirect(uriInfo.getBaseUri() + "/api/v1/query?query=" + query);
     }
 
     @GET

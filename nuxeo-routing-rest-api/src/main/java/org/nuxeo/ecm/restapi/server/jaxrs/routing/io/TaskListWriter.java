@@ -31,6 +31,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
@@ -52,6 +53,9 @@ public class TaskListWriter extends EntityListWriter<Task> {
 
     @Context
     HttpServletRequest request;
+
+    @Context
+    UriInfo uriInfo;
 
     @Override
     protected String getEntityType() {
@@ -84,7 +88,7 @@ public class TaskListWriter extends EntityListWriter<Task> {
             for (Task docRoute : tasks) {
                 jg.writeStartObject();
                 jg.writeStringField("entity-type", "task");
-                TaskWriter.writeTask(jg, docRoute, request);
+                TaskWriter.writeTask(jg, docRoute, request, uriInfo);
                 jg.writeEndObject();
             }
             jg.writeEndArray();

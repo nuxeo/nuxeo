@@ -26,3 +26,4 @@ nuxeo-*/META-INF
 nuxeo-*/OSGI-INF
 *.bak
 integration-lib.sh
+*.swp

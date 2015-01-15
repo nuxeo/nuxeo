@@ -22,8 +22,11 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jackson.JsonGenerationException;
@@ -42,12 +45,18 @@ public class DocumentRouteWriter extends EntityWriter<DocumentRoute> {
 
     public static final String ENTITY_TYPE = "workflow";
 
+    @Context
+    HttpServletRequest request;
+
+    @Context
+    UriInfo uriInfo;
+
     @Override
     protected void writeEntityBody(JsonGenerator jg, DocumentRoute item) throws IOException, ClientException {
-        writeDocumentRoute(jg, item);
+        writeDocumentRoute(jg, item, request, uriInfo);
     }
 
-    public static void writeDocumentRoute(JsonGenerator jg, DocumentRoute item) throws JsonGenerationException, IOException {
+    public static void writeDocumentRoute(JsonGenerator jg, DocumentRoute item, HttpServletRequest request, UriInfo uriInfo) throws JsonGenerationException, IOException {
         jg.writeStringField("id", item.getDocument().getId());
         jg.writeStringField("name", item.getName());
         jg.writeStringField("initiator", item.getInitiator());
@@ -70,6 +79,7 @@ public class DocumentRouteWriter extends EntityWriter<DocumentRoute> {
                 jg.writeEndObject();
             }
             jg.writeEndArray();
+            jg.writeStringField("graphResource", uriInfo.getBaseUri() + "/api/v1/" + item.getDocument().getId() + "/graph");
         }
     }
 

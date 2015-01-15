@@ -32,6 +32,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
@@ -60,6 +61,9 @@ public class DocumentRouteListWriter extends EntityListWriter<DocumentRoute> {
 
     @Context
     protected HttpServletRequest request;
+
+    @Context
+    UriInfo uriInfo;
 
     @Override
     protected String getEntityType() {
@@ -92,7 +96,7 @@ public class DocumentRouteListWriter extends EntityListWriter<DocumentRoute> {
             for (DocumentRoute docRoute : docRoutes) {
                 jg.writeStartObject();
                 jg.writeStringField("entity-type", "workflow");
-                DocumentRouteWriter.writeDocumentRoute(jg, docRoute);
+                DocumentRouteWriter.writeDocumentRoute(jg, docRoute, request, uriInfo);
                 jg.writeEndObject();
             }
             jg.writeEndArray();

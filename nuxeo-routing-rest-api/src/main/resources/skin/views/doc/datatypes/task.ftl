@@ -84,10 +84,8 @@
         },
         "taskInfo": {
             "uniqueItems": true,
-            "type": "container",
-            "items":{
-              "$ref":"taskInfo"
-            }
+            "type": "taskInfo",
+            "required": false
         }
     }
 
@@ -107,7 +105,24 @@
         },
         "layoutResource": {
           "uniqueItems": false,
-          "type": "Date",
+          "type": "layoutResource",
+          "required": true
+        }
+      }
+},
+
+"layoutResource" : {
+  "id": "layoutResource",
+      "uniqueItems": false,
+      "properties": {
+        "name": {
+          "uniqueItems": false,
+          "type": "string",
+          "required": true
+        },
+        "url": {
+          "uniqueItems": false,
+          "type": "layoutResource",
           "required": true
         }
       }
@@ -139,12 +154,17 @@
       "id": "taskAction",
       "uniqueItems": false,
       "properties": {
+        "name": {
+          "uniqueItems": false,
+          "type": "string",
+          "required": true
+        },
         "url": {
           "uniqueItems": false,
           "type": "string",
           "required": true
         },
-       "label": {
+		"label": {
           "uniqueItems": false,
           "type": "string",
           "required": true
