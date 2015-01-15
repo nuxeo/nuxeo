@@ -51,7 +51,7 @@ public abstract class BaseIndexingWorker extends AbstractWork {
     }
 
     @Override
-    public void work() {
+    public void work() throws Exception {
         runningWorkerCount.incrementAndGet();
         pendingWorkerCount.decrementAndGet();
         try {
@@ -61,5 +61,5 @@ public abstract class BaseIndexingWorker extends AbstractWork {
         }
     }
 
-    protected abstract void doWork();
+    protected abstract void doWork() throws Exception;
 }

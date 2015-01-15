@@ -31,6 +31,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -126,9 +127,10 @@ public class TestAutomaticIndexing {
     }
 
     @After
-    public void disableSynchronousMode() {
+    public void restoreAsyncAndConsoleLog() {
         ElasticSearchInlineListener.useSyncIndexing.set(false);
         syncMode = false;
+        restoreConsoleLog();
     }
 
     public void startTransaction() {
@@ -140,10 +142,9 @@ public class TestAutomaticIndexing {
         }
     }
 
-    @After
-    public void cleanupIndexed() throws Exception {
+    @Before
+    public void setupIndex() throws Exception {
         esa.initIndexes(true);
-        restoreConsoleLog();
     }
 
     @Test

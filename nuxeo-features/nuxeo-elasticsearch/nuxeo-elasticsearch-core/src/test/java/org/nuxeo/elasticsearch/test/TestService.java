@@ -77,8 +77,5 @@ public class TestService {
         NodesInfoResponse nodeInfoResponse = esa.getClient().admin().cluster().nodesInfo(new NodesInfoRequest()).actionGet();
 
         Assert.assertEquals(1, nodeInfoResponse.getNodes().length);
-        Assert.assertTrue(nodeInfoResponse.getClusterNameAsString().startsWith("nuxeoTestCluster"));
-        Assert.assertEquals("nuxeoTestNode", nodeInfoResponse.getNodes()[0].getNode().getName());
-
     }
 }
