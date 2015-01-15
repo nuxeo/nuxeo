@@ -23,11 +23,13 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -35,7 +37,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
@@ -54,13 +55,17 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3EncryptionClient;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.CryptoConfiguration;
+import com.amazonaws.services.s3.model.EncryptedPutObjectRequest;
 import com.amazonaws.services.s3.model.EncryptionMaterials;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.Upload;
+import com.amazonaws.services.s3.transfer.model.UploadResult;
 import com.google.common.base.Objects;
 
 /**
@@ -136,12 +141,14 @@ public class S3BinaryManager extends CachingBinaryManager {
 
     protected EncryptionMaterials encryptionMaterials;
 
+    protected boolean isEncrypted;
+
     protected CryptoConfiguration cryptoConfiguration;
 
     protected AmazonS3 amazonS3;
 
-    // SuppressWarnings because of confok (keystorePass, privkeyPass)
-    @SuppressWarnings("null")
+    protected TransferManager transferManager;
+
     @Override
     public void initialize(BinaryManagerDescriptor binaryManagerDescriptor) throws IOException {
         super.initialize(binaryManagerDescriptor);
@@ -270,13 +277,14 @@ public class S3BinaryManager extends CachingBinaryManager {
                 // Get encryptionMaterials from keypair
                 encryptionMaterials = new EncryptionMaterials(keypair);
                 cryptoConfiguration = new CryptoConfiguration();
-            } catch (Exception e) {
+            } catch (IOException | GeneralSecurityException e) {
                 throw new RuntimeException("Could not read keystore: " + keystoreFile + ", alias: " + privkeyAlias, e);
             }
         }
+        isEncrypted = encryptionMaterials != null;
 
         // Try to create bucket if it doesn't exist
-        if (encryptionMaterials == null) {
+        if (!isEncrypted) {
             amazonS3 = new AmazonS3Client(awsCredentialsProvider, clientConfiguration);
         } else {
             amazonS3 = new AmazonS3EncryptionClient(awsCredentialsProvider, new StaticEncryptionMaterialsProvider(
@@ -298,6 +306,30 @@ public class S3BinaryManager extends CachingBinaryManager {
         // Create file cache
         initializeCache(cacheSizeStr, newFileStorage());
         createGarbageCollector();
+
+        transferManager = new TransferManager(amazonS3);
+        abortOldUploads();
+    }
+
+    @Override
+    public void close() {
+        // this also shuts down the AmazonS3Client
+        transferManager.shutdownNow();
+        super.close();
+    }
+
+    /**
+     * Aborts uploads that crashed and are older than 1 day.
+     *
+     * @since 7.2
+     */
+    protected void abortOldUploads() throws IOException {
+        int oneDay = 1000 * 60 * 60 * 24;
+        try {
+            transferManager.abortMultipartUploads(bucketName, new Date(System.currentTimeMillis() - oneDay));
+        } catch (AmazonClientException e) {
+            throw new IOException("Failed to abort old uploads", e);
+        }
     }
 
     /**
@@ -351,8 +383,9 @@ public class S3BinaryManager extends CachingBinaryManager {
                 log.debug("storing blob " + digest + " to S3");
             }
             String etag;
+            String key = bucketNamePrefix + digest;
             try {
-                ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName, bucketNamePrefix + digest);
+                ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName, key);
                 etag = metadata.getETag();
                 if (log.isDebugEnabled()) {
                     log.debug("blob " + digest + " is already in S3");
@@ -362,11 +395,23 @@ public class S3BinaryManager extends CachingBinaryManager {
                     throw new IOException(e);
                 }
                 // not already present -> store the blob
+                PutObjectRequest request;
+                if (!isEncrypted) {
+                    request = new PutObjectRequest(bucketName, key, file);
+                } else {
+                    request = new EncryptedPutObjectRequest(bucketName, key, file);
+                }
+                Upload upload = transferManager.upload(request);
                 try {
-                    PutObjectResult result = amazonS3.putObject(bucketName, bucketNamePrefix + digest, file);
+                    UploadResult result = upload.waitForUploadResult();
                     etag = result.getETag();
                 } catch (AmazonClientException ee) {
                     throw new IOException(ee);
+                } catch (InterruptedException ee) {
+                    // reset interrupted status
+                    Thread.currentThread().interrupt();
+                    // continue interrupt
+                    throw new RuntimeException(ee);
                 } finally {
                     if (log.isDebugEnabled()) {
                         long dtms = System.currentTimeMillis() - t0;
@@ -375,7 +420,7 @@ public class S3BinaryManager extends CachingBinaryManager {
                 }
             }
             // check transfer went ok
-            if (!(amazonS3 instanceof AmazonS3EncryptionClient) && !etag.equals(digest)) {
+            if (!isEncrypted && !etag.equals(digest)) {
                 // When the blob is not encrypted by S3, the MD5 remotely
                 // computed by S3 and passed as a Etag should match the locally
                 // computed MD5 digest.
@@ -400,7 +445,7 @@ public class S3BinaryManager extends CachingBinaryManager {
                         new GetObjectRequest(bucketName, bucketNamePrefix + digest), file);
                 // check ETag
                 String etag = metadata.getETag();
-                if (!(amazonS3 instanceof AmazonS3EncryptionClient) && !etag.equals(digest)) {
+                if (!isEncrypted && !etag.equals(digest)) {
                     log.error("Invalid ETag in S3, ETag=" + etag + " digest=" + digest);
                     return false;
                 }
@@ -430,7 +475,7 @@ public class S3BinaryManager extends CachingBinaryManager {
                 ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName, bucketNamePrefix + digest);
                 // check ETag
                 String etag = metadata.getETag();
-                if (!(amazonS3 instanceof AmazonS3EncryptionClient) && !etag.equals(digest)) {
+                if (!isEncrypted && !etag.equals(digest)) {
                     log.error("Invalid ETag in S3, ETag=" + etag + " digest=" + digest);
                     return null;
                 }
