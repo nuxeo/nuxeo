@@ -18,10 +18,8 @@
 package org.nuxeo.ecm.platform.picture.listener;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
-import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.UPDATE_PICTURE_VIEW_EVENT;
 
 import java.io.IOException;
 import java.net.URL;
@@ -43,7 +41,6 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
@@ -76,16 +73,12 @@ public class PictureChangedListener implements EventListener {
         DocumentModel doc = docCtx.getSourceDocument();
         if (doc.hasFacet(PICTURE_FACET) && !doc.isProxy()) {
             Property fileProp = doc.getProperty("file:content");
-            if (ABOUT_TO_CREATE.equals(event.getName()) || fileProp.isDirty()) {
-                Property viewsProp = doc.getProperty(AbstractPictureAdapter.VIEWS_PROPERTY);
-                // if the views are dirty, assume they're up to date
-                if (viewsProp == null || !viewsProp.isDirty()) {
-                    preFillPictureViews(docCtx.getCoreSession(), doc);
-                    // mark the document as needing picture views generation
-                    Event trigger = docCtx.newEvent(UPDATE_PICTURE_VIEW_EVENT);
-                    EventService eventService = Framework.getLocalService(EventService.class);
-                    eventService.fireEvent(trigger);
-                }
+            Property viewsProp = doc.getProperty(AbstractPictureAdapter.VIEWS_PROPERTY);
+
+            if (!viewsProp.isDirty() && (ABOUT_TO_CREATE.equals(event.getName()) || fileProp.isDirty())) {
+                preFillPictureViews(docCtx.getCoreSession(), doc);
+            } else {
+                docCtx.setProperty(PictureViewsGenerationListener.DISABLE_PICTURE_VIEWS_GENERATION_LISTENER, true);
             }
         }
     }
