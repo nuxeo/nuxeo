@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,6 +37,7 @@ import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
@@ -43,8 +46,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.restapi.jaxrs.io.directory.DirectoryEntriesWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.directory.DirectoryEntry;
 import org.nuxeo.ecm.restapi.jaxrs.io.directory.DirectoryEntryWriter;
-import org.nuxeo.ecm.restapi.test.BaseTest;
-import org.nuxeo.ecm.restapi.test.RestServerFeature;
+import org.nuxeo.runtime.api.ConnectionHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -62,7 +64,7 @@ import com.sun.jersey.api.client.ClientResponse;
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
-@RepositoryConfig(init = RestServerInit.class, cleanup = Granularity.METHOD)
+@RepositoryConfig(init = RestServerInit.class, cleanup = Granularity.METHOD, repositoryFactoryClass=PoolingRepositoryFactory.class)
 @LocalDeploy("org.nuxeo.ecm.platform.restapi.test:test-directory-contrib.xml")
 public class DirectoryTest extends BaseTest {
 
@@ -74,6 +76,23 @@ public class DirectoryTest extends BaseTest {
     */
     private static final String TESTDIRNAME = "testdir";
 
+    protected String savedSingleDS;
+
+    @Before
+    public void setSingleDataSourceMode() {
+        savedSingleDS = System.getProperty(ConnectionHelper.SINGLE_DS);
+        System.setProperty(ConnectionHelper.SINGLE_DS, "jdbc/NuxeoTestDS");
+    }
+
+    @After
+    public void resetSingleDataSourceMode() {
+        if (savedSingleDS == null || savedSingleDS.isEmpty()) {
+            System.clearProperty(ConnectionHelper.SINGLE_DS);
+        } else {
+            System.setProperty(ConnectionHelper.SINGLE_DS, savedSingleDS);
+        }
+    }
+    
     Session dirSession = null;
 
     @Override
@@ -138,6 +157,7 @@ public class DirectoryTest extends BaseTest {
         // Then the entry is updated
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
+        dirSession.close();
         docEntry = dirSession.getEntry("test1");
         assertEquals("newlabel", docEntry.getPropertyValue("vocabulary:label"));
 
@@ -160,6 +180,7 @@ public class DirectoryTest extends BaseTest {
         assertEquals(Response.Status.CREATED.getStatusCode(),
                 response.getStatus());
 
+        dirSession.close();
         docEntry = dirSession.getEntry("newtest");
         assertEquals("newlabel", docEntry.getPropertyValue("vocabulary:label"));
 
@@ -176,6 +197,7 @@ public class DirectoryTest extends BaseTest {
                 + docEntry.getId());
 
         // Then the entry is deleted
+        dirSession.close();
         assertNull(dirSession.getEntry("test2"));
 
     }

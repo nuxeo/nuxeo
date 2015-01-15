@@ -1,25 +1,31 @@
 <?xml version="1.0"?>
 <component name="test-directory-contrib">
 
+	<extension target="org.nuxeo.runtime.datasource" point="datasources">
+		<datasource name="jdbc/NuxeoTestDS" driverClassName="org.h2.Driver"
+			maxActive="20" maxIdle="5">
+			<property name="url">jdbc:h2:mem:test;DB_CLOSE_DELAY=-1</property>
+		</datasource>
+	</extension>
 
 
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
-    point="directories">
+	<extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+		point="directories">
 
-    <directory name="testdir">
-      <schema>vocabulary</schema>
-      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-      <dbUser>${nuxeo.test.vcs.user}</dbUser>
-      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>testdir</table>
-      <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
-      <createTablePolicy>always</createTablePolicy>
-      <dataFile>testdir.csv</dataFile>
-    </directory>
+		<directory name="testdir">
+			<schema>vocabulary</schema>
+			<dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+			<dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+			<dbUser>${nuxeo.test.vcs.user}</dbUser>
+			<dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+			<cacheTimeout>3600</cacheTimeout>
+			<cacheMaxSize>1000</cacheMaxSize>
+			<table>testdir</table>
+			<idField>id</idField>
+			<autoincrementIdField>false</autoincrementIdField>
+			<createTablePolicy>always</createTablePolicy>
+			<dataFile>testdir.csv</dataFile>
+		</directory>
 
-  </extension>
+	</extension>
 </component>
