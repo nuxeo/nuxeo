@@ -32,23 +32,18 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
- * Feature to run tests needing the {@link TokenAuthenticationService} and a
- * Jetty server configured with a webapp deployment descriptor.
+ * Feature to run tests needing the {@link TokenAuthenticationService} and a Jetty server configured with a webapp
+ * deployment descriptor.
  *
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
  */
-@Features({ TokenAuthenticationServiceFeature.class,
-        JettyTransactionalFeature.class })
+@Features({ TokenAuthenticationServiceFeature.class, JettyTransactionalFeature.class })
 @Jetty(port = 18080)
 @TokenAuthenticationJettyConfig(webappDescriptorPath = "web.xml")
-@Deploy({
-        "org.nuxeo.ecm.platform.login",
-        "org.nuxeo.ecm.platform.web.common:OSGI-INF/authentication-framework.xml",
-        "org.nuxeo.ecm.platform.web.common:OSGI-INF/authentication-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.platform.login", "org.nuxeo.ecm.platform.web.common:OSGI-INF/authentication-framework.xml",
         "org.nuxeo.ecm.platform.login.token.test:OSGI-INF/test-token-authentication-runtime-server-contrib.xml" })
-public class TokenAuthenticationJettyFeature extends SimpleFeature implements
-        WorkingDirectoryConfigurator {
+public class TokenAuthenticationJettyFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
 
     protected URL webappDescriptorPath;
 
@@ -59,18 +54,15 @@ public class TokenAuthenticationJettyFeature extends SimpleFeature implements
         webappDescriptorPath = runner.getTargetTestClass().getClassLoader().getResource(
                 tokenAuthenticationConfig.webappDescriptorPath());
 
-        runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(
-                this);
+        runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(this);
     }
 
     @Override
-    public void configure(RuntimeHarness harness, File workingDir)
-            throws Exception {
+    public void configure(RuntimeHarness harness, File workingDir) throws Exception {
 
         File webappDir = new File(workingDir, "web/root.war/WEB-INF");
         webappDir.mkdirs();
-        FileUtils.copyURLToFile(webappDescriptorPath, new File(webappDir,
-                "web.xml"));
+        FileUtils.copyURLToFile(webappDescriptorPath, new File(webappDir, "web.xml"));
     }
 
 }

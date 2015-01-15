@@ -29,7 +29,8 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * @since 5.7
  */
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.server:OSGI-INF/auth-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.platform.web.common:OSGI-INF/authentication-contrib.xml",
+        "org.nuxeo.ecm.automation.server:OSGI-INF/auth-contrib.xml",
         "org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-contrib.xml",
         "org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-directory-types.xml",
         "org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-framework.xml",
