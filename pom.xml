@@ -477,6 +477,11 @@
         <artifactId>nuxeo-routing-test</artifactId>
         <version>${nuxeo.routing.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.routing</groupId>
+        <artifactId>nuxeo-routing-rest-api</artifactId>
+        <version>${nuxeo.routing.version}</version>
+      </dependency>
 
       <!-- Smart Search -->
       <dependency>
