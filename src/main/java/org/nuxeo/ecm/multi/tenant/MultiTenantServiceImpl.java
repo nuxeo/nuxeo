@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -173,8 +174,10 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
         String tenantAdministratorsGroup = computeTenantAdministratorsGroup(tenantId);
         acl.add(new ACE(tenantAdministratorsGroup, EVERYTHING, true));
         String tenantMembersGroup = computeTenantMembersGroup(tenantId);
-        acl.add(new ACE(tenantMembersGroup,
-                configuration.getMembersGroupPermission(), true));
+        String membersGroupPermission = configuration.getMembersGroupPermission();
+        if (!StringUtils.isBlank(membersGroupPermission)) {
+            acl.add(new ACE(tenantMembersGroup, membersGroupPermission, true));
+        }
         acl.add(new ACE(EVERYONE, EVERYTHING, false));
         doc.setACP(acp, true);
     }
