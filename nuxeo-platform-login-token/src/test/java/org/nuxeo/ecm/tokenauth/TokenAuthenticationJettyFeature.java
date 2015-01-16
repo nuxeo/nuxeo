@@ -43,6 +43,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @TokenAuthenticationJettyConfig(webappDescriptorPath = "web.xml")
 @Deploy({ "org.nuxeo.ecm.platform.login", "org.nuxeo.ecm.platform.web.common:OSGI-INF/authentication-framework.xml",
         "org.nuxeo.ecm.platform.web.common:OSGI-INF/authentication-contrib.xml",
+        "org.nuxeo.ecm.automation.server:OSGI-INF/auth-contrib.xml",
         "org.nuxeo.ecm.platform.login.token.test:OSGI-INF/test-token-authentication-runtime-server-contrib.xml" })
 public class TokenAuthenticationJettyFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
 
