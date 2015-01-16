@@ -16,7 +16,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
@@ -46,6 +46,7 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
 import com.google.inject.Inject;
 
 /**
@@ -116,7 +117,7 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         assertEquals("y", assignesVar[1]);
 
         Calendar varDate = Calendar.getInstance();
-        varDate.setTime((Date) graph.getVariables().get("datefield"));
+        varDate.setTime(DateParser.parseW3CDateTime((String) graph.getVariables().get("datefield")));
         assertEquals(Calendar.getInstance().get(Calendar.DAY_OF_MONTH), varDate.get(Calendar.DAY_OF_MONTH));
 
         // test SetWorkflowVar on the same context with StartWorkflow

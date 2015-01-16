@@ -112,9 +112,6 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             if (node == null) {
                 throw new DocumentRouteException("Invalid nodeId: " + nodeId);
             }
-            if (!node.hasTaskButton(status)) {
-                throw new DocumentRouteException("Invalid action: " + status);
-            }
             boolean forceResume = (varData != null
                     && varData.get(DocumentRoutingConstants.WORKFLOW_FORCE_RESUME) != null && (Boolean) varData.get(DocumentRoutingConstants.WORKFLOW_FORCE_RESUME));
 
