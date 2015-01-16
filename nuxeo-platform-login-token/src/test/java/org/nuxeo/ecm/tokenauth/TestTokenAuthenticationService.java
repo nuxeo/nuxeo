@@ -42,7 +42,7 @@ import com.google.inject.Inject;
 
 /**
  * Tests the {@link TokenAuthenticationService}.
- * 
+ *
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
  */

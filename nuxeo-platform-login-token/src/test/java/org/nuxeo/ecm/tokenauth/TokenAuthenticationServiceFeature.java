@@ -24,7 +24,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
  * Feature to run tests needing the {@link TokenAuthenticationService}.
- * 
+ *
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
  */
