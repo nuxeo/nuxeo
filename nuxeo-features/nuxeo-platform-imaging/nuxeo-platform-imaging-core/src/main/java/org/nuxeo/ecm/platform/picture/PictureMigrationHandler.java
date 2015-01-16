@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.picture;
 
 import static org.apache.commons.logging.LogFactory.getLog;
+import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.ecm.core.query.sql.NXQL.NXQL;
 
@@ -36,6 +37,7 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
+import org.nuxeo.ecm.platform.picture.listener.PictureViewsGenerationListener;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -52,7 +54,8 @@ public class PictureMigrationHandler extends RepositoryInitializationHandler {
     private static final Log log = getLog(PictureMigrationHandler.class);
 
     public static final String PICTURES_TO_MIGRATE_QUERY = "SELECT ecm:uuid FROM Document "
-            + "WHERE ecm:mixinType = 'Picture' " + "AND views/*/title = 'Original' " + "AND content/data IS NULL";
+            + "WHERE ecm:mixinType = 'Picture' AND ecm:isProxy = 0 AND views/*/title = 'Original' "
+            + "AND content/data IS NULL";
 
     public static final String ORIGINAL_VIEW_TITLE = "Original";
 
@@ -61,6 +64,8 @@ public class PictureMigrationHandler extends RepositoryInitializationHandler {
     public static final String FILE_FILENAME_PROPERTY = "file:filename";
 
     public static final int BATCH_SIZE = 50;
+
+    public static final String DISABLE_QUOTA_CHECK_LISTENER = "disableQuotaListener";
 
     @Override
     public void doInitializeRepository(CoreSession session) throws ClientException {
@@ -135,11 +140,18 @@ public class PictureMigrationHandler extends RepositoryInitializationHandler {
         MultiviewPicture multiviewPicture = picture.getAdapter(MultiviewPicture.class);
         PictureView originalView = multiviewPicture.getView(ORIGINAL_VIEW_TITLE);
         Blob blob = originalView.getBlob();
-        blob.setFilename(blob.getFilename().replaceAll("^Original_", ""));
-        picture.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
-        picture.setPropertyValue(FILE_FILENAME_PROPERTY, blob.getFilename());
-        multiviewPicture.removeView(ORIGINAL_VIEW_TITLE);
-        session.saveDocument(picture);
+        if (blob != null) {
+            blob.setFilename(blob.getFilename().replaceAll("^Original_", ""));
+            picture.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
+            picture.setPropertyValue(FILE_FILENAME_PROPERTY, blob.getFilename());
+            multiviewPicture.removeView(ORIGINAL_VIEW_TITLE);
+            if (picture.isVersion()) {
+                picture.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
+            }
+            // disable quota if installed
+            picture.putContextData(DISABLE_QUOTA_CHECK_LISTENER, Boolean.TRUE);
+            session.saveDocument(picture);
+        }
     }
 
 }
