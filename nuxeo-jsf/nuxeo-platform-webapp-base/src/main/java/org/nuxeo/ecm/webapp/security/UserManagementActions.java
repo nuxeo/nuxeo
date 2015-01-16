@@ -89,6 +89,8 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
 
     protected boolean immediateCreation = false;
 
+    protected boolean createAnotherUser = false;
+
     @Override
     protected String computeListingMode() throws ClientException {
         return userManager.getUserListingMode();
@@ -205,17 +207,29 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     }
 
     public void createUser() throws ClientException {
-        createUser(false);
-    }
-
-    public void createUser(boolean createAnotherUser) throws ClientException {
         try {
-            setSelectedUser(userManager.createUser(newUser));
+            if (immediateCreation) {
+                // Create the user with password
+                setSelectedUser(userManager.createUser(newUser));
+                // Set the default value for the creation
+                immediateCreation = false;
+                facesMessages.add(StatusMessage.Severity.INFO,
+                        resourcesAccessor.getMessages().get("info.userManager.userCreated"));
+                fireSeamEvent(USERS_LISTING_CHANGED);
+            } else {
+                UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
+                Map<String, Serializable> additionalInfos = new HashMap<String, Serializable>();
+                // Wrap the form as an invitation to the user
+                UserAdapter newUserAdapter = new UserAdapterImpl(newUser, userManager);
+                DocumentModel userRegistrationDoc = wrapToUserRegistration(newUserAdapter);
+                userRegistrationService.submitRegistrationRequest(userRegistrationDoc,
+                        additionalInfos , EMAIL, true);
+
+                facesMessages.add(StatusMessage.Severity.INFO,
+                        resourcesAccessor.getMessages().get("info.userManager.userInvited"));
+
+            }
             newUser = null;
-            // Set the default value for the creation
-            immediateCreation = false;
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get("info.userManager.userCreated"));
             if (createAnotherUser) {
                 showCreateForm = true;
             } else {
@@ -223,10 +237,21 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
                 showUserOrGroup = true;
                 detailsMode = null;
             }
-            fireSeamEvent(USERS_LISTING_CHANGED);
         } catch (UserAlreadyExistsException e) {
             facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get("error.userManager.userAlreadyExists"));
+        }
+        catch (Exception e) {
+            String message = e.getLocalizedMessage();
+            if(e.getCause() != null)
+            {
+                message += e.getCause().getLocalizedMessage();
+            }
+            log.error(message,e);
+
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    message);
+
         }
     }
 
@@ -371,42 +396,6 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
 
     }
 
-    /**
-     * Create a new user using the "Invite" action.
-     *
-     * @param inviteAnotherUser Invite another user after executing the action.
-     * @throws ClientException
-     * @since 5.9.3
-     */
-    public void inviteUser(boolean inviteAnotherUser) throws ClientException {
-        try {
-            Map<String, Serializable> additionnalInfo = new HashMap<String, Serializable>();
-            UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
-
-            // Create a new doc with the right schema
-            UserAdapter newUserAdapter = new UserAdapterImpl(newUser, userManager);
-            DocumentModel userRegistrationDoc = wrapToUserRegistration(newUserAdapter);
-            userRegistrationService.submitRegistrationRequest(userRegistrationDoc, additionnalInfo, EMAIL, true);
-            newUser = null;
-
-            // Set the default value for the creation
-            // immediateCreation = false;
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get("info.userManager.userInvited"));
-            // Set the flags used for the display
-            if (inviteAnotherUser) {
-                showCreateForm = true;
-            } else {
-                showCreateForm = false;
-                showUserOrGroup = false;
-                detailsMode = null;
-            }
-        } catch (UserAlreadyExistsException e) {
-            facesMessages.add(StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get("error.userManager.userAlreadyExists"));
-        }
-    }
-
     private DocumentModel wrapToUserRegistration(UserAdapter newUserAdapter) {
         UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
         DocumentModel newUserRegistration = userRegistrationService.getUserRegistrationModel(null);
@@ -531,47 +520,12 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         this.immediateCreation = immediateCreation;
     }
 
+    public boolean isCreateAnotherUser() {
+        return createAnotherUser;
+    }
 
-    /**
-     * Changes the type of newUser depending of the value defined in the checkbox "Set for immediate creation". Sets
-     * also the values previously entered in the form into the new DocumentModel.
-     *
-     * @param event
-     * @since 5.9.3
-     */
-    // public void changeTypeUserModel(AjaxBehaviorEvent event) throws ClientException {
-    // Object newValue = true;
-    // if (newValue instanceof Boolean) {
-    // DocumentModel previousNewUser = newUser;
-    // UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
-    // UserAdapter previousUserAdapter = null;
-    // UserConfig previousUserConfig = null;
-    // UserConfig newUserConfig = null;
-    //
-    // if ((Boolean) newValue) {
-    // previousUserConfig = wrapUserRegistrationConfig(userRegistrationService.getConfiguration());
-    // previousUserAdapter = new UserAdapterImpl(previousNewUser, previousUserConfig);
-    //
-    // newUser = userManager.getBareUserModel();
-    // newUserConfig = new UserAdapterImpl(newUser, userManager).getConfig();
-    // } else {
-    // previousUserAdapter = new UserAdapterImpl(previousNewUser, userManager);
-    // previousUserConfig = previousUserAdapter.getConfig();
-    //
-    // newUser = userRegistrationService.getUserRegistrationModel(null);
-    // newUserConfig = wrapUserRegistrationConfig(userRegistrationService.getConfiguration());
-    // }
-    //
-    // if (previousNewUser != null) {
-    // // Get the values previously filled
-    // newUser.setPropertyValue(newUserConfig.nameKey, previousUserAdapter.getName());
-    // newUser.setPropertyValue(newUserConfig.firstNameKey, previousUserAdapter.getFirstName());
-    // newUser.setPropertyValue(newUserConfig.lastNameKey, previousUserAdapter.getLastName());
-    // newUser.setPropertyValue(newUserConfig.emailKey, previousUserAdapter.getEmail());
-    // newUser.setPropertyValue(newUserConfig.groupsKey, previousUserAdapter.getGroups().toArray());
-    // newUser.setPropertyValue(newUserConfig.companyKey, previousUserAdapter.getCompany());
-    //
-    // }
-    // }
-    // }
+    public void setCreateAnotherUser(boolean createAnotherUser) {
+        this.createAnotherUser = createAnotherUser;
+    }
+
 }

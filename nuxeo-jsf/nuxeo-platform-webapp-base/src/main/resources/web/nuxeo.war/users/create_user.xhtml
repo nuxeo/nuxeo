@@ -27,38 +27,17 @@
       <tbody>
         <tr>
           <td>
-            <c:if test="#{!userManagementActions.immediateCreation}">
-              <h:commandButton
-                id="button_save_and_invite"
-                value="#{messages['command.saveAndInvite']}"
-                action="#{userManagementActions.inviteUser(true)}"
-                styleClass="button">
-                <f:ajax execute="@form" render="usersPanel facesStatusMessagePanel" />
-              </h:commandButton>
-              <h:commandButton
-                id="button_invite"
-                value="#{messages['command.invite']}"
-                action="#{userManagementActions.inviteUser(false)}"
-                styleClass="button">
-                <f:ajax execute="@form" render="usersPanel facesStatusMessagePanel" />
-              </h:commandButton>
-            </c:if>
-            <c:if test="#{userManagementActions.immediateCreation}">
-              <h:commandButton
-                id="button_save_and_create"
-                value="#{messages['command.saveAndCreate']}"
-                action="#{userManagementActions.createUser(true)}"
-                styleClass="button">
-                <f:ajax execute="@form" render="usersPanel facesStatusMessagePanel" />
-              </h:commandButton>
-              <h:commandButton
-                id="button_save"
-                value="#{messages['command.save']}"
-                action="#{userManagementActions.createUser}"
-                styleClass="button">
-                <f:ajax execute="@form" render="usersPanel facesStatusMessagePanel" />
-              </h:commandButton>
-            </c:if>
+            <h:outputLabel for="checkbox_createAnother" value="#{messages['createAnother.checkbox']}"/>
+            <h:selectBooleanCheckbox id="checkbox_createAnother" title="#{messages['createAnother.checkbox']}"
+              value="#{userManagementActions.createAnotherUser}">
+            </h:selectBooleanCheckbox>
+            <h:commandButton
+              id="button_save"
+              value="#{messages['command.create']}"
+              action="#{userManagementActions.createUser()}"
+              styleClass="button">
+              <f:ajax execute="@form" render="usersPanel facesStatusMessagePanel" />
+            </h:commandButton>
             <h:commandButton
               action="#{userManagementActions.toggleShowCreateForm}" immediate="true"
               value="#{messages['command.cancel']}" styleClass="button">

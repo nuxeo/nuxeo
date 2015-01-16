@@ -5191,9 +5191,6 @@
           <widget>email</widget>
         </row>
         <row>
-          <widget>passwordMatcher</widget>
-        </row>
-        <row>
           <widget>groups</widget>
         </row>
         <row>
@@ -5201,6 +5198,9 @@
         </row>
         <row>
           <widget>vgroups</widget>
+        </row>
+        <row>
+          <widget>passwordMatcher</widget>
         </row>
       </rows>
       <widget name="username" type="text">
@@ -5285,27 +5285,6 @@
           <property name="styleClass">dataInputText</property>
         </properties>
       </widget>
-      <widget name="passwordMatcher" type="template">
-        <labels>
-          <label mode="any"></label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field schema="user">password</field>
-        </fields>
-        <widgetModes>
-          <mode value="create">edit</mode>
-          <mode value="editPassword">edit</mode>
-          <mode value="any">hidden</mode>
-        </widgetModes>
-        <properties widgetMode="edit">
-          <property name="required">true</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="template">
-            /widgets/user_password_widget_template.xhtml
-          </property>
-        </properties>
-      </widget>
       <widget name="groups" type="multipleUsersSuggestion">
         <labels>
           <label mode="any">label.userManager.userGroups</label>
@@ -5357,6 +5336,34 @@
           <mode value="create">hidden</mode>
           <mode value="editPassword">hidden</mode>
         </widgetModes>
+      </widget>
+       <widget name="passwordMatcher" type="template">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">password</field>
+        </fields>
+        <widgetModes>
+          <mode value="create">edit</mode>
+          <mode value="editPassword">editPassword</mode>
+          <mode value="any">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="template">
+            /widgets/user_password_widget_template.xhtml
+          </property>
+        </properties>
+        <properties widgetMode="editPassword">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="template">
+            /widgets/user_password_validation_widget_template.xhtml
+          </property>
+        </properties>
       </widget>
     </layout>
 
