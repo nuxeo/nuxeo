@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -48,6 +49,8 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(TokenAuthenticationServiceFeature.class)
+@Deploy({ "org.nuxeo.ecm.platform.web.common:OSGI-INF/authentication-contrib.xml",
+        "org.nuxeo.ecm.automation.server:OSGI-INF/auth-contrib.xml" })
 public class TestTokenAuthenticationService {
 
     private static final Log log = LogFactory.getLog(TestTokenAuthenticationService.class);
