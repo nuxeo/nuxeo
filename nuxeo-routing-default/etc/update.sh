@@ -51,21 +51,24 @@ sed -e 's/<property name=\"width\">300<\/property>/<property name=\"width\">70%<
     -i '~' $RES/OSGI-INF/extensions.xml
 
 # in zip, replace studio name in schema namespaces, as well as workflow filter id
-ZIP=$RES/data/SerialDocumentReview.zip
-mkdir $ZIP.dir
-cd $ZIP.dir
-unzip $ZIP
-find . -name '*.xml' | while read f; do
-  sed -e "s,$STUDIONAME,nuxeo-routing-default,g" \
-      -i '~' $f
-  sed -e 's,filter@wf@SerialDocumentReview,filter@SerialDocumentReview,' \
-      -i '~' $f
+# also keep them unzipped to track changes in git diffs easily
+for wf in SerialDocumentReview ParallelDocumentReview; do
+  ZIP=$RES/data/$wf.zip
+  DIR=$RES/data/$wf
+  rm -rf $DIR/
+  mkdir $DIR
+  cd $DIR
+  unzip $ZIP
+  find . -name '*.xml' | while read f; do
+    sed -e "s,$STUDIONAME,nuxeo-routing-default,g" \
+        -i '~' $f
+    # only the serial workflow needs an old id (NXP-11633), parallel came later
+    sed -e 's,filter@wf@SerialDocumentReview,filter@SerialDocumentReview,' \
+        -i '~' $f
+  done
+  find . -name '*~' | xargs rm
+  rm $ZIP
+  zip -r $ZIP .
 done
-find . -name '*~' | xargs rm
-rm $ZIP
-zip -r $ZIP .
-cp -r . $RES/data/SerialDocumentReview/
-cp -r . $RES/data/ParallelDocumentReview/
 cd $BUNDLE
-rm -rf $ZIP.dir
 
