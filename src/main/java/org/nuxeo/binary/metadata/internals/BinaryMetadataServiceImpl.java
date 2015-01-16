@@ -262,7 +262,12 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                         if (!input.getEnabled()) {
                             return false;
                         }
-                        return actionService.checkFilters(input.getFilterIds(), actionContext);
+                        for (String filterId : input.getFilterIds()) {
+                            if (!actionService.checkFilter(filterId, actionContext)) {
+                                return false;
+                            }
+                        }
+                        return true;
                     }
 
                 });
