@@ -39,15 +39,13 @@ import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Servlet that allows to get a unique authentication token given the request
- * Principal and some device information passed as request parameters:
- * application name, device id, device description, permission. An error
- * response will be sent with a 400 status code if one of the required
- * parameters is null or empty. All parameters are required except for the
- * device description.
+ * Servlet that allows to get a unique authentication token given the request Principal and some device information
+ * passed as request parameters: application name, device id, device description, permission. An error response will be
+ * sent with a 400 status code if one of the required parameters is null or empty. All parameters are required except
+ * for the device description.
  * <p>
  * The token is provided by the {@link TokenAuthenticationService}.
- *
+ * 
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
  */
@@ -70,8 +68,7 @@ public class TokenAuthenticationServlet extends HttpServlet {
     protected static final String REVOKE_PARAM = "revoke";
 
     @Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         // Don't provide token for anonymous user unless 'allowAnonymous' parameter is explicitly set to true in
         // the authentication plugin configuration
@@ -100,14 +97,12 @@ public class TokenAuthenticationServlet extends HttpServlet {
         // If one of the required parameters is null or empty, send an
         // error with the 400 status
         if (!revoke
-                && (StringUtils.isEmpty(applicationName)
-                        || StringUtils.isEmpty(deviceId) || StringUtils.isEmpty(permission))) {
+                && (StringUtils.isEmpty(applicationName) || StringUtils.isEmpty(deviceId) || StringUtils.isEmpty(permission))) {
             log.error("The following request parameters are mandatory to acquire an authentication token: applicationName, deviceId, permission.");
             resp.sendError(HttpStatus.SC_BAD_REQUEST);
             return;
         }
-        if (revoke
-                && (StringUtils.isEmpty(applicationName) || StringUtils.isEmpty(deviceId))) {
+        if (revoke && (StringUtils.isEmpty(applicationName) || StringUtils.isEmpty(deviceId))) {
             log.error("The following request parameters are mandatory to revoke an authentication token: applicationName, deviceId.");
             resp.sendError(HttpStatus.SC_BAD_REQUEST);
             return;
@@ -138,15 +133,13 @@ public class TokenAuthenticationServlet extends HttpServlet {
             // Token acquisition: acquire token and write it to the response
             // body
             if (!revoke) {
-                response = tokenAuthService.acquireToken(userName,
-                        applicationName, deviceId, deviceDescription,
+                response = tokenAuthService.acquireToken(userName, applicationName, deviceId, deviceDescription,
                         permission);
                 statusCode = 201;
             }
             // Token revocation
             else {
-                String token = tokenAuthService.getToken(userName,
-                        applicationName, deviceId);
+                String token = tokenAuthService.getToken(userName, applicationName, deviceId);
                 if (token == null) {
                     response = String.format(
                             "No token found for userName %s, applicationName %s and deviceId %s; nothing to do.",
@@ -154,8 +147,7 @@ public class TokenAuthenticationServlet extends HttpServlet {
                     statusCode = 400;
                 } else {
                     tokenAuthService.revokeToken(token);
-                    response = String.format(
-                            "Token revoked for userName %s, applicationName %s and deviceId %s.",
+                    response = String.format("Token revoked for userName %s, applicationName %s and deviceId %s.",
                             userName, applicationName, deviceId);
                     statusCode = 202;
                 }
@@ -167,8 +159,7 @@ public class TokenAuthenticationServlet extends HttpServlet {
         }
     }
 
-    protected void sendTextResponse(HttpServletResponse resp,
-            String textResponse, int statusCode) throws IOException {
+    protected void sendTextResponse(HttpServletResponse resp, String textResponse, int statusCode) throws IOException {
 
         resp.setContentType("text/plain");
         resp.setStatus(statusCode);
