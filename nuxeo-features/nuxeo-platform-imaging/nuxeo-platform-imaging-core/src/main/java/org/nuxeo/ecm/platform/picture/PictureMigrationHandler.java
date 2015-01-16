@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
-import org.nuxeo.ecm.platform.picture.listener.PictureViewsGenerationListener;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -89,15 +88,18 @@ public class PictureMigrationHandler extends RepositoryInitializationHandler {
             return;
         }
 
-        log.warn(String.format("Started migration of %d documents with the 'Picture' facet", pictureIds.size()));
+        if (log.isWarnEnabled()) {
+            log.warn(String.format("Started migration of %d documents with the 'Picture' facet", pictureIds.size()));
+        }
 
         long pictureMigratedCount = 0;
         try {
             for (String pictureId : pictureIds) {
-                migratePicture(session, pictureId);
-                if (++pictureMigratedCount % BATCH_SIZE == 0) {
-                    TransactionHelper.commitOrRollbackTransaction();
-                    TransactionHelper.startTransaction();
+                if (migratePicture(session, pictureId)) {
+                    if (++pictureMigratedCount % BATCH_SIZE == 0) {
+                        TransactionHelper.commitOrRollbackTransaction();
+                        TransactionHelper.startTransaction();
+                    }
                 }
             }
         } finally {
@@ -105,8 +107,10 @@ public class PictureMigrationHandler extends RepositoryInitializationHandler {
             TransactionHelper.startTransaction();
         }
 
-        log.warn(String.format("Finished migration of %d/%d documents with the 'Picture' facet", pictureMigratedCount,
-                pictureIds.size()));
+        if (log.isWarnEnabled()) {
+            log.warn(String.format("Finished migration of %d/%d documents with the 'Picture' facet",
+                    pictureMigratedCount, pictureIds.size()));
+        }
     }
 
     protected Set<String> getPictureIdsToMigrate(CoreSession session) {
@@ -130,7 +134,7 @@ public class PictureMigrationHandler extends RepositoryInitializationHandler {
         return pictureIds;
     }
 
-    protected void migratePicture(CoreSession session, String docId) {
+    protected boolean migratePicture(CoreSession session, String docId) {
         DocumentModel picture = session.getDocument(new IdRef(docId));
 
         if (log.isDebugEnabled()) {
@@ -140,18 +144,23 @@ public class PictureMigrationHandler extends RepositoryInitializationHandler {
         MultiviewPicture multiviewPicture = picture.getAdapter(MultiviewPicture.class);
         PictureView originalView = multiviewPicture.getView(ORIGINAL_VIEW_TITLE);
         Blob blob = originalView.getBlob();
-        if (blob != null) {
-            blob.setFilename(blob.getFilename().replaceAll("^Original_", ""));
-            picture.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
-            picture.setPropertyValue(FILE_FILENAME_PROPERTY, blob.getFilename());
-            multiviewPicture.removeView(ORIGINAL_VIEW_TITLE);
-            if (picture.isVersion()) {
-                picture.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
+        if (blob == null) {
+            if (log.isWarnEnabled()) {
+                log.warn(String.format("No Original view Blob found for %s", picture));
             }
-            // disable quota if installed
-            picture.putContextData(DISABLE_QUOTA_CHECK_LISTENER, Boolean.TRUE);
-            session.saveDocument(picture);
+            return false;
         }
+        blob.setFilename(blob.getFilename().replaceAll("^Original_", ""));
+        picture.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
+        picture.setPropertyValue(FILE_FILENAME_PROPERTY, blob.getFilename());
+        multiviewPicture.removeView(ORIGINAL_VIEW_TITLE);
+        if (picture.isVersion()) {
+            picture.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
+        }
+        // disable quota if installed
+        picture.putContextData(DISABLE_QUOTA_CHECK_LISTENER, Boolean.TRUE);
+        session.saveDocument(picture);
+        return true;
     }
 
 }
