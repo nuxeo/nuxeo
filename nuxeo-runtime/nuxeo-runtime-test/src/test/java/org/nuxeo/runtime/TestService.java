@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -24,7 +24,6 @@ package org.nuxeo.runtime;
 import static org.junit.Assert.assertSame;
 
 import org.junit.Test;
-import org.nuxeo.runtime.services.deployment.DeploymentService;
 import org.nuxeo.runtime.services.event.EventService;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -35,10 +34,6 @@ public class TestService extends NXRuntimeTestCase {
         EventService eventComponent = (EventService) runtime.getComponent(EventService.NAME);
         EventService eventService = runtime.getService(EventService.class);
         assertSame(eventComponent, eventService);
-
-        DeploymentService deploymentComponent = (DeploymentService) runtime.getComponent(DeploymentService.NAME);
-        DeploymentService deploymentService = runtime.getService(DeploymentService.class);
-        assertSame(deploymentComponent, deploymentService);
     }
 
 }

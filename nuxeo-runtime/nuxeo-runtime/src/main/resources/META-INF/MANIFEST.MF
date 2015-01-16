@@ -30,7 +30,6 @@ Bundle-Version: 5.4.2.qualifier
 Eclipse-BuddyPolicy: registered
 Nuxeo-Component: OSGI-INF/EventService.xml,
  OSGI-INF/ResourceService.xml,
- OSGI-INF/DeploymentService.xml,
  OSGI-INF/LoginComponent.xml,
  OSGI-INF/ContributionPersistence.xml,
  OSGI-INF/FileEventTracker.xml, OSGI-INF/FileEventTrackerConfig.xml
