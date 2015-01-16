@@ -44,7 +44,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy({ "org.nuxeo.elasticsearch.seqgen:elasticsearch-test-contrib.xml" })
-public class TestSequenceGenerqtorWithElasticSearch {
+public class TestSequenceGeneratorWithElasticSearch {
 
     protected @Inject CoreSession session;
 
@@ -104,8 +104,8 @@ public class TestSequenceGenerqtorWithElasticSearch {
         }
 
         tpe.shutdown();
-        boolean finish = tpe.awaitTermination(5, TimeUnit.SECONDS);
-        Assert.assertTrue(finish);
+        boolean finish = tpe.awaitTermination(20, TimeUnit.SECONDS);
+        Assert.assertTrue("timeout", finish);
 
         Assert.assertEquals(nbCalls + 1, sg.getNextId(seqName));
 
