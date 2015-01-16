@@ -20,6 +20,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
 import org.nuxeo.binary.metadata.api.BinaryMetadataService;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.metrics.MetricInvocationHandler;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -33,9 +35,11 @@ public class BinaryMetadataComponent extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(BinaryMetadataComponent.class);
 
+    public static final String BINARY_METADATA_MONITOR = "binary.metadata.monitor.enable";
+
     protected static BinaryMetadataComponent self;
 
-    protected final BinaryMetadataServiceImpl metadataService = new BinaryMetadataServiceImpl();
+    protected BinaryMetadataService metadataService = new BinaryMetadataServiceImpl();
 
     protected final MetadataMappingRegistry mappingRegistry = new MetadataMappingRegistry();
 
@@ -46,6 +50,9 @@ public class BinaryMetadataComponent extends DefaultComponent {
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
+        if (Boolean.valueOf(Framework.getProperty(BINARY_METADATA_MONITOR, Boolean.toString(log.isTraceEnabled())))) {
+            metadataService = MetricInvocationHandler.newProxy(metadataService, BinaryMetadataService.class);
+        }
         self = this;
     }
 
@@ -89,9 +96,10 @@ public class BinaryMetadataComponent extends DefaultComponent {
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (adapter == BinaryMetadataService.class) {
+        if (adapter.isAssignableFrom(BinaryMetadataService.class)) {
             return adapter.cast(metadataService);
         }
         return null;
     }
+
 }
