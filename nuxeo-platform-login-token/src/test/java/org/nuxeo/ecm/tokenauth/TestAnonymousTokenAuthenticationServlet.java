@@ -68,7 +68,7 @@ public class TestAnonymousTokenAuthenticationServlet {
                     "OSGI-INF/test-token-authentication-allow-anonymous-token-contrib.xml");
 
             status = httpClient.executeMethod(getMethod);
-            assertEquals(201, status);
+            assertEquals(200, status);
             String token = getMethod.getResponseBodyAsString();
             assertNotNull(token);
             assertNotNull(tokenAuthenticationService.getUserName(token));
