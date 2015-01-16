@@ -34,8 +34,6 @@ import junit.framework.Assert;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.hamcrest.number.IsCloseTo;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,10 +76,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
-import org.nuxeo.runtime.api.ConnectionHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -105,32 +103,15 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.notification.core:OSGI-INF/NotificationService.xml",
         "org.nuxeo.ecm.automation.test" })
 @LocalDeploy({ "org.nuxeo.ecm.automation.test:test-bindings.xml",
-        "org.nuxeo.ecm.automation.test:test-mvalues.xml",
-        "org.nuxeo.runtime.datasource:ds-contrib.xml"})
-@Features({EmbeddedAutomationServerFeature.class, AuditFeature.class})
+        "org.nuxeo.ecm.automation.test:test-mvalues.xml"})
+@Features({SingleDatasourceFeature.class, EmbeddedAutomationServerFeature.class, AuditFeature.class})
 @Jetty(port = 18080)
+@TransactionalConfig(autoStart=false)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
 
     protected static String[] attachments = { "att1", "att2", "att3" };
 
-	protected String savedSingleDS;
-
-	@Before
-	public void setSingleDataSourceMode() {
-		savedSingleDS = System.getProperty(ConnectionHelper.SINGLE_DS);
-		System.setProperty(ConnectionHelper.SINGLE_DS, "jdbc/NuxeoTestDS");
-	}
-
-	@After
-	public void resetSingleDataSourceMode() {
-		if (savedSingleDS == null || savedSingleDS.isEmpty()) {
-			System.clearProperty(ConnectionHelper.SINGLE_DS);
-		} else {
-			System.setProperty(ConnectionHelper.SINGLE_DS, savedSingleDS);
-		}
-	}
-	
     @Inject
     UserManager userManager;
 
@@ -432,8 +413,6 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             user.setPropertyValue("user:username", testUserName);
             user.setPropertyValue("user:password", "secret");
             userManager.createUser(user);
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
             // check invalid credentials
             try {
                 client.getSession(testUserName, "badpassword");
