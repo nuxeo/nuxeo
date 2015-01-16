@@ -69,6 +69,8 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
 
     protected DocumentModel newGroup;
 
+    protected boolean createAnotherGroup = false;
+
     @Override
     protected String computeListingMode() throws ClientException {
         return userManager.getGroupListingMode();
@@ -122,16 +124,12 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
     }
 
     public void createGroup() throws ClientException {
-        createGroup(false);
-    }
-
-    public void createGroup(boolean createAnotherGroup) throws ClientException {
         try {
             selectedGroup = userManager.createGroup(newGroup);
             newGroup = null;
             facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get("info.groupManager.groupCreated"));
-            if (createAnotherGroup) {
+            if (createAnotherGroup ) {
                 showCreateForm = true;
             } else {
                 showCreateForm = false;
@@ -249,6 +247,14 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
             showCreateForm = false;
             detailsMode = DETAILS_VIEW_MODE;
         }
+    }
+
+    public boolean isCreateAnotherGroup() {
+        return createAnotherGroup;
+    }
+
+    public void setCreateAnotherGroup(boolean createAnotherGroup) {
+        this.createAnotherGroup = createAnotherGroup;
     }
 
 }

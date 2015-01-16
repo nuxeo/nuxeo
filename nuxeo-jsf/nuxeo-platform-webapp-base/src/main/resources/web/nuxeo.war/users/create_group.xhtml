@@ -24,16 +24,13 @@
       <tbody>
         <tr>
           <td>
-            <h:commandButton
-              id="button_save_and_create"
-              value="#{messages['command.saveAndCreate']}"
-              action="#{groupManagementActions.createGroup(true)}"
-              styleClass="button">
-              <f:ajax execute="@form" render="groupsPanel facesStatusMessagePanel" />
-            </h:commandButton>
+            <h:outputLabel for="checkbox_createAnother" value="#{messages['createAnother.checkbox']}"/>
+            <h:selectBooleanCheckbox id="checkbox_createAnother" title="#{messages['createAnother.checkbox']}"
+              value="#{groupManagementActions.createAnotherGroup}">
+            </h:selectBooleanCheckbox>
             <h:commandButton
               id="button_save"
-              value="#{messages['command.save']}"
+              value="#{messages['command.create']}"
               action="#{groupManagementActions.createGroup}"
               styleClass="button">
               <f:ajax execute="@form" render="groupsPanel facesStatusMessagePanel" />
