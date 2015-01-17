@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.multi.tenant.operations;
 
-import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
@@ -107,6 +106,6 @@ public class QueryUsers {
         JSONObject result = new JSONObject();
         result.put("users", array);
 
-        return new InputStreamBlob(new ByteArrayInputStream(result.toString().getBytes("UTF-8")), "application/json");
+        return new StringBlob(result.toString(), "application/json");
     }
 }
