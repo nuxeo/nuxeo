@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.quota.automation;
 
-import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.ecm.quota.size.QuotaDisplayValue;
 import org.nuxeo.ecm.quota.size.QuotaInfo;
@@ -68,8 +67,7 @@ public class GetQuotaStatisticsOperation {
             throw new ClientException("Quota not activated on doc");
         }
         String string = toJSON(qa.getQuotaInfo(), locale);
-
-        return new InputStreamBlob(new ByteArrayInputStream(string.getBytes("UTF-8")), "application/json");
+        return new StringBlob(string, "application/json");
     }
 
     public String toJSON(QuotaInfo quotaInfo, Locale locale) {
