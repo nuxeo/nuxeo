@@ -45,7 +45,7 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.trash.TrashService;
@@ -435,7 +435,7 @@ public class SimpleBackend extends AbstractCoreBackend {
 
     @Override
     public DocumentModel createFile(String parentPath, String name) throws ClientException {
-        Blob blob = new ByteArrayBlob(new byte[0], "application/octet-stream");
+        Blob blob = new StringBlob("", "application/octet-stream");
         return createFile(parentPath, name, blob);
     }
 
