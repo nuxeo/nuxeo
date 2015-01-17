@@ -22,12 +22,13 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -51,7 +52,7 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         Map<String, Object> vignette = new HashMap<String, Object>();
         vignette.put("width", Long.valueOf(0));
         vignette.put("height", Long.valueOf(0));
-        Blob blob1 = new ByteArrayBlob("foo1 bar1".getBytes("UTF-8"), "text/plain");
+        Blob blob1 = new StringBlob("foo1 bar1", "text/plain");
         blob1.setFilename("file1.txt");
         vignette.put("content", blob1);
         vignettes.add(vignette);
@@ -59,7 +60,7 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         vignette = new HashMap<String, Object>();
         vignette.put("width", Long.valueOf(0));
         vignette.put("height", Long.valueOf(0));
-        Blob blob2 = new ByteArrayBlob("foo2 bar2".getBytes("UTF-8"), "text/plain");
+        Blob blob2 = new StringBlob("foo2 bar2", "text/plain");
         blob2.setFilename("file2.txt");
         vignette.put("content", blob2);
         vignettes.add(vignette);
@@ -69,7 +70,7 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         attachedFile.put("vignettes", vignettes);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
 
-        Blob blob3 = new ByteArrayBlob("foo3 bar3".getBytes("UTF-8"), "text/plain");
+        Blob blob3 = new StringBlob("foo3 bar3", "text/plain");
         doc.setProperty("file", "content", blob3);
 
         BlobsExtractor extractor = new BlobsExtractor();
@@ -88,7 +89,7 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         Map<String, Object> vignette = new HashMap<String, Object>();
         vignette.put("width", Long.valueOf(0));
         vignette.put("height", Long.valueOf(0));
-        Blob blob1 = new ByteArrayBlob("foo1 bar1".getBytes("UTF-8"), "text/plain");
+        Blob blob1 = new StringBlob("foo1 bar1", "text/plain");
         blob1.setFilename("file1.txt");
         vignette.put("content", blob1);
         vignettes.add(vignette);
@@ -96,7 +97,7 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         vignette = new HashMap<String, Object>();
         vignette.put("width", Long.valueOf(0));
         vignette.put("height", Long.valueOf(0));
-        Blob blob2 = new ByteArrayBlob("foo2 bar2".getBytes("UTF-8"), "text/plain");
+        Blob blob2 = new StringBlob("foo2 bar2", "text/plain");
         blob2.setFilename("file2.txt");
         vignette.put("content", blob2);
         vignettes.add(vignette);
@@ -106,7 +107,7 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         attachedFile.put("vignettes", vignettes);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
 
-        Blob blob3 = new ByteArrayBlob("foo3 bar3".getBytes("UTF-8"), "text/plain");
+        Blob blob3 = new StringBlob("foo3 bar3", "text/plain");
         doc.setProperty("file", "content", blob3);
 
         BlobsExtractor extractor = new BlobsExtractor();

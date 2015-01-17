@@ -21,7 +21,7 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 
 /**
@@ -52,13 +52,11 @@ public class NoteHtmlPreviewAdapter extends PreprocessedHtmlPreviewAdapter {
             sb.append(note);
             sb.append("</body></html>");
 
-            byte[] bytes = blob.getEncoding() == null ? sb.toString().getBytes() : sb.toString().getBytes(
-                    blob.getEncoding());
             String mimeType = blob.getMimeType();
             if (mimeType == null) {
                 mimeType = "text/html";
             }
-            Blob newBlob = new ByteArrayBlob(bytes, mimeType, blob.getEncoding());
+            Blob newBlob = new StringBlob(sb.toString(), mimeType, blob.getEncoding());
             return newBlob;
         } catch (IOException e) {
             throw new PreviewException(e);

@@ -22,10 +22,12 @@ package org.nuxeo.ecm.platform.filemanager.utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.Normalizer;
 
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -42,31 +44,14 @@ public final class FileManagerUtils {
 
     /**
      * Returns the contents of the file in a byte array.
+     *
+     * @deprecated since 7.2, use {@link IOUtils#toByteArray} instead
      */
+    @Deprecated
     public static byte[] getBytesFromFile(File file) throws IOException {
-
-        FileInputStream is = new FileInputStream(file);
-
-        long length = file.length();
-        // Create the byte array to hold the data
-        byte[] bytes = new byte[(int) length];
-        try {
-            // Read in the bytes
-            int offset = 0;
-            int numRead = 0;
-            while (offset < bytes.length && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
-                offset += numRead;
-            }
-
-            // Ensure all the bytes have been read in
-            if (offset < bytes.length) {
-                throw new IOException("Could not completely read InputStream");
-            }
-        } finally {
-            // Close the input stream and return bytes
-            is.close();
+        try (InputStream in = new FileInputStream(file)) {
+            return IOUtils.toByteArray(in);
         }
-        return bytes;
     }
 
     /**

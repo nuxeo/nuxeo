@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -101,9 +100,7 @@ public class TestFileManagerService {
     @Test
     public void testDefaultCreateFromBlob() throws Exception {
         File file = getTestFile("test-data/hello.doc");
-
-        byte[] content = FileManagerUtils.getBytesFromFile(file);
-        ByteArrayBlob input = new ByteArrayBlob(content, "application/msword");
+        FileBlob input = new FileBlob(file, "application/msword");
 
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.doc");
@@ -117,9 +114,7 @@ public class TestFileManagerService {
     public void testDefaultCreateTwiceFromSameBlob() throws Exception {
         // create doc
         File file = getTestFile("test-data/hello.doc");
-
-        byte[] content = FileManagerUtils.getBytesFromFile(file);
-        ByteArrayBlob input = new ByteArrayBlob(content, "application/msword");
+        FileBlob input = new FileBlob(file, "application/msword");
 
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.doc");
@@ -152,9 +147,7 @@ public class TestFileManagerService {
     public void testDefaultUpdateFromBlob() throws Exception {
         // create doc
         File file = getTestFile("test-data/hello.doc");
-
-        byte[] content = FileManagerUtils.getBytesFromFile(file);
-        ByteArrayBlob input = new ByteArrayBlob(content, "application/msword");
+        FileBlob input = new FileBlob(file, "application/msword");
 
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.doc");
@@ -185,9 +178,7 @@ public class TestFileManagerService {
     @Test
     public void testCreateNote() throws Exception {
         File file = getTestFile("test-data/hello.html");
-
-        byte[] content = FileManagerUtils.getBytesFromFile(file);
-        ByteArrayBlob input = new ByteArrayBlob(content, "text/html");
+        FileBlob input = new FileBlob(file, "text/html");
 
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.html");
@@ -210,9 +201,7 @@ public class TestFileManagerService {
     public void testCreateNoteTwiceFromSameBlob() throws Exception {
         // create doc
         File file = getTestFile("test-data/hello.html");
-
-        byte[] content = FileManagerUtils.getBytesFromFile(file);
-        ByteArrayBlob input = new ByteArrayBlob(content, "text/html");
+        FileBlob input = new FileBlob(file, "text/html");
 
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.html");
@@ -329,8 +318,7 @@ public class TestFileManagerService {
 
         // create a File whose title is "hello.html" and content is "hello.rtf"
         File file = getTestFile("test-data/hello.rtf");
-        byte[] content = FileManagerUtils.getBytesFromFile(file);
-        ByteArrayBlob input = new ByteArrayBlob(content, "text/rtf");
+        FileBlob input = new FileBlob(file, "text/rtf");
         input.setFilename("hello.html");
 
         DocumentModel doc = coreSession.createDocumentModel(workspace.getPathAsString(), "hello.html", "File");
@@ -355,8 +343,7 @@ public class TestFileManagerService {
 
         // update the with a file that matches the same importer
         file = getTestFile("test-data/hello.html");
-        content = FileManagerUtils.getBytesFromFile(file);
-        input = new ByteArrayBlob(content, "text/html");
+        input = new FileBlob(file, "text/html");
         doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.html");
         assertNotNull(doc);

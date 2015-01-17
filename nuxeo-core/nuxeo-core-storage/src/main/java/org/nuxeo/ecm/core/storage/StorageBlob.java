@@ -16,14 +16,13 @@ import java.io.InputStream;
 import java.io.Serializable;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.DefaultStreamBlob;
+import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 import org.nuxeo.ecm.core.storage.binary.Binary;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
 
 /**
  * A {@link Blob} wrapping a {@link Binary} value.
  */
-public class StorageBlob extends DefaultStreamBlob implements SQLBlob {
+public class StorageBlob extends AbstractBlob implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -60,6 +59,12 @@ public class StorageBlob extends DefaultStreamBlob implements SQLBlob {
         return this;
     }
 
+    /**
+     * Gets the {@link Binary} attached to this blob.
+     *
+     * @since 5.9.4
+     * @return the binary
+     */
     public Binary getBinary() {
         return binary;
     }

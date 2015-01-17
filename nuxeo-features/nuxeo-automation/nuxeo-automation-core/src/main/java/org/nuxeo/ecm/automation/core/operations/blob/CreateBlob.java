@@ -64,7 +64,7 @@ public class CreateBlob {
         if (mimeType == null) { // TODO detect mime type
 
         }
-        return new URLBlob(file, mimeType, encoding, fileName, null);
+        return new URLBlob(file, mimeType, encoding, fileName);
     }
 
 }

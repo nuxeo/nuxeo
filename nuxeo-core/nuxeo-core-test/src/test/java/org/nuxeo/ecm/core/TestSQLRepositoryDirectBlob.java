@@ -184,19 +184,6 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
         binaryManager.close();
     }
 
-    protected static class TmpStreamingBlob extends StreamingBlob {
-        private static final long serialVersionUID = 1L;
-
-        public TmpStreamingBlob(FileSource src) {
-            super(src);
-        }
-
-        @Override
-        public boolean isTemporary() {
-            return true;
-        }
-    }
-
     @Test
     public void testBinaryManagerTmpFileMoveNotCopy() throws Exception {
         BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
@@ -210,7 +197,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
 
         // create blob
         FileSource fileSource = new FileSource(file);
-        Blob blob = new TmpStreamingBlob(fileSource);
+        Blob blob = new StreamingBlob.TemporaryFileBlob(fileSource);
 
         // set in doc
         DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");

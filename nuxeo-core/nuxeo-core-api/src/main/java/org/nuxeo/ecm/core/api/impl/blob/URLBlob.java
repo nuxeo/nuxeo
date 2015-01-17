@@ -16,6 +16,7 @@ package org.nuxeo.ecm.core.api.impl.blob;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -23,30 +24,21 @@ import org.nuxeo.ecm.core.api.Blob;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class URLBlob extends DefaultStreamBlob {
+public class URLBlob extends AbstractBlob implements Serializable {
 
-    private static final long serialVersionUID = 8153160000788820352L;
+    private static final long serialVersionUID = 1L;
 
     protected final URL url;
 
     public URLBlob(URL url) {
-        this(url, null, null);
+        this(url, null, null, null);
     }
 
-    public URLBlob(URL url, String ctype) {
-        this(url, ctype, null);
-    }
-
-    public URLBlob(URL url, String ctype, String encoding) {
-        this(url, ctype, encoding, null, null);
-    }
-
-    public URLBlob(URL url, String ctype, String encoding, String filename, String digest) {
+    public URLBlob(URL url, String mimeType, String encoding, String filename) {
         this.url = url;
-        mimeType = ctype;
+        this.mimeType = mimeType;
         this.encoding = encoding;
         this.filename = filename;
-        this.digest = digest;
     }
 
     @Override

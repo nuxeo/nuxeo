@@ -1238,9 +1238,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         childFile1.setProperty("file", "filename", "f1");
 
         // add a blob
-        StringBlob sb = new StringBlob("<html><head/><body>La la la!</body></html>");
-        byte[] bytes = sb.getByteArray();
-        Blob blob = new ByteArrayBlob(bytes, "text/html");
+        Blob blob = new StringBlob("<html><head/><body>La la la!</body></html>", "text/html");
         childFile1.setProperty("file", "content", blob);
 
         session.saveDocument(childFile1);
@@ -2839,7 +2837,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         blob = (Blob) doc.getPart("file").get("content").getValue();
         assertTrue(Arrays.equals(bytes, blob.getByteArray()));
 
-        // reset not implemented (not needed) for SQLBlob's Binary
+        // reset not implemented (not needed) for StorageBlob's Binary
         // XXX blob.getStream().reset();
 
         blob = (Blob) doc.getPart("file").get("content").getValue();

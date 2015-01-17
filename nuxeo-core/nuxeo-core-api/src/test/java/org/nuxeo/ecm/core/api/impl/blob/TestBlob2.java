@@ -19,12 +19,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.Arrays;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -70,7 +71,7 @@ public class TestBlob2 {
         out.write("some content");
         out.close();
 
-        Blob blob = new URLBlob(file.toURI().toURL(), "text/plain", "UTF-8");
+        Blob blob = new URLBlob(file.toURI().toURL(), "text/plain", "UTF-8", null);
         checkBlob(blob);
 
         file.delete();
@@ -82,15 +83,15 @@ public class TestBlob2 {
         assertEquals("some content", blob.getString());
         assertTrue(Arrays.equals("some content".getBytes(), blob.getByteArray()));
 
-        InputStream in = blob.getStream();
-        String result = StreamBlob.readString(new InputStreamReader(in));
-        assertEquals("some content", result);
-        in.close();
+        try (InputStream in = blob.getStream()) {
+            String result = IOUtils.toString(in);
+            assertEquals("some content", result);
+        }
 
-        Reader reader = blob.getReader();
-        result = StreamBlob.readString(reader);
-        assertEquals("some content", result);
-        reader.close();
+        try (Reader reader = blob.getReader()) {
+            String result = IOUtils.toString(reader);
+            assertEquals("some content", result);
+        }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         blob.transferTo(baos);

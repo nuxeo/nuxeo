@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
@@ -56,7 +56,7 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
         file1.setPropertyValue("dc:description", "test file description");
         String content = "Some caf\u00e9 in a restaurant.\nDrink!.\n";
         String filename = "testfile.txt";
-        ByteArrayBlob blob1 = new ByteArrayBlob(content.getBytes("UTF-8"), "text/plain");
+        StringBlob blob1 = new StringBlob(content, "text/plain");
         file1.setPropertyValue("content", blob1);
         file1.setPropertyValue("filename", filename);
         Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0);

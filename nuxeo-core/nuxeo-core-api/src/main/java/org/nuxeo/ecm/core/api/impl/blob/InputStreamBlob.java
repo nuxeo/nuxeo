@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,48 +7,44 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.api.impl.blob;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Blob based on an {@link InputStream}.
+ * <p>
+ * The method {@link #getStream} will return the original stream and therefore can only be consumed once.
  */
-public class InputStreamBlob extends DefaultStreamBlob {
+public class InputStreamBlob extends AbstractBlob {
 
-    private static final long serialVersionUID = 2044137587685886328L;
-
-    protected final InputStream in;
-
-    protected File file;
+    protected InputStream in;
 
     public InputStreamBlob(InputStream in) {
         this(in, null, null);
-        // TODO try to guess content type from file extension
     }
 
-    public InputStreamBlob(InputStream in, String ctype) {
-        this(in, ctype, null);
+    public InputStreamBlob(InputStream in, String mimeType) {
+        this(in, mimeType, null);
     }
 
-    public InputStreamBlob(InputStream in, String ctype, String encoding) {
+    public InputStreamBlob(InputStream in, String mimeType, String encoding) {
+        this(in, mimeType, encoding, null, null);
+    }
+
+    public InputStreamBlob(InputStream in, String mimeType, String encoding, String filename) {
+        this(in, mimeType, encoding, filename, null);
+    }
+
+    public InputStreamBlob(InputStream in, String mimeType, String encoding, String filename, String digest) {
         this.in = in;
-        mimeType = ctype;
-        this.encoding = encoding;
-    }
-
-    public InputStreamBlob(InputStream in, String ctype, String encoding, String filename, String digest) {
-        this.in = in;
-        mimeType = ctype;
+        this.mimeType = mimeType;
         this.encoding = encoding;
         this.filename = filename;
         this.digest = digest;

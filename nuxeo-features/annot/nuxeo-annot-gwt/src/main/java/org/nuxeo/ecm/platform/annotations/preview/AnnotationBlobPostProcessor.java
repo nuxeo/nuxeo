@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.preview.adapter.BlobPostProcessor;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
@@ -76,8 +76,7 @@ public class AnnotationBlobPostProcessor implements BlobPostProcessor {
             String blobAsString = getBlobAsString(blob, encoding);
             String processedBlob = addAnnotationModule(blobAsString);
 
-            byte[] bytes = encoding == null ? processedBlob.getBytes() : processedBlob.getBytes(encoding);
-            blob = new ByteArrayBlob(bytes, blob.getMimeType(), encoding);
+            blob = new StringBlob(processedBlob, blob.getMimeType(), encoding);
         } catch (IOException e) {
             log.debug("Unable to process Blob", e);
         }

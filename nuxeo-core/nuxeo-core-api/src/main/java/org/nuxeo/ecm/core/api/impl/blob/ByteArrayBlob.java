@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,11 +7,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.api.impl.blob;
 
 import java.io.ByteArrayInputStream;
@@ -24,28 +22,28 @@ import java.io.StringReader;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Blob based on a byte array.
  */
-public class ByteArrayBlob extends DefaultBlob implements Serializable {
+public class ByteArrayBlob extends AbstractBlob implements Serializable {
 
-    private static final long serialVersionUID = -91800812783051025L;
+    private static final long serialVersionUID = 1L;
 
-    protected final byte[] content;
+    protected final byte[] bytes;
 
-    public ByteArrayBlob(byte[] content) {
-        this(content, null, null);
+    public ByteArrayBlob(byte[] bytes) {
+        this(bytes, null, null);
     }
 
-    public ByteArrayBlob(byte[] content, String ctype) {
-        this(content, ctype, null);
+    public ByteArrayBlob(byte[] bytes, String mimeType) {
+        this(bytes, mimeType, null);
     }
 
-    public ByteArrayBlob(byte[] content, String ctype, String encoding) {
-        this(content, ctype, encoding, null, null);
+    public ByteArrayBlob(byte[] bytes, String mimeType, String encoding) {
+        this(bytes, mimeType, encoding, null, null);
     }
 
-    public ByteArrayBlob(byte[] content, String mimeType, String encoding, String filename, String digest) {
-        this.content = content;
+    public ByteArrayBlob(byte[] bytes, String mimeType, String encoding, String filename, String digest) {
+        this.bytes = bytes;
         this.mimeType = mimeType;
         this.encoding = encoding;
         this.filename = filename;
@@ -54,47 +52,43 @@ public class ByteArrayBlob extends DefaultBlob implements Serializable {
 
     @Override
     public long getLength() {
-        if (content == null || content.length == 0) {
+        if (bytes == null) {
             return 0;
         }
-        return content.length;
+        return bytes.length;
     }
 
     @Override
-    public InputStream getStream() throws IOException {
-        if (content == null || content.length == 0) {
+    public InputStream getStream() {
+        if (bytes == null) {
             return EMPTY_INPUT_STREAM;
         }
-        return new ByteArrayInputStream(content);
+        return new ByteArrayInputStream(bytes);
     }
 
     @Override
-    public byte[] getByteArray() throws IOException {
-        if (content == null || content.length == 0) {
+    public byte[] getByteArray() {
+        if (bytes == null) {
             return EMPTY_BYTE_ARRAY;
         }
-        return content;
+        return bytes;
     }
 
     @Override
     public String getString() throws IOException {
-        if (content == null || content.length == 0) {
+        if (bytes == null) {
             return EMPTY_STRING;
         }
-        return new String(content, encoding == null ? "UTF-8" : encoding);
+        return new String(bytes, encoding == null ? "UTF-8" : encoding);
     }
 
     @Override
     public Reader getReader() throws IOException {
-        String str = getString();
-        if (str == null || str.length() == 0) {
-            return EMPTY_READER;
-        }
-        return new StringReader(str);
+        return new StringReader(getString());
     }
 
     @Override
-    public Blob persist() throws IOException {
+    public Blob persist() {
         return this;
     }
 

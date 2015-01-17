@@ -180,7 +180,7 @@ public class TestDownloadServlet {
     }
 
     /**
-     * Forges a SQLBlob with a string value and an expected digest.
+     * Forges a StorageBlob with a string value and an expected digest.
      *
      * @param stringValue
      * @param digest

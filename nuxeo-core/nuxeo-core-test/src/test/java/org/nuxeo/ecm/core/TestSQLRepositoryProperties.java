@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
 import org.nuxeo.ecm.core.api.externalblob.FileSystemExternalBlobAdapter;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -838,7 +837,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertTrue(part.isSameAs(part));
 
         DocumentModel doc2 = session.createDocumentModel("/", "file2", "File");
-        Blob blob2 = new ByteArrayBlob("hello world!".getBytes(), "text/plain", "UTF-8");
+        Blob blob2 = new StringBlob("hello world!", "text/plain");
         doc2.setPropertyValue("file:content", (Serializable) blob2);
         doc2 = session.createDocument(doc2);
         DocumentPart part2 = doc2.getPart("file");
@@ -871,7 +870,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         // different
         assertFalse(doc2.getPropertyValue("file:content").equals(doc4.getPropertyValue("file:content")));
 
-        // compare a ByteArrayBlob and a StorageBlob
+        // compare a StringBlob and a StorageBlob
         assertEquals(blob2, doc3.getPropertyValue("file:content"));
         assertEquals(doc3.getPropertyValue("file:content"), blob2);
 
@@ -879,11 +878,11 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertEquals(blob3, doc3.getPropertyValue("file:content"));
         assertEquals(doc3.getPropertyValue("file:content"), blob3);
 
-        // compare a ByteArrayBlob and a StringBlob
+        // compare a StringBlob and a StringBlob
         assertEquals(blob2, blob3);
         assertEquals(blob3, blob2);
 
-        // compare a StringBlob with a different StringBlob or ByteArrayBlob
+        // compare a StringBlob with a different StringBlob
         assertFalse(blob2.equals(blob4));
         assertFalse(blob4.equals(blob2));
         assertFalse(blob3.equals(blob4));

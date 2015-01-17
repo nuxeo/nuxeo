@@ -16,9 +16,7 @@
 
 package org.nuxeo.ecm.automation.task;
 
-import java.io.ByteArrayInputStream;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -33,7 +31,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.task.dashboard.DashBoardItem;
@@ -104,12 +102,7 @@ public class UserTaskPageProviderOperation extends AbstractTaskOperation {
         json.put("pageCount", Long.valueOf(pageProvider.getNumberOfPages()));
 
         json.put("entries", processes);
-        try {
-            return new InputStreamBlob(new ByteArrayInputStream(json.toString().getBytes("UTF-8")), "application/json");
-        } catch (UnsupportedEncodingException e) {
-            // cannot happen
-            throw new RuntimeException(e);
-        }
+        return new StringBlob(json.toString(), "application/json");
     }
 
 }

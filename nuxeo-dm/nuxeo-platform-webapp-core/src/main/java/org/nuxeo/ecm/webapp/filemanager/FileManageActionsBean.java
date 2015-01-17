@@ -69,7 +69,6 @@ import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.streaming.FileSource;
 import org.richfaces.event.FileUploadEvent;
 import org.richfaces.model.UploadedFile;
 
@@ -742,33 +741,6 @@ public class FileManageActionsBean implements FileManageActions {
             setUploadedFiles(files);
         }
         return "";
-    }
-
-    /**
-     * A Blob based on a File but whose contract says that the file is allowed to be moved to another filesystem
-     * location if needed. (The move is done by getting the StreamSource from the Blob, casting to FileSource,
-     *
-     * @since 5.6.0-HF19
-     * @deprecated Since 5.7.2. See {@link org.nuxeo.ecm.platform.ui.web.util.files.FileUtils.TemporaryFileBlob}
-     */
-    @Deprecated
-    public static class TemporaryFileBlob extends StreamingBlob {
-
-        private static final long serialVersionUID = 1L;
-
-        public TemporaryFileBlob(File file, String mimeType, String encoding, String filename, String digest) {
-            super(new FileSource(file), mimeType, encoding, filename, digest);
-        }
-
-        @Override
-        public boolean isTemporary() {
-            return true; // for SQLSession#getBinary
-        }
-
-        @Override
-        public FileSource getStreamSource() {
-            return (FileSource) src;
-        }
     }
 
     /**

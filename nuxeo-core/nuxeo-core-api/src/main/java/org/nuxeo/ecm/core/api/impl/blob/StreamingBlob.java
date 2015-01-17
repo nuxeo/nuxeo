@@ -24,7 +24,7 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.net.URL;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.ByteArraySource;
@@ -37,7 +37,7 @@ import org.nuxeo.runtime.services.streaming.URLSource;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class StreamingBlob extends DefaultBlob implements Serializable {
+public class StreamingBlob extends AbstractBlob implements Serializable {
 
     // use in memory buffers for data under 1MB
     public static final int MEM_MAX_LIMIT = 1024 * 1024;
@@ -180,12 +180,12 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
                 persistedTmpFile = File.createTempFile("NXCore-persisted-StreamingBlob-", ".tmp");
                 in = src.getStream();
                 out = new FileOutputStream(persistedTmpFile);
-                copy(in, out);
+                IOUtils.copy(in, out);
                 src = new FileSource(persistedTmpFile);
                 Framework.trackFile(persistedTmpFile, this);
             } finally {
-                FileUtils.close(in);
-                FileUtils.close(out);
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
             }
         }
         return this;
@@ -193,6 +193,33 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
 
     public boolean isTemporary() {
         return persistedTmpFile != null;
+    }
+
+    /**
+     * A Blob based on a File but whose contract says that the file is allowed to be moved to another filesystem
+     * location if needed.
+     * <p>
+     * The move is done by getting the StreamSource from the Blob, casting to FileSource.
+     *
+     * @since 5.7.2
+     */
+    public static class TemporaryFileBlob extends StreamingBlob {
+
+        private static final long serialVersionUID = 1L;
+
+        public TemporaryFileBlob(File file, String mimeType, String encoding, String filename, String digest) {
+            super(new FileSource(file), mimeType, encoding, filename, digest);
+        }
+
+        public TemporaryFileBlob(FileSource src) {
+            super(src);
+        }
+
+        @Override
+        public boolean isTemporary() {
+            return true; // for SQLSession#getBinary
+        }
+
     }
 
 }

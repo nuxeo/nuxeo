@@ -32,12 +32,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
-import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -108,8 +107,7 @@ public class TestFileManagerVersioning {
 
         // create doc
         File file = getTestFile(HELLO_DOC);
-        byte[] content = FileManagerUtils.getBytesFromFile(file);
-        ByteArrayBlob input = new ByteArrayBlob(content, APPLICATION_MSWORD);
+        FileBlob input = new FileBlob(file, APPLICATION_MSWORD);
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input, root.getPathAsString(), true, HELLO_DOC);
         DocumentRef docRef = doc.getRef();
 
@@ -142,8 +140,7 @@ public class TestFileManagerVersioning {
 
         // create doc
         File file = getTestFile(HELLO_DOC);
-        byte[] content = FileManagerUtils.getBytesFromFile(file);
-        ByteArrayBlob input = new ByteArrayBlob(content, APPLICATION_MSWORD);
+        FileBlob input = new FileBlob(file, APPLICATION_MSWORD);
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input, root.getPathAsString(), true, HELLO_DOC);
         DocumentRef docRef = doc.getRef();
 

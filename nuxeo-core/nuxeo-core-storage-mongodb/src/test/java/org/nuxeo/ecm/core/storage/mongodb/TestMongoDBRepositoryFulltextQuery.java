@@ -40,8 +40,8 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 
 /**
@@ -117,7 +117,8 @@ public class TestMongoDBRepositoryFulltextQuery extends MongoDBRepositoryTestCas
         file1.setPropertyValue("dc:description", "testfile1_description");
         String content = "Some caf\u00e9 in a restaurant.\nDrink!.\n";
         String filename = "testfile.txt";
-        ByteArrayBlob blob1 = new ByteArrayBlob(content.getBytes("UTF-8"), "text/plain", "UTF-8", filename, null);
+        StringBlob blob1 = new StringBlob(content, "text/plain");
+        blob1.setFilename(filename);
         file1.setPropertyValue("content", blob1);
         file1.setPropertyValue("filename", filename);
         Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0);
@@ -664,7 +665,7 @@ public class TestMongoDBRepositoryFulltextQuery extends MongoDBRepositoryTestCas
         assertIdSet(dml, file1.getId());
         // check text extraction with '\0' in it
         String content = "Text with a \0 in it";
-        ByteArrayBlob blob1 = new ByteArrayBlob(content.getBytes("UTF-8"), "text/plain");
+        StringBlob blob1 = new StringBlob(content, "text/plain");
         file1.setPropertyValue("content", blob1);
         session.saveDocument(file1);
         session.save();

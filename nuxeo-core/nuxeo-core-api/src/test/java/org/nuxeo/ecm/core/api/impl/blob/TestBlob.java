@@ -20,13 +20,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Random;
@@ -69,24 +65,6 @@ public class TestBlob extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    private static void checkSerialization(Blob blob) throws Exception {
-        ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
-        blob.transferTo(baos1);
-
-        File tmpFile = File.createTempFile("FileBlobtest-", ".tmp");
-
-        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(tmpFile));
-        out.writeObject(blob);
-        out.close();
-
-        ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
-        ObjectInputStream in = new ObjectInputStream(new FileInputStream(tmpFile));
-        FileBlob blob2 = (FileBlob) in.readObject();
-        blob2.transferTo(baos2);
-        tmpFile.delete();
-        assertTrue(Arrays.equals(baos1.toByteArray(), baos2.toByteArray()));
-    }
-
     private void checkFileBlob(Blob blob) throws Exception {
         assertNull(blob.getMimeType());
         assertNull(blob.getEncoding());
@@ -102,8 +80,6 @@ public class TestBlob extends NXRuntimeTestCase {
         byte[] blobContent2 = blob.getByteArray();
         assertEquals(blobContent.length, blobContent2.length);
         assertTrue(Arrays.equals(blobContent, blobContent2));
-
-        checkSerialization(blob);
     }
 
     @Test

@@ -578,7 +578,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         Book book = new Book();
         BlobFile file = new BlobFile();
         file.fileName.extension = "xml";
-        file.blob = new StringBlob("abcdef", "plain/text", "UTF8");
+        file.blob = new StringBlob("abcdef", "plain/text");
         book.file = file;
 
         dp.setValue(book.getMap());

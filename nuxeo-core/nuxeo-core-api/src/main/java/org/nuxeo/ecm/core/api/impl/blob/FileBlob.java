@@ -19,30 +19,28 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class FileBlob extends DefaultStreamBlob implements Serializable {
+public class FileBlob extends AbstractBlob implements Serializable {
 
-    private static final long serialVersionUID = 373720300515677319L;
+    private static final long serialVersionUID = 1L;
 
     protected transient File file;
 
     public FileBlob(File file) {
-        this(file, null, null);
+        this(file, null, null, null, null);
     }
 
-    public FileBlob(File file, String ctype) {
-        this(file, ctype, null);
+    public FileBlob(File file, String mimeType) {
+        this(file, mimeType, null, null, null);
     }
 
     public FileBlob(File file, String mimeType, String encoding) {
@@ -72,11 +70,11 @@ public class FileBlob extends DefaultStreamBlob implements Serializable {
         try {
             file = File.createTempFile("NXCore-FileBlob-", ".tmp");
             out = new FileOutputStream(file);
-            copy(in, out);
+            IOUtils.copy(in, out);
             Framework.trackFile(file, this);
         } finally {
-            FileUtils.close(in);
-            FileUtils.close(out);
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(out);
         }
     }
 
@@ -102,49 +100,6 @@ public class FileBlob extends DefaultStreamBlob implements Serializable {
     @Override
     public boolean isPersistent() {
         return true;
-    }
-
-    private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
-        // always perform the default de-serialization first
-        in.defaultReadObject();
-        // create a temp file where we will put the blob content
-        file = File.createTempFile("NXCore-FileBlob-", ".tmp");
-        Framework.trackFile(file, this);
-        OutputStream out = null;
-        try {
-            out = new FileOutputStream(file);
-            byte[] buffer = new byte[BUFFER_SIZE];
-            int read;
-            int bytes = in.readInt();
-            while (bytes > -1 && (read = in.read(buffer, 0, bytes)) != -1) {
-                out.write(buffer, 0, read);
-                bytes -= read;
-                if (bytes == 0) {
-                    bytes = in.readInt();
-                }
-            }
-        } finally {
-            FileUtils.close(out);
-        }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.defaultWriteObject();
-        // write content
-        InputStream in = null;
-        try {
-            in = getStream();
-            int read = 0;
-            byte[] buf = new byte[BUFFER_SIZE];
-            while ((read = in.read(buf)) != -1) {
-                out.writeInt(read); // next follows a chunk of 'read' bytes
-                out.write(buf, 0, read);
-            }
-            out.writeInt(-1); // EOF
-        } finally {
-            FileUtils.close(in);
-        }
-
     }
 
 }

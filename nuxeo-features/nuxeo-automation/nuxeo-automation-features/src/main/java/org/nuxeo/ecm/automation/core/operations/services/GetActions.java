@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.automation.core.operations.services;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -41,7 +40,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
@@ -149,11 +148,6 @@ public class GetActions {
             obj.element("properties", properties);
             rows.add(obj);
         }
-        try {
-            return new ByteArrayBlob(rows.toString().getBytes("UTF-8"), "application/json");
-        } catch (UnsupportedEncodingException e) {
-            // cannot happen
-            throw new RuntimeException(e);
-        }
+        return new StringBlob(rows.toString(), "application/json");
     }
 }

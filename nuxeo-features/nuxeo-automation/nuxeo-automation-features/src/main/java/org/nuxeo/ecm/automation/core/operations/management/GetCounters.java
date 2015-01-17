@@ -17,7 +17,6 @@
  */
 package org.nuxeo.ecm.automation.core.operations.management;
 
-import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +34,7 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.counters.CounterHistoryStack;
 import org.nuxeo.runtime.management.counters.CounterManager;
@@ -132,12 +131,7 @@ public class GetCounters {
             }
         }
 
-        try {
-            return new ByteArrayBlob(collection.toString().getBytes("UTF-8"), "application/json");
-        } catch (UnsupportedEncodingException e) {
-            // cannot happen
-            throw new RuntimeException(e);
-        }
+        return new StringBlob(collection.toString(), "application/json");
     }
 
 }
