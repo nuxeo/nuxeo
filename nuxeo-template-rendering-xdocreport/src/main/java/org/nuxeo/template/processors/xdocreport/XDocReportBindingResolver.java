@@ -41,10 +41,8 @@ public class XDocReportBindingResolver extends AbstractBindingResolver {
     protected Object handlePictureField(String paramName, Blob blobValue) {
         if (blobValue == null) {
             // manage a default picture : blank one :)
-            InputStream is = this.getClass().getClassLoader().getResourceAsStream("blank.png");
-            byte[] bin;
-            try {
-                bin = FileUtils.readBytes(is);
+            try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("blank.png")) {
+                byte[] bin = FileUtils.readBytes(is);
                 blobValue = new ByteArrayBlob(bin);
                 blobValue.setFilename("blank.png");
                 blobValue.setMimeType("image/png");
