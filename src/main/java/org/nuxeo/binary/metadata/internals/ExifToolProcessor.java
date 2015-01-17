@@ -32,7 +32,7 @@ import org.nuxeo.binary.metadata.api.BinaryMetadataException;
 import org.nuxeo.binary.metadata.api.BinaryMetadataProcessor;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
+import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api
@@ -198,8 +198,8 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
     public File getFileFromBlob(Blob blob) {
         if (blob instanceof FileBlob) {
             return ((FileBlob) blob).getFile();
-        } else if (blob instanceof SQLBlob) {
-            StreamSource source = ((SQLBlob) blob).getBinary().getStreamSource();
+        } else if (blob instanceof StorageBlob) {
+            StreamSource source = ((StorageBlob) blob).getBinary().getStreamSource();
             return ((FileSource) source).getFile();
         }
         return null;
