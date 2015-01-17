@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
-import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,10 +37,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
-import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Point;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
 
 /**
  * Returns a json representation of the graph route
@@ -72,7 +71,7 @@ public class GetGraphOperation {
         Locale locale = language != null && !language.isEmpty() ? new Locale(language) : Locale.ENGLISH;
         GetRouteAsJsonUnrestricted unrestrictedRunner = new GetRouteAsJsonUnrestricted(session, routeDocId, locale);
         String json = unrestrictedRunner.getJSON();
-        return new InputStreamBlob(new ByteArrayInputStream(json.getBytes("UTF-8")), "application/json");
+        return new StringBlob(json.toString(), "application/json");
 
     }
 
