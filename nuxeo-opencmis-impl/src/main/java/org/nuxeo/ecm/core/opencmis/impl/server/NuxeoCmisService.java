@@ -128,7 +128,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -497,7 +497,8 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             } catch (MimetypeNotFoundException e) {
                 mimeType = MimetypeRegistry.DEFAULT_MIMETYPE;
             }
-            blob = new ByteArrayBlob(new byte[0], mimeType, null, name, null);
+            blob = new StringBlob("", mimeType, null);
+            blob.setFilename(name);
         } else {
             try {
                 blob = NuxeoPropertyData.getPersistentBlob(contentStream, null);

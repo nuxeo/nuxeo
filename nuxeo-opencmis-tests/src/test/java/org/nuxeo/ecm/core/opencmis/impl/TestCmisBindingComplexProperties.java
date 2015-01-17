@@ -47,7 +47,7 @@ import org.nuxeo.ecm.automation.core.util.DateTimeFormat;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoTypeHelper;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
@@ -176,8 +176,8 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
         CoreSession session = coreSession;
         DocumentModel doc = session.createDocumentModel("/", null, "ComplexFile");
         doc.setPropertyValue("complexTest:complexItem", (Serializable) propMap);
-        ByteArrayBlob blob = new ByteArrayBlob("Test content".getBytes("UTF-8"), "text/plain", "UTF-8", "test.txt",
-                null);
+        StringBlob blob = new StringBlob("Test content", "text/plain");
+        blob.setFilename("test.txt");
         doc.setProperty("file", "content", blob);
         doc = session.createDocument(doc);
         session.save();
