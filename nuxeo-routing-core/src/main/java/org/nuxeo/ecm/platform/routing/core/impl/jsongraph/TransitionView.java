@@ -18,7 +18,11 @@
 
 package org.nuxeo.ecm.platform.routing.core.impl.jsongraph;
 
+import java.util.List;
 import java.util.Locale;
+
+import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Point;
 
 /**
  * @since 7.2
@@ -31,10 +35,13 @@ public class TransitionView {
 
     public String label;
 
-    public TransitionView(String nodeSourceId, String nodeTargetId, String label, Locale locale) {
+    public List<Point> path;
+
+    public TransitionView(String nodeSourceId, String nodeTargetId, Transition transition, Locale locale) {
         this.nodeSourceId = nodeSourceId;
         this.nodeTargetId = nodeTargetId;
-        this.label = JsonGraphRoute.getI18nLabel(label, locale);
+        this.label = JsonGraphRoute.getI18nLabel(transition.getLabel(), locale);
+        this.path = transition.getPath();
     }
 
     public String getLabel() {
@@ -49,4 +56,7 @@ public class TransitionView {
         return nodeTargetId;
     }
 
+    public List<Point> getPath() {
+        return path;
+    }
 }

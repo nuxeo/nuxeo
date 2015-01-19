@@ -53,19 +53,18 @@ public class JsonGraphRoute extends UnrestrictedSessionRunner {
         try {
             Map<String, Object> graph = new HashMap<String, Object>();
             List<NodeView> nodeViews = new ArrayList<NodeView>();
-            Map<String, TransitionView> tranViews = new HashMap<String, TransitionView>();
+            List<TransitionView> tranViews = new ArrayList<TransitionView>();
 
             for (GraphNode node : route.getNodes()) {
                 nodeViews.add(new NodeView(node, locale));
                 List<Transition> transitions = node.getOutputTransitions();
                 for (Transition transition : transitions) {
                     GraphNode targetNode = route.getNode(transition.getTarget());
-                    tranViews.put(transition.getId(),
-                            new TransitionView(node.getId(), targetNode.getId(), transition.getLabel(), locale));
+                    tranViews.add(new TransitionView(node.getId(), targetNode.getId(), transition, locale));
                 }
             }
             graph.put("nodes", nodeViews);
-            graph.put("transitions", tranViews.values());
+            graph.put("transitions", tranViews);
 
             ObjectMapper mapper = new ObjectMapper();
             StringWriter writer = new StringWriter();
