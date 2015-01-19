@@ -296,28 +296,21 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         for (MetadataRuleDescriptor ruleDescriptor : ruleDescriptors) {
             if (ruleDescriptor.getIsAsync()) {
                 asyncMappingDescriptorIds.addAll(ruleDescriptor.getMetadataMappingIdDescriptors());
+                continue;
             }
             syncMappingDescriptorIds.addAll(ruleDescriptor.getMetadataMappingIdDescriptors());
         }
 
         // Handle async rules which should be taken into account in async listener.
         if (!asyncMappingDescriptorIds.isEmpty()) {
-            handleAsyncMapping(asyncMappingDescriptorIds, docCtx);
+            docCtx.setProperty(BinaryMetadataConstants.ASYNC_MAPPING_RESULT, getMapping(asyncMappingDescriptorIds));
+            docCtx.setProperty(BinaryMetadataConstants.ASYNC_BINARY_METADATA_EXECUTE, Boolean.TRUE);
         }
 
         if (syncMappingDescriptorIds.isEmpty()) {
             return null;
         }
         return getMapping(syncMappingDescriptorIds);
-    }
-
-    /**
-     * Handle Metadata Rules which should be executed within async listener.
-     */
-    protected void handleAsyncMapping(HashSet<String> asyncMappingDescriptorIds, DocumentEventContext docCtx) {
-        docCtx.setProperty(BinaryMetadataConstants.ASYNC_MAPPING_RESULT, getMapping(asyncMappingDescriptorIds));
-        EventService service = Framework.getService(EventService.class);
-        service.fireEvent(BinaryMetadataConstants.ASYNC_BINARY_METADATA_EVENT, docCtx);
     }
 
     protected LinkedList<MetadataMappingDescriptor> getMapping(Set<String> mappingDescriptorIds) {

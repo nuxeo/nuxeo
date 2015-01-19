@@ -47,14 +47,20 @@ public class BinaryMetadataConstants {
     /**
      * Flag to disable binary metadata listener.
      */
-    public static final String ASYNC_BINARY_METADATA_EVENT = "asyncBinaryMetadataEvent";
-
     public static final String DISABLE_BINARY_METADATA_LISTENER = "disableBinaryMetadataListener";
 
     /**
      * Constant map key to do the async update of given metadata listing.
      */
     public static final String ASYNC_MAPPING_RESULT = "asyncMappingResult";
+
+    /**
+     * Flag to execute the worker if async update should be done.
+     *
+     * @since 7.2
+     */
+    public static final String ASYNC_BINARY_METADATA_EXECUTE = "asyncExecute";
+
     /**
      * Binary Metadata configuration constant to active/deactivate metrics.
      */
