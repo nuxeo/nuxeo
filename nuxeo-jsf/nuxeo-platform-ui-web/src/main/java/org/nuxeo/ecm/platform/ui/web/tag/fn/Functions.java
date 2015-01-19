@@ -113,6 +113,8 @@ public final class Functions {
     // at a higher level in the Framework or in a facade.
     private static UserManager userManager;
 
+    private static UserNameResolverHelper userNameResolver = new UserNameResolverHelper();
+    
     /**
      * Key in the session holding a map caching user full names.
      */
@@ -238,37 +240,11 @@ public final class Functions {
             return username;
         }
 
-        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-
         // empty user name is current user
         if (StringUtils.isBlank(username)) {
             return null;
-        }
-        // check cache
-        Map<String, Object> session = externalContext.getSessionMap();
-        Map<String, String> fullNames = (Map<String, String>) session.get(FULLNAMES_MAP_KEY);
-        if (fullNames != null && fullNames.containsKey(username)) {
-            return fullNames.get(username);
-        }
-        // compute full name
-        String fullName;
-        try {
-            NuxeoPrincipal principal = getUserManager().getPrincipal(username);
-            if (principal != null) {
-                fullName = principalFullName(principal);
-            } else {
-                fullName = username;
-            }
-        } catch (ClientException e) {
-            fullName = username;
-        }
-        // put in cache
-        if (fullNames == null) {
-            fullNames = new HashMap<String, String>();
-            session.put(FULLNAMES_MAP_KEY, fullNames);
-        }
-        fullNames.put(username, fullName);
-        return fullName;
+        }        
+        return userNameResolver.getUserFullName(username);
     }
 
     /**
