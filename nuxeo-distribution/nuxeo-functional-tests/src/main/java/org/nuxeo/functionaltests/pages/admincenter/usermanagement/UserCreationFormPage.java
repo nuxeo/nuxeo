@@ -36,7 +36,7 @@ import org.openqa.selenium.support.FindBy;
 public class UserCreationFormPage extends UsersGroupsBasePage {
 
     @Required
-    @FindBy(id = "createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation")
+    @FindBy(id = "createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation_yes")
     WebElement immediateCreation;
 
     @FindBy(id = "createUserView:createUser:nxl_user:nxw_username")
@@ -109,7 +109,7 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
     protected void switchCreationFormPage() {
         if (!immediateCreation.isSelected()) {
             immediateCreation.click();
-            Locator.waitUntilElementPresent(By.id("createUserView:createUser:nxl_user:nxw_username"));
+            Locator.waitUntilElementPresent(By.id("createUserView:createUser:nxl_user:nxw_passwordMatcher_firstPassword"));
         }
     }
 }
