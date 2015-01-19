@@ -25,16 +25,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Test;
-
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
-
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
@@ -48,6 +49,8 @@ import com.google.common.base.Function;
  * @since 5.9.3
  */
 public class ITRichfileUploadTest extends AbstractTest {
+
+    private static final Log log = LogFactory.getLog(ITRichfileUploadTest.class);
 
     protected static final String FILES_TAB_ID = "nxw_TAB_FILES_EDIT";
 
@@ -160,14 +163,20 @@ public class ITRichfileUploadTest extends AbstractTest {
         Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
+                try {
+                    driver.switchTo().alert().dismiss();
+                    log.warn("Modal dialog present");
+                } catch (NoAlertPresentException e) {
+                    // Expected
+                }
                 List<WebElement> uploadedFiles = driver.findElements(By.xpath(NX_UPLOADED_FILES_XPATH));
                 uploadedFiles.get(0).findElements(By.tagName("a")).get(0).click();
+                Alert confirmRemove = driver.switchTo().alert();
+                confirmRemove.accept();
                 return true;
             }
         }, StaleElementReferenceException.class);
 
-        Alert confirmRemove = driver.switchTo().alert();
-        confirmRemove.accept();
         // check we have 1 uploaded file
         Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
             @Override
