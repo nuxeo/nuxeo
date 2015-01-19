@@ -78,7 +78,7 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin {
         // the authentication plugin configuration
         try {
             UserManager userManager = Framework.getService(UserManager.class);
-            if (userManager.getAnonymousUserId().equals(userName) && !allowAnonymous) {
+            if (userManager != null && userName.equals(userManager.getAnonymousUserId()) && !allowAnonymous) {
                 log.debug("Anonymous user is not allowed to get authenticated by token, returning null.");
                 return null;
             }
