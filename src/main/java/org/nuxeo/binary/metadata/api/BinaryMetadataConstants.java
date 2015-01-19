@@ -21,10 +21,19 @@ package org.nuxeo.binary.metadata.api;
  */
 public class BinaryMetadataConstants {
 
+    /**
+     * Commandline id - read metadata from binary with exiftool.
+     */
     public static final String EXIFTOOL_READ = "exiftool-read";
 
+    /**
+     * Commandline id - read metadata listing from binary with exiftool.
+     */
     public static final String EXIFTOOL_READ_TAGLIST = "exiftool-read-taglist";
 
+    /**
+     * Commandline id - Write metadata into binary with exiftool.
+     */
     public static final String EXIFTOOL_WRITE = "exiftool-write";
 
     public static final String METADATA_MAPPING_EP = "metadataMappings";
@@ -35,10 +44,16 @@ public class BinaryMetadataConstants {
 
     public static final String EXIF_TOOL_CONTRIBUTION_ID = "exifTool";
 
+    /**
+     * Flag to disable binary metadata listener.
+     */
     public static final String ASYNC_BINARY_METADATA_EVENT = "asyncBinaryMetadataEvent";
 
     public static final String DISABLE_BINARY_METADATA_LISTENER = "disableBinaryMetadataListener";
 
+    /**
+     * Constant map key to do the async update of given metadata listing.
+     */
     public static final String ASYNC_MAPPING_RESULT = "asyncMappingResult";
     /**
      * Binary Metadata configuration constant to active/deactivate metrics.
