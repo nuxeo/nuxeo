@@ -5339,6 +5339,7 @@
       </widget>
        <widget name="passwordMatcher" type="template">
         <labels>
+          <label mode="create">label.immediateCreation</label>
           <label mode="any"></label>
         </labels>
         <translated>true</translated>
