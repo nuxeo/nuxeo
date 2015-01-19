@@ -57,10 +57,11 @@
       <event>aboutToCreate</event>
       <event>beforeDocumentModification</event>
     </listener>
-    <listener name="binaryMetadataAsyncListener" async="true"
-              class="org.nuxeo.binary.metadata.internals.listeners.BinaryMetadataAsyncListener"
+    <listener name="binaryMetadataWorkSyncListener"
+              class="org.nuxeo.binary.metadata.internals.listeners.BinaryMetadataWorkListener"
               order="100">
-      <event>asyncBinaryMetadataEvent</event>
+      <event>documentCreated</event>
+      <event>documentModified</event>
     </listener>
   </extension>
 
