@@ -35,8 +35,6 @@ public class BinaryMetadataComponent extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(BinaryMetadataComponent.class);
 
-    public static final String BINARY_METADATA_MONITOR = "binary.metadata.monitor.enable";
-
     protected static BinaryMetadataComponent self;
 
     protected BinaryMetadataService metadataService = new BinaryMetadataServiceImpl();
@@ -50,7 +48,8 @@ public class BinaryMetadataComponent extends DefaultComponent {
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        if (Boolean.valueOf(Framework.getProperty(BINARY_METADATA_MONITOR, Boolean.toString(log.isTraceEnabled())))) {
+        if (Boolean.valueOf(Framework.getProperty(BinaryMetadataConstants.BINARY_METADATA_MONITOR,
+                Boolean.toString(log.isTraceEnabled())))) {
             metadataService = MetricInvocationHandler.newProxy(metadataService, BinaryMetadataService.class);
         }
         self = this;
