@@ -40,4 +40,8 @@ public class BinaryMetadataConstants {
     public static final String DISABLE_BINARY_METADATA_LISTENER = "disableBinaryMetadataListener";
 
     public static final String ASYNC_MAPPING_RESULT = "asyncMappingResult";
+    /**
+     * Binary Metadata configuration constant to active/deactivate metrics.
+     */
+    public static final String BINARY_METADATA_MONITOR = "binary.metadata.monitor.enable";
 }
