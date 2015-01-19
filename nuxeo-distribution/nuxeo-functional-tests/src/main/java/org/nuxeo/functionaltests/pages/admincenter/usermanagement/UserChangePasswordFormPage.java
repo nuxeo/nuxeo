@@ -29,11 +29,11 @@ import org.openqa.selenium.support.FindBy;
 public class UserChangePasswordFormPage extends UsersGroupsBasePage {
 
     @Required
-    @FindBy(id = "viewUserView:editUserPassword:nxl_user_2:nxw_firstPassword")
+    @FindBy(id = "viewUserView:editUserPassword:nxl_user_2:nxw_passwordMatcher_firstPassword")
     WebElement firstPasswordInput;
 
     @Required
-    @FindBy(id = "viewUserView:editUserPassword:nxl_user_2:nxw_secondPassword")
+    @FindBy(id = "viewUserView:editUserPassword:nxl_user_2:nxw_passwordMatcher_secondPassword")
     WebElement secondPasswordInput;
 
     @Required

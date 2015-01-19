@@ -36,7 +36,7 @@ import org.openqa.selenium.support.FindBy;
 public class UserCreationFormPage extends UsersGroupsBasePage {
 
     @Required
-    @FindBy(id = "createUserView:createUser:immediate_creation")
+    @FindBy(id = "createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation")
     WebElement immediateCreation;
 
     @FindBy(id = "createUserView:createUser:nxl_user:nxw_username")
@@ -54,10 +54,10 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
     @FindBy(id = "createUserView:createUser:nxl_user:nxw_email")
     WebElement emailInput;
 
-    @FindBy(id = "createUserView:createUser:nxl_user:nxw_firstPassword")
+    @FindBy(id = "createUserView:createUser:nxl_user:nxw_passwordMatcher_firstPassword")
     WebElement firstPasswordInput;
 
-    @FindBy(id = "createUserView:createUser:nxl_user:nxw_secondPassword")
+    @FindBy(id = "createUserView:createUser:nxl_user:nxw_passwordMatcher_secondPassword")
     WebElement secondPasswordInput;
 
     @FindBy(id = "createUserView:createUser:button_save")
