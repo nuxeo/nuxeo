@@ -45,7 +45,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(BinaryMetadataFeature.class)
 @LocalDeploy({ "org.nuxeo.binary.metadata:binary-metadata-contrib-test.xml",
-        "org.nuxeo.binary.metadata:binary-metadata-disable-listener.xml" })
+        "org.nuxeo.binary.metadata:binary-metadata-disable-listener.xml",
+        "org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = BinaryMetadataServerInit.class)
 public class TestBinaryMetadataService {
 
