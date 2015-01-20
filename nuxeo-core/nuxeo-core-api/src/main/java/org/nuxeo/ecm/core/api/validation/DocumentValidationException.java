@@ -26,8 +26,10 @@ import org.nuxeo.ecm.core.api.ClientException;
  */
 public class DocumentValidationException extends ClientException {
 
-    private static final String MESSAGE = "%s constraint violation(s) where thrown. 1st is : %s (call "
-            + DocumentValidationException.class.getSimpleName() + ".getViolations() to get the others)";
+    private static final String MESSAGE_SINGLE = "Constraint violation thrown: '%s'";
+
+    private static final String MESSAGE = "%s constraint violation(s) thrown. First one is: '%s', call "
+            + DocumentValidationException.class.getSimpleName() + ".getViolations() to get the others";
 
     private static final long serialVersionUID = 1L;
 
@@ -45,9 +47,13 @@ public class DocumentValidationException extends ClientException {
     @Override
     public String getMessage() {
         if (report.hasError()) {
+            int num = report.numberOfErrors();
             String violationMessage = report.asList().get(0).getMessage(null);
-            String message = String.format(MESSAGE, report.numberOfErrors(), violationMessage);
-            return message;
+            if (num > 1) {
+                return String.format(MESSAGE, report.numberOfErrors(), violationMessage);
+            } else {
+                return String.format(MESSAGE_SINGLE, violationMessage);
+            }
         } else {
             return super.getMessage();
         }
