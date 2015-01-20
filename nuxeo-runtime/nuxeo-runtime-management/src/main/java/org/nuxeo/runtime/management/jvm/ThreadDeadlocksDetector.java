@@ -157,7 +157,7 @@ public class ThreadDeadlocksDetector {
     }
 
     public File dump(long[] lockedIds) throws IOException {
-        File file = File.createTempFile("tcheck-", ".tdump");
+        File file = File.createTempFile("tcheck-", ".tdump", new File("target"));
         FileOutputStream os = new FileOutputStream(file);
         ThreadInfo[] infos = mgmt.dumpAllThreads(true, true);
         try {
