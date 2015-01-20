@@ -104,7 +104,6 @@ public class TestBinaryMetadataOperation {
         Map<String, Object> blobProperties = (Map<String, Object>) automationService.run(operationContext,
                 ReadMetadataFromBinary.ID);
         assertNotNull(blobProperties);
-        assertEquals(48, blobProperties.size());
         assertEquals("Twist", blobProperties.get("ID3:Title").toString());
         assertEquals("Divine Recordings", blobProperties.get("ID3:Publisher").toString());
     }
