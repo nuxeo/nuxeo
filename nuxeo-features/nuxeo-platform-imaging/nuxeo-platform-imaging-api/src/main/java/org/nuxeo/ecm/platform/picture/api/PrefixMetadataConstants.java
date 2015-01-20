@@ -18,7 +18,7 @@
 package org.nuxeo.ecm.platform.picture.api;
 
 /**
- * @since 7.2 Used only for testing.
+ * @since 7.2
  */
 public class PrefixMetadataConstants {
 
