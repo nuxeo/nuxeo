@@ -1,7 +1,6 @@
 Export-Package: org.nuxeo.ecm.platform.picture.core
 Private-Package: schema,
  org.nuxeo.ecm.platform.picture,
- org.nuxeo.ecm.platform.picture.core.mistral,
  lib,
  org.nuxeo.ecm.platform.picture.magick,
  org.nuxeo.ecm.platform.picture.core.imagej,
@@ -70,4 +69,3 @@ Import-Package: com.drew.imaging.jpeg,
  org.nuxeo.ecm.automation.core.annotations
 Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.core;singleton=true
 Eclipse-RegisterBuddy: org.nuxeo.ecm.platform.filemanager.core
-Require-Bundle: net.java.dev.mistral.EditableImage
