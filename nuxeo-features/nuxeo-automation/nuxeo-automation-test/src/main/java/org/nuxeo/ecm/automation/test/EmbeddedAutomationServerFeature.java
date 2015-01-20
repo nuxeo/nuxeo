@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
+import org.nuxeo.ecm.core.test.DetectThreadDeadlocksFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -39,7 +40,7 @@ import com.google.inject.Scopes;
  */
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.server",
         "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api" })
-@Features({ TransactionalFeature.class, WebEngineFeature.class })
+@Features({ DetectThreadDeadlocksFeature.class, TransactionalFeature.class, WebEngineFeature.class })
 public class EmbeddedAutomationServerFeature extends SimpleFeature {
 
     protected static final int HTTP_CONNECTION_TIMEOUT = 60000; // 60 seconds
