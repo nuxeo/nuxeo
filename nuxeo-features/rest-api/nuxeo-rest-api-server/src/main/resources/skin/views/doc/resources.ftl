@@ -56,11 +56,15 @@
         },
         {
             "path": "/workflow.{format}",
-            "description": "Workflow"
+            "description": "Browse and start workflow instances"
+        },
+        {
+            "path": "/workflowModel.{format}",
+            "description": "List workflow models"
         },
         {
             "path": "/task.{format}",
-            "description": "Task"
+            "description": "Browse and complete task"
         }
     ],
     "authorizations": {
