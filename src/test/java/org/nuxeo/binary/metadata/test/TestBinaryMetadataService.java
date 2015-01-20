@@ -92,7 +92,6 @@ public class TestBinaryMetadataService {
         BlobHolder musicBlobHolder = musicFile.getAdapter(BlobHolder.class);
         Map<String, Object> blobProperties = binaryMetadataService.readMetadata(musicBlobHolder.getBlob());
         assertNotNull(blobProperties);
-        assertEquals(48, blobProperties.size());
         assertEquals("Twist", blobProperties.get("ID3:Title").toString());
         assertEquals("Divine Recordings", blobProperties.get("ID3:Publisher").toString());
     }
