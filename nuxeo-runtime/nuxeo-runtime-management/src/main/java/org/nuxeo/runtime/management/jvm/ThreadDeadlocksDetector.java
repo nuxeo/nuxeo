@@ -182,7 +182,11 @@ public class ThreadDeadlocksDetector {
     }
 
     public long[] detectThreadLock() {
-        return mgmt.findMonitorDeadlockedThreads();
+        long[] findMonitorDeadlockedThreads = mgmt.findMonitorDeadlockedThreads();
+        if (findMonitorDeadlockedThreads == null) {
+            return new long[0];
+        }
+        return findMonitorDeadlockedThreads;
     }
 
     protected class Task extends TimerTask {
@@ -196,7 +200,7 @@ public class ThreadDeadlocksDetector {
         @Override
         public void run() {
             long[] ids = detectThreadLock();
-            if (ids == null) {
+            if (ids.length == 0) {
                 return;
             }
             File dumpFile;
