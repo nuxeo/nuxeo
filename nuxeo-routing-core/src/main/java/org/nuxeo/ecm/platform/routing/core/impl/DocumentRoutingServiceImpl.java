@@ -1211,9 +1211,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             if (StringUtils.isNotBlank(worflowModelName)) {
                 final String processId = task.getProcessId();
                 final DocumentModel routeDocumentModel = session.getDocument(new IdRef(processId));
-                final DocumentRoute route = routeDocumentModel.getAdapter(DocumentRoute.class);
-                final String routeName = route.getName();
-                if (routeName.endsWith(worflowModelName)) {
+                final String routeName = routeDocumentModel.getName();
+                if (routeName.equals(worflowModelName)) {
                     result.add(task);
                 }
             } else {
@@ -1254,5 +1253,15 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             result.add(documentModel.getAdapter(GraphRoute.class));
         }
         return result;
+    }
+
+    /**
+     * Returns true  id the document route is a model, false if it is just an instance i.e. a running workflow.
+     *
+     * @since 7.2
+     */
+    @Override
+    public boolean isWorkflowModel(final DocumentRoute documentRoute) {
+        return documentRoute.isValidated();
     }
 }

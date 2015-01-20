@@ -28,9 +28,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.routing.core.impl.jsongraph.JsonGraphRoute;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
@@ -42,6 +45,8 @@ import org.nuxeo.runtime.api.Framework;
 @Produces(MediaType.APPLICATION_JSON)
 public class WorkflowModelObject extends DefaultObject {
 
+    private static Log log = LogFactory.getLog(WorkflowModelObject.class);
+
     @GET
     public List<DocumentRoute> getWorkflowModels(@Context UriInfo uriInfo) {
         return Framework.getService(DocumentRoutingService.class).getAvailableDocumentRouteModel(
@@ -49,11 +54,24 @@ public class WorkflowModelObject extends DefaultObject {
     }
 
     @GET
-    @Path("{modelId}")
-    public DocumentModel getWorkflowModel(@PathParam("modelId") String modelId) {
+    @Path("{modelName}")
+    public DocumentRoute getWorkflowModel(@PathParam("modelName") String modelName) {
         DocumentRoute result = Framework.getService(DocumentRoutingService.class).getRouteModelWithId(
-                getContext().getCoreSession(), modelId);
-        return result.getDocument();
+                getContext().getCoreSession(), modelName);
+        return result;
+    }
+
+    @GET
+    @Path("{modelName}/graph")
+    public JsonGraphRoute getWorkflowModelGraph(@PathParam("modelName") String modelName) {
+        try {
+            final String id = Framework.getService(DocumentRoutingService.class).getRouteModelDocIdWithId(
+                    getContext().getCoreSession(), modelName);
+            return new JsonGraphRoute(getContext().getCoreSession(), id, getContext().getLocale());
+        } catch (ClientException e) {
+            log.error("Can not get workflow model graph with name" + modelName);
+            throw new ClientException(e);
+        }
     }
 
 }

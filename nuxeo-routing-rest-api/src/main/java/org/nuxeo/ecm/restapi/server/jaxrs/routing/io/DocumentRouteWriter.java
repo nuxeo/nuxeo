@@ -58,7 +58,8 @@ public class DocumentRouteWriter extends EntityWriter<DocumentRoute> {
 
     public static void writeDocumentRoute(JsonGenerator jg, DocumentRoute item, HttpServletRequest request, UriInfo uriInfo) throws JsonGenerationException, IOException {
         jg.writeStringField("id", item.getDocument().getId());
-        jg.writeStringField("name", item.getName());
+        jg.writeStringField("name", item.getDocument().getName());
+        jg.writeStringField("title", item.getName());
         jg.writeStringField("initiator", item.getInitiator());
 
         jg.writeArrayFieldStart("attachedDocumentIds");
@@ -79,7 +80,15 @@ public class DocumentRouteWriter extends EntityWriter<DocumentRoute> {
                 jg.writeEndObject();
             }
             jg.writeEndArray();
-            jg.writeStringField("graphResource", uriInfo.getBaseUri() + "/api/v1/" + item.getDocument().getId() + "/graph");
+            String graphResourceUrl = "";
+            if (item.isValidated()) {
+                // it is a model
+                graphResourceUrl = uriInfo.getBaseUri() + "api/v1/workflowModel/" + item.getDocument().getName() + "/graph";
+            } else {
+                // it is an instance
+                graphResourceUrl = uriInfo.getBaseUri() + "api/v1/workflow/" + item.getDocument().getId() + "/graph";
+            }
+            jg.writeStringField("graphResource", graphResourceUrl);
         }
     }
 

@@ -20,6 +20,7 @@ package org.nuxeo.ecm.restapi.server;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -237,7 +238,7 @@ public class WorkflowEndpointTest extends BaseTest {
     }
 
     @Test
-    public void testGetAllWorkflowEndpoint() throws Exception {
+    public void testWorkflowModelEndpoint() throws Exception {
 
         ClientResponse response = getResponse(RequestType.GET, "/workflowModel");
 
@@ -248,8 +249,8 @@ public class WorkflowEndpointTest extends BaseTest {
 
         Iterator<JsonNode> elements = node.get("entries").getElements();
 
-        List<String> expectedNames = Arrays.asList(new String[] { "wf.serialDocumentReview.SerialDocumentReview",
-                "wf.parallelDocumentReview.ParallelDocumentReview" });
+        List<String> expectedNames = Arrays.asList(new String[] { "SerialDocumentReview",
+                "ParallelDocumentReview" });
         Collections.sort(expectedNames);
         List<String> realNames = new ArrayList<String>();
         while (elements.hasNext()) {
@@ -258,6 +259,23 @@ public class WorkflowEndpointTest extends BaseTest {
         }
         Collections.sort(realNames);
         assertEquals(expectedNames, realNames);
+
+        response = getResponse(RequestType.GET, "/workflowModel/SerialDocumentReview");
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals("SerialDocumentReview", node.get("name").getTextValue());
+
+        response = getResponse(RequestType.GET, "/workflowModel/ParallelDocumentReview");
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals("ParallelDocumentReview", node.get("name").getTextValue());
+
+        // Check path resource
+        String graphUrl = node.get("graphResource").getTextValue();
+        String graphModelPath = "/workflowModel/ParallelDocumentReview/graph";
+        assertTrue(graphUrl.endsWith(graphModelPath));
+        response = getResponse(RequestType.GET, graphModelPath);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
     @Test

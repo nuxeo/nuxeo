@@ -52,6 +52,21 @@
 
     },
     {
+      "path": "/workflow/{workflowInstanceId}/graph",
+      "description": "Get the json serialization of a workflow instance graph",
+      "operations" : [
+        {
+          "method":"GET",
+          "nickname":"getWorkflowModelGraph",
+          <@params names = ["workflowInstanceId"]/>,
+          "type":"workflowGraph",
+          "summary":"Get the json serialization of a workflow instance graph",
+          "notes": "Get the json serialization of a workflow instance graph",
+          <#include "views/doc/errorresponses.ftl"/>
+        }
+      ]
+    },
+    {
       "path": "/id/{docId}/@workflow",
       "description": "Workflow adapter",
       "operations" : [
