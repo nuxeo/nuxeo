@@ -25,12 +25,13 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.binary.metadata.test.BinaryMetadataFeature;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
-import org.nuxeo.ecm.platform.picture.api.MetadataConstants;
+import org.nuxeo.ecm.platform.picture.api.PrefixMetadataConstants;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -41,7 +42,7 @@ import com.google.inject.Inject;
  * @author Laurent Doguin
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class })
+@Features({ CoreFeature.class, BinaryMetadataFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.picture.api" })
 public class TestMetaDataService {
@@ -62,34 +63,19 @@ public class TestMetaDataService {
         Map<String, Object> map = service.getImageMetadata(blob);
         assertNotNull(map);
         assertFalse(map.isEmpty());
-        assertNotNull(map.get(MetadataConstants.META_BY_LINE));
-        assertNotNull(map.get(MetadataConstants.META_CAPTION));
-        assertNotNull(map.get(MetadataConstants.META_CATEGORY));
-        assertNotNull(map.get(MetadataConstants.META_CITY));
-        assertNotNull(map.get(MetadataConstants.META_COUNTRY_OR_PRIMARY_LOCATION));
-        assertNotNull(map.get(MetadataConstants.META_CREDIT));
-        assertNotNull(map.get(MetadataConstants.META_DATE_CREATED));
-        assertNotNull(map.get(MetadataConstants.META_HEADLINE));
-        assertNotNull(map.get(MetadataConstants.META_HEIGHT));
-        assertNotNull(map.get(MetadataConstants.META_OBJECT_NAME));
-        assertNotNull(map.get(MetadataConstants.META_SOURCE));
-        assertNotNull(map.get(MetadataConstants.META_SUPPLEMENTAL_CATEGORIES));
-        assertNotNull(map.get(MetadataConstants.META_WIDTH));
-
-        // those metadata are not found by the parser
-        // assertNotNull(map.get(MetadataConstants.META_COMMENT));
-        // assertNotNull(map.get(MetadataConstants.META_COLORSPACE));
-        // assertNotNull(map.get(MetadataConstants.META_COPYRIGHT));
-        // assertNotNull(map.get(MetadataConstants.META_DESCRIPTION));
-        // assertNotNull(map.get(MetadataConstants.META_EQUIPMENT));
-        // assertNotNull(map.get(MetadataConstants.META_EXPOSURE));
-        // assertNotNull(map.get(MetadataConstants.META_FOCALLENGTH));
-        // assertNotNull(map.get(MetadataConstants.META_HRESOLUTION));
-        // assertNotNull(map.get(MetadataConstants.META_ICCPROFILE));
-        // assertNotNull(map.get(MetadataConstants.META_LANGUAGE));
-        // assertNotNull(map.get(MetadataConstants.META_ISOSPEED));
-        // assertNotNull(map.get(MetadataConstants.META_VRESOLUTION));
-        // assertNotNull(map.get(MetadataConstants.META_WHITEBALANCE));
+        assertNotNull(map.get(PrefixMetadataConstants.META_BY_LINE));
+        assertNotNull(map.get(PrefixMetadataConstants.META_CAPTION));
+        assertNotNull(map.get(PrefixMetadataConstants.META_CATEGORY));
+        assertNotNull(map.get(PrefixMetadataConstants.META_CITY));
+        assertNotNull(map.get(PrefixMetadataConstants.META_COUNTRY_OR_PRIMARY_LOCATION));
+        assertNotNull(map.get(PrefixMetadataConstants.META_CREDIT));
+        assertNotNull(map.get(PrefixMetadataConstants.META_DATE_CREATED));
+        assertNotNull(map.get(PrefixMetadataConstants.META_HEADLINE));
+        assertNotNull(map.get(PrefixMetadataConstants.META_HEIGHT));
+        assertNotNull(map.get(PrefixMetadataConstants.META_OBJECT_NAME));
+        assertNotNull(map.get(PrefixMetadataConstants.META_SOURCE));
+        assertNotNull(map.get(PrefixMetadataConstants.META_SUPPLEMENTAL_CATEGORIES));
+        assertNotNull(map.get(PrefixMetadataConstants.META_WIDTH));
     }
 
 }

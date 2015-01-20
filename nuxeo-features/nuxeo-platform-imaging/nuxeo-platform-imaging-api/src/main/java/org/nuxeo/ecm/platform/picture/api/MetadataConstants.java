@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.picture.api;
 
 /**
+ * @deprecated since 7.2
  * @author Max Stepanov
  * @author Catalin Baican
  */
