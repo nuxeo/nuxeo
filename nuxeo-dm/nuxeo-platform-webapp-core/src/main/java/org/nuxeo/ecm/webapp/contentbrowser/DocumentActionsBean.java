@@ -129,6 +129,9 @@ public class DocumentActionsBean extends InputController implements DocumentActi
 
     protected String comment;
 
+    @In(create = true)
+    protected Map<String, String> messages;
+
     @Deprecated
     @Override
     @Factory(autoCreate = true, value = "currentDocumentSummaryLayout", scope = EVENT)
@@ -278,8 +281,7 @@ public class DocumentActionsBean extends InputController implements DocumentActi
         documentManager.save();
         // some changes (versioning) happened server-side, fetch new one
         navigationContext.invalidateCurrentDocument();
-        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("document_modified"),
-                resourcesAccessor.getMessages().get(doc.getType()));
+        facesMessages.add(StatusMessage.Severity.INFO, messages.get("document_modified"), messages.get(doc.getType()));
         EventManager.raiseEventsOnDocumentChange(doc);
         String res = navigationContext.navigateToDocument(doc, "after-edit");
         if (restoreTabs) {
@@ -315,7 +317,7 @@ public class DocumentActionsBean extends InputController implements DocumentActi
                 VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
         changeableDocument = documentManager.saveDocument(changeableDocument);
 
-        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("new_version_created"));
+        facesMessages.add(StatusMessage.Severity.INFO, messages.get("new_version_created"));
         // then follow the standard pageflow for edited documents
         EventManager.raiseEventsOnDocumentChange(changeableDocument);
         return navigationContext.navigateToDocument(changeableDocument, "after-edit");
@@ -375,8 +377,8 @@ public class DocumentActionsBean extends InputController implements DocumentActi
         documentManager.save();
 
         logDocumentWithTitle("Created the document: ", newDocument);
-        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("document_saved"),
-                resourcesAccessor.getMessages().get(newDocument.getType()));
+        facesMessages.add(StatusMessage.Severity.INFO, messages.get("document_saved"),
+                messages.get(newDocument.getType()));
 
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
         return navigationContext.navigateToDocument(newDocument, "after-create");
