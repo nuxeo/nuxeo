@@ -38,6 +38,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.el.ExpressionFactoryImpl;
+import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -91,6 +92,8 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
 
     protected final PictureMigrationHandler pictureMigrationHandler = new PictureMigrationHandler();
 
+    private BinaryMetadataService binaryMetadataService;
+
     @Override
     public List<PictureConversion> getPictureConversions() {
         return pictureConversionRegistry.getPictureConversions();
@@ -134,7 +137,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
     @Override
     public Map<String, Object> getImageMetadata(Blob blob) {
         try {
-            return getLibrarySelectorService().getMetadataUtils().getImageMetadata(blob);
+            return getBinaryMetadataService().readMetadata(blob);
         } catch (ClientException e) {
             log.error(e.getMessage(), e);
         }
@@ -182,6 +185,16 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
             throw new ClientException("Unable to get LibrarySelector runtime service");
         }
         return librarySelector;
+    }
+
+    private BinaryMetadataService getBinaryMetadataService() throws ClientException {
+        if (binaryMetadataService == null) {
+            binaryMetadataService = Framework.getRuntime().getService(BinaryMetadataService.class);
+        }
+        if (binaryMetadataService == null) {
+            throw new ClientException("Unable to get binaryMetadataService runtime service");
+        }
+        return binaryMetadataService;
     }
 
     @Override

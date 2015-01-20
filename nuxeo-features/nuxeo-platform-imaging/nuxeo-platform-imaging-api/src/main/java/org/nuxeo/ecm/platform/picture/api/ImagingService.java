@@ -67,8 +67,10 @@ public interface ImagingService {
     Blob rotate(Blob blob, int angle);
 
     /**
-     * Retrieves metadata from an image contained in a {@link Blob}.
+     * @deprecated Since 7.2.
+     * Use {@link org.nuxeo.binary.metadata.api.BinaryMetadataService#readMetadata(Blob)} instead.
      *
+     * Retrieves metadata from an image contained in a {@link Blob}.
      * @return the image metadata as a map String -> Object
      */
     Map<String, Object> getImageMetadata(Blob blob);
