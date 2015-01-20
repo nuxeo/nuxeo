@@ -108,11 +108,6 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
             doc.setPropertyValue(PICTURE_INFO_PROPERTY, (Serializable) imageInfo.toMap());
         }
 
-        try {
-            setMetadata();
-        } catch (IOException | ClientException e) {
-            log.debug("An error occurred while trying to set metadata for " + filename, e);
-        }
         if (width != null && height != null) {
             clearViews();
             addViews(pictureConversions, filename, title);

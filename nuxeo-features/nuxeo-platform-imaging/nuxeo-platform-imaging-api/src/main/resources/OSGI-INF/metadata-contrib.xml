@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.picture.binary.metadata.contrib">
+
+  <extension target="org.nuxeo.binary.metadata"
+             point="metadataMappings">
+    <metadataMapping id="IPTC" processor="exifTool" blobXPath="file:content">
+      <metadata name="PDF:Producer" xpath="dc:title"/>
+    </metadataMapping>
+  </extension>
+
+  <extension target="org.nuxeo.binary.metadata"
+             point="metadataRules">
+    <rule id="iptc" order="0" enabled="true" async="false">
+      <metadataMappings>
+        <metadataMapping-id>IPTC</metadataMapping-id>
+      </metadataMappings>
+      <filters>
+        <filter-id>hasPictureType</filter-id>
+      </filters>
+    </rule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+             point="filters">
+    <filter id="hasPictureType">
+      <rule grant="true">
+        <type>Picture</type>
+      </rule>
+    </filter>
+  </extension>
+</component>
