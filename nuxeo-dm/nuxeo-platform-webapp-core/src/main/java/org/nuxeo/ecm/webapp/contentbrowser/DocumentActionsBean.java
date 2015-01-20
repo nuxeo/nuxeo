@@ -52,6 +52,7 @@ import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.types.Type;
@@ -276,7 +277,14 @@ public class DocumentActionsBean extends InputController implements DocumentActi
             subTabId = webActions.getCurrentSubTabId();
         }
         Events.instance().raiseEvent(EventNames.BEFORE_DOCUMENT_CHANGED, doc);
-        doc = documentManager.saveDocument(doc);
+        try {
+            doc = documentManager.saveDocument(doc);
+        } catch (DocumentValidationException e) {
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    messages.get("label.schema.constraint.violation.documentValidation"), e.getMessage());
+            return null;
+        }
+
         throwUpdateComments(doc);
         documentManager.save();
         // some changes (versioning) happened server-side, fetch new one
@@ -373,7 +381,13 @@ public class DocumentActionsBean extends InputController implements DocumentActi
 
         newDocument.setPathInfo(parentDocumentPath, pss.generatePathSegment(newDocument));
 
-        newDocument = documentManager.createDocument(newDocument);
+        try {
+            newDocument = documentManager.createDocument(newDocument);
+        } catch (DocumentValidationException e) {
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    messages.get("label.schema.constraint.violation.documentValidation"), e.getMessage());
+            return null;
+        }
         documentManager.save();
 
         logDocumentWithTitle("Created the document: ", newDocument);
