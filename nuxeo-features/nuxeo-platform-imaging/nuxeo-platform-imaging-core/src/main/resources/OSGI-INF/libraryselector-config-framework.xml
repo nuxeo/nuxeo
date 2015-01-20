@@ -11,7 +11,7 @@
   <documentation>
     The Library Selector service's goal is to provide easy configuration of image processing backend.
     It means you can contribute different implementation of an interface to process images. We currently provide
-    ImageMagick, Mistral and ImageJ implementations.
+    ImageMagick and ImageJ implementations.
     @author Laurent Doguin (ldoguin@nuxeo.com)
   </documentation>
 
@@ -28,9 +28,6 @@
       <ImageUtils
           class="org.nuxeo.ecm.platform.picture.core.im.IMImageUtils"
           name="ImageMagick"/>
-      <MetadataUtils
-          class="org.nuxeo.ecm.platform.picture.core.mistral.MistralMetadataUtils"
-          name="Mistral"/>
     </LibrarySelector>
   </extension>
 </component>
