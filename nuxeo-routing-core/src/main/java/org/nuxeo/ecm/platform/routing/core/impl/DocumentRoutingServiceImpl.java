@@ -87,6 +87,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
+
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -1189,37 +1190,35 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
      * @since 7.2
      */
     @Override
-    public List<Task> getUserRelatedWorkflowTasks(String userId, String workflowInstanceId, CoreSession session) {
+    public List<Task> getTasks(final DocumentModel document, String actorId,
+            String workflowInstanceId, String worflowModelName, CoreSession session) {
         StringBuilder query = new StringBuilder(String.format(
                 "SELECT * FROM Document WHERE ecm:mixinType = '%s' AND ecm:currentLifeCycleState = '%s'",
                 TaskConstants.TASK_FACET_NAME, TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE));
-        if (StringUtils.isNotBlank(userId)) {
-            query.append(String.format(" AND nt:actors = '%s'", userId));
+        if (StringUtils.isNotBlank(actorId)) {
+            query.append(String.format(" AND nt:actors = '%s'", actorId));
         }
         if (StringUtils.isNotBlank(workflowInstanceId)) {
             query.append(String.format(" AND nt:processId = '%s'", workflowInstanceId));
         }
-        DocumentModelList documentModelList = session.query(query.toString());
-        List<Task> result = new ArrayList<Task>();
-        for (DocumentModel documentModel : documentModelList) {
-            result.add(documentModel.getAdapter(Task.class));
+        if (document != null) {
+            query.append(String.format(" AND nt:targetDocumentId = '%s'", document.getId()));
         }
-        return result;
-    }
-
-    /**
-     * @since 7.2
-     */
-    @Override
-    public List<Task> getDocumentRelatedWorkflowTasks(DocumentModel document, String workflowInstanceId,
-            CoreSession session) {
-        final String query = String.format(
-                "SELECT * FROM Document WHERE ecm:mixinType = '%s' AND ecm:currentLifeCycleState = '%s' AND nt:targetDocumentId = '%s'",
-                TaskConstants.TASK_FACET_NAME, TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE, document.getId());
         DocumentModelList documentModelList = session.query(query.toString());
         List<Task> result = new ArrayList<Task>();
         for (DocumentModel documentModel : documentModelList) {
-            result.add(documentModel.getAdapter(Task.class));
+            final Task task = documentModel.getAdapter(Task.class);
+            if (StringUtils.isNotBlank(worflowModelName)) {
+                final String processId = task.getProcessId();
+                final DocumentModel routeDocumentModel = session.getDocument(new IdRef(processId));
+                final DocumentRoute route = routeDocumentModel.getAdapter(DocumentRoute.class);
+                final String routeName = route.getName();
+                if (routeName.endsWith(worflowModelName)) {
+                    result.add(task);
+                }
+            } else {
+                result.add(task);
+            }
         }
         return result;
     }

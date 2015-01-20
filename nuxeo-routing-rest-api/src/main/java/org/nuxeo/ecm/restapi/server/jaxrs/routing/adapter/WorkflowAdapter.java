@@ -50,7 +50,7 @@ public class WorkflowAdapter extends DefaultAdapter {
     public Response doPost(WorkflowRequest routingRequest) {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         final String workflowInstanceId = Framework.getLocalService(DocumentRoutingService.class).createNewInstance(
-                routingRequest.getWorkflowModelId(), Arrays.asList(new String[] { doc.getId() }), ctx.getCoreSession(),
+                routingRequest.getWorkflowModelName(), Arrays.asList(new String[] { doc.getId() }), ctx.getCoreSession(),
                 true);
         DocumentModel result = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));
         return Response.ok(result).status(Status.CREATED).build();
@@ -67,8 +67,8 @@ public class WorkflowAdapter extends DefaultAdapter {
     @Path("{workflowInstanceId}/task")
     public List<Task> doGetTasks(@PathParam("workflowInstanceId") String workflowInstanceId) {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
-        return Framework.getLocalService(DocumentRoutingService.class).getDocumentRelatedWorkflowTasks(doc,
-                workflowInstanceId, getContext().getCoreSession());
+        return Framework.getLocalService(DocumentRoutingService.class).getTasks(doc,
+                null , workflowInstanceId, null, getContext().getCoreSession());
     }
 
 }

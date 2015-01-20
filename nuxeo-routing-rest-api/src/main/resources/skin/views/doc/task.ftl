@@ -8,9 +8,9 @@
       "operations" : [
         {
           "method":"GET",
-          "nickname":"getUserRelatedWorkflowTasks",
+          "nickname":"getTasks",
           "type":"tasks",
-          <@params names = ["taskUserIdQueryParam", "taskWorkflowInstanceIdQueryParam"]/>,
+          <@params names = ["taskUserIdQueryParam", "taskWorkflowInstanceIdQueryParam", "taskWorkflowModelNameQueryParam"]/>,
           "summary":"Query tasks by user and workflow ids",
           "notes": "Only task instance which you have permission to see will be returned",
           <#include "views/doc/errorresponses.ftl"/>
@@ -55,9 +55,9 @@
       "operations" : [
         {
           "method":"GET",
-          "nickname":"getDocumentRelatedWorkflowTasks",
+          "nickname":"getDocumentTasks",
           "type":"tasks",
-          <@params names = ["taskUserIdQueryParam", "taskWorkflowInstanceIdQueryParam"]/>,
+          <@params names = ["taskUserIdQueryParam", "taskWorkflowInstanceIdQueryParam", "taskWorkflowModelNameQueryParam"]/>,
           "summary":"List tasks of the given document",
           "notes": "Only task instance which you have permission to see will be returned",
           <#include "views/doc/errorresponses.ftl"/>

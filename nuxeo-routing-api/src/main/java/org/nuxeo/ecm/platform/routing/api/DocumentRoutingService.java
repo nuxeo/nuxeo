@@ -575,16 +575,8 @@ public interface DocumentRoutingService {
      * @return
      * @since 7.2
      */
-    List<Task> getUserRelatedWorkflowTasks(final String userId, final String workflowInstanceId, final CoreSession session);
-
-    /**
-     * @param document
-     * @param workflowInstanceId
-     * @param session
-     * @return
-     * @since 7.2
-     */
-    List<Task> getDocumentRelatedWorkflowTasks(final DocumentModel document, final String workflowInstanceId, final CoreSession session);
+    List<Task> getTasks(final DocumentModel document, String actorId, String workflowInstanceId,
+            String workflowModelName, CoreSession session);
 
     /**
      * @param document

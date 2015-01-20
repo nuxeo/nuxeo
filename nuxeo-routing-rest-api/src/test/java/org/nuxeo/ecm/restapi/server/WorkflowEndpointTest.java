@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.restapi.server;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -110,7 +111,7 @@ public class WorkflowEndpointTest extends BaseTest {
     protected String getCreateAndStartWorkflowBodyContent(String workflowName, List<String> docIds) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         WorkflowRequest routingRequest = new WorkflowRequest();
-        routingRequest.setWorkflowModelId(workflowName);
+        routingRequest.setWorkflowModelName(workflowName);
         if (docIds != null) {
             routingRequest.setDocumentIds(docIds);
         }
@@ -138,7 +139,7 @@ public class WorkflowEndpointTest extends BaseTest {
         // Check POST /api/id/{documentId}/@workflow/
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         WorkflowRequest routingRequest = new WorkflowRequest();
-        routingRequest.setWorkflowModelId("SerialDocumentReview");
+        routingRequest.setWorkflowModelName("SerialDocumentReview");
         objectCodecService.write(out, routingRequest);
         ClientResponse response = getResponse(RequestType.POST, "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME,
                 out.toString());
@@ -263,7 +264,7 @@ public class WorkflowEndpointTest extends BaseTest {
     public void testInvalidNodeAction() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         WorkflowRequest routingRequest = new WorkflowRequest();
-        routingRequest.setWorkflowModelId("SerialDocumentReview");
+        routingRequest.setWorkflowModelName("SerialDocumentReview");
         objectCodecService.write(out, routingRequest);
         ClientResponse response = getResponse(RequestType.POST, "/workflow", out.toString());
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
@@ -324,5 +325,45 @@ public class WorkflowEndpointTest extends BaseTest {
         node = mapper.readTree(response.getEntityInputStream());
         assertEquals(0, node.get("entries").size());
 
+    }
+
+    @Test
+    public void testFilterByWorkflowModelName() throws IOException {
+        // Initiate SerialDocumentReview workflow
+        ClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        // Initiate ParallelDocumentReview workflow
+        response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("ParallelDocumentReview", null));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+
+        // Check GET /task
+        response = getResponse(RequestType.GET, "/task", null, queryParams, null, null);
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(2, node.get("entries").size());
+
+        // Check GET /task?workflowModelName={workflowModelName} i.e. pending tasks for SerialDocumentReview
+        queryParams.put("workflowModelName", Arrays.asList(new String[] { "SerialDocumentReview" }));
+        response = getResponse(RequestType.GET, "/task", null, queryParams, null, null);
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(1, node.get("entries").size());
+        Iterator<JsonNode> elements = node.get("entries").getElements();
+        JsonNode element = elements.next();
+        String serialDocumentReviewTaskId = element.get("id").getTextValue();
+
+        // Check GET /task?workflowModelName={workflowModelName} i.e. pending tasks for ParallelDocumentReview
+        queryParams.put("workflowModelName", Arrays.asList(new String[] { "ParallelDocumentReview" }));
+        response = getResponse(RequestType.GET, "/task", null, queryParams, null, null);
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(1, node.get("entries").size());
+        elements = node.get("entries").getElements();
+        element = elements.next();
+        String parallelDocumentReviewTaskId = element.get("id").getTextValue();
+
+        assertNotEquals(serialDocumentReviewTaskId, parallelDocumentReviewTaskId);
     }
 }

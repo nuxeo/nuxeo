@@ -67,7 +67,7 @@ public class WorkflowObject extends DefaultObject {
     @Consumes({ "application/json+nxentity" })
     @Produces(MediaType.APPLICATION_JSON)
     public Response createWorkflowInstance(WorkflowRequest workflowRequest) {
-        final String workflowInstanceId = documentRoutingService.createNewInstance(workflowRequest.getWorkflowModelId(),
+        final String workflowInstanceId = documentRoutingService.createNewInstance(workflowRequest.getWorkflowModelName(),
                 workflowRequest.getDocumentIds(), ctx.getCoreSession(), true);
         DocumentModel workflowInstance = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));
         DocumentRoute route = workflowInstance.getAdapter(DocumentRoute.class);

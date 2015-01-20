@@ -26,6 +26,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -49,18 +50,22 @@ public class TaskAdapter extends DefaultAdapter {
 
     @PUT
     @Path("{taskId}/{action}")
-    public Response completeTask(@PathParam("taskId") String taskId, @PathParam("action") String action, TaskCompletionRequest taskCompletionRequest) {
+    public Response completeTask(@PathParam("taskId") String taskId, @PathParam("action") String action,
+            TaskCompletionRequest taskCompletionRequest) {
         Map<String, Object> data = taskCompletionRequest.getDataMap();
         CoreSession session = getContext().getCoreSession();
-        Framework.getLocalService(DocumentRoutingService.class).endTask(session, session.getDocument(new IdRef(taskId)).getAdapter(Task.class), data, action);
+        Framework.getLocalService(DocumentRoutingService.class).endTask(session,
+                session.getDocument(new IdRef(taskId)).getAdapter(Task.class), data, action);
         return Response.ok("completed").status(Status.OK).build();
     }
 
     @GET
-    public List<Task> doGet() {
+    public List<Task> doGet(@QueryParam("userId") String userId,
+            @QueryParam("workflowInstanceId") String workflowInstanceId,
+            @QueryParam("workflowModelName") String workflowModelName) {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
-        return Framework.getLocalService(DocumentRoutingService.class).getDocumentRelatedWorkflowTasks(doc,
-                null, getContext().getCoreSession());
+        return Framework.getLocalService(DocumentRoutingService.class).getTasks(doc, userId, workflowInstanceId,
+                workflowModelName, getContext().getCoreSession());
     }
 
 }

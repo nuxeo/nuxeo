@@ -9,7 +9,7 @@
             "type": "string",
             "required": true
         },
-        "workflowModelId": {
+        "workflowModelName": {
             "uniqueItems": false,
             "type": "string",
             "required": false

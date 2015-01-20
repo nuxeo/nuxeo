@@ -32,7 +32,7 @@ public class WorkflowRequest {
 
     protected Map<String, Serializable> worflowVariables;
 
-    protected String workflowModelId;
+    protected String workflowModelName;
 
     public WorkflowRequest() {
         super();
@@ -42,8 +42,8 @@ public class WorkflowRequest {
         return documentIds;
     }
 
-    public String getWorkflowModelId() {
-        return workflowModelId;
+    public String getWorkflowModelName() {
+        return workflowModelName;
     }
 
     public Map<String, Serializable> getWorflowVariables() {
@@ -54,8 +54,8 @@ public class WorkflowRequest {
         this.documentIds = documentIds;
     }
 
-    public void setWorkflowModelId(String workflowModelId) {
-        this.workflowModelId = workflowModelId;
+    public void setWorkflowModelName(String workflowModelName) {
+        this.workflowModelName = workflowModelName;
     }
 
     public void setWorflowVariables(Map<String, Serializable> worflowVariables) {
