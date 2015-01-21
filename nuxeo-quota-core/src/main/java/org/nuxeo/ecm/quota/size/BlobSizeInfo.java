@@ -19,10 +19,9 @@ package org.nuxeo.ecm.quota.size;
 
 /**
  * helper class to transmis info about Blob changes during a transaction
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
- * 
  */
 public class BlobSizeInfo {
 

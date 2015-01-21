@@ -40,21 +40,17 @@ public interface QuotaStatsService {
      * <p>
      * Call all the registered {@link org.nuxeo.ecm.quota.QuotaStatsUpdater}s.
      */
-    void updateStatistics(DocumentEventContext docCtx, Event event)
-            throws ClientException;
+    void updateStatistics(DocumentEventContext docCtx, Event event) throws ClientException;
 
     /**
      * Compute the initial statistics for the given @{code updaterName}.
      */
-    void computeInitialStatistics(String updaterName, CoreSession session,
-            QuotaStatsInitialWork currentWorker);
+    void computeInitialStatistics(String updaterName, CoreSession session, QuotaStatsInitialWork currentWorker);
 
     /**
-     * Launch an asynchronously initial computation for the given
-     * {@code updaterName} on {@code repositoryName}.
+     * Launch an asynchronously initial computation for the given {@code updaterName} on {@code repositoryName}.
      */
-    void launchInitialStatisticsComputation(String updaterName,
-            String repositoryName);
+    void launchInitialStatisticsComputation(String updaterName, String repositoryName);
 
     /**
      * Returns the progress status of {@code updaterName}.
@@ -62,23 +58,19 @@ public interface QuotaStatsService {
     String getProgressStatus(String updaterName);
 
     /**
-     * Gets the quota from the first parent where quota has been set. Returns -1
-     * if no quota has been set.
-     * For user workspaces, only the first parent is investigated
+     * Gets the quota from the first parent where quota has been set. Returns -1 if no quota has been set. For user
+     * workspaces, only the first parent is investigated
      *
      * @since 5.7
      */
-    public long getQuotaFromParent(DocumentModel doc, CoreSession session)
-            throws ClientException;
+    public long getQuotaFromParent(DocumentModel doc, CoreSession session) throws ClientException;
 
     /**
-     * Test to see if quota allowed.
-     * Skip user worskpaces, where validation rules don't apply.
+     * Test to see if quota allowed. Skip user worskpaces, where validation rules don't apply.
      *
      * @since 5.7
      */
-    public boolean canSetMaxQuota(long maxQuota, DocumentModel doc,
-            CoreSession session) throws ClientException;
+    public boolean canSetMaxQuota(long maxQuota, DocumentModel doc, CoreSession session) throws ClientException;
 
     /**
      * Sets this maxQuota on all user workspaces
@@ -86,22 +78,19 @@ public interface QuotaStatsService {
      * @throws ClientException
      * @since 5.7
      */
-    public void launchSetMaxQuotaOnUserWorkspaces(long maxQuota,
-            DocumentModel context, CoreSession session) throws ClientException;
+    public void launchSetMaxQuotaOnUserWorkspaces(long maxQuota, DocumentModel context, CoreSession session)
+            throws ClientException;
 
     /**
      * Activates the quota on user personal workspaces
      *
      * @since 5.7
      */
-    public void activateQuotaOnUserWorkspaces(long maxQuota, CoreSession session)
-            throws ClientException;
+    public void activateQuotaOnUserWorkspaces(long maxQuota, CoreSession session) throws ClientException;
 
     /**
-     *
      * @since 5.7
      */
-    public long getQuotaSetOnUserWorkspaces(CoreSession session)
-            throws ClientException;
+    public long getQuotaSetOnUserWorkspaces(CoreSession session) throws ClientException;
 
 }

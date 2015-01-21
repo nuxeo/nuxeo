@@ -27,9 +27,8 @@ import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Work doing an initial statistics computation for a defined
- * {@link QuotaStatsUpdater}.
- * 
+ * Work doing an initial statistics computation for a defined {@link QuotaStatsUpdater}.
+ *
  * @since 5.6
  */
 public class QuotaStatsInitialWork extends AbstractWork {
@@ -70,8 +69,7 @@ public class QuotaStatsInitialWork extends AbstractWork {
             @Override
             public void run() throws ClientException {
                 QuotaStatsService service = Framework.getLocalService(QuotaStatsService.class);
-                service.computeInitialStatistics(updaterName, session,
-                        currentWorker);
+                service.computeInitialStatistics(updaterName, session, currentWorker);
             }
         }.runUnrestricted();
     }
@@ -82,8 +80,7 @@ public class QuotaStatsInitialWork extends AbstractWork {
             return false;
         }
         QuotaStatsInitialWork other = (QuotaStatsInitialWork) object;
-        return new EqualsBuilder().append(updaterName, other.updaterName).append(
-                repositoryName, other.repositoryName).isEquals();
+        return new EqualsBuilder().append(updaterName, other.updaterName).append(repositoryName, other.repositoryName).isEquals();
     }
 
     @Override
@@ -93,8 +90,7 @@ public class QuotaStatsInitialWork extends AbstractWork {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("updaterName", updaterName).append(
-                "repositoryName", repositoryName).toString();
+        return new ToStringBuilder(this).append("updaterName", updaterName).append("repositoryName", repositoryName).toString();
     }
 
 }

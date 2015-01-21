@@ -17,13 +17,13 @@
 
 package org.nuxeo.ecm.quota.size;
 
-import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.RecoverableClientException;
 
 /**
- * Exception throws by the {@link QuotaSyncListenerChecker} to enforce Quotas in
- * case a transaction tries to add too much Blobs
- * 
+ * Exception throws by the {@link QuotaSyncListenerChecker} to enforce Quotas in case a transaction tries to add too
+ * much Blobs
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */
@@ -38,19 +38,15 @@ public class QuotaExceededException extends RecoverableClientException {
     protected String addedDocumentID;
 
     public QuotaExceededException(DocumentModel targetDocument, String message) {
-        super(message, "label.quotaException." + message,
-                new String[] { targetDocument.getPathAsString() });
+        super(message, "label.quotaException." + message, new String[] { targetDocument.getPathAsString() });
         this.targetPath = targetDocument.getPathAsString();
     }
 
-    public QuotaExceededException(DocumentModel targetDocument,
-            DocumentModel addedDocument, long quotaValue) {
-        this(targetDocument.getPathAsString(), addedDocument.getId(),
-                quotaValue);
+    public QuotaExceededException(DocumentModel targetDocument, DocumentModel addedDocument, long quotaValue) {
+        this(targetDocument.getPathAsString(), addedDocument.getId(), quotaValue);
     }
 
-    public QuotaExceededException(String targetDocumentPath,
-            String addedDocumentID, long quotaValue) {
+    public QuotaExceededException(String targetDocumentPath, String addedDocumentID, long quotaValue) {
         super("QuotaExceeded", "label.quotaException.QuotaExceeded",
                 new String[] { targetDocumentPath, addedDocumentID });
         this.quotaValue = quotaValue;

@@ -17,21 +17,21 @@
 
 package org.nuxeo.ecm.quota;
 
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.UNDELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_RESTORE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDOUT;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
-import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
-import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION;
-import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
-import static org.nuxeo.ecm.core.api.LifeCycleConstants.UNDELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_RESTORED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_RESTORE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,20 +46,17 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Listener handling default events to update statistics through the
- * {@link org.nuxeo.ecm.quota.QuotaStatsService}.
+ * Listener handling default events to update statistics through the {@link org.nuxeo.ecm.quota.QuotaStatsService}.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
 public class QuotaStatsListener implements EventListener {
 
-    public static final Set<String> EVENTS_TO_HANDLE = Collections.unmodifiableSet(new HashSet<String>(
-            Arrays.asList(DOCUMENT_CREATED, DOCUMENT_CREATED_BY_COPY,
-                    DOCUMENT_UPDATED, DOCUMENT_MOVED, ABOUT_TO_REMOVE,
-                    BEFORE_DOC_UPDATE, ABOUT_TO_REMOVE_VERSION,
-                    DOCUMENT_CHECKEDIN, DOCUMENT_CHECKEDOUT, TRANSITION_EVENT,
-                    BEFORE_DOC_RESTORE, DOCUMENT_RESTORED)));
+    public static final Set<String> EVENTS_TO_HANDLE = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+            DOCUMENT_CREATED, DOCUMENT_CREATED_BY_COPY, DOCUMENT_UPDATED, DOCUMENT_MOVED, ABOUT_TO_REMOVE,
+            BEFORE_DOC_UPDATE, ABOUT_TO_REMOVE_VERSION, DOCUMENT_CHECKEDIN, DOCUMENT_CHECKEDOUT, TRANSITION_EVENT,
+            BEFORE_DOC_RESTORE, DOCUMENT_RESTORED)));
 
     @Override
     public void handleEvent(Event event) throws ClientException {
@@ -70,8 +67,7 @@ public class QuotaStatsListener implements EventListener {
         if (!EVENTS_TO_HANDLE.contains(event.getName())) {
             return;
         }
-        if (TRANSITION_EVENT.equals(event.getName())
-                && !isTrashOpEvent((DocumentEventContext) ctx)) {
+        if (TRANSITION_EVENT.equals(event.getName()) && !isTrashOpEvent((DocumentEventContext) ctx)) {
             return;
         }
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
@@ -80,10 +76,8 @@ public class QuotaStatsListener implements EventListener {
     }
 
     protected boolean isTrashOpEvent(DocumentEventContext eventContext) {
-        String transition = (String) eventContext.getProperties().get(
-                TRANSTION_EVENT_OPTION_TRANSITION);
-        if (transition != null
-                && (DELETE_TRANSITION.equals(transition) || UNDELETE_TRANSITION.equals(transition))) {
+        String transition = (String) eventContext.getProperties().get(TRANSTION_EVENT_OPTION_TRANSITION);
+        if (transition != null && (DELETE_TRANSITION.equals(transition) || UNDELETE_TRANSITION.equals(transition))) {
             return true;
         }
         return false;

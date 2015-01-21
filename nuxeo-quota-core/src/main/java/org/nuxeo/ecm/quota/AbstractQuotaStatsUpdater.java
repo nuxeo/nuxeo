@@ -97,8 +97,7 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
     }
 
     @Override
-    public void updateStatistics(CoreSession session,
-            DocumentEventContext docCtx, Event event) throws ClientException {
+    public void updateStatistics(CoreSession session, DocumentEventContext docCtx, Event event) throws ClientException {
         DocumentModel doc = docCtx.getSourceDocument();
 
         if (!needToProcessEventOnDocument(event, doc)) {
@@ -111,8 +110,7 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
         try {
             if (DOCUMENT_CREATED.equals(eventName)) {
                 processDocumentCreated(session, doc, docCtx);
-            } else if (ABOUT_TO_REMOVE.equals(eventName)
-                    || ABOUT_TO_REMOVE_VERSION.equals(eventName)) {
+            } else if (ABOUT_TO_REMOVE.equals(eventName) || ABOUT_TO_REMOVE_VERSION.equals(eventName)) {
                 processDocumentAboutToBeRemoved(session, doc, docCtx);
             } else if (DOCUMENT_CREATED_BY_COPY.equals(eventName)) {
                 processDocumentCopied(session, doc, docCtx);
@@ -143,8 +141,7 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
         }
     }
 
-    protected List<DocumentModel> getAncestors(CoreSession session,
-            DocumentModel doc) throws ClientException {
+    protected List<DocumentModel> getAncestors(CoreSession session, DocumentModel doc) throws ClientException {
         List<DocumentModel> ancestors = new ArrayList<DocumentModel>();
         if (doc != null && doc.getParentRef() != null) {
             doc = session.getDocument(doc.getParentRef());
@@ -156,65 +153,50 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
         return ancestors;
     }
 
-    protected abstract ClientException handleException(ClientException e,
-            Event event);
+    protected abstract ClientException handleException(ClientException e, Event event);
 
-    protected abstract boolean needToProcessEventOnDocument(Event event,
-            DocumentModel targetDoc);
+    protected abstract boolean needToProcessEventOnDocument(Event event, DocumentModel targetDoc);
 
-    protected abstract void processDocumentCreated(CoreSession session,
-            DocumentModel doc, DocumentEventContext docCtx)
+    protected abstract void processDocumentCreated(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException;
 
-    protected abstract void processDocumentCopied(CoreSession session,
-            DocumentModel doc, DocumentEventContext docCtx)
+    protected abstract void processDocumentCopied(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException;
 
-    protected abstract void processDocumentCheckedIn(CoreSession session,
-            DocumentModel doc, DocumentEventContext docCtx)
+    protected abstract void processDocumentCheckedIn(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException;
 
-    protected abstract void processDocumentCheckedOut(CoreSession session,
-            DocumentModel doc, DocumentEventContext docCtx)
-            throws ClientException;
-
-    protected abstract void processDocumentUpdated(CoreSession session,
-            DocumentModel doc, DocumentEventContext docCtx)
-            throws ClientException;
-
-    protected abstract void processDocumentMoved(CoreSession session,
-            DocumentModel doc, DocumentModel sourceParent,
+    protected abstract void processDocumentCheckedOut(CoreSession session, DocumentModel doc,
             DocumentEventContext docCtx) throws ClientException;
 
-    protected abstract void processDocumentAboutToBeRemoved(
-            CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
+    protected abstract void processDocumentUpdated(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException;
 
-    protected abstract void processDocumentBeforeUpdate(CoreSession session,
-            DocumentModel targetDoc, DocumentEventContext docCtx)
+    protected abstract void processDocumentMoved(CoreSession session, DocumentModel doc, DocumentModel sourceParent,
+            DocumentEventContext docCtx) throws ClientException;
+
+    protected abstract void processDocumentAboutToBeRemoved(CoreSession session, DocumentModel doc,
+            DocumentEventContext docCtx) throws ClientException;
+
+    protected abstract void processDocumentBeforeUpdate(CoreSession session, DocumentModel targetDoc,
+            DocumentEventContext docCtx) throws ClientException;
+
+    protected abstract void processDocumentTrashOp(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException;
 
-    protected abstract void processDocumentTrashOp(CoreSession session,
-            DocumentModel doc, DocumentEventContext docCtx)
+    protected abstract void processDocumentRestored(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException;
 
-    protected abstract void processDocumentRestored(CoreSession session,
-            DocumentModel doc, DocumentEventContext docCtx)
-            throws ClientException;
-
-    protected abstract void processDocumentBeforeRestore(CoreSession session,
-            DocumentModel doc, DocumentEventContext docCtx)
-            throws ClientException;
+    protected abstract void processDocumentBeforeRestore(CoreSession session, DocumentModel doc,
+            DocumentEventContext docCtx) throws ClientException;
 
     protected void setSystemContextData(DocumentModel doc) {
         // do not send notifications
         doc.putContextData(DISABLE_NOTIFICATION_SERVICE, true);
         doc.putContextData(DISABLE_DUBLINCORE_LISTENER, true);
         doc.putContextData(DISABLE_AUDIT_LOGGER, true);
-        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
-                Boolean.TRUE);
+        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
         // force no versioning after quota modifications
-        doc.putContextData(VersioningService.VERSIONING_OPTION,
-                VersioningOption.NONE);
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
     }
 }

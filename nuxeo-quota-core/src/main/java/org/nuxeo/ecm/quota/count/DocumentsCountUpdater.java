@@ -42,8 +42,7 @@ import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * {@link org.nuxeo.ecm.quota.QuotaStatsUpdater} counting the non folderish
- * documents.
+ * {@link org.nuxeo.ecm.quota.QuotaStatsUpdater} counting the non folderish documents.
  * <p>
  * Store the descendant and children count on {@code Folderish} documents.
  *
@@ -57,8 +56,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     public static final int BATCH_SIZE = 50;
 
     @Override
-    protected void processDocumentCreated(CoreSession session,
-            DocumentModel doc, DocumentEventContext docCtx)
+    protected void processDocumentCreated(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException {
         if (doc.isVersion()) {
             return;
@@ -69,8 +67,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    protected void processDocumentCopied(CoreSession session,
-            DocumentModel doc, DocumentEventContext docCtx)
+    protected void processDocumentCopied(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException {
         List<DocumentModel> ancestors = getAncestors(session, doc);
         long docCount = getCount(doc);
@@ -78,32 +75,27 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    protected void processDocumentCheckedIn(CoreSession session,
-            DocumentModel doc, DocumentEventContext docCtx)
+    protected void processDocumentCheckedIn(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException {
         // NOP
     }
 
     @Override
-    protected void processDocumentCheckedOut(CoreSession session,
-            DocumentModel doc, DocumentEventContext docCtx)
+    protected void processDocumentCheckedOut(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException {
         // NOP
     }
 
     @Override
-    protected void processDocumentUpdated(CoreSession session,
-            DocumentModel doc, DocumentEventContext docCtx)
+    protected void processDocumentUpdated(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException {
     }
 
     @Override
-    protected void processDocumentMoved(CoreSession session, DocumentModel doc,
-            DocumentModel sourceParent, DocumentEventContext docCtx)
-            throws ClientException {
+    protected void processDocumentMoved(CoreSession session, DocumentModel doc, DocumentModel sourceParent,
+            DocumentEventContext docCtx) throws ClientException {
         List<DocumentModel> ancestors = getAncestors(session, doc);
-        List<DocumentModel> sourceAncestors = getAncestors(session,
-                sourceParent);
+        List<DocumentModel> sourceAncestors = getAncestors(session, sourceParent);
         sourceAncestors.add(0, sourceParent);
         long docCount = getCount(doc);
         updateCountStatistics(session, doc, ancestors, docCount);
@@ -111,8 +103,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    protected void processDocumentAboutToBeRemoved(CoreSession session,
-            DocumentModel doc, DocumentEventContext docCtx)
+    protected void processDocumentAboutToBeRemoved(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException {
         List<DocumentModel> ancestors = getAncestors(session, doc);
         long docCount = getCount(doc);
@@ -126,20 +117,17 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    protected boolean needToProcessEventOnDocument(Event event,
-            DocumentModel targetDoc) {
+    protected boolean needToProcessEventOnDocument(Event event, DocumentModel targetDoc) {
         return true;
     }
 
     @Override
-    protected void processDocumentBeforeUpdate(CoreSession session,
-            DocumentModel targetDoc, DocumentEventContext docCtx) {
+    protected void processDocumentBeforeUpdate(CoreSession session, DocumentModel targetDoc, DocumentEventContext docCtx) {
         // NOP
     }
 
-    protected void updateCountStatistics(CoreSession session,
-            DocumentModel doc, List<DocumentModel> ancestors, long count)
-            throws ClientException {
+    protected void updateCountStatistics(CoreSession session, DocumentModel doc, List<DocumentModel> ancestors,
+            long count) throws ClientException {
         if (ancestors == null || ancestors.isEmpty()) {
             return;
         }
@@ -162,9 +150,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
                     if (!ancestor.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET)) {
                         ancestor.addFacet(DOCUMENTS_COUNT_STATISTICS_FACET);
                     }
-                    ancestor.setPropertyValue(
-                            DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY,
-                            descendantsCount);
+                    ancestor.setPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY, descendantsCount);
                 } else {
                     if (ancestor.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET)) {
                         ancestor.removeFacet(DOCUMENTS_COUNT_STATISTICS_FACET);
@@ -177,8 +163,8 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         session.save();
     }
 
-    protected void updateParentChildrenCount(CoreSession session,
-            DocumentModel parent, long count) throws ClientException {
+    protected void updateParentChildrenCount(CoreSession session, DocumentModel parent, long count)
+            throws ClientException {
         long childrenCount = 0;
         if (parent.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET)) {
             Long c = (Long) parent.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY);
@@ -186,9 +172,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         } else {
             parent.addFacet(DOCUMENTS_COUNT_STATISTICS_FACET);
         }
-        parent.setPropertyValue(
-                DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY,
-                childrenCount + count);
+        parent.setPropertyValue(DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY, childrenCount + count);
         setSystemContextData(parent);
         session.saveDocument(parent);
     }
@@ -207,29 +191,24 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    public void computeInitialStatistics(CoreSession session,
-            QuotaStatsInitialWork currentWorker) {
+    public void computeInitialStatistics(CoreSession session, QuotaStatsInitialWork currentWorker) {
         try {
             Map<String, String> folders = getFolders(session);
-            Map<String, Count> documentsCountByFolder = computeDocumentsCountByFolder(
-                    session, folders);
+            Map<String, Count> documentsCountByFolder = computeDocumentsCountByFolder(session, folders);
             saveDocumentsCount(session, documentsCountByFolder);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
 
-    protected Map<String, String> getFolders(CoreSession session)
-            throws ClientException {
+    protected Map<String, String> getFolders(CoreSession session) throws ClientException {
         IterableQueryResult res = session.queryAndFetch(
-                "SELECT ecm:uuid, ecm:parentId FROM Document WHERE ecm:mixinType = 'Folderish'",
-                "NXQL");
+                "SELECT ecm:uuid, ecm:parentId FROM Document WHERE ecm:mixinType = 'Folderish'", "NXQL");
         try {
             Map<String, String> folders = new HashMap<String, String>();
 
             for (Map<String, Serializable> r : res) {
-                folders.put((String) r.get("ecm:uuid"),
-                        (String) r.get("ecm:parentId"));
+                folders.put((String) r.get("ecm:uuid"), (String) r.get("ecm:parentId"));
             }
             return folders;
         } finally {
@@ -239,11 +218,9 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         }
     }
 
-    protected Map<String, Count> computeDocumentsCountByFolder(
-            CoreSession session, Map<String, String> folders)
+    protected Map<String, Count> computeDocumentsCountByFolder(CoreSession session, Map<String, String> folders)
             throws ClientException {
-        IterableQueryResult res = session.queryAndFetch(
-                "SELECT ecm:uuid, ecm:parentId FROM Document", "NXQL");
+        IterableQueryResult res = session.queryAndFetch("SELECT ecm:uuid, ecm:parentId FROM Document", "NXQL");
         try {
             Map<String, Count> foldersCount = new HashMap<String, Count>();
             for (Map<String, Serializable> r : res) {
@@ -271,8 +248,8 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         }
     }
 
-    protected void updateParentsDocumentsCount(Map<String, String> folders,
-            Map<String, Count> foldersCount, String folderId) {
+    protected void updateParentsDocumentsCount(Map<String, String> folders, Map<String, Count> foldersCount,
+            String folderId) {
         String parent = folders.get(folderId);
         while (parent != null) {
             if (!foldersCount.containsKey(parent)) {
@@ -284,8 +261,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         }
     }
 
-    protected void saveDocumentsCount(CoreSession session,
-            Map<String, Count> foldersCount) throws ClientException {
+    protected void saveDocumentsCount(CoreSession session, Map<String, Count> foldersCount) throws ClientException {
         long docsCount = 0;
         for (Map.Entry<String, Count> entry : foldersCount.entrySet()) {
             String folderId = entry.getKey();
@@ -318,17 +294,12 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         session.save();
     }
 
-    protected void saveDocumentsCount(CoreSession session,
-            DocumentModel folder, Count count) throws ClientException {
+    protected void saveDocumentsCount(CoreSession session, DocumentModel folder, Count count) throws ClientException {
         if (!folder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET)) {
             folder.addFacet(DOCUMENTS_COUNT_STATISTICS_FACET);
         }
-        folder.setPropertyValue(
-                DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY,
-                count.childrenCount);
-        folder.setPropertyValue(
-                DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY,
-                count.descendantsCount);
+        folder.setPropertyValue(DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY, count.childrenCount);
+        folder.setPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY, count.descendantsCount);
         setSystemContextData(folder);
         session.saveDocument(folder);
     }
@@ -344,21 +315,18 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    protected void processDocumentTrashOp(CoreSession session,
-            DocumentModel doc, DocumentEventContext docCtx) {
+    protected void processDocumentTrashOp(CoreSession session, DocumentModel doc, DocumentEventContext docCtx) {
         // do nothing for count
     }
 
     @Override
-    protected void processDocumentRestored(CoreSession session,
-            DocumentModel doc, DocumentEventContext docCtx)
+    protected void processDocumentRestored(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException {
         // do nothing
     }
 
     @Override
-    protected void processDocumentBeforeRestore(CoreSession session,
-            DocumentModel doc, DocumentEventContext docCtx)
+    protected void processDocumentBeforeRestore(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException {
         // do nothing
     }

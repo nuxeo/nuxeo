@@ -55,7 +55,6 @@ import com.google.inject.Inject;
  * NXP-11558 : Test that blob can be exclude by their path
  *
  * @author dmetzler
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(QuotaFeature.class)
@@ -86,8 +85,7 @@ public class TestExcludedBlob {
     }
 
     @Test
-    public void quotaServiceCanGiveTheListOfXpathPropsExcludedFromQuotaComputation()
-            throws Exception {
+    public void quotaServiceCanGiveTheListOfXpathPropsExcludedFromQuotaComputation() throws Exception {
         Collection<String> paths = sus.getExcludedPathList();
         assertThat(paths, is(notNullValue()));
         assertThat(paths.size(), is(1));
@@ -95,18 +93,15 @@ public class TestExcludedBlob {
     }
 
     @Test
-    public void quotaComputationDontTakeFilesSchemaIntoAccount()
-            throws Exception {
+    public void quotaComputationDontTakeFilesSchemaIntoAccount() throws Exception {
 
         // Given a document with a blob in the file schema
         isr.run(new RunnableWithException() {
 
             @Override
             public void run() throws Exception {
-                DocumentModel doc = session.createDocumentModel("/", "file1",
-                        "File");
-                doc.setPropertyValue("file:content",
-                        (Serializable) getFakeBlob(100));
+                DocumentModel doc = session.createDocumentModel("/", "file1", "File");
+                doc.setPropertyValue("file:content", (Serializable) getFakeBlob(100));
                 doc = session.createDocument(doc);
                 fileRef = doc.getRef();
 
@@ -121,9 +116,7 @@ public class TestExcludedBlob {
             }
         });
 
-
-
-        //When I add some Blob in the files content
+        // When I add some Blob in the files content
         isr.run(new RunnableWithException() {
             @Override
             public void run() throws Exception {
@@ -143,9 +136,7 @@ public class TestExcludedBlob {
             }
         });
 
-
-
-        //Then quota should not change
+        // Then quota should not change
         isr.run(new RunnableWithException() {
             @Override
             public void run() throws Exception {
@@ -153,9 +144,6 @@ public class TestExcludedBlob {
                 assertQuota(doc, 100, 100);
             }
         });
-
-
-
 
     }
 
@@ -182,8 +170,8 @@ public class TestExcludedBlob {
         assertTrue(doc.hasFacet(DOCUMENTS_SIZE_STATISTICS_FACET));
         QuotaAware qa = doc.getAdapter(QuotaAware.class);
         assertNotNull(qa);
-        assertEquals("inner:" + innerSize + " total:" + totalSize, "inner:"
-                + qa.getInnerSize() + " total:" + qa.getTotalSize());
+        assertEquals("inner:" + innerSize + " total:" + totalSize,
+                "inner:" + qa.getInnerSize() + " total:" + qa.getTotalSize());
     }
 
 }

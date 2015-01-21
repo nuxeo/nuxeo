@@ -70,15 +70,12 @@ public class QuotaStatsActions implements Serializable {
     }
 
     public void launchInitialComputation(String updaterName) {
-        launchInitialComputation(updaterName,
-                documentManager.getRepositoryName());
+        launchInitialComputation(updaterName, documentManager.getRepositoryName());
     }
 
-    public void launchInitialComputation(String updaterName,
-            String repositoryName) {
+    public void launchInitialComputation(String updaterName, String repositoryName) {
         QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
-        quotaStatsService.launchInitialStatisticsComputation(updaterName,
-                repositoryName);
+        quotaStatsService.launchInitialStatisticsComputation(updaterName, repositoryName);
     }
 
     public String getStatus(String updaterName) {
@@ -101,17 +98,15 @@ public class QuotaStatsActions implements Serializable {
         }
     }
 
-    public void validateQuotaSize(FacesContext context, UIComponent component,
-            Object value) {
+    public void validateQuotaSize(FacesContext context, UIComponent component, Object value) {
 
         String strValue = value.toString();
 
         try {
             Long quotaValue = Long.parseLong(strValue);
         } catch (NumberFormatException e) {
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                            context, "wrong format"), null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                    "wrong format"), null);
             // also add global message
             context.addMessage(null, message);
             throw new ValidatorException(message);

@@ -28,7 +28,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author dmetzler
- *
  */
 public class IsolatedSessionRunner {
 
@@ -78,8 +77,7 @@ public class IsolatedSessionRunner {
             }
         }
         if (!(session instanceof LocalSession)) {
-            throw new UnsupportedOperationException(
-                    "Cannot dispose session of class " + session.getClass());
+            throw new UnsupportedOperationException("Cannot dispose session of class " + session.getClass());
         }
         ((LocalSession) session).getSession().dispose();
     }

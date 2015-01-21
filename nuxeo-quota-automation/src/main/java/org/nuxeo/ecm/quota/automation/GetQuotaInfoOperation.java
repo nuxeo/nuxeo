@@ -27,8 +27,7 @@ public class GetQuotaInfoOperation {
         if (qa == null) {
             return new TestableJsonAdapter(new SimpleQuotaInfo());
         } else {
-            return new TestableJsonAdapter(new SimpleQuotaInfo(
-                    qa.getQuotaInfo()));
+            return new TestableJsonAdapter(new SimpleQuotaInfo(qa.getQuotaInfo()));
         }
     }
 
