@@ -246,6 +246,7 @@ table.noHover tr:hover {
 .buttonsGadget .actionsWidgetPanel {
   padding-left: .2em }
 
+.nxDraggable .icon,
 .iconColumn .nxDraggable {
   cursor: move }
 
