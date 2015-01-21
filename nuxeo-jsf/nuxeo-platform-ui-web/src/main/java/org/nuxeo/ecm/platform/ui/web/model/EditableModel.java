@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.model;
 
+import javax.el.ValueExpression;
 import javax.faces.model.DataModel;
 
 import org.nuxeo.ecm.core.api.ListDiff;

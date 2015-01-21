@@ -8,7 +8,7 @@
 
   <xs:element name="textField" type="xs:string" />
 
-   <xs:element name="anotherTextField" type="xs:string" />
+  <xs:element name="anotherTextField" type="xs:string" default="foo" />
 
   <xs:element name="textareaField" type="xs:string" />
 
@@ -55,7 +55,7 @@
   <xs:element name="complexField" type="nxs:complexType" />
   <xs:complexType name="complexType">
     <xs:sequence>
-      <xs:element name="stringComplexItem" type="xs:string" />
+      <xs:element name="stringComplexItem" type="xs:string" default="foo" />
       <xs:element name="dateComplexItem" type="xs:date" />
       <xs:element name="intComplexItem" type="xs:int" />
       <xs:element name="booleanComplexItem" type="xs:boolean" />

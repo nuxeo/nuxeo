@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.el.ValueExpression;
 import javax.faces.model.DataModel;
 import javax.faces.model.DataModelEvent;
 import javax.faces.model.DataModelListener;
@@ -413,7 +414,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         final StringBuilder buf = new StringBuilder();
         buf.append(EditableModelImpl.class.getSimpleName());
         buf.append(" {");
-        buf.append("originalData: ");
+        buf.append(" originalData: ");
         buf.append(originalData);
         buf.append(", data: ");
         buf.append(data);

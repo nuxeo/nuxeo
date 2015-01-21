@@ -74,7 +74,7 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
         FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ValidatorConfig validatorConfig = TagConfigFactory.createValidatorConfig(tagConfig,
-                    widget.getTagConfigId(), new TagAttributesImpl(new TagAttribute[0]), new LeafFaceletHandler(),
+                    widget.getTagConfigId(), FaceletHandlerHelper.getTagAttributes(), new LeafFaceletHandler(),
                     org.nuxeo.ecm.platform.ui.web.component.date.DateTimeValidator.VALIDATOR_ID);
             ValidatorHandler validateHandler = new ValidatorHandler(validatorConfig);
             FaceletHandler nextHandler = new CompositeFaceletHandler(new FaceletHandler[] { validateHandler, leaf });

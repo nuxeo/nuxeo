@@ -35,9 +35,31 @@ public class DocumentPropertyContext {
         this.schema = schema;
     }
 
+    /**
+     * @since 7.2
+     */
+    public DocumentModel getDoc() {
+        return doc;
+    }
+
+    /**
+     * @since 7.2
+     */
+    public String getSchema() {
+        return schema;
+    }
+
     @Override
     public String toString() {
-        return doc.getName() + '.' + schema;
+        final StringBuilder buf = new StringBuilder();
+        buf.append("DocumentPropertyContext");
+        buf.append(" {");
+        buf.append(" doc=");
+        buf.append(doc);
+        buf.append(", schema=");
+        buf.append(schema);
+        buf.append('}');
+        return buf.toString();
     }
 
 }
