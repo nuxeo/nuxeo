@@ -402,7 +402,8 @@
       <filter-id>hasPicture</filter-id>
     </action>
 
-    <action id="summary_picture_iptc" type="widget" order="240">
+    <!-- deprecated see NXP-16336 -->
+    <action id="summary_picture_iptc" type="widget" order="240" enabled="false">
       <category>SUMMARY_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">summary_picture_iptc</property>
