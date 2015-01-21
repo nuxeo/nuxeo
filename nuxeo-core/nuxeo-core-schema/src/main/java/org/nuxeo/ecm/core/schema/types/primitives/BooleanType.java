@@ -38,18 +38,23 @@ public final class BooleanType extends PrimitiveType {
 
     @Override
     public boolean validate(Object object) {
-        return object instanceof Boolean;
+        Object converted = convert(object);
+        return converted == null || converted instanceof Boolean;
     }
 
     @Override
     public Object convert(Object value) {
+        if (value == null) {
+            return null;
+        }
         if (value instanceof Boolean) {
             return value;
         } else if (value instanceof Number) {
             return ((Number) value).intValue() != 0 ? Boolean.TRUE : Boolean.FALSE;
-        } else {
+        } else if (value instanceof String) {
             return Boolean.valueOf((String) value);
         }
+        return value;
     }
 
     @Override
