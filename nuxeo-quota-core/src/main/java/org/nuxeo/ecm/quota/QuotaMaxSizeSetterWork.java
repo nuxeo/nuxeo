@@ -31,7 +31,6 @@ import org.nuxeo.ecm.quota.size.QuotaAwareDocumentFactory;
  * Work to set the maxSize on a list of documents
  *
  * @since 5.7
- *
  */
 public class QuotaMaxSizeSetterWork extends AbstractWork {
 
@@ -41,8 +40,7 @@ public class QuotaMaxSizeSetterWork extends AbstractWork {
 
     public static final String QUOTA_MAX_SIZE_UPDATE_WORK = "quotaMaxSizeSetter";
 
-    public QuotaMaxSizeSetterWork(long maxSize, List<String> docIds,
-            String repositoryName) {
+    public QuotaMaxSizeSetterWork(long maxSize, List<String> docIds, String repositoryName) {
         super(); // random id, for unique job
         setDocuments(repositoryName, docIds);
         this.maxSize = maxSize;

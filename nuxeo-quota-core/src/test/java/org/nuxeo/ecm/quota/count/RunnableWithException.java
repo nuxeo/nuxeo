@@ -18,7 +18,6 @@ package org.nuxeo.ecm.quota.count;
 
 /**
  * @author dmetzler
- *
  */
 public interface RunnableWithException {
 

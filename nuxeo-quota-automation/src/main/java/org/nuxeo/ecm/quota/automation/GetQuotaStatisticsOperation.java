@@ -41,12 +41,9 @@ import org.nuxeo.ecm.quota.size.QuotaDisplayValue;
 import org.nuxeo.ecm.quota.size.QuotaInfo;
 
 /**
- *
- * Returns a json representation of the quota info to be displayed in a pie
- * chart
+ * Returns a json representation of the quota info to be displayed in a pie chart
  *
  * @since 5.7
- *
  */
 @Operation(id = GetQuotaStatisticsOperation.ID, category = "Quotas", label = "Get Quota statistics", description = "Returns the Quota Infos (innerSize, totalSize and maxQuota) for a DocumentModel")
 public class GetQuotaStatisticsOperation {
@@ -64,17 +61,15 @@ public class GetQuotaStatisticsOperation {
 
     @OperationMethod()
     public Blob run() throws Exception {
-        Locale locale = language != null && !language.isEmpty() ? new Locale(
-                language) : Locale.ENGLISH;
+        Locale locale = language != null && !language.isEmpty() ? new Locale(language) : Locale.ENGLISH;
         DocumentModel doc = session.getDocument(documentRef);
         QuotaAware qa = doc.getAdapter(QuotaAware.class);
         if (qa == null) {
-             throw new ClientException("Quota not enabled on doc");
+            throw new ClientException("Quota not enabled on doc");
         }
         String string = toJSON(qa.getQuotaInfo(), locale);
 
-        return new InputStreamBlob(new ByteArrayInputStream(
-                string.getBytes("UTF-8")), "application/json");
+        return new InputStreamBlob(new ByteArrayInputStream(string.getBytes("UTF-8")), "application/json");
     }
 
     public String toJSON(QuotaInfo quotaInfo, Locale locale) {
@@ -84,25 +79,15 @@ public class GetQuotaStatisticsOperation {
         long liveSize = quotaInfo.getTotalSize().getValue()
                 - (quotaInfo.getTrashSize().getValue() + quotaInfo.getSizeVersions().getValue());
         QuotaDisplayValue live = new QuotaDisplayValue(liveSize);
-        stats.add(new QuotaStat(quotaInfo.getLiveSize().getValue(),
-                getI18nLabel("label.quota.liveSize", locale) + ":"
-                        + nf.format(live.getValueInUnit()) + " "
-                        + getI18nLabel(live.getUnit(), locale)));
-        stats.add(new QuotaStat(quotaInfo.getTrashSize().getValue(),
-                getI18nLabel("label.quota.trashSize", locale)
-                        + ":"
-                        + nf.format(quotaInfo.getTrashSize().getValueInUnit())
-                        + " "
-                        + getI18nLabel(quotaInfo.getTrashSize().getUnit(),
-                                locale)));
-        stats.add(new QuotaStat(
-                quotaInfo.getSizeVersions().getValue(),
-                getI18nLabel("label.quota.versionsSize", locale)
-                        + ":"
-                        + nf.format(quotaInfo.getSizeVersions().getValueInUnit())
-                        + " "
-                        + getI18nLabel(quotaInfo.getSizeVersions().getUnit(),
-                                locale)));
+        stats.add(new QuotaStat(quotaInfo.getLiveSize().getValue(), getI18nLabel("label.quota.liveSize", locale) + ":"
+                + nf.format(live.getValueInUnit()) + " " + getI18nLabel(live.getUnit(), locale)));
+        stats.add(new QuotaStat(quotaInfo.getTrashSize().getValue(), getI18nLabel("label.quota.trashSize", locale)
+                + ":" + nf.format(quotaInfo.getTrashSize().getValueInUnit()) + " "
+                + getI18nLabel(quotaInfo.getTrashSize().getUnit(), locale)));
+        stats.add(new QuotaStat(quotaInfo.getSizeVersions().getValue(),
+                getI18nLabel("label.quota.versionsSize", locale) + ":"
+                        + nf.format(quotaInfo.getSizeVersions().getValueInUnit()) + " "
+                        + getI18nLabel(quotaInfo.getSizeVersions().getUnit(), locale)));
         ObjectMapper mapper = new ObjectMapper();
         StringWriter writer = new StringWriter();
         try {

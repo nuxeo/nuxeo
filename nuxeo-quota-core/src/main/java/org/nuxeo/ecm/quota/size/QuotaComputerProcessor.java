@@ -46,8 +46,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 
 /**
- * Asynchronous listener triggered by the {@link QuotaSyncListenerChecker} when
- * Quota needs to be recomputed
+ * Asynchronous listener triggered by the {@link QuotaSyncListenerChecker} when Quota needs to be recomputed
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
@@ -62,8 +61,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
         if (eventBundle.containsEventName(SizeUpdateEventContext.QUOTA_UPDATE_NEEDED)) {
 
             for (Event event : eventBundle) {
-                if (event.getName().equals(
-                        SizeUpdateEventContext.QUOTA_UPDATE_NEEDED)) {
+                if (event.getName().equals(SizeUpdateEventContext.QUOTA_UPDATE_NEEDED)) {
                     EventContext ctx = event.getContext();
 
                     if (ctx instanceof DocumentEventContext) {
@@ -83,8 +81,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
         }
     }
 
-    protected void debugCheck(SizeUpdateEventContext quotaCtx)
-            throws ClientException {
+    protected void debugCheck(SizeUpdateEventContext quotaCtx) throws ClientException {
         String sourceEvent = quotaCtx.getSourceEvent();
         CoreSession session = quotaCtx.getCoreSession();
         DocumentModel sourceDocument = quotaCtx.getSourceDocument();
@@ -99,40 +96,33 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 }
             }
         } else {
-            log.debug("Document " + sourceDocument.getRef()
-                    + " no longer exists (" + sourceEvent + ")");
+            log.debug("Document " + sourceDocument.getRef() + " no longer exists (" + sourceEvent + ")");
         }
 
     }
 
-    public void processQuotaComputation(SizeUpdateEventContext quotaCtx)
-            throws ClientException {
+    public void processQuotaComputation(SizeUpdateEventContext quotaCtx) throws ClientException {
         String sourceEvent = quotaCtx.getSourceEvent();
         CoreSession session = quotaCtx.getCoreSession();
         DocumentModel sourceDocument = quotaCtx.getSourceDocument();
 
         if (sourceDocument instanceof ShallowDocumentModel) {
             if (!(ABOUT_TO_REMOVE.equals(sourceEvent) || ABOUT_TO_REMOVE_VERSION.equals(sourceEvent))) {
-                log.error("Unable to reconnect Document "
-                        + sourceDocument.getPathAsString() + " on event "
+                log.error("Unable to reconnect Document " + sourceDocument.getPathAsString() + " on event "
                         + sourceEvent);
                 return;
             }
         } else {
             if (log.isTraceEnabled()) {
-                log.trace("sourceDoc SessionId:"
-                        + sourceDocument.getSessionId());
-                log.trace("sourceDoc SessionId:"
-                        + sourceDocument.getCoreSession().getSessionId());
+                log.trace("sourceDoc SessionId:" + sourceDocument.getSessionId());
+                log.trace("sourceDoc SessionId:" + sourceDocument.getCoreSession().getSessionId());
             }
         }
         List<DocumentModel> parents = new ArrayList<DocumentModel>();
 
-        log.debug("compute Quota on " + sourceDocument.getPathAsString()
-                + " and parents");
+        log.debug("compute Quota on " + sourceDocument.getPathAsString() + " and parents");
 
-        if (ABOUT_TO_REMOVE.equals(sourceEvent)
-                || ABOUT_TO_REMOVE_VERSION.equals(sourceEvent)) {
+        if (ABOUT_TO_REMOVE.equals(sourceEvent) || ABOUT_TO_REMOVE_VERSION.equals(sourceEvent)) {
             // use the store list of parentIds
             for (String id : quotaCtx.getParentUUIds()) {
                 if (session.exists(new IdRef(id))) {
@@ -141,8 +131,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
             }
         } else if (DOCUMENT_MOVED.equals(sourceEvent)) {
 
-            if (quotaCtx.getParentUUIds() != null
-                    && quotaCtx.getParentUUIds().size() > 0) {
+            if (quotaCtx.getParentUUIds() != null && quotaCtx.getParentUUIds().size() > 0) {
                 // use the store list of parentIds
                 for (String id : quotaCtx.getParentUUIds()) {
                     if (session.exists(new IdRef(id))) {
@@ -174,8 +163,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 try {
                     parents.addAll(getParents(sourceDocument, session));
                 } catch (ClientException e) {
-                    log.debug("Could not get parent for document "
-                            + sourceDocument.getRef() + ", error is "
+                    log.debug("Could not get parent for document " + sourceDocument.getRef() + ", error is "
                             + e.getMessage());
                 }
             }
@@ -184,14 +172,11 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
             // process Quota on target Document
             if (!DOCUMENT_CREATED_BY_COPY.equals(sourceEvent)) {
                 if (quotaDoc == null) {
-                    log.debug("  add Quota Facet on "
-                            + sourceDocument.getPathAsString());
-                    quotaDoc = QuotaAwareDocumentFactory.make(sourceDocument,
-                            false);
+                    log.debug("  add Quota Facet on " + sourceDocument.getPathAsString());
+                    quotaDoc = QuotaAwareDocumentFactory.make(sourceDocument, false);
 
                 } else {
-                    log.debug("  update Quota Facet on "
-                            + sourceDocument.getPathAsString());
+                    log.debug("  update Quota Facet on " + sourceDocument.getPathAsString());
                 }
                 if (DOCUMENT_CHECKEDIN.equals(sourceEvent)) {
                     long versionSize = getVersionSizeFromCtx(quotaCtx);
@@ -200,13 +185,11 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
 
                 } else if (DOCUMENT_CHECKEDOUT.equals(sourceEvent)) {
                     // All quota computation are now handled on Checkin
-                } else if (DELETE_TRANSITION.equals(sourceEvent)
-                        || UNDELETE_TRANSITION.equals(sourceEvent)) {
+                } else if (DELETE_TRANSITION.equals(sourceEvent) || UNDELETE_TRANSITION.equals(sourceEvent)) {
                     quotaDoc.addTrashSize(quotaCtx.getBlobSize(), true);
                 } else if (DOCUMENT_UPDATE_INITIAL_STATISTICS.equals(sourceEvent)) {
                     quotaDoc.addInnerSize(quotaCtx.getBlobSize(), false);
-                    quotaDoc.addTotalSize(quotaCtx.getVersionsSizeOnTotal(),
-                            false);
+                    quotaDoc.addTotalSize(quotaCtx.getVersionsSizeOnTotal(), false);
                     quotaDoc.addTrashSize(quotaCtx.getTrashSize(), false);
                     quotaDoc.addVersionsSize(quotaCtx.getVersionsSize(), true);
                 } else {
@@ -228,63 +211,39 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
             if (DOCUMENT_CHECKEDIN.equals(sourceEvent)) {
                 long versionSize = getVersionSizeFromCtx(quotaCtx);
 
-                processOnParents(parents, versionSize, 0L, versionSize, true,
-                        false, true);
+                processOnParents(parents, versionSize, 0L, versionSize, true, false, true);
             } else if (DOCUMENT_CHECKEDOUT.equals(sourceEvent)) {
                 // All quota computation are now handled on Checkin
-            } else if (DELETE_TRANSITION.equals(sourceEvent)
-                    || UNDELETE_TRANSITION.equals(sourceEvent)) {
-                processOnParents(parents, quotaCtx.getBlobSize(),
-                        quotaCtx.getTrashSize(), false, true);
+            } else if (DELETE_TRANSITION.equals(sourceEvent) || UNDELETE_TRANSITION.equals(sourceEvent)) {
+                processOnParents(parents, quotaCtx.getBlobSize(), quotaCtx.getTrashSize(), false, true);
             } else if (ABOUT_TO_REMOVE_VERSION.equals(sourceEvent)) {
-                processOnParents(parents, quotaCtx.getBlobDelta(), 0L,
-                        quotaCtx.getBlobDelta(), true, false, true);
+                processOnParents(parents, quotaCtx.getBlobDelta(), 0L, quotaCtx.getBlobDelta(), true, false, true);
             } else if (ABOUT_TO_REMOVE.equals(sourceEvent)) {
                 // when permanently deleting the doc clean the trash if the doc
                 // is in trash and all
                 // archived versions size
-                log.debug("Processing document about to be removed on parents. Total: "
-                        + quotaCtx.getBlobDelta()
-                        + " , trash size: "
-                        + quotaCtx.getTrashSize()
-                        + " , versions size: "
+                log.debug("Processing document about to be removed on parents. Total: " + quotaCtx.getBlobDelta()
+                        + " , trash size: " + quotaCtx.getTrashSize() + " , versions size: "
                         + quotaCtx.getVersionsSize());
-                processOnParents(
-                        parents,
-                        quotaCtx.getBlobDelta(),
-                        quotaCtx.getTrashSize(),
-                        quotaCtx.getVersionsSize(),
-                        true,
-                        quotaCtx.getProperties().get(
-                                SizeUpdateEventContext._UPDATE_TRASH_SIZE) != null
-                                && (Boolean) quotaCtx.getProperties().get(
-                                        SizeUpdateEventContext._UPDATE_TRASH_SIZE),
+                processOnParents(parents, quotaCtx.getBlobDelta(), quotaCtx.getTrashSize(), quotaCtx.getVersionsSize(),
+                        true, quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE) != null
+                                && (Boolean) quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE),
                         true);
             } else if (DOCUMENT_MOVED.equals(sourceEvent)) {
                 // update versionsSize on source parents since all archived
                 // versions
                 // are also moved
-                processOnParents(parents, quotaCtx.getBlobDelta(), 0L,
-                        quotaCtx.getVersionsSize(), true, false, true);
+                processOnParents(parents, quotaCtx.getBlobDelta(), 0L, quotaCtx.getVersionsSize(), true, false, true);
             } else if (DOCUMENT_UPDATE_INITIAL_STATISTICS.equals(sourceEvent)) {
-                processOnParents(
-                        parents,
-                        quotaCtx.getBlobSize()
-                                + quotaCtx.getVersionsSizeOnTotal(),
-                        quotaCtx.getTrashSize(),
-                        quotaCtx.getVersionsSize(),
-                        true,
-                        quotaCtx.getProperties().get(
-                                SizeUpdateEventContext._UPDATE_TRASH_SIZE) != null
-                                && (Boolean) quotaCtx.getProperties().get(
-                                        SizeUpdateEventContext._UPDATE_TRASH_SIZE),
+                processOnParents(parents, quotaCtx.getBlobSize() + quotaCtx.getVersionsSizeOnTotal(),
+                        quotaCtx.getTrashSize(), quotaCtx.getVersionsSize(), true,
+                        quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE) != null
+                                && (Boolean) quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE),
                         true);
             } else if (DOCUMENT_CREATED_BY_COPY.equals(sourceEvent)) {
-                processOnParents(parents, quotaCtx.getBlobSize(), 0, true,
-                        false);
+                processOnParents(parents, quotaCtx.getBlobSize(), 0, true, false);
             } else {
-                processOnParents(parents, quotaCtx.getBlobDelta(),
-                        quotaCtx.getBlobDelta(), true, false);
+                processOnParents(parents, quotaCtx.getBlobDelta(), quotaCtx.getBlobDelta(), true, false);
             }
         }
     }
@@ -297,24 +256,21 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
         return quotaCtx.getBlobSize() - quotaCtx.getBlobDelta();
     }
 
-    protected void processOnParents(List<DocumentModel> parents, long delta,
-            long trash, boolean total, boolean trashOp) throws ClientException {
+    protected void processOnParents(List<DocumentModel> parents, long delta, long trash, boolean total, boolean trashOp)
+            throws ClientException {
         processOnParents(parents, delta, trash, 0L, total, trashOp, false);
     }
 
-    protected void processOnParents(List<DocumentModel> parents,
-            long deltaTotal, long trashSize, long deltaVersions, boolean total,
-            boolean trashOp, boolean versionsOp) throws ClientException {
+    protected void processOnParents(List<DocumentModel> parents, long deltaTotal, long trashSize, long deltaVersions,
+            boolean total, boolean trashOp, boolean versionsOp) throws ClientException {
         for (DocumentModel parent : parents) {
             // process Quota on target Document
             QuotaAware quotaDoc = parent.getAdapter(QuotaAware.class);
             if (quotaDoc == null) {
-                log.debug("   add Quota Facet on parent "
-                        + parent.getPathAsString());
+                log.debug("   add Quota Facet on parent " + parent.getPathAsString());
                 quotaDoc = QuotaAwareDocumentFactory.make(parent, false);
             } else {
-                log.debug("   update Quota Facet on parent "
-                        + parent.getPathAsString());
+                log.debug("   update Quota Facet on parent " + parent.getPathAsString());
             }
             if (total) {
                 quotaDoc.addTotalSize(deltaTotal, true);
@@ -328,8 +284,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
         }
     }
 
-    protected List<DocumentModel> getParents(DocumentModel sourceDocument,
-            CoreSession session) throws ClientException {
+    protected List<DocumentModel> getParents(DocumentModel sourceDocument, CoreSession session) throws ClientException {
         List<DocumentModel> parents = new ArrayList<DocumentModel>();
         // use getParentDocumentRefs instead of getParentDocuments , beacuse
         // getParentDocuments doesn't fetch the root document

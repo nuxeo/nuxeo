@@ -48,17 +48,13 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import com.google.inject.Inject;
 
 /**
- *
  * @since 5.7
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, PlatformFeature.class })
 @TransactionalConfig(autoStart = false)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.quota.core" })
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.api", "org.nuxeo.ecm.platform.userworkspace.core",
+        "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.quota.core" })
 public class TestQuotaService {
 
     @Inject
@@ -88,8 +84,7 @@ public class TestQuotaService {
             userSession = openSessionAs("jdoe");
             assertNotNull(uwm);
 
-            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession,
-                    null);
+            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
             assertNotNull(uw);
             uwRef1 = uw.getRef();
 
@@ -106,8 +101,7 @@ public class TestQuotaService {
             uwm = Framework.getLocalService(UserWorkspaceService.class);
             assertNotNull(uwm);
 
-            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession,
-                    null);
+            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
             assertNotNull(uw);
             uwRef2 = uw.getRef();
 
@@ -121,8 +115,7 @@ public class TestQuotaService {
         eventService.waitForAsyncCompletion();
         TransactionHelper.startTransaction();
         try {
-            quotaStatsService.launchSetMaxQuotaOnUserWorkspaces(100L,
-                    session.getRootDocument(), session);
+            quotaStatsService.launchSetMaxQuotaOnUserWorkspaces(100L, session.getRootDocument(), session);
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
@@ -139,8 +132,7 @@ public class TestQuotaService {
     public CoreSession openSessionAs(String username) throws ClientException {
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         context.put("username", username);
-        return CoreInstance.getInstance().open(session.getRepositoryName(),
-                context);
+        return CoreInstance.getInstance().open(session.getRepositoryName(), context);
     }
 
 }
