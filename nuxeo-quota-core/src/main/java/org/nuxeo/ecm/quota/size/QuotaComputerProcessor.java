@@ -180,7 +180,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                     quotaDoc.addTrashSize(quotaCtx.getBlobSize(), true);
                 } else if (DOCUMENT_UPDATE_INITIAL_STATISTICS.equals(sourceEvent)) {
                     quotaDoc.addInnerSize(quotaCtx.getBlobSize(), false);
-                    quotaDoc.addTotalSize(quotaCtx.getVersionsSizeOnTotal(), false);
+                    quotaDoc.addTotalSize(quotaCtx.getVersionsSize(), false);
                     quotaDoc.addTrashSize(quotaCtx.getTrashSize(), false);
                     quotaDoc.addVersionsSize(quotaCtx.getVersionsSize(), true);
                 } else {
@@ -226,8 +226,8 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 // are also moved
                 processOnParents(parents, quotaCtx.getBlobDelta(), 0L, quotaCtx.getVersionsSize(), true, false, true);
             } else if (DOCUMENT_UPDATE_INITIAL_STATISTICS.equals(sourceEvent)) {
-                processOnParents(parents, quotaCtx.getBlobSize() + quotaCtx.getVersionsSizeOnTotal(),
-                        quotaCtx.getTrashSize(), quotaCtx.getVersionsSize(), true,
+                processOnParents(parents, quotaCtx.getBlobSize() + quotaCtx.getVersionsSize(), quotaCtx.getTrashSize(),
+                        quotaCtx.getVersionsSize(), true,
                         quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE) != null
                                 && (Boolean) quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE),
                         true);
@@ -244,7 +244,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
      * @return
      */
     private long getVersionSizeFromCtx(SizeUpdateEventContext quotaCtx) {
-        return quotaCtx.getBlobSize() - quotaCtx.getBlobDelta();
+        return quotaCtx.getBlobSize();
     }
 
     protected void processOnParents(List<DocumentModel> parents, long delta, long trash, boolean total, boolean trashOp)
