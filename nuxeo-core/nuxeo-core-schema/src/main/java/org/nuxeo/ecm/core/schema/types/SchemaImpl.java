@@ -36,7 +36,7 @@ public class SchemaImpl extends ComplexTypeImpl implements Schema {
 
     /**
      * Create a schema from a ComplexType
-     * 
+     *
      * @since 5.7
      * @param complexType
      * @param name
@@ -69,6 +69,11 @@ public class SchemaImpl extends ComplexTypeImpl implements Schema {
     @Override
     public String toString() {
         return getClass().getSimpleName() + '(' + name + ')';
+    }
+
+    @Override
+    public Schema getSchema() {
+        return this;
     }
 
 }

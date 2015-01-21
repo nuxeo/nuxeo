@@ -469,6 +469,12 @@
     </validator>
   </tag>
   <tag>
+    <tag-name>validateDocumentConstraint</tag-name>
+    <validator>
+      <validator-id>DocumentConstraintValidator</validator-id>
+    </validator>
+  </tag>
+  <tag>
     <tag-name>outputFile</tag-name>
     <component>
       <component-type>

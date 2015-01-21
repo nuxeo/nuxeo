@@ -246,7 +246,7 @@ public abstract class AbstractSelectWidgetTypeHandler extends AbstractWidgetType
             if (subHandlers != null) {
                 nextHandlers = (FaceletHandler[]) ArrayUtils.addAll(nextHandlers, subHandlers);
             }
-            FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, nextHandlers, helper, true);
+            FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, nextHandlers, helper, true, true);
             // maybe add convert handler for easier integration of select2
             // widgets handling multiple values
             if (HtmlSelectManyListbox.COMPONENT_TYPE.equals(componentType)
