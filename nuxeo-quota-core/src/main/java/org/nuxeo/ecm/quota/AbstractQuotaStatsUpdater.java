@@ -32,8 +32,8 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 import static org.nuxeo.ecm.platform.audit.service.NXAuditEventsService.DISABLE_AUDIT_LOGGER;
 import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
 import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
-import static org.nuxeo.ecm.platform.publisher.listeners.DomainEventsListener.DISABLE_DOMAIN_LISTENER;
 import static org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerListener.DISABLE_HTMLSANITIZER_LISTENER;
+import static org.nuxeo.ecm.platform.publisher.listeners.DomainEventsListener.DISABLE_DOMAIN_LISTENER;
 
 import java.util.ArrayList;
 import java.util.List;

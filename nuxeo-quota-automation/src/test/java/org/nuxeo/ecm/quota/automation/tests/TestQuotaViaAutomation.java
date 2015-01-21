@@ -16,6 +16,7 @@ package org.nuxeo.ecm.quota.automation.tests;
  * Contributors:
  *     Nuxeo
  */
+
 import static org.junit.Assert.assertEquals;
 
 import java.io.Serializable;
@@ -34,7 +35,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;

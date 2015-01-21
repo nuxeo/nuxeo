@@ -17,13 +17,13 @@
 
 package org.nuxeo.ecm.quota.size;
 
-import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.RecoverableClientException;
 
 /**
  * Exception throws by the {@link QuotaSyncListenerChecker} to enforce Quotas in case a transaction tries to add too
  * much Blobs
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */

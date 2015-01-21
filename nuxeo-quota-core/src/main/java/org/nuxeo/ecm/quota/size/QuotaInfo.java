@@ -19,7 +19,7 @@ package org.nuxeo.ecm.quota.size;
 
 /**
  * Helper class to have easy to display numbers and stats
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */

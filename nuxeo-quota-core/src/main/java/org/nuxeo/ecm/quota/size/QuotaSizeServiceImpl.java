@@ -20,9 +20,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.slf4j.Logger;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
