@@ -83,6 +83,21 @@ public class TestDocumentModelFunctions {
         assertEquals("defaultAction", subComplexListValMap.get("optionaction"));
         assertTrue(subComplexListValMap.containsKey("optionlabel"));
         assertNull(subComplexListValMap.get("optionlabel"));
+
+        Object complexVal = DocumentModelFunctions.defaultValue("lds:complexField");
+        assertTrue(complexVal instanceof HashMap);
+        HashMap complexValMap = (HashMap) complexVal;
+        assertEquals(6, complexValMap.size());
+        assertTrue(complexValMap.containsKey("stringComplexItem"));
+        assertNotNull(complexValMap.get("stringComplexItem"));
+        assertEquals("foo", complexValMap.get("stringComplexItem"));
+        assertTrue(complexValMap.containsKey("dateComplexItem"));
+        assertNull(complexValMap.get("dateComplexItem"));
+
+        Object stringVal = DocumentModelFunctions.defaultValue("lds:textField");
+        assertNull(stringVal);
+        Object otherStringVal = DocumentModelFunctions.defaultValue("lds:anotherTextField");
+        assertEquals("foo", otherStringVal);
     }
 
 }
