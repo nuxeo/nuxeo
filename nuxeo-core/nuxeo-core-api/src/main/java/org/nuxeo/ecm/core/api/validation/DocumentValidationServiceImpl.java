@@ -136,7 +136,13 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
     @Override
     public DocumentValidationReport validate(Field field, Object value) {
         Schema schema = field.getDeclaringType().getSchema();
-        return new DocumentValidationReport(validate(schema, field, value));
+        return new DocumentValidationReport(validate(schema, field, value, true));
+    }
+
+    @Override
+    public DocumentValidationReport validate(Field field, Object value, boolean validateSubProperties) {
+        Schema schema = field.getDeclaringType().getSchema();
+        return new DocumentValidationReport(validate(schema, field, value, validateSubProperties));
     }
 
     @Override
@@ -152,15 +158,15 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
         if (field == null) {
             throw new IllegalArgumentException("Invalid xpath " + xpath);
         }
-        return new DocumentValidationReport(validate(field.getDeclaringType().getSchema(), field, value));
+        return new DocumentValidationReport(validate(field.getDeclaringType().getSchema(), field, value, true));
     }
 
     // ///////////////////
     // UTILITY OPERATIONS
 
-    protected List<ConstraintViolation> validate(Schema schema, Field field, Object value) {
+    protected List<ConstraintViolation> validate(Schema schema, Field field, Object value, boolean validateSubProperties) {
         List<PathNode> path = Arrays.asList(new PathNode(field));
-        return validateAnyTypeField(schema, path, field, value);
+        return validateAnyTypeField(schema, path, field, value, validateSubProperties);
     }
 
     // ////////////////////////////
@@ -171,7 +177,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
      */
     @SuppressWarnings("rawtypes")
     private List<ConstraintViolation> validateAnyTypeField(Schema schema, List<PathNode> path, Field field,
-            Object value) {
+            Object value, boolean validateSubProperties) {
         if (field.getType().isSimpleType()) {
             return validateSimpleTypeField(schema, path, field, value);
         } else if (field.getType().isComplexType()) {
@@ -179,14 +185,18 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
             if (!field.isNillable() && (value == null || (value instanceof Map && ((Map) value).isEmpty()))) {
                 addNotNullViolation(res, schema, path);
             }
-            List<ConstraintViolation> subs = validateComplexTypeField(schema, path, field, value);
-            if (subs != null) {
-                res.addAll(subs);
+            if (validateSubProperties) {
+                List<ConstraintViolation> subs = validateComplexTypeField(schema, path, field, value);
+                if (subs != null) {
+                    res.addAll(subs);
+                }
             }
             return res;
         } else if (field.getType().isListType()) {
             // maybe validate the list type here
-            return validateListTypeField(schema, path, field, value);
+            if (validateSubProperties) {
+                return validateListTypeField(schema, path, field, value);
+            }
         }
         // unrecognized type : ignored
         return Collections.emptyList();
@@ -230,7 +240,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
             Object item = map.get(child.getName().getLocalName());
             List<PathNode> subPath = new ArrayList<PathNode>(path);
             subPath.add(new PathNode(child));
-            violations.addAll(validateAnyTypeField(schema, subPath, child, item));
+            violations.addAll(validateAnyTypeField(schema, subPath, child, item, true));
         }
         return violations;
     }
@@ -257,7 +267,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
             for (Object item : castedValue) {
                 List<PathNode> subPath = new ArrayList<PathNode>(path);
                 subPath.add(new PathNode(listField, index));
-                violations.addAll(validateAnyTypeField(schema, subPath, listField, item));
+                violations.addAll(validateAnyTypeField(schema, subPath, listField, item, true));
                 index++;
             }
             return violations;
