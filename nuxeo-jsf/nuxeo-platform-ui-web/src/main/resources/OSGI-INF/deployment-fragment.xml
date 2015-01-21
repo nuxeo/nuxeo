@@ -845,6 +845,12 @@
         org.nuxeo.ecm.platform.ui.web.component.date.DateTimeValidator
       </validator-class>
     </validator>
+    <validator>
+      <validator-id>DocumentConstraintValidator</validator-id>
+      <validator-class>
+        org.nuxeo.ecm.platform.ui.web.validator.DocumentConstraintValidator
+      </validator-class>
+    </validator>
   </extension>
 
   <extension target="faces-config#MANAGED-BEAN">
