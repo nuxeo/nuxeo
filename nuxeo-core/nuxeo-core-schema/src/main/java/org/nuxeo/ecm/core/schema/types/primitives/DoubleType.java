@@ -38,22 +38,34 @@ public final class DoubleType extends PrimitiveType {
 
     @Override
     public boolean validate(Object object) {
-        return object instanceof Number;
+        try {
+            Object converted = convert(object);
+            return converted == null || converted instanceof Number;
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 
     @Override
     public Object convert(Object value) {
+        if (value == null) {
+            return null;
+        }
         if (value instanceof Double) {
             return value;
         } else if (value instanceof Number) {
             return Double.valueOf(((Number) value).longValue());
-        } else {
+        } else if (value instanceof String) {
+            if (StringUtils.isBlank((String) value)) {
+                return null;
+            }
             try {
                 return Double.valueOf((String) value);
             } catch (NumberFormatException e) {
-                return null;
+                throw new RuntimeException(e);
             }
         }
+        return value;
     }
 
     @Override
