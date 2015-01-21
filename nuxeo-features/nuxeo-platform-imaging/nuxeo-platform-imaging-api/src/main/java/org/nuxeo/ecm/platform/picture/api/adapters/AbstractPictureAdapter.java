@@ -191,6 +191,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
      * @deprecated Since 7.2.
      * Use {@link org.nuxeo.binary.metadata.internals.BinaryMetadataComponent} contributions instead.
      * EXIF schema has been removed from doctype Picture.
+     * picture-metadata-contrib.xml has been added.
      */
     protected void setMetadata() throws IOException, ClientException {
         boolean imageInfoUsed = false;

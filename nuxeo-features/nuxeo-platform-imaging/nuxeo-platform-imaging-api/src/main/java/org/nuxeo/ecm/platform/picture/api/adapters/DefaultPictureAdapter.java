@@ -108,6 +108,12 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
             doc.setPropertyValue(PICTURE_INFO_PROPERTY, (Serializable) imageInfo.toMap());
         }
 
+        if (imageInfo != null) {
+            width = imageInfo.getWidth();
+            height = imageInfo.getHeight();
+            depth = imageInfo.getDepth();
+        }
+
         if (width != null && height != null) {
             clearViews();
             addViews(pictureConversions, filename, title);
