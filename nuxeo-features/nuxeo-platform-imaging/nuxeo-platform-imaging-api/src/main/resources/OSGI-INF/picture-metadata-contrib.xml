@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.binary.metadata"
              point="metadataMappings">
-    <metadataMapping id="IPTC" processor="exifTool" blobXPath="file:content">
+    <metadataMapping id="EXIF" processor="exifTool" blobXPath="file:content">
       <metadata name="EXIF:ImageDescription" xpath="imd:image_description"/>
       <metadata name="EXIF:UserComment" xpath="imd:user_comment"/>
       <metadata name="EXIF:Equipment" xpath="imd:equipment"/>
@@ -26,9 +26,9 @@
 
   <extension target="org.nuxeo.binary.metadata"
              point="metadataRules">
-    <rule id="iptc" order="0" enabled="true" async="false">
+    <rule id="exif" order="0" enabled="true" async="false">
       <metadataMappings>
-        <metadataMapping-id>IPTC</metadataMapping-id>
+        <metadataMapping-id>EXIF</metadataMapping-id>
       </metadataMappings>
       <filters>
         <filter-id>hasPictureType</filter-id>
