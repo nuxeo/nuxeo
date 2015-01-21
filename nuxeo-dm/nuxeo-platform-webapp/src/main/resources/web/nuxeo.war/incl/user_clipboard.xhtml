@@ -39,21 +39,23 @@
   
           <nxu:dataList var="copiedDocument"
             value="#{clipboardActions.currentSelectedList}">
-            <div id="docClipboardRef:#{copiedDocument.ref}"
+            <span id="docClipboardRef:#{copiedDocument.ref}"
               class="cell nxDraggable">
+              <nxu:graphicImage
+                value="#{nxd:iconPath(copiedDocument)}"
+                styleClass="icon smallIcon" />
+            </span>
+            <span>
               <span class="clipboardRemoveItem">
                 <h:commandLink
                   actionListener="#{clipboardActions.removeWorkListItem(copiedDocument.ref)}">
                   <nxu:graphicImage value="/icons/delete.png" />
                 </h:commandLink>
               </span>
-              <nxu:graphicImage
-                value="#{nxd:iconPath(copiedDocument)}"
-                styleClass="icon smallIcon" />
-              <nxd:restDocumentLink document="#{copiedDocument}">
-                <h:outputText value="#{nxd:titleOrId(copiedDocument)}" />
-              </nxd:restDocumentLink>
-            </div>
+                <nxd:restDocumentLink document="#{copiedDocument}">
+                  <h:outputText value="#{nxd:titleOrId(copiedDocument)}" />
+                </nxd:restDocumentLink>
+            </span>
           </nxu:dataList>
 
           <c:if test="#{clipboardActions.workListEmpty}">
