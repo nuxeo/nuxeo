@@ -41,6 +41,7 @@ import com.google.inject.Scopes;
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.server",
         "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api" })
 @Features({ DetectThreadDeadlocksFeature.class, TransactionalFeature.class, WebEngineFeature.class })
+@DetectThreadDeadlocksFeature.Config(dumpAtTearDown = true)
 public class EmbeddedAutomationServerFeature extends SimpleFeature {
 
     protected static final int HTTP_CONNECTION_TIMEOUT = 60000; // 60 seconds
