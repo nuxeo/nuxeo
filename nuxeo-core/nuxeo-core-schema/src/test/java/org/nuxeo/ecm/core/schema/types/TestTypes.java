@@ -14,13 +14,18 @@
 
 package org.nuxeo.ecm.core.schema.types;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Calendar;
 import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.schema.Namespace;
 import org.nuxeo.ecm.core.schema.SchemaNames;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
@@ -58,6 +63,7 @@ public class TestTypes extends NXRuntimeTestCase {
         assertTrue(type.validate(0));
         assertTrue(type.validate(""));
         assertTrue(type.validate(true));
+        assertTrue(type.validate("blah"));
     }
 
     // Primitive types
@@ -77,6 +83,7 @@ public class TestTypes extends NXRuntimeTestCase {
         assertTrue(type.validate(0));
         assertTrue(type.validate(""));
         assertTrue(type.validate(true));
+        assertTrue(type.validate("blah"));
 
         // TODO: test convert method
     }
@@ -96,10 +103,11 @@ public class TestTypes extends NXRuntimeTestCase {
         assertEquals(0, type.getTypeHierarchy().length);
 
         // Validation tests
-        assertFalse(type.validate(0));
-        assertFalse(type.validate(""));
+        assertTrue(type.validate(0));
+        assertTrue(type.validate(""));
         assertTrue(type.validate(true));
         assertTrue(type.validate(false));
+        assertTrue(type.validate("blah")); // will set Boolean.FALSE
 
         // Conversion tests
         assertNull(type.decode(""));
@@ -127,15 +135,21 @@ public class TestTypes extends NXRuntimeTestCase {
 
         // Validation tests
         assertTrue(type.validate(0));
-        assertFalse(type.validate(""));
+        assertTrue(type.validate(""));
         assertFalse(type.validate(true));
+        assertFalse(type.validate("blah"));
 
         // Conversion tests
         assertNull(type.decode(""));
         assertEquals(0, type.convert(0));
         assertEquals(0, type.convert("0"));
         assertEquals(0, type.convert(0.5));
-        assertNull(type.convert("abc"));
+        try {
+            assertNull(type.convert("abc"));
+            fail("Should have raised a RuntimeException");
+        } catch (RuntimeException e) {
+            assertEquals("java.lang.NumberFormatException: For input string: \"abc\"", e.getMessage());
+        }
         assertEquals(0, type.decode("0"));
     }
 
@@ -156,14 +170,20 @@ public class TestTypes extends NXRuntimeTestCase {
         assertTrue(type.validate(0));
         assertTrue(type.validate(0.0));
         assertFalse(type.validate(true));
-        assertFalse(type.validate(""));
+        assertTrue(type.validate(""));
+        assertFalse(type.validate("blah"));
 
         // Conversion tests
         assertNull(type.decode(""));
         assertEquals(0.0, type.convert(0));
         assertEquals(0.5, type.convert(0.5));
         assertEquals(3.14, type.convert("3.14"));
-        assertNull(type.convert("abc"));
+        try {
+            assertNull(type.convert("abc"));
+            fail("Should have raised a RuntimeException");
+        } catch (RuntimeException e) {
+            assertEquals("java.lang.NumberFormatException: For input string: \"abc\"", e.getMessage());
+        }
         assertEquals(0.0, type.decode("0.0"));
         assertEquals(3.14, type.decode("3.14"));
     }
@@ -183,15 +203,21 @@ public class TestTypes extends NXRuntimeTestCase {
 
         // Validation tests
         assertTrue(type.validate(0));
-        assertFalse(type.validate(""));
+        assertTrue(type.validate(""));
         assertFalse(type.validate(true));
+        assertFalse(type.validate("blah"));
 
         // Conversion tests
         assertNull(type.decode(""));
         assertEquals(0L, type.convert(0));
         assertEquals(0L, type.convert("0"));
         assertEquals(0L, type.convert(0.5));
-        assertNull(type.convert("abc"));
+        try {
+            assertNull(type.convert("abc"));
+            fail("Should have raised a RuntimeException");
+        } catch (RuntimeException e) {
+            assertEquals("java.lang.NumberFormatException: For input string: \"abc\"", e.getMessage());
+        }
         assertEquals(0L, type.decode("0"));
     }
 
@@ -237,6 +263,7 @@ public class TestTypes extends NXRuntimeTestCase {
         assertFalse(type.validate(0));
         assertFalse(type.validate(""));
         assertFalse(type.validate(true));
+        assertFalse(type.validate("blah"));
 
         // TODO: add tests for collections once this is implemented
     }
