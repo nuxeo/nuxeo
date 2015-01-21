@@ -285,7 +285,9 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
             // We only have to decrement the inner size of this doc
             QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
-            SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(session, docCtx, quotaDoc.getInnerSize(),
+            // we do not write the right quota on the version, so we need to recompute it instead of quotaDoc#getInnerSize
+            BlobSizeInfo bsi = computeSizeImpact(targetDoc, false);
+            SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(session, docCtx, bsi.getBlobSize(),
                     ABOUT_TO_REMOVE_VERSION);
             asyncEventCtx.setParentUUIds(parentUUIDs);
             sendUpdateEvents(asyncEventCtx);
@@ -544,24 +546,17 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
         // process versions if any
         List<DocumentModel> versions = unrestrictedSession.getVersions(target.getRef());
-        if (versions.size() == 0) {
+        if (versions.isEmpty() && !DELETED_STATE.equals(target.getCurrentLifeCycleState())) {
             quotaCtx = new SizeUpdateEventContext(unrestrictedSession, bsi, DOCUMENT_CREATED, target);
 
         } else {
-            long lastVersionSize = 0;
             long versionsSize = 0;
             for (DocumentModel documentModel : versions) {
-                long s = computeSizeImpact(documentModel, false).blobSize;
-                if (documentModel.isLatestVersion()) {
-                    lastVersionSize = s;
-                } else {
-                    versionsSize = versionsSize + s;
-                }
+                versionsSize += computeSizeImpact(documentModel, false).blobSize;;
             }
-            quotaCtx = new SizeUpdateEventContext(unrestrictedSession, bsi, DOCUMENT_UPDATE_INITIAL_STATISTICS, target);
-            quotaCtx.setVersionsSizeOnTotal(lastVersionSize);
-            quotaCtx.setVersionsSize(versionsSize + lastVersionSize);
 
+            quotaCtx = new SizeUpdateEventContext(unrestrictedSession, bsi, DOCUMENT_UPDATE_INITIAL_STATISTICS, target);
+            quotaCtx.setVersionsSize(versionsSize);
         }
         return quotaCtx;
     }

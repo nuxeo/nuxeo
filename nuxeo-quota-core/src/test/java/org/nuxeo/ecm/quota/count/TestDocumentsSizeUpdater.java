@@ -317,11 +317,11 @@ public class TestDocumentsSizeUpdater {
                 assertFalse(firstFile.isCheckedOut());
                 assertEquals("0.1", firstFile.getVersionLabel());
 
-                assertQuota(firstFile, 380, 480, 0, 100);
+                assertQuota(firstFile, 380, 760, 0, 380);
                 assertQuota(getSecondFile(), 200, 200, 0, 0);
-                assertQuota(getFirstSubFolder(), 0, 680, 0, 100);
-                assertQuota(getFirstFolder(), 0, 680, 0, 100);
-                assertQuota(getWorkspace(), 50, 730, 0, 100);
+                assertQuota(getFirstSubFolder(), 0, 960, 0, 380);
+                assertQuota(getFirstFolder(), 0, 960, 0, 380);
+                assertQuota(getWorkspace(), 50, 1010, 0, 380);
 
             }
         });
@@ -341,11 +341,11 @@ public class TestDocumentsSizeUpdater {
                 assertFalse(firstFile.isCheckedOut());
                 assertEquals("0.2", firstFile.getVersionLabel());
 
-                assertQuota(firstFile, 380, 860, 0, 480);
+                assertQuota(firstFile, 380, 1140, 0, 760);
                 assertQuota(getSecondFile(), 200, 200, 0, 0);
-                assertQuota(getFirstSubFolder(), 0, 1060, 0, 480);
-                assertQuota(getFirstFolder(), 0, 1060, 0, 480);
-                assertQuota(getWorkspace(), 50, 1110, 0, 480);
+                assertQuota(getFirstSubFolder(), 0, 1340, 0, 760);
+                assertQuota(getFirstFolder(), 0, 1340, 0, 760);
+                assertQuota(getWorkspace(), 50, 1390, 0, 760);
 
             }
         });
@@ -864,11 +864,11 @@ public class TestDocumentsSizeUpdater {
             @Override
             public void run() throws Exception {
 
-                assertQuota(getFirstFile(), 380, 480, 0, 100);
+                assertQuota(getFirstFile(), 380, 760, 0, 380);
                 assertQuota(getSecondFile(), 200, 200, 0, 0);
-                assertQuota(getFirstSubFolder(), 0, 680, 0, 100);
-                assertQuota(getFirstFolder(), 0, 680, 0, 100);
-                assertQuota(getWorkspace(), 50, 730, 0, 100);
+                assertQuota(getFirstSubFolder(), 0, 960, 0, 380);
+                assertQuota(getFirstFolder(), 0, 960, 0, 380);
+                assertQuota(getWorkspace(), 50, 1010, 0, 380);
 
             }
         });
@@ -880,12 +880,12 @@ public class TestDocumentsSizeUpdater {
             @Override
             public void run() throws Exception {
 
-                assertQuota(getFirstFile(), 380, 480, 0, 100);
+                assertQuota(getFirstFile(), 380, 760, 0, 380);
                 assertQuota(getSecondFile(), 200, 200, 0, 0);
                 assertQuota(getFirstSubFolder(), 0, 200, 0, 0);
                 assertQuota(getFirstFolder(), 0, 200, 0, 0);
-                assertQuota(getSecondFolder(), 0, 480, 0, 100);
-                assertQuota(getWorkspace(), 50, 730, 0, 100);
+                assertQuota(getSecondFolder(), 0, 760, 0, 380);
+                assertQuota(getWorkspace(), 50, 1010, 0, 380);
 
             }
         });
@@ -905,11 +905,11 @@ public class TestDocumentsSizeUpdater {
 
                 dump();
 
-                assertQuota(getFirstFile(), 380, 480, 0, 100);
+                assertQuota(getFirstFile(), 380, 760, 0, 380);
                 assertQuota(getSecondFile(), 200, 200, 0, 0);
-                assertQuota(getFirstSubFolder(), 0, 680, 0, 100);
-                assertQuota(getFirstFolder(), 0, 680, 0, 100);
-                assertQuota(getWorkspace(), 50, 730, 0, 100);
+                assertQuota(getFirstSubFolder(), 0, 960, 0, 380);
+                assertQuota(getFirstFolder(), 0, 960, 0, 380);
+                assertQuota(getWorkspace(), 50, 1010, 0, 380);
 
             }
         });
@@ -924,13 +924,13 @@ public class TestDocumentsSizeUpdater {
                 dump();
                 DocumentModel copiedFile = session.getChildren(secondSubFolderRef).get(0);
 
-                assertQuota(getFirstFile(), 380, 480, 0, 100);
+                assertQuota(getFirstFile(), 380, 760, 0, 380);
                 assertQuota(getSecondFile(), 200, 200, 0, 0);
-                assertQuota(getFirstSubFolder(), 0, 680, 0, 100);
-                assertQuota(getFirstFolder(), 0, 1060, 0, 100);
+                assertQuota(getFirstSubFolder(), 0, 960, 0, 380);
+                assertQuota(getFirstFolder(), 0, 1340, 0, 380);
                 assertQuota(copiedFile, 380, 380, 0, 0);
                 assertQuota(getSecondSubFolder(), 0, 380, 0, 0);
-                assertQuota(getWorkspace(), 50, 1110, 0, 100);
+                assertQuota(getWorkspace(), 50, 1390, 0, 380);
 
             }
         });
@@ -1043,11 +1043,11 @@ public class TestDocumentsSizeUpdater {
                 assertFalse(firstFile.isCheckedOut());
                 assertEquals("0.1", firstFile.getVersionLabel());
 
-                assertQuota(firstFile, 380, 480, 0, 100);
+                assertQuota(firstFile, 380, 760, 0, 380);
                 assertQuota(getSecondFile(), 200, 200, 0, 0);
-                assertQuota(getFirstSubFolder(), 0, 680, 0, 100);
-                assertQuota(getFirstFolder(), 0, 680, 0, 100);
-                assertQuota(getWorkspace(), 50, 730, 0, 100);
+                assertQuota(getFirstSubFolder(), 0, 960, 0, 380);
+                assertQuota(getFirstFolder(), 0, 960, 0, 380);
+                assertQuota(getWorkspace(), 50, 1010, 0, 380);
 
             }
         });
@@ -1063,11 +1063,11 @@ public class TestDocumentsSizeUpdater {
                 assertFalse(firstFile.isCheckedOut());
                 assertEquals("0.2", firstFile.getVersionLabel());
 
-                assertQuota(firstFile, 380, 860, 0, 480);
+                assertQuota(firstFile, 380, 1140, 0, 760);
                 assertQuota(getSecondFile(), 200, 200, 0, 0);
-                assertQuota(getFirstSubFolder(), 0, 1060, 0, 480);
-                assertQuota(getFirstFolder(), 0, 1060, 0, 480);
-                assertQuota(getWorkspace(), 50, 1110, 0, 480);
+                assertQuota(getFirstSubFolder(), 0, 1340, 0, 760);
+                assertQuota(getFirstFolder(), 0, 1340, 0, 760);
+                assertQuota(getWorkspace(), 50, 1390, 0, 760);
 
                 List<DocumentModel> versions = session.getVersions(firstFileRef);
                 for (DocumentModel documentModel : versions) {
@@ -1090,10 +1090,10 @@ public class TestDocumentsSizeUpdater {
                 assertFalse(firstFile.isCheckedOut());
                 assertEquals("0.1", firstFile.getVersionLabel());
 
-                assertQuota(firstFile, 380, 760, 0, 760);
-                assertQuota(getFirstSubFolder(), 0, 960, 0, 760);
-                assertQuota(getFirstFolder(), 0, 960, 0, 760);
-                assertQuota(getWorkspace(), 50, 1010, 0, 760);
+                assertQuota(firstFile, 380, 1140, 0, 760);
+                assertQuota(getFirstSubFolder(), 0, 1340, 0, 760);
+                assertQuota(getFirstFolder(), 0, 1340, 0, 760);
+                assertQuota(getWorkspace(), 50, 1390, 0, 760);
 
             }
         });
