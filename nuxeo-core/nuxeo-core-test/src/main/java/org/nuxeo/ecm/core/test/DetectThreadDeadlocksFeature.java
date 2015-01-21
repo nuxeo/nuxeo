@@ -19,6 +19,11 @@
 package org.nuxeo.ecm.core.test;
 
 import java.io.File;
+import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 import org.apache.commons.logging.LogFactory;
 import org.junit.runner.notification.Failure;
@@ -32,30 +37,57 @@ import com.google.inject.Inject;
 
 public class DetectThreadDeadlocksFeature extends SimpleFeature {
 
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    public @interface Config {
+
+        public boolean dumpAtTearDown() default false;
+
+        public boolean dumpOnFailure() default true;
+    }
+
     @Inject
     protected RunNotifier notifier;
 
     protected ThreadDeadlocksDetector detector = new ThreadDeadlocksDetector();
 
+    protected Config config;
+
     protected final RunListener listener = new RunListener() {
         @Override
         public void testFailure(Failure failure) throws Exception {
-            long[] detectThreadLock = detector.detectThreadLock();
-            File dump = detector.dump(detectThreadLock);
-            LogFactory.getLog(DetectThreadDeadlocksFeature.class).error("Thread dump available at " + dump);
+            dump();
         }
     };
 
     @Override
+    public void initialize(FeaturesRunner runner) throws Exception {
+        config = runner.getConfig(Config.class);
+    }
+
+    @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
         runner.getInjector().injectMembers(this);
-        notifier.addListener(listener);
+        if (config.dumpOnFailure()) {
+            notifier.addListener(listener);
+        }
         detector.schedule(30 * 1000, new ThreadDeadlocksDetector.KillListener());
     }
 
     @Override
     public void afterRun(FeaturesRunner runner) throws Exception {
-        notifier.removeListener(listener);
+        if (config.dumpOnFailure()) {
+            notifier.removeListener(listener);
+        }
+        if (config.dumpAtTearDown()) {
+            dump();
+        }
         detector.cancel();
+    }
+
+    protected void dump() throws IOException {
+        long[] detectThreadLock = detector.detectThreadLock();
+        File dump = detector.dump(detectThreadLock);
+        LogFactory.getLog(DetectThreadDeadlocksFeature.class).warn("Thread dump available at " + dump);
     }
 }
