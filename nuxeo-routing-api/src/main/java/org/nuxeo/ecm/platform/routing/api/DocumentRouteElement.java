@@ -265,4 +265,9 @@ public interface DocumentRouteElement extends Serializable {
      * @return true
      */
     boolean isModifiable();
+
+    /**
+     * @since 7.2
+     */
+    String getTitle();
 }

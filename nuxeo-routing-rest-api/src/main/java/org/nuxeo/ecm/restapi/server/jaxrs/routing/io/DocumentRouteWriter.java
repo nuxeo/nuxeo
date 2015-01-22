@@ -58,8 +58,8 @@ public class DocumentRouteWriter extends EntityWriter<DocumentRoute> {
 
     public static void writeDocumentRoute(JsonGenerator jg, DocumentRoute item, HttpServletRequest request, UriInfo uriInfo) throws JsonGenerationException, IOException {
         jg.writeStringField("id", item.getDocument().getId());
-        jg.writeStringField("name", item.getDocument().getName());
-        jg.writeStringField("title", item.getName());
+        jg.writeStringField("name", item.getName());
+        jg.writeStringField("title", item.getTitle());
         jg.writeStringField("initiator", item.getInitiator());
 
         jg.writeArrayFieldStart("attachedDocumentIds");

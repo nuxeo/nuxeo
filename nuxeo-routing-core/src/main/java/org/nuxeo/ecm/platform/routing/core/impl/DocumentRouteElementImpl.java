@@ -116,6 +116,14 @@ public class DocumentRouteElementImpl implements DocumentRouteElement, DocumentR
 
     @Override
     public String getName() {
+        return getDocument().getName();
+    }
+
+    /**
+     * @since 7.2
+     */
+    @Override
+    public String getTitle() {
         return (String) getProperty(DocumentRoutingConstants.TITLE_PROPERTY_NAME);
     }
 
