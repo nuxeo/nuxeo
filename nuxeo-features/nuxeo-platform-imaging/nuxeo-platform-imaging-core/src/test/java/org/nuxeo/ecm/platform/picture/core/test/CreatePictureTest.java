@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.binary.metadata.test.BinaryMetadataFeature;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -29,7 +28,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, BinaryMetadataFeature.class })
+@Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.automation.server",
         "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.platform.picture.api",
         "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.core",

@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.picture.api;
 
 /**
- * @deprecated since 7.2 (not prefixed) use {@link org.nuxeo.ecm.platform.picture.api.PrefixMetadataConstants} instead.
  * @author Max Stepanov
  * @author Catalin Baican
  */

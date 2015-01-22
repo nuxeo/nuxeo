@@ -128,7 +128,6 @@
     <nuxeo.dm.version>7.2-SNAPSHOT</nuxeo.dm.version>
     <nuxeo.webengine.version>7.2-SNAPSHOT</nuxeo.webengine.version>
     <nuxeo.features.version>7.2-SNAPSHOT</nuxeo.features.version>
-    <nuxeo.binary.metadata.version>7.2-SNAPSHOT</nuxeo.binary.metadata.version>
 
     <nuxeo.connect.client.version>1.4.18</nuxeo.connect.client.version>
     <!-- nuxeo-distribution-tools is still used as a dependency -->
@@ -1397,19 +1396,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-search-ui</artifactId>
         <version>${nuxeo.features.version}</version>
-      </dependency>
-
-      <!-- Nuxeo Binary Metadata -->
-      <dependency>
-        <groupId>org.nuxeo.binary.metadata</groupId>
-        <artifactId>nuxeo-binary-metadata</artifactId>
-        <version>${nuxeo.binary.metadata.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.binary.metadata</groupId>
-        <artifactId>nuxeo-binary-metadata</artifactId>
-        <version>${nuxeo.binary.metadata.version}</version>
-        <type>test-jar</type>
       </dependency>
 
       <!-- Third parties -->
@@ -2839,7 +2825,27 @@
         <artifactId>imagej</artifactId>
         <version>1.4.1.e</version>
       </dependency>
-
+      <!-- Mistral -->
+      <dependency>
+        <groupId>net.java.dev.mistral</groupId>
+        <artifactId>EditableImage</artifactId>
+        <version>0.9.5</version>
+      </dependency>
+      <dependency>
+        <groupId>net.java.dev.mistral</groupId>
+        <artifactId>JAI-Adapter</artifactId>
+        <version>0.9.5</version>
+      </dependency>
+      <dependency>
+        <groupId>net.java.dev.mistral</groupId>
+        <artifactId>Operations</artifactId>
+        <version>0.9.5</version>
+      </dependency>
+      <dependency>
+        <groupId>net.java.dev.mistral</groupId>
+        <artifactId>metadata-extractor</artifactId>
+        <version>2.3.1</version>
+      </dependency>
       <!-- JAI -->
       <dependency>
         <groupId>javax.media</groupId>

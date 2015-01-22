@@ -24,8 +24,6 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- * @deprecated Since 7.2.
- * Use {@link org.nuxeo.binary.metadata.api.BinaryMetadataService#readMetadata(Blob)} instead.
  * @author Max Stepanov
  */
 public interface MetadataUtils {

@@ -18,6 +18,7 @@
       <schema name="file"/>
       <schema name="picture"/>
       <schema name="image_metadata"/>
+      <schema name="iptc"/>
     </facet>
 
     <!-- deprecated since 7.1, here for compat -->

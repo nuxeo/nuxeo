@@ -28,7 +28,6 @@ import java.util.Calendar;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.binary.metadata.test.BinaryMetadataFeature;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -49,7 +48,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Features({ AutomationFeature.class , BinaryMetadataFeature.class})
+@Features({ AutomationFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.mimetype.api",
         "org.nuxeo.ecm.platform.mimetype.core", "org.nuxeo.ecm.platform.picture.api",

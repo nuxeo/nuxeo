@@ -23,7 +23,6 @@ import java.io.File;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.binary.metadata.test.BinaryMetadataFeature;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
@@ -47,7 +46,7 @@ import com.google.inject.Inject;
  * @since 5.7
  */
 @RunWith(FeaturesRunner.class)
-@Features({ AutomationFeature.class, BinaryMetadataFeature.class })
+@Features({ AutomationFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.convert" })
