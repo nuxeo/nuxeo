@@ -392,4 +392,31 @@ public class WorkflowEndpointTest extends BaseTest {
 
         assertNotEquals(serialDocumentReviewTaskId, parallelDocumentReviewTaskId);
     }
+
+    @Test
+    public void testMultipleWorkflowInstanceCreation() throws IOException {
+        // Initiate a first SerialDocumentReview workflow
+        ClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        final String firstModelId = node.get("modelId").getTextValue();
+
+        // Initiate a second SerialDocumentReview workflow
+        response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        final String secondModelId = node.get("modelId").getTextValue();
+
+        assertEquals(firstModelId, secondModelId);
+
+        // Check we have two pending tasks
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.put("workflowModelName", Arrays.asList(new String[] { "SerialDocumentReview" }));
+        response = getResponse(RequestType.GET, "/task", null, queryParams, null, null);
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(2, node.get("entries").size());
+    }
+
 }

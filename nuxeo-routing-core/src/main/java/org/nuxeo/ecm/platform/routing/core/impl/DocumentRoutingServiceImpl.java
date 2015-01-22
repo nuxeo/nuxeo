@@ -1212,8 +1212,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
      * @since 7.2
      */
     @Override
-    public List<Task> getTasks(final DocumentModel document, String actorId,
-            String workflowInstanceId, String worflowModelName, CoreSession session) {
+    public List<Task> getTasks(final DocumentModel document, String actorId, String workflowInstanceId,
+            String worflowModelName, CoreSession session) {
         StringBuilder query = new StringBuilder(String.format(
                 "SELECT * FROM Document WHERE ecm:mixinType = '%s' AND ecm:currentLifeCycleState = '%s'",
                 TaskConstants.TASK_FACET_NAME, TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE));
@@ -1232,10 +1232,20 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             final Task task = documentModel.getAdapter(Task.class);
             if (StringUtils.isNotBlank(worflowModelName)) {
                 final String processId = task.getProcessId();
-                final DocumentModel routeDocumentModel = session.getDocument(new IdRef(processId));
-                final String routeName = routeDocumentModel.getName();
-                if (routeName.equals(worflowModelName)) {
+                final DocumentRoute routeInstance = session.getDocument(new IdRef(processId)).getAdapter(
+                        DocumentRoute.class);
+                final String modelId = routeInstance.getModelId();
+                if (StringUtils.isNotBlank(modelId)) {
+                    DocumentRoute model = session.getDocument(new IdRef(modelId)).getAdapter(DocumentRoute.class);
+                    if (worflowModelName.equals(model.getName())) {
+                        result.add(task);
+                    }
+                } else {
+                    final String routeInstanceName = routeInstance.getName();
+                    if (routeInstanceName.startsWith(worflowModelName)) {
+                    // For compatibility < 7.2 only
                     result.add(task);
+                    }
                 }
             } else {
                 result.add(task);
