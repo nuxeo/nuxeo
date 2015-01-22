@@ -276,6 +276,15 @@ public class WorkflowEndpointTest extends BaseTest {
         assertTrue(graphUrl.endsWith(graphModelPath));
         response = getResponse(RequestType.GET, graphModelPath);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // Instantiate a workflow and check it does not appear as a model
+        response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        response = getResponse(RequestType.GET, "/workflowModel");
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(2, node.get("entries").size());
     }
 
     @Test

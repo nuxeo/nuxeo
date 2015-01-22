@@ -311,7 +311,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         assertNotNull(route);
         session.save();
-        List<DocumentRoute> routes = service.getAvailableDocumentRouteModel(session);
+        List<DocumentRoute> routes = service.getAvailableDocumentRoute(session);
         assertEquals(1, routes.size());
         DocumentRoute routeModel = routes.get(0);
         DocumentModel doc1 = createTestDocument("test1", session);
@@ -335,7 +335,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
 
         assertNotNull(route);
         // this API does not restrict itself to models actually
-        routes = service.getAvailableDocumentRouteModel(session);
+        routes = service.getAvailableDocumentRoute(session);
         assertEquals(2, routes.size());
     }
 
@@ -346,7 +346,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         assertNotNull(route);
         session.save();
-        List<DocumentRoute> routes = service.getAvailableDocumentRouteModel(session);
+        List<DocumentRoute> routes = service.getAvailableDocumentRoute(session);
         assertEquals(1, routes.size());
         DocumentRoute routeModel = routes.get(0);
         DocumentModel doc1 = createTestDocument("test1", session);
@@ -391,7 +391,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         assertNotNull(route);
         session.save();
-        List<DocumentRoute> routes = service.getAvailableDocumentRouteModel(session);
+        List<DocumentRoute> routes = service.getAvailableDocumentRoute(session);
         assertEquals(1, routes.size());
         DocumentRoute routeModel = routes.get(0);
         DocumentModel doc1 = createTestDocument("test1", session);
@@ -434,7 +434,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         assertNotNull(route);
         session.save();
-        List<DocumentRoute> routes = service.getAvailableDocumentRouteModel(session);
+        List<DocumentRoute> routes = service.getAvailableDocumentRoute(session);
         assertEquals(1, routes.size());
         DocumentRoute routeModel = routes.get(0);
         DocumentModel doc1 = createTestDocument("test1", session);
@@ -506,7 +506,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         assertNotNull(route);
         session.save();
-        List<DocumentRoute> routes = service.getAvailableDocumentRouteModel(session);
+        List<DocumentRoute> routes = service.getAvailableDocumentRoute(session);
         assertEquals(1, routes.size());
         DocumentRoute routeModel = routes.get(0);
         DocumentModel doc1 = createTestDocument("test1", session);
@@ -575,7 +575,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         assertNotNull(route);
         session.save();
-        List<DocumentRoute> routes = service.getAvailableDocumentRouteModel(session);
+        List<DocumentRoute> routes = service.getAvailableDocumentRoute(session);
         assertEquals(1, routes.size());
     }
 
@@ -682,7 +682,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.save();
         assertNotNull(route);
         session.save();
-        List<DocumentRoute> routes = service.getAvailableDocumentRouteModel(session);
+        List<DocumentRoute> routes = service.getAvailableDocumentRoute(session);
         assertEquals(1, routes.size());
         DocumentRoute routeModel = routes.get(0);
         DocumentModel doc1 = createTestDocument("test1", session);

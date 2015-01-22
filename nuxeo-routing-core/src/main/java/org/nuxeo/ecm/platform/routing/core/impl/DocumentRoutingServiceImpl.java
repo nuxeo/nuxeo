@@ -102,6 +102,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     private static final String AVAILABLE_ROUTES_QUERY = String.format("SELECT * FROM %s",
             DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE);
 
+    /** Routes Models. */
+    private static final String AVAILABLE_ROUTES_MODEL_QUERY = String.format(
+            "SELECT * FROM %s WHERE ecm:currentLifeCycleState = '%s'",
+            DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE,
+            DocumentRoutingConstants.DOCUMENT_ROUTE_MODEL_LIFECYCLESTATE);
+
     /** Route models that have been validated. */
     private static final String ROUTE_MODEL_WITH_ID_QUERY = String.format(
             "SELECT * FROM %s WHERE ecm:name = %%s AND ecm:currentLifeCycleState = 'validated' AND ecm:isCheckedInVersion  = 0  AND ecm:isProxy = 0 ",
@@ -315,6 +321,22 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public List<DocumentRoute> getAvailableDocumentRouteModel(CoreSession session) {
+        DocumentModelList list = null;
+        try {
+            list = session.query(AVAILABLE_ROUTES_MODEL_QUERY);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+        List<DocumentRoute> routes = new ArrayList<DocumentRoute>();
+        for (DocumentModel model : list) {
+            routes.add(model.getAdapter(DocumentRoute.class));
+        }
+        return routes;
+    }
+
+
+    @Override
+    public List<DocumentRoute> getAvailableDocumentRoute(CoreSession session) {
         DocumentModelList list = null;
         try {
             list = session.query(AVAILABLE_ROUTES_QUERY);

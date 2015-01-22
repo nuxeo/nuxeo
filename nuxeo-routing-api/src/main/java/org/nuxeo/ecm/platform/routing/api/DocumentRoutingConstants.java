@@ -200,4 +200,9 @@ public interface DocumentRoutingConstants {
     public static final String ROUTING_TASK_DOC_TYPE = "RoutingTask";
 
     public static final String ROUTE_TASK_LOCAL_ACL = "routingTask";
+
+    /**
+     * @since 7.2
+     */
+    public static final String DOCUMENT_ROUTE_MODEL_LIFECYCLESTATE = "validated";
 }

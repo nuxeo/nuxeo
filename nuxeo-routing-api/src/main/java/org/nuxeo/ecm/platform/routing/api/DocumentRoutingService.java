@@ -156,6 +156,15 @@ public interface DocumentRoutingService {
     List<DocumentRoute> getAvailableDocumentRouteModel(CoreSession session);
 
     /**
+     * Return the list of available {@link DocumentRoute} document route.
+     *
+     * @param session The session of the user.
+     * @return A list of available {@link DocumentRoute}
+     * @since 7.2
+     */
+    List<DocumentRoute> getAvailableDocumentRoute(CoreSession session);
+
+    /**
      * Return the operation chain to run for a documentType. The document type should extend the DocumentRouteStep. Use
      * the <code>chainsToType</code> extension point to contribute new mapping.
      *
