@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,7 +135,9 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
     @Override
     public Map<String, Object> getImageMetadata(Blob blob) {
         try {
-            return getLibrarySelectorService().getMetadataUtils().getImageMetadata(blob);
+            log.warn("org.nuxeo.ecm.platform.picture.ImagingComponent.getImageMetadata is deprecated. Please use "
+                    + "org.nuxeo.binary.metadata.api.BinaryMetadataService#readMetadata(org.nuxeo.ecm.core.api.Blob)");
+            return Collections.emptyMap();
         } catch (ClientException e) {
             log.error(e.getMessage(), e);
         }
