@@ -63,6 +63,8 @@ public class BinaryMetadataConstants {
 
     /**
      * Binary Metadata configuration constant to active/deactivate metrics.
+     *
+     * @since 7.2
      */
     public static final String BINARY_METADATA_MONITOR = "binary.metadata.monitor.enable";
 }
