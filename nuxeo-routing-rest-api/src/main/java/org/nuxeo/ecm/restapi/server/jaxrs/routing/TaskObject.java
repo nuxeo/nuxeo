@@ -56,7 +56,7 @@ public class TaskObject extends DefaultObject {
 
     @PUT
     @Path("{taskId}/{taskAction}")
-    @Consumes({ "application/json+nxentity" })
+    @Consumes({ MediaType.APPLICATION_JSON, "application/json+nxentity" })
     @Produces(MediaType.APPLICATION_JSON)
     public Response completeTask(@PathParam("taskId") String taskId, @PathParam("taskAction") String action, TaskCompletionRequest taskCompletionRequest) {
         Map<String, Object> data = taskCompletionRequest.getDataMap();

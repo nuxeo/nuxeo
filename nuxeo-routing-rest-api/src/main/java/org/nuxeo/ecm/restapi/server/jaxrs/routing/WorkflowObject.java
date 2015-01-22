@@ -64,7 +64,7 @@ public class WorkflowObject extends DefaultObject {
     }
 
     @POST
-    @Consumes({ "application/json+nxentity" })
+    @Consumes({ MediaType.APPLICATION_JSON, "application/json+nxentity" })
     @Produces(MediaType.APPLICATION_JSON)
     public Response createWorkflowInstance(WorkflowRequest workflowRequest) {
         final String workflowInstanceId = documentRoutingService.createNewInstance(workflowRequest.getWorkflowModelName(),
