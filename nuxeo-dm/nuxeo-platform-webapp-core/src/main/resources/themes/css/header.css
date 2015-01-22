@@ -25,6 +25,9 @@ author: lkemen@nuxeo.com
   vertical-align: middle;
   width: 18% }
 
+.nxHeader .logo img {
+  max-height: 8em }
+
 .nxHeader .content {
   font-size: 12px;
   font-family: Arial;
