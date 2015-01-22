@@ -24,14 +24,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.LocaleSelector;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.validation.ConstraintViolation;
+import org.nuxeo.ecm.core.api.validation.DocumentValidationReport;
+import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
@@ -66,6 +73,12 @@ public class LayoutDemoActions implements Serializable {
     @In(create = true)
     protected DocumentModel layoutBareDemoDocument;
 
+    @In(create = true)
+    protected DocumentModel layoutValidationDocument;
+
+    @In(create = true)
+    protected LayoutDemoContext layoutDemoContext;
+
     protected DocumentModel layoutDemoDocument;
 
     protected DemoWidgetType currentWidgetType;
@@ -77,6 +90,24 @@ public class LayoutDemoActions implements Serializable {
     protected PreviewLayoutDefinition viewPreviewLayoutDef;
 
     protected PreviewLayoutDefinition editPreviewLayoutDef;
+
+    /**
+     * @since 7.2
+     */
+    @In(create = true)
+    protected transient LocaleSelector localeSelector;
+
+    /**
+     * @since 7.2
+     */
+    @In(create = true)
+    protected FacesMessages facesMessages;
+
+    /**
+     * @since 7.2
+     */
+    @In(create = true)
+    protected Map<String, String> messages;
 
     @Factory(value = "layoutDemoDocument", scope = EVENT)
     public DocumentModel getDemoDocument() throws ClientException {
@@ -235,6 +266,31 @@ public class LayoutDemoActions implements Serializable {
             editPreviewLayoutDef = createPreviewLayoutDefinition(currentWidgetType);
         }
         return editPreviewLayoutDef;
+    }
+
+    /**
+     * @since 7.2
+     */
+    public void validateDocument() {
+        DocumentValidationService s = Framework.getService(DocumentValidationService.class);
+        DocumentValidationReport report = s.validate(layoutValidationDocument);
+        if (report.hasError()) {
+            Locale locale = localeSelector.getLocale();
+            for (ConstraintViolation v : report.asList()) {
+                String msg = v.getMessage(locale);
+                facesMessages.addToControl("errors", StatusMessage.Severity.ERROR, msg);
+            }
+        } else {
+            facesMessages.addToControl("errors", StatusMessage.Severity.INFO, "Validation done");
+        }
+    }
+
+    /**
+     * @since 7.2
+     */
+    public String resetValidationDocument() {
+        layoutDemoContext.resetValidationDocument();
+        return null;
     }
 
 }

@@ -72,6 +72,11 @@ public class LayoutDemoContext implements Serializable {
 
     public static final String DEMO_DOCUMENT_TYPE = "LayoutDemoDocument";
 
+    /**
+     * @since 7.2
+     */
+    public static final String VALIDATION_DOCUMENT_TYPE = "LayoutValidationDocument";
+
     protected CoreSession demoCoreSession;
 
     @In(create = true)
@@ -84,6 +89,8 @@ public class LayoutDemoContext implements Serializable {
     protected transient ActionManager actionManager;
 
     protected DocumentModel bareDemoDocument;
+
+    protected DocumentModel validationDocument;
 
     protected DocumentModel previewDocument;
 
@@ -142,12 +149,43 @@ public class LayoutDemoContext implements Serializable {
         }
     }
 
+    /**
+     * @since 7.2
+     */
+    protected DocumentModel generateValidationDocument() throws ClientException {
+        try {
+            DocumentModel doc = demoCoreSession.createDocumentModel(VALIDATION_DOCUMENT_TYPE);
+            doc.setPropertyValue("dc:title", "My title");
+            return doc;
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+    }
+
     @Factory(value = "layoutBareDemoDocument", scope = EVENT)
     public DocumentModel getBareDemoDocument() throws ClientException {
         if (bareDemoDocument == null) {
             bareDemoDocument = generateBareDemoDocument();
         }
         return bareDemoDocument;
+    }
+
+    /**
+     * @since 7.2
+     */
+    @Factory(value = "layoutValidationDocument", scope = EVENT)
+    public DocumentModel getValidationDocument() throws ClientException {
+        if (validationDocument == null) {
+            validationDocument = generateValidationDocument();
+        }
+        return validationDocument;
+    }
+
+    /**
+     * @since 7.2
+     */
+    public void resetValidationDocument() {
+        validationDocument = null;
     }
 
     @Factory(value = "layoutPreviewDocument", scope = EVENT)

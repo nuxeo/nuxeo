@@ -17,6 +17,12 @@
     </navigation-case>
 
     <navigation-case>
+      <from-outcome>testDocumentValidation</from-outcome>
+      <to-view-id>/layoutDemo/test_document_validation.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
       <from-outcome>layoutPreviewFrame</from-outcome>
       <to-view-id>/layoutDemo/layout_preview_frame.xhtml</to-view-id>
       <redirect />

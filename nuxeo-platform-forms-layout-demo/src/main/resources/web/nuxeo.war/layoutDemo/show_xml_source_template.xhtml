@@ -11,34 +11,14 @@
   
   </c:if>
   
-  <div class="foldableBox">
-    <h3 class="folded">
-      <a href="#nogo" onclick="showXMLSources(this, '#{sourcePath}', jQuery(this).parent().next().children('pre')[0]);return toggleBox(this);">
-        <h:outputText value="#{messages['label.layoutDemo.widgetDemo.showSources']}" />
-      </a>
-    </h3>
-  
-    <div class="boxBody" style="overflow: visible; display: none;">
-  
-      <pre class="prettyprint">
-      </pre>
-  
-    </div>
-  </div>
+  <ui:include src="show_source_template.xhtml">
+    <ui:param name="sourcePath" value="#{sourcePath}" />
+    <ui:param name="label" value="#{messages['label.layoutDemo.widgetDemo.showSources']}" />
+  </ui:include>
 
-  <div class="foldableBox">
-    <h3 class="folded">
-      <a href="#nogo" onclick="showXMLSources(this, 'layoutDemo/sources/schemas/layout_demo_schema.xsd', jQuery(this).parent().next().children('pre')[0]);return toggleBox(this);">
-        <h:outputText value="#{messages['label.layoutDemo.widgetDemo.showSchemaDefinition']}" />
-      </a>
-    </h3>
-  
-    <div class="boxBody" style="overflow: visible; display: none;">
-  
-      <pre class="prettyprint">
-      </pre>
-  
-    </div>
-  </div>
+  <ui:include src="show_source_template.xhtml">
+    <ui:param name="sourcePath" value="layoutDemo/sources/schemas/layout_demo_schema.xsd" />
+    <ui:param name="label" value="#{messages['label.layoutDemo.widgetDemo.showSchemaDefinition']}" />
+  </ui:include>
   
 </div>

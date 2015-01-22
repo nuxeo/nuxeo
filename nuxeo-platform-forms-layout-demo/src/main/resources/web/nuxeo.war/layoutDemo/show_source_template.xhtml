@@ -1,0 +1,25 @@
+<div class="foldableBox"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+<c:if test="false">
+  Needed parameters:
+  - sourcePath: source path of the source to retrieve
+  - label: label of the "show sources" button  
+</c:if>
+  
+  <h3 class="folded">
+    <a href="#nogo" onclick="showXMLSources(this, '#{sourcePath}', jQuery(this).parent().next().children('pre')[0]);return toggleBox(this);">
+      <h:outputText value="#{label}" />
+    </a>
+  </h3>
+
+  <div class="boxBody" style="overflow: visible; display: none;">
+
+    <pre class="prettyprint">
+    </pre>
+
+  </div>
+
+</div>
