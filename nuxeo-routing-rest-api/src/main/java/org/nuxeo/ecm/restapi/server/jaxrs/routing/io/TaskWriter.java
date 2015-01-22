@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.restapi.server.jaxrs.routing.io;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.plexus.util.StringUtils;
 import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,6 +51,7 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Button;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskComment;
+import org.nuxeo.ecm.restapi.server.jaxrs.routing.io.util.JsonComplexTypeEncoder;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
 
@@ -74,6 +77,17 @@ public class TaskWriter extends EntityWriter<Task> {
 
     public static void writeTask(JsonGenerator jg, Task item, HttpServletRequest request, UriInfo uriInfo)
             throws JsonGenerationException, IOException {
+        CoreSession session = null;
+        GraphRoute workflowInstance = null;
+        String workflowInstanceId = item.getProcessId();
+        if (request != null) {
+            session = SessionFactory.getSession(request);
+        }
+        if (session != null && StringUtils.isNotBlank(workflowInstanceId)) {
+            DocumentModel workflowInstanceDoc = session.getDocument(new IdRef(workflowInstanceId));
+            workflowInstance = workflowInstanceDoc.getAdapter(GraphRoute.class);
+        }
+
         jg.writeStringField("id", item.getDocument().getId());
         jg.writeStringField("name", item.getName());
         jg.writeStringField("workflowId", item.getProcessId());
@@ -110,17 +124,28 @@ public class TaskWriter extends EntityWriter<Task> {
         }
         jg.writeEndArray();
 
-        jg.writeArrayFieldStart("variables");
+        jg.writeFieldName("variables");
+        jg.writeStartObject();
+        // add taskVariables
         for (Entry<String, String> e : item.getVariables().entrySet()) {
-            jg.writeStartObject();
-            jg.writeStringField("key", e.getKey());
-            jg.writeObjectField("value", e.getValue());
-            jg.writeEndObject();
+            jg.writeStringField(e.getKey(), e.getValue());
         }
-        jg.writeEndArray();
+        // add workflow variables
+        if (workflowInstance != null) {
+            for (Entry<String, Serializable> e : workflowInstance.getVariables().entrySet()) {
 
-        if (request != null) {
-            CoreSession session = SessionFactory.getSession(request);
+                if (e.getValue() instanceof Blob) {
+                    jg.writeFieldName(e.getKey());
+                    JsonComplexTypeEncoder.encodeBlob((Blob) e.getValue(), jg, request);
+                } else {
+                    jg.writeObjectField(e.getKey(), e.getValue());
+                }
+
+            }
+        }
+        jg.writeEndObject();
+
+        if (session != null) {
             jg.writeFieldName("taskInfo");
             jg.writeStartObject();
             DocumentModel doc = session.getDocument(new IdRef(item.getProcessId()));

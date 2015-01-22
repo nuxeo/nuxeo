@@ -102,8 +102,7 @@ public class WorkflowEndpointTest extends BaseTest {
         calendar.add(Calendar.YEAR, 1);
         variables.put("end_date", DateParser.formatW3CDateTime(calendar.getTime()));
         variables.put("participants", "[\"user:Administrator\"]");
-        taskCompletionRequest.setNodeVariables(variables);
-        taskCompletionRequest.setWorkflowVariables(variables);
+        taskCompletionRequest.setVariables(variables);
         taskCompletionRequest.setComment("a comment");
         objectCodecService.write(out, taskCompletionRequest);
         return out;
@@ -270,7 +269,7 @@ public class WorkflowEndpointTest extends BaseTest {
         node = mapper.readTree(response.getEntityInputStream());
         assertEquals("ParallelDocumentReview", node.get("name").getTextValue());
 
-        // Check path resource
+        // Check graph resource
         String graphUrl = node.get("graphResource").getTextValue();
         String graphModelPath = "/workflowModel/ParallelDocumentReview/graph";
         assertTrue(graphUrl.endsWith(graphModelPath));

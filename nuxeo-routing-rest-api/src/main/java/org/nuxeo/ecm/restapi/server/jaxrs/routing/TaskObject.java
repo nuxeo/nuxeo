@@ -58,10 +58,12 @@ public class TaskObject extends DefaultObject {
     @Path("{taskId}/{taskAction}")
     @Consumes({ MediaType.APPLICATION_JSON, "application/json+nxentity" })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response completeTask(@PathParam("taskId") String taskId, @PathParam("taskAction") String action, TaskCompletionRequest taskCompletionRequest) {
+    public Response completeTask(@PathParam("taskId") String taskId, @PathParam("taskAction") String action,
+            TaskCompletionRequest taskCompletionRequest) {
         Map<String, Object> data = taskCompletionRequest.getDataMap();
         CoreSession session = getContext().getCoreSession();
-        Framework.getLocalService(DocumentRoutingService.class).endTask(session, session.getDocument(new IdRef(taskId)).getAdapter(Task.class), data, action);
+        Framework.getLocalService(DocumentRoutingService.class).endTask(session,
+                session.getDocument(new IdRef(taskId)).getAdapter(Task.class), data, action);
         return Response.ok("completed").status(Status.OK).build();
     }
 

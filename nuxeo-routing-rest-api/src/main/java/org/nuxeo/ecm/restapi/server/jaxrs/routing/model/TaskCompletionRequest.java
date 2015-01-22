@@ -33,9 +33,7 @@ public class TaskCompletionRequest {
 
     protected String comment;
 
-    protected Map<String, String> nodeVariables;
-
-    protected Map<String, String> workflowVariables;
+    protected Map<String, String> variables;
 
     public TaskCompletionRequest() {
         super();
@@ -47,11 +45,9 @@ public class TaskCompletionRequest {
 
     public Map<String, Object> getDataMap() {
         Map<String, Object> data = new HashMap<String, Object>();
-        if (getWorkflowVariables() != null) {
-            data.put(Constants.VAR_WORKFLOW, getWorkflowVariables());
-        }
-        if (getNodeVariables() != null) {
-            data.put(Constants.VAR_WORKFLOW_NODE, getNodeVariables());
+        if (getVariables() != null) {
+            data.put(Constants.VAR_WORKFLOW, getVariables());
+            data.put(Constants.VAR_WORKFLOW_NODE, getVariables());
         }
         data.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, Boolean.TRUE);
         if (StringUtils.isNotBlank(getComment())) {
@@ -60,23 +56,16 @@ public class TaskCompletionRequest {
         return data;
     }
 
-    public Map<String, String> getNodeVariables() {
-        return nodeVariables;
-    }
-
-    public Map<String, String> getWorkflowVariables() {
-        return workflowVariables;
+    public Map<String, String> getVariables() {
+        return variables;
     }
 
     public void setComment(String comment) {
         this.comment = comment;
     }
 
-    public void setNodeVariables(Map<String, String> nodeVariables) {
-        this.nodeVariables = nodeVariables;
+    public void setVariables(Map<String, String> nodeVariables) {
+        this.variables = nodeVariables;
     }
 
-    public void setWorkflowVariables(Map<String, String> workflowVariables) {
-        this.workflowVariables = workflowVariables;
-    }
 }

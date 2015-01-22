@@ -30,7 +30,7 @@ public class WorkflowRequest {
 
     protected List<String> documentIds = new ArrayList<String>();
 
-    protected Map<String, Serializable> worflowVariables;
+    protected Map<String, Serializable> variables;
 
     protected String workflowModelName;
 
@@ -46,8 +46,8 @@ public class WorkflowRequest {
         return workflowModelName;
     }
 
-    public Map<String, Serializable> getWorflowVariables() {
-        return worflowVariables;
+    public Map<String, Serializable> getVariables() {
+        return variables;
     }
 
     public void setDocumentIds(List<String> documentIds) {
@@ -58,8 +58,8 @@ public class WorkflowRequest {
         this.workflowModelName = workflowModelName;
     }
 
-    public void setWorflowVariables(Map<String, Serializable> worflowVariables) {
-        this.worflowVariables = worflowVariables;
+    public void setVariables(Map<String, Serializable> worflowVariables) {
+        this.variables = worflowVariables;
     }
 
 }
