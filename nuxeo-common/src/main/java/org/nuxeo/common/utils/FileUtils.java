@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -91,17 +92,15 @@ public final class FileUtils {
     /**
      * Read the byte stream as a string assuming a UTF-8 encoding.
      *
-     * @deprecated use org.apache.commons.io.IOUtils.toString(in, "UTF-8") explicitly instead (or any other encoding
-     *             when provided by the source of the byte stream).
+     * @deprecated Since 5.7. Use {@link IOUtils#toString(InputStream, java.nio.charset.Charset)} explicitly instead (or
+     *             any other encoding when provided by the source of the byte stream).
      */
     @Deprecated
     public static String read(InputStream in) throws IOException {
-        // UTF-8 should is configured as the default "file.encoding" in a system
-        // property configured in the nuxeo.conf file.
-        // However this option might not be passed when running the Nuxeo as a
-        // library or using the maven test runner. Therefore we hardcode the
-        // default charset to "UTF-8" to ensure consistency.
-        return IOUtils.toString(in, "UTF-8");
+        // UTF-8 should be configured as the default "file.encoding" in a system property configured in the nuxeo.conf
+        // file. However this option might not be passed when running the Nuxeo as a library or using the Maven test
+        // runner. Therefore we hardcode the default charset to "UTF-8" to ensure consistency.
+        return IOUtils.toString(in, Charsets.UTF_8);
     }
 
     public static byte[] readBytes(URL url) throws IOException {
@@ -148,7 +147,7 @@ public final class FileUtils {
     }
 
     public static List<String> readLines(File file) throws IOException {
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
         BufferedReader reader = null;
         try {
             InputStream in = new FileInputStream(file);
@@ -524,7 +523,7 @@ public final class FileUtils {
     }
 
     public static File[] findFiles(File root, String pattern, boolean recurse) {
-        List<File> result = new ArrayList<File>();
+        List<File> result = new ArrayList<>();
         if (pattern == null) {
             if (recurse) {
                 collectFiles(root, result);
@@ -608,7 +607,7 @@ public final class FileUtils {
     }
 
     public static List<String> readLines(InputStream in) throws IOException {
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(in));
@@ -628,7 +627,7 @@ public final class FileUtils {
     }
 
     /**
-     * Compares two files content as String even if their EOL are differents
+     * Compares two files content as String even if their EOL are different
      *
      * @param expected a file content with Windows or Unix like EOL
      * @param source another file content with Windows or Unix like EOL

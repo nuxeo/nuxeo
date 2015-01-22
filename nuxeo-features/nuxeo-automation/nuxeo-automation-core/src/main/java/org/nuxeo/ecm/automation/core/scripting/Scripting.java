@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class Scripting {
 
-    protected static final Map<String, Script> cache = new ConcurrentHashMap<String, Script>();
+    protected static final Map<String, Script> cache = new ConcurrentHashMap<>();
 
     protected static final GroovyScripting gscripting = new GroovyScripting();
 
@@ -83,7 +83,7 @@ public class Scripting {
 
     public static Map<String, Object> initBindings(OperationContext ctx) {
         Object input = ctx.getInput(); // get last output
-        Map<String, Object> map = new HashMap<String, Object>(ctx);
+        Map<String, Object> map = new HashMap<>(ctx);
         map.put("CurrentDate", new DateWrapper());
         map.put("Context", ctx);
         if (ctx.get(Constants.VAR_WORKFLOW) != null) {
@@ -107,7 +107,7 @@ public class Scripting {
             map.put("currentDocument", documentWrapper);
         }
         if (input instanceof DocumentModelList) {
-            List<DocumentWrapper> docs = new ArrayList<DocumentWrapper>();
+            List<DocumentWrapper> docs = new ArrayList<>();
             for (DocumentModel doc : (DocumentModelList) input) {
                 docs.add(new DocumentWrapper(ctx.getCoreSession(), doc));
             }
