@@ -66,4 +66,15 @@ public class BinaryManagerStatus {
         return sizeBinariesGC;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("BinaryManagerStatus [gcDuration=").append(gcDuration) //
+        .append(", numBinaries=").append(numBinaries) //
+        .append(", sizeBinaries=").append(sizeBinaries) //
+        .append(", numBinariesGC=").append(numBinariesGC) //
+        .append(", sizeBinariesGC=").append(sizeBinariesGC).append("]");
+        return builder.toString();
+    }
+
 }

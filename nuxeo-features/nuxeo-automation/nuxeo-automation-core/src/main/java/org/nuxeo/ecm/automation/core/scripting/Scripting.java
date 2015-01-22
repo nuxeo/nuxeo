@@ -7,14 +7,16 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.ecm.automation.core.scripting;
 
 import groovy.lang.Binding;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
@@ -23,8 +25,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.mvel2.MVEL;
-import org.nuxeo.common.utils.FileUtils;
+
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -63,22 +67,19 @@ public class Scripting {
             throw new OperationException("Script files must have an extension: " + script);
         }
         String ext = path.substring(p + 1).toLowerCase();
-        if ("mvel".equals(ext)) {
-            InputStream in = script.openStream();
-            try {
-                Serializable c = MVEL.compileExpression(FileUtils.read(in));
+        try (InputStream in = script.openStream()) {
+            if ("mvel".equals(ext)) {
+                Serializable c = MVEL.compileExpression(IOUtils.toString(in, Charsets.UTF_8));
                 cs = new MvelScript(c);
-            } finally {
-                in.close();
+            } else if ("groovy".equals(ext)) {
+                cs = new GroovyScript(IOUtils.toString(in, Charsets.UTF_8));
+            } else {
+                throw new OperationException("Unsupported script file: " + script
+                        + ". Only MVEL and Groovy scripts are supported");
             }
-        } else if ("groovy".equals(ext)) {
-            // Script gs = new GroovyScript();
-        } else {
-            throw new OperationException("Unsupported script file: " + script
-                    + ". Only mvel and groovy scripts are supported");
+            cache.put(key, cs);
+            cs.eval(ctx);
         }
-        cache.put(key, cs);
-        cs.eval(ctx);
     }
 
     public static Map<String, Object> initBindings(OperationContext ctx) {
@@ -154,8 +155,11 @@ public class Scripting {
             for (Map.Entry<String, Object> entry : initBindings(ctx).entrySet()) {
                 binding.setVariable(entry.getKey(), entry.getValue());
             }
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            binding.setVariable("out", new PrintStream(baos));
             c.setBinding(binding);
-            return c.run();
+            c.run();
+            return baos;
         }
     }
 
