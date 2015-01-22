@@ -405,13 +405,7 @@ command.upload=Upload
 command.validate=Approve
 command.invite=Invite
 command.saveAndInvite=Save and invite
-
-createAnother.checkbox=Create another
-label.immediateCreation=Set user password
-label.immediateCreation.no=No
-label.immediateCreation.yes=Yes
-immediateCreation.no.tip=The user will receive by email an invitation to set a password and access the platform.
-immediateCreation.yes.tip=The user won't receive any notification.
+label.immediateCreation=Set password for immediate user creation
 
 # Workspace Wizard (by tsoulcie, to be modified)
 label.security.inherit=Inherit rights
@@ -2786,6 +2780,7 @@ label.bulk.import.documents.cannotCreateError=One or several documents cannot be
 
 # schema field constraint violation messages
 label.schema.constraint.violation=The value "{0}" does not respect the constraint {1}.
+label.schema.constraint.violation.documentValidation=Document validation failed. {0}.
 label.schema.constraint.violation.NotNullConstraint=Value is required
 label.schema.constraint.violation.PatternConstraint=This value must match the format "{0}".
 label.schema.constraint.violation.EnumConstraint=The field must have one of the following values: {0}.
