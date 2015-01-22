@@ -64,4 +64,12 @@ public class DocumentRouteImpl extends DocumentRouteStepsContainerImpl implement
         return (String) document.getPropertyValue(DocumentRoutingConstants.ROUTING_INITIATOR_ID_KEY);
     }
 
+    /**
+     * @since 7.2
+     */
+    @Override
+    public String getModelId() {
+        return (String) document.getPropertyValue(DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCE_MODEL_ID);
+    }
+
 }

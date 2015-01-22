@@ -85,6 +85,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
                     model.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME));
             // reset creation date, used for workflow start time
             result.setPropertyValue("dc:created", Calendar.getInstance());
+            result.setPropertyValue(DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCE_MODEL_ID, model.getId());
             session.saveDocument(result);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);

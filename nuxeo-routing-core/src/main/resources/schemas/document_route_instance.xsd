@@ -10,5 +10,6 @@
   <xs:element name="availabilityFilter" type="xs:string" />
   <xs:element name="parentRouteInstanceId" type="xs:string" />
   <xs:element name="parentRouteNodeId" type="xs:string" />
+  <xs:element name="modelId" type="xs:string" />
 
 </xs:schema>

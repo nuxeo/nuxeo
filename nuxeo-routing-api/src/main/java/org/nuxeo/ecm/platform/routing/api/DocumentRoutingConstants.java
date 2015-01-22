@@ -205,4 +205,9 @@ public interface DocumentRoutingConstants {
      * @since 7.2
      */
     public static final String DOCUMENT_ROUTE_MODEL_LIFECYCLESTATE = "validated";
+
+    /**
+     * @since 7.2
+     */
+    public static final String DOCUMENT_ROUTE_INSTANCE_MODEL_ID = "docri:modelId";
 }

@@ -60,6 +60,7 @@ public class DocumentRouteWriter extends EntityWriter<DocumentRoute> {
         jg.writeStringField("id", item.getDocument().getId());
         jg.writeStringField("name", item.getName());
         jg.writeStringField("title", item.getTitle());
+        jg.writeStringField("modelId", item.getModelId());
         jg.writeStringField("initiator", item.getInitiator());
 
         jg.writeArrayFieldStart("attachedDocumentIds");

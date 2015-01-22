@@ -50,4 +50,9 @@ public interface DocumentRoute extends DocumentRouteStepsContainer {
      */
     String getInitiator();
 
+    /**
+     * @since 7.2
+     */
+    String getModelId();
+
 }
