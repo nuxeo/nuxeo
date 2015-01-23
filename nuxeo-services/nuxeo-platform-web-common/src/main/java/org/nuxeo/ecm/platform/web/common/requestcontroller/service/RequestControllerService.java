@@ -173,15 +173,16 @@ public class RequestControllerService extends DefaultComponent implements Reques
 
     public Map<String, String> getResponseHeaders() {
         if (headersCache == null) {
-            buildHeadersCache();
+            headersCache = buildHeadersCache();
         }
         return headersCache;
     }
 
-    public void buildHeadersCache() {
-        headersCache = new HashMap<String, String>();
+    protected static Map<String, String> buildHeadersCache() {
+        Map<String, String> headersCache = new HashMap<String, String>();
         for (NuxeoHeaderDescriptor header : headersRegistry.descs.values()) {
             headersCache.put(header.name, header.getValue());
         }
+        return headersCache;
     }
 }
