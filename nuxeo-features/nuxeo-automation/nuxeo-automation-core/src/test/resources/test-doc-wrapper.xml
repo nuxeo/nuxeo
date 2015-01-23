@@ -3,7 +3,7 @@
     point="chains">
     <chain id="followtransitiondelete">
       <operation id="Context.FetchDocument" />
-      <operation id="Context.RunScript">
+      <operation id="RunScript">
         <param type="string" name="script">Session.followTransition(Document.getRef(),
           "delete");</param>
       </operation>

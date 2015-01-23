@@ -42,10 +42,10 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
  * @since 6.0 Document query operation to perform queries on the repository.
  */
 @Operation(id = DocumentPaginatedQuery.ID, category = Constants.CAT_FETCH, label = "Query", description = "Perform a query on the repository. "
-        + "The document list returned will become the input for the next " + "operation.", since = "6.0", addToStudio = true)
+        + "The document list returned will become the input for the next " + "operation.", since = "6.0", addToStudio = true, aliases = { "Document.Query" })
 public class DocumentPaginatedQuery {
 
-    public static final String ID = "Document.Query";
+    public static final String ID = "Repository.Query";
 
     public static final String CURRENT_USERID_PATTERN = "$currentUser";
 

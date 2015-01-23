@@ -210,7 +210,7 @@
     var op = null;
     if (restoreSeamCtx && typeof currentConversationId != 'undefined') {
       // If Seam context is available, let's restore it
-      op = jQuery().automation('Seam.RunOperation', automationParams);
+      op = jQuery().automation('WebUI.RunOperationInSeam', automationParams);
     } else {
       op = jQuery().automation(opName, automationParams);
     }

@@ -24,10 +24,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
  * @since 5.7
  */
-@Operation(id = GetLiveDocument.ID, category = Constants.CAT_DOCUMENT, label = "Get Live Document", description = "Get the live document even if this is a Proxy or Version Document.")
+@Operation(id = GetLiveDocument.ID, category = Constants.CAT_DOCUMENT, label = "Get Live Document", description = "Get the live document even if this is a Proxy or Version Document.", aliases = { "GetLiveDocument" })
 public class GetLiveDocument {
 
-    public static final String ID = "GetLiveDocument";
+    public static final String ID = "Proxy.GetSourceDocument";
 
     private static int MAX_ITERATION = 5;
 

@@ -52,12 +52,12 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
         + "rather than as a List of Document"
         + "The query result will become the input for the next "
         + "operation. If no query or provider name is given, a query returning "
-        + "all the documents that the user has access to will be executed.", addToStudio = false)
+        + "all the documents that the user has access to will be executed.", addToStudio = false, aliases = { "Resultset.PageProvider" })
 public class ResultSetPageProviderOperation {
 
     private static final Log log = LogFactory.getLog(ResultSetPageProviderOperation.class);
 
-    public static final String ID = "Resultset.PageProvider";
+    public static final String ID = "Repository.ResultSetPageProvider";
 
     public static final String CURRENT_USERID_PATTERN = "$currentUser";
 

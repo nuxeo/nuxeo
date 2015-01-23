@@ -122,9 +122,9 @@
   <extension point="chains"
     target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
     <chain id="VersionAndAttachFile">
-      <operation id="Blob.PushList">
+      <operation id="Context.PushBlobList">
       </operation>
-      <operation id ="Document.Fetch">
+      <operation id ="Repository.GetDocument">
         <param type="string" name="value">expr:Context.get("currentDocument")</param>
       </operation>
       <operation id="Document.CheckIn">
@@ -138,21 +138,21 @@
         <param type="string" name="name">currentDocument</param>
         <param type="string" name="value">expr:Context.get("newDocument").id</param>
       </operation>
-      <operation id="Blob.PopList">
+      <operation id="Context.PopBlobList">
       </operation>
-      <operation id="BlobHolder.Attach">
+      <operation id="BlobHolder.AttachOnCurrentDocument">
         <param type="boolean" name="useMainBlob">true</param>
       </operation>
     </chain>
     <chain id="AttachFiles">
-      <operation id="BlobHolder.Attach">
+      <operation id="BlobHolder.AttachOnCurrentDocument">
         <param type="boolean" name="useMainBlob">false</param>
       </operation>
     </chain>
     <chain id="VersionAndAttachFiles">
-      <operation id="Blob.PushList">
+      <operation id="Context.PushBlobList">
       </operation>
-      <operation id ="Document.Fetch">
+      <operation id ="Repository.GetDocument">
         <param type="string" name="value">expr:Context.get("currentDocument")</param>
       </operation>
       <operation id="Document.CheckIn">
@@ -166,9 +166,9 @@
         <param type="string" name="name">currentDocument</param>
         <param type="string" name="value">expr:Context.get("newDocument").id</param>
       </operation>
-      <operation id="Blob.PopList">
+      <operation id="Context.PopBlobList">
       </operation>
-      <operation id="BlobHolder.Attach">
+      <operation id="BlobHolder.AttachOnCurrentDocument">
         <param type="boolean" name="useMainBlob">false</param>
       </operation>
     </chain>
@@ -188,7 +188,7 @@
     <binding name="Audit.Query">
       <administrator>true</administrator>
     </binding>
-    <binding name="Audit.PageProvider">
+    <binding name="Audit.QueryWithPageProvider">
       <administrator>true</administrator>
     </binding>
   </extension>

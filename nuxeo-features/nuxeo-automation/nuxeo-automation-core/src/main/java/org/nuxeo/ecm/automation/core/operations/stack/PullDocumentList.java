@@ -26,10 +26,10 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = PullDocumentList.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pull Document List", description = "Restore the first saved input document list in the context input stack")
+@Operation(id = PullDocumentList.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pull Document List", description = "Restore the first saved input document list in the context input stack", aliases = { "Document.PullList" })
 public class PullDocumentList {
 
-    public static final String ID = "Document.PullList";
+    public static final String ID = "Context.PullDocumentList";
 
     @Context
     protected OperationContext ctx;

@@ -20,10 +20,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 
-@Operation(id = BlobHolderAttach.ID, category = Constants.CAT_BLOB, label = "Attach File or files to the currentDocument.", description = "Attach the input file(s) to the current document using the BlobHolder abstraction")
+@Operation(id = BlobHolderAttach.ID, category = Constants.CAT_BLOB, label = "Attach File or files to the currentDocument.", description = "Attach the input file(s) to the current document using the BlobHolder abstraction", aliases = { "BlobHolder.Attach" })
 public class BlobHolderAttach {
 
-    public static final String ID = "BlobHolder.Attach";
+    public static final String ID = "BlobHolder.AttachOnCurrentDocument";
 
     @Context
     protected CoreSession session;

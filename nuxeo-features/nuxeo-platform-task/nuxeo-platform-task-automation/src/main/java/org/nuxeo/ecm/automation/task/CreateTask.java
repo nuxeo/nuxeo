@@ -57,10 +57,10 @@ import org.nuxeo.ecm.platform.task.TaskService;
         + "You have to specify a variable name (the <b>key for ... </b> parameter) to resolve target users and groups to which the task will be assigned. "
         + "You can use Get Users and Groups to update a context variable with some users and groups. "
         + "If you check <b>create one task per actor</b>, each of the actors will have a task to achieve, "
-        + "versus \"the first who achieve the task makes it disappear for the others\".</p>")
+        + "versus \"the first who achieve the task makes it disappear for the others\".</p>", aliases = { "Workflow.CreateTask" })
 public class CreateTask {
 
-    public static final String ID = "Workflow.CreateTask";
+    public static final String ID = "Task.Create";
 
     private static final Log log = LogFactory.getLog(CreateTask.class);
 

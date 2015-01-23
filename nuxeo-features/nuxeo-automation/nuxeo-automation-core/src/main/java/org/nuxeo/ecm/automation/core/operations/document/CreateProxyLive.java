@@ -27,10 +27,10 @@ import org.nuxeo.ecm.core.api.PathRef;
  * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
  * @since 5.7
  */
-@Operation(id = CreateProxyLive.ID, category = Constants.CAT_DOCUMENT, label = "Create Proxy Live", description = "This operation will create a proxy that points the given document as input. This is like a symbolic link for File System. The proxy will be created into the destination specified as parameter. <p>The document returned is the proxy live.<p> Remark: <b>you will have a strange behavior if the input is a folderish.</b>")
+@Operation(id = CreateProxyLive.ID, category = Constants.CAT_DOCUMENT, label = "Create Proxy Live", description = "This operation will create a proxy that points the given document as input. This is like a symbolic link for File System. The proxy will be created into the destination specified as parameter. <p>The document returned is the proxy live.<p> Remark: <b>you will have a strange behavior if the input is a folderish.</b>", aliases = { "CreateProxyLive" })
 public class CreateProxyLive {
 
-    public static final String ID = "CreateProxyLive";
+    public static final String ID = "Document.CreateLiveProxy";
 
     @Context
     protected CoreSession session;

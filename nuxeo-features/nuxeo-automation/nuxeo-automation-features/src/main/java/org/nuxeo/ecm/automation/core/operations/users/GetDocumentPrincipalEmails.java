@@ -41,10 +41,10 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
         + "user members of these groups. Be <b>warned</b> "
         + "that this may be a very consuming operation.<ul>Note that <li></li>"
         + "<li>groups are not included</li><li>the list pushed into the context "
-        + "is a string list of emails.</li></ul>")
+        + "is a string list of emails.</li></ul>", aliases = { "Document.GetPrincipalEmails" })
 public class GetDocumentPrincipalEmails {
 
-    public static final String ID = "Document.GetPrincipalEmails";
+    public static final String ID = "Context.GetEmailsWithPermissionOnDoc";
 
     @Context
     protected PermissionProvider permissionProvider;

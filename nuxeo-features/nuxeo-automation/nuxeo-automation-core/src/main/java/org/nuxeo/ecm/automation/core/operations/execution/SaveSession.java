@@ -22,10 +22,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = SaveSession.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Save Session", description = "Commit any changes made by the operation on the documents. This can be used to explicitly commit changes. This operation can be executed on any type of input. The input of this operation will be preserved as the input for the next operation in the chain.")
+@Operation(id = SaveSession.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Save Session", description = "Commit any changes made by the operation on the documents. This can be used to explicitly commit changes. This operation can be executed on any type of input. The input of this operation will be preserved as the input for the next operation in the chain.", aliases = { "Document.SaveSession" })
 public class SaveSession {
 
-    public static final String ID = "Document.SaveSession";
+    public static final String ID = "Repository.SaveSession";
 
     @Context
     protected CoreSession session;

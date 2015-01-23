@@ -13,7 +13,7 @@
       <category>Clipboard_CLIPBOARD</category>
       <filter-id>not_anonymous</filter-id>
       <properties>
-        <property name="chainId">ImportClipboard</property>
+        <property name="chainId">Blob.ImportClipboard</property>
       </properties>
     </action>
     <action id="Chain.ImportWorklist"
@@ -23,7 +23,7 @@
       <category>Clipboard_DEFAULT</category>
       <filter-id>not_anonymous</filter-id>
       <properties>
-        <property name="chainId">ImportWorklist</property>
+        <property name="chainId"><Blob class="ImportWorklist"></Blob></property>
       </properties>
     </action>
 
@@ -58,7 +58,7 @@
       <filter-id>mutable_document</filter-id>
       <filter-id>user_canedit</filter-id>
       <properties>
-        <property name="operationId">BlobHolder.Attach</property>
+        <property name="operationId">BlobHolder.AttachOnCurrentDocument</property>
       </properties>
     </action>
     <action id="Chain.VersionAndAttachFile"

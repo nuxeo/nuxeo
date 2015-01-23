@@ -61,10 +61,10 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
         + "a query or a named provider query on the repository. Result is "
         + "paginated. The query result will become the input for the next "
         + "operation. If no query or provider name is given, a query returning "
-        + "all the documents that the user has access to will be executed.")
+        + "all the documents that the user has access to will be executed.", aliases = { "Document.PageProvider" })
 public class DocumentPageProviderOperation {
 
-    public static final String ID = "Document.PageProvider";
+    public static final String ID = "Repository.PageProvider";
 
     public static final String CURRENT_USERID_PATTERN = "$currentUser";
 

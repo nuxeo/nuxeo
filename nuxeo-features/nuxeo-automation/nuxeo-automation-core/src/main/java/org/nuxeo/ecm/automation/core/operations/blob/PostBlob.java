@@ -28,10 +28,10 @@ import org.nuxeo.ecm.core.api.Blob;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = PostBlob.ID, category = Constants.CAT_BLOB, label = "HTTP Post", description = "Post the input file to a target HTTP URL. Returns back the input file.")
+@Operation(id = PostBlob.ID, category = Constants.CAT_BLOB, label = "HTTP Post", description = "Post the input file to a target HTTP URL. Returns back the input file.", aliases = { "Blob.Post" })
 public class PostBlob {
 
-    public static final String ID = "Blob.Post";
+    public static final String ID = "Blob.PostToURL";
 
     @Param(name = "url")
     protected String url;

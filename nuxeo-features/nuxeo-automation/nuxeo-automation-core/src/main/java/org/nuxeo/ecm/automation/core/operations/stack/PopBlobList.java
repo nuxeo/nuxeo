@@ -22,10 +22,10 @@ import org.nuxeo.ecm.automation.core.util.BlobList;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = PopBlobList.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pop File List", description = "Restore the last saved input file list in the context input stack")
+@Operation(id = PopBlobList.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pop File List", description = "Restore the last saved input file list in the context input stack", aliases = { "Blob.PopList" })
 public class PopBlobList {
 
-    public static final String ID = "Blob.PopList";
+    public static final String ID = "Context.PopBlobList";
 
     @Context
     protected OperationContext ctx;

@@ -23,10 +23,10 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = PullDocument.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pull Document", description = "Restore the first saved input document in the context input stack. This operation must be used only if a PUSH operation was previously made. Return the first <i>pushed</i> document.")
+@Operation(id = PullDocument.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pull Document", description = "Restore the first saved input document in the context input stack. This operation must be used only if a PUSH operation was previously made. Return the first <i>pushed</i> document.", aliases = { "Document.Pull" })
 public class PullDocument {
 
-    public static final String ID = "Document.Pull";
+    public static final String ID = "Context.PullDocument";
 
     @Context
     protected OperationContext ctx;

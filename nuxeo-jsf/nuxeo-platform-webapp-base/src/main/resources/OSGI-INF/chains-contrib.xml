@@ -5,12 +5,12 @@
 
     <chain id="downloadFilesZip">
       <operation id="Context.FetchDocument" />
-      <operation id="Blob.GetAll" />
+      <operation id="Document.GetBlobs" />
       <operation id="Blob.CreateZip">
         <param type="string" name="filename">attachments.zip
         </param>
       </operation>
-      <operation id="Seam.DownloadFile" />
+      <operation id="WebUI.DownloadFileBlob.ToFile" />
     </chain>
 
   </extension>

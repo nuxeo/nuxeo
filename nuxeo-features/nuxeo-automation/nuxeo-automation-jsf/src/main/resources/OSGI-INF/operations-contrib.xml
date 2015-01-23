@@ -62,22 +62,28 @@
 
   <extension point="chains"
     target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
-    <chain id="ImportWorklist">
-      <operation id="Seam.InitContext" />
+    <chain id="Blob.ImportWorklist">
+      <aliases>
+        <alias>ImportWorklist</alias>
+      </aliases>
+      <operation id="WebUI.InitSeamContext" />
       <operation id="UserWorkspace.CreateDocumentFromBlob" />
       <operation id="Document.Save" />
-      <operation id="Seam.AddToWorklist" />
-      <operation id="Seam.DestroyContext" />
+      <operation id="WebUi.AddToWorklist" />
+      <operation id="WebUi.DestroySeamContext" />
     </chain>
-    <chain id="ImportClipboard">
-      <operation id="Seam.InitContext" />
+    <chain id="Blob.ImportClipboard">
+      <aliases>
+        <alias>ImportClipboard</alias>
+      </aliases>
+      <operation id="WebUI.InitSeamContext" />
       <operation id="UserWorkspace.CreateDocumentFromBlob" />
       <operation id="Document.Save" />
-      <operation id="Seam.AddToClipboard" />
-      <operation id="Seam.DestroyContext" />
+      <operation id="WebUI.AddToClipboard" />
+      <operation id="WebUi.DestroySeamContext" />
     </chain>
     <chain id="SeamActions.GET">
-      <operation id="Seam.RunOperation">
+      <operation id="WebUI.RunOperationInSeam">
         <param type="string" name="id">Actions.GET</param>
       </operation>
     </chain>
@@ -90,8 +96,8 @@
         <param type="properties" name="properties">expr:Context.get("docMetaData")
         </param>
       </operation>
-      <operation id="Seam.RunOperation">
-        <param type="string" name="id">Seam.Refresh</param>
+      <operation id="WebUI.RunOperationInSeam">
+        <param type="string" name="id">WebUI.Refresh</param>
       </operation>
     </chain>
 
@@ -99,8 +105,8 @@
       <operation id="FileManager.Import">
         <param type="boolean" name="overwite">true</param>
       </operation>
-      <operation id="Seam.RunOperation">
-        <param type="string" name="id">Seam.Refresh</param>
+      <operation id="WebUI.RunOperationInSeam">
+        <param type="string" name="id">WebUI.Refresh</param>
       </operation>
     </chain>
 

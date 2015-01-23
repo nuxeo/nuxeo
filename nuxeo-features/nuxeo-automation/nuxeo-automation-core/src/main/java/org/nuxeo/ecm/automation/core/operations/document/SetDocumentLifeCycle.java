@@ -24,10 +24,10 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = SetDocumentLifeCycle.ID, category = Constants.CAT_DOCUMENT, label = "Follow Life Cycle Transition", description = "Follow the given transition on the input document life cycle state")
+@Operation(id = SetDocumentLifeCycle.ID, category = Constants.CAT_DOCUMENT, label = "Follow Life Cycle Transition", description = "Follow the given transition on the input document life cycle state", aliases = { "Document.SetLifeCycle" })
 public class SetDocumentLifeCycle {
 
-    public static final String ID = "Document.SetLifeCycle";
+    public static final String ID = "Document.FollowLifecycleTransition";
 
     @Context
     protected CoreSession session;

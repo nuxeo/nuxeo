@@ -29,10 +29,10 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.7
  */
-@Operation(id = GetNuxeoPrincipal.ID, category = Constants.CAT_USERS_GROUPS, label = "Get Nuxeo Principal", description = "Retrieve Nuxeo principal and export it as a DocumentModel, if login parameter is not set the Operation will return informations about the current user, otherwise Directory Administration rights are required.")
+@Operation(id = GetNuxeoPrincipal.ID, category = Constants.CAT_USERS_GROUPS, label = "Get Nuxeo Principal", description = "Retrieve Nuxeo principal and export it as a DocumentModel, if login parameter is not set the Operation will return informations about the current user, otherwise Directory Administration rights are required.", aliases = { "NuxeoPrincipal.Get" })
 public class GetNuxeoPrincipal extends AbstractDirectoryOperation {
 
-    public static final String ID = "NuxeoPrincipal.Get";
+    public static final String ID = "User.Get";
 
     @Context
     protected UserManager umgr;

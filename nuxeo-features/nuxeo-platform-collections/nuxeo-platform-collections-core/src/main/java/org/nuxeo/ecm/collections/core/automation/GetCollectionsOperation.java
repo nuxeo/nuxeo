@@ -39,10 +39,10 @@ import org.nuxeo.ecm.collections.api.CollectionConstants;
  * @since 5.9.4
  */
 @Operation(id = GetCollectionsOperation.ID, category = Constants.CAT_DOCUMENT, label = "Get collections", description = "Get the list of all the collections visible by the currentUser. "
-        + "This is returning a list of collections.")
+        + "This is returning a list of collections.", aliases = { "Collection.GetCollections" })
 public class GetCollectionsOperation {
 
-    public static final String ID = "Collection.GetCollections";
+    public static final String ID = "User.GetCollections";
 
     @Param(name = "searchTerm")
     protected String searchTerm;

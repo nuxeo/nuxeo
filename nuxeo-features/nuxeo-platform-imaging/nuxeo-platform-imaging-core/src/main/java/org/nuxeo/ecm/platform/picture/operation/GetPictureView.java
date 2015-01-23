@@ -28,10 +28,10 @@ import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
  *
  * @author Tiry (tdelprat@nuxeo.com)
  */
-@Operation(id = GetPictureView.ID, category = Constants.CAT_CONVERSION, label = "Get image view", description = "Get an image from a Picture document.")
+@Operation(id = GetPictureView.ID, category = Constants.CAT_CONVERSION, label = "Get image view", description = "Get an image from a Picture document.", aliases = { "Picture.getView" })
 public class GetPictureView {
 
-    public static final String ID = "Picture.getView";
+    public static final String ID = "Picture.GetView";
 
     @Param(name = "viewName", required = false)
     protected String viewName;

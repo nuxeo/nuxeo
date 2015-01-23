@@ -28,10 +28,10 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = PopDocument.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pop Document", description = "Restore the last saved input document in the context input stack. This operation must be used only if a PUSH operation was previously made. Return the last <i>pushed</i> document.")
+@Operation(id = PopDocument.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pop Document", description = "Restore the last saved input document in the context input stack. This operation must be used only if a PUSH operation was previously made. Return the last <i>pushed</i> document.", aliases = { "Document.Pop" })
 public class PopDocument {
 
-    public static final String ID = "Document.Pop";
+    public static final String ID = "Context.PopDocument";
 
     @Context
     protected OperationContext ctx;

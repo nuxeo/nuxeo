@@ -12,22 +12,22 @@
       </operation>
     </chain>
     <chain id="runOnProviderTestchain">
-      <operation id="Document.PageProvider">
+      <operation id="Repository.PageProvider">
       	<param type="string" name="providerName">simpleProviderTest1</param>
       </operation>
-      <operation id="Context.RunOperationOnProvider">
+      <operation id="RunOperationOnProvider">
       	<param type="string" name="id">testChain</param>
       	<param type="boolean" name="isolate">false</param>
       </operation>
     </chain>
     <chain id="testChainParameterType">
-      <operation id="Document.PageProvider">
+      <operation id="Repository.PageProvider">
         <param type="string" name="providerName">simpleProviderTest1</param>
         <!-- testing if integer parameter is well registered in automation
         could be a long one and adapters can handle it as well -->
         <param type="integer" name="pageSize">1</param>
       </operation>
-      <operation id="Context.RunOperationOnProvider">
+      <operation id="RunOperationOnProvider">
         <param type="string" name="id">testChain</param>
         <param type="boolean" name="isolate">false</param>
       </operation>

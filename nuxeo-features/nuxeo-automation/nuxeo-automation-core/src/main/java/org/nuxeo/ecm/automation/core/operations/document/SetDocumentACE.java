@@ -29,10 +29,10 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = SetDocumentACE.ID, category = Constants.CAT_DOCUMENT, label = "Set ACL", description = "Set Acces Control Entry on the input document(s). Returns the document(s).")
+@Operation(id = SetDocumentACE.ID, category = Constants.CAT_DOCUMENT, label = "Set ACL", description = "Set Acces Control Entry on the input document(s). Returns the document(s).", aliases = { "Document.SetACE" })
 public class SetDocumentACE {
 
-    public static final String ID = "Document.SetACE";
+    public static final String ID = "Document.AddACE";
 
     @Context
     protected CoreSession session;

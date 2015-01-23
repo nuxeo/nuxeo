@@ -43,10 +43,10 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
         + "user members of these groups in place of them. Be <b>warned</b> "
         + "that this may be a very consuming operation. If the 'prefix "
         + "identifiers' argument is true, then user identifiers are "
-        + "prefixed by 'user:' and groups identifiers are prefixed by 'group:'.")
+        + "prefixed by 'user:' and groups identifiers are prefixed by 'group:'.", aliases = { "Document.GetUsersAndGroups" })
 public class GetDocumentUsersAndGroups {
 
-    public static final String ID = "Document.GetUsersAndGroups";
+    public static final String ID = "Context.GetUsersGroupIdsWithPermissionOnDoc";
 
     @Context
     protected PermissionProvider permissionProvider;

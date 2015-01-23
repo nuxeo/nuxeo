@@ -20,10 +20,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = FetchDocument.ID, category = Constants.CAT_FETCH, label = "Document", description = "Fetch a document from the repository given its reference (path or UID). The document will become the input of the next operation.")
+@Operation(id = FetchDocument.ID, category = Constants.CAT_FETCH, label = "Document", description = "Fetch a document from the repository given its reference (path or UID). The document will become the input of the next operation.", aliases = { "Document.Fetch" })
 public class FetchDocument {
 
-    public static final String ID = "Document.Fetch";
+    public static final String ID = "Repository.GetDocument";
 
     @Param(name = "value")
     protected DocumentModel value;

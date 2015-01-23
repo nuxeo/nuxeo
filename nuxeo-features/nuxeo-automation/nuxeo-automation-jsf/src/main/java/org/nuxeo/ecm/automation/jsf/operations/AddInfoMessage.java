@@ -21,10 +21,10 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
-@Operation(id = AddInfoMessage.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Add Info Message", description = "Add a message to be displayed after the chain is successfuly executed. This is a void operation - the input will be returned back as output")
+@Operation(id = AddInfoMessage.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Add Info Message", description = "Add a message to be displayed after the chain is successfuly executed. This is a void operation - the input will be returned back as output", aliases = { "Seam.AddInfoMessage" })
 public class AddInfoMessage {
 
-    public static final String ID = "Seam.AddInfoMessage";
+    public static final String ID = "WebUI.AddInfoMessage";
 
     @Context
     protected OperationContext ctx;

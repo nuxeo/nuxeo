@@ -32,11 +32,11 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
  *
  * @since 5.9.4
  */
-@Operation(id = AddToCollectionOperation.ID, category = Constants.CAT_DOCUMENT, label = "Add to collection", description = "Add a list of documents in a collection. "
-        + "No value is returned.")
+@Operation(id = AddToCollectionOperation.ID, category = Constants.CAT_DOCUMENT, label = "Add document to collection", description = "Add a list of documents in a collection. "
+        + "No value is returned.", aliases = { "Collection.AddToCollection" })
 public class AddToCollectionOperation {
 
-    public static final String ID = "Collection.AddToCollection";
+    public static final String ID = "Document.AddToCollection";
 
     @Context
     protected CoreSession session;

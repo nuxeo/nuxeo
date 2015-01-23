@@ -25,10 +25,10 @@ import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = CreateBlob.ID, category = Constants.CAT_FETCH, label = "File From URL", description = "Creates a file from a given URL. The file parameter specifies how to retrieve the file content. It should be an URL to the file you want to use as the source. You can also use an expression to get an URL from the context. Returns the created file.")
+@Operation(id = CreateBlob.ID, category = Constants.CAT_FETCH, label = "File From URL", description = "Creates a file from a given URL. The file parameter specifies how to retrieve the file content. It should be an URL to the file you want to use as the source. You can also use an expression to get an URL from the context. Returns the created file.", aliases = { "Blob.Create" })
 public class CreateBlob {
 
-    public static final String ID = "Blob.Create";
+    public static final String ID = "Blob.CreateFromURL";
 
     /** For tests. */
     public static boolean skipProtocolCheck;

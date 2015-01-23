@@ -32,10 +32,10 @@ import org.nuxeo.ecm.automation.core.scripting.Scripting;
  *             {@link AutomationComponent#activate(org.nuxeo.runtime.model.ComponentContext)} and enable the unit test.
  */
 @Deprecated
-@Operation(id = RunScriptFile.ID, category = Constants.CAT_SCRIPTING, label = "Run Script File", description = "Run a script file in the current context. The file is located using the bundle class loader.")
+@Operation(id = RunScriptFile.ID, category = Constants.CAT_SCRIPTING, label = "Run Script File", description = "Run a script file in the current context. The file is located using the bundle class loader.", aliases = { "Context.RunScriptFile" })
 public class RunScriptFile {
 
-    public static final String ID = "Context.RunScriptFile";
+    public static final String ID = "RunScriptFile";
 
     @Context
     protected OperationContext ctx;

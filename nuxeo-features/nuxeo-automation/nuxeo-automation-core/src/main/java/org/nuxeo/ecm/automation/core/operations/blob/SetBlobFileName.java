@@ -26,10 +26,10 @@ import org.nuxeo.ecm.core.api.model.Property;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = SetBlobFileName.ID, category = Constants.CAT_BLOB, label = "Set File Name", description = "Modify the filename of a file stored in the input document. The file is found in the input document given its xpath specified through the 'xpath' parameter. Return back the input document.")
+@Operation(id = SetBlobFileName.ID, category = Constants.CAT_BLOB, label = "Set File Name", description = "Modify the filename of a file stored in the input document. The file is found in the input document given its xpath specified through the 'xpath' parameter. Return back the input document.", aliases = { "Blob.SetFilename" })
 public class SetBlobFileName {
 
-    public static final String ID = "Blob.SetFilename";
+    public static final String ID = "Document.SetBlobName";
 
     @Context
     protected OperationContext ctx;

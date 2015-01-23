@@ -35,12 +35,12 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 /**
  * @author Anahide Tchertchian
  */
-@Operation(id = DownloadFile.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Download file", description = "Download a file")
+@Operation(id = DownloadFile.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Download file", description = "Download a file", aliases = { "Seam.DownloadFile" })
 public class DownloadFile {
 
     protected static Log log = LogFactory.getLog(DownloadFile.class);
 
-    public static final String ID = "Seam.DownloadFile";
+    public static final String ID = "WebUI.DownloadFile";
 
     @Context
     protected OperationContext ctx;

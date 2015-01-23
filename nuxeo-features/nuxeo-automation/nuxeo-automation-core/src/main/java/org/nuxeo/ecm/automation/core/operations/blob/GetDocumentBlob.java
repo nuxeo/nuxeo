@@ -27,10 +27,10 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author tiry
  */
-@Operation(id = GetDocumentBlob.ID, category = Constants.CAT_BLOB, label = "Get Document File", description = "Gets a file attached to the input document. The file location is specified using an xpath to the blob property of the document. Returns the file.")
+@Operation(id = GetDocumentBlob.ID, category = Constants.CAT_BLOB, label = "Get Document File", description = "Gets a file attached to the input document. The file location is specified using an xpath to the blob property of the document. Returns the file.", aliases = { "Blob.Get" })
 public class GetDocumentBlob {
 
-    public static final String ID = "Blob.Get";
+    public static final String ID = "Document.GetBlob";
 
     @Param(name = "xpath", required = false, values = "file:content")
     protected String xpath = "file:content";

@@ -29,10 +29,10 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
  *
  * @since 5.6
  */
-@Operation(id = LogOperation.ID, category = Constants.CAT_NOTIFICATION, label = "Log", description = "Logging with log4j")
+@Operation(id = LogOperation.ID, category = Constants.CAT_NOTIFICATION, label = "Log", description = "Logging with log4j", aliases = { "LogOperation" })
 public class LogOperation {
 
-    public static final String ID = "LogOperation";
+    public static final String ID = "Log";
 
     @Param(name = "category", required = false)
     protected String category;

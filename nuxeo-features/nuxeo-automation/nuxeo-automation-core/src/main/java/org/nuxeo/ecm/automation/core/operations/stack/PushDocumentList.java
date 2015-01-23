@@ -22,10 +22,10 @@ import org.nuxeo.ecm.core.api.DocumentRefList;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = PushDocumentList.ID, category = Constants.CAT_EXECUTION_STACK, label = "Push Document List", description = "Push the input document list on the context stack. The document list can be restored later as the input using the corrresponding pop operation. Returns the input document list.")
+@Operation(id = PushDocumentList.ID, category = Constants.CAT_EXECUTION_STACK, label = "Push Document List", description = "Push the input document list on the context stack. The document list can be restored later as the input using the corrresponding pop operation. Returns the input document list.", aliases = { "Document.PushList" })
 public class PushDocumentList {
 
-    public static final String ID = "Document.PushList";
+    public static final String ID = "Context.PushDocumentList";
 
     @Context
     protected OperationContext ctx;

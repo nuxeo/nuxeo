@@ -19,10 +19,10 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.jsf.OperationHelper;
 
-@Operation(id = CreateDocumentForm.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Show Create Document Page", description = "Show the document creation form given a type. This is a void operation: the input object is returned back as the output.")
+@Operation(id = CreateDocumentForm.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Show Create Document Page", description = "Show the document creation form given a type. This is a void operation: the input object is returned back as the output.", aliases = { "Seam.CreateDocumentForm" })
 public class CreateDocumentForm {
 
-    public static final String ID = "Seam.CreateDocumentForm";
+    public static final String ID = "WebUI.ShowCreateForm";
 
     @Context
     protected OperationContext ctx;

@@ -35,10 +35,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @since 5.5
  */
-@Operation(id = RunOperationOnList.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run For Each", description = "Run an operation for each element from the list defined by the 'list' parameter. The 'list' parameter is pointing to a context variable that represents the list which will be iterated. The 'item' parameter represents the name of the context variable which will point to the current element in the list at each iteration. You can use the 'isolate' parameter to specify whether or not the evalution context is the same as the parent context or a copy of it. If the 'isolate' parameter is 'true' then a copy of the current context is used and so that modifications in this context will not affect the parent context. Any input is accepted. The input is returned back as output when operation terminates. The 'parameters' injected are accessible in the subcontext ChainParameters. For instance, @{ChainParameters['parameterKey']}.")
+@Operation(id = RunOperationOnList.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run For Each", description = "Run an operation for each element from the list defined by the 'list' parameter. The 'list' parameter is pointing to a context variable that represents the list which will be iterated. The 'item' parameter represents the name of the context variable which will point to the current element in the list at each iteration. You can use the 'isolate' parameter to specify whether or not the evalution context is the same as the parent context or a copy of it. If the 'isolate' parameter is 'true' then a copy of the current context is used and so that modifications in this context will not affect the parent context. Any input is accepted. The input is returned back as output when operation terminates. The 'parameters' injected are accessible in the subcontext ChainParameters. For instance, @{ChainParameters['parameterKey']}.", aliases = { "Context.RunOperationOnList" })
 public class RunOperationOnList {
 
-    public static final String ID = "Context.RunOperationOnList";
+    public static final String ID = "RunOperationOnList";
 
     @Context
     protected OperationContext ctx;

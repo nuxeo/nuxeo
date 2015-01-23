@@ -6,7 +6,7 @@
 
     <chain id="chainWithEscapedParams">
       <operation id="Context.FetchDocument" />
-      <operation id="Document.Query">
+      <operation id="Repository.Query">
         <param type="string" name="query">
           SELECT * FROM Document WHERE dc:created
           &lt; DATE '2013-08-19'

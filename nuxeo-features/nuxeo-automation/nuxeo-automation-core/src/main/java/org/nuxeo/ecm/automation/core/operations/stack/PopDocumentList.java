@@ -31,10 +31,10 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = PopDocumentList.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pop Document List", description = "Restore the last saved input document list in the context input stack")
+@Operation(id = PopDocumentList.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pop Document List", description = "Restore the last saved input document list in the context input stack", aliases = { "Document.PopList" })
 public class PopDocumentList {
 
-    public static final String ID = "Document.PopList";
+    public static final String ID = "Context.PopDocumentList";
 
     @Context
     protected OperationContext ctx;

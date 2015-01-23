@@ -26,10 +26,10 @@ import org.nuxeo.ecm.automation.core.scripting.Scripting;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = RunScript.ID, category = Constants.CAT_SCRIPTING, label = "Run Script", description = "Run a script which content is specified as text in the 'script' parameter")
+@Operation(id = RunScript.ID, category = Constants.CAT_SCRIPTING, label = "Run Script", description = "Run a script which content is specified as text in the 'script' parameter", aliases = { "Context.RunScript" })
 public class RunScript {
 
-    public static final String ID = "Context.RunScript";
+    public static final String ID = "RunScript";
 
     @Context
     protected OperationContext ctx;

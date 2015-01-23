@@ -20,10 +20,10 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
  * @since 5.6
  * @author Laurent Doguin
  */
-@Operation(id = ClearSelectedDocuments.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Clear Selected Documents", description = "Clear the selected documents list.", since = "5.6")
+@Operation(id = ClearSelectedDocuments.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Clear Selected Documents", description = "Clear the selected documents list.", since = "5.6", aliases = { "Seam.ClearSelectedDocuments" })
 public class ClearSelectedDocuments {
 
-    public static final String ID = "Seam.ClearSelectedDocuments";
+    public static final String ID = "WebUI.ClearSelectedDocuments";
 
     @OperationMethod
     public void run() {

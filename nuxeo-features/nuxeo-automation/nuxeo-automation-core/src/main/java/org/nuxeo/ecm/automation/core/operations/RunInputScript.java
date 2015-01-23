@@ -32,10 +32,10 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = RunInputScript.ID, category = Constants.CAT_SCRIPTING, label = "Run Input Script", description = "Run a script from the input blob. A blob comtaining script result is returned.")
+@Operation(id = RunInputScript.ID, category = Constants.CAT_SCRIPTING, label = "Run Input Script", description = "Run a script from the input blob. A blob comtaining script result is returned.", aliases = { "Context.RunInputScript" })
 public class RunInputScript {
 
-    public static final String ID = "Context.RunInputScript";
+    public static final String ID = "RunInputScript";
 
     @Context
     protected OperationContext ctx;

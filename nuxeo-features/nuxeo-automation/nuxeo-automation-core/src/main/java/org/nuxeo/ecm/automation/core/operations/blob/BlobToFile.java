@@ -24,10 +24,10 @@ import org.nuxeo.ecm.core.api.Blob;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = BlobToFile.ID, category = Constants.CAT_BLOB, label = "Export to File", description = "Save the input blob(s) as a file(s) into the given target directory. The blob(s) filename is used as the file name. You can specify an optional <b>prefix</b> string to prepend to the file name. Return back the blob(s).")
+@Operation(id = BlobToFile.ID, category = Constants.CAT_BLOB, label = "Export to File", description = "Save the input blob(s) as a file(s) into the given target directory. The blob(s) filename is used as the file name. You can specify an optional <b>prefix</b> string to prepend to the file name. Return back the blob(s).", aliases = { "Blob.ToFile" })
 public class BlobToFile {
 
-    public static final String ID = "Blob.ToFile";
+    public static final String ID = "Blob.ExportToFS";
 
     @Param(name = "directory", required = true)
     protected String directory;

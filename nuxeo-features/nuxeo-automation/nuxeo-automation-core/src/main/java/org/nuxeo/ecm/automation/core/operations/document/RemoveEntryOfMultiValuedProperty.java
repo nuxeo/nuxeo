@@ -34,10 +34,10 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
  * @since 5.7
  */
-@Operation(id = RemoveEntryOfMultiValuedProperty.ID, category = Constants.CAT_DOCUMENT, label = "Remove Entry Of Multivalued Property", description = "Remove the first entry of the giving value in the multivalued xpath, does nothing if does not exist: <ul<li>if 'is Remove All' is check, all entry instance in the list.</li><li>if not will remove just the first one found</li><ul>")
+@Operation(id = RemoveEntryOfMultiValuedProperty.ID, category = Constants.CAT_DOCUMENT, label = "Remove Entry Of Multivalued Property", description = "Remove the first entry of the giving value in the multivalued xpath, does nothing if does not exist: <ul<li>if 'is Remove All' is check, all entry instance in the list.</li><li>if not will remove just the first one found</li><ul>", aliases = { "RemoveEntryOfMultivaluedProperty" })
 public class RemoveEntryOfMultiValuedProperty extends AbstractOperationMultiValuedProperty {
 
-    public static final String ID = "RemoveEntryOfMultivaluedProperty";
+    public static final String ID = "Document.RemoveEntryOfMultivaluedProperty";
 
     public static final Log log = LogFactory.getLog(RemoveEntryOfMultiValuedProperty.class);
 

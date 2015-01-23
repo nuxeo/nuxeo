@@ -36,13 +36,13 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.8
  */
-@Operation(id = AuditPageProviderOperation.ID, category = Constants.CAT_FETCH, label = "AuditPageProvider", description = "Perform "
+@Operation(id = AuditPageProviderOperation.ID, category = Constants.CAT_FETCH, label = "Audit Query With Page Provider", description = "Perform "
         + "a query or a named provider query against Audit logs. Result is "
         + "paginated. The query result will become the input for the next "
-        + "operation. If no query or provider name is given, a query based on default Audit page provider will be executed.", addToStudio = false)
+        + "operation. If no query or provider name is given, a query based on default Audit page provider will be executed.", addToStudio = false, aliases = { "Audit.PageProvider" })
 public class AuditPageProviderOperation {
 
-    public static final String ID = "Audit.PageProvider";
+    public static final String ID = "Audit.QueryWithPageProvider";
 
     public static final String CURRENT_USERID_PATTERN = "$currentUser";
 

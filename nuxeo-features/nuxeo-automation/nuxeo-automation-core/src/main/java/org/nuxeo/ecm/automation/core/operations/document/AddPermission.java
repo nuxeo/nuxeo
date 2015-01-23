@@ -35,10 +35,10 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
  *
  * @since 5.7.3
  */
-@Operation(id = AddPermission.ID, category = Constants.CAT_DOCUMENT, label = "Add Permission", description = "Add Permission on the input document(s). Returns the document(s).")
+@Operation(id = AddPermission.ID, category = Constants.CAT_DOCUMENT, label = "Add Permission", description = "Add Permission on the input document(s). Returns the document(s).", aliases = { "Document.AddPermission" })
 public class AddPermission {
 
-    public static final String ID = "Document.AddPermission";
+    public static final String ID = "Document.AddACL";
 
     @Context
     protected CoreSession session;

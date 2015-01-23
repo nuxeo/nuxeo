@@ -22,10 +22,10 @@ import org.nuxeo.ecm.core.api.Blob;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = PullBlob.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pull File", description = "Restore the last saved input file in the context input stack. This operation must be used only if a PUSH operation was previously made. Return the first <i>pushed</i> file.")
+@Operation(id = PullBlob.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pull File", description = "Restore the last saved input file in the context input stack. This operation must be used only if a PUSH operation was previously made. Return the first <i>pushed</i> file.", aliases = { "Blob.Pull" })
 public class PullBlob {
 
-    public static final String ID = "Blob.Pull";
+    public static final String ID = "Context.PullBlob";
 
     @Context
     protected OperationContext ctx;

@@ -22,7 +22,7 @@
         <param type="boolean" name="isolate">true</param>
         <param type="string" name="item">attachment</param>
       </operation>
-      <operation id="Context.RunScript">
+      <operation id="RunScript">
         <param type="string" name="script">
            
            Context["mailDocument"].setPropertyValue("dc:title",Context["subject"]);
@@ -42,7 +42,7 @@
       <operation id="Context.RestoreBlobInput">
         <param type="string" name="name">attachment</param>
       </operation>
-      <operation id="Blob.Attach">
+      <operation id="Blob.AttachOnDocument">
         <param type="document" name="document">expr:Context["mailDocument"]</param>
         <param type="boolean" name="save">false</param>
         <param type="string" name="xpath">files:files</param>

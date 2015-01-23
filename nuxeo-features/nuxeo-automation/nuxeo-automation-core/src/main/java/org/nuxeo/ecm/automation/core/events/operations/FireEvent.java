@@ -32,10 +32,10 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = FireEvent.ID, category = Constants.CAT_NOTIFICATION, label = "Send Event", description = "Send a Nuxeo event.")
+@Operation(id = FireEvent.ID, category = Constants.CAT_NOTIFICATION, label = "Send Event", description = "Send a Nuxeo event.", aliases = { "Notification.SendEvent" })
 public class FireEvent {
 
-    public static final String ID = "Notification.SendEvent";
+    public static final String ID = "Event.Fire";
 
     @Context
     protected OperationContext ctx;

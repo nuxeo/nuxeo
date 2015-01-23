@@ -25,10 +25,10 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 /**
  * Get all document blobs
  */
-@Operation(id = GetAllDocumentBlobs.ID, category = Constants.CAT_BLOB, label = "Get All Document Files", description = "Gets a list of all blobs that are attached on the input document. Returns a list of files.")
+@Operation(id = GetAllDocumentBlobs.ID, category = Constants.CAT_BLOB, label = "Get All Document Files", description = "Gets a list of all blobs that are attached on the input document. Returns a list of files.", aliases = { "Blob.GetAll" })
 public class GetAllDocumentBlobs {
 
-    public static final String ID = "Blob.GetAll";
+    public static final String ID = "Document.GetBlobs";
 
     @OperationMethod(collector = BlobListCollector.class)
     public BlobList run(DocumentModel doc) {

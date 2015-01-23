@@ -27,10 +27,10 @@ import org.nuxeo.runtime.api.Framework;
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.5
  */
-@Operation(id = UserWorkspace.ID, category = Constants.CAT_USERS_GROUPS, label = "Get Home", description = "Retrieve user's personal workspace.")
+@Operation(id = UserWorkspace.ID, category = Constants.CAT_USERS_GROUPS, label = "Get Home", description = "Retrieve user's personal workspace.", aliases = { "UserWorkspace.Get" })
 public class UserWorkspace {
 
-    public static final String ID = "UserWorkspace.Get";
+    public static final String ID = "User.GetUserWorkspace";
 
     @Context
     protected CoreSession session;

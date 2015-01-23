@@ -37,10 +37,10 @@ import org.nuxeo.ecm.automation.jsf.OperationHelper;
  *
  * @author Tiry (tdelprat@nuxeo.com)
  */
-@Operation(id = RunOperationInSeam.ID, category = Constants.CAT_UI, label = "Run operation in Seam Context", description = "Initialize a Seam context (including Conversation if needed) and runs an Operation")
+@Operation(id = RunOperationInSeam.ID, category = Constants.CAT_UI, label = "Run operation in Seam Context", description = "Initialize a Seam context (including Conversation if needed) and runs an Operation", aliases = { "Seam.RunOperation" })
 public class RunOperationInSeam {
 
-    public static final String ID = "Seam.RunOperation";
+    public static final String ID = "WebUI.RunOperationInSeam";
 
     @Context
     protected OperationContext ctx;

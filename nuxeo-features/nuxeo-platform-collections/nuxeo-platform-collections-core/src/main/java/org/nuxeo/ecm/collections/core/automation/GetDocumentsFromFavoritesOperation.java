@@ -41,10 +41,10 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
  * @since 6.0
  */
 @Operation(id = GetDocumentsFromFavoritesOperation.ID, category = Constants.CAT_DOCUMENT, label = "Get documents from favorites", description = "Get the list "
-        + "of documents visible from the currentUser's favorites. This is returning a list of documents.")
+        + "of documents visible from the currentUser's favorites. This is returning a list of documents.", aliases = { "Collection.GetElementsInFavorite" })
 public class GetDocumentsFromFavoritesOperation {
 
-    public static final String ID = "Collection.GetElementsInFavorite";
+    public static final String ID = "Favorite.GetDocuments";
 
     @Context
     protected CoreSession session;

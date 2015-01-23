@@ -32,7 +32,7 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
  */
 public class DocumentService {
 
-    public static final String FetchDocument = "Document.Fetch";
+    public static final String FetchDocument = "Repository.GetDocument";
 
     public static final String CreateDocument = "Document.Create";
 
@@ -48,13 +48,13 @@ public class DocumentService {
 
     public static final String GetDocumentParent = "Document.GetParent";
 
-    public static final String Query = "Document.Query";
+    public static final String Query = "Repository.Query";
 
-    public static final String SetPermission = "Document.SetACE";
+    public static final String SetPermission = "Document.AddACE";
 
     public static final String RemoveAcl = "Document.RemoveACL";
 
-    public static final String SetDocumentState = "Document.SetLifeCycle";
+    public static final String SetDocumentState = "Document.FollowLifecycleTransition";
 
     public static final String LockDocument = "Document.Lock";
 
@@ -68,21 +68,21 @@ public class DocumentService {
 
     public static final String PublishDocument = "Document.Publish";
 
-    public static final String CreateRelation = "Relations.CreateRelation";
+    public static final String CreateRelation = "Document.AddRelation";
 
-    public static final String GetRelations = "Relations.GetRelations";
+    public static final String GetRelations = "Document.GetLinkedDocuments";
 
-    public static final String SetBlob = "Blob.Attach";
+    public static final String SetBlob = "Blob.AttachOnDocument";
 
-    public static final String RemoveBlob = "Blob.Remove";
+    public static final String RemoveBlob = "Blob.RemoveFromDocument";
 
-    public static final String GetBlob = "Blob.Get";
+    public static final String GetBlob = "Document.GetBlob";
 
-    public static final String GetBlobs = "Blob.GetList";
+    public static final String GetBlobs = "Document.GetBlobsByProperty";
 
     public static final String CreateVersion = "Document.CreateVersion";
 
-    public static final String FireEvent = "Notification.SendEvent";
+    public static final String FireEvent = "Event.Fire";
 
     // The following are not yet implemented
     public static final String CheckOut = "Document.CheckOut";

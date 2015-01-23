@@ -33,7 +33,7 @@ import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
  *
  * @author Tiry (tdelprat@nuxeo.com)
  */
-@Operation(id = PictureResize.ID, category = Constants.CAT_CONVERSION, label = "Resize a picture", description = "Use conversion service to resize a picture contained in a Document or a Blob")
+@Operation(id = PictureResize.ID, category = Constants.CAT_CONVERSION, label = "Resize a picture", description = "Use conversion service to resize a picture contained in a Document or a Blob", aliases = { "Picture.resize" })
 public class PictureResize {
 
     private static final String HEIGHT = "height";
@@ -42,7 +42,7 @@ public class PictureResize {
 
     private static final String PICTURE_RESIZE_CONVERTER = "pictureResize";
 
-    public static final String ID = "Picture.resize";
+    public static final String ID = "Picture.Resize";
 
     @Param(name = "maxWidth", required = true)
     protected int maxWidth = 0;

@@ -38,10 +38,10 @@ import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = GetRelations.ID, category = Constants.CAT_SERVICES, label = "Get Linked Documents", description = "Get the relations for the input document. The 'outgoing' parameter ca be used to specify whether outgoing or incoming relations should be returned. Retuns a document list.")
+@Operation(id = GetRelations.ID, category = Constants.CAT_SERVICES, label = "Get Linked Documents", description = "Get the relations for the input document. The 'outgoing' parameter ca be used to specify whether outgoing or incoming relations should be returned. Retuns a document list.", aliases = { "Relations.GetRelations" })
 public class GetRelations {
 
-    public static final String ID = "Relations.GetRelations";
+    public static final String ID = "Document.GetLinkedDocuments";
 
     @Context
     protected CoreSession session;

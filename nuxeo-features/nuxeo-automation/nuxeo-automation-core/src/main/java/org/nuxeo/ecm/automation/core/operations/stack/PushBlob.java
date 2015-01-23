@@ -21,10 +21,10 @@ import org.nuxeo.ecm.core.api.Blob;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = PushBlob.ID, category = Constants.CAT_EXECUTION_STACK, label = "Push File", description = "Push the input file on the context stack. The file can be restored later as the input using the corrresponding pop operation. Returns the input file.")
+@Operation(id = PushBlob.ID, category = Constants.CAT_EXECUTION_STACK, label = "Push File", description = "Push the input file on the context stack. The file can be restored later as the input using the corrresponding pop operation. Returns the input file.", aliases = { "Blob.Push" })
 public class PushBlob {
 
-    public static final String ID = "Blob.Push";
+    public static final String ID = "Context.PushBlob";
 
     @Context
     protected OperationContext ctx;

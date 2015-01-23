@@ -32,10 +32,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @since 5.9.4
  */
 @Operation(id = CreateCollectionOperation.ID, category = Constants.CAT_DOCUMENT, label = "Create a collection", description = "Create a new collection. "
-        + "This is returning the document serialization of the created collection.")
+        + "This is returning the document serialization of the created collection.", aliases = { "Collection.CreateCollection" })
 public class CreateCollectionOperation {
 
-    public static final String ID = "Collection.CreateCollection";
+    public static final String ID = "Collection.Create";
 
     @Context
     protected CoreSession session;

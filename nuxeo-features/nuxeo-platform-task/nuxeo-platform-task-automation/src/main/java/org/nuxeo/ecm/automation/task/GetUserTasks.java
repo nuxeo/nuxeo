@@ -45,10 +45,10 @@ import org.nuxeo.ecm.platform.task.dashboard.DashBoardItemImpl;
  * @since 5.5
  */
 @Operation(id = GetUserTasks.ID, category = Constants.CAT_SERVICES, label = "Get user tasks", since = "5.4", description = "List tasks assigned to this user or one of its group."
-        + "Task properties are serialized using JSON and returned in a Blob.")
+        + "Task properties are serialized using JSON and returned in a Blob.", aliases = { "Workflow.GetTask" })
 public class GetUserTasks {
 
-    public static final String ID = "Workflow.GetTask";
+    public static final String ID = "Task.GetAssigned";
 
     private static final Log log = LogFactory.getLog(Log.class);
 
