@@ -27,6 +27,7 @@ import java.util.GregorianCalendar;
 import java.util.Set;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -191,6 +192,16 @@ public class TestSchemaLoaderRestriction extends NXRuntimeTestCase {
         Field attr = ((ComplexType) field.getType()).getField("attr");
         assertEquals(!expected, attr.getConstraints().contains(NotNullConstraint.get()));
         assertEquals(expected, attr.isNillable());
+    }
+
+    @Ignore("NXP-16217: sub sub list restrictions issue")
+    @Test
+    public void testListOfListRestriction() {
+        SchemaManager mgr = Framework.getService(SchemaManager.class);
+        Field subList = mgr.getField("testrestriction:listOfLists/*/stringListItem/*");
+        assertNotNull(subList);
+        Set<Constraint> constraints = subList.getConstraints();
+        assertEquals(1, constraints.size());
     }
 
 }

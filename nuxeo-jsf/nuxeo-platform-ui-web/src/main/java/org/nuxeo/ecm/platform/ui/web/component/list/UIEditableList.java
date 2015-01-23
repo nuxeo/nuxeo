@@ -37,6 +37,7 @@ import javax.faces.FacesException;
 import javax.faces.component.ContextCallback;
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIForm;
 import javax.faces.component.UIInput;
 import javax.faces.component.visit.VisitCallback;
 import javax.faces.component.visit.VisitContext;
@@ -54,6 +55,7 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.platform.el.FieldAdapterManager;
 import org.nuxeo.ecm.platform.ui.web.component.ResettableComponent;
 import org.nuxeo.ecm.platform.ui.web.model.EditableModel;
+import org.nuxeo.ecm.platform.ui.web.model.ProtectedEditableModel;
 import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelImpl;
 import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelRowEvent;
 import org.nuxeo.ecm.platform.ui.web.model.impl.ProtectedEditableModelImpl;
@@ -390,7 +392,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
                 requestMap.remove(modelName);
             } else {
                 // only expose protected model
-                requestMap.put(modelName, new ProtectedEditableModelImpl(model));
+                requestMap.put(modelName, getProtectedModel(model));
             }
         }
 
@@ -416,6 +418,38 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
             }
             StampState.restoreStampState(context, stamp, state);
         }
+    }
+
+    public ProtectedEditableModel getProtectedModel(EditableModel model) {
+        return new ProtectedEditableModelImpl(model, getParentList(), getValueExpression("value"));
+    }
+
+    // parent list detection, cached
+
+    protected transient UIEditableList parentList;
+
+    protected transient boolean parentListSet = false;
+
+    protected ProtectedEditableModel getParentList() {
+        if (parentList == null && !parentListSet) {
+            UIComponent parent = getParent();
+            while (parent != null) {
+                if (parent instanceof UIForm) {
+                    // don't bother
+                    break;
+                }
+                if (parent instanceof UIEditableList) {
+                    parentList = (UIEditableList) parent;
+                    parentListSet = true;
+                    break;
+                }
+                parent = parent.getParent();
+            }
+        }
+        if (parentList != null) {
+            return parentList.getProtectedModel(parentList.getEditableModel());
+        }
+        return null;
     }
 
     /**
@@ -1024,10 +1058,14 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
 
         decode(context);
 
-        // XXX AT: cannot validate values because model is not updated yet
-        // if (isImmediate()) {
-        // executeValidate(context);
-        // }
+        if (isImmediate()) {
+            pushComponentToEL(context, this);
+            // process updates right away so that list can perform its global validation
+            processFacetsAndChildren(context, PhaseId.PROCESS_VALIDATIONS);
+            processFacetsAndChildren(context, PhaseId.UPDATE_MODEL_VALUES);
+            popComponentFromEL(context);
+            executeValidate(context);
+        }
     }
 
     @Override
@@ -1038,14 +1076,15 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
 
         initializeState(true);
 
-        pushComponentToEL(context, this);
-        processFacetsAndChildren(context, PhaseId.PROCESS_VALIDATIONS);
-        popComponentFromEL(context);
+        if (!isImmediate()) {
+            pushComponentToEL(context, this);
+            processFacetsAndChildren(context, PhaseId.PROCESS_VALIDATIONS);
+            // process updates right away so that list can perform its global validation
+            processFacetsAndChildren(context, PhaseId.UPDATE_MODEL_VALUES);
+            popComponentFromEL(context);
 
-        // XXX AT: cannot validate values because model is not updated yet
-        // if (!isImmediate()) {
-        // executeValidate(context);
-        // }
+            executeValidate(context);
+        }
     }
 
     @Override
@@ -1055,45 +1094,6 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         }
 
         initializeState(true);
-
-        pushComponentToEL(context, this);
-        processFacetsAndChildren(context, PhaseId.UPDATE_MODEL_VALUES);
-        popComponentFromEL(context);
-
-        EditableModel model = getEditableModel();
-        if (model.isDirty()) {
-            // remove empty values if needed
-            Boolean removeEmpty = getRemoveEmpty();
-            Object data = model.getWrappedData();
-            Object template = getTemplate();
-            if (removeEmpty && data instanceof List) {
-                List dataList = (List) data;
-                for (int i = dataList.size() - 1; i > -1; i--) {
-                    Object item = dataList.get(i);
-                    if (item == null || item.equals(template)) {
-                        model.removeValue(i);
-                    }
-                }
-            }
-        }
-
-        Object submitted = model.getWrappedData();
-        if (submitted == null) {
-            // set submitted to empty list to force validation
-            submitted = Collections.emptyList();
-        }
-        setSubmittedValue(submitted);
-
-        // execute validate now that value is submitted
-        executeValidate(context);
-
-        if (isValid() && isLocalValueSet()) {
-            Boolean setDiff = getDiff();
-            if (setDiff) {
-                // set list diff instead of the whole list
-                setValue(model.getListDiff());
-            }
-        }
 
         try {
             updateModel(context);
@@ -1162,6 +1162,37 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
 
     private void executeValidate(FacesContext context) {
         try {
+            EditableModel model = getEditableModel();
+            if (model.isDirty()) {
+                // remove empty values if needed
+                Boolean removeEmpty = getRemoveEmpty();
+                Object data = model.getWrappedData();
+                Object template = getTemplate();
+                if (removeEmpty && data instanceof List) {
+                    List dataList = (List) data;
+                    for (int i = dataList.size() - 1; i > -1; i--) {
+                        Object item = dataList.get(i);
+                        if (item == null || item.equals(template)) {
+                            model.removeValue(i);
+                        }
+                    }
+                }
+            }
+
+            if (isValid() && isLocalValueSet()) {
+                Boolean setDiff = getDiff();
+                if (setDiff) {
+                    // set list diff instead of the whole list
+                    setValue(model.getListDiff());
+                }
+            }
+
+            Object submitted = model.getWrappedData();
+            if (submitted == null) {
+                // set submitted to empty list to force validation
+                submitted = Collections.emptyList();
+            }
+            setSubmittedValue(submitted);
             validate(context);
         } catch (RuntimeException e) {
             context.renderResponse();

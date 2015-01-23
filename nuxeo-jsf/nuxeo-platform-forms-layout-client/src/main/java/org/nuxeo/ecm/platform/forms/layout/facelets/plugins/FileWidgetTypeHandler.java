@@ -73,7 +73,7 @@ public class FileWidgetTypeHandler extends AbstractWidgetTypeHandler {
         }
         // file components do not support client behaviors => do not add input
         // slot
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper, false);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper, false, true);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     UIInputFile.COMPONENT_TYPE, null);

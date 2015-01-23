@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.constraints.NotNullConstraint;
 import org.nuxeo.runtime.api.Framework;
@@ -134,9 +135,14 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
 
     @Override
     public DocumentValidationReport validate(Field field, Object value) {
-        String prefix = field.getName().getPrefix();
-        Schema schema = getSchemaManager().getSchemaFromPrefix(prefix);
-        return new DocumentValidationReport(validate(schema, field, value));
+        Schema schema = field.getDeclaringType().getSchema();
+        return new DocumentValidationReport(validate(schema, field, value, true));
+    }
+
+    @Override
+    public DocumentValidationReport validate(Field field, Object value, boolean validateSubProperties) {
+        Schema schema = field.getDeclaringType().getSchema();
+        return new DocumentValidationReport(validate(schema, field, value, validateSubProperties));
     }
 
     @Override
@@ -147,42 +153,20 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
 
     @Override
     public DocumentValidationReport validate(String xpath, Object value) throws IllegalArgumentException {
-        String[] splitted = xpath.split(":|/");
-        if (splitted.length < 2) {
-            throw new IllegalArgumentException("Invalid xpath " + xpath);
-        }
-        Schema schemaDef = getSchemaManager().getSchemaFromPrefix(splitted[0]);
-        if (schemaDef == null) {
-            throw new IllegalArgumentException("Invalid xpath " + xpath);
-        }
-        Field field = schemaDef.getField(splitted[1]);
+        SchemaManager tm = Framework.getService(SchemaManager.class);
+        Field field = tm.getField(xpath);
         if (field == null) {
             throw new IllegalArgumentException("Invalid xpath " + xpath);
         }
-        for (int i = 2; i < splitted.length; i++) {
-            if (field.getType().isListType()) {
-                ListType listType = (ListType) field.getType();
-                if (!splitted[i].equals(listType.getFieldName())) {
-                    throw new IllegalArgumentException("Invalid xpath " + xpath);
-                }
-                field = listType.getField();
-            } else if (field.getType().isComplexType()) {
-                ComplexType complexType = (ComplexType) field.getType();
-                field = complexType.getField(splitted[i]);
-                if (field == null) {
-                    throw new IllegalArgumentException("Invalid xpath " + xpath);
-                }
-            }
-        }
-        return new DocumentValidationReport(validate(schemaDef, field, value));
+        return new DocumentValidationReport(validate(field.getDeclaringType().getSchema(), field, value, true));
     }
 
     // ///////////////////
     // UTILITY OPERATIONS
 
-    protected List<ConstraintViolation> validate(Schema schema, Field field, Object value) {
+    protected List<ConstraintViolation> validate(Schema schema, Field field, Object value, boolean validateSubProperties) {
         List<PathNode> path = Arrays.asList(new PathNode(field));
-        return validateAnyTypeField(schema, path, field, value);
+        return validateAnyTypeField(schema, path, field, value, validateSubProperties);
     }
 
     // ////////////////////////////
@@ -191,13 +175,28 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
     /**
      * @since 7.1
      */
-    private List<ConstraintViolation> validateAnyTypeField(Schema schema, List<PathNode> path, Field field, Object value) {
+    @SuppressWarnings("rawtypes")
+    private List<ConstraintViolation> validateAnyTypeField(Schema schema, List<PathNode> path, Field field,
+            Object value, boolean validateSubProperties) {
         if (field.getType().isSimpleType()) {
             return validateSimpleTypeField(schema, path, field, value);
         } else if (field.getType().isComplexType()) {
-            return validateComplexTypeField(schema, path, field, value);
+            List<ConstraintViolation> res = new ArrayList<>();
+            if (!field.isNillable() && (value == null || (value instanceof Map && ((Map) value).isEmpty()))) {
+                addNotNullViolation(res, schema, path);
+            }
+            if (validateSubProperties) {
+                List<ConstraintViolation> subs = validateComplexTypeField(schema, path, field, value);
+                if (subs != null) {
+                    res.addAll(subs);
+                }
+            }
+            return res;
         } else if (field.getType().isListType()) {
-            return validateListTypeField(schema, path, field, value);
+            // maybe validate the list type here
+            if (validateSubProperties) {
+                return validateListTypeField(schema, path, field, value);
+            }
         }
         // unrecognized type : ignored
         return Collections.emptyList();
@@ -222,8 +221,11 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
     }
 
     /**
+     * Validates sub fields for given complex field.
+     *
      * @since 7.1
      */
+    @SuppressWarnings("unchecked")
     private List<ConstraintViolation> validateComplexTypeField(Schema schema, List<PathNode> path, Field field,
             Object value) {
         assert field.getType().isComplexType();
@@ -233,24 +235,19 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
         if (value != null && !(value instanceof Map)) {
             return violations;
         }
-        @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) value;
-        if (value == null || map.isEmpty()) {
-            if (!field.isNillable()) {
-                addNotNullViolation(violations, schema, path);
-            }
-        } else {
-            for (Field child : complexType.getFields()) {
-                Object item = map.get(child.getName().getLocalName());
-                List<PathNode> subPath = new ArrayList<PathNode>(path);
-                subPath.add(new PathNode(child));
-                violations.addAll(validateAnyTypeField(schema, subPath, child, item));
-            }
+        for (Field child : complexType.getFields()) {
+            Object item = map.get(child.getName().getLocalName());
+            List<PathNode> subPath = new ArrayList<PathNode>(path);
+            subPath.add(new PathNode(child));
+            violations.addAll(validateAnyTypeField(schema, subPath, child, item, true));
         }
         return violations;
     }
 
     /**
+     * Validates sub fields for given list field.
+     *
      * @since 7.1
      */
     private List<ConstraintViolation> validateListTypeField(Schema schema, List<PathNode> path, Field field,
@@ -270,7 +267,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
             for (Object item : castedValue) {
                 List<PathNode> subPath = new ArrayList<PathNode>(path);
                 subPath.add(new PathNode(listField, index));
-                violations.addAll(validateAnyTypeField(schema, subPath, listField, item));
+                violations.addAll(validateAnyTypeField(schema, subPath, listField, item, true));
                 index++;
             }
             return violations;
