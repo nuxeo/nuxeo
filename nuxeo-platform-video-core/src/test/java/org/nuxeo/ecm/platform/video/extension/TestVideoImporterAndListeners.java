@@ -196,7 +196,10 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         Framework.getService(EventService.class).waitForAsyncCompletion();
 
         // the test video is very short, no storyboard:
-        assertEquals(0.05, docModel.getPropertyValue(DURATION_PROPERTY));
+        Serializable duration = docModel.getPropertyValue(DURATION_PROPERTY);
+        if (!Double.valueOf(0.05).equals(duration)) { // ffmpeg 2.2.1
+            assertEquals(0.04, duration);
+        }
         List<Map<String, Serializable>> storyboard = docModel.getProperty("vid:storyboard").getValue(List.class);
         assertNotNull(storyboard);
         assertEquals(0, storyboard.size());
@@ -222,7 +225,10 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
 
         docModel = session.getDocument(docModel.getRef());
         // the test video last around 10 minutes
-        assertEquals(653.81, docModel.getPropertyValue(DURATION_PROPERTY));
+        Serializable duration = docModel.getPropertyValue(DURATION_PROPERTY);
+        if (!Double.valueOf(653.81).equals(duration)) { // ffmpeg 2.2.1
+            assertEquals(653.8, duration);
+        }
         List<Map<String, Serializable>> storyboard = docModel.getProperty("vid:storyboard").getValue(List.class);
         assertNotNull(storyboard);
         assertEquals(9, storyboard.size());
