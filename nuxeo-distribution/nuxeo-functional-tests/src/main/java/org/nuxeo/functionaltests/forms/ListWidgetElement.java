@@ -46,7 +46,7 @@ public class ListWidgetElement extends AbstractWidgetElement {
         AjaxRequestManager arm = new AjaxRequestManager(AbstractTest.driver);
         arm.watchAjaxRequests();
         addElement.click();
-        arm.watchAjaxRequests();
+        arm.waitForAjaxRequests();
     }
 
     public void removeElement(int index) {
