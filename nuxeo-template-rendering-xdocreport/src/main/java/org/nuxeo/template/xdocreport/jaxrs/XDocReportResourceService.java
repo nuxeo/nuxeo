@@ -17,7 +17,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
@@ -174,14 +174,9 @@ public class XDocReportResourceService extends AbstractResourceService implement
                 TemplateSourceDocument template = target.getAdapter(TemplateSourceDocument.class);
                 if (template != null) {
                     Blob oldBlob = template.getTemplateBlob();
-
-                    Blob newBlob = new InputStreamBlob(dataIn.getContent());
-
-                    // make stream resettable
-                    newBlob = newBlob.persist();
+                    Blob newBlob = new FileBlob(dataIn.getContent());
                     newBlob.setFilename(oldBlob.getFilename());
                     newBlob.setMimeType(oldBlob.getMimeType());
-
                     template.setTemplateBlob(newBlob, true);
                 }
             } catch (Exception e) {

@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
@@ -43,8 +42,6 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorServic
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.streaming.FileSource;
-import org.nuxeo.runtime.services.streaming.StreamSource;
 
 public class DeckJSPDFConverter implements Converter {
 
@@ -60,17 +57,9 @@ public class DeckJSPDFConverter implements Converter {
             Blob blob = blobHolder.getBlob();
             File inputFile = null;
             if (blob instanceof FileBlob) {
-                inputFile = ((FileBlob) blob).getFile();
+                inputFile = blob.getFile();
             } else if (blob instanceof StorageBlob) {
-                StreamSource source = ((StorageBlob) blob).getBinary().getStreamSource();
-                inputFile = ((FileSource) source).getFile();
-            } else if (blob instanceof StreamingBlob) {
-                StreamingBlob streamingBlob = ((StreamingBlob) blob);
-                if (!streamingBlob.isPersistent()) {
-                    streamingBlob.persist();
-                }
-                StreamSource source = streamingBlob.getStreamSource();
-                inputFile = ((FileSource) source).getFile();
+                inputFile = blob.getFile();
             } else if (blob instanceof StringBlob) {
                 inputFile = File.createTempFile("deckJsSource", ".html");
                 Framework.trackFile(inputFile, this);

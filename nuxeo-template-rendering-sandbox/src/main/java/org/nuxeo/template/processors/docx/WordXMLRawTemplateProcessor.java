@@ -31,10 +31,10 @@ import java.util.zip.ZipInputStream;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.tree.DefaultElement;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -65,10 +65,10 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
         Blob blob = templateDocument.getTemplateBlob(templateName);
         String fileName = blob.getFilename();
         List<TemplateInput> params = templateDocument.getParams(templateName);
-        File sourceZipFile = File.createTempFile("WordXMLTemplate", ".zip");
-        blob.transferTo(sourceZipFile);
 
-        ZipUtils.unzip(sourceZipFile, workingDir);
+        try (CloseableFile source = blob.getCloseableFile()) {
+            ZipUtils.unzip(source.getFile(), workingDir);
+        }
 
         File xmlCustomFile = new File(workingDir.getAbsolutePath() + "/docProps/custom.xml");
 
@@ -122,7 +122,6 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
 
         // clean up
         FileUtils.deleteTree(workingDir);
-        sourceZipFile.delete();
 
         Blob newBlob = new FileBlob(newZipFile);
         Framework.trackFile(newZipFile, newBlob);

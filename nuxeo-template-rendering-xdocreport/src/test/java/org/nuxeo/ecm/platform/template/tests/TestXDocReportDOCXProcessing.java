@@ -35,11 +35,7 @@ public class TestXDocReportDOCXProcessing extends SimpleTemplateDocTestCase {
 
         Blob newBlob = adapter.renderAndStoreAsAttachment(TEMPLATE_NAME, true);
 
-        System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
-
         String xmlContent = ZipXmlHelper.readXMLContent(newBlob, ZipXmlHelper.DOCX_MAIN_FILE);
-
-        // System.out.println(xmlContent);
 
         assertTrue(xmlContent.contains("John Smith"));
         assertTrue(xmlContent.contains("some description"));
@@ -69,11 +65,7 @@ public class TestXDocReportDOCXProcessing extends SimpleTemplateDocTestCase {
 
         Blob newBlob = adapter.renderAndStoreAsAttachment(TEMPLATE_NAME, true);
 
-        System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
-
         String xmlContent = ZipXmlHelper.readXMLContent(newBlob, ZipXmlHelper.DOCX_MAIN_FILE);
-
-        // System.out.println(xmlContent);
 
         assertTrue(xmlContent.contains("John Smith"));
         assertTrue(xmlContent.contains("some description"));
@@ -103,11 +95,7 @@ public class TestXDocReportDOCXProcessing extends SimpleTemplateDocTestCase {
 
         Blob newBlob = adapter.renderAndStoreAsAttachment(TEMPLATE_NAME, true);
 
-        System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
-
         String xmlContent = ZipXmlHelper.readXMLContent(newBlob, ZipXmlHelper.DOCX_MAIN_FILE);
-
-        // System.out.println(xmlContent);
 
         assertTrue(xmlContent.contains("John Smith"));
         assertTrue(xmlContent.contains("some description"));
@@ -141,11 +129,7 @@ public class TestXDocReportDOCXProcessing extends SimpleTemplateDocTestCase {
 
         Blob newBlob = adapter.renderAndStoreAsAttachment(TEMPLATE_NAME, true);
 
-        System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
-
         String xmlContent = ZipXmlHelper.readXMLContent(newBlob, ZipXmlHelper.DOCX_MAIN_FILE);
-
-        // System.out.println(xmlContent);
 
         assertTrue(xmlContent.contains("John Smith"));
         assertTrue(xmlContent.contains("some description"));

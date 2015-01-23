@@ -26,11 +26,8 @@ public class TestODSProcessingWithSimpleAttributes extends SimpleTemplateDocTest
 
         Blob newBlob = adapter.renderAndStoreAsAttachment(TEMPLATE_NAME, true);
 
-        System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
-
         String xmlContent = ZipXmlHelper.readXMLContent(newBlob, ZipXmlHelper.OOO_MAIN_FILE);
 
-        System.out.println(xmlContent);
         assertTrue(xmlContent.contains("Subject 1"));
         assertTrue(xmlContent.contains("Subject 2"));
         assertTrue(xmlContent.contains("Subject 3"));

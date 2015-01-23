@@ -27,18 +27,17 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.io.ExportConstants;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.AbstractDocumentReader;
 import org.nuxeo.ecm.core.io.impl.ExportedDocumentImpl;
-import org.nuxeo.runtime.services.streaming.FileSource;
 
 /**
  * CoreIO reader used to read a exploded XML archive.
  * <p>
  * This format is used here to make changes in the models easier
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class XMLModelReader extends AbstractDocumentReader {
@@ -74,7 +73,7 @@ public class XMLModelReader extends AbstractDocumentReader {
                     xdoc.setDocument(doc);
                     xdoc.setPath(new Path(modelName));
                 } else { // presume a blob
-                    xdoc.putBlob(file.getName(), new StreamingBlob(new FileSource(file)));
+                    xdoc.putBlob(file.getName(), new FileBlob(file));
                 }
             }
         }
