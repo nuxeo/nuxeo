@@ -14,14 +14,20 @@
 
 package org.nuxeo.ecm.core.schema.types;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Calendar;
 import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.schema.Namespace;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaNames;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
@@ -29,6 +35,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestTypes extends NXRuntimeTestCase {
@@ -58,6 +65,7 @@ public class TestTypes extends NXRuntimeTestCase {
         assertTrue(type.validate(0));
         assertTrue(type.validate(""));
         assertTrue(type.validate(true));
+        assertTrue(type.validate("blah"));
     }
 
     // Primitive types
@@ -77,6 +85,7 @@ public class TestTypes extends NXRuntimeTestCase {
         assertTrue(type.validate(0));
         assertTrue(type.validate(""));
         assertTrue(type.validate(true));
+        assertTrue(type.validate("blah"));
 
         // TODO: test convert method
     }
@@ -96,10 +105,11 @@ public class TestTypes extends NXRuntimeTestCase {
         assertEquals(0, type.getTypeHierarchy().length);
 
         // Validation tests
-        assertFalse(type.validate(0));
-        assertFalse(type.validate(""));
+        assertTrue(type.validate(0));
+        assertTrue(type.validate(""));
         assertTrue(type.validate(true));
         assertTrue(type.validate(false));
+        assertTrue(type.validate("blah")); // will set Boolean.FALSE
 
         // Conversion tests
         assertNull(type.decode(""));
@@ -127,15 +137,21 @@ public class TestTypes extends NXRuntimeTestCase {
 
         // Validation tests
         assertTrue(type.validate(0));
-        assertFalse(type.validate(""));
+        assertTrue(type.validate(""));
         assertFalse(type.validate(true));
+        assertFalse(type.validate("blah"));
 
         // Conversion tests
         assertNull(type.decode(""));
         assertEquals(0, type.convert(0));
         assertEquals(0, type.convert("0"));
         assertEquals(0, type.convert(0.5));
-        assertNull(type.convert("abc"));
+        try {
+            assertNull(type.convert("abc"));
+            fail("Should have raised a RuntimeException");
+        } catch (RuntimeException e) {
+            assertEquals("java.lang.NumberFormatException: For input string: \"abc\"", e.getMessage());
+        }
         assertEquals(0, type.decode("0"));
     }
 
@@ -156,14 +172,20 @@ public class TestTypes extends NXRuntimeTestCase {
         assertTrue(type.validate(0));
         assertTrue(type.validate(0.0));
         assertFalse(type.validate(true));
-        assertFalse(type.validate(""));
+        assertTrue(type.validate(""));
+        assertFalse(type.validate("blah"));
 
         // Conversion tests
         assertNull(type.decode(""));
         assertEquals(0.0, type.convert(0));
         assertEquals(0.5, type.convert(0.5));
         assertEquals(3.14, type.convert("3.14"));
-        assertNull(type.convert("abc"));
+        try {
+            assertNull(type.convert("abc"));
+            fail("Should have raised a RuntimeException");
+        } catch (RuntimeException e) {
+            assertEquals("java.lang.NumberFormatException: For input string: \"abc\"", e.getMessage());
+        }
         assertEquals(0.0, type.decode("0.0"));
         assertEquals(3.14, type.decode("3.14"));
     }
@@ -183,15 +205,21 @@ public class TestTypes extends NXRuntimeTestCase {
 
         // Validation tests
         assertTrue(type.validate(0));
-        assertFalse(type.validate(""));
+        assertTrue(type.validate(""));
         assertFalse(type.validate(true));
+        assertFalse(type.validate("blah"));
 
         // Conversion tests
         assertNull(type.decode(""));
         assertEquals(0L, type.convert(0));
         assertEquals(0L, type.convert("0"));
         assertEquals(0L, type.convert(0.5));
-        assertNull(type.convert("abc"));
+        try {
+            assertNull(type.convert("abc"));
+            fail("Should have raised a RuntimeException");
+        } catch (RuntimeException e) {
+            assertEquals("java.lang.NumberFormatException: For input string: \"abc\"", e.getMessage());
+        }
         assertEquals(0L, type.decode("0"));
     }
 
@@ -237,6 +265,7 @@ public class TestTypes extends NXRuntimeTestCase {
         assertFalse(type.validate(0));
         assertFalse(type.validate(""));
         assertFalse(type.validate(true));
+        assertFalse(type.validate("blah"));
 
         // TODO: add tests for collections once this is implemented
     }
@@ -274,6 +303,119 @@ public class TestTypes extends NXRuntimeTestCase {
         assertEquals(schema.getName(), name);
         assertEquals(schema.getNamespace().uri, uri);
         assertEquals(schema.getNamespace().prefix, prefix);
+    }
+
+    @Test
+    public void testFieldFromXpath() throws Exception {
+        deployTestContrib("org.nuxeo.ecm.core.schema", "OSGI-INF/test-advanced-schema.xml");
+        SchemaManager sm = Framework.getService(SchemaManager.class);
+        assertNotNull(sm);
+        Field field = sm.getField("tp:foo");
+        assertNull(field);
+        field = sm.getField("dc:title");
+        assertEquals("title", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+        field = sm.getField("dc:contributors");
+        assertEquals("contributors", field.getName().getLocalName());
+        assertEquals("contributorList", field.getType().getName());
+        field = sm.getField("tp:stringArray");
+        assertEquals("stringArray", field.getName().getLocalName());
+        assertEquals("stringArrayType", field.getType().getName());
+        field = sm.getField("tp:stringArray/*");
+        assertEquals("item", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+        field = sm.getField("tp:stringArray/1");
+        assertEquals("item", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+        field = sm.getField("tp:complexChain");
+        assertEquals("complexChain", field.getName().getLocalName());
+        assertEquals("complexChain", field.getType().getName());
+        field = sm.getField("tp:complexChain/stringItem");
+        assertEquals("stringItem", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+        field = sm.getField("tp:complexChain/complexItem");
+        assertEquals("complexItem", field.getName().getLocalName());
+        assertEquals("complexType", field.getType().getName());
+        field = sm.getField("tp:complexList/*/stringItem");
+        assertEquals("stringItem", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+        field = sm.getField("tp:complexList/0/stringItem");
+        assertEquals("stringItem", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+
+        field = sm.getField("tp:listOfLists");
+        assertEquals("listOfLists", field.getName().getLocalName());
+        assertEquals("listOfListsType", field.getType().getName());
+        field = sm.getField("tp:listOfLists/*");
+        assertEquals("listOfListsItem", field.getName().getLocalName());
+        assertEquals("listOfListsItemType", field.getType().getName());
+        field = sm.getField("tp:listOfLists/*/stringItem");
+        assertEquals("stringItem", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+        // XXX maybe this one should resolve to null (invalid item index in xpath) (?)
+        field = sm.getField("tp:listOfLists/stringItem");
+        assertEquals("stringItem", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+        field = sm.getField("tp:listOfLists/*/stringListItem/*");
+        assertEquals("item", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+        field = sm.getField("tp:listOfLists/*/stringListItem/0");
+        assertEquals("item", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+        // XXX maybe this one should resolve to null (invalid item index in xpath) (?)
+        field = sm.getField("tp:listOfLists/stringListItem");
+        assertEquals("stringListItem", field.getName().getLocalName());
+        assertEquals("stringList", field.getType().getName());
+    }
+
+    @Test
+    public void testSchemaFromType() throws Exception {
+        deployTestContrib("org.nuxeo.ecm.core.schema", "OSGI-INF/test-advanced-schema.xml");
+        Schema schema = getSchema("foo");
+        assertNull(schema);
+        schema = getSchema("dc:title");
+        assertEquals("dublincore", schema.getName());
+        schema = getSchema("dc:contributors");
+        assertEquals("dublincore", schema.getName());
+        schema = getSchema("tp:stringArray");
+        assertEquals("testProperties", schema.getName());
+        schema = getSchema("tp:complexChain");
+        assertEquals("testProperties", schema.getName());
+        schema = getSchema("tp:complexChain/stringItem");
+        assertEquals("testProperties", schema.getName());
+        schema = getSchema("tp:complexChain/complexItem");
+        assertEquals("testProperties", schema.getName());
+        schema = getSchema("tp:complexList/*/stringItem");
+        assertEquals("testProperties", schema.getName());
+        schema = getSchema("tp:complexList/0/stringItem");
+        assertEquals("testProperties", schema.getName());
+
+        schema = getSchema("tp:listOfLists");
+        assertEquals("testProperties", schema.getName());
+        schema = getSchema("tp:listOfLists/*");
+        assertEquals("testProperties", schema.getName());
+        schema = getSchema("tp:listOfLists/*/stringItem");
+        assertEquals("testProperties", schema.getName());
+        // XXX maybe this one should resolve to null (invalid item index in xpath) (?)
+        schema = getSchema("tp:listOfLists/stringItem");
+        assertEquals("testProperties", schema.getName());
+        schema = getSchema("tp:listOfLists/*/stringListItem/*");
+        assertEquals("testProperties", schema.getName());
+        schema = getSchema("tp:listOfLists/*/stringListItem/0");
+        assertEquals("testProperties", schema.getName());
+        // XXX maybe this one should resolve to null (invalid item index in xpath) (?)
+        schema = getSchema("tp:listOfLists/stringListItem");
+        assertEquals("testProperties", schema.getName());
+    }
+
+    protected Schema getSchema(String xpath) {
+        SchemaManager sm = Framework.getService(SchemaManager.class);
+        assertNotNull(sm);
+        Field field = sm.getField(xpath);
+        if (field != null) {
+            return field.getDeclaringType().getSchema();
+        }
+        return null;
     }
 
 }

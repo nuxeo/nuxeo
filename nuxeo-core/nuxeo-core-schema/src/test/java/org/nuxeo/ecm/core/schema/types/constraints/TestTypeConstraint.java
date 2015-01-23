@@ -97,8 +97,8 @@ public class TestTypeConstraint {
     }
 
     @Test
-    public void testBooleanDeniedBooleanAsString() {
-        assertFalse(new TypeConstraint(BooleanType.INSTANCE).validate("false"));
+    public void testBooleanAcceptBooleanAsString() {
+        assertTrue(new TypeConstraint(BooleanType.INSTANCE).validate("false"));
     }
 
     @Test
@@ -122,8 +122,8 @@ public class TestTypeConstraint {
     }
 
     @Test
-    public void testIntegerDeniedIntegerAsString() {
-        assertFalse(new TypeConstraint(IntegerType.INSTANCE).validate("12"));
+    public void testIntegerAcceptIntegerAsString() {
+        assertTrue(new TypeConstraint(IntegerType.INSTANCE).validate("12"));
     }
 
     @Test
@@ -137,8 +137,8 @@ public class TestTypeConstraint {
     }
 
     @Test
-    public void testLongDeniedIntegerAsString() {
-        assertFalse(new TypeConstraint(LongType.INSTANCE).validate("12"));
+    public void testLongAcceptIntegerAsString() {
+        assertTrue(new TypeConstraint(LongType.INSTANCE).validate("12"));
     }
 
     @Test
@@ -152,8 +152,8 @@ public class TestTypeConstraint {
     }
 
     @Test
-    public void testDoubleDeniedIntegerAsString() {
-        assertFalse(new TypeConstraint(DoubleType.INSTANCE).validate("12"));
+    public void testDoubleAcceptIntegerAsString() {
+        assertTrue(new TypeConstraint(DoubleType.INSTANCE).validate("12"));
     }
 
     @Test

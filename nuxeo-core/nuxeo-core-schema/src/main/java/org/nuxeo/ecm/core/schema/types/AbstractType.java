@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.schema.TypeProvider;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 import org.nuxeo.runtime.api.Framework;
@@ -65,7 +65,7 @@ public abstract class AbstractType implements Type {
 
     @Override
     public Schema getSchema() {
-        return Framework.getLocalService(TypeProvider.class).getSchema(schema);
+        return Framework.getLocalService(SchemaManager.class).getSchema(schema);
     }
 
     @Override

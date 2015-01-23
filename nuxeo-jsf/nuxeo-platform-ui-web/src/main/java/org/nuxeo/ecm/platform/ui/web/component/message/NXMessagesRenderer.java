@@ -26,6 +26,7 @@ import javax.faces.component.UIMessages;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.renderkit.html_basic.MessagesRenderer;
@@ -131,11 +132,11 @@ public class NXMessagesRenderer extends MessagesRenderer {
                     + "    className: \"%s\",\n" + "    timeout: \"%d\"" + "  })\n" + "});\n";
             String formattedScriptContent;
             if (showDetail) {
-                formattedScriptContent = String.format(scriptContent, detail, summary, errorType, severityStyleClass,
-                        timeout);
+                formattedScriptContent = String.format(scriptContent, StringEscapeUtils.escapeJavaScript(detail),
+                        StringEscapeUtils.escapeJavaScript(summary), errorType, severityStyleClass, timeout);
             } else {
-                formattedScriptContent = String.format(scriptContent, "", summary, errorType, severityStyleClass,
-                        timeout);
+                formattedScriptContent = String.format(scriptContent, "", StringEscapeUtils.escapeJavaScript(summary),
+                        errorType, severityStyleClass, timeout);
             }
             writer.writeText(formattedScriptContent, null);
             writer.endElement("script");

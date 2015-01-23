@@ -98,6 +98,13 @@ public interface DocumentValidationService {
     DocumentValidationReport validate(Field field, Object value);
 
     /**
+     * Validates a value according to some {@link Field} definition.
+     *
+     * @since 7.2
+     */
+    DocumentValidationReport validate(Field field, Object value, boolean validateSubProperties);
+
+    /**
      * Validates a property according to its {@link Field} definition.
      *
      * @since 7.1
