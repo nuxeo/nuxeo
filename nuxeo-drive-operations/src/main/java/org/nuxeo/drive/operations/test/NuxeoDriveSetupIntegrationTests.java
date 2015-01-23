@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -93,7 +93,7 @@ public class NuxeoDriveSetupIntegrationTests {
         // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed
         NuxeoDriveOperationHelper.commitAndReopenTransaction();
 
-        return StreamingBlob.createFromString(testUserCredentials, "text/plain");
+        return new StringBlob(testUserCredentials, "text/plain");
     }
 
     protected String createTestUsers(String[] testUserNames) throws ClientException {

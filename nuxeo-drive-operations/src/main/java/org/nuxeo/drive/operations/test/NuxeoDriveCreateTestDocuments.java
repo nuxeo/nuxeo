@@ -25,7 +25,7 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -63,7 +63,7 @@ public class NuxeoDriveCreateTestDocuments {
         FileManager fileManager = Framework.getLocalService(FileManager.class);
         for (int i = 0; i < number; i++) {
             String name = String.format(namePattern, i);
-            StreamingBlob content = StreamingBlob.createFromString(String.format(contentPattern, i));
+            Blob content = new StringBlob(String.format(contentPattern, i));
             content.setFilename(name);
             fileManager.createDocumentFromBlob(session, content, parent.getPathAsString(), true, name);
             if (delay > 0) {
@@ -73,6 +73,6 @@ public class NuxeoDriveCreateTestDocuments {
         // Commit transaction explicitly to ensure client-side consistency
         // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed
         NuxeoDriveOperationHelper.commitAndReopenTransaction();
-        return StreamingBlob.createFromString(number.toString(), "text/plain");
+        return new StringBlob(number.toString(), "text/plain");
     }
 }
