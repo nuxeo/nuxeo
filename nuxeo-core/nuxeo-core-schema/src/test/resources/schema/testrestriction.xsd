@@ -154,4 +154,32 @@
     </xs:complexType>
   </xs:element>
 
+  <!--  list of lists use case -->
+
+  <xs:element name="listOfLists" type="nxs:vlistOfListsType" />
+
+  <xs:complexType name="vlistOfListsType">
+    <xs:sequence>
+      <xs:element name="listOfListsItem" type="nxs:vlistOfListsItemType"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="vlistOfListsItemType">
+    <xs:sequence>
+      <xs:element name="stringItem" type="xs:string" />
+      <xs:element name="stringListItem" type="nxs:vstringList" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="restrictedType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[A-Z][a-z '-]+" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="vstringList">
+    <xs:list itemType="nxs:restrictedType" />
+  </xs:simpleType>
+
 </xs:schema>
