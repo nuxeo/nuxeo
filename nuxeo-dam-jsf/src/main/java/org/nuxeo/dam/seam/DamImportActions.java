@@ -21,8 +21,7 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.nuxeo.dam.DamConstants.REFRESH_DAM_SEARCH;
 
-import java.io.File;
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,6 +69,7 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.webapp.dnd.DndConfigurationHelper;
+import org.nuxeo.ecm.webapp.filemanager.FileManageActionsBean;
 import org.nuxeo.ecm.webapp.filemanager.NxUploadedFile;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.event.FileUploadEvent;
@@ -280,9 +280,8 @@ public class DamImportActions implements Serializable {
         try {
             List<Blob> blobs = new ArrayList<>();
             for (NxUploadedFile uploadItem : uploadedFiles) {
-                String filename = FileUtils.getCleanFileName(uploadItem.getName());
-                Blob blob = FileUtils.createTemporaryFileBlob(uploadItem.getFile(), filename,
-                        uploadItem.getContentType());
+                Blob blob = uploadItem.getBlob();
+                FileUtils.configureFileBlob(blob);
                 blobs.add(blob);
             }
 
@@ -411,12 +410,9 @@ public class DamImportActions implements Serializable {
             if (uploadedFiles == null) {
                 uploadedFiles = new ArrayList<NxUploadedFile>();
             }
-            File file = File.createTempFile("ImportActions", null);
-            InputStream in = uploadEvent.getUploadedFile().getInputStream();
-            org.nuxeo.common.utils.FileUtils.copyToFile(in, file);
-            uploadedFiles.add(new NxUploadedFile(uploadEvent.getUploadedFile().getName(),
-                    uploadEvent.getUploadedFile().getContentType(), file));
-        } catch (Exception e) {
+            Blob blob = FileManageActionsBean.getBlob(uploadEvent);
+            uploadedFiles.add(new NxUploadedFile(blob));
+        } catch (IOException e) {
             log.error(e, e);
         }
     }

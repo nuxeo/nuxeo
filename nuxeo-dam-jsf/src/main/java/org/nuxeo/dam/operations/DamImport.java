@@ -17,8 +17,6 @@
 
 package org.nuxeo.dam.operations;
 
-import java.io.IOException;
-
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.dam.AssetLibrary;
 import org.nuxeo.dam.DamService;
@@ -175,11 +173,6 @@ public class DamImport {
     }
 
     protected void updateDocument(DocumentModel doc, Blob blob) throws ClientException {
-        try {
-            blob = blob.persist();
-        } catch (IOException e) {
-            throw new ClientException(e);
-        }
         doc.getAdapter(BlobHolder.class).setBlob(blob);
     }
 
