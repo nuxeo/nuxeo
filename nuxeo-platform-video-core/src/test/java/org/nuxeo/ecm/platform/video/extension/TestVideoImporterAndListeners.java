@@ -187,16 +187,16 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         assertEquals("sample.mpg", docModel.getPropertyValue("file:filename"));
 
         CommandAvailability ca = Framework.getService(CommandLineExecutorService.class).getCommandAvailability(
-                "ffmpeg-storyboard");
+                "ffmpeg-screenshot");
         if (!ca.isAvailable()) {
-            log.warn("ffmpeg-storyboard is not avalaible, skipping the end of the test");
-            throw new AssumptionViolatedException("ffmpeg-storyboard is not avalaible");
+            log.warn("ffmpeg-screenshot is not avalaible, skipping the end of the test");
+            throw new AssumptionViolatedException("ffmpeg-screenshot is not avalaible");
         }
 
         Framework.getService(EventService.class).waitForAsyncCompletion();
 
         // the test video is very short, no storyboard:
-        assertEquals(0.04, docModel.getPropertyValue(DURATION_PROPERTY));
+        assertEquals(0.05, docModel.getPropertyValue(DURATION_PROPERTY));
         List<Map<String, Serializable>> storyboard = docModel.getProperty("vid:storyboard").getValue(List.class);
         assertNotNull(storyboard);
         assertEquals(0, storyboard.size());
@@ -206,10 +206,10 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
     @Test
     public void testImportBigVideo() throws Exception {
         CommandAvailability ca = Framework.getService(CommandLineExecutorService.class).getCommandAvailability(
-                "ffmpeg-storyboard");
+                "ffmpeg-screenshot");
         if (!ca.isAvailable()) {
-            log.warn("ffmpeg-storyboard is not avalaible, skipping the end of the test");
-            throw new AssumptionViolatedException("ffmpeg-storyboard is not avalaible");
+            log.warn("ffmpeg-screenshot is not avalaible, skipping the end of the test");
+            throw new AssumptionViolatedException("ffmpeg-screenshot is not avalaible");
         }
         DocumentModel docModel = session.createDocumentModel("/", "doc", VIDEO_TYPE);
         assertNotNull(docModel);
@@ -222,25 +222,25 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
 
         docModel = session.getDocument(docModel.getRef());
         // the test video last around 10 minutes
-        assertEquals(653.8, docModel.getPropertyValue(DURATION_PROPERTY));
+        assertEquals(653.81, docModel.getPropertyValue(DURATION_PROPERTY));
         List<Map<String, Serializable>> storyboard = docModel.getProperty("vid:storyboard").getValue(List.class);
         assertNotNull(storyboard);
         assertEquals(9, storyboard.size());
 
         assertEquals(0.0, storyboard.get(0).get("timecode"));
-        assertEquals("elephantsdream-160-mpeg4-su-ac3.avi 1", storyboard.get(0).get("comment"));
+        assertEquals("elephantsdream-160-mpeg4-su-ac3.avi 0", storyboard.get(0).get("comment"));
         Blob thumb0 = (Blob) storyboard.get(0).get("content");
         assertEquals("00000.000-seconds.jpeg", thumb0.getFilename());
 
-        assertEquals(70.0, storyboard.get(1).get("timecode"));
-        assertEquals("elephantsdream-160-mpeg4-su-ac3.avi 2", storyboard.get(1).get("comment"));
+        assertEquals(72.0, storyboard.get(1).get("timecode"));
+        assertEquals("elephantsdream-160-mpeg4-su-ac3.avi 1", storyboard.get(1).get("comment"));
         Blob thumb1 = (Blob) storyboard.get(1).get("content");
-        assertEquals("00070.000-seconds.jpeg", thumb1.getFilename());
+        assertEquals("00072.000-seconds.jpeg", thumb1.getFilename());
 
         // check that the thumbnails where extracted
-        assertEquals("Thumbnail", docModel.getPropertyValue("picture:views/0/title"));
-        assertEquals(62L, docModel.getPropertyValue("picture:views/0/height"));
-        assertEquals(100L, docModel.getPropertyValue("picture:views/0/width"));
+        assertEquals("Small", docModel.getPropertyValue("picture:views/0/title"));
+        assertEquals(100L, docModel.getPropertyValue("picture:views/0/height"));
+        assertEquals(160L, docModel.getPropertyValue("picture:views/0/width"));
         assertTrue((Long) docModel.getPropertyValue("picture:views/0/content/length") > 1000);
 
         // the original video is also 100 pixels high hence the player preview
