@@ -74,4 +74,9 @@ public class ListWidgetElement extends AbstractWidgetElement {
         return getWidget(getListSubElementId(id, index), widgetClassToProxy);
     }
 
+    @Override
+    public String getMessageValue() {
+        return getMessageValue(":" + getWidgetId() + "_message");
+    }
+
 }
