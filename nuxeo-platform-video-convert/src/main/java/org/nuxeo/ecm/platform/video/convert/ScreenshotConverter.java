@@ -20,19 +20,18 @@ package org.nuxeo.ecm.platform.video.convert;
 
 import static org.nuxeo.ecm.platform.video.convert.Constants.POSITION_PARAMETER;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -67,17 +66,13 @@ public class ScreenshotConverter extends BaseVideoConverter implements Converter
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
-        File outFile = null;
-        Blob blob = null;
-        InputFile inputFile = null;
-        try {
-            blob = blobHolder.getBlob();
-            inputFile = new InputFile(blob);
-            outFile = File.createTempFile("ScreenshotConverter-out-", ".tmp.jpeg");
+        Blob blob = blobHolder.getBlob();
+        try (CloseableFile source = blob.getCloseableFile("." + FilenameUtils.getExtension(blob.getFilename()))) {
+            FileBlob outBlob = new FileBlob(".jpeg");
 
             CmdParameters params = new CmdParameters();
-            params.addNamedParameter("inFilePath", inputFile.file.getAbsolutePath());
-            params.addNamedParameter("outFilePath", outFile.getAbsolutePath());
+            params.addNamedParameter("inFilePath", source.getFile().getAbsolutePath());
+            params.addNamedParameter("outFilePath", outBlob.getFile().getAbsolutePath());
             Double position = 0.0;
             if (parameters != null) {
                 position = (Double) parameters.get(POSITION_PARAMETER);
@@ -92,7 +87,7 @@ public class ScreenshotConverter extends BaseVideoConverter implements Converter
                 throw res.getError();
             }
 
-            Blob outBlob = StreamingBlob.createFromStream(new FileInputStream(outFile), "image/jpeg").persist();
+            outBlob.setMimeType("image/jpeg");
             outBlob.setFilename(String.format("video-screenshot-%05d.000.jpeg", positionParam));
             return new SimpleCachableBlobHolder(outBlob);
         } catch (CommandNotAvailable | IOException | ClientException | CommandException e) {
@@ -103,11 +98,6 @@ public class ScreenshotConverter extends BaseVideoConverter implements Converter
                 msg = "conversion failed";
             }
             throw new ConversionException(msg, e);
-        } finally {
-            FileUtils.deleteQuietly(outFile);
-            if (inputFile != null && inputFile.isTempFile) {
-                FileUtils.deleteQuietly(inputFile.file);
-            }
         }
     }
 

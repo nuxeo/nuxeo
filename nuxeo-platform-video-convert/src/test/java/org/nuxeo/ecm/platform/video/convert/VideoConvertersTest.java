@@ -34,7 +34,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
@@ -60,9 +60,10 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
     }
 
     protected static BlobHolder getBlobFromPath(String path) throws IOException {
-        InputStream is = VideoConvertersTest.class.getResourceAsStream("/" + path);
-        assertNotNull(String.format("Failed to load resource: " + path), is);
-        return new SimpleBlobHolder(StreamingBlob.createFromStream(is, path).persist());
+        try (InputStream is = VideoConvertersTest.class.getResourceAsStream("/" + path)) {
+            assertNotNull(String.format("Failed to load resource: " + path), is);
+            return new SimpleBlobHolder(new FileBlob(is, path));
+        }
     }
 
     protected BlobHolder applyConverter(String converter, String fileName, Double position, Double duration)

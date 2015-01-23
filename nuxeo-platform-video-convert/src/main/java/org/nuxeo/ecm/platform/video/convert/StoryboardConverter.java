@@ -32,14 +32,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
@@ -100,10 +102,6 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
-        File outFolder = null;
-        InputFile inputFile = null;
-        Blob blob = null;
-
         // Build the empty output structure
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         List<Blob> blobs = new ArrayList<Blob>();
@@ -112,16 +110,12 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
         properties.put("timecodes", (Serializable) timecodes);
         properties.put("comments", (Serializable) comments);
         SimpleBlobHolderWithProperties bh = new SimpleBlobHolderWithProperties(blobs, properties);
-        try {
-            blob = blobHolder.getBlob();
-            inputFile = new InputFile(blob);
 
-            outFolder = File.createTempFile("StoryboardConverter-out-", "-tmp");
-            outFolder.delete();
-            outFolder.mkdir();
+        Blob blob = blobHolder.getBlob();
+        try (CloseableFile source = blob.getCloseableFile("." + FilenameUtils.getExtension(blob.getFilename()))) {
 
             CmdParameters params = new CmdParameters();
-            params.addNamedParameter(INPUT_FILE_PATH_PARAMETER, inputFile.file.getAbsolutePath());
+            params.addNamedParameter(INPUT_FILE_PATH_PARAMETER, source.getFile().getAbsolutePath());
 
             Double duration = (Double) parameters.get("duration");
             if (duration == null) {
@@ -137,30 +131,16 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
             // run it
             for (int i = 0; i < numberOfThumbnails; i++) {
                 long timecode = Double.valueOf(Math.floor(i * duration / numberOfThumbnails)).longValue();
-                File outSubFolder = new File(outFolder, String.format("%04d", i));
-                outSubFolder.mkdir();
-                File outFile = new File(outSubFolder, "video-thumb-%04d.jpeg");
-                params.addNamedParameter(OUTPUT_FILE_PATH_PARAMETER, outFile.getAbsolutePath());
+                FileBlob thumbBlob = new FileBlob(".jpeg");
+                params.addNamedParameter(OUTPUT_FILE_PATH_PARAMETER, thumbBlob.getFile().getAbsolutePath());
                 params.addNamedParameter(POSITION_PARAMETER, String.valueOf(timecode));
                 params.addNamedParameter(WIDTH_PARAM, commonParams.get(WIDTH_PARAM));
                 params.addNamedParameter(HEIGHT_PARAM, commonParams.get(HEIGHT_PARAM));
                 ExecResult result = cleService.execCommand(FFMPEG_SCREENSHOT_RESIZE_COMMAND, params);
-
                 if (!result.isSuccessful()) {
                     throw result.getError();
                 }
-
-                List<File> thumbs = new ArrayList<File>(FileUtils.listFiles(outSubFolder, new String[] { "jpeg" },
-                        false));
-                if (thumbs.isEmpty()) {
-                    String commandLine = result.getCommandLine();
-                    log.error("Error executing command: " + commandLine);
-                    String output = StringUtils.join(result.getOutput(), "\n");
-                    log.error(output);
-                    throw new ConversionException(String.format("Failed taking storyboard screenshot for"
-                            + " video file '%s' with command: %s", blob.getFilename(), commandLine));
-                }
-                Blob thumbBlob = StreamingBlob.createFromStream(new FileInputStream(thumbs.get(0)), "image/jpeg").persist();
+                thumbBlob.setMimeType("image/jpeg");
                 thumbBlob.setFilename(String.format("%05d.000-seconds.jpeg", timecode));
                 blobs.add(thumbBlob);
                 timecodes.add(Double.valueOf(timecode));
@@ -175,11 +155,6 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
                 msg = "conversion failed";
             }
             throw new ConversionException(msg, e);
-        } finally {
-            FileUtils.deleteQuietly(outFolder);
-            if (inputFile != null && inputFile.isTempFile) {
-                FileUtils.deleteQuietly(inputFile.file);
-            }
         }
     }
 }

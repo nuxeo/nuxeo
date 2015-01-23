@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.video;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -31,10 +30,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -168,12 +168,13 @@ public class VideoHelper {
 
         // put a black screen if the video or its screen-shot is unreadable
         if (docModel.getProperty("picture:views").getValue(List.class).isEmpty()) {
-            InputStream is = VideoHelper.class.getResourceAsStream("/" + MISSING_PREVIEW_PICTURE);
-            Blob blob = StreamingBlob.createFromStream(is, "image/jpeg").persist();
-            blob.setFilename(MISSING_PREVIEW_PICTURE.replace('/', '-'));
-            PictureResourceAdapter picture = docModel.getAdapter(PictureResourceAdapter.class);
-            picture.fillPictureViews(blob, blob.getFilename(), docModel.getTitle(), new ArrayList<Map<String, Object>>(
-                    templates));
+            try (InputStream is = VideoHelper.class.getResourceAsStream("/" + MISSING_PREVIEW_PICTURE)) {
+                Blob blob = new FileBlob(is, "image/jpeg");
+                blob.setFilename(MISSING_PREVIEW_PICTURE.replace('/', '-'));
+                PictureResourceAdapter picture = docModel.getAdapter(PictureResourceAdapter.class);
+                picture.fillPictureViews(blob, blob.getFilename(), docModel.getTitle(),
+                        new ArrayList<Map<String, Object>>(templates));
+            }
         }
     }
 
@@ -205,28 +206,22 @@ public class VideoHelper {
             return null;
         }
 
-        File file = null;
         try {
-            CommandLineExecutorService cleService = Framework.getLocalService(CommandLineExecutorService.class);
+            ExecResult result;
+            try (CloseableFile cf = video.getCloseableFile("." + FilenameUtils.getExtension(video.getFilename()))) {
+                CmdParameters params = new CmdParameters();
+                params.addNamedParameter("inFilePath", cf.getFile().getAbsolutePath());
 
-            file = File.createTempFile("ffmpegInfo", "." + FilenameUtils.getExtension(video.getFilename()));
-            video.transferTo(file);
-
-            CmdParameters params = new CmdParameters();
-            params.addNamedParameter("inFilePath", file.getAbsolutePath());
-
-            // read the duration with a first command to adjust the best rate:
-            ExecResult result = cleService.execCommand(FFMPEG_INFO_COMMAND_LINE, params);
+                // read the duration with a first command to adjust the best rate:
+                CommandLineExecutorService cleService = Framework.getService(CommandLineExecutorService.class);
+                result = cleService.execCommand(FFMPEG_INFO_COMMAND_LINE, params);
+            }
             if (!result.isSuccessful()) {
                 throw result.getError();
             }
             return VideoInfo.fromFFmpegOutput(result.getOutput());
         } catch (CommandNotAvailable | CommandException | IOException e) {
             throw ClientException.wrap(e);
-        } finally {
-            if (file != null) {
-                file.delete();
-            }
         }
     }
 

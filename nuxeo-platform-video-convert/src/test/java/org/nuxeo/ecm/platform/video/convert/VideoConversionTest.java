@@ -17,6 +17,10 @@
 
 package org.nuxeo.ecm.platform.video.convert;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -24,17 +28,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
@@ -66,11 +68,12 @@ public class VideoConversionTest extends NXRuntimeTestCase {
     }
 
     protected static BlobHolder getBlobFromPath(String path, String mimeType) throws IOException {
-        InputStream is = VideoConvertersTest.class.getResourceAsStream("/" + path);
-        assertNotNull(String.format("Failed to load resource: " + path), is);
-        Blob blob = StreamingBlob.createFromStream(is, mimeType);
-        blob.setFilename(FilenameUtils.getName(path));
-        return new SimpleBlobHolder(blob.persist());
+        try (InputStream is = VideoConvertersTest.class.getResourceAsStream("/" + path)) {
+            assertNotNull(String.format("Failed to load resource: " + path), is);
+            Blob blob = new FileBlob(is, mimeType);
+            blob.setFilename(FilenameUtils.getName(path));
+            return new SimpleBlobHolder(blob);
+        }
     }
 
     protected BlobHolder applyConverter(String converter, String fileName, String mimeType, long newHeight)

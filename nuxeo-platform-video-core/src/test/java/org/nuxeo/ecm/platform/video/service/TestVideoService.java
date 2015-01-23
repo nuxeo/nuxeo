@@ -17,6 +17,9 @@
 
 package org.nuxeo.ecm.platform.video.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_TYPE;
 
 import java.io.IOException;
@@ -26,21 +29,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
@@ -107,13 +106,13 @@ public class TestVideoService extends SQLRepositoryTestCase {
     }
 
     protected static Video getTestVideo() throws IOException {
-        InputStream is = TestVideoService.class.getResourceAsStream("/" + DELTA_MP4);
-        assertNotNull(String.format("Failed to load resource: " + DELTA_MP4), is);
-        Blob blob = StreamingBlob.createFromStream(is, "video/mp4");
-        blob.setFilename(FilenameUtils.getName(DELTA_MP4));
-        blob = blob.persist();
-        VideoInfo videoInfo = VideoInfo.fromFFmpegOutput(getTestVideoInfoOutput());
-        return Video.fromBlobAndInfo(blob, videoInfo);
+        try (InputStream is = TestVideoService.class.getResourceAsStream("/" + DELTA_MP4)) {
+            assertNotNull(String.format("Failed to load resource: " + DELTA_MP4), is);
+            Blob blob = new FileBlob(is, "video/mp4");
+            blob.setFilename(FilenameUtils.getName(DELTA_MP4));
+            VideoInfo videoInfo = VideoInfo.fromFFmpegOutput(getTestVideoInfoOutput());
+            return Video.fromBlobAndInfo(blob, videoInfo);
+        }
     }
 
     protected static List<String> getTestVideoInfoOutput() {
