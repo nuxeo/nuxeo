@@ -16,7 +16,6 @@
  */
 package org.nuxeo.binary.metadata.internals;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -31,17 +30,13 @@ import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
 import org.nuxeo.binary.metadata.api.BinaryMetadataException;
 import org.nuxeo.binary.metadata.api.BinaryMetadataProcessor;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.storage.StorageBlob;
+import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
-import org.nuxeo.ecm.platform.commandline.executor.api
-        .CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.streaming.FileSource;
-import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * @since 7.1
@@ -72,11 +67,13 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
             throw new BinaryMetadataException("The following command " + ca + " cannot be executed with a null blob");
         }
         try {
-            CmdParameters params = new CmdParameters();
-            File file = makeFile(blob);
-            params.addNamedParameter("inFilePath", file, true);
-            params.addNamedParameter("tagList", getCommandTags(metadata), false);
-            ExecResult er = commandLineService.execCommand(BinaryMetadataConstants.EXIFTOOL_WRITE, params);
+            ExecResult er;
+            try (CloseableFile source = blob.getCloseableFile()) {
+                CmdParameters params = new CmdParameters();
+                params.addNamedParameter("inFilePath", source.getFile(), true);
+                params.addNamedParameter("tagList", getCommandTags(metadata), false);
+                er = commandLineService.execCommand(BinaryMetadataConstants.EXIFTOOL_WRITE, params);
+            }
             boolean success = er.isSuccessful();
             if (!success) {
                 log.error("There was an error executing " + "the following command: " + er.getCommandLine() + ". \n"
@@ -102,12 +99,13 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
             throw new BinaryMetadataException("The following command " + ca + " cannot be executed with a null blob");
         }
         try {
-            CmdParameters params = new CmdParameters();
-            File file = makeFile(blob);
-            params.addNamedParameter("inFilePath", file, true);
-            params.addNamedParameter("tagList", getCommandTags(metadata), false);
-            ExecResult er = commandLineService.execCommand(BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST, params);
-
+            ExecResult er;
+            try (CloseableFile source = blob.getCloseableFile()) {
+                CmdParameters params = new CmdParameters();
+                params.addNamedParameter("inFilePath", source.getFile(), true);
+                params.addNamedParameter("tagList", getCommandTags(metadata), false);
+                er = commandLineService.execCommand(BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST, params);
+            }
             return returnResultMap(er);
         } catch (CommandNotAvailable commandNotAvailable) {
             throw new RuntimeException("Command '" + BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST
@@ -128,11 +126,12 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
             throw new BinaryMetadataException("The following command " + ca + " cannot be executed with a null blob");
         }
         try {
-            CmdParameters params = new CmdParameters();
-            File file = makeFile(blob);
-            params.addNamedParameter("inFilePath", file, true);
-            ExecResult er = commandLineService.execCommand(BinaryMetadataConstants.EXIFTOOL_READ, params);
-
+            ExecResult er;
+            try (CloseableFile source = blob.getCloseableFile()) {
+                CmdParameters params = new CmdParameters();
+                params.addNamedParameter("inFilePath", source.getFile(), true);
+                er = commandLineService.execCommand(BinaryMetadataConstants.EXIFTOOL_READ, params);
+            }
             return returnResultMap(er);
         } catch (CommandNotAvailable commandNotAvailable) {
             throw new RuntimeException("Command '" + BinaryMetadataConstants.EXIFTOOL_READ + "' is not available.",
@@ -182,27 +181,6 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
             sb.append("-" + metadata + "=" + metadataValue + " ");
         }
         return sb.toString();
-    }
-
-    public File makeFile(Blob blob) throws IOException {
-        File sourceFile = getFileFromBlob(blob);
-        if (sourceFile == null) {
-            String filename = blob.getFilename();
-            sourceFile = File.createTempFile(filename, ".tmp");
-            blob.transferTo(sourceFile);
-            Framework.trackFile(sourceFile, this);
-        }
-        return sourceFile;
-    }
-
-    public File getFileFromBlob(Blob blob) {
-        if (blob instanceof FileBlob) {
-            return ((FileBlob) blob).getFile();
-        } else if (blob instanceof StorageBlob) {
-            StreamSource source = ((StorageBlob) blob).getBinary().getStreamSource();
-            return ((FileSource) source).getFile();
-        }
-        return null;
     }
 
 }
