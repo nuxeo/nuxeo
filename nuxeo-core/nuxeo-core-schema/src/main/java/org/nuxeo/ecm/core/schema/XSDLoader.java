@@ -642,6 +642,8 @@ public class XSDLoader {
             // TODO: type must be already defined - use a dependency manager or
             // something to
             // support types that are not yet defined
+            // FIXME: this seems to be preventing constraints definitions on sub sub lists, see
+            // TestSchemaLoaderRestriction#testListOfListRestriction
             itemType = getType(xsItemType.getName());
         }
         if (itemType == null) {
