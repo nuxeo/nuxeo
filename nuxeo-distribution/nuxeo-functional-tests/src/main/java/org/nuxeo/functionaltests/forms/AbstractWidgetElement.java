@@ -17,6 +17,7 @@
 package org.nuxeo.functionaltests.forms;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 /**
  * Base class to handle widgets
@@ -38,6 +39,28 @@ public abstract class AbstractWidgetElement extends LayoutElement {
             res = res.substring(res.lastIndexOf(":") + 1);
         }
         return res;
+    }
+
+    /**
+     * Returns the message element value, e.g. errors for this widget.
+     *
+     * @since 7.2
+     */
+    public String getMessageValue() {
+        return getMessageValue("_message");
+    }
+
+    /**
+     * Returns the message element value, e.g. errors for this widget.
+     *
+     * @since 7.2
+     */
+    public String getMessageValue(String suffix) {
+        WebElement el = getElement(id + suffix);
+        if (el != null) {
+            return el.getText();
+        }
+        return null;
     }
 
 }
