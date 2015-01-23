@@ -56,7 +56,7 @@ public class LayoutElement implements LayoutFragment {
     }
 
     /**
-     * Returns a sub element, concatenating the layout id with the sub element id (and using the standard charcater ':'
+     * Returns a sub element, concatenating the layout id with the sub element id (and using the standard character ':'
      * as JSF UINamingContainer separator).
      */
     @Override
