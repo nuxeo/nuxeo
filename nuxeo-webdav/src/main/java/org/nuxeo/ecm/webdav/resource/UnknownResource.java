@@ -34,9 +34,8 @@ import net.java.dev.webdav.jaxrs.methods.PROPFIND;
 import net.java.dev.webdav.jaxrs.methods.PROPPATCH;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.webdav.backend.Backend;
-import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 /**
  * Resource for an unknown (ie non-existing) object. Used so that PUT / MKCOL requests can actually created a document /
@@ -67,7 +66,7 @@ public class UnknownResource extends AbstractResource {
         }
 
         ensureParentExists();
-        Blob content = new StreamingBlob(new InputStreamSource(request.getInputStream()));
+        Blob content = new FileBlob(request.getInputStream());
         String contentType = request.getContentType();
         if (contentType == null) {
             contentType = "application/octet-stream";
@@ -85,13 +84,6 @@ public class UnknownResource extends AbstractResource {
     @MKCOL
     public Response mkcol() throws IOException, URISyntaxException {
         ensureParentExists();
-
-        // We really need this?
-        InputStreamSource iss = new InputStreamSource(request.getInputStream());
-        if (iss.getString().length() > 0) {
-            return Response.status(415).build();
-        }
-
         backend.createFolder(parentPath, name);
         backend.saveChanges();
         return Response.created(new URI(request.getRequestURI())).build();

@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.wss.WSSException;
@@ -284,11 +284,11 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
     public void setStream(InputStream is, String fileName) throws WSSException {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh != null) {
-            Blob blob = StreamingBlob.createFromStream(is);
-            if (fileName != null) {
-                blob.setFilename(fileName);
-            }
             try {
+                Blob blob = new FileBlob(is);
+                if (fileName != null) {
+                    blob.setFilename(fileName);
+                }
                 Blob oldBlob = bh.getBlob();
                 if (oldBlob == null) {
                     // force to recompute icon
@@ -299,7 +299,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
                 bh.setBlob(blob);
                 doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
                 doc = getSession().saveDocument(doc);
-            } catch (ClientException e) {
+            } catch (ClientException | IOException e) {
                 log.error("Error while setting stream", e);
             }
         } else {

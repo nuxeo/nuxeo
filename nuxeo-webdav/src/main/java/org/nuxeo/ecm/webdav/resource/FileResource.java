@@ -54,10 +54,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.ecm.webdav.jaxrs.Util;
-import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 /**
  * Resource representing a file-like object in the repository. (I.e. not a folder).
@@ -99,8 +98,7 @@ public class FileResource extends ExistingResource {
         }
 
         try {
-            Blob content = new StreamingBlob(new InputStreamSource(request.getInputStream()));
-            content.persist();
+            Blob content = new FileBlob(request.getInputStream());
             String contentType = request.getContentType();
             if (contentType == null) {
                 contentType = "application/octet-stream";
