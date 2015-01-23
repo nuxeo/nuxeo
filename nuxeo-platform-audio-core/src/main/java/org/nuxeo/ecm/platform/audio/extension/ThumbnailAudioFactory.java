@@ -74,7 +74,9 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
         FileBlob fileBlob;
         try {
             // Get the cover art of the audio file if ID3v2 exist
-            fileBlob = new FileBlob(bh.getBlob().getStream());
+            try (InputStream in = bh.getBlob().getStream()) {
+                fileBlob = new FileBlob(in);
+            }
             MP3File file = new MP3File(fileBlob.getFile());
             if (file.hasID3v2Tag()) {
                 Iterator it = file.getID3v2Tag().getFrameOfType("APIC");

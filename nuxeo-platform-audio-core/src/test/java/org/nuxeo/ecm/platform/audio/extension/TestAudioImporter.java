@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -112,7 +112,7 @@ public class TestAudioImporter {
     @Test
     public void testImportAudio() throws Exception {
         File testFile = getTestFile();
-        Blob blob = StreamingBlob.createFromFile(testFile, "audio/wav");
+        Blob blob = new FileBlob(testFile, "audio/wav");
         String rootPath = root.getPathAsString();
         assertNotNull(blob);
         assertNotNull(rootPath);
