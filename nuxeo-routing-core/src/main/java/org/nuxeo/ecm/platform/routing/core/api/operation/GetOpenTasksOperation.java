@@ -45,9 +45,9 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 @Operation(id = GetOpenTasksOperation.ID, category = Constants.CAT_WORKFLOW, label = "Get open tasks", requires = Constants.WORKFLOW_CONTEXT, description = "Returns all open tasks for the input document(s). "
         + "If the operation is invoked with parameters, all tasks instances for the given 'processId' "
         + "originating from the given 'nodeId' are returned. The 'processId' is the id of the document representing the workflow instance. The parameter 'username' is used to fetch only tasks assigned to the given user. "
-        + "Tasks are queried using an unrestricted session.")
+        + "Tasks are queried using an unrestricted session.", aliases = { "Context.GetOpenTasks" })
 public class GetOpenTasksOperation {
-    public static final String ID = "Context.GetOpenTasks";
+    public static final String ID = "Workflow.GetOpenTasks";
 
     @Context
     protected CoreSession session;

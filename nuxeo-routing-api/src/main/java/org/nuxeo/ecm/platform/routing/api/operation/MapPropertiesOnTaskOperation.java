@@ -35,10 +35,10 @@ import org.nuxeo.ecm.platform.task.Task;
  * @since 5.6
  */
 @Operation(id = MapPropertiesOnTaskOperation.ID, category = Constants.CAT_WORKFLOW, label = "Apply mapping on input task doc", requires = Constants.WORKFLOW_CONTEXT, description = "Applies the mapping passed in parameter on the task document. "
-        + "The sourceDoc in the mapping is the input document in the workflow. The operation throws a ClientException if the input document is not a Task.")
+        + "The sourceDoc in the mapping is the input document in the workflow. The operation throws a ClientException if the input document is not a Task.", aliases = { "Context.ApplyMappingOnTask" })
 public class MapPropertiesOnTaskOperation {
 
-    public static final String ID = "Context.ApplyMappingOnTask";
+    public static final String ID = "Task.ApplyDocumentMapping";
 
     private static Log log = LogFactory.getLog(MapPropertiesOnTaskOperation.class);
 

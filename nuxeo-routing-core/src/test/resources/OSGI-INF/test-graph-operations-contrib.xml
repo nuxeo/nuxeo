@@ -54,7 +54,7 @@
       </operation>
     </chain>
     <chain id="testchain_stringfield2">
-      <operation id="Context.SetWorkflowNodeVar">
+      <operation id="Workflow.SetNodeVariable">
         <param type="string" name="name">stringfield2</param>
         <param type="string" name="value">bar</param>
       </operation>

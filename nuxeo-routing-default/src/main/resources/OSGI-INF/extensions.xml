@@ -54,7 +54,7 @@
         <param type="string" name="category">Review workflow</param>
         <param type="string" name="comment">Some consultation tasks were aborted by the system as they received no feedback message.</param>
       </operation>
-      <operation id="Workflow.ResumeNodeOperation"/>
+      <operation id="Workflow.ResumeNode"/>
     </chain>
     <chain id="NRD-AC-PR-storeTaskInfo">
       <operation id="Context.FetchDocument"/>
@@ -174,7 +174,7 @@ NodeVariables["comment"]= null;}</param>
     </chain>
     <chain id="validateDocument">
       <operation id="Context.FetchDocument"/>
-      <operation id="Document.SetLifeCycle">
+      <operation id="Document.FollowLifecycleTransition">
         <param type="string" name="value">approve</param>
       </operation>
       <operation id="Document.CheckIn">

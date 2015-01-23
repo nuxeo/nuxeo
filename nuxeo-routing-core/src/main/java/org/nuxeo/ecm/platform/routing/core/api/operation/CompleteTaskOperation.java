@@ -40,9 +40,9 @@ import org.nuxeo.ecm.platform.task.Task;
         + "To specify multi-line values you can use a \\ character followed by a new line. <p>Example:<pre>description=foo bar</pre>For updating a date, you will need to expose the value as ISO 8601 format, "
         + "for instance : <p>Example:<pre>workflowVarString=A sample value<br>workflowVarDate=@{org.nuxeo.ecm.core.schema.utils.DateParser.formatW3CDateTime(CurrentDate.date)}</pre><p>"
         + "For all values, you have to submit a JSON representation. This is an example for a variable of type StringList:"
-        + "<p><pre>nodeVarList = [\"John Doe\", \"John Test\"]</pre></p>")
+        + "<p><pre>nodeVarList = [\"John Doe\", \"John Test\"]</pre></p>", aliases = { "Workflow.CompleteTaskOperation" })
 public class CompleteTaskOperation {
-    public static final String ID = "Workflow.CompleteTaskOperation";
+    public static final String ID = "WorkflowTask.Complete";
 
     @Context
     protected CoreSession session;

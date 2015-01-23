@@ -100,7 +100,7 @@
     <chain id="followLifeCycleTransition">
       <operation id="Context.FetchDocument" />
       <operation id="Document.Routing.SetRunningStepFromTask" />
-      <operation id="Document.SetLifeCycle">
+      <operation id="Document.FollowLifecycleTransition">
         <param type="string" name="value">expr:Context["document.routing.step"].getDocument().getPropertyValue("tkst:directive")
         </param>
       </operation>

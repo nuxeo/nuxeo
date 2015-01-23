@@ -36,10 +36,10 @@ import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
  * @since 5.7.2
  */
 @Operation(id = CancelWorkflowOperation.ID, category = Constants.CAT_WORKFLOW, label = "Cancel workflow", requires = Constants.WORKFLOW_CONTEXT, description = "Cancel the workflow with the given id, "
-        + "where the required id is the id of the document representing the workflow instance.")
+        + "where the required id is the id of the document representing the workflow instance.", aliases = { "Context.CancelWorkflow" })
 public class CancelWorkflowOperation {
 
-    public static final String ID = "Context.CancelWorkflow";
+    public static final String ID = "WorkflowInstance.Cancel";
 
     private static final Log log = LogFactory.getLog(CancelWorkflowOperation.class);
 

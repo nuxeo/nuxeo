@@ -51,10 +51,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *
  * @since 5.7
  */
-@Operation(id = BulkRestartWorkflow.ID, category = Constants.CAT_WORKFLOW, label = "BulkRestartWorkflow", description = "Bulk operation to restart workflows.")
+@Operation(id = BulkRestartWorkflow.ID, category = Constants.CAT_WORKFLOW, label = "Bulk Restart Workflow", description = "Bulk operation to restart workflows.", aliases = { "BulkRestartWorkflow" })
 public class BulkRestartWorkflow {
 
-    public static final String ID = "BulkRestartWorkflow";
+    public static final String ID = "WorkflowModel.BulkRestartInstances";
 
     private static final Log log = LogFactory.getLog(BulkRestartWorkflow.class);
 
