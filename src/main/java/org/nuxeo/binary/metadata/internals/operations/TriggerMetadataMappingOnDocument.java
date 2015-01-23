@@ -28,10 +28,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * @since 7.1
  */
-@Operation(id = TriggerMetadataMappingOnDocument.ID, category = Constants.CAT_BLOB, label = "Trigger Metadata Mapping", description = "Write Metadata To Document From Binary according to metadata mapping.", since = "7.1", addToStudio = true)
+@Operation(id = TriggerMetadataMappingOnDocument.ID, category = Constants.CAT_BLOB, label = "Trigger Metadata Mapping", description = "Write Metadata To Document From Binary according to metadata mapping.", since = "7.1", addToStudio = true, aliases = { "Document.TriggerMetadataMapping" })
 public class TriggerMetadataMappingOnDocument {
 
-    public static final String ID = "Document.TriggerMetadataMapping";
+    public static final String ID = "Document.SetMetadataFromBlob";
 
     @Context
     protected BinaryMetadataService binaryMetadataService;

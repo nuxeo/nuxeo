@@ -33,10 +33,10 @@ import org.nuxeo.ecm.core.api.Blob;
  */
 @Operation(id = WriteMetadataToBinaryFromContext.ID, category = Constants.CAT_BLOB, label = "Write Metadata To Binary From"
         + " Context", description = "Write Metadata To Binary From Context "
-        + "given a processor name (or the default Nuxeo one) and given metadata" + ".", since = "7.1", addToStudio = true)
+        + "given a processor name (or the default Nuxeo one) and given metadata" + ".", since = "7.1", addToStudio = true, aliases = { "Binary.WriteMetadataFromContext" })
 public class WriteMetadataToBinaryFromContext {
 
-    public static final String ID = "Binary.WriteMetadataFromContext";
+    public static final String ID = "Blob.SetMetadataFromContext";
 
     @Context
     protected BinaryMetadataService binaryMetadataService;

@@ -34,10 +34,10 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 /**
  * @since 7.1
  */
-@Operation(id = WriteMetadataToBinaryFromDocument.ID, category = Constants.CAT_BLOB, label = "Write Metadata To Binary From Document", description = "Write metadata to a Blob (xpath parameter, or BlobHolder if empty) from a document (input) given a custom metadata mapping defined in a Properties parameter, using a named processor (exifTool for instance).", since = "7.1", addToStudio = true)
+@Operation(id = WriteMetadataToBinaryFromDocument.ID, category = Constants.CAT_BLOB, label = "Write Metadata To Binary From Document", description = "Write metadata to a Blob (xpath parameter, or BlobHolder if empty) from a document (input) given a custom metadata mapping defined in a Properties parameter, using a named processor (exifTool for instance).", since = "7.1", addToStudio = true, aliases = { "Binary.WriteMetadataFromDocument" })
 public class WriteMetadataToBinaryFromDocument {
 
-    public static final String ID = "Binary.WriteMetadataFromDocument";
+    public static final String ID = "Blob.SetMetadataFromDocument";
 
     @Context
     protected BinaryMetadataService binaryMetadataService;

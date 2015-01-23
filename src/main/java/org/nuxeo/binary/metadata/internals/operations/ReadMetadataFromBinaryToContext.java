@@ -34,10 +34,10 @@ import org.nuxeo.ecm.core.api.Blob;
 @Operation(id = ReadMetadataFromBinaryToContext.ID, category = Constants.CAT_EXECUTION, label = "Read Metadata From "
         + "Binary to Context", description = "Read Metadata From binary to Context "
         + "for a given input blob and given metadata to inject into the "
-        + "Operation context (if not specified, all metadata will be injected) " + "", since = "7.1", addToStudio = true)
+        + "Operation context (if not specified, all metadata will be injected) " + "", since = "7.1", addToStudio = true, aliases = { "Context.ReadMetadataFromBinary" })
 public class ReadMetadataFromBinaryToContext {
 
-    public static final String ID = "Context.ReadMetadataFromBinary";
+    public static final String ID = "Context.SetMetadataFromBlob";
 
     public static final String CTX_BINARY_METADATA = "binaryMetadata";
 

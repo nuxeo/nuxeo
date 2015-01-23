@@ -29,10 +29,10 @@ import org.nuxeo.ecm.core.api.Blob;
  * @since 7.1
  */
 @Operation(id = ReadMetadataFromBinary.ID, category = Constants.CAT_BLOB, label = "Read Metadata From Binary", description = "Read Metadata "
-        + "From Binary with the default Nuxeo processor.", since = "7.1", addToStudio = false)
+        + "From Binary with the default Nuxeo processor.", since = "7.1", addToStudio = false, aliases = { "Binary.ReadMetadata" })
 public class ReadMetadataFromBinary {
 
-    public static final String ID = "Binary.ReadMetadata";
+    public static final String ID = "Blob.ReadMetadata";
 
     @Context
     protected BinaryMetadataService binaryMetadataService;
