@@ -85,6 +85,7 @@
         <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}"
           immediate="true"
           required="#{widgetProperty_required}" var="currentValue">
+          <nxu:validateDocumentConstraint />
           <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
             value="#{select2Actions.resolveSingleReference(currentValue, widgetProperty_repository,widgetProperty_initOperationId, widgetProperty_idProperty,widgetProperty_documentSchemas)}" />
         </nxu:valueHolder>
