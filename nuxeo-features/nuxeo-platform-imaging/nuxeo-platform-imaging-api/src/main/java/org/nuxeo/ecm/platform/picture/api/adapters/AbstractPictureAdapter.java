@@ -150,8 +150,6 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
 
     protected String type;
 
-    protected File file;
-
     protected Blob fileContent;
 
     /** @since 5.9.5 */

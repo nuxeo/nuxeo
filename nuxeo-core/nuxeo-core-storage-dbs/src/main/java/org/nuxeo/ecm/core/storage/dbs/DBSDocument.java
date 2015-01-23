@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.Lock;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -74,12 +73,9 @@ import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerStreamSupport;
 import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.streaming.FileSource;
-import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * Implementation of a {@link Document} for Document-Based Storage. The document is stored as a JSON-like Map. The keys
@@ -858,41 +854,26 @@ public class DBSDocument implements Document {
         state.put(KEY_BLOB_LENGTH, length);
     }
 
+    // BinaryManager not closed
+    @SuppressWarnings("resource")
     protected Binary getBinary(Blob blob) throws DocumentException {
         if (blob instanceof StorageBlob) {
             return ((StorageBlob) blob).getBinary();
         }
-        if (blob instanceof StreamingBlob) {
-            StreamingBlob sb = (StreamingBlob) blob;
-            StreamSource source = sb.getStreamSource();
-            if (source instanceof FileSource && sb.isTemporary()) {
-                return getBinary((FileSource) source);
-            }
-        }
-        try {
-            InputStream stream = blob.getStream();
-            return getBinary(stream);
-        } catch (IOException e) {
-            throw new DocumentException(e);
-        }
-    }
-
-    protected Binary getBinary(FileSource source) throws DocumentException {
         BinaryManager binaryManager = session.getBinaryManager();
         try {
-            if (binaryManager instanceof BinaryManagerStreamSupport) {
-                return ((BinaryManagerStreamSupport) binaryManager).getBinary(source);
-            }
-            return binaryManager.getBinary(source.getStream());
+            return binaryManager.getBinary(blob);
         } catch (IOException e) {
             throw new DocumentException(e);
         }
     }
 
+    // BinaryManager not closed
+    @SuppressWarnings("resource")
     protected Binary getBinary(InputStream in) throws DocumentException {
-        BinaryManager repositoryManager = session.getBinaryManager();
+        BinaryManager binaryManager = session.getBinaryManager();
         try {
-            return repositoryManager.getBinary(in);
+            return binaryManager.getBinary(in);
         } catch (IOException e) {
             throw new DocumentException(e);
         }

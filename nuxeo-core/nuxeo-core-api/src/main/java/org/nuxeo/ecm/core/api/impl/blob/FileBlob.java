@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,13 +7,14 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.api.impl.blob;
 
-import java.io.BufferedInputStream;
+import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -21,19 +22,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * A {@link Blob} backed by a {@link File}.
+ * <p>
+ * The backing file may be in a temporary location, which is the case if this {@link FileBlob} was constructed from an
+ * {@link InputStream} or from a file which was explicitly marked as temporary. In this case, the file may be renamed,
+ * or the file location may be changed to a non-temporary one.
  */
 public class FileBlob extends AbstractBlob implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected transient File file;
+    protected File file;
+
+    protected boolean isTemporary;
 
     public FileBlob(File file) {
         this(file, null, null, null, null);
@@ -48,58 +58,153 @@ public class FileBlob extends AbstractBlob implements Serializable {
     }
 
     public FileBlob(File file, String mimeType, String encoding, String filename, String digest) {
+        if (file == null) {
+            throw new NullPointerException("null file");
+        }
         this.file = file;
         this.mimeType = mimeType;
         this.encoding = encoding;
         this.digest = digest;
-        this.filename = filename != null ? filename : file != null ? file.getName() : null;
+        this.filename = filename != null ? filename : file.getName();
     }
 
+    /**
+     * Creates a {@link FileBlob} from an {@link InputStream}, by saving it to a temporary file.
+     * <p>
+     * The input stream is closed.
+     *
+     * @param in the input stream, which is closed after use
+     */
     public FileBlob(InputStream in) throws IOException {
         this(in, null, null);
     }
 
-    public FileBlob(InputStream in, String ctype) throws IOException {
-        this(in, ctype, null);
+    /**
+     * Creates a {@link FileBlob} from an {@link InputStream}, by saving it to a temporary file.
+     * <p>
+     * The input stream is closed.
+     *
+     * @param in the input stream, which is closed after use
+     * @param mimeType the MIME type
+     */
+    public FileBlob(InputStream in, String mimeType) throws IOException {
+        this(in, mimeType, null);
     }
 
+    /**
+     * Creates a {@link FileBlob} from an {@link InputStream}, by saving it to a temporary file.
+     * <p>
+     * The input stream is closed.
+     *
+     * @param in the input stream, which is closed after use
+     * @param mimeType the MIME type
+     * @param encoding the encoding
+     */
     public FileBlob(InputStream in, String mimeType, String encoding) throws IOException {
+        this(in, mimeType, encoding, null);
+    }
+
+    /**
+     * Creates a {@link FileBlob} from an {@link InputStream}, by saving it to a temporary file.
+     * <p>
+     * The input stream is closed.
+     *
+     * @param in the input stream, which is closed after use
+     * @param mimeType the MIME type
+     * @param encoding the encoding
+     * @param tmpDir the temporary directory for file creation
+     */
+    public FileBlob(InputStream in, String mimeType, String encoding, File tmpDir) throws IOException {
+        if (in == null) {
+            throw new NullPointerException("null inputstream");
+        }
         this.mimeType = mimeType;
         this.encoding = encoding;
-        OutputStream out = null;
+        isTemporary = true;
         try {
-            file = File.createTempFile("NXCore-FileBlob-", ".tmp");
-            out = new FileOutputStream(file);
-            IOUtils.copy(in, out);
-            Framework.trackFile(file, this);
+            file = File.createTempFile("nxblob-", ".tmp", tmpDir);
+            Framework.trackFile(file, file);
+            filename = file.getName();
+            try (OutputStream out = new FileOutputStream(file)) {
+                IOUtils.copy(in, out);
+            }
         } finally {
             IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(out);
         }
     }
 
+    /**
+     * Creates a {@link FileBlob} with an empty temporary file with the given extension.
+     *
+     * @param ext the temporary file extension
+     * @return a file blob
+     * @since 7.2
+     */
+    public FileBlob(String ext) throws IOException {
+        isTemporary = true;
+        file = File.createTempFile("nxblob-", ext);
+        Framework.trackFile(file, file);
+        filename = file.getName();
+    }
+
+    @Override
     public File getFile() {
         return file;
     }
 
     @Override
     public long getLength() {
-        return file == null ? 0L : file.length();
+        return file.length();
     }
 
     @Override
     public InputStream getStream() throws IOException {
-        return new BufferedInputStream(new FileInputStream(file));
+        return new FileInputStream(file);
     }
 
-    @Override
-    public Blob persist() {
-        return this;
+    /**
+     * Checks whether this {@link FileBlob} is backed by a temporary file.
+     *
+     * @since 7.2
+     */
+    public boolean isTemporary() {
+        return isTemporary;
     }
 
-    @Override
-    public boolean isPersistent() {
-        return true;
+    /**
+     * Moves this blob's temporary file to a new non-temporary location.
+     * <p>
+     * The move is done as atomically as possible.
+     *
+     * @since 7.2
+     */
+    public void moveTo(File dest) throws IOException {
+        if (!isTemporary) {
+            throw new IOException("Cannot move non-temporary file: " + file);
+        }
+        if (dest.exists()) {
+            throw new IOException("Destination already exists: " + dest);
+        }
+        Path path = file.toPath();
+        Path destPath = dest.toPath();
+        try {
+            Files.move(path, destPath, ATOMIC_MOVE);
+            file = dest;
+        } catch (AtomicMoveNotSupportedException e) {
+            // Do a copy through a tmp file on the same filesystem then atomic rename
+            Path tmp = Files.createTempFile(destPath.getParent(), null, null);
+            try {
+                Files.copy(path, tmp, REPLACE_EXISTING);
+                Files.delete(path);
+                Files.move(tmp, destPath, ATOMIC_MOVE);
+                file = dest;
+            } catch (IOException ioe) {
+                // don't leave tmp file in case of error
+                Files.deleteIfExists(tmp);
+                throw ioe;
+            }
+        }
+        isTemporary = false;
     }
 
 }

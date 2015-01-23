@@ -19,11 +19,6 @@ package org.nuxeo.ecm.platform.picture.api;
 import java.io.File;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.core.storage.StorageBlob;
-import org.nuxeo.runtime.services.streaming.FileSource;
-import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * Helpers around Blob objects.
@@ -42,21 +37,11 @@ public class BlobHelper {
      * Note that the File may be short-lived (temporary file), so should be used immediately.
      *
      * @return a File, or {@code null} if this blob doesn't have one
+     * @deprecated since 7.2, use {@link Blob#getFile} directly
      */
+    @Deprecated
     public static File getFileFromBlob(Blob blob) {
-        if (blob instanceof FileBlob) {
-            return ((FileBlob) blob).getFile();
-        } else if (blob instanceof StorageBlob) {
-            StreamSource source = ((StorageBlob) blob).getBinary().getStreamSource();
-            return ((FileSource) source).getFile();
-        } else if (blob instanceof StreamingBlob) {
-            StreamingBlob sb = (StreamingBlob) blob;
-            StreamSource source = sb.getStreamSource();
-            if (source instanceof FileSource && sb.isTemporary()) {
-                return ((FileSource) source).getFile();
-            }
-        }
-        return null;
+        return blob.getFile();
     }
 
 }

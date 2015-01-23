@@ -41,6 +41,7 @@ import javax.transaction.xa.Xid;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -57,7 +58,6 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerStreamSupport;
 import org.nuxeo.ecm.core.storage.sql.PersistenceContext.PathAndId;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLFulltextExtractorWork;
@@ -66,7 +66,6 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
-import org.nuxeo.runtime.services.streaming.FileSource;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.codahale.metrics.MetricRegistry;
@@ -307,24 +306,25 @@ public class SessionImpl implements Session, XAResource {
         return rootNode;
     }
 
+    // don't close BinaryManager
+    @SuppressWarnings("resource")
     @Override
-    public Binary getBinary(FileSource source) throws StorageException {
-        BinaryManager mgr = repository.getBinaryManager();
+    public Binary getBinary(Blob blob) throws StorageException {
+        BinaryManager binaryManager = repository.getBinaryManager();
         try {
-            if (mgr instanceof BinaryManagerStreamSupport) {
-                return ((BinaryManagerStreamSupport) mgr).getBinary(source);
-            }
-            return mgr.getBinary(source.getStream());
+            return binaryManager.getBinary(blob);
         } catch (IOException e) {
             throw new StorageException(e);
         }
     }
 
+    // don't close BinaryManager
+    @SuppressWarnings("resource")
     @Override
     public Binary getBinary(InputStream in) throws StorageException {
-        BinaryManager mgr = repository.getBinaryManager();
+        BinaryManager binaryManager = repository.getBinaryManager();
         try {
-            return mgr.getBinary(in);
+            return binaryManager.getBinary(in);
         } catch (IOException e) {
             throw new StorageException(e);
         }

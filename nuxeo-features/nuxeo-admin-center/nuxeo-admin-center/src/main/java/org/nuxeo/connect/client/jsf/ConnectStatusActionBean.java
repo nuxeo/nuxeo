@@ -18,7 +18,6 @@
 
 package org.nuxeo.connect.client.jsf;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -55,6 +54,7 @@ import org.nuxeo.connect.registration.ConnectRegistrationService;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -231,17 +231,14 @@ public class ConnectStatusActionBean implements Serializable {
             return;
         }
         PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
-        File tmpFile = File.createTempFile("upload", "nxpkg");
-        packageToUpload.transferTo(tmpFile);
-        try {
-            pus.addPackage(tmpFile);
+        try (CloseableFile cfile = packageToUpload.getCloseableFile()) {
+            pus.addPackage(cfile.getFile());
         } catch (PackageException e) {
             log.warn(e, e);
             facesMessages.add(StatusMessage.Severity.ERROR,
                     messages.get("label.connect.wrong.package") + ":" + e.getMessage());
             return;
         } finally {
-            tmpFile.delete();
             packageFileName = null;
             packageToUpload = null;
         }

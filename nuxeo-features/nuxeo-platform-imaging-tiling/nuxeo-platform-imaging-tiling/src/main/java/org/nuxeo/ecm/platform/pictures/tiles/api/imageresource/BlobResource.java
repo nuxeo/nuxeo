@@ -70,15 +70,10 @@ public class BlobResource implements ImageResource {
     }
 
     private String getMD5Digest() {
-        InputStream in = null;
-        try {
-            Blob b = blob.persist();
-            in = b.getStream();
+        try (InputStream in = blob.getStream()) {
             return DigestUtils.md5Hex(in);
         } catch (IOException e) {
             return blob.hashCode() + "fakeHash";
-        } finally {
-            IOUtils.closeQuietly(in);
         }
     }
 

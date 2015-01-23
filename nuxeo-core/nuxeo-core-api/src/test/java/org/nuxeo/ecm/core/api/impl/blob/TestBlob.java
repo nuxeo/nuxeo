@@ -16,7 +16,6 @@ package org.nuxeo.ecm.core.api.impl.blob;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -37,7 +36,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:sf@nuxeo.com">Stefane Fermigier</a>
  */
-@SuppressWarnings({ "IOResourceOpenedButNotSafelyClosed", "UnusedAssignment" })
 public class TestBlob extends NXRuntimeTestCase {
 
     private URL url;
@@ -70,7 +68,6 @@ public class TestBlob extends NXRuntimeTestCase {
         assertNull(blob.getEncoding());
         assertEquals(length, blob.getLength());
 
-        assertTrue(blob.isPersistent());
         String s1 = blob.getString();
         String s2 = blob.getString();
         assertEquals(s1, s2);
@@ -90,40 +87,16 @@ public class TestBlob extends NXRuntimeTestCase {
 
     @Test
     public void testFileBlobFromStream() throws Exception {
-        Blob blob = new FileBlob(new FileInputStream(new File(url.toURI())));
-        checkFileBlob(blob);
-    }
-
-    @Test
-    public void testStreamingBlob() throws Exception {
-        Blob blob = StreamingBlob.createFromStream(new FileInputStream(new File(url.toURI())));
-
-        assertEquals("application/octet-stream", blob.getMimeType());
-        assertNull(blob.getEncoding());
-        // unknown length without exhausting the source stream
-        assertEquals(-1, blob.getLength());
-
-        assertFalse(blob.isPersistent());
-
-        Blob blob2 = blob.persist();
-        // the internal structure of the StreamingBlob is updated to get
-        // persisted inplace
-        assertTrue(blob.isPersistent());
-        assertTrue(blob2.isPersistent());
-        assertEquals(length, blob.getLength());
-        assertEquals(length, blob2.getLength());
-
-        String s1 = blob.getString();
-        String s2 = blob2.getString();
-        assertEquals(s1, s2);
-        s1 = null;
-        s2 = null;
+        try (InputStream in = new FileInputStream(new File(url.toURI()))) {
+            Blob blob = new FileBlob(in);
+            checkFileBlob(blob);
+        }
     }
 
     @Test
     public void testStreamingFromString() throws Exception {
         String nonAsciiString = "String with non ASCII chars: \u00e9";
-        Blob blob = StreamingBlob.createFromString(nonAsciiString);
+        Blob blob = new StringBlob(nonAsciiString);
         assertEquals(nonAsciiString, blob.getString());
         assertEquals(blob.getByteArray().length, blob.getLength());
         assertArrayEquals(nonAsciiString.getBytes("utf-8"), blob.getByteArray());
@@ -136,7 +109,6 @@ public class TestBlob extends NXRuntimeTestCase {
         assertNull(blob.getEncoding());
         assertEquals(-1, blob.getLength());
 
-        assertTrue(blob.isPersistent());
         String s1 = blob.getString();
         String s2 = blob.getString();
         assertEquals(s1, s2);
@@ -144,23 +116,6 @@ public class TestBlob extends NXRuntimeTestCase {
         s2 = null;
 
         byte[] blobContent2 = blob.getByteArray();
-        assertEquals(blobContent.length, blobContent2.length);
-        assertTrue(Arrays.equals(blobContent, blobContent2));
-    }
-
-    @Test
-    public void testInputStreamBlob() throws Exception {
-        InputStream is = new FileInputStream(new File(url.toURI()));
-        Blob blob = new InputStreamBlob(is);
-        assertNull(blob.getMimeType());
-        assertNull(blob.getEncoding());
-        assertEquals(-1, blob.getLength());
-
-        assertFalse(blob.isPersistent());
-
-        Blob blob2 = blob.persist();
-
-        byte[] blobContent2 = blob2.getByteArray();
         assertEquals(blobContent.length, blobContent2.length);
         assertTrue(Arrays.equals(blobContent, blobContent2));
     }
@@ -181,7 +136,6 @@ public class TestBlob extends NXRuntimeTestCase {
         assertEquals("UTF-8", blob.getEncoding());
         assertEquals(1000000, blob.getString().length());
 
-        assertTrue(blob.isPersistent());
         String s1 = blob.getString();
         assertEquals(s, s1);
 
@@ -210,7 +164,6 @@ public class TestBlob extends NXRuntimeTestCase {
         assertNull(blob.getEncoding());
         assertEquals(length, blob.getLength());
 
-        assertTrue(blob.isPersistent());
         String s1 = blob.getString();
         String s2 = blob.getString();
         assertEquals(s1, s2);

@@ -46,6 +46,7 @@ import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
@@ -61,7 +62,6 @@ import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
-import org.nuxeo.ecm.platform.picture.api.BlobHelper;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingConfigurationDescriptor;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
@@ -190,24 +190,15 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
     @Override
     public ImageInfo getImageInfo(Blob blob) {
         ImageInfo imageInfo = null;
-        File tmpFile = null;
         try {
-            File file = BlobHelper.getFileFromBlob(blob);
-            if (file == null) {
-                tmpFile = File.createTempFile("nuxeoImageInfo",
-                        blob.getFilename() != null ? "." + FilenameUtils.getExtension(blob.getFilename()) : ".tmp");
-                blob.transferTo(tmpFile);
-                file = tmpFile;
+            String ext = blob.getFilename() == null ? ".tmp" : "." + FilenameUtils.getExtension(blob.getFilename());
+            try (CloseableFile cf = blob.getCloseableFile(ext)) {                
+                imageInfo = ImageIdentifier.getInfo(cf.getFile().getAbsolutePath());
             }
-            imageInfo = ImageIdentifier.getInfo(file.getAbsolutePath());
         } catch (CommandNotAvailable | CommandException e) {
             log.error("Failed to get ImageInfo for file " + blob.getFilename(), e);
         } catch (IOException e) {
             log.error("Failed to transfer file " + blob.getFilename(), e);
-        } finally {
-            if (tmpFile != null) {
-                tmpFile.delete();
-            }
         }
         return imageInfo;
     }
@@ -336,15 +327,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         return new PictureViewImpl(map);
     }
 
-    /**
-     * @deprecated 5.9.2. Use {@link #wrapBlob(org.nuxeo.ecm.core.api.Blob)}.
-     */
-    @Deprecated
-    protected Blob copyBlob(Blob blob) throws IOException {
-        return wrapBlob(blob);
-    }
-
-    protected Blob wrapBlob(Blob blob) throws IOException {
+    protected Blob wrapBlob(Blob blob) {
         return new BlobWrapper(blob);
     }
 
@@ -448,7 +431,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
 
         // if the chainId is null just use the same blob (wrapped)
         if (StringUtils.isBlank(chainId)) {
-            return new BlobWrapper(blob);
+            return wrapBlob(blob);
         }
 
         Properties parameters = new Properties();
@@ -480,7 +463,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
                 viewBlob = wrapBlob(blob);
             }
             return viewBlob;
-        } catch (OperationException | IOException e) {
+        } catch (OperationException e) {
             throw new ClientRuntimeException(e);
         } finally {
             if (txWasActive && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {

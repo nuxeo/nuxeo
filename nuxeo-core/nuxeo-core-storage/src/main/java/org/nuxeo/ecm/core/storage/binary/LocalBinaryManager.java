@@ -40,8 +40,6 @@ import org.nuxeo.runtime.api.Framework;
  * <li><em>tmp/</em> temporary storage during creation,</li>
  * <li><em>config.xml</em> a file containing the configuration used.</li>
  * </ul>
- * When not using a binary scrambler, you should use {@link DefaultBinaryManager} instead as it includes some
- * optimizations.
  *
  * @author Florent Guillaume
  * @since 5.6
@@ -120,7 +118,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
         /*
          * Now we can build the Binary.
          */
-        return getBinaryScrambler().getUnscrambledBinary(file, digest, repositoryName);
+        return new Binary(file, digest, repositoryName);
     }
 
     @Override
@@ -134,7 +132,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
             log.warn("cannot fetch content at " + file.getPath() + " (file does not exist), check your configuration");
             return null;
         }
-        return getBinaryScrambler().getUnscrambledBinary(file, digest, repositoryName);
+        return new Binary(file, digest, repositoryName);
     }
 
     /**
@@ -213,19 +211,9 @@ public class LocalBinaryManager extends AbstractBinaryManager {
             // atomic rename.
             File tmp = File.createTempFile(dest.getName(), ".tmp", dest.getParentFile());
             try {
-                InputStream in = null;
-                OutputStream out = null;
-                try {
-                    in = new FileInputStream(source);
-                    out = new FileOutputStream(tmp);
+                try (InputStream in = new FileInputStream(source); //
+                        OutputStream out = new FileOutputStream(tmp)) {
                     IOUtils.copy(in, out);
-                } finally {
-                    if (in != null) {
-                        in.close();
-                    }
-                    if (out != null) {
-                        out.close();
-                    }
                 }
                 // then do the atomic rename
                 tmp.renameTo(dest);

@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -73,9 +73,9 @@ public class TestThumbnailStorage {
         DocumentModel root = session.getRootDocument();
         DocumentModel file = new DocumentModelImpl(root.getPathAsString(), "File", "File");
         // Attach a blob
-        Blob blob = new InputStreamBlob(
-                TestThumbnailStorage.class.getResource("/test-data/big_nuxeo_logo.jpg").openStream(), "image/jpeg",
-                null, "logo.jpg", null);
+        Blob blob = new FileBlob(TestThumbnailStorage.class.getResource("/test-data/big_nuxeo_logo.jpg").openStream(),
+                "image/jpeg");
+        blob.setFilename("logo.jpg");
         file.setPropertyValue("file:content", (Serializable) blob);
         file = session.createDocument(file);
         TransactionHelper.commitOrRollbackTransaction();
@@ -103,9 +103,9 @@ public class TestThumbnailStorage {
         Assert.assertFalse(file.hasFacet(ThumbnailConstants.THUMBNAIL_FACET));
 
         // Attach a blob
-        Blob blob = new InputStreamBlob(
-                TestThumbnailStorage.class.getResource("/test-data/big_nuxeo_logo.jpg").openStream(), "image/jpeg",
-                null, "logo.jpg", null);
+        Blob blob = new FileBlob(TestThumbnailStorage.class.getResource("/test-data/big_nuxeo_logo.jpg").openStream(),
+                "image/jpeg");
+        blob.setFilename("logo.jpg");
         file.setPropertyValue("file:content", (Serializable) blob);
         file = session.saveDocument(file);
 

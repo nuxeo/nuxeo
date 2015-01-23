@@ -19,6 +19,8 @@ package org.nuxeo.ecm.core.convert.plugins.text.extractors;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -30,14 +32,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
-import org.nuxeo.runtime.services.streaming.StreamSource;
-import org.nuxeo.runtime.services.streaming.StringSource;
 
 /**
  * Extract the text content of HTML documents while trying to respect the paragraph structure.
@@ -55,19 +54,16 @@ public class Html2TextConverter implements Converter {
         InputStream stream = null;
         try {
             Blob blob = blobHolder.getBlob();
-            Source source = null;
-
             // if the underlying source is unambiguously decoded, access the
             // decoded string directly
-            if (blob instanceof StreamingBlob) {
-                StreamingBlob sblob = (StreamingBlob) blob;
-                StreamSource streamSource = sblob.getStreamSource();
-                if (streamSource instanceof StringSource) {
-                    source = new Source(((StringSource) streamSource).getString());
-                }
-            }
-            if (source == null) {
-                // use the parser charset heuristic to decode properly
+            Source source;
+            if (blob instanceof StringBlob) {
+                source = new Source(blob.getString());
+            } else if (blob.getEncoding() != null) {
+                Reader reader = new InputStreamReader(blob.getStream(), blob.getEncoding());
+                source = new Source(reader);
+            } else {
+                // otherwise use the parser charset heuristic to decode properly
                 source = new Source(blob.getStream());
             }
             Renderer renderer = source.getRenderer();

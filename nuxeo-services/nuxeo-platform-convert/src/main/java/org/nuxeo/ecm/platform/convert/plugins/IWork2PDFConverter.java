@@ -60,8 +60,10 @@ public class IWork2PDFConverter implements Converter {
             if (ZipUtils.hasEntry(blob.getStream(), IWORK_PREVIEW_FILE)) {
                 // pdf file exist, let's extract it and return it as a
                 // BlobHolder.
-                InputStream previewPDFFile = ZipUtils.getEntryContentAsStream(blob.getStream(), IWORK_PREVIEW_FILE);
-                Blob previewBlob = new FileBlob(previewPDFFile);
+                Blob previewBlob;
+                try (InputStream previewPDFFile = ZipUtils.getEntryContentAsStream(blob.getStream(), IWORK_PREVIEW_FILE)) {
+                    previewBlob = new FileBlob(previewPDFFile);
+                }
                 return new SimpleCachableBlobHolder(previewBlob);
             } else {
                 // Pdf file does not exist, conversion cannot be done.

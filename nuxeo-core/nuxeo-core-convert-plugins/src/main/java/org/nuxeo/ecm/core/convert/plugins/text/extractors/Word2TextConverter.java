@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Map;
@@ -59,7 +60,10 @@ public class Word2TextConverter implements Converter {
             fas = new FileOutputStream(f);
             fas.write(bytes);
 
-            Blob blob = new FileBlob(new FileInputStream(f));
+            Blob blob;
+            try (InputStream in = new FileInputStream(f)) {
+                blob = new FileBlob(in);
+            }
             blob.setMimeType("text/plain");
 
             return new SimpleCachableBlobHolder(blob);

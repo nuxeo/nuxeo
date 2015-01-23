@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.picture.api.adapters;
 
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_VIEWS_PROPERTY;
 
-import java.io.File;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,8 +31,6 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.ecm.platform.picture.api.PictureViewImpl;
@@ -79,15 +75,7 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
         map.put(PictureView.FIELD_HEIGHT, view.getHeight());
         map.put(PictureView.FIELD_WIDTH, view.getWidth());
         map.put(PictureView.FIELD_FILENAME, view.getFilename());
-        Object o = view.getContent();
-        Blob blob = null;
-        if (o instanceof File) {
-            blob = new FileBlob((File) o, "application/octet-stream");
-        } else if (o instanceof InputStream) {
-            blob = new InputStreamBlob((InputStream) o, "application/octet-stream");
-        } else if (o instanceof Blob) {
-            blob = (Blob) o;
-        }
+        Blob blob = view.getBlob();
         if (blob != null) {
             map.put(PictureView.FIELD_CONTENT, blob);
         }
@@ -109,7 +97,6 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
         }
         view.setFilename((String) map.get(PictureView.FIELD_FILENAME));
         Blob blob = (Blob) map.get(PictureView.FIELD_CONTENT);
-        view.setContent(blob);
         view.setBlob(blob);
         view.setImageInfo(ImageInfo.fromMap((Map<String, Serializable>) map.get("info")));
         return view;

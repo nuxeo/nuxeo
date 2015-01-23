@@ -10,16 +10,17 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.convert.plugins.UTF8CharsetConverter;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public class CanTranscodeCharsetsTest {
+public class CanTranscodeCharsetsTest extends NXRuntimeTestCase {
 
     @Test
     public void transcodeLatin1() throws IOException, ClientException {
         Blob blob;
         try (InputStream in = CanTranscodeCharsetsTest.class.getResource("/latin1.txt").openStream()) {
-            InputStreamBlob latin1Blob = new InputStreamBlob(in);
+            Blob latin1Blob = new FileBlob(in);
             latin1Blob.setMimeType("text/plain");
             BlobHolder holder = new SimpleBlobHolder(latin1Blob);
             UTF8CharsetConverter encoder = new UTF8CharsetConverter();

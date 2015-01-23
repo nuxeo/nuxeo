@@ -20,8 +20,8 @@
 package org.nuxeo.ecm.platform.pictures.tiles.restlets;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Map;
@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -175,7 +176,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
 
     protected void handleSendImage(Response res, PictureTiles tiles, Integer x, Integer y) {
 
-        Blob image;
+        final Blob image;
         try {
             image = tiles.getTile(x, y);
         } catch (ClientException e) {
@@ -183,25 +184,15 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
             return;
         }
 
-        try {
-            final File tempfile = File.createTempFile("nuxeo-tilingrestlet-tmp", "");
-            image.transferTo(tempfile);
-            res.setEntity(new OutputRepresentation(null) {
-                @Override
-                public void write(OutputStream outputStream) throws IOException {
-                    // the write call happens after the seam conversation is
-                    // finished which will garbage collect the CoreSession
-                    // instance, hence we store the blob content in a temporary
-                    // file
-                    FileInputStream instream = new FileInputStream(tempfile);
-                    FileUtils.copy(instream, outputStream);
-                    instream.close();
-                    tempfile.delete();
+        // blobs are always persistent, and temporary blobs are GCed only when not referenced anymore
+        res.setEntity(new OutputRepresentation(null) {
+            @Override
+            public void write(OutputStream outputStream) throws IOException {
+                try (InputStream stream = image.getStream()) {
+                    IOUtils.copy(stream, outputStream);
                 }
-            });
-        } catch (IOException e) {
-            handleError(res, e);
-        }
+            }
+        });
     }
 
     protected void handleNoTiles(Response res, Exception e) {

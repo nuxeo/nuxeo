@@ -141,7 +141,10 @@ public class PDF2TextConverter implements Converter {
                 f = File.createTempFile("pdfboplugin", ".txt");
                 fas = new FileOutputStream(f);
                 fas.write(text.getBytes("UTF-8"));
-                return new SimpleCachableBlobHolder(new FileBlob(new FileInputStream(f), "text/plain", "UTF-8"));
+                try (FileInputStream is = new FileInputStream(f)) {
+                    FileBlob blob = new FileBlob(is, "text/plain", "UTF-8");
+                    return new SimpleCachableBlobHolder(blob);
+                }
             } else {
                 return new SimpleCachableBlobHolder(new StringBlob(""));
             }

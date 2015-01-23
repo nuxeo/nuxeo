@@ -15,10 +15,10 @@ package org.nuxeo.ecm.core.storage.binary;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import org.apache.commons.io.output.NullOutputStream;
-import org.nuxeo.runtime.services.streaming.FileSource;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 
 /**
  * A simple filesystem-based binary manager. It stores the binaries according to their digest (hash), which means that
@@ -32,44 +32,43 @@ import org.nuxeo.runtime.services.streaming.FileSource;
  * <li><em>tmp/</em> temporary storage during creation,</li>
  * <li><em>config.xml</em> a file containing the configuration used.</li>
  * </ul>
- * This class includes optimizations that make it unsuitable for use with a binary scrambler. Extend
- * {@link LocalBinaryManager} instead to make use of a scrambler.
  *
  * @author Florent Guillaume
  */
-public class DefaultBinaryManager extends LocalBinaryManager implements BinaryManagerStreamSupport {
-
-    public DefaultBinaryManager() {
-        super();
-        if (!(getBinaryScrambler() instanceof NullBinaryScrambler)) {
-            throw new IllegalStateException("DefaultBinaryManager cannot be used with a binary scrambler");
-        }
-    }
+public class DefaultBinaryManager extends LocalBinaryManager {
 
     @Override
-    public Binary getBinary(FileSource source) throws IOException {
-        String digest = storeAndDigest(source);
+    public Binary getBinary(Blob blob) throws IOException {
+        if (!(blob instanceof FileBlob) || !((FileBlob) blob).isTemporary()) {
+            return super.getBinary(blob); // just open the stream
+        }
+        String digest = storeAndDigest((FileBlob) blob);
         File file = getFileForDigest(digest, false);
         /*
          * Now we can build the Binary.
          */
-        return getBinaryScrambler().getUnscrambledBinary(file, digest, repositoryName);
+        return new Binary(file, digest, repositoryName);
     }
 
-    protected String storeAndDigest(FileSource source) throws IOException {
-        File sourceFile = source.getFile();
-        InputStream in = source.getStream();
-        OutputStream out = new NullOutputStream();
+    /**
+     * Stores and digests a temporary FileBlob.
+     */
+    protected String storeAndDigest(FileBlob blob) throws IOException {
         String digest;
-        try {
-            digest = storeAndDigest(in, out);
-        } finally {
-            in.close();
-            out.close();
+        try (InputStream in = blob.getStream()) {
+            digest = storeAndDigest(in, NullOutputStream.NULL_OUTPUT_STREAM);
         }
         File digestFile = getFileForDigest(digest, true);
-        atomicMove(sourceFile, digestFile);
-        source.setFile(digestFile);
+        if (digestFile.exists()) {
+            // The file with the proper digest is already there so don't do anything. This is to avoid
+            // "Stale NFS File Handle" problems which would occur if we tried to overwrite it anyway.
+            // Note that this doesn't try to protect from the case where two identical files are uploaded
+            // at the same time.
+            // Update date for the GC.
+            digestFile.setLastModified(blob.getFile().lastModified());
+        } else {
+            blob.moveTo(digestFile);
+        }
         return digest;
     }
 

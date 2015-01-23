@@ -101,7 +101,7 @@ public class CreatePictureTest {
             PictureView pv = mvp.getView(title);
             assertNotNull(pv);
 
-            Blob content = (Blob) pv.getContent();
+            Blob content = pv.getBlob();
             // Just test if we have a blob
             assertNotNull(content);
 

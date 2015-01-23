@@ -77,7 +77,7 @@ public class IMImageUtils implements ImageUtils {
         }
 
         protected void makeFiles(Blob blob, String targetExt) throws CommandNotAvailable, CommandException, IOException {
-            sourceFile = BlobHelper.getFileFromBlob(blob);
+            sourceFile = blob.getFile();
 
             // check extension
             String ext = FilenameUtils.getExtension(blob.getFilename());

@@ -11,8 +11,6 @@
  */
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -49,7 +47,6 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -90,8 +87,6 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.streaming.FileSource;
-import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * This class is the bridge between the Nuxeo SPI Session and the actual low-level implementation of the SQL storage
@@ -1230,22 +1225,8 @@ public class SQLSession implements Session {
         if (blob instanceof StorageBlob) {
             return ((StorageBlob) blob).getBinary();
         }
-        StreamSource source;
         try {
-            if (blob instanceof StreamingBlob) {
-                StreamingBlob sb = (StreamingBlob) blob;
-                source = sb.getStreamSource();
-                if (source instanceof FileSource && sb.isTemporary()) {
-                    return session.getBinary((FileSource) source);
-                }
-            }
-            InputStream stream;
-            try {
-                stream = blob.getStream();
-            } catch (IOException e) {
-                throw new DocumentException(e);
-            }
-            return session.getBinary(stream);
+            return session.getBinary(blob);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }

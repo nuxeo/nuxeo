@@ -13,13 +13,13 @@
  */
 package org.nuxeo.ecm.platform.thumbnail.converter;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -32,7 +32,6 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
-import org.nuxeo.ecm.platform.picture.api.BlobHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -52,7 +51,6 @@ public class ThumbnailDocumentConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
-        File tmpFile = null;
         try {
             // Make sure the toThumbnail command is available
             CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
@@ -62,40 +60,28 @@ public class ThumbnailDocumentConverter implements Converter {
             }
             // get the input and output of the command
             Blob blob = blobHolder.getBlob();
-            blob.persist();
 
-            File inputFile = BlobHelper.getFileFromBlob(blob);
-            if (inputFile == null) {
-                tmpFile = File.createTempFile("nuxeoImageInfo", ".tmp");
-                blob.transferTo(tmpFile);
-                inputFile = tmpFile;
-            }
-
-            CmdParameters params = new CmdParameters();
-            File outputFile = File.createTempFile("nuxeoImageTarget", "." + "png");
-            String size = THUMBNAIL_DEFAULT_SIZE;
-            if (parameters != null) {
-                if (parameters.containsKey(THUMBNAIL_SIZE_PARAMETER_NAME)) {
+            Blob targetBlob = new FileBlob(".png");
+            try (CloseableFile source = blob.getCloseableFile()) {
+                CmdParameters params = new CmdParameters();
+                String size;
+                if (parameters != null && parameters.containsKey(THUMBNAIL_SIZE_PARAMETER_NAME)) {
                     size = (String) parameters.get(THUMBNAIL_SIZE_PARAMETER_NAME);
+                } else {
+                    size = THUMBNAIL_DEFAULT_SIZE;
+                }
+                params.addNamedParameter(THUMBNAIL_SIZE_PARAMETER_NAME, size);
+                params.addNamedParameter("inputFilePath", source.getFile());
+                params.addNamedParameter("outputFilePath", targetBlob.getFile());
+
+                ExecResult res = cles.execCommand(THUMBNAIL_COMMAND, params);
+                if (!res.isSuccessful()) {
+                    throw res.getError();
                 }
             }
-            params.addNamedParameter(THUMBNAIL_SIZE_PARAMETER_NAME, size);
-            params.addNamedParameter("inputFilePath", inputFile);
-            params.addNamedParameter("outputFilePath", outputFile);
-
-            ExecResult res = cles.execCommand(THUMBNAIL_COMMAND, params);
-            if (!res.isSuccessful()) {
-                throw res.getError();
-            }
-            Blob targetBlob = new FileBlob(outputFile);
-            Framework.trackFile(outputFile, targetBlob);
             return new SimpleCachableBlobHolder(targetBlob);
         } catch (CommandNotAvailable | IOException | ClientException | CommandException e) {
             throw new ConversionException("Thumbnail conversion failed", e);
-        } finally {
-            if (tmpFile != null) {
-                tmpFile.delete();
-            }
         }
     }
 

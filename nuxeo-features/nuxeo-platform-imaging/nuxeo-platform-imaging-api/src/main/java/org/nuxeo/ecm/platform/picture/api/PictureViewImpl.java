@@ -39,7 +39,7 @@ public class PictureViewImpl implements PictureView {
 
     String filename;
 
-    Object content;
+    Blob content;
 
     Blob blob;
 
@@ -124,13 +124,8 @@ public class PictureViewImpl implements PictureView {
     }
 
     @Override
-    public Object getContent() {
-        return content;
-    }
-
-    @Override
-    public void setContent(Object content) {
-        this.content = content;
+    public Blob getContent() {
+        return blob;
     }
 
     @Override

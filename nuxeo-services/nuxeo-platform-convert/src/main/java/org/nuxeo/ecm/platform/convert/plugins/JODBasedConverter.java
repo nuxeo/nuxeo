@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.convert.plugins;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -40,7 +41,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
@@ -50,7 +51,6 @@ import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
 import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerService;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.streaming.FileSource;
 
 /**
  * Converter based on JOD which uses an external OpenOffice process to do actual conversions.
@@ -171,7 +171,6 @@ public class JODBasedConverter implements ExternalConverter {
         super.finalize();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         blobHolder = new UTF8CharsetConverter().convert(blobHolder, parameters);
@@ -215,10 +214,8 @@ public class JODBasedConverter implements ExternalConverter {
             // Copy in a file to be able to read it several time
             sourceFile = File.createTempFile("NXJOOoConverterDocumentIn", ext);
             InputStream stream = inputBlob.getStream();
-            // if (stream.markSupported()) {
-            // stream.reset(); // works on a JCRBlobInputStream
-            // }
             FileUtils.copyToFile(stream, sourceFile);
+            stream.close();
 
             DocumentFormat sourceFormat = null;
             if (sourceMimetype != null) {
@@ -255,24 +252,27 @@ public class JODBasedConverter implements ExternalConverter {
                     throw new IOException("Unable to create temp file");
                 }
 
-                log.debug("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
                 log.debug("Input File = " + outFile.getAbsolutePath());
                 // Perform the actual conversion.
                 documentConverter.convert(sourceFile, outFile, destinationFormat);
 
                 files = myTmpDir.listFiles();
                 for (File file : files) {
-                    Blob blob = StreamingBlob.createFromByteArray(new FileSource(file).getBytes());
+                    // copy the files to a new tmp location, as we'll delete them
+                    Blob blob;
+                    try (FileInputStream in = new FileInputStream(file)) {
+                        blob = new FileBlob(in);
+                    }
                     blob.setFilename(file.getName());
                     blobs.add(blob);
                     // add a blob for the index
                     if (file.getName().equals(outFile.getName())) {
-                        File indexFile = File.createTempFile("idx-", file.getName());
-                        FileUtils.copy(file, indexFile);
-                        Blob indexBlob = StreamingBlob.createFromByteArray(new FileSource(indexFile).getBytes());
+                        Blob indexBlob;
+                        try (FileInputStream in = new FileInputStream(file)) {
+                            indexBlob = new FileBlob(in);
+                        }
                         indexBlob.setFilename("index.html");
                         blobs.add(0, indexBlob);
-                        indexFile.delete();
                     }
                 }
 
@@ -282,11 +282,10 @@ public class JODBasedConverter implements ExternalConverter {
                 // Perform the actual conversion.
                 documentConverter.convert(sourceFile, outFile, destinationFormat, parameters);
 
-                // load the content in the file since it will be deleted
-                // soon: TODO: find a way to stream it to the streaming
-                // server without loading it all in memory
-                Blob blob = StreamingBlob.createFromByteArray(new FileSource(outFile).getBytes(),
-                        getDestinationMimeType());
+                Blob blob;
+                try (FileInputStream in = new FileInputStream(outFile)) {
+                    blob = new FileBlob(in, getDestinationMimeType());
+                }
                 blobs.add(blob);
             }
             return new SimpleCachableBlobHolder(blobs);

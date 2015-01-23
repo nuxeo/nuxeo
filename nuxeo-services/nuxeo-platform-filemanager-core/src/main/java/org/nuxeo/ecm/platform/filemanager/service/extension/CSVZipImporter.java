@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.filemanager.service.extension;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Serializable;
@@ -36,17 +35,18 @@ import java.util.zip.ZipFile;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -92,11 +92,9 @@ public class CSVZipImporter extends AbstractFileImporter {
     @Override
     public DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite,
             String filename, TypeManager typeService) throws ClientException, IOException {
-        File tmp = null;
-        try {
-            tmp = File.createTempFile("zipcsv-importer", null);
-            content.transferTo(tmp);
-            ZipFile zip = getArchiveFileIfValid(tmp);
+        ZipFile zip = null;
+        try (CloseableFile source = content.getCloseableFile()) {
+            zip = getArchiveFileIfValid(source.getFile());
             if (zip == null) {
                 return null;
             }
@@ -200,9 +198,7 @@ public class CSVZipImporter extends AbstractFileImporter {
             }
             return container;
         } finally {
-            if (tmp != null) {
-                tmp.delete();
-            }
+            IOUtils.closeQuietly(zip);
         }
     }
 
@@ -243,13 +239,12 @@ public class CSVZipImporter extends AbstractFileImporter {
             if (TypeConstants.CONTENT.equals(field.getName().getLocalName())) {
                 ZipEntry blobIndex = zip.getEntry(stringValue);
                 if (blobIndex != null) {
-                    InputStream blobStream;
+                    Blob blob;
                     try {
-                        blobStream = zip.getInputStream(blobIndex);
+                        blob = new FileBlob(zip.getInputStream(blobIndex));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    Blob blob = new InputStreamBlob(blobStream);
                     blob.setFilename(stringValue);
                     fieldValue = (Serializable) blob;
                 }

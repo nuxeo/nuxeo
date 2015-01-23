@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
-import org.nuxeo.ecm.platform.picture.api.BlobHelper;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
 import org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants;
@@ -74,19 +73,21 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
             return true;
         }
 
-        file = BlobHelper.getFileFromBlob(blob);
+        File file = blob.getFile();
         CommandLineExecutorService commandLineExecutorService = Framework.getLocalService(CommandLineExecutorService.class);
-        boolean validFilename = file == null || commandLineExecutorService.isValidParameter(file.getName());
+        boolean validFilename = file != null && commandLineExecutorService.isValidParameter(file.getName());
         if (file == null || !validFilename) {
-            String extension = ".jpg";
+            String extension;
             if (file != null) {
                 extension = "." + FileUtils.getFileExtension(file.getName());
+            } else {
+                extension = ".jpg";
             }
             file = File.createTempFile("nuxeoImage", extension);
             Framework.trackFile(file, this);
             blob.transferTo(file);
             // use a persistent blob with our file
-            if (!blob.isPersistent() || !validFilename) {
+            if (!validFilename) {
                 blob = new FileBlob(file, blob.getMimeType(), blob.getEncoding(), blob.getFilename(), blob.getDigest());
             }
         }

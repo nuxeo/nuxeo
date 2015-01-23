@@ -41,7 +41,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -302,7 +302,7 @@ public class TestFileManagerService {
         // Create doc from NFC normalized filename
         String fileName = "ÜÜÜ ÓÓÓ.rtf";
         String nfcNormalizedFileName = Normalizer.normalize(fileName, Normalizer.Form.NFC);
-        Blob blob = StreamingBlob.createFromString("Test content", "text/rtf");
+        Blob blob = new StringBlob("Test content", "text/rtf");
         blob.setFilename(nfcNormalizedFileName);
         service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true, nfcNormalizedFileName);
         assertNotNull(FileManagerUtils.getExistingDocByFileName(coreSession, workspace.getPathAsString(),

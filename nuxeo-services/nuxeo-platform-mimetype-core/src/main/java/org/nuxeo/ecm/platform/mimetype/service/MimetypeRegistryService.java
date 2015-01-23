@@ -323,11 +323,6 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     public String getMimetypeFromBlob(Blob blob) throws MimetypeNotFoundException, MimetypeDetectionException {
         File file = null;
         try {
-            // make sure the blob can be read several times without exhausting
-            // its binary source
-            if (!blob.isPersistent()) {
-                blob = blob.persist();
-            }
             file = File.createTempFile("NXMimetypeBean", ".bin");
             try {
                 InputStream is = blob.getStream();
@@ -402,13 +397,6 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     }
 
     public Blob updateMimetype(Blob blob, String filename) throws MimetypeDetectionException {
-        if (!blob.isPersistent()) {
-            try {
-                blob = blob.persist();
-            } catch (IOException e) {
-                throw new MimetypeDetectionException(e.getMessage(), e);
-            }
-        }
         if (filename == null) {
             filename = blob.getFilename();
         } else if (blob.getFilename() == null) {

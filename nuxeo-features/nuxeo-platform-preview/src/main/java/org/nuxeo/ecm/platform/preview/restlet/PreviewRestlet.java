@@ -15,9 +15,8 @@
 
 package org.nuxeo.ecm.platform.preview.restlet;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -28,6 +27,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -35,12 +35,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.international.LocaleSelector;
-import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.resource.OutputRepresentation;
-
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -56,6 +50,10 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.platform.web.common.locale.LocaleProvider;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
+import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.resource.OutputRepresentation;
 
 /**
  * Provides a REST API to retrieve the preview of a document.
@@ -250,21 +248,14 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
         response.setHeader("Content-Disposition", "inline");
     }
 
-    protected void handlePreview(Response res, Blob previewBlob, String mimeType) throws IOException {
-        final File tempfile = File.createTempFile("nuxeo-previewrestlet-tmp", "");
-        Framework.trackFile(tempfile, res);
-        previewBlob.transferTo(tempfile);
+    protected void handlePreview(Response res, final Blob blob, String mimeType) throws IOException {
+        // blobs are always persistent, and temporary blobs are GCed only when not referenced anymore
         res.setEntity(new OutputRepresentation(null) {
             @Override
             public void write(OutputStream outputStream) throws IOException {
-                // the write call happens after the seam conversation is
-                // finished which will garbage collect the CoreSession
-                // instance, hence we store the blob content in a temporary
-                // file
-                FileInputStream instream = new FileInputStream(tempfile);
-                FileUtils.copy(instream, outputStream);
-                instream.close();
-                tempfile.delete();
+                try (InputStream stream = blob.getStream()) {
+                    IOUtils.copy(stream, outputStream);
+                }
             }
         });
         HttpServletResponse response = getHttpResponse(res);

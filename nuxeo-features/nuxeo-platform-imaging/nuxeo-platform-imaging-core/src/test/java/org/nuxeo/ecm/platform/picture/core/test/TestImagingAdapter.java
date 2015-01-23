@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.FileInputStream;
 import java.util.Calendar;
 
 import org.apache.commons.io.FilenameUtils;
@@ -33,7 +32,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
@@ -125,32 +123,6 @@ public class TestImagingAdapter {
             assertEquals("Small_" + computedFilename, pictureView.getFilename());
             assertEquals("Small_" + computedFilename, pictureView.getBlob().getFilename());
             assertNotNull(pictureView);
-        }
-    }
-
-    @Test
-    public void testBlobReadOnlyOnce() throws Exception {
-        DocumentModel doc = session.createDocumentModel("/", "pic", "Picture");
-        doc = session.createDocument(doc);
-
-        PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
-        assertNotNull(adapter);
-
-        String filename = JPEG_IMAGE;
-        String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
-
-        FileInputStream in = new FileInputStream(ImagingResourcesHelper.getFileFromPath(path));
-        try {
-            // blob that can be read only once, like HttpServletRequest streams
-            Blob blob = new InputStreamBlob(in);
-            blob.setFilename(filename);
-            adapter.fillPictureViews(blob, filename, filename);
-            doc = session.saveDocument(doc);
-            MultiviewPicture pic = doc.getAdapter(MultiviewPicture.class);
-            assertNotNull(pic);
-            assertNotNull(pic.getView("Thumbnail"));
-        } finally {
-            in.close();
         }
     }
 

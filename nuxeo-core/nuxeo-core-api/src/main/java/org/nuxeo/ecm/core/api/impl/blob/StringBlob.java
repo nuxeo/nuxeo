@@ -15,13 +15,10 @@ package org.nuxeo.ecm.core.api.impl.blob;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.StringReader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
 
 /**
  * Blob based on a string.
@@ -43,6 +40,9 @@ public class StringBlob extends AbstractBlob implements Serializable {
     }
 
     public StringBlob(String string, String mimeType, String encoding) {
+        if (string == null) {
+            throw new NullPointerException("null string");
+        }
         this.string = string;
         this.mimeType = mimeType;
         this.encoding = encoding;
@@ -50,9 +50,6 @@ public class StringBlob extends AbstractBlob implements Serializable {
 
     @Override
     public long getLength() {
-        if (string == null) {
-            return 0;
-        }
         try {
             return getByteArray().length;
         } catch (IOException e) {
@@ -63,44 +60,17 @@ public class StringBlob extends AbstractBlob implements Serializable {
 
     @Override
     public InputStream getStream() throws IOException {
-        if (string == null) {
-            return EMPTY_INPUT_STREAM;
-        }
         return new ByteArrayInputStream(getByteArray());
     }
 
     @Override
     public byte[] getByteArray() throws IOException {
-        if (string == null) {
-            return EMPTY_BYTE_ARRAY;
-        }
-        return string.getBytes(encoding == null ? UTF_8 : encoding);
+        return string.getBytes(getEncoding() == null ? UTF_8 : getEncoding());
     }
 
     @Override
     public String getString() {
-        if (string == null) {
-            return EMPTY_STRING;
-        }
         return string;
-    }
-
-    @Override
-    public Reader getReader() {
-        if (string == null) {
-            return EMPTY_READER;
-        }
-        return new StringReader(string);
-    }
-
-    @Override
-    public boolean isPersistent() {
-        return true;
-    }
-
-    @Override
-    public Blob persist() {
-        return this;
     }
 
 }

@@ -55,7 +55,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
@@ -157,21 +158,20 @@ public class FileManageActionsBean implements FileManageActions {
     @Override
     public String addFile() throws ClientException {
         NxUploadedFile uploadedFile = fileUploadHolder.getUploadedFiles().iterator().next();
-        File tempFile = uploadedFile.getFile();
-        String fileName = uploadedFile.getName();
-        if (tempFile == null || fileName == null) {
+        Blob blob = uploadedFile.getBlob();
+        if (blob == null || blob.getFilename() == null) {
             facesMessages.add(StatusMessage.Severity.ERROR, messages.get("fileImporter.error.nullUploadedFile"));
             return navigationContext.getActionResult(navigationContext.getCurrentDocument(), UserAction.AFTER_CREATE);
         }
-        fileName = FileUtils.getCleanFileName(fileName);
+        FileUtils.configureFileBlob(blob);
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String path = currentDocument.getPathAsString();
-        Blob blob = FileUtils.createTemporaryFileBlob(tempFile, fileName, null);
         DocumentModel createdDoc = null;
         try {
-            createdDoc = getFileManagerService().createDocumentFromBlob(documentManager, blob, path, true, fileName);
+            createdDoc = getFileManagerService().createDocumentFromBlob(documentManager, blob, path, true,
+                    blob.getFilename());
         } catch (IOException e) {
-            throw new ClientException("Can not write blob for" + fileName, e);
+            throw new ClientException("Can not write blob for" + blob.getFilename(), e);
         }
         EventManager.raiseEventsOnDocumentSelected(createdDoc);
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
@@ -282,7 +282,7 @@ public class FileManageActionsBean implements FileManageActions {
     @Deprecated
     public String addBinaryFileFromPlugin(byte[] content, String mimetype, String fullName, String morePath)
             throws ClientException {
-        Blob blob = StreamingBlob.createFromByteArray(content, null);
+        Blob blob = new ByteArrayBlob(content);
         return addBinaryFileFromPlugin(blob, fullName, morePath);
     }
 
@@ -519,25 +519,31 @@ public class FileManageActionsBean implements FileManageActions {
     public void processUpload(FileUploadEvent uploadEvent) {
         try {
             if (fileUploadHolder != null) {
-                Collection<NxUploadedFile> temp = fileUploadHolder.getUploadedFiles();
-                File file = null;
-                String jstTmpFileDir = Framework.getProperty(NUXEO_JSF_TMP_DIR_PROP);
-                if (StringUtils.isNotBlank(jstTmpFileDir)) {
-                    file = File.createTempFile("FileManageActionsFile", null, new File(jstTmpFileDir));
-                } else {
-                    file = File.createTempFile("FileManageActionsFile", null);
-                }
-                UploadedFile uploadedFile = uploadEvent.getUploadedFile();
-                try (InputStream in = uploadedFile.getInputStream()) {
-                    org.nuxeo.common.utils.FileUtils.copyToFile(in, file);
-                }
-                temp.add(new NxUploadedFile(uploadedFile.getName(), uploadedFile.getContentType(), file));
-                fileUploadHolder.setUploadedFiles(temp);
+                Blob blob = getBlob(uploadEvent);
+                fileUploadHolder.getUploadedFiles().add(new NxUploadedFile(blob));
             } else {
                 log.error("Unable to reach fileUploadHolder");
             }
         } catch (IOException e) {
             log.error(e, e);
+        }
+    }
+
+    public static Blob getBlob(FileUploadEvent uploadEvent) throws IOException {
+        // copy to a temporary file we own
+        // TODO check how we can reuse RichFaces' temporary file
+        String jstTmpFileDir = Framework.getProperty(NUXEO_JSF_TMP_DIR_PROP);
+        File tmpDir;
+        if (StringUtils.isBlank(jstTmpFileDir)) {
+            tmpDir = null;
+        } else {
+            tmpDir = new File(jstTmpFileDir);
+        }
+        UploadedFile uploadedFile = uploadEvent.getUploadedFile();
+        try (InputStream in = uploadedFile.getInputStream()) {
+            Blob blob = new FileBlob(in, uploadedFile.getContentType(), null, tmpDir);
+            blob.setFilename(uploadedFile.getName());
+            return blob;
         }
     }
 
@@ -557,12 +563,11 @@ public class FileManageActionsBean implements FileManageActions {
             ArrayList files = (ArrayList) current.getPropertyValue(FILES_PROPERTY);
             if (nxuploadFiles != null) {
                 for (NxUploadedFile uploadItem : nxuploadFiles) {
-                    String filename = FileUtils.getCleanFileName(uploadItem.getName());
-                    Blob blob = FileUtils.createTemporaryFileBlob(uploadItem.getFile(), filename,
-                            uploadItem.getContentType());
+                    Blob blob = uploadItem.getBlob();
+                    FileUtils.configureFileBlob(blob);
                     HashMap<String, Object> fileMap = new HashMap<String, Object>(2);
                     fileMap.put("file", blob);
-                    fileMap.put("filename", filename);
+                    fileMap.put("filename", blob.getFilename());
                     if (!files.contains(fileMap)) {
                         files.add(fileMap);
                     }
@@ -741,17 +746,6 @@ public class FileManageActionsBean implements FileManageActions {
             setUploadedFiles(files);
         }
         return "";
-    }
-
-    /**
-     * Creates a TemporaryFileBlob.
-     *
-     * @since 5.6.0-HF19
-     * @deprecated Since 5.7.2. See {@link org.nuxeo.ecm.platform.ui.web.util.files.FileUtils#createTemporaryFileBlob}
-     */
-    @Deprecated
-    protected static Blob createTemporaryFileBlob(File file, String filename, String mimeType) {
-        return FileUtils.createTemporaryFileBlob(file, filename, mimeType);
     }
 
 }

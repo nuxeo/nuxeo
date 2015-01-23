@@ -12,7 +12,6 @@
  */
 package org.nuxeo.ecm.core.api.impl.blob;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -21,16 +20,17 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Serializable;
-import java.io.StringReader;
-import java.io.Writer;
+import java.nio.file.Files;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableFile;
+import org.nuxeo.runtime.api.Framework;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Abstract implementation of a {@link Blob} storing the information other than the byte stream.
  */
 public abstract class AbstractBlob implements Blob, Serializable {
 
@@ -39,16 +39,6 @@ public abstract class AbstractBlob implements Blob, Serializable {
     public static final String UTF_8 = "UTF-8";
 
     public static final String TEXT_PLAIN = "text/plain";
-
-    protected static final String EMPTY_STRING = "";
-
-    protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
-
-    protected static final InputStream EMPTY_INPUT_STREAM = new ByteArrayInputStream(EMPTY_BYTE_ARRAY);
-
-    protected static final Reader EMPTY_READER = new StringReader(EMPTY_STRING);
-
-    protected static final int BUFFER_SIZE = 4096 * 16;
 
     protected String mimeType;
 
@@ -99,33 +89,22 @@ public abstract class AbstractBlob implements Blob, Serializable {
     }
 
     @Override
+    public File getFile() {
+        return null;
+    }
+
+    @Override
     public byte[] getByteArray() throws IOException {
         try (InputStream in = getStream()) {
-            if (in == null || in.available() == 0) {
-                return EMPTY_BYTE_ARRAY;
-            }
             return IOUtils.toByteArray(in);
         }
     }
 
     @Override
     public String getString() throws IOException {
-        try (Reader reader = getReader()) {
-            if (reader == null || reader == EMPTY_READER) {
-                return EMPTY_STRING;
-            }
+        try (Reader reader = new InputStreamReader(getStream(), getEncoding() == null ? UTF_8 : getEncoding())) {
             return IOUtils.toString(reader);
         }
-    }
-
-    @Override
-    public Reader getReader() throws IOException {
-        InputStream in = getStream();
-        if (in == null || in.available() == 0) {
-            return EMPTY_READER;
-        }
-        String enc = getEncoding();
-        return enc == null ? new InputStreamReader(in) : new InputStreamReader(in, enc);
     }
 
     @Override
@@ -134,20 +113,39 @@ public abstract class AbstractBlob implements Blob, Serializable {
     }
 
     @Override
-    public void transferTo(Writer writer) throws IOException {
-        try (Reader reader = getReader()) {
-            if (reader != null) {
-                IOUtils.copy(reader, writer);
+    public CloseableFile getCloseableFile() throws IOException {
+        return getCloseableFile(null);
+    }
+
+    @Override
+    public CloseableFile getCloseableFile(String ext) throws IOException {
+        File file = getFile();
+        if (file != null && (ext == null || file.getName().endsWith(ext))) {
+            return new CloseableFile(file, false);
+        }
+        File tmp = File.createTempFile("nxblob-", ext);
+        tmp.delete();
+        if (file != null) {
+            // attempt to create a symbolic link, which would be cheaper than a copy
+            try {
+                Files.createSymbolicLink(tmp.toPath(), file.toPath().toAbsolutePath());
+            } catch (IOException | UnsupportedOperationException e) {
+                // symbolic link not supported, do a copy instead
+                Files.copy(file.toPath(), tmp.toPath());
+            }
+        } else {
+            try (InputStream in = getStream()) {
+                Files.copy(in, tmp.toPath());
             }
         }
+        Framework.trackFile(tmp, tmp);
+        return new CloseableFile(tmp, true);
     }
 
     @Override
     public void transferTo(OutputStream out) throws IOException {
         try (InputStream in = getStream()) {
-            if (in != null) {
-                IOUtils.copy(in, out);
-            }
+            IOUtils.copy(in, out);
         }
     }
 
@@ -192,8 +190,6 @@ public abstract class AbstractBlob implements Blob, Serializable {
         InputStream is = null;
         InputStream ois = null;
         try {
-            persist();
-            other.persist();
             is = getStream();
             ois = other.getStream();
             return IOUtils.contentEquals(is, ois);

@@ -18,7 +18,7 @@
 
 package org.nuxeo.ecm.platform.convert.plugins;
 
-import java.io.File;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,7 +27,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
@@ -133,17 +135,16 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
     protected CmdReturn execOnBlob(String commandName, Map<String, Blob> blobParameters, Map<String, String> parameters)
             throws ConversionException {
         CmdParameters params = new CmdParameters();
-        List<String> filesToDelete = new ArrayList<>();
-
+        List<Closeable> toClose = new ArrayList<>();
         try {
             if (blobParameters != null) {
                 for (String blobParamName : blobParameters.keySet()) {
                     Blob blob = blobParameters.get(blobParamName);
-                    File file = File.createTempFile("cmdLineBasedConverter",
-                            "." + FilenameUtils.getExtension(blob.getFilename()));
-                    blob.transferTo(file);
-                    params.addNamedParameter(blobParamName, file);
-                    filesToDelete.add(file.getAbsolutePath());
+                    @SuppressWarnings("resource")
+                    // closed in finally block
+                    CloseableFile closeable = blob.getCloseableFile("." + FilenameUtils.getExtension(blob.getFilename()));
+                    params.addNamedParameter(blobParamName, closeable.getFile());
+                    toClose.add(closeable);
                 }
             }
 
@@ -164,8 +165,8 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
         } catch (IOException | CommandException e) {
             throw new ConversionException("Error while converting via CommandLineService", e);
         } finally {
-            for (String fileToDelete : filesToDelete) {
-                new File(fileToDelete).delete();
+            for (Closeable closeable : toClose) {
+                IOUtils.closeQuietly(closeable);
             }
         }
     }

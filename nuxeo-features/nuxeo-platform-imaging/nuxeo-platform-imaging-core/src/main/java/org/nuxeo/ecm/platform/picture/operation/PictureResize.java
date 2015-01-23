@@ -59,7 +59,7 @@ public class PictureResize {
         Blob pictureBlob = null;
         MultiviewPicture mvp = doc.getAdapter(MultiviewPicture.class);
         if (mvp != null) {
-            pictureBlob = (Blob) mvp.getView(mvp.getOrigin()).getContent();
+            pictureBlob = mvp.getView(mvp.getOrigin()).getBlob();
         } else {
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             if (bh != null) {

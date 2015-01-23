@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Map;
@@ -59,9 +60,10 @@ public class MSOffice2TextConverter implements Converter {
             fas = new FileOutputStream(f);
             fas.write(bytes);
 
-            Blob blob = new FileBlob(new FileInputStream(f), "text/plain", "UTF-8");
-
-            return new SimpleCachableBlobHolder(blob);
+            try (InputStream is = new FileInputStream(f)) {
+                Blob blob = new FileBlob(is, "text/plain", "UTF-8");
+                return new SimpleCachableBlobHolder(blob);
+            }
         } catch (ClientException | IOException | OpenXML4JException | XmlException e) {
             throw new ConversionException("Error during MSOffice2Text conversion", e);
         } finally {

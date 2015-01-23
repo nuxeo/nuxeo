@@ -11,13 +11,12 @@
  */
 package org.nuxeo.ecm.core.storage.binary;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.streaming.FileSource;
-import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * Lazy Binary that fetches its remote stream on first access.
@@ -50,22 +49,12 @@ public class LazyBinary extends Binary {
 
     @Override
     public InputStream getStream() throws IOException {
-        if (file == null) {
-            file = getCachingBinaryManager().getFile(digest);
-            if (file != null) {
-                length = file.length();
-                hasLength = true;
-            }
-        }
-        if (file == null) {
-            return null;
-        } else {
-            return new FileInputStream(file);
-        }
+        File file = getFile();
+        return file == null ? null : new FileInputStream(file);
     }
 
     @Override
-    public StreamSource getStreamSource() {
+    public File getFile() {
         if (file == null) {
             try {
                 file = getCachingBinaryManager().getFile(digest);
@@ -77,7 +66,7 @@ public class LazyBinary extends Binary {
                 hasLength = true;
             }
         }
-        return file == null ? null : new FileSource(file);
+        return file;
     }
 
     @Override

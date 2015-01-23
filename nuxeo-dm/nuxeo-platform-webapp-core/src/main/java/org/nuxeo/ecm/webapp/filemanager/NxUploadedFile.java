@@ -23,45 +23,32 @@ package org.nuxeo.ecm.webapp.filemanager;
 import java.io.File;
 import java.io.Serializable;
 
+import org.nuxeo.ecm.core.api.Blob;
+
 public class NxUploadedFile implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected String contentType;
+    protected final Blob blob;
 
-    protected String name;
+    public NxUploadedFile(Blob blob) {
+        this.blob = blob;
+    }
 
-    protected File file;
-
-    public NxUploadedFile(String name, String contentType, File file) {
-        super();
-        this.contentType = contentType;
-        this.name = name;
-        this.file = file;
+    public Blob getBlob() {
+        return blob;
     }
 
     public String getContentType() {
-        return contentType;
+        return blob.getMimeType();
     }
 
     public File getFile() {
-        return file;
+        return blob.getFile();
     }
 
     public String getName() {
-        return name;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
-    public void setFile(File file) {
-        this.file = file;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        return blob.getFilename();
     }
 
 }

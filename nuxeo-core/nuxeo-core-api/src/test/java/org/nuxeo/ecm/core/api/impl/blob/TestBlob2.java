@@ -45,7 +45,7 @@ public class TestBlob2 {
 
     @Test
     public void testByteArrayContentSource() throws Exception {
-        Blob blob = new ByteArrayBlob("some content".getBytes(), "text/plain", "UTF-8");
+        Blob blob = new ByteArrayBlob("some content".getBytes("UTF-8"), "text/plain", "UTF-8");
         checkBlob(blob);
     }
 
@@ -71,7 +71,7 @@ public class TestBlob2 {
         out.write("some content");
         out.close();
 
-        Blob blob = new URLBlob(file.toURI().toURL(), "text/plain", "UTF-8", null);
+        Blob blob = new URLBlob(file.toURI().toURL(), "text/plain", "UTF-8");
         checkBlob(blob);
 
         file.delete();
@@ -88,17 +88,9 @@ public class TestBlob2 {
             assertEquals("some content", result);
         }
 
-        try (Reader reader = blob.getReader()) {
-            String result = IOUtils.toString(reader);
-            assertEquals("some content", result);
-        }
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         blob.transferTo(baos);
         assertEquals("some content", new String(baos.toByteArray()));
-        StringWriter sw = new StringWriter();
-        blob.transferTo(sw);
-        assertEquals("some content", sw.toString());
     }
 
     @Test

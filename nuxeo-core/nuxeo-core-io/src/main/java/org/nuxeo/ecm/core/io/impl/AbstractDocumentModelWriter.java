@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -53,7 +53,6 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.streaming.ByteArraySource;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -321,7 +320,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
                 if (blob == null) { // maybe the blob is embedded in Base64
                     // encoded data
                     byte[] bytes = Base64.decode(content);
-                    blob = new StreamingBlob(new ByteArraySource(bytes));
+                    blob = new ByteArrayBlob(bytes);
                 }
                 blob.setMimeType(mimeType);
                 blob.setEncoding(encoding);

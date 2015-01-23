@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.util.files;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -28,7 +27,7 @@ import javax.servlet.http.Part;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
@@ -43,20 +42,19 @@ public class FileUtils {
     /**
      * Creates a serializable blob from a stream, with filename and mimetype detection.
      * <p>
-     * Creates an in-memory blob if data is under 64K, otherwise constructs a serializable FileBlob which stores data in
-     * a temporary file on the hard disk.
+     * Creates a serializable FileBlob which stores data in a temporary file on the hard disk.
      *
-     * @param file the input stream holding data
+     * @param in the input stream holding data
      * @param filename the file name. Will be set on the blob and will used for mimetype detection.
      * @param mimeType the detected mimetype at upload. Can be null. Will be verified by the mimetype service.
      */
-    public static Blob createSerializableBlob(InputStream file, String filename, String mimeType) {
+    public static Blob createSerializableBlob(InputStream in, String filename, String mimeType) {
         Blob blob = null;
         try {
             // persisting the blob makes it possible to read the binary content
             // of the request stream several times (mimetype sniffing, digest
             // computation, core binary storage)
-            blob = StreamingBlob.createFromStream(file, mimeType).persist();
+            blob = new FileBlob(in, mimeType);
             // filename
             if (filename != null) {
                 filename = getCleanFileName(filename);
@@ -118,37 +116,25 @@ public class FileUtils {
         return res;
     }
 
-    /**
-     * Creates a TemporaryFileBlob. Similar to FileUtils.createSerializableBlob.
-     *
-     * @since 5.7.2
-     */
-    public static Blob createTemporaryFileBlob(File file, String filename, String mimeType) {
-        if (filename != null) {
-            filename = FileUtils.getCleanFileName(filename);
-        }
-        Blob blob = new StreamingBlob.TemporaryFileBlob(file, mimeType, null, filename, null);
-        return configureFileBlob(blob, filename, mimeType);
-    }
-
-    protected static Blob configureFileBlob(Blob blob, String filename, String mimeType) {
+    public static void configureFileBlob(Blob blob) {
+        // mimetype detection
+        MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
+        String detectedMimeType;
         try {
-            // mimetype detection
-            MimetypeRegistry mimeService = Framework.getLocalService(MimetypeRegistry.class);
-            String detectedMimeType = mimeService.getMimetypeFromFilenameAndBlobWithDefault(filename, blob, null);
-            if (detectedMimeType == null) {
-                if (mimeType != null) {
-                    detectedMimeType = mimeType;
-                } else {
-                    // default
-                    detectedMimeType = "application/octet-stream";
-                }
-            }
-            blob.setMimeType(detectedMimeType);
+            detectedMimeType = mimeService.getMimetypeFromFilenameAndBlobWithDefault(blob.getFilename(), blob, null);
         } catch (MimetypeDetectionException e) {
-            log.error(String.format("could not fetch mimetype for file %s", filename), e);
+            log.error("could not fetch mimetype for file " + blob.getFilename(), e);
+            return;
         }
-        return blob;
+        if (detectedMimeType == null) {
+            if (blob.getMimeType() != null) {
+                return;
+            }
+            // default
+            detectedMimeType = "application/octet-stream";
+        }
+        blob.setMimeType(detectedMimeType);
+        return;
     }
 
 }

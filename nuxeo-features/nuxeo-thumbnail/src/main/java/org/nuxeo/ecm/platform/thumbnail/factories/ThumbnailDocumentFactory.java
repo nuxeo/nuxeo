@@ -109,9 +109,10 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
             return null;
         }
         try {
-            InputStream iconStream = ctx.getExternalContext().getResourceAsStream(iconPath);
-            if (iconStream != null) {
-                return new FileBlob(iconStream);
+            try (InputStream iconStream = ctx.getExternalContext().getResourceAsStream(iconPath)) {
+                if (iconStream != null) {
+                    return new FileBlob(iconStream);
+                }
             }
         } catch (IOException e) {
             log.warn(String.format("Could not fetch the thumbnail blob from icon path '%s'", iconPath), e);

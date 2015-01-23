@@ -58,10 +58,6 @@ public class DownloadFile {
             HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
-            if (!blob.isPersistent()) {
-                blob.persist();
-            }
-
             String sid = UUID.randomUUID().toString();
             request.getSession(true).setAttribute(sid, blob);
 

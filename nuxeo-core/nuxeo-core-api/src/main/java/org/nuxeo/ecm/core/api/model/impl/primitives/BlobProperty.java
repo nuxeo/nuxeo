@@ -13,14 +13,20 @@
 package org.nuxeo.ecm.core.api.model.impl.primitives;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyAccessException;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
@@ -29,15 +35,13 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
 import org.nuxeo.ecm.core.schema.types.Field;
-import org.nuxeo.runtime.services.streaming.ByteArraySource;
-import org.nuxeo.runtime.services.streaming.InputStreamSource;
-import org.nuxeo.runtime.services.streaming.StreamSource;
-import org.nuxeo.runtime.services.streaming.StringSource;
 
 /**
  * Blob property, reading and writing from a {@link Blob} object.
  */
 public class BlobProperty extends MapProperty {
+
+    private static final Log log = LogFactory.getLog(BlobProperty.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -154,17 +158,23 @@ public class BlobProperty extends MapProperty {
 
     protected Object create(Map<String, Object> value) {
         Object data = value.get(DATA);
-        StreamSource ss;
-        if (data instanceof String) {
-            ss = new StringSource((String) data);
-        } else if (data instanceof InputStream) {
-            ss = new InputStreamSource((InputStream) data);
+        Blob blob;
+        if (data == null) {
+            blob = new StringBlob("");
+        } else if (data instanceof String) {
+            blob = new StringBlob((String) data);
         } else if (data instanceof byte[]) {
-            ss = new ByteArraySource((byte[]) data);
+            blob = new ByteArrayBlob((byte[]) data);
+        } else if (data instanceof InputStream) {
+            try {
+                blob = new FileBlob((InputStream) data);
+            } catch (IOException e) {
+                throw new NuxeoException("Cannot persist blob: " + getPath(), e);
+            }
         } else {
-            ss = new ByteArraySource(new byte[0]);
+            log.warn("Unknown class for blob, saving an empty one: " + data.getClass());
+            blob = new StringBlob("");
         }
-        Blob blob = new StreamingBlob(ss);
         try {
             Map<String, Object> v = new HashMap<String, Object>(value);
             v.remove(DATA);

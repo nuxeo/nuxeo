@@ -25,10 +25,10 @@ import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -148,17 +148,11 @@ public class NuxeoArchiveWriter extends AbstractDocumentWriter {
             String fileName = blobEntry.getKey();
             entry = new ZipEntry(path + fileName);
             out.putNextEntry(entry);
-            InputStream in = null;
-            try {
-                in = blobEntry.getValue().getStream();
-                FileUtils.copy(in, out);
-            } finally {
-                if (in != null) {
-                    in.close();
-                }
-                out.closeEntry();
-                // System.out.println(">> add entry: "+entry.getName());
+            try (InputStream in = blobEntry.getValue().getStream()) {
+                IOUtils.copy(in, out);
             }
+            // DO NOT CALL out.close(), we want to keep writing to it
+            out.closeEntry();
         }
     }
 

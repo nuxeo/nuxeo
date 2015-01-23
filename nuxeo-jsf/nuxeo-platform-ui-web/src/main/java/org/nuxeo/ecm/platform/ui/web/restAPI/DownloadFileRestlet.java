@@ -21,18 +21,17 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -104,19 +103,13 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements LiveEditCon
                 blob = (Blob) dm.getProperty(schemaName, blobFieldName);
             }
 
-            final File tempfile = File.createTempFile("nuxeo-downloadrestlet-tmp", "");
-            blob.transferTo(tempfile);
+            // blobs are always persistent, and temporary blobs are GCed only when not referenced anymore
             res.setEntity(new OutputRepresentation(null) {
                 @Override
                 public void write(OutputStream outputStream) throws IOException {
-                    // the write call happens after the seam conversation is
-                    // finished which will garbage collect the CoreSession
-                    // instance, hence we store the blob content in a temporary
-                    // file
-                    FileInputStream instream = new FileInputStream(tempfile);
-                    FileUtils.copy(instream, outputStream);
-                    instream.close();
-                    tempfile.delete();
+                    try (InputStream stream = blob.getStream()) {
+                        IOUtils.copy(stream, outputStream);
+                    }
                 }
             });
             HttpServletResponse response = getHttpResponse(res);
@@ -124,7 +117,7 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements LiveEditCon
             response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\";");
             // TODO: add mimetype here too
 
-        } catch (ClientException | IOException e) {
+        } catch (ClientException e) {
             handleError(res, e);
         }
     }

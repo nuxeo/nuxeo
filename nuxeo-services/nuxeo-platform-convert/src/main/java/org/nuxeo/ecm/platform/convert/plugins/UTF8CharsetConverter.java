@@ -20,16 +20,17 @@ package org.nuxeo.ecm.platform.convert.plugins;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.ReaderInputStream;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
@@ -38,6 +39,10 @@ import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 
 public class UTF8CharsetConverter implements Converter {
+
+    private static final String TEXT_PREFIX = "text/";
+
+    private static final String UTF_8 = "UTF-8";
 
     @Override
     public void init(ConverterDescriptor descriptor) {
@@ -56,7 +61,7 @@ public class UTF8CharsetConverter implements Converter {
         Blob transcodedBlob;
         try {
             transcodedBlob = convert(originalBlob);
-        } catch (IOException e) {
+        } catch (IOException | ConversionException e) {
             throw new ConversionException("Cannot transcode " + path + " to UTF-8", e);
         }
         return new SimpleBlobHolder(transcodedBlob);
@@ -64,32 +69,42 @@ public class UTF8CharsetConverter implements Converter {
 
     protected Blob convert(Blob blob) throws IOException, ConversionException {
         String mimetype = blob.getMimeType();
-        if (mimetype == null || !mimetype.startsWith("text/")) {
+        if (mimetype == null || !mimetype.startsWith(TEXT_PREFIX)) {
             return blob;
         }
         String encoding = blob.getEncoding();
-        if (encoding != null && "UTF-8".equals(encoding)) {
+        if (UTF_8.equals(encoding)) {
             return blob;
         }
-        InputStream in = new BufferedInputStream(blob.getStream());
-        String filename = blob.getFilename();
-        if (encoding == null || encoding.length() == 0) {
-            encoding = detectEncoding(in);
+        if (StringUtils.isEmpty(encoding)) {
+            try (InputStream in = blob.getStream()) {
+                encoding = detectEncoding(in);
+            }
         }
         Blob newBlob;
-        if ("UTF-8".equals(encoding)) {
-            newBlob = new InputStreamBlob(in);
+        if (UTF_8.equals(encoding)) {
+            // had no encoding previously, detected as UTF-8
+            // just reuse the same blob
+            try (InputStream in = blob.getStream()) {
+                newBlob = new FileBlob(in);
+            }
         } else {
-            String content = IOUtils.toString(in, encoding);
-            newBlob = new StringBlob(content);
+            // decode bytes as chars in the detected charset then encode chars as bytes in UTF-8
+            try (InputStream in = new ReaderInputStream(new InputStreamReader(blob.getStream(), encoding), UTF_8)) {
+                newBlob = new FileBlob(in);
+            }
         }
         newBlob.setMimeType(mimetype);
-        newBlob.setEncoding("UTF-8");
-        newBlob.setFilename(filename);
+        newBlob.setEncoding(UTF_8);
+        newBlob.setFilename(blob.getFilename());
         return newBlob;
     }
 
     protected String detectEncoding(InputStream in) throws IOException, ConversionException {
+        if (!in.markSupported()) {
+            // detector.setText requires mark
+            in = new BufferedInputStream(in);
+        }
         CharsetDetector detector = new CharsetDetector();
         detector.setText(in);
         CharsetMatch charsetMatch = detector.detect();

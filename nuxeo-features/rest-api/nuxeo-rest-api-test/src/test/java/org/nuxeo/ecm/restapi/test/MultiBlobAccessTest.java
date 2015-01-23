@@ -110,9 +110,6 @@ public class MultiBlobAccessTest extends BaseTest {
         fetchInvalidations();
         doc = getTestBlob();
         Blob blob = (Blob) doc.getPropertyValue("mb:blobs/0/content");
-        StringWriter sw = new StringWriter();
-        blob.transferTo(sw);
-        assertEquals("modifiedData", sw.toString());
 
     }
 

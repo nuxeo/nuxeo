@@ -45,7 +45,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -560,7 +560,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
         document.setProperty("file", "filename", filname);
         final byte[] contentData = Base64.decodeBase64((String) contentMap.get("data"));
         // String contentType = (String) contentMap.get("mime-type") ;
-        Blob blob = StreamingBlob.createFromByteArray(contentData);
+        Blob blob = new ByteArrayBlob(contentData);
 
         MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
 

@@ -26,12 +26,11 @@ import org.dom4j.io.SAXReader;
 import org.nuxeo.common.utils.FileTreeIterator;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.io.ExportConstants;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.AbstractDocumentReader;
 import org.nuxeo.ecm.core.io.impl.ExportedDocumentImpl;
-import org.nuxeo.runtime.services.streaming.FileSource;
 
 /**
  * @author bs@nuxeo.com
@@ -94,7 +93,7 @@ public class XMLDirectoryReader extends AbstractDocumentReader {
                     } else if (name.endsWith(".xml")) {
                         xdoc.putDocument(FileUtils.getFileNameNoExt(file.getName()), loadXML(file));
                     } else { // presume a blob
-                        xdoc.putBlob(file.getName(), new StreamingBlob(new FileSource(file)));
+                        xdoc.putBlob(file.getName(), new FileBlob(file));
                     }
                 }
             }

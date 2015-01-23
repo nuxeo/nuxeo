@@ -80,15 +80,10 @@ public abstract class AbstractBlobHolder implements BlobHolder {
     }
 
     protected String getMD5Digest() throws ClientException {
-        InputStream in = null;
-        try {
-            Blob blob = getBlob().persist();
-            in = blob.getStream();
+        try (InputStream in = getBlob().getStream()) {
             return DigestUtils.md5Hex(in);
         } catch (IOException e) {
             throw new ClientException(e);
-        } finally {
-            IOUtils.closeQuietly(in);
         }
     }
 

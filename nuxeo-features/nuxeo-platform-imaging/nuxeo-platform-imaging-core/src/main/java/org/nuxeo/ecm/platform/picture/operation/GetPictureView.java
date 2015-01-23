@@ -55,7 +55,7 @@ public class GetPictureView {
             return null;
         }
 
-        return (Blob) pv.getContent();
+        return pv.getBlob();
     }
 
 }

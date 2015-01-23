@@ -16,6 +16,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.nuxeo.ecm.core.api.Blob;
+
 /**
  * A binary manager stores binaries according to their digest.
  */
@@ -39,6 +41,22 @@ public interface BinaryManager extends Closeable {
      * @throws IOException
      */
     Binary getBinary(InputStream in) throws IOException;
+
+    /**
+     * Saves the given blob into a {@link Binary}.
+     * <p>
+     * Returns a {@link Binary} representing the stream. The {@link Binary} includes a digest that is a sufficient
+     * representation to persist it.
+     * <p>
+     * If the blob is a temporary {@link FileBlob}, then the temporary file may be reused as the final storage location
+     * after being moved.
+     *
+     * @param blob the blob
+     * @return the corresponding binary
+     * @throws IOException
+     * @since 7.2
+     */
+    Binary getBinary(Blob blob) throws IOException;
 
     /**
      * Returns a {@link Binary} corresponding to the given digest.

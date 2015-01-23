@@ -34,7 +34,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 import org.jboss.seam.web.MultipartRequest;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.restlet.data.Request;
 
 import com.noelios.restlet.ext.servlet.ServletCall;
@@ -81,11 +81,12 @@ public class FileUploadHelper {
             Enumeration<String> names = seamMPRequest.getParameterNames();
             while (names.hasMoreElements()) {
                 String name = names.nextElement();
-                InputStream in = seamMPRequest.getFileInputStream(name);
-                if (in != null) {
-                    Blob blob = StreamingBlob.createFromStream(in);
-                    blob.setFilename(seamMPRequest.getFileName(name));
-                    blobs.add(blob);
+                try (InputStream in = seamMPRequest.getFileInputStream(name)) {
+                    if (in != null) {
+                        Blob blob = new FileBlob(in);
+                        blob.setFilename(seamMPRequest.getFileName(name));
+                        blobs.add(blob);
+                    }
                 }
             }
         } else {
@@ -98,9 +99,11 @@ public class FileUploadHelper {
             ServletRequestContext requestContext = new ServletRequestContext(request);
             List<FileItem> fileItems = fu.parseRequest(requestContext);
             for (FileItem item : fileItems) {
-                Blob blob = StreamingBlob.createFromStream(item.getInputStream()).persist();
-                blob.setFilename(item.getName());
-                blobs.add(blob);
+                try (InputStream is = item.getInputStream()) {
+                    Blob blob = new FileBlob(is);
+                    blob.setFilename(item.getName());
+                    blobs.add(blob);
+                }
             }
         }
         return blobs;

@@ -19,7 +19,9 @@
 
 package org.nuxeo.ecm.webengine.forms;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,13 +38,11 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -54,16 +54,11 @@ import org.nuxeo.ecm.webengine.forms.validation.Form;
 import org.nuxeo.ecm.webengine.forms.validation.FormManager;
 import org.nuxeo.ecm.webengine.forms.validation.ValidationException;
 import org.nuxeo.ecm.webengine.servlet.WebConst;
-import org.nuxeo.runtime.services.streaming.ByteArraySource;
-import org.nuxeo.runtime.services.streaming.InputStreamSource;
-import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class FormData implements FormInstance {
-
-    private static Log log = LogFactory.getLog(FormData.class);
 
     public static final String PROPERTY = "property";
 
@@ -225,26 +220,21 @@ public class FormData implements FormInstance {
     }
 
     protected Blob getBlob(FileItem item) {
-        StreamSource src;
-        if (item.isInMemory()) {
-            src = new ByteArraySource(item.get());
-        } else {
-            try {
-                src = new InputStreamSource(item.getInputStream());
-            } catch (IOException e) {
-                throw WebException.wrap("Failed to get blob data", e);
-            }
-        }
-        String ctype = item.getContentType();
-
-        StreamingBlob blob = new StreamingBlob(src, ctype == null ? "application/octet-stream" : ctype);
         try {
-            blob.persist();
+            InputStream in;
+            if (item.isInMemory()) {
+                in = new ByteArrayInputStream(item.get());
+            } else {
+                in = item.getInputStream();
+            }
+            String ctype = item.getContentType();
+            Blob blob = new FileBlob(in, ctype == null ? "application/octet-stream" : ctype);
+            blob.setFilename(item.getName());
+            in.close();
+            return blob;
         } catch (IOException e) {
-            log.error(e, e);
+            throw WebException.wrap("Failed to get blob data", e);
         }
-        blob.setFilename(item.getName());
-        return blob;
     }
 
     public final FileItem getFileItem(String key) {

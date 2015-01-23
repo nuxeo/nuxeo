@@ -17,7 +17,6 @@
  */
 package org.nuxeo.ecm.platform.picture.extension;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -42,11 +41,6 @@ public class ImagePlugin extends AbstractFileImporter {
 
     @Override
     public void updateDocument(DocumentModel doc, Blob content) throws ClientException {
-        try {
-            content = content.persist();
-        } catch (IOException e) {
-            throw new ClientException(e);
-        }
         doc.setPropertyValue("file:content", (Serializable) content);
     }
 

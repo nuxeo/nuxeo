@@ -19,13 +19,13 @@ import java.util.Map;
 
 import javax.resource.cci.Connection;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.binary.Binary;
-import org.nuxeo.runtime.services.streaming.FileSource;
 
 /**
  * The session is the main high level access point to data from the underlying database.
@@ -401,14 +401,14 @@ public interface Session extends Connection {
     Binary getBinary(InputStream source) throws StorageException;
 
     /**
-     * Creates a binary value given an stream source.
+     * Creates a binary value given a blob.
      *
-     * @since 5.6
-     * @param source the file stream
+     * @param blob the blob
      * @return the binary value
      * @throws StorageException
+     * @since 7.2
      */
-    Binary getBinary(FileSource source) throws StorageException;
+    Binary getBinary(Blob blob) throws StorageException;
 
     /**
      * Finds the proxies for a document. If the parent is not null, the search will be limited to its direct children.

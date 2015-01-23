@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -74,18 +75,15 @@ public class ExportedZipImporter extends AbstractFileImporter {
 
     public DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite,
             String filename, TypeManager typeService) throws ClientException, IOException {
-        File tmp = null;
-        try {
-            tmp = File.createTempFile("xml-importer", null);
-            content.transferTo(tmp);
-            ZipFile zip = getArchiveFileIfValid(tmp);
+        try (CloseableFile source = content.getCloseableFile()) {
+            ZipFile zip = getArchiveFileIfValid(source.getFile());
             if (zip == null) {
-                tmp.delete();
                 return null;
             }
+            zip.close();
 
             boolean importWithIds = false;
-            DocumentReader reader = new NuxeoArchiveReader(tmp);
+            DocumentReader reader = new NuxeoArchiveReader(source.getFile());
             ExportedDocument root = reader.read();
             IdRef rootRef = new IdRef(root.getId());
 
@@ -98,7 +96,7 @@ public class ExportedZipImporter extends AbstractFileImporter {
 
             DocumentWriter writer = new DocumentModelWriter(documentManager, path, 10);
             reader.close();
-            reader = new NuxeoArchiveReader(tmp);
+            reader = new NuxeoArchiveReader(source.getFile());
 
             DocumentRef resultingRef;
             if (overwrite && importWithIds) {
@@ -120,10 +118,6 @@ public class ExportedZipImporter extends AbstractFileImporter {
                 writer.close();
             }
             return documentManager.getDocument(resultingRef);
-        } finally {
-            if (tmp != null) {
-                tmp.delete();
-            }
         }
     }
 }

@@ -19,8 +19,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.streaming.FileSource;
-import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * A binary object that can be read, and has a length and a digest.
@@ -105,8 +103,8 @@ public class Binary implements Serializable {
         return getClass().getSimpleName() + '(' + digest + ')';
     }
 
-    public StreamSource getStreamSource() {
-        return new FileSource(file);
+    public File getFile() {
+        return file;
     }
 
     private void writeObject(java.io.ObjectOutputStream oos) throws IOException, ClassNotFoundException {

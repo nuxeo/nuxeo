@@ -31,14 +31,13 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiTransformer;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.FreemarkerMacro;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.PatternFilter;
-import org.nuxeo.runtime.services.streaming.URLSource;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -79,8 +78,8 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         DocumentPart documentPart = doc1.getPart("dublincore");
         documentPart.get("title").setValue("The dublincore title for doc1");
         documentPart.get("description").setValue("A descripton *with* wiki code and a WikiName");
-        Blob blob = new StreamingBlob(new URLSource(TestFreemarkerRendering.class.getClassLoader().getResource(
-                "testdata/blob.wiki")));
+        Blob blob = new URLBlob(TestFreemarkerRendering.class.getClassLoader().getResource(
+                "testdata/blob.wiki"));
         doc1.getPart("dublincore").get("content").setValue(blob);
         // also add something prefetched (dm not loaded)
         Prefetch prefetch = new Prefetch();

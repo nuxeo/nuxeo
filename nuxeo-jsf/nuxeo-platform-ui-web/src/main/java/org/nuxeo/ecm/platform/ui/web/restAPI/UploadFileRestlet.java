@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
+import static org.jboss.seam.ScopeType.EVENT;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -34,7 +36,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
@@ -42,8 +44,6 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-
-import static org.jboss.seam.ScopeType.EVENT;
 
 /**
  * Restlet to help LiveEdit clients update the blob content of a document
@@ -131,7 +131,7 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements LiveEditConst
         // persisting the blob makes it possible to read the binary content
         // of the request stream several times (mimetype sniffing, digest
         // computation, core binary storage)
-        Blob blob = StreamingBlob.createFromStream(is).persist();
+        Blob blob = new FileBlob(is);
         blob.setFilename(filename);
 
         dm.setPropertyValue(blobPropertyName, (Serializable) blob);

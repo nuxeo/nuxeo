@@ -21,8 +21,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.nuxeo.common.xmap.XMap;
-import org.nuxeo.runtime.services.streaming.FileSource;
-import org.nuxeo.runtime.services.streaming.StreamSource;
+import org.nuxeo.ecm.core.api.Blob;
 
 /**
  * Abstract BinaryManager implementation that provides a few utilities
@@ -47,6 +46,16 @@ public abstract class AbstractBinaryManager implements BinaryManager {
     @Override
     abstract public Binary getBinary(InputStream in) throws IOException;
 
+    /*
+     * This abstract implementation just opens the stream.
+     */
+    @Override
+    public Binary getBinary(Blob blob) throws IOException {
+        try (InputStream stream = blob.getStream()) {
+            return getBinary(stream);
+        }
+    }
+
     @Override
     abstract public Binary getBinary(String digest);
 
@@ -67,10 +76,6 @@ public abstract class AbstractBinaryManager implements BinaryManager {
             desc.write(configFile); // may throw IOException
         }
         return desc;
-    }
-
-    protected BinaryScrambler getBinaryScrambler() {
-        return NullBinaryScrambler.INSTANCE;
     }
 
     public static final int MIN_BUF_SIZE = 8 * 1024; // 8 kB
@@ -96,12 +101,10 @@ public abstract class AbstractBinaryManager implements BinaryManager {
         byte[] buf = new byte[size];
 
         /*
-         * Scramble, copy and digest.
+         * Copy and digest.
          */
-        BinaryScrambler scrambler = getBinaryScrambler();
         int n;
         while ((n = in.read(buf)) != -1) {
-            scrambler.scrambleBuffer(buf, 0, n);
             digest.update(buf, 0, n);
             out.write(buf, 0, n);
         }
@@ -133,145 +136,6 @@ public abstract class AbstractBinaryManager implements BinaryManager {
      */
     protected String getDigest() {
         return DEFAULT_DIGEST;
-    }
-
-    /**
-     * A {@link BinaryScrambler} that does nothing.
-     */
-    public static class NullBinaryScrambler implements BinaryScrambler {
-        private static final long serialVersionUID = 1L;
-
-        public static final BinaryScrambler INSTANCE = new NullBinaryScrambler();
-
-        @Override
-        public void scrambleBuffer(byte[] buf, int off, int n) {
-        }
-
-        @Override
-        public void unscrambleBuffer(byte[] buf, int off, int n) {
-        }
-
-        @Override
-        public Binary getUnscrambledBinary(File file, String digest, String repoName) {
-            return new Binary(file, digest, repoName);
-        }
-
-        @Override
-        public void skip(long n) {
-        }
-
-        @Override
-        public void reset() {
-        }
-    }
-
-    /**
-     * A {@link Binary} that is unscrambled on read using a {@link BinaryScrambler}.
-     */
-    public static class ScrambledBinary extends Binary {
-
-        private static final long serialVersionUID = 1L;
-
-        protected final BinaryScrambler scrambler;
-
-        public ScrambledBinary(File file, String digest, String repoName, BinaryScrambler scrambler) {
-            super(file, digest, repoName);
-            this.scrambler = scrambler;
-        }
-
-        @Override
-        public InputStream getStream() throws IOException {
-            return new ScrambledFileInputStream(file, scrambler);
-        }
-
-        @Override
-        public StreamSource getStreamSource() {
-            return new ScrambledStreamSource(file, scrambler);
-        }
-
-    }
-
-    /**
-     * A {@link FileSource} that is unscrambled on read using a {@link BinaryScrambler}.
-     */
-    public static class ScrambledStreamSource extends FileSource {
-
-        protected final BinaryScrambler scrambler;
-
-        public ScrambledStreamSource(File file, BinaryScrambler scrambler) {
-            super(file);
-            this.scrambler = scrambler;
-        }
-
-        @Override
-        public File getFile() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public InputStream getStream() throws IOException {
-            return new ScrambledFileInputStream(file, scrambler);
-        }
-    }
-
-    /**
-     * A {@link FileInputStream} that is unscrambled on read using a {@link BinaryScrambler}.
-     */
-    public static class ScrambledFileInputStream extends InputStream {
-
-        protected final InputStream is;
-
-        protected final BinaryScrambler scrambler;
-
-        protected final byte[] onebyte = new byte[1];
-
-        protected ScrambledFileInputStream(File file, BinaryScrambler scrambler) throws IOException {
-            is = new FileInputStream(file);
-            this.scrambler = scrambler;
-            scrambler.reset();
-        }
-
-        @Override
-        public int read() throws IOException {
-            int b = is.read();
-            if (b != -1) {
-                onebyte[0] = (byte) b;
-                scrambler.unscrambleBuffer(onebyte, 0, 1);
-                b = onebyte[0];
-            }
-            return b;
-        }
-
-        @Override
-        public int read(byte[] b) throws IOException {
-            return read(b, 0, b.length);
-        }
-
-        @Override
-        public int read(byte[] b, int off, int len) throws IOException {
-            int n = is.read(b, off, len);
-            if (n != -1) {
-                scrambler.unscrambleBuffer(b, off, n);
-            }
-            return n;
-        }
-
-        @Override
-        public long skip(long n) throws IOException {
-            n = is.skip(n);
-            scrambler.skip(n);
-            return n;
-        }
-
-        @Override
-        public int available() throws IOException {
-            return is.available();
-        }
-
-        @Override
-        public void close() throws IOException {
-            is.close();
-        }
     }
 
 }

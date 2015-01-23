@@ -161,11 +161,6 @@ public abstract class AbstractFileImporter implements FileImporter {
      * Default implementation sets the content.
      */
     public void updateDocument(DocumentModel doc, Blob content) throws ClientException {
-        try {
-            content = content.persist();
-        } catch (IOException e) {
-            throw new ClientException(e);
-        }
         doc.getAdapter(BlobHolder.class).setBlob(content);
     }
 

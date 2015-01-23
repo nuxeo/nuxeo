@@ -27,6 +27,7 @@ import javax.resource.cci.LocalTransaction;
 import javax.resource.cci.ResultSetInfo;
 
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -39,7 +40,6 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
-import org.nuxeo.runtime.services.streaming.FileSource;
 
 /**
  * A connection is a handle to the underlying storage. It is returned by the {@link ConnectionFactory} to application
@@ -173,8 +173,8 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
-    public Binary getBinary(FileSource source) throws StorageException {
-        return getSession().getBinary(source);
+    public Binary getBinary(Blob blob) throws StorageException {
+        return getSession().getBinary(blob);
     }
 
     @Override

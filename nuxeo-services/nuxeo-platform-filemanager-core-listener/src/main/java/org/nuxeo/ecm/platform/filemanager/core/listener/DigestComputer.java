@@ -102,12 +102,6 @@ public class DigestComputer implements EventListener {
             throw new RuntimeException(e);
         }
 
-        // make sure the blob can be read several times without exhausting its
-        // binary source
-        if (!blob.isPersistent()) {
-            blob = blob.persist();
-        }
-
         DigestInputStream dis = new DigestInputStream(blob.getStream(), md);
         while (dis.available() > 0) {
             dis.read();

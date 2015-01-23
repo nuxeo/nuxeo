@@ -64,7 +64,9 @@ public class CreateBlob {
         if (mimeType == null) { // TODO detect mime type
 
         }
-        return new URLBlob(file, mimeType, encoding, fileName);
+        URLBlob blob = new URLBlob(file, mimeType, encoding);
+        blob.setFilename(fileName);
+        return blob;
     }
 
 }

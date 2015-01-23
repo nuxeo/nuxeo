@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 
@@ -732,7 +731,7 @@ public class TestMongoDBRepositoryFulltextQuery extends MongoDBRepositoryTestCas
         // test setting and reading a list of maps without a complex type in the
         // maps
         Map<String, Object> vignette = new HashMap<String, Object>();
-        vignette.put("content", StreamingBlob.createFromString("textblob content", "text/plain"));
+        vignette.put("content", new StringBlob("textblob content", "text/plain"));
         vignette.put("label", "vignettelabel");
         vignettes.add(vignette);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);

@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +39,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.service.ExtensionDescriptor;
 import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
@@ -145,27 +147,19 @@ public class TestMimetypeRegistryService {
     public void testGetMimetypeFromBlob() throws Exception {
         MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetypeEntry);
-
-        InputStream istream = new FileInputStream(FileUtils.getResourceFileFromContext("test-data/hello.doc"));
-
-        String mimetype = mimetypeRegistry.getMimetypeFromBlob(StreamingBlob.createFromStream(istream));
+        String mimetype = mimetypeRegistry.getMimetypeFromBlob(getWordBlob());
         assertEquals("application/msword", mimetype);
 
         List<String> extensions = mimetypeRegistry.getExtensionsFromMimetypeName(mimetype);
         assertTrue(extensions.contains("doc"));
     }
 
-    protected static Blob getBlob(String filename) throws FileNotFoundException {
-        InputStream istream = new FileInputStream(FileUtils.getResourceFileFromContext(filename));
-        return StreamingBlob.createFromStream(istream);
+    protected Blob getWordBlob() throws FileNotFoundException {
+        return new URLBlob(getClass().getResource("/test-data/hello.doc"));
     }
 
-    protected static Blob getWordBlob() throws FileNotFoundException {
-        return getBlob("test-data/hello.doc");
-    }
-
-    protected static Blob getWordMLBlob() throws FileNotFoundException {
-        return getBlob("test-data/wordml-sample.xml");
+    protected Blob getWordMLBlob() throws FileNotFoundException {
+        return new URLBlob(getClass().getResource("/test-data/wordml-sample.xml"));
     }
 
     @Test
@@ -185,8 +179,8 @@ public class TestMimetypeRegistryService {
         mimetypeRegistry.registerFileExtension(ed);
 
         // doc filename + empty file gives word mimetype
-        String mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("hello.doc",
-                StreamingBlob.createFromByteArray(new byte[0]), "default/mimetype");
+        String mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("hello.doc", new StringBlob(""),
+                "default/mimetype");
         assertEquals("application/msword", mimetype);
         List<String> extensions = mimetypeRegistry.getExtensionsFromMimetypeName(mimetype);
         assertTrue(extensions.contains("doc"));
@@ -202,8 +196,8 @@ public class TestMimetypeRegistryService {
         assertEquals("application/msword", mimetype);
 
         // bad name and empty file: fallback to default mimetype
-        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("bad_file_name",
-                StreamingBlob.createFromByteArray(new byte[0]), "default/mimetype");
+        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("bad_file_name", new StringBlob(""),
+                "default/mimetype");
         assertEquals("default/mimetype", mimetype);
 
         // test ambiguous file extension with wordml sniffing
@@ -212,8 +206,8 @@ public class TestMimetypeRegistryService {
         assertEquals("application/msword", mimetype);
 
         // test ambiguous file extension with empty file
-        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("sample-wordml.xml",
-                StreamingBlob.createFromByteArray(new byte[0]), "default/mimetype");
+        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("sample-wordml.xml", new StringBlob(""),
+                "default/mimetype");
         assertEquals("default/mimetype", mimetype);
     }
 

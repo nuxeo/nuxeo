@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.convert.plugins.text.extractors;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -50,7 +51,10 @@ public class RTF2TextConverter implements Converter {
             String text = document.getText(0, document.getLength());
             f = File.createTempFile("swing-rtf2text", ".txt");
             FileUtils.writeFile(f, text);
-            Blob blob = new FileBlob(new FileInputStream(f));
+            Blob blob;
+            try (InputStream in = new FileInputStream(f)) {
+                blob = new FileBlob(in);
+            }
             blob.setMimeType("text/plain");
             return new SimpleCachableBlobHolder(blob);
         } catch (ClientException | IOException | BadLocationException e) {

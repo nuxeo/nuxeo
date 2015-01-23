@@ -17,19 +17,21 @@
 
 package org.nuxeo.ecm.core.api.impl.blob;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
+import java.io.OutputStream;
 import java.io.Serializable;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableFile;
 
 /**
- * Wraps an existing Blob allowing to set a different filename than the original Blob's filename.
+ * Wraps an existing {@link Blob} to allow setting a different filename.
  *
  * @since 5.9.2
  */
-public class BlobWrapper extends AbstractBlob implements Serializable {
+public class BlobWrapper implements Blob, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,16 +41,24 @@ public class BlobWrapper extends AbstractBlob implements Serializable {
 
     public BlobWrapper(Blob blob) {
         this.blob = blob;
-    }
-
-    public BlobWrapper(Blob blob, String filename) {
-        this.blob = blob;
-        this.filename = filename;
+        filename = blob.getFilename();
     }
 
     @Override
-    public long getLength() {
-        return blob.getLength();
+    public String getFilename() {
+        return filename;
+    }
+
+    @Override
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    // the rest of the implementation just delegates to the blob
+
+    @Override
+    public String getMimeType() {
+        return blob.getMimeType();
     }
 
     @Override
@@ -57,28 +67,8 @@ public class BlobWrapper extends AbstractBlob implements Serializable {
     }
 
     @Override
-    public String getMimeType() {
-        return blob.getMimeType();
-    }
-
-    @Override
-    public String getFilename() {
-        return filename != null ? filename : blob.getFilename();
-    }
-
-    @Override
     public String getDigest() {
         return blob.getDigest();
-    }
-
-    @Override
-    public void setDigest(String digest) {
-        blob.setDigest(digest);
-    }
-
-    @Override
-    public void setFilename(String filename) {
-        this.filename = filename;
     }
 
     @Override
@@ -92,13 +82,18 @@ public class BlobWrapper extends AbstractBlob implements Serializable {
     }
 
     @Override
+    public void setDigest(String digest) {
+        blob.setDigest(digest);
+    }
+
+    @Override
     public InputStream getStream() throws IOException {
         return blob.getStream();
     }
 
     @Override
-    public Reader getReader() throws IOException {
-        return blob.getReader();
+    public long getLength() {
+        return blob.getLength();
     }
 
     @Override
@@ -112,12 +107,28 @@ public class BlobWrapper extends AbstractBlob implements Serializable {
     }
 
     @Override
-    public Blob persist() throws IOException {
-        return blob.persist();
+    public void transferTo(OutputStream out) throws IOException {
+        blob.transferTo(out);
     }
 
     @Override
-    public boolean isPersistent() {
-        return blob.isPersistent();
+    public void transferTo(File file) throws IOException {
+        blob.transferTo(file);
     }
+
+    @Override
+    public File getFile() {
+        return blob.getFile();
+    }
+
+    @Override
+    public CloseableFile getCloseableFile() throws IOException {
+        return blob.getCloseableFile();
+    }
+
+    @Override
+    public CloseableFile getCloseableFile(String ext) throws IOException {
+        return blob.getCloseableFile(ext);
+    }
+
 }

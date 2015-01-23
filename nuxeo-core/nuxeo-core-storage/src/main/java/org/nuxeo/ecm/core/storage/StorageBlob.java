@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.core.storage;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -49,16 +50,6 @@ public class StorageBlob extends AbstractBlob implements Serializable {
         return binary.getStream();
     }
 
-    @Override
-    public boolean isPersistent() {
-        return true;
-    }
-
-    @Override
-    public Blob persist() {
-        return this;
-    }
-
     /**
      * Gets the {@link Binary} attached to this blob.
      *
@@ -77,6 +68,11 @@ public class StorageBlob extends AbstractBlob implements Serializable {
         } else {
             return digest;
         }
+    }
+
+    @Override
+    public File getFile() {
+        return binary.getFile();
     }
 
     /*

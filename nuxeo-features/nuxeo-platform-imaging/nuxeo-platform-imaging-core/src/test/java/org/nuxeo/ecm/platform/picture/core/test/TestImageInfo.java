@@ -19,6 +19,8 @@ package org.nuxeo.ecm.platform.picture.core.test;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.net.URL;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
@@ -73,8 +75,8 @@ public class TestImageInfo {
         DocumentModel picturebook = new DocumentModelImpl(root.getPathAsString(), "picturebook", "PictureBook");
         session.createDocument(picturebook);
         DocumentModel picture = new DocumentModelImpl(picturebook.getPathAsString(), "pic1", "Picture");
-        picture.setPropertyValue("file:content",
-                StreamingBlob.createFromURL(this.getClass().getClassLoader().getResource("images/exif_sample.jpg")));
+        URL resource = getClass().getClassLoader().getResource("images/exif_sample.jpg");
+        picture.setPropertyValue("file:content", new URLBlob(resource));
         session.createDocument(picture);
         session.save();
 

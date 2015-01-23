@@ -22,9 +22,7 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.nuxeo.ecm.webapp.helpers.EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,7 +37,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -74,11 +71,10 @@ import org.nuxeo.ecm.platform.ui.web.rest.FancyNavigationHandler;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webapp.dnd.DndConfigurationHelper;
-import org.nuxeo.ecm.webapp.filemanager.FileManageActions;
+import org.nuxeo.ecm.webapp.filemanager.FileManageActionsBean;
 import org.nuxeo.ecm.webapp.filemanager.NxUploadedFile;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.event.FileUploadEvent;
-import org.richfaces.model.UploadedFile;
 
 /**
  * @since 6.0
@@ -308,9 +304,8 @@ public class ImportActions implements Serializable {
         try {
             List<Blob> blobs = new ArrayList<>();
             for (NxUploadedFile uploadItem : uploadedFiles) {
-                String filename = FileUtils.getCleanFileName(uploadItem.getName());
-                Blob blob = FileUtils.createTemporaryFileBlob(uploadItem.getFile(), filename,
-                        uploadItem.getContentType());
+                Blob blob = uploadItem.getBlob();
+                FileUtils.configureFileBlob(blob);
                 blobs.add(blob);
             }
 
@@ -378,18 +373,8 @@ public class ImportActions implements Serializable {
             if (uploadedFiles == null) {
                 uploadedFiles = new ArrayList<NxUploadedFile>();
             }
-            String jstTmpFileDir = Framework.getProperty(FileManageActions.NUXEO_JSF_TMP_DIR_PROP);
-            File file = null;
-            if (StringUtils.isNotBlank(jstTmpFileDir)) {
-                file = File.createTempFile("ImportActions", null, new File(jstTmpFileDir));
-            } else {
-                file = File.createTempFile("ImportActions", null);
-            }
-            UploadedFile uploadedFile = uploadEvent.getUploadedFile();
-            try (InputStream in = uploadedFile.getInputStream()) {
-                org.nuxeo.common.utils.FileUtils.copyToFile(in, file);
-            }
-            uploadedFiles.add(new NxUploadedFile(uploadedFile.getName(), uploadedFile.getContentType(), file));
+            Blob blob = FileManageActionsBean.getBlob(uploadEvent);
+            uploadedFiles.add(new NxUploadedFile(blob));
         } catch (IOException e) {
             log.error(e, e);
         }

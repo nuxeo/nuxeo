@@ -29,12 +29,7 @@ import java.io.IOException;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.storage.binary.Binary;
-import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
-import org.nuxeo.ecm.core.storage.binary.DefaultBinaryManager;
-import org.nuxeo.runtime.services.streaming.FileSource;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestDefaultBinaryManager extends NXRuntimeTestCase {
@@ -113,15 +108,14 @@ public class TestDefaultBinaryManager extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testStreamingCopies() throws IOException {
+    public void testTemporaryCopies() throws IOException {
         DefaultBinaryManager binaryManager = new DefaultBinaryManager();
         binaryManager.initialize(new BinaryManagerDescriptor());
         assertEquals(0, countFiles(binaryManager.getStorageDir()));
-        File file = File.createTempFile("test-", ".data", binaryManager.getStorageDir());
-        FileUtils.writeFile(file, CONTENT.getBytes("UTF-8"));
-        FileSource source = new FileSource(file);
+        FileBlob source = new FileBlob(new ByteArrayInputStream(CONTENT.getBytes("UTF-8")));
+        File originalFile = source.getFile();
         binaryManager.storeAndDigest(source);
-        assertFalse(file.exists());
+        assertFalse(originalFile.exists());
         assertTrue(source.getFile().exists());
 
         binaryManager.close();

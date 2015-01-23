@@ -63,7 +63,6 @@ import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -201,7 +200,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         Map<String, Object> vignette = new HashMap<String, Object>();
         vignette.put("width", Long.valueOf(0));
         vignette.put("height", Long.valueOf(0));
-        vignette.put("content", StreamingBlob.createFromString("textblob content", "text/plain"));
+        vignette.put("content", new StringBlob("textblob content", "text/plain"));
         vignette.put("label", "vignettelabel");
         vignettes.add(vignette);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
@@ -215,8 +214,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals("vignettelabel", doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/label").getValue());
 
         // test setting and reading a list of maps with a blob inside the map
-        byte[] binaryContent = "01AB".getBytes();
-        Blob blob = StreamingBlob.createFromByteArray(binaryContent, "application/octet-stream");
+        Blob blob = new StringBlob("01AB", "application/octet-stream");
         blob.setFilename("file.bin");
         vignette.put("content", blob);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
@@ -268,7 +266,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
                 Map<String, Object> vignette = new HashMap<String, Object>();
                 vignette.put("width", Long.valueOf(j));
                 vignette.put("height", Long.valueOf(j));
-                vignette.put("content", StreamingBlob.createFromString(String.format("document %d, vignette %d", i, j)));
+                vignette.put("content", new StringBlob(String.format("document %d, vignette %d", i, j)));
                 vignettes.add(vignette);
             }
             doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);

@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 
@@ -39,7 +40,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.SimpleFileManager;
 import org.nuxeo.ecm.platform.ui.web.util.FileUploadHelper;
@@ -105,7 +106,10 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
                 // mono import
                 String outcome;
                 try {
-                    Blob inputBlob = StreamingBlob.createFromStream(req.getEntity().getStream()).persist();
+                    Blob inputBlob;
+                    try (InputStream in = req.getEntity().getStream()) {
+                        inputBlob = new FileBlob(in);
+                    }
                     inputBlob.setFilename(fileName);
                     outcome = FileManageActions.addBinaryFileFromPlugin(inputBlob, fileName, targetContainer);
                 } catch (ClientException | IOException e) {

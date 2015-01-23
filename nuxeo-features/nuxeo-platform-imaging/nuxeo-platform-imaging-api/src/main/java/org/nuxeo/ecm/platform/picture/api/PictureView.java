@@ -66,9 +66,12 @@ public interface PictureView {
 
     void setFilename(String filename);
 
-    Object getContent();
-
-    void setContent(Object content);
+    /**
+     * Returns the {@code Blob} of the picture view.
+     *
+     * @deprecated since 7.2, use {@link #getBlob} instead
+     */
+    Blob getContent();
 
     /**
      * Returns the {@code ImageInfo} of the picture view.

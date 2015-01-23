@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -85,7 +86,10 @@ public class RFC822ToTextConverter implements Converter {
                     writeInfo(fo, extracted);
                 }
             }
-            Blob outblob = new FileBlob(new FileInputStream(f));
+            Blob outblob;
+            try (InputStream in = new FileInputStream(f)) {
+                outblob = new FileBlob(in);
+            }
             outblob.setMimeType(descriptor.getDestinationMimeType());
             return outblob;
         } catch (ClientException | IOException | MessagingException e) {
@@ -163,7 +167,11 @@ public class RFC822ToTextConverter implements Converter {
         if (converterName == null) {
             return null;
         } else {
-            BlobHolder result = cs.convert(converterName, new SimpleBlobHolder(new FileBlob(p.getInputStream())), null);
+            FileBlob blob;
+            try (InputStream in = p.getInputStream()) {
+                blob = new FileBlob(in);
+            }
+            BlobHolder result = cs.convert(converterName, new SimpleBlobHolder(blob), null);
             return result.getBlob().getByteArray();
         }
     }

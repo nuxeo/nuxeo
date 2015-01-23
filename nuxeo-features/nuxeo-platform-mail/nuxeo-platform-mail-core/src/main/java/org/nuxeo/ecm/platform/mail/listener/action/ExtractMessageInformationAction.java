@@ -247,7 +247,10 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
                         part.getContentType().toLowerCase().startsWith("text/")) {
                     bodyContent += decodeMailBody(part);
                 } else {
-                    FileBlob fileBlob = new FileBlob(part.getInputStream());
+                    FileBlob fileBlob;
+                    try (InputStream in = part.getInputStream()) {
+                        fileBlob = new FileBlob(in);
+                    }
                     String mime = DEFAULT_BINARY_MIMETYPE;
                     try {
                         if (mimeService != null) {

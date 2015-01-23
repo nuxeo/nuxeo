@@ -12,6 +12,12 @@
 
 package org.nuxeo.ecm.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -24,28 +30,20 @@ import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerService;
 import org.nuxeo.ecm.core.storage.binary.DefaultBinaryManager;
-import org.nuxeo.ecm.core.storage.binary.LocalBinaryManager;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.streaming.FileSource;
 
 /**
  * Sample test showing how to use a direct access to the binaries storage.
@@ -186,27 +184,17 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
 
     @Test
     public void testBinaryManagerTmpFileMoveNotCopy() throws Exception {
-        BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
-        LocalBinaryManager binaryManager = (LocalBinaryManager) bms.getBinaryManager(session.getRepositoryName());
-
-        // tmp file in binary manager filesystem (not in tmp but still works)
-        File file = File.createTempFile("test-", ".data", binaryManager.getStorageDir());
-        FileOutputStream out = new FileOutputStream(file);
-        IOUtils.copy(new ByteArrayInputStream("abcd\n".getBytes("UTF-8")), out);
-        out.close();
-
-        // create blob
-        FileSource fileSource = new FileSource(file);
-        Blob blob = new StreamingBlob.TemporaryFileBlob(fileSource);
-
+        // tmp file
+        Blob blob = new FileBlob(new ByteArrayInputStream("abcd\b".getBytes("UTF-8")));
+        File originaFile = blob.getFile();
         // set in doc
         DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
         doc.setPropertyValue("file:content", (Serializable) blob);
         doc = session.createDocument(doc);
         session.save();
 
-        assertFalse(file.exists());
-        assertTrue(fileSource.getFile().exists());
+        assertFalse(originaFile.exists());
+        assertTrue(blob.getFile().exists());
     }
 
 }
