@@ -22,7 +22,5 @@ public class TestXMLParser {
 
         String html = XMLContributionParser.prettyfy(xml);
 
-        System.out.println(html);
-
     }
 }

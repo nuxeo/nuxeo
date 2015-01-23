@@ -52,10 +52,13 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         doc.setPropertyValue(PROP_ARTIFACT_VERSION, bundleInfo.getArtifactVersion());
         doc.setPropertyValue(PROP_BUNDLE_ID, bundleInfo.getId());
         doc.setPropertyValue(PROP_JAR_NAME, bundleInfo.getFileName());
-        Blob manifestBlob = new StringBlob(bundleInfo.getManifest());
-        manifestBlob.setFilename("MANIFEST.MF");
-        manifestBlob.setMimeType("text/plain");
-        doc.setPropertyValue("file:content", (Serializable) manifestBlob);
+        String manifest = bundleInfo.getManifest();
+        if (manifest != null) {
+            Blob manifestBlob = new StringBlob(manifest);
+            manifestBlob.setFilename("MANIFEST.MF");
+            manifestBlob.setMimeType("text/plain");
+            doc.setPropertyValue("file:content", (Serializable) manifestBlob);
+        }
 
         if (exist) {
             doc = session.saveDocument(doc);

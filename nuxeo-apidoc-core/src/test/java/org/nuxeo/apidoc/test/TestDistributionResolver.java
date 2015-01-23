@@ -219,7 +219,6 @@ public class TestDistributionResolver {
     protected String testResolution(List<DistributionSnapshot> snaps, String target) {
         String match = SnapshotResolverHelper.findBestMatch(snaps, target);
         assertNotNull(match);
-        System.out.println(target + " => " + match);
         return match;
     }
 
