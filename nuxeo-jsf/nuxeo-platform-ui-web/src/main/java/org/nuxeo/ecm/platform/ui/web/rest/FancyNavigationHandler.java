@@ -99,6 +99,11 @@ public class FancyNavigationHandler extends ConfigurableNavigationHandler {
                 url = url.replaceFirst(localUrl, baseUrl);
             }
             if (Contexts.isEventContextActive()) {
+                // strip any jsession id before redirect
+                int jsessionidIndex = url.indexOf(";jsessionid");
+                if (jsessionidIndex != -1) {
+                    url = url.substring(0, jsessionidIndex);
+                }
                 // add conversation id before redirect
                 url = RestHelper.addMainConversationParameters(url);
             }
