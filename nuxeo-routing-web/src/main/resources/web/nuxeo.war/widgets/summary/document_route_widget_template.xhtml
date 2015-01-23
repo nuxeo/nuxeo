@@ -28,7 +28,7 @@
     <c:when test="#{routingActions.hasRelatedRoute()}">
       <c:forEach var="relatedRoute" items="#{routingActions.getRelatedRoutes()}">
         <div>
-          <h:outputText value="#{messages[relatedRoute.name]} " />
+          <h:outputText value="#{messages[relatedRoute.title]} " />
           <h:outputText value="#{messages['label.route.started']} " />
           <h:outputText value="#{nxu:userFullName(relatedRoute.document.docri.initiator)}" />
         </div>
