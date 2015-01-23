@@ -16,13 +16,13 @@
  */
 package org.nuxeo.ecm.platform.routing.core.persistence;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipFile;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -51,58 +51,56 @@ public class RouteModelsZipImporter extends ExportedZipImporter {
     @Override
     public DocumentModel create(CoreSession session, Blob content, String path, boolean overwrite, String filename,
             TypeManager typeService) throws ClientException, IOException {
-
-        File tmp = File.createTempFile("xml-importer", null);
-        content.transferTo(tmp);
-        ZipFile zip = getArchiveFileIfValid(tmp);
-
-        if (zip == null) {
-            tmp.delete();
-            return null;
-        }
-
-        boolean overWrite = false;
-        DocumentReader reader = new NuxeoArchiveReader(tmp);
-        ExportedDocument root = reader.read();
-        PathRef rootRef = new PathRef(path, root.getPath().toString());
-        ACP currentRouteModelACP = null;
-        if (session.exists(rootRef)) {
-            DocumentModel target = session.getDocument(rootRef);
-            if (target.getPath().removeLastSegments(1).equals(new Path(path))) {
-                overWrite = true;
-                // clean up existing route before import
-                DocumentModel routeModel = session.getDocument(rootRef);
-                currentRouteModelACP = routeModel.getACP();
-                session.removeDocument(rootRef);
+        try (CloseableFile source = content.getCloseableFile()) {
+            ZipFile zip = getArchiveFileIfValid(source.getFile());
+            if (zip == null) {
+                return null;
             }
-        }
+            zip.close();
 
-        DocumentWriter writer = new DocumentModelWriter(session, path, 10);
-        reader.close();
-        reader = new NuxeoArchiveReader(tmp);
+            boolean overWrite = false;
+            DocumentReader reader = new NuxeoArchiveReader(source.getFile());
+            ExportedDocument root = reader.read();
+            PathRef rootRef = new PathRef(path, root.getPath().toString());
+            ACP currentRouteModelACP = null;
+            if (session.exists(rootRef)) {
+                DocumentModel target = session.getDocument(rootRef);
+                if (target.getPath().removeLastSegments(1).equals(new Path(path))) {
+                    overWrite = true;
+                    // clean up existing route before import
+                    DocumentModel routeModel = session.getDocument(rootRef);
+                    currentRouteModelACP = routeModel.getACP();
+                    session.removeDocument(rootRef);
+                }
+            }
 
-        DocumentRef resultingRef;
-        if (overwrite && overWrite) {
-            resultingRef = rootRef;
-        } else {
-            String rootName = root.getPath().lastSegment();
-            resultingRef = new PathRef(path, rootName);
-        }
-
-        try {
-            DocumentPipe pipe = new DocumentPipeImpl(10);
-            pipe.setReader(reader);
-            pipe.setWriter(writer);
-            pipe.run();
-        } finally {
+            DocumentWriter writer = new DocumentModelWriter(session, path, 10);
             reader.close();
-            writer.close();
+            reader = new NuxeoArchiveReader(source.getFile());
+
+            DocumentRef resultingRef;
+            if (overwrite && overWrite) {
+                resultingRef = rootRef;
+            } else {
+                String rootName = root.getPath().lastSegment();
+                resultingRef = new PathRef(path, rootName);
+            }
+
+            try {
+                DocumentPipe pipe = new DocumentPipeImpl(10);
+                pipe.setReader(reader);
+                pipe.setWriter(writer);
+                pipe.run();
+            } finally {
+                reader.close();
+                writer.close();
+            }
+
+            DocumentModel newRouteModel = session.getDocument(resultingRef);
+            if (currentRouteModelACP != null && overwrite && overWrite) {
+                newRouteModel.setACP(currentRouteModelACP, true);
+            }
+            return session.saveDocument(newRouteModel);
         }
-        tmp.delete();
-        DocumentModel newRouteModel = session.getDocument(resultingRef);
-        if (currentRouteModelACP != null && overwrite && overWrite) {
-            newRouteModel.setACP(currentRouteModelACP, true);
-        }
-        return session.saveDocument(newRouteModel);
     }
 }

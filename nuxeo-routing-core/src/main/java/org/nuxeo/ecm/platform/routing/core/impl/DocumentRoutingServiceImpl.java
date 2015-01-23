@@ -22,7 +22,6 @@ import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.MA
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.PAGE_SIZE_RESULTS_KEY;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -36,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -48,7 +47,7 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -658,15 +657,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         if (modelToImport == null) {
             throw new ClientException(("No resource containing route templates found"));
         }
-        StreamingBlob fb;
-        try {
-            fb = StreamingBlob.createFromStream(modelToImport.openStream());
-        } catch (IOException e) {
-            throw new ClientRuntimeException(e);
-        }
+        Blob blob = new URLBlob(modelToImport);
         try {
             final String file = modelToImport.getFile();
-            DocumentModel doc = getFileManager().createDocumentFromBlob(session, fb,
+            DocumentModel doc = getFileManager().createDocumentFromBlob(session, blob,
                     persister.getParentFolderForDocumentRouteModels(session).getPathAsString(), true, file);
             if (doc == null) {
                 throw new ClientException("Can not import document " + file);
@@ -679,12 +673,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             return doc.getAdapter(DocumentRoute.class);
         } catch (Exception e) {
             throw new ClientException(e);
-        } finally {
-            try {
-                FileUtils.close(fb.getStream());
-            } catch (IOException e) {
-                throw new ClientException(e);
-            }
         }
     }
 
