@@ -14,7 +14,7 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * 
+ *
  */
 
 package org.nuxeo.ecm.platform.ui.web.tag.fn;
@@ -38,12 +38,11 @@ import org.nuxeo.runtime.services.event.EventListener;
 import org.nuxeo.runtime.services.event.EventService;
 
 /**
- * Helper class to encapsulate userName => DisplayName resolution.
- * 
- * Does direct access to the underlying directories to avoid performance issues.
- * 
- * @author tiry
+ * Helper class to encapsulate userName => DisplayName resolution. Does direct access to the underlying directories to
+ * avoid performance issues.
  *
+ * @author tiry
+ * @since 7.2
  */
 public class UserNameResolverHelper implements EventListener {
 
