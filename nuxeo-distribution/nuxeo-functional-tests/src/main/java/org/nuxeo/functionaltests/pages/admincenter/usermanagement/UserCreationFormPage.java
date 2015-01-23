@@ -18,6 +18,8 @@
  */
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
@@ -35,9 +37,8 @@ import org.openqa.selenium.support.FindBy;
  */
 public class UserCreationFormPage extends UsersGroupsBasePage {
 
-    @Required
-    @FindBy(id = "createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation_yes")
-    WebElement immediateCreation;
+    @FindBy(name = "createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation")
+    List<WebElement> immediateCreation;
 
     @FindBy(id = "createUserView:createUser:nxl_user:nxw_username")
     WebElement usernameInput;
@@ -76,6 +77,18 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
         return createUser(username, firstname, lastname, company, email, password, group, false);
     }
 
+    private boolean isObjectChecked(int index) {
+        assert (index < 2 && index >= 0);
+        org.junit.Assert.assertNotNull(immediateCreation);
+        org.junit.Assert.assertEquals(2, immediateCreation.size());
+
+        return immediateCreation.get(index).isSelected();
+    }
+
+    public boolean isImmediateCreationYesSelected() {
+        return isObjectChecked(1);
+    }
+
     public UsersGroupsBasePage createUser(String username, String firstname, String lastname, String company,
             String email, String password, String group, final boolean invite) throws NoSuchElementException {
         if (!invite) {
@@ -107,8 +120,8 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
     }
 
     protected void switchCreationFormPage() {
-        if (!immediateCreation.isSelected()) {
-            immediateCreation.click();
+        if (!isImmediateCreationYesSelected()) {
+            immediateCreation.get(1).click();
             Locator.waitUntilElementPresent(By.id("createUserView:createUser:nxl_user:nxw_passwordMatcher_firstPassword"));
         }
     }
