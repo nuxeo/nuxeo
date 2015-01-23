@@ -33,7 +33,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.faces.component.UIComponent;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -64,8 +63,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
  */
 public final class Functions {
-
-    private static final Log log = LogFactory.getLog(Functions.class);
 
     public static final String I18N_DURATION_PREFIX = "label.duration.unit.";
 
@@ -113,12 +110,10 @@ public final class Functions {
     // at a higher level in the Framework or in a facade.
     private static UserManager userManager;
 
-    private static UserNameResolverHelper userNameResolver = new UserNameResolverHelper();
-    
     /**
-     * Key in the session holding a map caching user full names.
+     * @since 7.2
      */
-    private static final String FULLNAMES_MAP_KEY = Functions.class.getName() + ".FULLNAMES_MAP";
+    private static UserNameResolverHelper userNameResolver = new UserNameResolverHelper();
 
     static final Map<String, String> mapOfDateLength = new HashMap<String, String>() {
         {
@@ -243,7 +238,7 @@ public final class Functions {
         // empty user name is current user
         if (StringUtils.isBlank(username)) {
             return null;
-        }        
+        }
         return userNameResolver.getUserFullName(username);
     }
 
