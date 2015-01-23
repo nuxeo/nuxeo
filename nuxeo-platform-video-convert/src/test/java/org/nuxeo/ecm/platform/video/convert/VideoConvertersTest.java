@@ -60,15 +60,13 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
     }
 
     protected static BlobHolder getBlobFromPath(String path) throws IOException {
-        InputStream is = VideoConvertersTest.class.getResourceAsStream("/"
-                + path);
+        InputStream is = VideoConvertersTest.class.getResourceAsStream("/" + path);
         assertNotNull(String.format("Failed to load resource: " + path), is);
-        return new SimpleBlobHolder(
-                StreamingBlob.createFromStream(is, path).persist());
+        return new SimpleBlobHolder(StreamingBlob.createFromStream(is, path).persist());
     }
 
-    protected BlobHolder applyConverter(String converter, String fileName,
-            Double position, Double duration) throws Exception {
+    protected BlobHolder applyConverter(String converter, String fileName, Double position, Double duration)
+            throws Exception {
         ConversionService cs = Framework.getService(ConversionService.class);
         assertNotNull(cs.getRegistredConverters().contains(converter));
         BlobHolder in = getBlobFromPath(fileName);
@@ -93,8 +91,7 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
             log.warn("ffmpeg is not avalaible, skipping test");
             return;
         }
-        BlobHolder result = applyConverter(Constants.STORYBOARD_CONVERTER,
-                ELEPHANTS_DREAM, null, 653.53);
+        BlobHolder result = applyConverter(Constants.STORYBOARD_CONVERTER, ELEPHANTS_DREAM, null, 653.53);
         List<Blob> blobs = result.getBlobs();
         assertEquals(9, blobs.size());
         assertEquals("00000.000-seconds.jpeg", blobs.get(0).getFilename());
@@ -111,19 +108,15 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
             log.warn("ffmpeg is not avalaible, skipping test");
             return;
         }
-        BlobHolder result = applyConverter(Constants.SCREENSHOT_CONVERTER,
-                ELEPHANTS_DREAM, null, null);
+        BlobHolder result = applyConverter(Constants.SCREENSHOT_CONVERTER, ELEPHANTS_DREAM, null, null);
         List<Blob> blobs = result.getBlobs();
         assertEquals(1, blobs.size());
-        assertEquals("video-screenshot-00000.000.jpeg",
-                blobs.get(0).getFilename());
+        assertEquals("video-screenshot-00000.000.jpeg", blobs.get(0).getFilename());
 
-        result = applyConverter(Constants.SCREENSHOT_CONVERTER,
-                ELEPHANTS_DREAM, 10.0, null);
+        result = applyConverter(Constants.SCREENSHOT_CONVERTER, ELEPHANTS_DREAM, 10.0, null);
         blobs = result.getBlobs();
         assertEquals(1, blobs.size());
-        assertEquals("video-screenshot-00010.000.jpeg",
-                blobs.get(0).getFilename());
+        assertEquals("video-screenshot-00010.000.jpeg", blobs.get(0).getFilename());
     }
 
 }

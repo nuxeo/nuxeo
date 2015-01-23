@@ -49,12 +49,10 @@ import org.nuxeo.ecm.platform.video.convert.Constants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Helper class to factorize logic than can be either called from the UI or from
- * core event listener.
+ * Helper class to factorize logic than can be either called from the UI or from core event listener.
  * <p>
- * If the need to evolve to make this further configurable (not just using the
- * existing converter / commandline extensions points), we might want to turn
- * this class into a full blown nuxeo service.
+ * If the need to evolve to make this further configurable (not just using the existing converter / commandline
+ * extensions points), we might want to turn this class into a full blown nuxeo service.
  *
  * @author ogrisel
  */
@@ -77,23 +75,19 @@ public class VideoHelper {
     static {
         Map<String, Object> thumbnailView = new LinkedHashMap<String, Object>();
         thumbnailView.put("title", "Small");
-        thumbnailView.put("maxsize",
-                Long.valueOf(AbstractPictureAdapter.SMALL_SIZE));
+        thumbnailView.put("maxsize", Long.valueOf(AbstractPictureAdapter.SMALL_SIZE));
         THUMBNAILS_VIEWS.add(thumbnailView);
         Map<String, Object> staticPlayerView = new HashMap<String, Object>();
         staticPlayerView.put("title", "StaticPlayerView");
-        staticPlayerView.put("maxsize",
-                Long.valueOf(AbstractPictureAdapter.MEDIUM_SIZE));
+        staticPlayerView.put("maxsize", Long.valueOf(AbstractPictureAdapter.MEDIUM_SIZE));
         THUMBNAILS_VIEWS.add(staticPlayerView);
     }
 
     /**
-     * Update the JPEG story board and duration in seconds of a Video document
-     * from the video blob content.
+     * Update the JPEG story board and duration in seconds of a Video document from the video blob content.
      */
     @SuppressWarnings("unchecked")
-    public static void updateStoryboard(DocumentModel docModel, Blob video)
-            throws PropertyException, ClientException {
+    public static void updateStoryboard(DocumentModel docModel, Blob video) throws PropertyException, ClientException {
         if (video == null) {
             docModel.setPropertyValue(VideoConstants.STORYBOARD_PROPERTY, null);
             docModel.setPropertyValue(VideoConstants.DURATION_PROPERTY, null);
@@ -106,14 +100,12 @@ public class VideoHelper {
             VideoDocument videoDocument = docModel.getAdapter(VideoDocument.class);
             Map<String, Serializable> parameters = new HashMap<String, Serializable>();
             parameters.put("duration", videoDocument.getVideo().getDuration());
-            result = Framework.getService(ConversionService.class).convert(
-                    Constants.STORYBOARD_CONVERTER,
+            result = Framework.getService(ConversionService.class).convert(Constants.STORYBOARD_CONVERTER,
                     new SimpleBlobHolder(video), parameters);
         } catch (ConversionException e) {
             // this can happen when if the codec is not supported or not
             // readable by ffmpeg and is recoverable by using a dummy preview
-            log.warn(String.format(
-                    "could not extract story board for document '%s' with video file '%s': %s",
+            log.warn(String.format("could not extract story board for document '%s' with video file '%s': %s",
                     docModel.getTitle(), video.getFilename(), e.getMessage()));
             log.debug(e, e);
             return;
@@ -131,17 +123,15 @@ public class VideoHelper {
             item.put("content", (Serializable) blobs.get(i));
             storyboard.add(item);
         }
-        docModel.setPropertyValue(VideoConstants.STORYBOARD_PROPERTY,
-                (Serializable) storyboard);
+        docModel.setPropertyValue(VideoConstants.STORYBOARD_PROPERTY, (Serializable) storyboard);
     }
 
     /**
-     * Update the JPEG previews of a Video document from the video blob content
-     * by taking a screen-shot of the movie at timecode offset given in seconds.
+     * Update the JPEG previews of a Video document from the video blob content by taking a screen-shot of the movie at
+     * timecode offset given in seconds.
      */
-    public static void updatePreviews(DocumentModel docModel, Blob video,
-            Double position, List<Map<String, Object>> templates)
-            throws ClientException, IOException {
+    public static void updatePreviews(DocumentModel docModel, Blob video, Double position,
+            List<Map<String, Object>> templates) throws ClientException, IOException {
 
         if (video == null) {
             docModel.setPropertyValue("picture:views", null);
@@ -152,14 +142,12 @@ public class VideoHelper {
         parameters.put(Constants.POSITION_PARAMETER, position);
         BlobHolder result;
         try {
-            result = Framework.getService(ConversionService.class).convert(
-                    Constants.SCREENSHOT_CONVERTER,
+            result = Framework.getService(ConversionService.class).convert(Constants.SCREENSHOT_CONVERTER,
                     new SimpleBlobHolder(video), parameters);
         } catch (ConversionException e) {
             // this can happen when if the codec is not supported or not
             // readable by ffmpeg and is recoverable by using a dummy preview
-            log.warn(String.format(
-                    "could not extract screenshot from document '%s' with video file '%s': %s",
+            log.warn(String.format("could not extract screenshot from document '%s' with video file '%s': %s",
                     docModel.getTitle(), video.getFilename(), e.getMessage()));
             log.debug(e, e);
             return;
@@ -168,39 +156,32 @@ public class VideoHelper {
         }
 
         // compute the thumbnail preview
-        if (result != null && result.getBlob() != null
-                && result.getBlob().getLength() > 0) {
+        if (result != null && result.getBlob() != null && result.getBlob().getLength() > 0) {
             PictureResourceAdapter picture = docModel.getAdapter(PictureResourceAdapter.class);
             try {
-                picture.fillPictureViews(result.getBlob(),
-                        result.getBlob().getFilename(), docModel.getTitle(),
+                picture.fillPictureViews(result.getBlob(), result.getBlob().getFilename(), docModel.getTitle(),
                         new ArrayList<Map<String, Object>>(templates));
             } catch (Exception e) {
-                log.warn("failed to video compute previews for "
-                        + docModel.getTitle() + ": " + e.getMessage());
+                log.warn("failed to video compute previews for " + docModel.getTitle() + ": " + e.getMessage());
             }
         }
 
         // put a black screen if the video or its screen-shot is unreadable
         if (docModel.getProperty("picture:views").getValue(List.class).isEmpty()) {
-            InputStream is = VideoHelper.class.getResourceAsStream("/"
-                    + MISSING_PREVIEW_PICTURE);
+            InputStream is = VideoHelper.class.getResourceAsStream("/" + MISSING_PREVIEW_PICTURE);
             Blob blob = StreamingBlob.createFromStream(is, "image/jpeg").persist();
             blob.setFilename(MISSING_PREVIEW_PICTURE.replace('/', '-'));
             PictureResourceAdapter picture = docModel.getAdapter(PictureResourceAdapter.class);
-            picture.fillPictureViews(blob, blob.getFilename(),
-                    docModel.getTitle(), new ArrayList<Map<String, Object>>(
-                            templates));
+            picture.fillPictureViews(blob, blob.getFilename(), docModel.getTitle(), new ArrayList<Map<String, Object>>(
+                    templates));
         }
     }
 
     /**
-     * Update the JPEG previews of a Video document from the video blob content
-     * by taking a screen-shot of the movie at 10% of the duration to avoid
-     * black screen fade in video.
+     * Update the JPEG previews of a Video document from the video blob content by taking a screen-shot of the movie at
+     * 10% of the duration to avoid black screen fade in video.
      */
-    public static void updatePreviews(DocumentModel docModel, Blob video)
-            throws ClientException, IOException {
+    public static void updatePreviews(DocumentModel docModel, Blob video) throws ClientException, IOException {
 
         Double duration = (Double) docModel.getPropertyValue(VideoConstants.DURATION_PROPERTY);
         Double position = 0.0;
@@ -210,12 +191,10 @@ public class VideoHelper {
         updatePreviews(docModel, video, position, THUMBNAILS_VIEWS);
     }
 
-    public static void updateVideoInfo(DocumentModel docModel, Blob video)
-            throws ClientException {
+    public static void updateVideoInfo(DocumentModel docModel, Blob video) throws ClientException {
         VideoInfo videoInfo = getVideoInfo(video);
         if (videoInfo == null) {
-            docModel.setPropertyValue("vid:info",
-                    (Serializable) VideoInfo.EMPTY_INFO.toMap());
+            docModel.setPropertyValue("vid:info", (Serializable) VideoInfo.EMPTY_INFO.toMap());
             return;
         }
         docModel.setPropertyValue("vid:info", (Serializable) videoInfo.toMap());
@@ -230,16 +209,14 @@ public class VideoHelper {
         try {
             CommandLineExecutorService cleService = Framework.getLocalService(CommandLineExecutorService.class);
 
-            file = File.createTempFile("ffmpegInfo",
-                    "." + FilenameUtils.getExtension(video.getFilename()));
+            file = File.createTempFile("ffmpegInfo", "." + FilenameUtils.getExtension(video.getFilename()));
             video.transferTo(file);
 
             CmdParameters params = new CmdParameters();
             params.addNamedParameter("inFilePath", file.getAbsolutePath());
 
             // read the duration with a first command to adjust the best rate:
-            ExecResult result = cleService.execCommand(
-                    FFMPEG_INFO_COMMAND_LINE, params);
+            ExecResult result = cleService.execCommand(FFMPEG_INFO_COMMAND_LINE, params);
             if (!result.isSuccessful()) {
                 throw result.getError();
             }

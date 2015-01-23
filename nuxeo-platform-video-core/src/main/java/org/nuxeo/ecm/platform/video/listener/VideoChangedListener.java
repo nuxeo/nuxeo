@@ -41,12 +41,9 @@ import org.nuxeo.ecm.platform.video.VideoHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Core event listener to trigger the
- * {@link org.nuxeo.ecm.platform.video.VideoConstants#VIDEO_CHANGED_EVENT} event
- * if the main video has changed.
- *
- * This is useful to update the video information, thumbnails and story board in
- * a dedicated async event listener.
+ * Core event listener to trigger the {@link org.nuxeo.ecm.platform.video.VideoConstants#VIDEO_CHANGED_EVENT} event if
+ * the main video has changed. This is useful to update the video information, thumbnails and story board in a dedicated
+ * async event listener.
  *
  * @author ogrisel
  * @since 5.5
@@ -65,8 +62,7 @@ public class VideoChangedListener implements EventListener {
         DocumentModel doc = docCtx.getSourceDocument();
         if (doc.hasFacet(HAS_VIDEO_PREVIEW_FACET)) {
             Property origVideoProperty = doc.getProperty("file:content");
-            if (DOCUMENT_CREATED.equals(event.getName())
-                    || origVideoProperty.isDirty()) {
+            if (DOCUMENT_CREATED.equals(event.getName()) || origVideoProperty.isDirty()) {
 
                 Blob video = (Blob) origVideoProperty.getValue();
                 updateVideoInfo(doc, video);
@@ -92,8 +88,7 @@ public class VideoChangedListener implements EventListener {
             VideoHelper.updateVideoInfo(doc, video);
         } catch (ClientException e) {
             // may happen if ffmpeg is not installed
-            log.error(String.format("Unable to retrieve video info: %s",
-                    e.getMessage()));
+            log.error(String.format("Unable to retrieve video info: %s", e.getMessage()));
             log.debug(e, e);
         }
     }

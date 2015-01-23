@@ -40,28 +40,23 @@ public final class VideoInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static final Pattern FORMAT_PATTERN = Pattern.compile(
-            "^\\s*(Input|Output) #0, ([\\w,]+).+$\\s*", Pattern.CASE_INSENSITIVE);
+    public static final Pattern FORMAT_PATTERN = Pattern.compile("^\\s*(Input|Output) #0, ([\\w,]+).+$\\s*",
+            Pattern.CASE_INSENSITIVE);
 
-    public static final Pattern DURATION_PATTERN = Pattern.compile(
-            "Duration: (\\d\\d):(\\d\\d):(\\d\\d)\\.(\\d+)",
+    public static final Pattern DURATION_PATTERN = Pattern.compile("Duration: (\\d\\d):(\\d\\d):(\\d\\d)\\.(\\d+)",
             Pattern.CASE_INSENSITIVE);
 
     public static final Pattern STREAM_PATTERN = Pattern.compile(
-            "^\\s*Stream #\\S+: ((?:Audio)|(?:Video)|(?:Data)): (.*)\\s*$",
+            "^\\s*Stream #\\S+: ((?:Audio)|(?:Video)|(?:Data)): (.*)\\s*$", Pattern.CASE_INSENSITIVE);
+
+    public static final Pattern SIZE_PATTERN = Pattern.compile("(\\d+)x(\\d+)", Pattern.CASE_INSENSITIVE);
+
+    public static final Pattern FRAME_RATE_PATTERN = Pattern.compile("([\\d.]+)\\s+(?:fps|tbr)",
             Pattern.CASE_INSENSITIVE);
 
-    public static final Pattern SIZE_PATTERN = Pattern.compile("(\\d+)x(\\d+)",
-            Pattern.CASE_INSENSITIVE);
+    public static final Pattern BIT_RATE_PATTERN = Pattern.compile("(\\d+)\\s+kb/s", Pattern.CASE_INSENSITIVE);
 
-    public static final Pattern FRAME_RATE_PATTERN = Pattern.compile(
-            "([\\d.]+)\\s+(?:fps|tbr)", Pattern.CASE_INSENSITIVE);
-
-    public static final Pattern BIT_RATE_PATTERN = Pattern.compile(
-            "(\\d+)\\s+kb/s", Pattern.CASE_INSENSITIVE);
-
-    public static final VideoInfo EMPTY_INFO = new VideoInfo(0, 0, 0, 0, null,
-            null);
+    public static final VideoInfo EMPTY_INFO = new VideoInfo(0, 0, 0, 0, null, null);
 
     public static final String DURATION = "duration";
 
@@ -90,8 +85,7 @@ public final class VideoInfo implements Serializable {
     /**
      * Build a {@code VideoInfo} from a {@code Map} of attributes.
      * <p>
-     * Used when creating a {@code VideoInfo} from a {@code DocumentModel}
-     * property.
+     * Used when creating a {@code VideoInfo} from a {@code DocumentModel} property.
      */
     public static VideoInfo fromMap(Map<String, Serializable> map) {
         Double duration = (Double) map.get(DURATION);
@@ -124,8 +118,7 @@ public final class VideoInfo implements Serializable {
             }
         }
 
-        return new VideoInfo(duration, width, height, frameRate, format,
-                streams);
+        return new VideoInfo(duration, width, height, frameRate, format, streams);
     }
 
     /**
@@ -152,10 +145,8 @@ public final class VideoInfo implements Serializable {
 
             matcher = DURATION_PATTERN.matcher(line);
             if (matcher.find()) {
-                duration = Double.parseDouble(matcher.group(1)) * 3600
-                        + Double.parseDouble(matcher.group(2)) * 60
-                        + Double.parseDouble(matcher.group(3))
-                        + Double.parseDouble(matcher.group(4)) / 100;
+                duration = Double.parseDouble(matcher.group(1)) * 3600 + Double.parseDouble(matcher.group(2)) * 60
+                        + Double.parseDouble(matcher.group(3)) + Double.parseDouble(matcher.group(4)) / 100;
                 continue;
             }
 
@@ -198,12 +189,10 @@ public final class VideoInfo implements Serializable {
                 streams.add(Stream.fromMap(map));
             }
         }
-        return new VideoInfo(duration, width, height, frameRate, format,
-                streams);
+        return new VideoInfo(duration, width, height, frameRate, format, streams);
     }
 
-    private VideoInfo(double duration, long width, long height,
-            double frameRate, String format, List<Stream> streams) {
+    private VideoInfo(double duration, long width, long height, double frameRate, String format, List<Stream> streams) {
         this.duration = duration;
         this.width = width;
         this.height = height;
@@ -270,8 +259,7 @@ public final class VideoInfo implements Serializable {
         map.put(HEIGHT, height);
         map.put(FORMAT, format);
 
-        List<Map<String, Serializable>> streamItems = new ArrayList<Map<String, Serializable>>(
-                streams.size());
+        List<Map<String, Serializable>> streamItems = new ArrayList<Map<String, Serializable>>(streams.size());
         for (Stream stream : streams) {
             streamItems.add(stream.toMap());
         }

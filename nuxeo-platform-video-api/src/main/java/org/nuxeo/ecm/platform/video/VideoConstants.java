@@ -43,7 +43,7 @@ public class VideoConstants {
      */
     public static final String VIDEO_CHANGED_PROPERTY = "videoChanged";
 
-    public static final String VIDEO_CHANGED_EVENT= "videoChanged";
+    public static final String VIDEO_CHANGED_EVENT = "videoChanged";
 
     // Constant utility class.
     private VideoConstants() {

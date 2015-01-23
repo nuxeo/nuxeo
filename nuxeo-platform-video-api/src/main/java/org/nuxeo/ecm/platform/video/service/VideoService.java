@@ -34,8 +34,7 @@ import org.nuxeo.ecm.platform.video.VideoConversionStatus;
 public interface VideoService {
 
     /**
-     * Returns the available registered video conversions that can be run on a
-     * Video document.
+     * Returns the available registered video conversions that can be run on a Video document.
      */
     Collection<VideoConversion> getAvailableVideoConversions();
 
@@ -48,8 +47,7 @@ public interface VideoService {
     void launchConversion(DocumentModel doc, String conversionName);
 
     /**
-     * Launch all the registered automatic video conversions on the given
-     * {@code doc}.
+     * Launch all the registered automatic video conversions on the given {@code doc}.
      *
      * @param doc the video document to be converted
      */
@@ -67,8 +65,7 @@ public interface VideoService {
     /**
      * Convert the {@code originalVideo} using the given {@code conversionName}.
      *
-     * @param id unique identifier of the video conversion calling this method,
-     *            used for monitoring.
+     * @param id unique identifier of the video conversion calling this method, used for monitoring.
      * @param originalVideo the video to convert
      * @param conversionName the video conversion to use
      * @return a {@code TranscodedVideo} object for the converted video.
@@ -76,12 +73,10 @@ public interface VideoService {
      * @see #convert(Video, String)
      */
     @Deprecated
-    TranscodedVideo convert(VideoConversionId id, Video originalVideo,
-            String conversionName);
+    TranscodedVideo convert(VideoConversionId id, Video originalVideo, String conversionName);
 
     /**
-     * Returns the status of the video conversion identified by the given
-     * {@code id}.
+     * Returns the status of the video conversion identified by the given {@code id}.
      *
      * @param id unique identifier of the video conversion
      * @deprecated since 5.7.3, use the other API with a document
@@ -91,8 +86,7 @@ public interface VideoService {
     VideoConversionStatus getProgressStatus(VideoConversionId id);
 
     /**
-     * Returns the status of the video conversion with the given conversion name
-     * on the given document.
+     * Returns the status of the video conversion with the given conversion name on the given document.
      *
      * @param repositoryName
      * @param docId
@@ -100,7 +94,6 @@ public interface VideoService {
      * @return
      * @since 5.7.3
      */
-    VideoConversionStatus getProgressStatus(String repositoryName, String docId,
-            String conversionName);
+    VideoConversionStatus getProgressStatus(String repositoryName, String docId, String conversionName);
 
 }

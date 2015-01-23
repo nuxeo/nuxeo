@@ -34,8 +34,7 @@ public class Video {
     protected final Blob blob;
 
     /**
-     * Build a {@code Video} from a video {@code blob} and the related
-     * {@code videoInfo}.
+     * Build a {@code Video} from a video {@code blob} and the related {@code videoInfo}.
      */
     public static Video fromBlobAndInfo(Blob blob, VideoInfo videoInfo) {
         return new Video(blob, videoInfo);

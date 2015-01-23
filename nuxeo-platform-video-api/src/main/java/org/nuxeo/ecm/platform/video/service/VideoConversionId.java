@@ -35,8 +35,7 @@ public class VideoConversionId {
 
     private final String conversionName;
 
-    public VideoConversionId(DocumentLocation documentLocation,
-            String conversionName) {
+    public VideoConversionId(DocumentLocation documentLocation, String conversionName) {
         this.documentLocation = documentLocation;
         this.conversionName = conversionName;
     }
@@ -61,8 +60,7 @@ public class VideoConversionId {
 
     @Override
     public String toString() {
-        return String.format(
-                "VideoConversionId [documentLocation=%s, conversionName=%s]",
-                documentLocation, conversionName);
+        return String.format("VideoConversionId [documentLocation=%s, conversionName=%s]", documentLocation,
+                conversionName);
     }
 }

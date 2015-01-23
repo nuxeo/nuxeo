@@ -60,8 +60,7 @@ public class VideoConversionWork extends AbstractWork {
         return repositoryName + ':' + docId + ":videoconv:";
     }
 
-    public VideoConversionWork(String repositoryName, String docId,
-            String conversionName) {
+    public VideoConversionWork(String repositoryName, String docId, String conversionName) {
         super(computeIdPrefix(repositoryName, docId) + conversionName);
         setDocument(repositoryName, docId);
         this.conversionName = conversionName;
@@ -99,8 +98,7 @@ public class VideoConversionWork extends AbstractWork {
         // Perform the actual conversion
         VideoService service = Framework.getLocalService(VideoService.class);
         setStatus("Transcoding");
-        TranscodedVideo transcodedVideo = service.convert(originalVideo,
-                conversionName);
+        TranscodedVideo transcodedVideo = service.convert(originalVideo, conversionName);
 
         // Saving it to the document
         startTransaction();
@@ -122,16 +120,14 @@ public class VideoConversionWork extends AbstractWork {
         return video;
     }
 
-    protected void saveNewTranscodedVideo(DocumentModel doc,
-            TranscodedVideo transcodedVideo) throws ClientException {
+    protected void saveNewTranscodedVideo(DocumentModel doc, TranscodedVideo transcodedVideo) throws ClientException {
         @SuppressWarnings("unchecked")
         List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
         if (transcodedVideos == null) {
             transcodedVideos = new ArrayList<>();
         }
         transcodedVideos.add(transcodedVideo.toMap());
-        doc.setPropertyValue("vid:transcodedVideos",
-                (Serializable) transcodedVideos);
+        doc.setPropertyValue("vid:transcodedVideos", (Serializable) transcodedVideos);
         if (doc.isVersion()) {
             doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
         }
@@ -139,16 +135,14 @@ public class VideoConversionWork extends AbstractWork {
     }
 
     /**
-     * Fire a {@code VIDEO_CONVERSIONS_DONE_EVENT} event when no other
-     * VideoConversionWork is scheduled for this document.
+     * Fire a {@code VIDEO_CONVERSIONS_DONE_EVENT} event when no other VideoConversionWork is scheduled for this
+     * document.
      *
      * @since 5.8
      */
-    protected void fireVideoConversionsDoneEvent(DocumentModel doc)
-            throws ClientException {
+    protected void fireVideoConversionsDoneEvent(DocumentModel doc) throws ClientException {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        List<String> workIds = workManager.listWorkIds(
-                CATEGORY_VIDEO_CONVERSION, null);
+        List<String> workIds = workManager.listWorkIds(CATEGORY_VIDEO_CONVERSION, null);
         String idPrefix = computeIdPrefix(repositoryName, docId);
         int worksCount = 0;
         for (String workId : workIds) {
@@ -160,8 +154,7 @@ public class VideoConversionWork extends AbstractWork {
             }
         }
 
-        DocumentEventContext ctx = new DocumentEventContext(session,
-                session.getPrincipal(), doc);
+        DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         Event event = ctx.newEvent(VIDEO_CONVERSIONS_DONE_EVENT);
         Framework.getLocalService(EventService.class).fireEvent(event);
     }

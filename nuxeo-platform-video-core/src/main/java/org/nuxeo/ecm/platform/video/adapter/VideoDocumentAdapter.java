@@ -102,10 +102,8 @@ public class VideoDocumentAdapter implements VideoDocument {
                 List<Map<String, Serializable>> videos = (List<Map<String, Serializable>>) doc.getPropertyValue(TRANSCODED_VIDEOS_PROPERTY);
                 transcodedVideos = Maps.newHashMap();
                 for (int i = 0; i < videos.size(); i++) {
-                    TranscodedVideo transcodedVideo = TranscodedVideo.fromMapAndPosition(
-                            videos.get(i), i);
-                    transcodedVideos.put(transcodedVideo.getName(),
-                            transcodedVideo);
+                    TranscodedVideo transcodedVideo = TranscodedVideo.fromMapAndPosition(videos.get(i), i);
+                    transcodedVideos.put(transcodedVideo.getName(), transcodedVideo);
                 }
             }
         } catch (ClientException e) {

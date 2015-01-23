@@ -28,8 +28,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public class VideoConversionContributionHandler extends
-        ContributionFragmentRegistry<VideoConversion> {
+public class VideoConversionContributionHandler extends ContributionFragmentRegistry<VideoConversion> {
 
     public final Map<String, VideoConversion> registry;
 
@@ -43,8 +42,7 @@ public class VideoConversionContributionHandler extends
     }
 
     @Override
-    public void contributionUpdated(String id, VideoConversion contrib,
-            VideoConversion newOrigContrib) {
+    public void contributionUpdated(String id, VideoConversion contrib, VideoConversion newOrigContrib) {
         if (contrib.isEnabled()) {
             registry.put(id, contrib);
         } else {

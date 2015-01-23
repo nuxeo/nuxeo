@@ -27,14 +27,12 @@ import org.nuxeo.ecm.platform.video.VideoConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This class will create a Document of type "Video" from the uploaded file, if
- * the uploaded file matches any of the mime types listed in the
- * filemanager-plugins.xml file.
+ * This class will create a Document of type "Video" from the uploaded file, if the uploaded file matches any of the
+ * mime types listed in the filemanager-plugins.xml file.
  * <p>
- * If an existing document with the same title is found, it will overwrite it
- * and increment the version number if the overwrite flag is set to true;
- * Otherwise, it will generate a new title and create a new Document of type
- * Video with that title.
+ * If an existing document with the same title is found, it will overwrite it and increment the version number if the
+ * overwrite flag is set to true; Otherwise, it will generate a new title and create a new Document of type Video with
+ * that title.
  */
 public class VideoImporter extends AbstractFileImporter {
 
@@ -51,12 +49,10 @@ public class VideoImporter extends AbstractFileImporter {
     }
 
     @Override
-    public void updateDocument(DocumentModel doc, Blob content)
-            throws ClientException {
+    public void updateDocument(DocumentModel doc, Blob content) throws ClientException {
         super.updateDocument(doc, content);
         // update the icon
-        Type type = Framework.getLocalService(TypeManager.class).getType(
-                doc.getType());
+        Type type = Framework.getLocalService(TypeManager.class).getType(doc.getType());
         if (type != null) {
             doc.setProperty("common", "icon", type.getIcon());
         }

@@ -51,13 +51,12 @@ import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Converter to extract a list of equally spaced JPEG thumbnails to represent
- * the story-line of a movie file using the ffmpeg commandline tool.
+ * Converter to extract a list of equally spaced JPEG thumbnails to represent the story-line of a movie file using the
+ * ffmpeg commandline tool.
  *
  * @author ogrisel
  */
-public class StoryboardConverter extends BaseVideoConverter implements
-        Converter {
+public class StoryboardConverter extends BaseVideoConverter implements Converter {
 
     public static final Log log = LogFactory.getLog(StoryboardConverter.class);
 
@@ -99,8 +98,7 @@ public class StoryboardConverter extends BaseVideoConverter implements
     }
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         File outFolder = null;
         InputFile inputFile = null;
@@ -113,8 +111,7 @@ public class StoryboardConverter extends BaseVideoConverter implements
         List<String> comments = new ArrayList<String>();
         properties.put("timecodes", (Serializable) timecodes);
         properties.put("comments", (Serializable) comments);
-        SimpleBlobHolderWithProperties bh = new SimpleBlobHolderWithProperties(
-                blobs, properties);
+        SimpleBlobHolderWithProperties bh = new SimpleBlobHolderWithProperties(blobs, properties);
         try {
             blob = blobHolder.getBlob();
             inputFile = new InputFile(blob);
@@ -124,14 +121,11 @@ public class StoryboardConverter extends BaseVideoConverter implements
             outFolder.mkdir();
 
             CmdParameters params = new CmdParameters();
-            params.addNamedParameter(INPUT_FILE_PATH_PARAMETER,
-                    inputFile.file.getAbsolutePath());
+            params.addNamedParameter(INPUT_FILE_PATH_PARAMETER, inputFile.file.getAbsolutePath());
 
             Double duration = (Double) parameters.get("duration");
             if (duration == null) {
-                log.warn(String.format(
-                        "Cannot extract storyboard for file '%s'"
-                                + " with missing duration info.",
+                log.warn(String.format("Cannot extract storyboard for file '%s'" + " with missing duration info.",
                         blob.getFilename()));
                 return bh;
             }
@@ -142,54 +136,41 @@ public class StoryboardConverter extends BaseVideoConverter implements
             // add the command line parameters for the storyboard extraction and
             // run it
             for (int i = 0; i < numberOfThumbnails; i++) {
-                long timecode = Double.valueOf(
-                        Math.floor(i * duration / numberOfThumbnails)).longValue();
-                File outSubFolder = new File(outFolder,
-                        String.format("%04d", i));
+                long timecode = Double.valueOf(Math.floor(i * duration / numberOfThumbnails)).longValue();
+                File outSubFolder = new File(outFolder, String.format("%04d", i));
                 outSubFolder.mkdir();
                 File outFile = new File(outSubFolder, "video-thumb-%04d.jpeg");
-                params.addNamedParameter(OUTPUT_FILE_PATH_PARAMETER,
-                        outFile.getAbsolutePath());
-                params.addNamedParameter(POSITION_PARAMETER,
-                        String.valueOf(timecode));
-                params.addNamedParameter(WIDTH_PARAM,
-                        commonParams.get(WIDTH_PARAM));
-                params.addNamedParameter(HEIGHT_PARAM,
-                        commonParams.get(HEIGHT_PARAM));
-                ExecResult result = cleService.execCommand(
-                        FFMPEG_SCREENSHOT_RESIZE_COMMAND, params);
+                params.addNamedParameter(OUTPUT_FILE_PATH_PARAMETER, outFile.getAbsolutePath());
+                params.addNamedParameter(POSITION_PARAMETER, String.valueOf(timecode));
+                params.addNamedParameter(WIDTH_PARAM, commonParams.get(WIDTH_PARAM));
+                params.addNamedParameter(HEIGHT_PARAM, commonParams.get(HEIGHT_PARAM));
+                ExecResult result = cleService.execCommand(FFMPEG_SCREENSHOT_RESIZE_COMMAND, params);
 
                 if (!result.isSuccessful()) {
                     throw result.getError();
                 }
 
-                List<File> thumbs = new ArrayList<File>(FileUtils.listFiles(
-                        outSubFolder, new String[] { "jpeg" }, false));
+                List<File> thumbs = new ArrayList<File>(FileUtils.listFiles(outSubFolder, new String[] { "jpeg" },
+                        false));
                 if (thumbs.isEmpty()) {
                     String commandLine = result.getCommandLine();
                     log.error("Error executing command: " + commandLine);
                     String output = StringUtils.join(result.getOutput(), "\n");
                     log.error(output);
-                    throw new ConversionException(String.format(
-                            "Failed taking storyboard screenshot for"
-                                    + " video file '%s' with command: %s",
-                            blob.getFilename(), commandLine));
+                    throw new ConversionException(String.format("Failed taking storyboard screenshot for"
+                            + " video file '%s' with command: %s", blob.getFilename(), commandLine));
                 }
-                Blob thumbBlob = StreamingBlob.createFromStream(
-                        new FileInputStream(thumbs.get(0)), "image/jpeg").persist();
-                thumbBlob.setFilename(String.format("%05d.000-seconds.jpeg",
-                        timecode));
+                Blob thumbBlob = StreamingBlob.createFromStream(new FileInputStream(thumbs.get(0)), "image/jpeg").persist();
+                thumbBlob.setFilename(String.format("%05d.000-seconds.jpeg", timecode));
                 blobs.add(thumbBlob);
                 timecodes.add(Double.valueOf(timecode));
                 comments.add(String.format("%s %d", blob.getFilename(), i));
             }
             return bh;
-        } catch (IOException | CommandNotAvailable | ClientException
-                | CommandException e) {
+        } catch (IOException | CommandNotAvailable | ClientException | CommandException e) {
             String msg;
             if (blob != null) {
-                msg = "Error extracting story board from '"
-                        + blob.getFilename() + "'";
+                msg = "Error extracting story board from '" + blob.getFilename() + "'";
             } else {
                 msg = "conversion failed";
             }

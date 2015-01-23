@@ -79,10 +79,8 @@ public class TestVideoService extends SQLRepositoryTestCase {
         openSession();
 
         EventServiceAdmin eventServiceAdmin = Framework.getLocalService(EventServiceAdmin.class);
-        eventServiceAdmin.setListenerEnabledFlag("videoAutomaticConversions",
-                false);
-        eventServiceAdmin.setListenerEnabledFlag("sql-storage-binary-text",
-                false);
+        eventServiceAdmin.setListenerEnabledFlag("videoAutomaticConversions", false);
+        eventServiceAdmin.setListenerEnabledFlag("sql-storage-binary-text", false);
 
         videoService = Framework.getLocalService(VideoService.class);
     }
@@ -96,8 +94,7 @@ public class TestVideoService extends SQLRepositoryTestCase {
     @Test
     public void testVideoConversion() throws IOException, ClientException {
         Video video = getTestVideo();
-        TranscodedVideo transcodedVideo = videoService.convert(video,
-                "WebM 480p");
+        TranscodedVideo transcodedVideo = videoService.convert(video, "WebM 480p");
         assertNotNull(transcodedVideo);
         assertEquals("video/webm", transcodedVideo.getBlob().getMimeType());
         assertTrue(transcodedVideo.getBlob().getFilename().endsWith("webm"));
@@ -110,10 +107,8 @@ public class TestVideoService extends SQLRepositoryTestCase {
     }
 
     protected static Video getTestVideo() throws IOException {
-        InputStream is = TestVideoService.class.getResourceAsStream("/"
-                + DELTA_MP4);
-        assertNotNull(String.format("Failed to load resource: " + DELTA_MP4),
-                is);
+        InputStream is = TestVideoService.class.getResourceAsStream("/" + DELTA_MP4);
+        assertNotNull(String.format("Failed to load resource: " + DELTA_MP4), is);
         Blob blob = StreamingBlob.createFromStream(is, "video/mp4");
         blob.setFilename(FilenameUtils.getName(DELTA_MP4));
         blob = blob.persist();
@@ -132,19 +127,16 @@ public class TestVideoService extends SQLRepositoryTestCase {
     @Test
     // temporary ignore
     @Ignore
-    public void testAsynchronousVideoConversion() throws IOException,
-            ClientException, InterruptedException {
+    public void testAsynchronousVideoConversion() throws IOException, ClientException, InterruptedException {
         Video video = getTestVideo();
-        DocumentModel doc = session.createDocumentModel("/", "video",
-                VIDEO_TYPE);
+        DocumentModel doc = session.createDocumentModel("/", "video", VIDEO_TYPE);
         doc.setPropertyValue("file:content", (Serializable) video.getBlob());
         doc = session.createDocument(doc);
         session.save();
 
         videoService.launchConversion(doc, "WebM 480p");
 
-        while (videoService.getProgressStatus(doc.getRepositoryName(),
-                doc.getId(), "WebM 480p") != null) {
+        while (videoService.getProgressStatus(doc.getRepositoryName(), doc.getId(), "WebM 480p") != null) {
             // wait for the conversion to complete
             Thread.sleep(2000);
         }
