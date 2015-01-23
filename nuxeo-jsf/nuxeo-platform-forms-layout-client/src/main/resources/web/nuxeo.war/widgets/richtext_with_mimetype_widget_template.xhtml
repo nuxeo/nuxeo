@@ -60,7 +60,9 @@
           <nxu:editor id="#{widget.id}_editor" value="#{field_0}"
             width="#{width}" cols="#{cols}" height="#{height}"
             rows="#{rows}" editorSelector="#{editorSelector}"
-            disableHtmlInit="#{disableBinding}" />
+            disableHtmlInit="#{disableBinding}">
+            <nxu:validateDocumentConstraint />
+          </nxu:editor>
         </a4j:outputPanel>
       </nxu:set>
 
