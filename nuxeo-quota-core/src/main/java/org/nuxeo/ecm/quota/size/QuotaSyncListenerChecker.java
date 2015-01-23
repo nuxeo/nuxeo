@@ -508,9 +508,6 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             if (needRecompute) {
                 for (Property blobProperty : blobProperties) {
                     Blob blob = (Blob) blobProperty.getValue();
-                    if (blob != null && blob.getLength() < 0) {
-                        blob.persist();
-                    }
                     String schema = blobProperty.getParent().getSchema().getName();
                     String propName = blobProperty.getName();
 
