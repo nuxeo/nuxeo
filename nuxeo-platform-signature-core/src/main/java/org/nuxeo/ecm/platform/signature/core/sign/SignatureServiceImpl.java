@@ -310,10 +310,6 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
         File outputFile = null;
         FileBlob blob = null;
         try {
-            if (!pdfBlob.isPersistent()) {
-                pdfBlob = pdfBlob.persist(); // we'll read it several times
-            }
-
             outputFile = File.createTempFile("signed-", ".pdf");
             blob = new FileBlob(outputFile, MIME_TYPE_PDF);
             Framework.trackFile(outputFile, blob);
