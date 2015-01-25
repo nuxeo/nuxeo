@@ -28,6 +28,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -77,7 +78,7 @@ public class DeckJSPDFOperation {
         fw.flush();
         fw.close();
 
-        FileBlob indexBlob = new FileBlob(index);
+        Blob indexBlob = Blobs.createBlob(index);
         indexBlob.setFilename(blob.getFilename());
         BlobHolder bh = conversionService.convert("deckJSToPDF", new SimpleCachableBlobHolder(indexBlob), null);
         FileUtils.deleteDirectory(workingDir);

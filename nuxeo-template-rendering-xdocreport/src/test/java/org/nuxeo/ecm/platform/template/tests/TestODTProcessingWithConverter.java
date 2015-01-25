@@ -1,5 +1,10 @@
 package org.nuxeo.ecm.platform.template.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -12,8 +17,8 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.convert.ConvertHelper;
@@ -26,8 +31,6 @@ import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
-
-import static org.junit.Assert.*;
 
 public class TestODTProcessingWithConverter extends SQLRepositoryTestCase {
 
@@ -91,7 +94,7 @@ public class TestODTProcessingWithConverter extends SQLRepositoryTestCase {
         templateDoc = session.createDocumentModel(root.getPathAsString(), "templatedDoc", "TemplateSource");
         templateDoc.setProperty("dublincore", "title", "MyTemplate");
         File file = FileUtils.getResourceFileFromContext("data/Container.odt");
-        Blob fileBlob = new FileBlob(file);
+        Blob fileBlob = Blobs.createBlob(file);
         fileBlob.setFilename("Container.odt");
         templateDoc.setProperty("file", "content", fileBlob);
         templateDoc.setPropertyValue("tmpl:templateName", TEMPLATE_NAME);
@@ -104,13 +107,13 @@ public class TestODTProcessingWithConverter extends SQLRepositoryTestCase {
         testDoc.setProperty("dublincore", "description", "Simple note sample");
 
         File mdfile = FileUtils.getResourceFileFromContext("data/MDSample.md");
-        Blob mdfileBlob = new FileBlob(mdfile);
+        Blob mdfileBlob = Blobs.createBlob(mdfile);
 
         testDoc.setPropertyValue("note:note", mdfileBlob.getString());
         testDoc.setPropertyValue("note:mime_type", "text/x-web-markdown");
 
         File imgFile = FileUtils.getResourceFileFromContext("data/android.jpg");
-        Blob imgBlob = new FileBlob(imgFile);
+        Blob imgBlob = Blobs.createBlob(imgFile);
         imgBlob.setFilename("android.jpg");
         imgBlob.setMimeType("image/jpeg");
 

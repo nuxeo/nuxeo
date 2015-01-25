@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.template.processors.AbstractBindingResolver;
 
 import fr.opensagres.xdocreport.core.document.SyntaxKind;
@@ -43,9 +43,8 @@ public class XDocReportBindingResolver extends AbstractBindingResolver {
             // manage a default picture : blank one :)
             try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("blank.png")) {
                 byte[] bin = FileUtils.readBytes(is);
-                blobValue = new ByteArrayBlob(bin);
+                blobValue = Blobs.createBlob(bin, "image/png");
                 blobValue.setFilename("blank.png");
-                blobValue.setMimeType("image/png");
             } catch (IOException e) {
                 log.error("Unable to read fake Blob", e);
             }

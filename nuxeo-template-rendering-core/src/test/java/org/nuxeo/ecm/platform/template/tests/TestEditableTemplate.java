@@ -1,21 +1,23 @@
 package org.nuxeo.ecm.platform.template.tests;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
+import java.io.Serializable;
 
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
-
-import static org.junit.Assert.*;
 
 public class TestEditableTemplate extends SQLRepositoryTestCase {
 
@@ -44,7 +46,7 @@ public class TestEditableTemplate extends SQLRepositoryTestCase {
                 "TemplateSource");
         templateDoc.setProperty("dublincore", "title", "MyTemplate");
         File file = FileUtils.getResourceFileFromContext("data/test.ftl");
-        Blob fileBlob = new FileBlob(file);
+        Blob fileBlob = Blobs.createBlob(file);
         fileBlob.setFilename("test.ftl");
         templateDoc.setProperty("file", "content", fileBlob);
         templateDoc.setPropertyValue("tmpl:templateName", TEMPLATE_NAME);
@@ -109,10 +111,10 @@ public class TestEditableTemplate extends SQLRepositoryTestCase {
         Blob localTemplate = (Blob) doc.getPropertyValue("file:content");
         assertNotNull(localTemplate);
 
-        StringBlob newTemplate = new StringBlob("Hello ${doc.id}");
+        Blob newTemplate = Blobs.createBlob("Hello ${doc.id}");
         newTemplate.setFilename("newTemplate.ftl");
 
-        doc.setPropertyValue("file:content", newTemplate);
+        doc.setPropertyValue("file:content", (Serializable) newTemplate);
         doc = session.saveDocument(doc);
         session.save();
 

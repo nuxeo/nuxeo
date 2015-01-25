@@ -27,7 +27,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.io.ExportConstants;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.AbstractDocumentReader;
@@ -73,7 +73,7 @@ public class XMLModelReader extends AbstractDocumentReader {
                     xdoc.setDocument(doc);
                     xdoc.setPath(new Path(modelName));
                 } else { // presume a blob
-                    xdoc.putBlob(file.getName(), new FileBlob(file));
+                    xdoc.putBlob(file.getName(), Blobs.createBlob(file));
                 }
             }
         }

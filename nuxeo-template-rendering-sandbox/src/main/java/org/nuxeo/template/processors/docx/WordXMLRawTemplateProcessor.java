@@ -34,9 +34,9 @@ import org.dom4j.tree.DefaultElement;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.InputType;
@@ -123,7 +123,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
         // clean up
         FileUtils.deleteTree(workingDir);
 
-        Blob newBlob = new FileBlob(newZipFile);
+        Blob newBlob = Blobs.createBlob(newZipFile);
         Framework.trackFile(newZipFile, newBlob);
         newBlob.setFilename(fileName);
 

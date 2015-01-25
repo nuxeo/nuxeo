@@ -1,12 +1,18 @@
 package org.nuxeo.ecm.platform.template.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.template.api.TemplateProcessor;
@@ -17,8 +23,6 @@ import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 import org.nuxeo.template.processors.fm.FreeMarkerProcessor;
 import org.nuxeo.template.processors.xslt.XSLTProcessor;
 import org.nuxeo.template.service.TemplateProcessorComponent;
-
-import static org.junit.Assert.*;
 
 public class TestService extends NXRuntimeTestCase {
 
@@ -52,7 +56,7 @@ public class TestService extends NXRuntimeTestCase {
         assertEquals(FreeMarkerProcessor.class.getSimpleName(), desc.getProcessor().getClass().getSimpleName());
         assertEquals(false, desc.isDefaultProcessor());
 
-        Blob fakeBlob = new StringBlob("Empty");
+        Blob fakeBlob = Blobs.createBlob("Empty");
 
         fakeBlob.setFilename("bidon.docx");
         assertNotNull(tps.findProcessor(fakeBlob));
@@ -113,7 +117,7 @@ public class TestService extends NXRuntimeTestCase {
         assertNotNull(tps.getProcessor("Freemarker"));
         assertNotNull(tps.getProcessor("XSLTProcessor"));
 
-        Blob fakeBlob = new StringBlob("Empty");
+        Blob fakeBlob = Blobs.createBlob("Empty");
         fakeBlob.setFilename("bidon.ftl");
 
         TemplateProcessor processor = tps.findProcessor(fakeBlob);

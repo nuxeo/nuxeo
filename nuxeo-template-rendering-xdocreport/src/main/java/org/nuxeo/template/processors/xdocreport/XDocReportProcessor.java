@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.runtime.api.Framework;
@@ -30,7 +31,7 @@ import fr.opensagres.xdocreport.template.formatter.FieldsMetadata;
 
 /**
  * XDocReport based {@link TemplateProcessor}
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class XDocReportProcessor extends AbstractTemplateProcessor implements TemplateProcessor {
@@ -137,7 +138,7 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements Te
 
         report.process(context, out);
 
-        Blob newBlob = new FileBlob(generated);
+        Blob newBlob = Blobs.createBlob(generated);
 
         String templateFileName = sourceTemplateBlob.getFilename();
 

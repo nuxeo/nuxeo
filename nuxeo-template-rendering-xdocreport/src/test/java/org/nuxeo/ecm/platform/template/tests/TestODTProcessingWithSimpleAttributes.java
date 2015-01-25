@@ -1,14 +1,17 @@
 package org.nuxeo.ecm.platform.template.tests;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.processors.xdocreport.ZipXmlHelper;
+
 import static org.junit.Assert.*;
 
 public class TestODTProcessingWithSimpleAttributes extends SimpleTemplateDocTestCase {
@@ -36,11 +39,11 @@ public class TestODTProcessingWithSimpleAttributes extends SimpleTemplateDocTest
     }
 
     @Override
-    protected Blob getTemplateBlob() {
+    protected Blob getTemplateBlob() throws IOException {
         File file = FileUtils.getResourceFileFromContext("data/DocumentsAttributes.odt");
-        Blob fileBlob = new FileBlob(file);
-        fileBlob.setFilename("DocumentsAttributes.odt");
-        return fileBlob;
+        Blob blob = Blobs.createBlob(file);
+        blob.setFilename("DocumentsAttributes.odt");
+        return blob;
     }
 
 }

@@ -1,7 +1,7 @@
 package org.nuxeo.template.xdocreport.jaxrs;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 import fr.opensagres.xdocreport.remoting.resources.domain.LargeBinaryData;
@@ -31,8 +31,7 @@ public class BinaryDataWrapper {
     }
 
     public static LargeBinaryData wrapXml(String xml, String fileName) throws Exception {
-        StringBlob blob = new StringBlob(xml, "text/xml");
-        blob.setFilename(fileName);
+        Blob blob = Blobs.createBlob(xml, "text/xml", null, fileName);
         return wrap(blob);
     }
 

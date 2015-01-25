@@ -4,15 +4,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.plugins.text.extractors.XL2TextConverter;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
@@ -72,11 +73,11 @@ public class TestJXLSProcessingWithLoops extends SimpleTemplateDocTestCase {
     }
 
     @Override
-    protected Blob getTemplateBlob() {
+    protected Blob getTemplateBlob() throws IOException {
         File file = FileUtils.getResourceFileFromContext("data/jxls_simpleloop.xls");
-        Blob fileBlob = new FileBlob(file);
-        fileBlob.setFilename("jxls_simpletest.xls");
-        return fileBlob;
+        Blob blob = Blobs.createBlob(file);
+        blob.setFilename("jxls_simpletest.xls");
+        return blob;
     }
 
 }

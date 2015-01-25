@@ -1,14 +1,14 @@
 package org.nuxeo.ecm.platform.template.tests;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.List;
 
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.template.XMLSerializer;
 import org.nuxeo.template.api.TemplateInput;
@@ -28,7 +28,7 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
         XDocReportProcessor processor = new XDocReportProcessor();
         File file = FileUtils.getResourceFileFromContext("data/testDoc.docx");
 
-        List<TemplateInput> inputs = processor.getInitialParametersDefinition(new FileBlob(file));
+        List<TemplateInput> inputs = processor.getInitialParametersDefinition(Blobs.createBlob(file));
 
         String[] expectedVars = new String[] { "StringVar", "DateVar", "Description", "BooleanVar" };
 
@@ -70,7 +70,7 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
         XDocReportProcessor processor = new XDocReportProcessor();
         File file = FileUtils.getResourceFileFromContext("data/testDoc.odt");
 
-        List<TemplateInput> inputs = processor.getInitialParametersDefinition(new FileBlob(file));
+        List<TemplateInput> inputs = processor.getInitialParametersDefinition(Blobs.createBlob(file));
 
         String[] expectedVars = new String[] { "StringVar", "DateVar", "Description", "BooleanVar" };
 
@@ -115,7 +115,7 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
         XDocReportProcessor processor = new XDocReportProcessor();
         File file = FileUtils.getResourceFileFromContext("data/brokenVariables.docx");
 
-        List<TemplateInput> inputs = processor.getInitialParametersDefinition(new FileBlob(file));
+        List<TemplateInput> inputs = processor.getInitialParametersDefinition(Blobs.createBlob(file));
 
         // only one variable because of broken MERGEFIELD
         String[] expectedVars = new String[] { "func", };

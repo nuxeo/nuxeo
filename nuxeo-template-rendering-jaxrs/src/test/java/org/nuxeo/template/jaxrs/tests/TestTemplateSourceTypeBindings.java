@@ -9,8 +9,8 @@ import java.util.List;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
@@ -42,7 +42,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         DocumentModel templateDoc = session.createDocumentModel(root.getPathAsString(), name, "TemplateSource");
         templateDoc.setProperty("dublincore", "title", name);
         File file = FileUtils.getResourceFileFromContext("data/testDoc.odt");
-        Blob fileBlob = new FileBlob(file);
+        Blob fileBlob = Blobs.createBlob(file);
         fileBlob.setFilename("testDoc.odt");
         templateDoc.setProperty("file", "content", fileBlob);
         templateDoc = session.createDocument(templateDoc);

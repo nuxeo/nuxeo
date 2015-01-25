@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +13,8 @@ import java.util.Map;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
@@ -139,9 +140,9 @@ public class TestXDocReportDOCXProcessing extends SimpleTemplateDocTestCase {
     }
 
     @Override
-    protected Blob getTemplateBlob() {
+    protected Blob getTemplateBlob() throws IOException {
         File file = FileUtils.getResourceFileFromContext("data/testDoc.docx");
-        Blob fileBlob = new FileBlob(file);
+        Blob fileBlob = Blobs.createBlob(file);
         fileBlob.setFilename("testDoc.docx");
         return fileBlob;
     }

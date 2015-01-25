@@ -1,6 +1,10 @@
 package org.nuxeo.template.processors.tests;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -9,16 +13,14 @@ import java.util.List;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.plugins.text.extractors.XL2TextConverter;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.processors.jxls.JXLSTemplateProcessor;
-
-import static org.junit.Assert.*;
 
 public class TestJXLSProcessing extends SimpleTemplateDocTestCase {
 
@@ -59,11 +61,11 @@ public class TestJXLSProcessing extends SimpleTemplateDocTestCase {
     }
 
     @Override
-    protected Blob getTemplateBlob() {
+    protected Blob getTemplateBlob() throws IOException {
         File file = FileUtils.getResourceFileFromContext("data/jxls_simpletest.xls");
-        Blob fileBlob = new FileBlob(file);
-        fileBlob.setFilename("jxls_simpletest.xls");
-        return fileBlob;
+        Blob blob = Blobs.createBlob(file);
+        blob.setFilename("jxls_simpletest.xls");
+        return blob;
     }
 
 }

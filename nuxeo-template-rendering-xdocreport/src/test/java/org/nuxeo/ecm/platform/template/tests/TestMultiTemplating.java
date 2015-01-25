@@ -1,6 +1,12 @@
 package org.nuxeo.ecm.platform.template.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,15 +14,14 @@ import java.util.List;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.processors.xdocreport.ZipXmlHelper;
-import static org.junit.Assert.*;
 
 public class TestMultiTemplating extends SQLRepositoryTestCase {
 
@@ -48,18 +53,18 @@ public class TestMultiTemplating extends SQLRepositoryTestCase {
         super.tearDown();
     }
 
-    protected Blob getODTTemplateBlob() {
+    protected Blob getODTTemplateBlob() throws IOException {
         File file = FileUtils.getResourceFileFromContext("data/DocumentsAttributes.odt");
-        Blob fileBlob = new FileBlob(file);
-        fileBlob.setFilename("DocumentsAttributes.odt");
-        return fileBlob;
+        Blob blob = Blobs.createBlob(file);
+        blob.setFilename("DocumentsAttributes.odt");
+        return blob;
     }
 
-    protected Blob getFTLTemplateBlob() {
+    protected Blob getFTLTemplateBlob() throws IOException {
         File file = FileUtils.getResourceFileFromContext("data/test.ftl");
-        Blob fileBlob = new FileBlob(file);
-        fileBlob.setFilename("test.ftl");
-        return fileBlob;
+        Blob blob = Blobs.createBlob(file);
+        blob.setFilename("test.ftl");
+        return blob;
     }
 
     protected void setupTestDocs() throws Exception {

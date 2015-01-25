@@ -1,19 +1,22 @@
 package org.nuxeo.ecm.platform.template.tests;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.processors.xdocreport.XDocReportProcessor;
 import org.nuxeo.template.processors.xdocreport.ZipXmlHelper;
-import static org.junit.Assert.*;
 
 public class TestXDocReportODSProcessing extends SimpleTemplateDocTestCase {
 
@@ -43,9 +46,9 @@ public class TestXDocReportODSProcessing extends SimpleTemplateDocTestCase {
     }
 
     @Override
-    protected Blob getTemplateBlob() {
+    protected Blob getTemplateBlob() throws IOException {
         File file = FileUtils.getResourceFileFromContext("data/testODS.ods");
-        Blob fileBlob = new FileBlob(file);
+        Blob fileBlob = Blobs.createBlob(file);
         fileBlob.setFilename("testODS.odt");
         return fileBlob;
     }

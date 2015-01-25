@@ -33,8 +33,8 @@ import net.sf.jooreports.templates.DocumentTemplate;
 import net.sf.jooreports.templates.DocumentTemplateFactory;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
@@ -55,7 +55,7 @@ import org.nuxeo.template.processors.AbstractTemplateProcessor;
 /**
  * {@link TemplateProcessor} for ODT based templates. Using JODReports but also custom ODT hacks. May be migrated to
  * pure ODT + Custom Freemarker soon.
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
  */
 public class JODReportTemplateProcessor extends AbstractTemplateProcessor implements TemplateProcessor {
@@ -169,7 +169,7 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
 
         generated = modifier.updateArchive(workingDir, generated, blobsToInsert);
 
-        Blob newBlob = new FileBlob(generated);
+        Blob newBlob = Blobs.createBlob(generated);
         newBlob.setMimeType("application/vnd.oasis.opendocument.text");
         if (templateBasedDocument.getTemplateBlob(templateName) != null) {
             newBlob.setFilename(templateBasedDocument.getTemplateBlob(templateName).getFilename());

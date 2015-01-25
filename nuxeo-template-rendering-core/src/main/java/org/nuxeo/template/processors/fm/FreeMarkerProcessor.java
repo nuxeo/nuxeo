@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.runtime.api.Framework;
@@ -42,7 +42,7 @@ public class FreeMarkerProcessor extends AbstractTemplateProcessor implements Te
     protected final static Pattern HtmlTagPattern = Pattern.compile("<(\\S+?)(.*?)>(.*?)</\\1>",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 
-    protected String guessMimeType(StringBlob result, MimetypeRegistry mreg) throws Exception {
+    protected String guessMimeType(Blob result, MimetypeRegistry mreg) throws Exception {
 
         if (result == null) {
             return null;
@@ -61,7 +61,7 @@ public class FreeMarkerProcessor extends AbstractTemplateProcessor implements Te
         return mreg.getMimetypeFromBlobWithDefault(result, "text/plain");
     }
 
-    protected void setBlobAttributes(StringBlob result, TemplateBasedDocument templateBasedDocument) throws Exception {
+    protected void setBlobAttributes(Blob result, TemplateBasedDocument templateBasedDocument) throws Exception {
 
         // try to guess mimetype and extension of the resulting Blob
 
@@ -108,7 +108,7 @@ public class FreeMarkerProcessor extends AbstractTemplateProcessor implements Te
         StringWriter writer = new StringWriter();
         getEngine().render(fmTemplateKey, ctx, writer);
 
-        StringBlob result = new StringBlob(writer.toString());
+        Blob result = Blobs.createBlob(writer.toString());
         setBlobAttributes(result, templateBasedDocument);
 
         return result;

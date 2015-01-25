@@ -4,12 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
 public class TestIdentityProcessing extends SimpleTemplateDocTestCase {
@@ -37,11 +38,11 @@ public class TestIdentityProcessing extends SimpleTemplateDocTestCase {
     }
 
     @Override
-    protected Blob getTemplateBlob() {
+    protected Blob getTemplateBlob() throws IOException {
         File file = FileUtils.getResourceFileFromContext("data/testIdentity.bin");
-        Blob fileBlob = new FileBlob(file);
-        fileBlob.setFilename("testIdentity.bin");
-        return fileBlob;
+        Blob blob = Blobs.createBlob(file);
+        blob.setFilename("testIdentity.bin");
+        return blob;
     }
 
 }

@@ -1,6 +1,10 @@
 package org.nuxeo.ecm.platform.template.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,12 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
@@ -24,7 +26,7 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 public abstract class SimpleTemplateDocTestCase extends SQLRepositoryTestCase {
 
-    protected abstract Blob getTemplateBlob();
+    protected abstract Blob getTemplateBlob() throws IOException;
 
     protected static final String TEMPLATE_NAME = "mytestTemplate";
 
@@ -74,7 +76,7 @@ public abstract class SimpleTemplateDocTestCase extends SQLRepositoryTestCase {
 
         // add an image as first entry of files
         File imgFile = FileUtils.getResourceFileFromContext("data/android.jpg");
-        Blob imgBlob = new FileBlob(imgFile);
+        Blob imgBlob = Blobs.createBlob(imgFile);
         imgBlob.setFilename("android.jpg");
         List<Map<String, Serializable>> blobs = new ArrayList<Map<String, Serializable>>();
         Map<String, Serializable> blob1 = new HashMap<String, Serializable>();

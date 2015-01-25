@@ -1,11 +1,13 @@
 package org.nuxeo.ecm.platform.template.tests;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
@@ -19,7 +21,7 @@ public class TestXSLTProcessing extends SimpleTemplateDocTestCase {
         TemplateBasedDocument adapter = setupTestDocs();
 
         File file = FileUtils.getResourceFileFromContext("data/nuxeoremoting.wsdl");
-        Blob fileBlob = new FileBlob(file);
+        Blob fileBlob = Blobs.createBlob(file);
         fileBlob.setFilename("nuxeoremoting.wsdl");
 
         DocumentModel testDoc = adapter.getAdaptedDoc();
@@ -41,9 +43,9 @@ public class TestXSLTProcessing extends SimpleTemplateDocTestCase {
     }
 
     @Override
-    protected Blob getTemplateBlob() {
+    protected Blob getTemplateBlob() throws IOException {
         File file = FileUtils.getResourceFileFromContext("data/wsdl-viewer.xsl");
-        Blob fileBlob = new FileBlob(file);
+        Blob fileBlob = Blobs.createBlob(file);
         fileBlob.setFilename("wsdl-viewer.xsl");
         return fileBlob;
     }

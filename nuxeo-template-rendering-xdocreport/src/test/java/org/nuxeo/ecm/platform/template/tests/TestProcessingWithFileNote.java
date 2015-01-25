@@ -18,8 +18,8 @@ import org.dom4j.DocumentHelper;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
@@ -71,7 +71,7 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
         templateDoc = session.createDocumentModel(root.getPathAsString(), "templatedDoc", "TemplateSource");
         templateDoc.setProperty("dublincore", "title", "MyTemplate");
         File file = FileUtils.getResourceFileFromContext("data/Container.odt");
-        Blob fileBlob = new FileBlob(file);
+        Blob fileBlob = Blobs.createBlob(file);
         fileBlob.setFilename("Container.odt");
         templateDoc.setProperty("file", "content", fileBlob);
         templateDoc.setPropertyValue("tmpl:templateName", TEMPLATE_NAME);
@@ -83,13 +83,13 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
         testDoc.setProperty("dublincore", "description", "Simple note sample");
 
         File mdfile = FileUtils.getResourceFileFromContext("data/MDSample.md");
-        Blob mdfileBlob = new FileBlob(mdfile);
+        Blob mdfileBlob = Blobs.createBlob(mdfile);
 
         testDoc.setPropertyValue("note:note", mdfileBlob.getString());
         testDoc.setPropertyValue("note:mime_type", "text/x-web-markdown");
 
         File imgFile = FileUtils.getResourceFileFromContext("data/android.jpg");
-        Blob imgBlob = new FileBlob(imgFile);
+        Blob imgBlob = Blobs.createBlob(imgFile);
         imgBlob.setFilename("android.jpg");
         imgBlob.setMimeType("image/jpeg");
 

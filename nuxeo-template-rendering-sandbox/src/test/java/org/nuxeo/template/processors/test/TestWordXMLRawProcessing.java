@@ -1,5 +1,9 @@
 package org.nuxeo.template.processors.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,8 +12,8 @@ import java.util.List;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
@@ -18,8 +22,6 @@ import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessor;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.processors.docx.WordXMLRawTemplateProcessor;
-
-import static org.junit.Assert.*;
 
 public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
 
@@ -73,7 +75,7 @@ public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
         templateDoc.setProperty("dublincore", "title", "MyTemplate");
         templateDoc.setPropertyValue("tmpl:templateName", TEMPLATE_NAME);
         File file = FileUtils.getResourceFileFromContext("data/sample templatet.docx");
-        Blob fileBlob = new FileBlob(file);
+        Blob fileBlob = Blobs.createBlob(file);
         templateDoc.setProperty("file", "content", fileBlob);
         templateDoc = session.createDocument(templateDoc);
 
@@ -129,7 +131,7 @@ public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
     public void testParameterInit() throws Exception {
 
         File file = FileUtils.getResourceFileFromContext("data/sample templatet.docx");
-        Blob fileBlob = new FileBlob(file);
+        Blob fileBlob = Blobs.createBlob(file);
         fileBlob.setFilename("sample templatet.docx");
 
         TemplateProcessor processor = new WordXMLRawTemplateProcessor();
