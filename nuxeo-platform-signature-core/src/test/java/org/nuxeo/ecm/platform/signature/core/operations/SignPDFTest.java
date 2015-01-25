@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.signature.core.operations;
 
 import com.google.inject.Inject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +28,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -111,7 +113,7 @@ public class SignPDFTest {
     @Test
     public void testSignPDF() throws Exception {
         // first user signs
-        FileBlob origBlob = new FileBlob(origPdfFile);
+        Blob origBlob = Blobs.createBlob(origPdfFile);
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(origBlob);
         Map<String, Object> params = new HashMap<>();

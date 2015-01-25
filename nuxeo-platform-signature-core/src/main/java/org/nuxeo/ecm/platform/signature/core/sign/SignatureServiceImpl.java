@@ -44,13 +44,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.ListDiff;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.signature.api.exception.AlreadySignedException;
@@ -307,11 +307,9 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
     public Blob signPDF(Blob pdfBlob, DocumentModel user, String keyPassword, String reason) throws ClientException {
         CertService certService = Framework.getLocalService(CertService.class);
         CUserService cUserService = Framework.getLocalService(CUserService.class);
-        File outputFile = null;
-        FileBlob blob = null;
         try {
-            outputFile = File.createTempFile("signed-", ".pdf");
-            blob = new FileBlob(outputFile, MIME_TYPE_PDF);
+            File outputFile = File.createTempFile("signed-", ".pdf");
+            Blob blob = Blobs.createBlob(outputFile, MIME_TYPE_PDF);
             Framework.trackFile(outputFile, blob);
 
             PdfReader pdfReader = new PdfReader(pdfBlob.getStream());
