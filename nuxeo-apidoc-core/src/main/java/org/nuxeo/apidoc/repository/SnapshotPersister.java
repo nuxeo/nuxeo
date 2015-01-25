@@ -52,13 +52,13 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotFilter;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -268,7 +268,7 @@ public class SnapshotPersister {
             } else {
                 if (previousDocItem instanceof DocumentationItemDocAdapter) {
                     DocumentationItemDocAdapter existingDoc = (DocumentationItemDocAdapter) previousDocItem;
-                    Blob blob = new StringBlob(docItem.getContent());
+                    Blob blob = Blobs.createBlob(docItem.getContent());
                     Blob oldBlob = (Blob) existingDoc.getDocumentModel().getPropertyValue("file:content");
                     blob.setFilename(oldBlob.getFilename());
                     existingDoc.getDocumentModel().setPropertyValue("file:content", (Serializable) blob);

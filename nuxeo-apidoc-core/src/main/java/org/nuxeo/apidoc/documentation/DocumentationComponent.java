@@ -38,6 +38,7 @@ import org.nuxeo.apidoc.search.ArtifactSearcherImpl;
 import org.nuxeo.apidoc.security.SecurityConstants;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -46,7 +47,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -289,10 +289,8 @@ public class DocumentationComponent extends DefaultComponent implements Document
 
         doc.setPathInfo(getDocumentationRoot(session).getPathAsString(), name);
         doc.setPropertyValue("dc:title", title);
-        Blob blob = new StringBlob(content);
+        Blob blob = Blobs.createBlob(content);
         blob.setFilename(type);
-        blob.setMimeType("text/plain");
-        blob.setEncoding("utf-8");
         doc.setPropertyValue("file:content", (Serializable) blob);
         doc.setPropertyValue(DocumentationItem.PROP_TARGET, item.getId());
         doc.setPropertyValue(DocumentationItem.PROP_TARGET_TYPE, item.getArtifactType());
@@ -328,10 +326,8 @@ public class DocumentationComponent extends DefaultComponent implements Document
     protected DocumentModel updateDocumentModel(DocumentModel doc, DocumentationItem item) throws ClientException {
 
         doc.setPropertyValue("dc:title", item.getTitle());
-        Blob content = new StringBlob(item.getContent());
-        content.setMimeType("text/plain");
+        Blob content = Blobs.createBlob(item.getContent());
         content.setFilename(item.getTypeLabel());
-        content.setEncoding("utf-8");
         doc.setPropertyValue("file:content", (Serializable) content);
         doc.setPropertyValue(DocumentationItem.PROP_DOCUMENTATION_ID, item.getId());
         doc.setPropertyValue(DocumentationItem.PROP_NUXEO_APPROVED, Boolean.valueOf(item.isApproved()));
@@ -343,10 +339,8 @@ public class DocumentationComponent extends DefaultComponent implements Document
         if (attData != null && attData.size() > 0) {
             for (String fileName : attData.keySet()) {
                 Map<String, Serializable> fileItem = new HashMap<String, Serializable>();
-                Blob blob = new StringBlob(attData.get(fileName));
+                Blob blob = Blobs.createBlob(attData.get(fileName));
                 blob.setFilename(fileName);
-                blob.setMimeType("text/plain");
-                blob.setEncoding("utf-8");
 
                 fileItem.put("file", (Serializable) blob);
                 fileItem.put("filename", fileName);

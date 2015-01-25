@@ -26,11 +26,11 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements BundleInfo {
 
@@ -54,9 +54,8 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         doc.setPropertyValue(PROP_JAR_NAME, bundleInfo.getFileName());
         String manifest = bundleInfo.getManifest();
         if (manifest != null) {
-            Blob manifestBlob = new StringBlob(manifest);
+            Blob manifestBlob = Blobs.createBlob(manifest);
             manifestBlob.setFilename("MANIFEST.MF");
-            manifestBlob.setMimeType("text/plain");
             doc.setPropertyValue("file:content", (Serializable) manifestBlob);
         }
 

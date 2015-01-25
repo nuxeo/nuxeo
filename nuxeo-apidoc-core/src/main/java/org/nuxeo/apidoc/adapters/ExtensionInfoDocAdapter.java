@@ -31,11 +31,11 @@ import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.apidoc.documentation.XMLContributionParser;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.model.ComponentName;
 
 public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ExtensionInfo {
@@ -60,9 +60,7 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         doc.setPropertyValue(PROP_EXTENSION_POINT, xi.getExtensionPoint());
         doc.setPropertyValue(PROP_TARGET_COMPONENT_NAME, xi.getTargetComponentName().getName());
 
-        Blob xmlBlob = new StringBlob(xi.getXml());
-        xmlBlob.setFilename("contrib.xml"); // !!!!!
-        xmlBlob.setMimeType("text/xml");
+        Blob xmlBlob = Blobs.createBlob(xi.getXml(), "text/xml", null, "contrib.xml"); // !!!!!
         doc.setPropertyValue("file:content", (Serializable) xmlBlob);
 
         if (exist) {

@@ -32,12 +32,12 @@ import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ComponentInfo {
 
@@ -66,9 +66,8 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         doc.setPropertyValue(PROP_IS_XML, Boolean.valueOf(componentInfo.isXmlPureComponent()));
         doc.setPropertyValue(PROP_SERVICES, (Serializable) componentInfo.getServiceNames());
 
-        Blob xmlBlob = new StringBlob(componentInfo.getXmlFileContent());
-        xmlBlob.setFilename(componentInfo.getXmlFileName());
-        xmlBlob.setMimeType("text/xml");
+        Blob xmlBlob = Blobs.createBlob(componentInfo.getXmlFileContent(), "text/xml", null,
+                componentInfo.getXmlFileName());
         doc.setPropertyValue("file:content", (Serializable) xmlBlob);
 
         if (exist) {

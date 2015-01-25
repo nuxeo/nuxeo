@@ -16,6 +16,7 @@
  */
 package org.nuxeo.apidoc.browse;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -37,9 +38,9 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.doc.SimpleDocumentationItem;
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -232,7 +233,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         } else {
             DocumentModel doc = getContext().getCoreSession().getDocument(new IdRef(editId));
             doc.setPropertyValue("dc:title", title);
-            doc.setPropertyValue("file:content", new StringBlob(content));
+            doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob(content));
             DocumentationItem item = doc.getAdapter(DocumentationItem.class);
 
             ds.updateDocumentationItem(getContext().getCoreSession(), item);
