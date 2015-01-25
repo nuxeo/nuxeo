@@ -12,7 +12,6 @@
  */
 package org.nuxeo.ecm.platform.audio.extension;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,11 +27,11 @@ import org.jaudiotagger.tag.id3.ID3v23Frame;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyAPIC;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactory;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 
@@ -60,8 +59,12 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
         }
         if (thumbnailBlob == null) {
             TypeInfo docType = doc.getAdapter(TypeInfo.class);
-            return new FileBlob(FileUtils.getResourceFileFromContext("nuxeo.war" + File.separator
-                    + docType.getBigIcon()));
+            try {
+                return Blobs.createBlob(FileUtils.getResourceFileFromContext("nuxeo.war" + File.separator
+                        + docType.getBigIcon()));
+            } catch (IOException e) {
+                throw new ClientException(e);
+            }
         }
         return thumbnailBlob;
     }
@@ -71,11 +74,11 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
     public Blob computeThumbnail(DocumentModel doc, CoreSession session) {
         Blob thumbnailBlob = null;
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
-        FileBlob fileBlob;
+        Blob fileBlob;
         try {
             // Get the cover art of the audio file if ID3v2 exist
             try (InputStream in = bh.getBlob().getStream()) {
-                fileBlob = new FileBlob(in);
+                fileBlob = Blobs.createBlob(in);
             }
             MP3File file = new MP3File(fileBlob.getFile());
             if (file.hasID3v2Tag()) {
@@ -83,8 +86,7 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
                 if (it != null && it.hasNext()) {
                     ID3v23Frame id3v2 = (ID3v23Frame) it.next();
                     FrameBodyAPIC framePic = (FrameBodyAPIC) id3v2.getBody();
-                    InputStream is = new ByteArrayInputStream(framePic.getImageData());
-                    thumbnailBlob = new FileBlob(is);
+                    thumbnailBlob = Blobs.createBlob(framePic.getImageData());
                 }
             }
         } catch (IOException | TagException | InvalidAudioFrameException | ReadOnlyFileException | ClientException e) {
