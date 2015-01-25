@@ -35,11 +35,12 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
@@ -205,9 +206,9 @@ public class LayoutDemoContext implements Serializable {
             doc.setPropertyValue("lds:dateField", Calendar.getInstance());
             doc.setPropertyValue("lds:intField", new Integer(666));
             doc.setPropertyValue("lds:booleanField", Boolean.FALSE);
-            StringBlob blob = new StringBlob("Hello!\nThis is a sample text.", "text/plain", "UTF-8");
+            Blob blob = Blobs.createBlob("Hello!\nThis is a sample text.");
             blob.setFilename("hello.txt");
-            doc.setPropertyValue("lds:fileField", blob);
+            doc.setPropertyValue("lds:fileField", (Serializable) blob);
 
             // complex props
             ArrayList<Map<String, Serializable>> cl = new ArrayList<Map<String, Serializable>>();
@@ -245,9 +246,9 @@ public class LayoutDemoContext implements Serializable {
             doc.setPropertyValue("lds:dateField", Calendar.getInstance());
             doc.setPropertyValue("lds:intField", new Integer(667));
             doc.setPropertyValue("lds:booleanField", Boolean.TRUE);
-            StringBlob blob = new StringBlob("Hello!\nThis is another sample text.", "text/plain", "UTF-8");
+            Blob blob = Blobs.createBlob("Hello!\nThis is another sample text.");
             blob.setFilename("hello-again.txt");
-            doc.setPropertyValue("lds:fileField", blob);
+            doc.setPropertyValue("lds:fileField", (Serializable) blob);
         }
         return doc;
     }
