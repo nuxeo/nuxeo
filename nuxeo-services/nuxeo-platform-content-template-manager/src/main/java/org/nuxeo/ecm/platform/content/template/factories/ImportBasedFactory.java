@@ -29,9 +29,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.content.template.service.ACEDescriptor;
 import org.nuxeo.ecm.platform.content.template.service.TemplateItemDescriptor;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
@@ -147,7 +147,7 @@ public class ImportBasedFactory extends BaseContentFactory {
                 importBlob(childFile, createdFolder.getPathAsString());
             }
         } else {
-            Blob fb = new FileBlob(file);
+            Blob fb = Blobs.createBlob(file);
             fb.setFilename(file.getName());
             getFileManagerService().createDocumentFromBlob(session, fb, parentPath, overwrite, fb.getFilename());
         }

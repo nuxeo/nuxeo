@@ -30,6 +30,7 @@ import net.htmlparser.jericho.Source;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -74,7 +75,7 @@ public class Html2TextConverter implements Converter {
             text = text.replaceAll(" *\n", "\n"); // clean trailing spaces
             text = text.replaceAll("\\n\\n+", "\n\n"); // clean multiple lines
             text = text.trim();
-            return new SimpleCachableBlobHolder(new StringBlob(text, "text/plain"));
+            return new SimpleCachableBlobHolder(Blobs.createBlob(text));
         } catch (ClientException | IOException e) {
             throw new ConversionException("Error during Html2Text conversion", e);
         } finally {

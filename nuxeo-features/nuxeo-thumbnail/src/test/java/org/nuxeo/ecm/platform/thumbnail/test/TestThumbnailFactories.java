@@ -22,11 +22,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactory;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -53,9 +53,9 @@ import com.google.inject.Inject;
 @LocalDeploy({ "org.nuxeo.ecm.platform.thumbnail:test-thumbnail-factories-contrib.xml" })
 public class TestThumbnailFactories {
 
-    protected static Blob folderishThumbnail = new StringBlob("folderish");
+    protected static Blob folderishThumbnail = Blobs.createBlob("folderish");
 
-    protected static Blob defaultThumbnail = new StringBlob("default");
+    protected static Blob defaultThumbnail = Blobs.createBlob("default");
 
     @Inject
     CoreSession session;

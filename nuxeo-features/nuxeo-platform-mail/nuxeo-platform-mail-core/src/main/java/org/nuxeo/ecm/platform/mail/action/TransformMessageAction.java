@@ -37,7 +37,8 @@ import javax.mail.internet.MimeUtility;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 
 /**
  * Transforms the message using the transformer and puts it in the context under transformed.
@@ -230,7 +231,7 @@ public class TransformMessageAction implements MessageAction {
     private void setFile(String fileName, InputStream inputStream) throws IOException {
         log.debug("* adding attachment: " + fileName);
         Map<String, Object> map = new HashMap<String, Object>();
-        FileBlob fileBlob = new FileBlob(inputStream);
+        Blob fileBlob = Blobs.createBlob(inputStream);
         map.put("file", fileBlob);
         map.put("filename", fileName);
         files.add(map);

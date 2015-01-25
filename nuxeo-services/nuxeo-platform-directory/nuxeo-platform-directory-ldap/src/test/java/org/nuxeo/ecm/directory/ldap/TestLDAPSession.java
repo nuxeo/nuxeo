@@ -42,11 +42,10 @@ import java.util.Set;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.management.api.ProbeStatus;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -121,7 +120,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                     assertNotNull(avatar);
                     File file = FileUtils.getResourceFileFromContext("sample.jpg");
                     assertNotNull(file);
-                    FileBlob expectedBlob = new FileBlob(file);
+                    Blob expectedBlob = Blobs.createBlob(file);
                     assertTrue(Arrays.equals(expectedBlob.getByteArray(), avatar.getByteArray()));
                 }
             }
@@ -557,7 +556,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 if (!(this instanceof TestLDAPPOSIXSession)) {
                     // Create a fake certificate for the test
                     X509Certificate myCert = createCertificate("cn=Mister Untel");
-                    Blob cert = new ByteArrayBlob(myCert.getEncoded());
+                    Blob cert = Blobs.createBlob(myCert.getEncoded());
                     map.put("certificate", cert);
 
                     user = session.getEntry(session.createEntry(map).getId());

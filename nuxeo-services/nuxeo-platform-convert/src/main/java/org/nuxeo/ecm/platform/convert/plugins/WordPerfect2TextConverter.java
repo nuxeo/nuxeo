@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
@@ -45,7 +45,7 @@ public class WordPerfect2TextConverter extends CommandLineBasedConverter {
                 }
             }
         }
-        return new SimpleCachableBlobHolder(new StringBlob(sb.toString()));
+        return new SimpleCachableBlobHolder(Blobs.createBlob(sb.toString()));
     }
 
     @Override

@@ -71,7 +71,6 @@ import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WRITER;
 
 import java.awt.Point;
 import java.awt.color.ICC_Profile;
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -85,12 +84,12 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
@@ -421,7 +420,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         return (Blob) doc.getPropertyValue(String.format(CONTENT_XPATH, i));
     }
 
-    protected FileBlob crop(Blob blob, Map<String, Serializable> coords) throws ClientException {
+    protected Blob crop(Blob blob, Map<String, Serializable> coords) throws ClientException {
         try {
             BlobHolder bh = new SimpleBlobHolder(blob);
             String type = blob.getMimeType();
@@ -434,7 +433,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
 
             if (type != "image/png") {
                 bh = getConversionService().convert(OPERATION_CROP, bh, options);
-                return new FileBlob(bh.getBlob().getStream(), type);
+                return Blobs.createBlob(bh.getBlob().getStream(), type);
             }
         } catch (IOException e) {
             throw new ClientException("Crop failed", e);

@@ -48,6 +48,11 @@ public class StringBlob extends AbstractBlob implements Serializable {
         this.encoding = encoding;
     }
 
+    public StringBlob(String string, String mimeType, String encoding, String filename) {
+        this(string, mimeType, encoding);
+        setFilename(filename);
+    }
+
     @Override
     public long getLength() {
         try {

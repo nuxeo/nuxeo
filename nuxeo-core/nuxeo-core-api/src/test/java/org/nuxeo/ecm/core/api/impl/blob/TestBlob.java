@@ -30,6 +30,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -81,14 +82,14 @@ public class TestBlob extends NXRuntimeTestCase {
 
     @Test
     public void testFileBlobFromFile() throws Exception {
-        Blob blob = new FileBlob(new File(url.toURI()));
+        Blob blob = Blobs.createBlob(new File(url.toURI()));
         checkFileBlob(blob);
     }
 
     @Test
     public void testFileBlobFromStream() throws Exception {
         try (InputStream in = new FileInputStream(new File(url.toURI()))) {
-            Blob blob = new FileBlob(in);
+            Blob blob = Blobs.createBlob(in);
             checkFileBlob(blob);
         }
     }

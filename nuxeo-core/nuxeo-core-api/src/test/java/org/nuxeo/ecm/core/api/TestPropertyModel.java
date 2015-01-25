@@ -14,6 +14,12 @@
 
 package org.nuxeo.ecm.core.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -31,9 +37,6 @@ import java.util.Map.Entry;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.core.api.model.ValueExporter;
@@ -122,12 +125,12 @@ public class TestPropertyModel extends NXRuntimeTestCase {
 
         final FileName fileName = new FileName();
 
-        StringBlob blob;
+        Blob blob;
 
         HashMap<String, Serializable> getMap() {
             HashMap<String, Serializable> map = new HashMap<String, Serializable>();
             map.put("fileName", fileName.getMap());
-            map.put("blob", blob);
+            map.put("blob", (Serializable) blob);
             return map;
         }
     }
@@ -548,7 +551,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         Book book = new Book();
         BlobFile file = new BlobFile();
         file.fileName.extension = "xml";
-        file.blob = new StringBlob("abcdef", "plain/text", "UTF8");
+        file.blob = Blobs.createBlob("abcdef", "plain/text", "UTF8");
         book.file = file;
 
         dp.setValue(book.getMap());
@@ -558,7 +561,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         assertEquals(file.blob.getEncoding(), pblob.getValue("encoding"));
         assertEquals(file.blob.getMimeType(), pblob.getValue("mime-type"));
 
-        StringBlob blob = new StringBlob("xyz", "text/html", "UTF16");
+        Blob blob = Blobs.createBlob("xyz", "text/html", "UTF16");
         pblob.setValue(blob);
         assertEquals(blob.getEncoding(), pblob.getValue("encoding"));
         assertEquals(blob.getMimeType(), pblob.getValue("mime-type"));
@@ -578,7 +581,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         Book book = new Book();
         BlobFile file = new BlobFile();
         file.fileName.extension = "xml";
-        file.blob = new StringBlob("abcdef", "plain/text");
+        file.blob = Blobs.createBlob("abcdef", "plain/text");
         book.file = file;
 
         dp.setValue(book.getMap());

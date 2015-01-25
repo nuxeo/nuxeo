@@ -23,12 +23,11 @@ import java.util.zip.ZipInputStream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
@@ -74,9 +73,8 @@ public class TestExportImportZipArchive {
 
         docToExport.setProperty("dublincore", "description", XML_DATA);
 
-        Blob blob = new StringBlob("SomeDummyContent");
+        Blob blob = Blobs.createBlob("SomeDummyContent");
         blob.setFilename("dummyBlob.txt");
-        blob.setMimeType("text/plain");
         docToExport.setProperty("file", "content", blob);
 
         docToExport = session.createDocument(docToExport);

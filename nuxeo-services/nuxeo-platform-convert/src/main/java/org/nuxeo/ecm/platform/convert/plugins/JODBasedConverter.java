@@ -39,10 +39,9 @@ import org.artofsolving.jodconverter.document.DocumentFamily;
 import org.artofsolving.jodconverter.document.DocumentFormat;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
@@ -261,7 +260,7 @@ public class JODBasedConverter implements ExternalConverter {
                     // copy the files to a new tmp location, as we'll delete them
                     Blob blob;
                     try (FileInputStream in = new FileInputStream(file)) {
-                        blob = new FileBlob(in);
+                        blob = Blobs.createBlob(in);
                     }
                     blob.setFilename(file.getName());
                     blobs.add(blob);
@@ -269,7 +268,7 @@ public class JODBasedConverter implements ExternalConverter {
                     if (file.getName().equals(outFile.getName())) {
                         Blob indexBlob;
                         try (FileInputStream in = new FileInputStream(file)) {
-                            indexBlob = new FileBlob(in);
+                            indexBlob = Blobs.createBlob(in);
                         }
                         indexBlob.setFilename("index.html");
                         blobs.add(0, indexBlob);
@@ -284,7 +283,7 @@ public class JODBasedConverter implements ExternalConverter {
 
                 Blob blob;
                 try (FileInputStream in = new FileInputStream(outFile)) {
-                    blob = new FileBlob(in, getDestinationMimeType());
+                    blob = Blobs.createBlob(in, getDestinationMimeType());
                 }
                 blobs.add(blob);
             }
@@ -365,8 +364,8 @@ public class JODBasedConverter implements ExternalConverter {
                         "<META http-equiv=\"Content-Type\" content=\"text/html; charset=%s\">", charset);
                 StringBuilder sb = new StringBuilder(charsetMetaTag);
                 sb.append(new String(inputBlob.getByteArray(), charset));
-                Blob blobWithCharsetMetaTag = new StringBlob(sb.toString(), "text/html", charset);
-                blobWithCharsetMetaTag.setFilename(inputBlob.getFilename());
+                Blob blobWithCharsetMetaTag = Blobs.createBlob(sb.toString(), "text/html", charset,
+                        inputBlob.getFilename());
                 return blobWithCharsetMetaTag;
             }
         }

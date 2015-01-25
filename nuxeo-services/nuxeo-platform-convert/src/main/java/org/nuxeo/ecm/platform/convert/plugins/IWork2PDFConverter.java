@@ -27,8 +27,8 @@ import java.util.Map;
 
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -62,7 +62,7 @@ public class IWork2PDFConverter implements Converter {
                 // BlobHolder.
                 Blob previewBlob;
                 try (InputStream previewPDFFile = ZipUtils.getEntryContentAsStream(blob.getStream(), IWORK_PREVIEW_FILE)) {
-                    previewBlob = new FileBlob(previewPDFFile);
+                    previewBlob = Blobs.createBlob(previewPDFFile);
                 }
                 return new SimpleCachableBlobHolder(previewBlob);
             } else {

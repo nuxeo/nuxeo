@@ -16,11 +16,11 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,11 +31,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
@@ -70,8 +70,8 @@ public class MultiBlobAccessTest extends BaseTest {
     public void doBefore() throws Exception {
         super.doBefore();
         doc = session.createDocumentModel("/", "testBlob", "MultiBlobDoc");
-        addBlob(doc, new StringBlob("one"));
-        addBlob(doc, new StringBlob("two"));
+        addBlob(doc, Blobs.createBlob("one"));
+        addBlob(doc, Blobs.createBlob("two"));
         doc = session.createDocument(doc);
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();

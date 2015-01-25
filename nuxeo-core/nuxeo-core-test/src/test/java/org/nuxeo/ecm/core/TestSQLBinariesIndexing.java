@@ -20,13 +20,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -61,7 +61,7 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
     protected void createDocument() throws ClientException {
         DocumentModel doc = session.createDocumentModel("/", "source", "File");
         BlobHolder holder = doc.getAdapter(BlobHolder.class);
-        holder.setBlob(new StringBlob("test"));
+        holder.setBlob(Blobs.createBlob("test"));
         doc = session.createDocument(doc);
         docId = doc.getId();
         docRef = new IdRef(docId);
@@ -184,7 +184,7 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
 
         // check copy doesn't stay linked to doc
         DocumentModel doc = session.getDocument(docRef);
-        doc.getAdapter(BlobHolder.class).setBlob(new StringBlob("other"));
+        doc.getAdapter(BlobHolder.class).setBlob(Blobs.createBlob("other"));
         session.saveDocument(doc);
 
         waitForFulltextIndexing();

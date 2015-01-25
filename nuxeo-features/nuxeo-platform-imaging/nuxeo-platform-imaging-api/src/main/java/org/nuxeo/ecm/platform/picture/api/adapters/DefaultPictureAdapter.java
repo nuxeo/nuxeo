@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.picture.api.adapters;
 
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_INFO_PROPERTY;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -32,22 +34,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
-import org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.PictureConversion;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.runtime.api.Framework;
-
-import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_INFO_PROPERTY;
 
 public class DefaultPictureAdapter extends AbstractPictureAdapter {
     private static final Log log = LogFactory.getLog(DefaultPictureAdapter.class);
@@ -88,7 +87,9 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
             blob.transferTo(file);
             // use a persistent blob with our file
             if (!validFilename) {
-                blob = new FileBlob(file, blob.getMimeType(), blob.getEncoding(), blob.getFilename(), blob.getDigest());
+                String digest = blob.getDigest();
+                blob = Blobs.createBlob(file, blob.getMimeType(), blob.getEncoding(), blob.getFilename());
+                blob.setDigest(digest);
             }
         }
 

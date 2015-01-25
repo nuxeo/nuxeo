@@ -21,10 +21,10 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
 
@@ -68,8 +68,7 @@ public class PictureResize {
         }
 
         if (pictureBlob == null) {
-            Blob blob = new StringBlob("Unable to find a picture in the Document");
-            blob.setMimeType("text/plain");
+            Blob blob = Blobs.createBlob("Unable to find a picture in the Document");
             blob.setFilename(doc.getName() + ".null");
             return blob;
         } else {
@@ -95,9 +94,7 @@ public class PictureResize {
         if (result != null) {
             return result.getBlob();
         } else {
-            Blob fakeRes = new StringBlob("Converter did not return any result");
-            fakeRes.setMimeType("text/plain");
-            return fakeRes;
+            return Blobs.createBlob("Converter did not return any result");
         }
     }
 

@@ -22,10 +22,10 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -68,12 +68,12 @@ public class FullTextConverter implements Converter {
             if (converterName.equals(descriptor.getConverterName())) {
                 // Should never happen !
                 log.debug("Existing from converter to avoid a loop");
-                return new SimpleBlobHolder(new StringBlob(""));
+                return new SimpleBlobHolder(Blobs.createBlob(""));
             }
             return cs.convert(converterName, blobHolder, parameters);
         } else {
             log.debug("Unable to find full text extractor for source mime type" + srcMT);
-            return new SimpleBlobHolder(new StringBlob(""));
+            return new SimpleBlobHolder(Blobs.createBlob(""));
         }
     }
 

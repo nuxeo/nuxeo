@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 
 /**
  * Batch Object to encapsulate all data related to a batch, especially the temporary files used for Blobs
@@ -64,7 +64,7 @@ public class Batch {
         try {
             File tmp = new File(new Path(baseDir).append(name).toString());
             FileUtils.copyToFile(is, tmp);
-            FileBlob blob = new FileBlob(tmp);
+            Blob blob = Blobs.createBlob(tmp);
             if (mime != null) {
                 blob.setMimeType(mime);
             } else {

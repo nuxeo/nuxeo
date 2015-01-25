@@ -17,6 +17,11 @@
 
 package org.nuxeo.ecm.platform.publisher.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -24,20 +29,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.apache.commons.io.FilenameUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
@@ -107,9 +110,8 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         doc2Publish = session.createDocumentModel(ws.getPathAsString(), "file", "File");
         doc2Publish.setProperty("dublincore", "title", "MyDoc");
 
-        Blob blob = new StringBlob("SomeDummyContent");
+        Blob blob = Blobs.createBlob("SomeDummyContent");
         blob.setFilename("dummyBlob.txt");
-        blob.setMimeType("text/plain");
         doc2Publish.setProperty("file", "content", blob);
 
         doc2Publish = session.createDocument(doc2Publish);

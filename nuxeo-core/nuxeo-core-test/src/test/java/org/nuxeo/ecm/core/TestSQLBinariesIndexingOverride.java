@@ -17,10 +17,10 @@ import static org.junit.Assert.assertTrue;
 import java.util.Map;
 
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
 import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
@@ -42,7 +42,7 @@ public class TestSQLBinariesIndexingOverride extends TXSQLRepositoryTestCase {
         DocumentModelList res;
         DocumentModel doc = session.createDocumentModel("/", "source", "File");
         BlobHolder holder = doc.getAdapter(BlobHolder.class);
-        holder.setBlob(new StringBlob("test"));
+        holder.setBlob(Blobs.createBlob("test"));
         doc = session.createDocument(doc);
         session.save();
         closeSession();
@@ -65,7 +65,7 @@ public class TestSQLBinariesIndexingOverride extends TXSQLRepositoryTestCase {
         DocumentModelList res;
         DocumentModel doc = session.createDocumentModel("/", "source", "File");
         BlobHolder holder = doc.getAdapter(BlobHolder.class);
-        holder.setBlob(new StringBlob("test"));
+        holder.setBlob(Blobs.createBlob("test"));
         doc = session.createDocument(doc);
         session.save();
         closeSession();

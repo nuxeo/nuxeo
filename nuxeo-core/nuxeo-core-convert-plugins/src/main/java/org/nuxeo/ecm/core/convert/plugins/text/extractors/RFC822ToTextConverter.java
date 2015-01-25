@@ -31,21 +31,21 @@ import java.util.List;
 import java.util.Map;
 
 import javax.mail.Address;
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.Session;
-import javax.mail.Message.RecipientType;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
@@ -88,7 +88,7 @@ public class RFC822ToTextConverter implements Converter {
             }
             Blob outblob;
             try (InputStream in = new FileInputStream(f)) {
-                outblob = new FileBlob(in);
+                outblob = Blobs.createBlob(in);
             }
             outblob.setMimeType(descriptor.getDestinationMimeType());
             return outblob;
@@ -167,9 +167,9 @@ public class RFC822ToTextConverter implements Converter {
         if (converterName == null) {
             return null;
         } else {
-            FileBlob blob;
+            Blob blob;
             try (InputStream in = p.getInputStream()) {
-                blob = new FileBlob(in);
+                blob = Blobs.createBlob(in);
             }
             BlobHolder result = cs.convert(converterName, new SimpleBlobHolder(blob), null);
             return result.getBlob().getByteArray();

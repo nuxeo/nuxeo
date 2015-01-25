@@ -24,9 +24,10 @@ import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.operations.document.SetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -73,9 +74,7 @@ public class SendMailTest {
     public void testSendMail() throws Exception {
         // add some blobs and then send an email
 
-        StringBlob blob = new StringBlob("my content");
-        blob.setMimeType("text/plain");
-        blob.setEncoding("UTF-8");
+        Blob blob = Blobs.createBlob("my content");
         blob.setFilename("thefile.txt");
 
         OperationContext ctx = new OperationContext(session);

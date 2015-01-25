@@ -24,13 +24,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Features;
@@ -47,9 +48,9 @@ public class TestMailConverter extends SimpleConverterTest {
 
     private static final String CONVERTER_NAME = "rfc822totext";
 
-    private static Blob getTestBlob(String filePath) {
+    private static Blob getTestBlob(String filePath) throws IOException {
         File file = FileUtils.getResourceFileFromContext(filePath);
-        return new FileBlob(file);
+        return Blobs.createBlob(file);
     }
 
     @Inject

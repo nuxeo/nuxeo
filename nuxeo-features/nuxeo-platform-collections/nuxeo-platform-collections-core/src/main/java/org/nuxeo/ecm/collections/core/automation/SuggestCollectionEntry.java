@@ -41,9 +41,9 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
 
@@ -125,7 +125,7 @@ public class SuggestCollectionEntry {
             result.add(0, obj);
         }
 
-        return new StringBlob(result.toString(), "application/json");
+        return Blobs.createBlob(result.toString(), "application/json");
     }
 
     protected Locale getLocale() {

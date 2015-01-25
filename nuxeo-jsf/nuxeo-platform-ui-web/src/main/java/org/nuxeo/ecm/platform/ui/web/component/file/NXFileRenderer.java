@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 
 import org.apache.commons.fileupload.FileUploadBase.InvalidContentTypeException;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 
 import com.sun.faces.renderkit.html_basic.FileRenderer;
@@ -91,7 +91,7 @@ public class NXFileRenderer extends FileRenderer {
             // Nuxeo specific error management
             if ((cause instanceof InvalidContentTypeException)
                     || (cause != null && cause.getClass().getName().contains("InvalidContentTypeException"))) {
-                setSubmittedValue(component, new StringBlob(""));
+                setSubmittedValue(component, Blobs.createBlob(""));
             } else {
                 throw new FacesException(se);
             }

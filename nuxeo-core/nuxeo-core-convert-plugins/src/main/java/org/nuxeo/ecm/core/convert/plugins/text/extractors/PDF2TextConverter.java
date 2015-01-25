@@ -38,10 +38,10 @@ import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.PDFStreamEngine;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -142,11 +142,11 @@ public class PDF2TextConverter implements Converter {
                 fas = new FileOutputStream(f);
                 fas.write(text.getBytes("UTF-8"));
                 try (FileInputStream is = new FileInputStream(f)) {
-                    FileBlob blob = new FileBlob(is, "text/plain", "UTF-8");
+                    Blob blob = Blobs.createBlob(is, "text/plain", "UTF-8");
                     return new SimpleCachableBlobHolder(blob);
                 }
             } else {
-                return new SimpleCachableBlobHolder(new StringBlob(""));
+                return new SimpleCachableBlobHolder(Blobs.createBlob(""));
             }
         } catch (ClientException | IOException e) {
             throw new ConversionException("Error during text extraction with PDFBox", e);

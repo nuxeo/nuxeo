@@ -27,8 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.platform.picture.core.im.IMImageUtils.ImageMagickCaller;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -44,7 +43,7 @@ public class TestIMImageUtils extends NXRuntimeTestCase {
 
     protected String checkFileBlob(String filename, boolean usefilename, String targetExt) throws Exception {
         File file = FileUtils.getResourceFileFromContext(filename);
-        Blob blob = new FileBlob(file);
+        Blob blob = Blobs.createBlob(file);
         if (usefilename) {
             blob.setFilename(filename);
         }
@@ -54,7 +53,7 @@ public class TestIMImageUtils extends NXRuntimeTestCase {
     protected String checkStringBlob(String filename, boolean usefilename, String targetExt) throws Exception {
         File file = FileUtils.getResourceFileFromContext(filename);
         byte[] bytes = org.apache.commons.io.FileUtils.readFileToByteArray(file);
-        Blob blob = new ByteArrayBlob(bytes);
+        Blob blob = Blobs.createBlob(bytes);
         if (usefilename) {
             blob.setFilename(filename);
         }

@@ -12,9 +12,10 @@
 package org.nuxeo.ecm.core.api.externalblob;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
@@ -45,14 +46,14 @@ public class FileSystemExternalBlobAdapter extends AbstractExternalBlobAdapter {
     }
 
     @Override
-    public Blob getBlob(String uri) throws PropertyException {
+    public Blob getBlob(String uri) throws PropertyException, IOException {
         String localPath = getLocalName(uri);
         String path = getFileAbsolutePath(localPath);
         File file = new File(path);
         if (!file.exists()) {
             throw new PropertyException(String.format("Cannot find file at '%s'", path));
         }
-        Blob blob = new FileBlob(file);
+        Blob blob = Blobs.createBlob(file);
         blob.setFilename(file.getName());
         return blob;
     }

@@ -14,21 +14,20 @@
 
 package org.nuxeo.ecm.core.api.impl.blob;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringWriter;
 import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -57,7 +56,7 @@ public class TestBlob2 {
         out.write("some content");
         out.close();
 
-        Blob blob = new FileBlob(file, "text/plain", "UTF-8");
+        Blob blob = Blobs.createBlob(file, "text/plain", "UTF-8");
         checkBlob(blob);
 
         file.delete();

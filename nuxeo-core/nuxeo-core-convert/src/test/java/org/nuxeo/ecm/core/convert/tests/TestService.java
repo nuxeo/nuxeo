@@ -26,8 +26,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.core.convert.api.ConverterNotAvailable;
@@ -165,7 +165,7 @@ public class TestService {
         // check call
         notRegistred = false;
         try {
-            cs.convert("toto", new SimpleBlobHolder(new StringBlob("")), null);
+            cs.convert("toto", new SimpleBlobHolder(Blobs.createBlob("")), null);
         } catch (ConverterNotRegistered e) {
             notRegistred = true;
         }
@@ -186,7 +186,7 @@ public class TestService {
         notRegistred = false;
         boolean notAvailable = false;
         try {
-            cs.convert("NotAvailableConverter", new SimpleBlobHolder(new StringBlob("")), null);
+            cs.convert("NotAvailableConverter", new SimpleBlobHolder(Blobs.createBlob("")), null);
         } catch (ConverterNotRegistered e) {
             notRegistred = true;
         } catch (ConverterNotAvailable e) {
@@ -211,7 +211,7 @@ public class TestService {
 
         notRegistred = false;
         try {
-            cs.convert("dummy2", new SimpleBlobHolder(new StringBlob("")), null);
+            cs.convert("dummy2", new SimpleBlobHolder(Blobs.createBlob("")), null);
         } catch (ConverterNotRegistered e) {
             notRegistred = true;
         } catch (ConverterNotAvailable e) {

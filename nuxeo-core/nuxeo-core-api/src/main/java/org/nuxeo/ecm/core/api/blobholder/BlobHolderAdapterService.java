@@ -13,6 +13,8 @@
 
 package org.nuxeo.ecm.core.api.blobholder;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
@@ -40,7 +42,7 @@ public interface BlobHolderAdapterService {
      * @throws PropertyException if the blob cannot be retrieved (if adapter cannot retrieve it or if file is not found
      *             for instance)
      */
-    Blob getExternalBlobForUri(String uri) throws PropertyException;
+    Blob getExternalBlobForUri(String uri) throws PropertyException, IOException;
 
     /**
      * Returns the external blob adapter registered for given prefix.

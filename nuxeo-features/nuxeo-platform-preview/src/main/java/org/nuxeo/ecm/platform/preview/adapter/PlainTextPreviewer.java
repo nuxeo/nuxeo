@@ -26,8 +26,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 
 import com.ibm.icu.text.CharsetDetector;
@@ -73,8 +73,7 @@ public class PlainTextPreviewer extends AbstractPreviewer implements MimeTypePre
         htmlPage.append(htmlContent(content));
         htmlPage.append("</body></html>");
 
-        Blob mainBlob = new StringBlob(htmlPage.toString(), "text/html", "UTF-8");
-        mainBlob.setFilename("index.html");
+        Blob mainBlob = Blobs.createBlob(htmlPage.toString(), "text/html", "UTF-8", "index.html");
 
         blobResults.add(mainBlob);
         return blobResults;

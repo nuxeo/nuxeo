@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 
@@ -45,14 +46,14 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements Cachab
     }
 
     @Override
-    public void load(String path) {
+    public void load(String path) throws IOException {
         blobs = new ArrayList<Blob>();
         File base = new File(path);
         if (base.isDirectory()) {
             addDirectoryToList(base, "");
         } else {
             File file = new File(path);
-            Blob mainBlob = new FileBlob(file);
+            Blob mainBlob = Blobs.createBlob(file);
             mainBlob.setFilename(file.getName());
             blobs.add(mainBlob);
         }
@@ -60,7 +61,7 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements Cachab
         orderIndexPageFirst(blobs);
     }
 
-    public void addDirectoryToList(File directory, String prefix) {
+    public void addDirectoryToList(File directory, String prefix) throws IOException {
         File[] directoryContent = directory.listFiles();
         for (File file : directoryContent) {
             if (file.isDirectory()) {
@@ -69,7 +70,7 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements Cachab
                 addDirectoryToList(file, prefix);
                 prefix = prefix.substring(0, beginIndex);
             } else {
-                Blob blob = new FileBlob(file);
+                Blob blob = Blobs.createBlob(file);
                 blob.setFilename(prefix + file.getName());
                 if (file.getName().equalsIgnoreCase("index.html")) {
                     blobs.add(0, blob);

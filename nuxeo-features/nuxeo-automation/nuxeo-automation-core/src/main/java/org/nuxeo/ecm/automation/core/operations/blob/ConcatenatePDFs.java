@@ -30,7 +30,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -79,11 +79,11 @@ public class ConcatenatePDFs {
         return appendPDFs(ut);
     }
 
-    protected FileBlob appendPDFs(PDFMergerUtility ut) throws IOException, COSVisitorException {
+    protected Blob appendPDFs(PDFMergerUtility ut) throws IOException, COSVisitorException {
         File tempFile = File.createTempFile(filename, ".pdf");
         ut.setDestinationFileName(tempFile.getAbsolutePath());
         ut.mergeDocuments();
-        FileBlob fb = new FileBlob(tempFile);
+        Blob fb = Blobs.createBlob(tempFile);
         Framework.trackFile(tempFile, fb);
         fb.setFilename(filename);
         return fb;

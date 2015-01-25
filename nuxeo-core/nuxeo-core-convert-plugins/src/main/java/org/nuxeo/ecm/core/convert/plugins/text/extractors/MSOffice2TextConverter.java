@@ -31,9 +31,9 @@ import org.apache.poi.extractor.ExtractorFactory;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.xmlbeans.XmlException;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -61,7 +61,7 @@ public class MSOffice2TextConverter implements Converter {
             fas.write(bytes);
 
             try (InputStream is = new FileInputStream(f)) {
-                Blob blob = new FileBlob(is, "text/plain", "UTF-8");
+                Blob blob = Blobs.createBlob(is, "text/plain", "UTF-8");
                 return new SimpleCachableBlobHolder(blob);
             }
         } catch (ClientException | IOException | OpenXML4JException | XmlException e) {

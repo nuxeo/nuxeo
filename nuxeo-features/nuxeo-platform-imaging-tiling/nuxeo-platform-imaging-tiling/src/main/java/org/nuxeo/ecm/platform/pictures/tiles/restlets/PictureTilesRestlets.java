@@ -179,7 +179,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         final Blob image;
         try {
             image = tiles.getTile(x, y);
-        } catch (ClientException e) {
+        } catch (ClientException | IOException e) {
             handleError(res, e);
             return;
         }

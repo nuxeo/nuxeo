@@ -33,9 +33,9 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -57,9 +57,8 @@ public class TestDocumentAdapter {
         DocumentModel file = session.createDocumentModel("File");
         file.setPathInfo("/", "TestFile");
 
-        Blob blob = new StringBlob("BlobContent");
+        Blob blob = Blobs.createBlob("BlobContent");
         blob.setFilename("TestFile.txt");
-        blob.setMimeType("text/plain");
         file.setProperty("dublincore", "title", "TestFile");
         file.setProperty("file", "content", blob);
         file.setProperty("file", "filename", "TestFile-fn.txt");
@@ -78,9 +77,7 @@ public class TestDocumentAdapter {
         assertEquals("BlobContent", b.getString());
 
         // test write
-        blob = new StringBlob("OtherContent");
-        blob.setFilename("other.txt");
-        blob.setMimeType("text/html");
+        blob = Blobs.createBlob("OtherContent", "text/html", null, "other.txt");
         bh.setBlob(blob);
         session.saveDocument(file);
         session.save();
@@ -123,9 +120,7 @@ public class TestDocumentAdapter {
         assertEquals("Text of the note", b.getString());
 
         // test write
-        StringBlob blob = new StringBlob("Other text for note");
-        blob.setFilename("other.txt");
-        blob.setMimeType("text/html");
+        Blob blob = Blobs.createBlob("Other text for note", "text/html", null, "other.txt");
         bh.setBlob(blob);
         session.saveDocument(note);
         session.save();
@@ -163,9 +158,8 @@ public class TestDocumentAdapter {
         DocumentModel file = session.createDocumentModel("File");
         file.setPathInfo("/", "TestDoc");
 
-        Blob blob = new StringBlob("BlobContent");
+        Blob blob = Blobs.createBlob("BlobContent");
         blob.setFilename("TestFile.txt");
-        blob.setMimeType("text/plain");
         file.setProperty("dublincore", "title", "TestDoc");
         file.setProperty("file", "content", blob);
         file.setProperty("file", "filename", "TestFile-fn.txt");
@@ -173,9 +167,8 @@ public class TestDocumentAdapter {
         List<Map<String, Serializable>> blobs = new ArrayList<Map<String, Serializable>>();
         for (int i = 1; i <= 5; i++) {
             String name = "TestFile" + i + ".txt";
-            Blob nblob = new StringBlob("BlobContent" + i);
+            Blob nblob = Blobs.createBlob("BlobContent" + i);
             nblob.setFilename(name);
-            nblob.setMimeType("text/plain");
 
             Map<String, Serializable> filesEntry = new HashMap<String, Serializable>();
             filesEntry.put("file", (Serializable) nblob);

@@ -27,7 +27,7 @@ import javax.servlet.http.Part;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
@@ -54,7 +54,7 @@ public class FileUtils {
             // persisting the blob makes it possible to read the binary content
             // of the request stream several times (mimetype sniffing, digest
             // computation, core binary storage)
-            blob = new FileBlob(in, mimeType);
+            blob = Blobs.createBlob(in, mimeType);
             // filename
             if (filename != null) {
                 filename = getCleanFileName(filename);

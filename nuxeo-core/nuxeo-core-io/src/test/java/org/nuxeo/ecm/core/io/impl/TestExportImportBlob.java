@@ -19,10 +19,10 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.io.DocumentWriter;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelWriter;
@@ -57,9 +57,8 @@ public class TestExportImportBlob {
         docToExport = session.createDocumentModel(workspace.getPathAsString(), "file", "File");
         docToExport.setProperty("dublincore", "title", "MyDoc");
 
-        Blob blob = new StringBlob("SomeDummyContent");
+        Blob blob = Blobs.createBlob("SomeDummyContent");
         blob.setFilename("dummyBlob.txt");
-        blob.setMimeType("text/plain");
         docToExport.setProperty("file", "content", blob);
 
         docToExport = session.createDocument(docToExport);

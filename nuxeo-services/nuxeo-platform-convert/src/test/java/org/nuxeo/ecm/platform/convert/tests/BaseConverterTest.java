@@ -32,9 +32,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -49,11 +49,11 @@ public abstract class BaseConverterTest extends Assert {
 
     OOoManagerService oooManagerService;
 
-    protected static BlobHolder getBlobFromPath(String path, String srcMT) {
+    protected static BlobHolder getBlobFromPath(String path, String srcMT) throws IOException {
         File file = FileUtils.getResourceFileFromContext(path);
         assertTrue(file.length() > 0);
 
-        Blob blob = new FileBlob(file);
+        Blob blob = Blobs.createBlob(file);
         if (srcMT != null) {
             blob.setMimeType(srcMT);
         }
@@ -61,7 +61,7 @@ public abstract class BaseConverterTest extends Assert {
         return new SimpleBlobHolder(blob);
     }
 
-    protected static BlobHolder getBlobFromPath(String path) {
+    protected static BlobHolder getBlobFromPath(String path) throws IOException {
         return getBlobFromPath(path, null);
     }
 

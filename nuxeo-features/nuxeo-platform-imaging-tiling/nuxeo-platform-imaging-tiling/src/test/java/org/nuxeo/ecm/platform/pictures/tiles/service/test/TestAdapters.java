@@ -33,8 +33,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 import org.nuxeo.ecm.platform.pictures.tiles.api.adapter.PictureTilesAdapter;
@@ -75,7 +75,7 @@ public class TestAdapters extends SQLRepositoryTestCase {
         doc.setProperty("dublincore", "modified", new GregorianCalendar());
 
         File file = FileUtils.getResourceFileFromContext("test.jpg");
-        Blob image = new FileBlob(file);
+        Blob image = Blobs.createBlob(file);
         doc.setProperty("file", "content", image);
         doc.setProperty("file", "filename", "test.jpg");
 
@@ -104,7 +104,7 @@ public class TestAdapters extends SQLRepositoryTestCase {
         picture.setProperty("dublincore", "modified", new GregorianCalendar());
 
         File file = FileUtils.getResourceFileFromContext("test.jpg");
-        Blob image = new FileBlob(file);
+        Blob image = Blobs.createBlob(file);
 
         List<Map<String, Object>> viewsList = getDefaultViewsList(image);
         picture.getProperty("picture:views").setValue(viewsList);
@@ -122,7 +122,7 @@ public class TestAdapters extends SQLRepositoryTestCase {
         picture.setProperty("dublincore", "modified", new GregorianCalendar());
 
         File file = FileUtils.getResourceFileFromContext("test.jpg");
-        Blob image = new FileBlob(file);
+        Blob image = Blobs.createBlob(file);
 
         List<Map<String, Object>> viewsList = getDefaultViewsList(image);
         Map<String, Object> map = new HashMap<String, Object>();

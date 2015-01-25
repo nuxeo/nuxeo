@@ -28,11 +28,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -107,7 +108,7 @@ public class TestFileManagerVersioning {
 
         // create doc
         File file = getTestFile(HELLO_DOC);
-        FileBlob input = new FileBlob(file, APPLICATION_MSWORD);
+        Blob input = Blobs.createBlob(file, APPLICATION_MSWORD);
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input, root.getPathAsString(), true, HELLO_DOC);
         DocumentRef docRef = doc.getRef();
 
@@ -140,7 +141,7 @@ public class TestFileManagerVersioning {
 
         // create doc
         File file = getTestFile(HELLO_DOC);
-        FileBlob input = new FileBlob(file, APPLICATION_MSWORD);
+        Blob input = Blobs.createBlob(file, APPLICATION_MSWORD);
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input, root.getPathAsString(), true, HELLO_DOC);
         DocumentRef docRef = doc.getRef();
 

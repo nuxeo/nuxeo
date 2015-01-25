@@ -32,9 +32,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
@@ -182,7 +182,7 @@ public class TestPictureConversions {
         deployContrib(PICTURE_CONVERSIONS_FILTERS_COMPONENT_LOCATION);
 
         DocumentModel picture = session.createDocumentModel("/", "picture", "Picture");
-        Blob blob = new FileBlob(FileUtils.getResourceFileFromContext("images/test.jpg"));
+        Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"));
         blob.setFilename("MyTest.jpg");
         blob.setMimeType("image/jpeg");
         picture.setPropertyValue("file:content", (Serializable) blob);

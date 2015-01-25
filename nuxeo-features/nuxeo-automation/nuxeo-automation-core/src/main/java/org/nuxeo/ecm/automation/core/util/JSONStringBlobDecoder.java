@@ -15,7 +15,7 @@ package org.nuxeo.ecm.automation.core.util;
 
 import org.codehaus.jackson.node.ObjectNode;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 
 /**
  * Very basic implementation of a Blob decoder Only usable for StringBlobs
@@ -53,7 +53,7 @@ public class JSONStringBlobDecoder implements JSONBlobDecoder {
         if (data == null) {
             return null;
         } else {
-            blob = new StringBlob(data, mimetype, encoding);
+            blob = Blobs.createBlob(data, mimetype, encoding);
         }
         return blob;
     }

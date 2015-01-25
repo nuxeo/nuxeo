@@ -16,9 +16,9 @@ package org.nuxeo.ecm.core.api.blobholder;
 import java.io.IOException;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 /**
  * {@link BlobHolder} implemention based on a {@link DocumentModel} and a Xpath pointing to a String fields. (Typical
@@ -45,7 +45,7 @@ public class DocumentStringBlobHolder extends DocumentBlobHolder {
         if (string == null) {
             return null;
         }
-        Blob blob = new StringBlob(string, mt);
+        Blob blob = Blobs.createBlob(string, mt);
         String ext = ".txt";
         if ("text/html".equals(mt)) {
             ext = ".html";

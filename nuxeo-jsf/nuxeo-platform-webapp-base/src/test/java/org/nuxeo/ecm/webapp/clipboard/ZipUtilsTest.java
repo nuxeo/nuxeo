@@ -29,11 +29,12 @@ import java.util.zip.ZipFile;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
@@ -56,9 +57,9 @@ public class ZipUtilsTest {
         DocumentModel file = new DocumentModelImpl("/parent", "éèà", "File");
         file.setPropertyValue("dc:title", "éèà");
 
-        StringBlob blob = new StringBlob("ééà");
+        Blob blob = Blobs.createBlob("ééà");
         blob.setFilename("éèà");
-        file.setPropertyValue("file:content", blob);
+        file.setPropertyValue("file:content", (Serializable) blob);
         file.setPropertyValue("dc:title", "éèà");
         file = session.createDocument(file);
         return parent;
@@ -68,11 +69,11 @@ public class ZipUtilsTest {
         DocumentModel heavyFile = session.createDocumentModel("/", "heavyFile", "File");
         heavyFile.setPropertyValue("dc:title", "Heavy File");
 
-        StringBlob blob1 = new StringBlob("abc");
+        Blob blob1 = Blobs.createBlob("abc");
         blob1.setFilename("blob1.raw");
-        heavyFile.setPropertyValue("file:content", blob1);
+        heavyFile.setPropertyValue("file:content", (Serializable) blob1);
 
-        StringBlob blob2 = new StringBlob("123");
+        Blob blob2 = Blobs.createBlob("123");
         blob2.setFilename("blob2.raw");
 
         HashMap<String, Serializable> blob = new HashMap<String, Serializable>();

@@ -20,6 +20,8 @@ package org.nuxeo.ecm.admin.repo.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.Serializable;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.collections.ScopeType;
@@ -27,12 +29,13 @@ import org.nuxeo.ecm.admin.repo.RepoStat;
 import org.nuxeo.ecm.admin.repo.RepoStatInfo;
 import org.nuxeo.ecm.admin.runtime.RuntimeInstrospection;
 import org.nuxeo.ecm.admin.runtime.SimplifiedServerInfo;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -77,8 +80,8 @@ public class TestRepoStats {
         DocumentModel blobDoc = session.createDocumentModel("File");
         blobDoc.setPathInfo("/default-domain/workspaces/", "blobDoc");
         blobDoc.setPropertyValue("dc:title", "blobDoc");
-        StringBlob blob = new StringBlob("12345");
-        blobDoc.setPropertyValue("file:content", blob);
+        Blob blob = Blobs.createBlob("12345");
+        blobDoc.setPropertyValue("file:content", (Serializable) blob);
 
         blobDoc = session.createDocument(blobDoc);
         session.save();
@@ -115,8 +118,8 @@ public class TestRepoStats {
         assertEquals(new Long(2), stat3.getDocTypeCount("File"));
 
         // modify blob
-        blob = new StringBlob("123456789");
-        blobDoc.setPropertyValue("file:content", blob);
+        blob = Blobs.createBlob("123456789");
+        blobDoc.setPropertyValue("file:content", (Serializable) blob);
         blobDoc = session.saveDocument(blobDoc);
         session.save();
 

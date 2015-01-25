@@ -39,8 +39,8 @@ import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.jaxrs.io.InputStreamDataSource;
 import org.nuxeo.ecm.automation.jaxrs.io.SharedFileInputStream;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
@@ -125,7 +125,7 @@ public class MultiPartRequestReader implements MessageBodyReader<ExecutionReques
         InputStream pin = part.getInputStream();
         final File tmp = File.createTempFile("nx-automation-upload-", ".tmp");
         FileUtils.copyToFile(pin, tmp);
-        FileBlob blob = new FileBlob(tmp, ctype, null, fname, null);
+        Blob blob = Blobs.createBlob(tmp, ctype, null, fname);
         RequestContext.getActiveContext(request).addRequestCleanupHandler(new RequestCleanupHandler() {
             @Override
             public void cleanup(HttpServletRequest req) {

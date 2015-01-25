@@ -18,7 +18,15 @@
 
 package org.nuxeo.ecm.automation.core.test;
 
-import com.google.inject.Inject;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.transaction.Transaction;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,9 +38,9 @@ import org.nuxeo.ecm.automation.core.operations.execution.RunFileChain;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnList;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnListInNewTransaction;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -45,13 +53,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import javax.transaction.Transaction;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
@@ -189,7 +191,7 @@ public class OperationsAndTxTests {
                 Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
                 getOrCreateList(ctx, "sids").add(session.getSessionId());
                 getOrCreateList(ctx, "txids").add(tx.toString());
-                Blob blob = new StringBlob("blob");
+                Blob blob = Blobs.createBlob("blob");
                 ctx.setInput(blob);
                 OperationChain chain = new OperationChain("testChain");
                 chain.add(RunFileChain.ID).set("id", "runOnListItemWithTx").set("isolate", "false").set("newTx", "true");

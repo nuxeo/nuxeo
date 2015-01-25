@@ -29,11 +29,11 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.task.dashboard.DashBoardItem;
@@ -85,7 +85,7 @@ public class GetUserTasks {
             JSONObject obj = item.asJSON();
             rows.add(obj);
         }
-        return new StringBlob(rows.toString(), "application/json");
+        return Blobs.createBlob(rows.toString(), "application/json");
     }
 
     protected NuxeoPrincipal principal() {

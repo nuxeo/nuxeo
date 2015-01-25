@@ -21,10 +21,10 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -78,9 +78,7 @@ public class TestVersionning {
     public void testVersioning() throws Exception {
         createTestDocuments();
 
-        Blob blob = new StringBlob("Something");
-        blob.setMimeType("something");
-        blob.setFilename("mytest.something");
+        Blob blob = Blobs.createBlob("Something", "something", null, "mytest.something");
         DocumentModel doc = fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(), true,
                 "mytest.something");
         waitForAsyncCompletion();

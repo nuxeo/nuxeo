@@ -25,18 +25,19 @@ import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTUR
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_TYPE_NAME;
 
 import java.io.File;
+import java.io.Serializable;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureBlobHolder;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureBookBlobHolder;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -86,12 +87,12 @@ public class TestPictureBlobHolder {
         DocumentModel picturebook = new DocumentModelImpl("/", "picturebook", PICTUREBOOK_TYPE_NAME);
         session.createDocument(picturebook);
         DocumentModel picture = new DocumentModelImpl(picturebook.getPathAsString(), "pic1", PICTURE_TYPE_NAME);
-        picture.setPropertyValue("file:content", new FileBlob(getFileFromPath("images/exif_sample.jpg"), "image/jpeg",
-                null, "mysample.jpg", null));
+        picture.setPropertyValue("file:content", (Serializable) Blobs.createBlob(
+                getFileFromPath("images/exif_sample.jpg"), "image/jpeg", null, "mysample.jpg"));
         picture = session.createDocument(picture);
         DocumentModel picture2 = new DocumentModelImpl(picturebook.getPathAsString(), "pic2", PICTURE_TYPE_NAME);
-        picture2.setPropertyValue("file:content", new FileBlob(getFileFromPath("images/exif_sample.jpg"), "image/jpeg",
-                null, "mysample.jpg", null));
+        picture2.setPropertyValue("file:content", (Serializable) Blobs.createBlob(
+                getFileFromPath("images/exif_sample.jpg"), "image/jpeg", null, "mysample.jpg"));
         session.createDocument(picture2);
         session.save();
 

@@ -18,10 +18,10 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -61,7 +61,7 @@ public class ThumbnailDocumentConverter implements Converter {
             // get the input and output of the command
             Blob blob = blobHolder.getBlob();
 
-            Blob targetBlob = new FileBlob(".png");
+            Blob targetBlob = Blobs.createBlobWithExtension(".png");
             try (CloseableFile source = blob.getCloseableFile()) {
                 CmdParameters params = new CmdParameters();
                 String size;

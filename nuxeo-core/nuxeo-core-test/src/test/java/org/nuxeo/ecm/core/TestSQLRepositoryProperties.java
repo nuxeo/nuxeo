@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -48,7 +49,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
 import org.nuxeo.ecm.core.api.externalblob.FileSystemExternalBlobAdapter;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -347,7 +347,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertTrue(doc.getPropertyValue("tp:fileList") instanceof List);
         assertEquals(0, ((List) doc.getPropertyValue("tp:fileList")).size());
         ArrayList<Blob> values = new ArrayList<Blob>();
-        StringBlob blob = new StringBlob("My content");
+        Blob blob = Blobs.createBlob("My content");
         values.add(blob);
         doc.setPropertyValue("tp:fileList", values);
         doc = session.saveDocument(doc);
@@ -368,8 +368,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertEquals(0, ((List) doc.getPropertyValue("tp:fileComplexList")).size());
         ArrayList<Map<String, Serializable>> values = new ArrayList<Map<String, Serializable>>();
         Map<String, Serializable> item = new HashMap<String, Serializable>();
-        StringBlob blob = new StringBlob("My content");
-        item.put("blob", blob);
+        Blob blob = Blobs.createBlob("My content");
+        item.put("blob", (Serializable) blob);
         item.put("filename", "My filename");
         values.add(item);
         doc.setPropertyValue("tp:fileComplexList", values);
@@ -784,7 +784,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
         doc.setPropertyValue("book:author/pJob", "somejob");
         doc.setPropertyValue("dc:subjects", new String[] { "bar" });
-        StringBlob blob = new StringBlob("foo");
+        Blob blob = Blobs.createBlob("foo");
         blob.setFilename("fooname");
         LinkedList<Object> blobs = new LinkedList<Object>();
         blobs.add(blob);
@@ -837,7 +837,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertTrue(part.isSameAs(part));
 
         DocumentModel doc2 = session.createDocumentModel("/", "file2", "File");
-        Blob blob2 = new StringBlob("hello world!", "text/plain");
+        Blob blob2 = Blobs.createBlob("hello world!");
         doc2.setPropertyValue("file:content", (Serializable) blob2);
         doc2 = session.createDocument(doc2);
         DocumentPart part2 = doc2.getPart("file");
@@ -849,7 +849,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         // same blob content, should compare equal
 
         DocumentModel doc3 = session.createDocumentModel("/", "file3", "File");
-        Blob blob3 = new StringBlob("hello world!", "text/plain");
+        Blob blob3 = Blobs.createBlob("hello world!");
         doc3.setPropertyValue("file:content", (Serializable) blob3);
         doc3 = session.createDocument(doc3);
         DocumentPart part3 = doc3.getPart("file");
@@ -858,7 +858,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         // different blob content
 
         DocumentModel doc4 = session.createDocumentModel("/", "file3", "File");
-        Blob blob4 = new StringBlob("this is goodbye", "text/plain");
+        Blob blob4 = Blobs.createBlob("this is goodbye");
         doc4.setPropertyValue("file:content", (Serializable) blob4);
         doc4 = session.createDocument(doc4);
         DocumentPart part4 = doc4.getPart("file");

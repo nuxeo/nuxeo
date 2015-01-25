@@ -43,7 +43,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
@@ -223,9 +223,9 @@ public final class ComponentUtils {
         return null;
     }
 
-    public static String downloadFile(FacesContext faces, String filename, File file) {
-        FileBlob fileBlob = new FileBlob(file);
-        return download(faces, fileBlob, filename);
+    public static String downloadFile(FacesContext faces, String filename, File file) throws IOException {
+        Blob blob = Blobs.createBlob(file);
+        return download(faces, blob, filename);
     }
 
     protected static boolean forceNoCacheOnMSIE() {

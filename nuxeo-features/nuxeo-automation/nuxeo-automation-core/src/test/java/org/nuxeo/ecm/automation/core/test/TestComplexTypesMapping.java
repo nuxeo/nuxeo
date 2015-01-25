@@ -16,9 +16,9 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -45,16 +45,14 @@ public class TestComplexTypesMapping {
 
         doc = session.createDocumentModel("/", "FileTest", "File");
         doc.setPropertyValue("dc:title", "TitleInit");
-        Blob blob = new StringBlob("Yo");
+        Blob blob = Blobs.createBlob("Yo");
         blob.setFilename("Yo.txt");
-        blob.setMimeType("text/plain");
         doc.setPropertyValue("file:content", (Serializable) blob);
 
         List<Map<String, Object>> blobs = new ArrayList<Map<String, Object>>();
         for (int i = 0; i < 5; i++) {
-            Blob subblob = new StringBlob("Yo" + i);
+            Blob subblob = Blobs.createBlob("Yo" + i);
             subblob.setFilename("File" + i + ".txt");
-            subblob.setMimeType("text/plain");
 
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("file", subblob);

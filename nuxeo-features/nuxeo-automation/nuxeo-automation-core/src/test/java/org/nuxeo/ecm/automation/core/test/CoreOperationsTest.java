@@ -61,11 +61,11 @@ import org.nuxeo.ecm.automation.core.scripting.MvelExpression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -376,7 +376,7 @@ public class CoreOperationsTest {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
-        Blob blob = new StringBlob("blob content");
+        Blob blob = Blobs.createBlob("blob content");
         blob.setFilename("attachment");
 
         OperationChain chain = new OperationChain("testChain");

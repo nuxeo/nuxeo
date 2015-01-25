@@ -21,15 +21,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.mail.utils.MailCoreConstants;
 
 /**
  * BlobHolder for MailMessage documents. The blob returned is a StringBlob with the mail body message as content.
- * 
+ *
  * @author ldoguin
  * @since 5.7.3
  */
@@ -47,19 +47,17 @@ public class MailMessageBlobHolder extends DocumentBlobHolder {
         String htmlTextProperty = (String) doc.getPropertyValue(xPath);
         Blob blob = null;
         if (htmlTextProperty != null && xPathFilename != null && htmlTextProperty.length() != 0) {
-            blob = new StringBlob(htmlTextProperty);
+            blob = Blobs.createBlob(htmlTextProperty);
             Matcher m = isHtmlPattern.matcher(htmlTextProperty);
             if (m.matches()) {
                 blob.setMimeType("text/html");
-            } else {
-                blob.setMimeType("text/plain");
-            }
+            } // else default is text/plain
         } else {
             String txt = (String) doc.getPropertyValue(MailCoreConstants.TEXT_PROPERTY_NAME);
             if (txt == null) {
                 txt = "";
             }
-            blob = new StringBlob(txt, "text/plain");
+            blob = Blobs.createBlob(txt);
         }
         if (blob != null) {
             blob.setFilename(xPathFilename);

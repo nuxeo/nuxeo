@@ -17,9 +17,9 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.BlobCollector;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 /**
  * Get document blob inside the file:content property
@@ -46,8 +46,7 @@ public class GetDocumentBlob {
         }
         // cannot return null since it may break the next operation
         if (blob == null) { // create an empty blob
-            blob = new StringBlob("");
-            blob.setMimeType("text/plain");
+            blob = Blobs.createBlob("");
             blob.setFilename(doc.getName() + ".null");
         }
         return blob;

@@ -26,9 +26,9 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -205,7 +205,7 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
     }
 
     protected Blob createTestBlob(boolean setMimeType, String filename) {
-        Blob blob = new StringBlob("SOMEDUMMYDATA");
+        Blob blob = Blobs.createBlob("SOMEDUMMYDATA");
         blob.setFilename(filename);
         if (setMimeType) {
             blob.setMimeType("application/pdf");

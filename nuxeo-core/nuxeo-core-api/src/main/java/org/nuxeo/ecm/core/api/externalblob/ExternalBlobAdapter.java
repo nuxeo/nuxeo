@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.core.api.externalblob;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -69,6 +70,6 @@ public interface ExternalBlobAdapter extends Serializable {
      * @throws PropertyException if the blob cannot be retrieved (if adapter cannot retrieve it or if file is not found
      *             for instance)
      */
-    Blob getBlob(String uri) throws PropertyException;
+    Blob getBlob(String uri) throws PropertyException, IOException;
 
 }

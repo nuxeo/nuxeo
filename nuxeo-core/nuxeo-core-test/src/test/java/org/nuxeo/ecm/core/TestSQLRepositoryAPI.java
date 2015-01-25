@@ -46,6 +46,7 @@ import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -67,8 +68,6 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -232,7 +231,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         Map<String, Object> vignette = new HashMap<String, Object>();
         vignette.put("width", Long.valueOf(0));
         vignette.put("height", Long.valueOf(0));
-        vignette.put("content", new StringBlob("textblob content", "text/plain"));
+        vignette.put("content", Blobs.createBlob("textblob content"));
         vignette.put("label", "vignettelabel");
         vignettes.add(vignette);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
@@ -246,8 +245,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("vignettelabel", doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/label").getValue());
 
         // test setting and reading a list of maps with a blob inside the map
-        Blob blob = new StringBlob("01AB", "application/octet-stream");
-        blob.setFilename("file.bin");
+        Blob blob = Blobs.createBlob("01AB", "application/octet-stream", null, "file.bin");
         vignette.put("content", blob);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
         session.saveDocument(doc);
@@ -309,7 +307,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 Map<String, Object> vignette = new HashMap<String, Object>();
                 vignette.put("width", Long.valueOf(j));
                 vignette.put("height", Long.valueOf(j));
-                vignette.put("content", new StringBlob(String.format("document %d, vignette %d", i, j)));
+                vignette.put("content", Blobs.createBlob(String.format("document %d, vignette %d", i, j)));
                 vignettes.add(vignette);
             }
             doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
@@ -1317,7 +1315,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         childFile1.setProperty("file", "filename", "f1");
 
         // add a blob
-        Blob blob = new StringBlob("<html><head/><body>La la la!</body></html>", "text/html");
+        Blob blob = Blobs.createBlob("<html><head/><body>La la la!</body></html>", "text/html");
         childFile1.setProperty("file", "content", blob);
 
         session.saveDocument(childFile1);
@@ -2383,10 +2381,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
 
         byte[] bytes = FileUtils.readBytes(Blob.class.getResourceAsStream("Blob.class"));
-        Blob blob = new ByteArrayBlob(bytes, "java/class");
-        blob.setDigest("XXX");
+        Blob blob = Blobs.createBlob(bytes, "java/class", "UTF8");
         blob.setFilename("blob.txt");
-        blob.setEncoding("UTF8");
+        blob.setDigest("XXX");
         long length = blob.getLength();
         byte[] content = blob.getByteArray();
 
@@ -2610,7 +2607,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         files.add(f);
         f = new HashMap<String, Object>();
         f.put("filename", "f2");
-        f.put("file", new StringBlob("myfile", "text/test", "UTF-8"));
+        f.put("file", Blobs.createBlob("myfile", "text/test", "UTF-8"));
         files.add(f);
         doc.setProperty("files", "files", files);
         // add a dynamic facet too
@@ -2955,7 +2952,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc = session.createDocument(doc);
         byte[] bytes = createBytes(1024 * 1024, (byte) 24);
 
-        Blob blob = new ByteArrayBlob(bytes);
+        Blob blob = Blobs.createBlob(bytes);
         doc.getPart("file").get("content").setValue(blob);
         doc = session.saveDocument(doc);
 

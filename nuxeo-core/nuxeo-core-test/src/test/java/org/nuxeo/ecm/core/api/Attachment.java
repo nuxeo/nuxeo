@@ -22,15 +22,13 @@ package org.nuxeo.ecm.core.api;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-
 public class Attachment {
 
     private final Map<String, Object> map = new HashMap<String, Object>();
 
     public Attachment(String name, String content) {
         map.put("name", name);
-        map.put("content", new StringBlob(content));
+        map.put("content", Blobs.createBlob(content));
     }
 
     public Map<String, Object> asMap() {

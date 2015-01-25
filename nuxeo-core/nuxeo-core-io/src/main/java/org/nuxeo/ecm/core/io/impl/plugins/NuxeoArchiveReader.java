@@ -34,7 +34,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.impl.blob.ZipEntryBlob;
 import org.nuxeo.ecm.core.io.ExportConstants;
 import org.nuxeo.ecm.core.io.ExportedDocument;
@@ -281,7 +281,7 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
             // FileBlob always closes the stream, but we don't want that
             // so wrap it in a CloseShieldInputStream
             try (CloseShieldInputStream ncin = new CloseShieldInputStream(in)) {
-                FileBlob blob = new FileBlob(ncin);
+                Blob blob = Blobs.createBlob(ncin);
                 filesToDelete.add(blob.getFile());
                 return blob;
             }

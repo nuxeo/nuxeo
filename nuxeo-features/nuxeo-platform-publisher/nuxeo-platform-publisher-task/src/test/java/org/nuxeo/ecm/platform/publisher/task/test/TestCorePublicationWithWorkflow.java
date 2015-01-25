@@ -29,11 +29,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -45,7 +45,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
-import org.nuxeo.ecm.platform.publisher.impl.core.SectionPublicationTree;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.runtime.api.Framework;
@@ -114,9 +113,8 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         doc2Publish = session.createDocumentModel(ws.getPathAsString(), "file", "File");
         doc2Publish.setProperty("dublincore", "title", "MyDoc");
 
-        Blob blob = new StringBlob("SomeDummyContent");
+        Blob blob = Blobs.createBlob("SomeDummyContent");
         blob.setFilename("dummyBlob.txt");
-        blob.setMimeType("text/plain");
         doc2Publish.setProperty("file", "content", blob);
 
         doc2Publish = session.createDocument(doc2Publish);

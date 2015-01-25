@@ -39,11 +39,10 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
@@ -228,7 +227,7 @@ public class FormData implements FormInstance {
                 in = item.getInputStream();
             }
             String ctype = item.getContentType();
-            Blob blob = new FileBlob(in, ctype == null ? "application/octet-stream" : ctype);
+            Blob blob = Blobs.createBlob(in, ctype == null ? "application/octet-stream" : ctype);
             blob.setFilename(item.getName());
             in.close();
             return blob;
@@ -421,7 +420,7 @@ public class FormData implements FormInstance {
                                                                             // to
                                                                             // blobs
                         for (Object obj : ar) {
-                            blobs.add(new StringBlob(obj.toString()));
+                            blobs.add(Blobs.createBlob(obj.toString()));
                         }
                     } else {
                         for (Object obj : ar) {
@@ -440,7 +439,7 @@ public class FormData implements FormInstance {
                 // should be a file upload
                 Blob blob = null;
                 if (ar[0].getClass() == String.class) {
-                    blob = new StringBlob(ar[0].toString());
+                    blob = Blobs.createBlob(ar[0].toString());
                 } else {
                     blob = (Blob) ar[0];
                 }

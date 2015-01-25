@@ -41,10 +41,10 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -535,7 +535,7 @@ public class SuggestDirectoryEntries {
                 jsonAdapter.push(adapter);
 
             }
-            return new StringBlob(jsonAdapter.getChildrenJSONArray().toString(), "application/json");
+            return Blobs.createBlob(jsonAdapter.getChildrenJSONArray().toString(), "application/json");
         } finally {
             try {
                 if (session != null) {

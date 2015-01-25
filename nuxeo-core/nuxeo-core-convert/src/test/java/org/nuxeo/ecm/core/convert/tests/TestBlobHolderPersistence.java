@@ -25,8 +25,7 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.convert.cache.CachableBlobHolder;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.runtime.test.runner.Features;
@@ -40,7 +39,7 @@ public class TestBlobHolderPersistence {
     public void testPersistence() throws Exception {
         List<Blob> blobs = new ArrayList<Blob>();
         for (int i = 0; i < 10; i++) {
-            Blob blob = new StringBlob("FileContent_" + i);
+            Blob blob = Blobs.createBlob("FileContent_" + i);
             if (i == 0) {
                 blob.setFilename("index.html");
             } else {
@@ -70,7 +69,7 @@ public class TestBlobHolderPersistence {
             if (file.getName().startsWith("index.html")) {
                 mainFileFound = true;
             } else {
-                assertTrue(new FileBlob(file).getString().startsWith("FileContent_"));
+                assertTrue(Blobs.createBlob(file).getString().startsWith("FileContent_"));
             }
 
         }

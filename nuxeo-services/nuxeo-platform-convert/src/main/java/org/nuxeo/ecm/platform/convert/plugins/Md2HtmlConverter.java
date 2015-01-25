@@ -22,8 +22,8 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -65,7 +65,7 @@ public class Md2HtmlConverter implements Converter {
             if (!bodyContentOnly) {
                 html.append("</body></html>");
             }
-            Blob outputBlob = new StringBlob(html.toString(), descriptor.getDestinationMimeType());
+            Blob outputBlob = Blobs.createBlob(html.toString(), descriptor.getDestinationMimeType());
             String filename = inputBlob.getFilename();
             if (filename != null) {
                 int dotPosition = filename.lastIndexOf('.');

@@ -27,9 +27,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -62,7 +62,7 @@ public abstract class XmlZip2TextConverter implements Converter {
             } finally {
                 zis.doClose();
             }
-            return new SimpleCachableBlobHolder(new StringBlob(sb.toString()));
+            return new SimpleCachableBlobHolder(Blobs.createBlob(sb.toString()));
         } catch (ClientException | IOException | ParserConfigurationException | SAXException e) {
             throw new ConversionException("Error during OpenXml2Text conversion", e);
         }

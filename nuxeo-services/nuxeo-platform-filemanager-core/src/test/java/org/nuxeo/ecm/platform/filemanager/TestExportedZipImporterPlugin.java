@@ -28,11 +28,11 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.DocumentWriter;
@@ -134,7 +134,7 @@ public class TestExportedZipImporterPlugin {
     public void testImportViaFileManager() throws Exception {
         createTestDocumentsAndArchive();
         FileManager fm = Framework.getService(FileManager.class);
-        Blob blob = new FileBlob(archiveFile);
+        Blob blob = Blobs.createBlob(archiveFile);
         fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(), true, "toto.zip");
         DocumentModelList children = coreSession.getChildren(destWS.getRef());
         assertTrue(children.size() > 0);
@@ -166,7 +166,7 @@ public class TestExportedZipImporterPlugin {
         coreSession.save();
 
         FileManager fm = Framework.getService(FileManager.class);
-        Blob blob = new FileBlob(archiveFile);
+        Blob blob = Blobs.createBlob(archiveFile);
         fm.createDocumentFromBlob(coreSession, blob, wsRoot.getPathAsString(), true, "toto.zip");
         sourceWS = coreSession.getChild(wsRoot.getRef(), "sourceWS");
         assertNotNull(sourceWS);

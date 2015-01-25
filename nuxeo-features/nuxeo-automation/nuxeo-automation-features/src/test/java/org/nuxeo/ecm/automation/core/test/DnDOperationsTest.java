@@ -13,10 +13,10 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -42,9 +42,8 @@ public class DnDOperationsTest {
     @Test
     public void testCreate() throws Exception {
 
-        Blob source = new StringBlob("YoMan");
+        Blob source = Blobs.createBlob("YoMan");
         source.setFilename("Test.txt");
-        source.setMimeType("text/plain");
 
         BlobList blobs = new BlobList(source);
 
@@ -73,13 +72,11 @@ public class DnDOperationsTest {
 
         // prepare blobs attachements on the Files
 
-        Blob source2 = new StringBlob("YoMan2");
+        Blob source2 = Blobs.createBlob("YoMan2");
         source2.setFilename("Test2.txt");
-        source2.setMimeType("text/plain");
 
-        Blob source3 = new StringBlob("YoMan3");
+        Blob source3 = Blobs.createBlob("YoMan3");
         source3.setFilename("Test3.txt");
-        source3.setMimeType("text/plain");
 
         blobs = new BlobList();
         blobs.add(source2);

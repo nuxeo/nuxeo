@@ -14,12 +14,12 @@ import java.util.zip.ZipOutputStream;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.api.Framework;
 
 public class DocumentListZipExporter {
@@ -122,7 +122,7 @@ public class DocumentListZipExporter {
      */
     private void addSummaryToZip(ZipOutputStream out, byte[] data, StringBuilder sb) throws IOException {
 
-        Blob content = new StringBlob(sb.toString());
+        Blob content = Blobs.createBlob(sb.toString());
 
         BufferedInputStream buffi = new BufferedInputStream(content.getStream(), BUFFER);
 

@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.platform.pictures.tiles.api;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -36,7 +37,7 @@ public interface PictureTiles {
 
     String getTilesPath();
 
-    Blob getTile(int x, int y) throws ClientException;
+    Blob getTile(int x, int y) throws ClientException, IOException;
 
     float getZoomfactor();
 

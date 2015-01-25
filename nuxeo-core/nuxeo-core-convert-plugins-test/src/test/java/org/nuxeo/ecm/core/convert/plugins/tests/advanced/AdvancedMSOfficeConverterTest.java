@@ -25,7 +25,7 @@ import java.io.IOException;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.convert.plugins.tests.SimpleConverterTest;
 import org.nuxeo.ecm.core.convert.plugins.text.extractors.DOCX2TextConverter;
 import org.nuxeo.ecm.core.convert.plugins.text.extractors.MSOffice2TextConverter;
@@ -42,7 +42,7 @@ public class AdvancedMSOfficeConverterTest extends SimpleConverterTest {
     protected void checkTextConversion(String textContent) {
 
         try {
-            Blob blob = new FileBlob(FileUtils.getResourceFileFromContext("test-docs/advanced/MSOffice_paragraphs.txt"));
+            Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-docs/advanced/MSOffice_paragraphs.txt"));
             blob.setEncoding("UTF-8");
 
             // Get blob string with Unix end of line characters

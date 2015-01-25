@@ -35,6 +35,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -185,7 +186,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
     @Test
     public void testBinaryManagerTmpFileMoveNotCopy() throws Exception {
         // tmp file
-        Blob blob = new FileBlob(new ByteArrayInputStream("abcd\b".getBytes("UTF-8")));
+        Blob blob = Blobs.createBlob(new ByteArrayInputStream("abcd\b".getBytes("UTF-8")));
         File originaFile = blob.getFile();
         // set in doc
         DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");

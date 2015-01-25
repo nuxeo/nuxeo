@@ -36,14 +36,13 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
@@ -70,7 +69,7 @@ public class DownloadServlet extends HttpServlet {
 
     protected static final int MIN_BUFFER_SIZE = 1024 * 64;
 
-    protected static final Blob BLOB_NOT_FOUND = new StringBlob("404");
+    protected static final Blob BLOB_NOT_FOUND = Blobs.createBlob("404");
 
     private static final long serialVersionUID = 986876871L;
 
@@ -357,7 +356,7 @@ public class DownloadServlet extends HttpServlet {
         String tmpFileName = pathParts[0];
         File tmpZip = new File(System.getProperty("java.io.tmpdir") + "/" + tmpFileName);
         try {
-            FileBlob zipBlob = new FileBlob(tmpZip);
+            Blob zipBlob = Blobs.createBlob(tmpZip);
             downloadBlob(req, resp, zipBlob, "clipboard.zip");
         } finally {
             tmpZip.delete();

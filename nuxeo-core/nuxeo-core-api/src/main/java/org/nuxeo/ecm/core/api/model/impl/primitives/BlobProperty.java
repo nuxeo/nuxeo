@@ -23,10 +23,8 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyAccessException;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
@@ -160,20 +158,20 @@ public class BlobProperty extends MapProperty {
         Object data = value.get(DATA);
         Blob blob;
         if (data == null) {
-            blob = new StringBlob("");
+            blob = Blobs.createBlob("");
         } else if (data instanceof String) {
-            blob = new StringBlob((String) data);
+            blob = Blobs.createBlob((String) data);
         } else if (data instanceof byte[]) {
-            blob = new ByteArrayBlob((byte[]) data);
+            blob = Blobs.createBlob((byte[]) data);
         } else if (data instanceof InputStream) {
             try {
-                blob = new FileBlob((InputStream) data);
+                blob = Blobs.createBlob((InputStream) data);
             } catch (IOException e) {
                 throw new NuxeoException("Cannot persist blob: " + getPath(), e);
             }
         } else {
             log.warn("Unknown class for blob, saving an empty one: " + data.getClass());
-            blob = new StringBlob("");
+            blob = Blobs.createBlob("");
         }
         try {
             Map<String, Object> v = new HashMap<String, Object>(value);

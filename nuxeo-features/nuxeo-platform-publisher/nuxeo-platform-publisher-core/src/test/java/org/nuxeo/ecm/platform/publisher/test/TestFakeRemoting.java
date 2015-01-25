@@ -17,18 +17,21 @@
 
 package org.nuxeo.ecm.platform.publisher.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
@@ -96,9 +99,8 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
         doc2Publish = session.createDocumentModel(workspace.getPathAsString(), "file", "File");
         doc2Publish.setProperty("dublincore", "title", "MyDoc");
 
-        Blob blob = new StringBlob("SomeDummyContent");
+        Blob blob = Blobs.createBlob("SomeDummyContent");
         blob.setFilename("dummyBlob.txt");
-        blob.setMimeType("text/plain");
         doc2Publish.setProperty("file", "content", blob);
 
         doc2Publish = session.createDocument(doc2Publish);
@@ -281,9 +283,8 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
         DocumentModel doc = session.createDocumentModel(workspace.getPathAsString(), "file2", "File");
         doc.setProperty("dublincore", "title", "A title with spaces");
 
-        Blob blob = new StringBlob("SomeDummyContent");
+        Blob blob = Blobs.createBlob("SomeDummyContent");
         blob.setFilename("dummyBlob.txt");
-        blob.setMimeType("text/plain");
         doc.setProperty("file", "content", blob);
 
         doc = session.createDocument(doc);

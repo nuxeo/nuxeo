@@ -12,6 +12,9 @@
 
 package org.nuxeo.ecm.core.utils;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,13 +25,10 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -52,7 +52,7 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         Map<String, Object> vignette = new HashMap<String, Object>();
         vignette.put("width", Long.valueOf(0));
         vignette.put("height", Long.valueOf(0));
-        Blob blob1 = new StringBlob("foo1 bar1", "text/plain");
+        Blob blob1 = Blobs.createBlob("foo1 bar1");
         blob1.setFilename("file1.txt");
         vignette.put("content", blob1);
         vignettes.add(vignette);
@@ -60,7 +60,7 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         vignette = new HashMap<String, Object>();
         vignette.put("width", Long.valueOf(0));
         vignette.put("height", Long.valueOf(0));
-        Blob blob2 = new StringBlob("foo2 bar2", "text/plain");
+        Blob blob2 = Blobs.createBlob("foo2 bar2");
         blob2.setFilename("file2.txt");
         vignette.put("content", blob2);
         vignettes.add(vignette);
@@ -70,7 +70,7 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         attachedFile.put("vignettes", vignettes);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
 
-        Blob blob3 = new StringBlob("foo3 bar3", "text/plain");
+        Blob blob3 = Blobs.createBlob("foo3 bar3");
         doc.setProperty("file", "content", blob3);
 
         BlobsExtractor extractor = new BlobsExtractor();
@@ -89,7 +89,7 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         Map<String, Object> vignette = new HashMap<String, Object>();
         vignette.put("width", Long.valueOf(0));
         vignette.put("height", Long.valueOf(0));
-        Blob blob1 = new StringBlob("foo1 bar1", "text/plain");
+        Blob blob1 = Blobs.createBlob("foo1 bar1");
         blob1.setFilename("file1.txt");
         vignette.put("content", blob1);
         vignettes.add(vignette);
@@ -97,7 +97,7 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         vignette = new HashMap<String, Object>();
         vignette.put("width", Long.valueOf(0));
         vignette.put("height", Long.valueOf(0));
-        Blob blob2 = new StringBlob("foo2 bar2", "text/plain");
+        Blob blob2 = Blobs.createBlob("foo2 bar2");
         blob2.setFilename("file2.txt");
         vignette.put("content", blob2);
         vignettes.add(vignette);
@@ -107,7 +107,7 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         attachedFile.put("vignettes", vignettes);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
 
-        Blob blob3 = new StringBlob("foo3 bar3", "text/plain");
+        Blob blob3 = Blobs.createBlob("foo3 bar3");
         doc.setProperty("file", "content", blob3);
 
         BlobsExtractor extractor = new BlobsExtractor();

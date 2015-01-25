@@ -44,6 +44,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CloseableFile;
@@ -51,7 +52,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.BlobWrapper;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
@@ -149,12 +149,12 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         try {
             MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
             if (file.getName() != null) {
-                return mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(file.getName(), new FileBlob(file),
+                return mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(file.getName(), Blobs.createBlob(file),
                         "image/jpeg");
             } else {
                 return mimetypeRegistry.getMimetypeFromFile(file);
             }
-        } catch (ClientException | MimetypeNotFoundException | MimetypeDetectionException e) {
+        } catch (ClientException | MimetypeNotFoundException | MimetypeDetectionException | IOException e) {
             log.error("Unable to retrieve mime type", e);
         }
         return null;
@@ -192,7 +192,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         ImageInfo imageInfo = null;
         try {
             String ext = blob.getFilename() == null ? ".tmp" : "." + FilenameUtils.getExtension(blob.getFilename());
-            try (CloseableFile cf = blob.getCloseableFile(ext)) {                
+            try (CloseableFile cf = blob.getCloseableFile(ext)) {
                 imageInfo = ImageIdentifier.getInfo(cf.getFile().getAbsolutePath());
             }
         } catch (CommandNotAvailable | CommandException e) {

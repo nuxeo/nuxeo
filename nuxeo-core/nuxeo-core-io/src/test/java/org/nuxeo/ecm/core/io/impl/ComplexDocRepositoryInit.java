@@ -24,10 +24,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 
 public class ComplexDocRepositoryInit extends DefaultRepositoryInit {
@@ -66,9 +66,8 @@ public class ComplexDocRepositoryInit extends DefaultRepositoryInit {
         // file
         // -----------------------
         doc.setProperty("file", "filename", "test_file.doc");
-        Blob blob = new StringBlob("My blob");
+        Blob blob = Blobs.createBlob("My blob");
         blob.setFilename("test_file.doc");
-        blob.setMimeType("text/plain");
         doc.setProperty("file", "content", blob);
 
         // ------------------------

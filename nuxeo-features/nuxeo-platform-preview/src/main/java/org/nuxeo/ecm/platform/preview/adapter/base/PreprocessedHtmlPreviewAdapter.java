@@ -21,8 +21,8 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
@@ -60,7 +60,7 @@ public class PreprocessedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter {
                     resultBlobs.add(blob);
                 } else {
                     String data = (String) prop.getValue();
-                    resultBlobs.add(new StringBlob(data));
+                    resultBlobs.add(Blobs.createBlob(data));
                 }
             } catch (PropertyException e) {
                 throw new PreviewException("Unable to get property " + xpath, e);

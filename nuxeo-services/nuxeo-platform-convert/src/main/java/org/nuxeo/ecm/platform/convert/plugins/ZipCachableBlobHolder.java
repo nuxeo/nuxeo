@@ -28,9 +28,8 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
@@ -64,7 +63,7 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
             ConversionException {
         String filePath = key + path;
         File file = new File(filePath);
-        Blob blob = new FileBlob(file);
+        Blob blob = Blobs.createBlob(file);
         String mimeType = getMimeTypeService().getMimetypeFromBlob(blob);
         blob.setMimeType(mimeType);
         blob.setFilename(path);
@@ -79,13 +78,17 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
     @Override
     public List<Blob> getBlobs() throws ClientException {
         if (blobs == null) {
-            load(key);
+            try {
+                load(key);
+            } catch (IOException e) {
+                throw new ClientException(e);
+            }
         }
         return blobs;
     }
 
     @Override
-    public void load(String path) {
+    public void load(String path) throws IOException {
         blobs = new ArrayList<Blob>();
         File base = new File(path);
         try {
@@ -94,9 +97,7 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
             } else {
                 File file = new File(path);
                 String mimeType = getMimeType(file);
-                Blob mainBlob = new FileBlob(file);
-                mainBlob.setMimeType(mimeType);
-                mainBlob.setFilename(file.getName());
+                Blob mainBlob = Blobs.createBlob(file, mimeType, null, file.getName());
                 blobs.add(mainBlob);
             }
 
@@ -159,6 +160,6 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
             page.append("</a></li>");
         }
         page.append("</ul></body></html>");
-        return new StringBlob(page.toString());
+        return Blobs.createBlob(page.toString());
     }
 }

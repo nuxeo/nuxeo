@@ -14,9 +14,9 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
@@ -47,7 +47,7 @@ public class CreatePictureTest {
     @Test
     public void testCreate() throws Exception {
 
-        Blob source = new FileBlob(FileUtils.getResourceFileFromContext("images/test.jpg"));
+        Blob source = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"));
         String fileName = "MyTest.jpg";
         String mimeType = "image/jpeg";
 

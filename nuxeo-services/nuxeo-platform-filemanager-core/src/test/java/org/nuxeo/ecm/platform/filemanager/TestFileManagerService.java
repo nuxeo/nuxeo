@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.text.Normalizer;
 import java.util.List;
@@ -36,12 +37,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -100,7 +100,7 @@ public class TestFileManagerService {
     @Test
     public void testDefaultCreateFromBlob() throws Exception {
         File file = getTestFile("test-data/hello.doc");
-        FileBlob input = new FileBlob(file, "application/msword");
+        Blob input = Blobs.createBlob(file, "application/msword");
 
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.doc");
@@ -114,7 +114,7 @@ public class TestFileManagerService {
     public void testDefaultCreateTwiceFromSameBlob() throws Exception {
         // create doc
         File file = getTestFile("test-data/hello.doc");
-        FileBlob input = new FileBlob(file, "application/msword");
+        Blob input = Blobs.createBlob(file, "application/msword");
 
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.doc");
@@ -147,7 +147,7 @@ public class TestFileManagerService {
     public void testDefaultUpdateFromBlob() throws Exception {
         // create doc
         File file = getTestFile("test-data/hello.doc");
-        FileBlob input = new FileBlob(file, "application/msword");
+        Blob input = Blobs.createBlob(file, "application/msword");
 
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.doc");
@@ -178,7 +178,7 @@ public class TestFileManagerService {
     @Test
     public void testCreateNote() throws Exception {
         File file = getTestFile("test-data/hello.html");
-        FileBlob input = new FileBlob(file, "text/html");
+        Blob input = Blobs.createBlob(file, "text/html");
 
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.html");
@@ -201,7 +201,7 @@ public class TestFileManagerService {
     public void testCreateNoteTwiceFromSameBlob() throws Exception {
         // create doc
         File file = getTestFile("test-data/hello.html");
-        FileBlob input = new FileBlob(file, "text/html");
+        Blob input = Blobs.createBlob(file, "text/html");
 
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.html");
@@ -286,7 +286,7 @@ public class TestFileManagerService {
     @Test
     public void testCreateBlobWithNormalizedMimeType() throws Exception {
         File file = getTestFile("test-data/hello.doc");
-        Blob blob = new FileBlob(file);
+        Blob blob = Blobs.createBlob(file);
         // should fore Note creation using 'pluginToUseNormalizedMimeType'
         // plugin
         blob.setMimeType("application/csv");
@@ -302,8 +302,7 @@ public class TestFileManagerService {
         // Create doc from NFC normalized filename
         String fileName = "ÜÜÜ ÓÓÓ.rtf";
         String nfcNormalizedFileName = Normalizer.normalize(fileName, Normalizer.Form.NFC);
-        Blob blob = new StringBlob("Test content", "text/rtf");
-        blob.setFilename(nfcNormalizedFileName);
+        Blob blob = Blobs.createBlob("Test content", "text/rtf", null, nfcNormalizedFileName);
         service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true, nfcNormalizedFileName);
         assertNotNull(FileManagerUtils.getExistingDocByFileName(coreSession, workspace.getPathAsString(),
                 nfcNormalizedFileName));
@@ -318,12 +317,11 @@ public class TestFileManagerService {
 
         // create a File whose title is "hello.html" and content is "hello.rtf"
         File file = getTestFile("test-data/hello.rtf");
-        FileBlob input = new FileBlob(file, "text/rtf");
-        input.setFilename("hello.html");
+        Blob input = Blobs.createBlob(file, "text/rtf", null, "hello.html");
 
         DocumentModel doc = coreSession.createDocumentModel(workspace.getPathAsString(), "hello.html", "File");
         doc.setPropertyValue("dc:title", "hello.html");
-        doc.setPropertyValue("file:content", input);
+        doc.setPropertyValue("file:content", (Serializable) input);
         doc.setPropertyValue("file:filename", "hello.html");
 
         // create doc
@@ -343,7 +341,7 @@ public class TestFileManagerService {
 
         // update the with a file that matches the same importer
         file = getTestFile("test-data/hello.html");
-        input = new FileBlob(file, "text/html");
+        input = Blobs.createBlob(file, "text/html");
         doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.html");
         assertNotNull(doc);

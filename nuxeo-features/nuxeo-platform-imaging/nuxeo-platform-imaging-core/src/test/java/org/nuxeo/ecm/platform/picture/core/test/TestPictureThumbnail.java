@@ -26,11 +26,11 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -68,7 +68,7 @@ public class TestPictureThumbnail {
         session.save();
         // Create 4 views
         BlobHolder bh = picture.getAdapter(BlobHolder.class);
-        Blob blob = new FileBlob(getFileFromPath("images/cat.gif"), "image/gif", null, "cat.gif", null);
+        Blob blob = Blobs.createBlob(getFileFromPath("images/cat.gif"), "image/gif", null, "cat.gif");
         bh.setBlob(blob);
         session.saveDocument(picture);
         session.save();

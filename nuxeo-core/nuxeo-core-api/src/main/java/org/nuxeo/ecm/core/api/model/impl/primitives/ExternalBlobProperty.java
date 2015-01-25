@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.core.api.model.impl.primitives;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -199,7 +200,7 @@ public class ExternalBlobProperty extends MapProperty {
             // TODO maybe check if digest is still a match to the retrieved blob
             blob.setDigest(digest);
             return blob;
-        } catch (DocumentException e) {
+        } catch (DocumentException | IOException e) {
             throw new NuxeoException(e);
         }
     }

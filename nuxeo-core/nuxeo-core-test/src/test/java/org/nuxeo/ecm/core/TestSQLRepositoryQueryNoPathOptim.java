@@ -13,6 +13,7 @@ package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 import junit.framework.Assert;
@@ -20,11 +21,12 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
@@ -90,9 +92,9 @@ public class TestSQLRepositoryQueryNoPathOptim extends SQLRepositoryTestCase {
         file1.setPropertyValue("dc:description", "testfile1_description");
         String content = "Some caf\u00e9 in a restaurant.\nDrink!.\n";
         String filename = "testfile.txt";
-        StringBlob blob1 = new StringBlob(content, "text/plain");
+        Blob blob1 = Blobs.createBlob(content);
         blob1.setFilename(filename);
-        file1.setPropertyValue("content", blob1);
+        file1.setPropertyValue("content", (Serializable) blob1);
         file1.setPropertyValue("filename", filename);
         Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0);
         file1.setPropertyValue("dc:created", cal1);

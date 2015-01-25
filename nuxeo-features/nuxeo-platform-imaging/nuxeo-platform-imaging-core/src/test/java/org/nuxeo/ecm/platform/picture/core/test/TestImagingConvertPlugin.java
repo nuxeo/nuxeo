@@ -41,9 +41,9 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -81,7 +81,7 @@ public class TestImagingConvertPlugin {
 
         for (String filename : ImagingResourcesHelper.TEST_IMAGE_FILENAMES) {
             String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
-            Blob blob = new FileBlob(ImagingResourcesHelper.getFileFromPath(path));
+            Blob blob = Blobs.createBlob(ImagingResourcesHelper.getFileFromPath(path));
             blob.setFilename(filename);
             BlobHolder bh = new SimpleBlobHolder(blob);
 
@@ -104,7 +104,7 @@ public class TestImagingConvertPlugin {
 
         for (String filename : ImagingResourcesHelper.TEST_IMAGE_FILENAMES) {
             String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
-            Blob blob = new FileBlob(ImagingResourcesHelper.getFileFromPath(path));
+            Blob blob = Blobs.createBlob(ImagingResourcesHelper.getFileFromPath(path));
             blob.setFilename(filename);
             BlobHolder bh = new SimpleBlobHolder(blob);
 
@@ -139,7 +139,7 @@ public class TestImagingConvertPlugin {
 
         for (String filename : ImagingResourcesHelper.TEST_IMAGE_FILENAMES) {
             String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
-            Blob blob = new FileBlob(ImagingResourcesHelper.getFileFromPath(path));
+            Blob blob = Blobs.createBlob(ImagingResourcesHelper.getFileFromPath(path));
             blob.setFilename(filename);
             BlobHolder bh = new SimpleBlobHolder(blob);
 

@@ -19,17 +19,19 @@
 
 package org.nuxeo.ecm.platform.filemanager.core.listener.tests;
 
-import org.junit.Before;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 /**
@@ -146,8 +148,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
                 "WithoutPrefixDocument");
         withoutPrefixBlobDoc.setProperty("dublincore", "title", "TestFile");
 
-        Blob blob = new StringBlob("SOMEDUMMYDATA", null);
-        blob.setFilename("test.pdf");
+        Blob blob = Blobs.createBlob("SOMEDUMMYDATA", null, null, "test.pdf");
         if (setMimeType) {
             blob.setMimeType("application/pdf");
         }
@@ -165,8 +166,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         DocumentModel withoutPrefixBlobDoc = getCoreSession().createDocumentModel("/", "testFile", "SimpleBlobDocument");
         withoutPrefixBlobDoc.setProperty("dublincore", "title", "TestFile");
 
-        Blob blob = new StringBlob("SOMEDUMMYDATA", null);
-        blob.setFilename("test.pdf");
+        Blob blob = Blobs.createBlob("SOMEDUMMYDATA", null, null, "test.pdf");
         if (setMimeType) {
             blob.setMimeType("application/pdf");
         }
@@ -184,8 +184,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         DocumentModel fileDoc = getCoreSession().createDocumentModel("/", "testFile", "File");
         fileDoc.setProperty("dublincore", "title", "TestFile");
 
-        Blob blob = new StringBlob("SOMEDUMMYDATA", null);
-        blob.setFilename("test.pdf");
+        Blob blob = Blobs.createBlob("SOMEDUMMYDATA", null, null, "test.pdf");
         if (setMimeType) {
             blob.setMimeType("application/pdf");
         }
@@ -209,8 +208,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
     protected DocumentModel createWorkspace() throws ClientException {
         DocumentModel doc = getCoreSession().createDocumentModel("/", "testWorkspace", "Workspace");
         doc.setProperty("dublincore", "title", "TestWorkspace");
-        Blob blob = new StringBlob("SOMEDUMMYDATA", null);
-        blob.setFilename("test.pdf");
+        Blob blob = Blobs.createBlob("SOMEDUMMYDATA", null, null, "test.pdf");
         // blob.setMimeType("application/pdf");
         doc.setProperty("file", "content", blob);
         doc = getCoreSession().createDocument(doc);

@@ -26,8 +26,8 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.pictures.tiles.gwt.client.TilingPreviewConstant;
@@ -61,9 +61,7 @@ public class TiledImagePreviewer extends AbstractPreviewer implements MimeTypePr
             htmlFile = htmlFile.replace("$tileWidth$", "" + 200);
             htmlFile = htmlFile.replace("$tileHeight$", "" + 200);
             htmlFile = htmlFile.replace("$maxTiles$", "" + 2);
-            Blob mainBlob = new StringBlob(htmlFile);
-            mainBlob.setFilename("index.html");
-            mainBlob.setMimeType("text/html");
+            Blob mainBlob = Blobs.createBlob(htmlFile, "text/html", null, "index.html");
             blob.setFilename("image");
 
             blobResults.add(mainBlob);

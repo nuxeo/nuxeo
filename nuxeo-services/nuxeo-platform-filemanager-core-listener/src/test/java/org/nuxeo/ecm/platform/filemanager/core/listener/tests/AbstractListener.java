@@ -20,9 +20,9 @@
 package org.nuxeo.ecm.platform.filemanager.core.listener.tests;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 public class AbstractListener extends SQLRepositoryTestCase {
@@ -43,7 +43,7 @@ public class AbstractListener extends SQLRepositoryTestCase {
         DocumentModel fileDoc = session.createDocumentModel("/", "testFile", "File");
         fileDoc.setProperty("dublincore", "title", "TestFile");
 
-        Blob blob = new StringBlob("SOMEDUMMYDATA");
+        Blob blob = Blobs.createBlob("SOMEDUMMYDATA");
         blob.setFilename("test.pdf");
         if (setMimeType) {
             blob.setMimeType("application/pdf");

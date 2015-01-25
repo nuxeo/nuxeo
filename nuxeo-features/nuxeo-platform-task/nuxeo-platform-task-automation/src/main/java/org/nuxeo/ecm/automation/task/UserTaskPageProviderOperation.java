@@ -30,8 +30,8 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.task.dashboard.DashBoardItem;
@@ -102,7 +102,7 @@ public class UserTaskPageProviderOperation extends AbstractTaskOperation {
         json.put("pageCount", Long.valueOf(pageProvider.getNumberOfPages()));
 
         json.put("entries", processes);
-        return new StringBlob(json.toString(), "application/json");
+        return Blobs.createBlob(json.toString(), "application/json");
     }
 
 }

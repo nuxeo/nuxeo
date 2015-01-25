@@ -23,8 +23,8 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.BlobCollector;
 import org.nuxeo.ecm.automation.core.rendering.RenderingService;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.runtime.services.resource.ResourceService;
 
@@ -59,10 +59,7 @@ public class RenderDocument {
     @OperationMethod(collector = BlobCollector.class)
     public Blob run(DocumentModel doc) throws OperationException, RenderingException, TemplateException, IOException {
         String content = RenderingService.getInstance().render(type, template, ctx);
-        StringBlob blob = new StringBlob(content);
-        blob.setFilename(name);
-        blob.setMimeType(mimeType);
-        return blob;
+        return Blobs.createBlob(content, mimeType, null, name);
     }
 
 }

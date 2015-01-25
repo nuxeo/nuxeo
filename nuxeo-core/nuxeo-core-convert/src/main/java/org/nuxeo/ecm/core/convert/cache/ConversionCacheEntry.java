@@ -69,9 +69,13 @@ public class ConversionCacheEntry {
     public BlobHolder restore() {
         updateAccessTime();
         if (persisted && persistPath != null) {
-            CachableBlobHolder holder = new SimpleCachableBlobHolder();
-            holder.load(persistPath);
-            return holder;
+            try {
+                CachableBlobHolder holder = new SimpleCachableBlobHolder();
+                holder.load(persistPath);
+                return holder;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         } else {
             return null;
         }

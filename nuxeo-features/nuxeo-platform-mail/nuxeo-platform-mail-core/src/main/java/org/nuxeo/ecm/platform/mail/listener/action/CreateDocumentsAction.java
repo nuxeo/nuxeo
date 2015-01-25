@@ -47,6 +47,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -54,7 +56,6 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
@@ -118,7 +119,7 @@ public class CreateDocumentsAction extends AbstractMailAction {
 
         documentModel.setPropertyValue(HTML_TEXT_PROPERTY_NAME, text);
         if (text != null && !text.isEmpty()) {
-            StringBlob sb = new StringBlob(text);
+            Blob sb = Blobs.createBlob(text);
             BlobHolder simpleBlobHolder = new SimpleBlobHolder(sb);
             ConversionService conversionService = Framework.getService(ConversionService.class);
             Map<String, Serializable> parameters = new HashMap<String, Serializable>();

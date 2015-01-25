@@ -37,13 +37,12 @@ import javax.faces.context.FacesContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
-
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayout;
@@ -55,6 +54,7 @@ import org.nuxeo.ecm.platform.contentview.json.JSONContentViewState;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.ui.web.jsf.MockFacesContext;
 import org.nuxeo.runtime.api.Framework;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
  * @since 5.4.2
@@ -496,8 +496,8 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         File tmpFile = File.createTempFile("test", ".txt");
         Framework.trackFile(tmpFile, this);
         FileUtils.writeFile(tmpFile, "Content");
-        FileBlob blob = new FileBlob(tmpFile);
-        file.put("file", blob);
+        Blob blob = Blobs.createBlob(tmpFile);
+        file.put("file", (Serializable) blob);
         file.put("filename", "initial_name.txt");
         files.add(file);
         searchDocument.setPropertyValue("files:files", files);

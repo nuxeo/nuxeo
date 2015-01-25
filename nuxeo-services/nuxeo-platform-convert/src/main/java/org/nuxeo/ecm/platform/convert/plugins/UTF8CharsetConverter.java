@@ -27,10 +27,10 @@ import java.util.Map;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
@@ -86,12 +86,12 @@ public class UTF8CharsetConverter implements Converter {
             // had no encoding previously, detected as UTF-8
             // just reuse the same blob
             try (InputStream in = blob.getStream()) {
-                newBlob = new FileBlob(in);
+                newBlob = Blobs.createBlob(in);
             }
         } else {
             // decode bytes as chars in the detected charset then encode chars as bytes in UTF-8
             try (InputStream in = new ReaderInputStream(new InputStreamReader(blob.getStream(), encoding), UTF_8)) {
-                newBlob = new FileBlob(in);
+                newBlob = Blobs.createBlob(in);
             }
         }
         newBlob.setMimeType(mimetype);

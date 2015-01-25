@@ -29,7 +29,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
@@ -82,7 +82,7 @@ public class AuditQuery {
             // }
             rows.add(obj);
         }
-        return new StringBlob(rows.toString(), "application/json");
+        return Blobs.createBlob(rows.toString(), "application/json");
     }
 
     public List<LogEntry> query() {

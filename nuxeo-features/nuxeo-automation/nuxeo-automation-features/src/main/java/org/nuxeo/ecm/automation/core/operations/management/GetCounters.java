@@ -33,8 +33,8 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.counters.CounterHistoryStack;
 import org.nuxeo.runtime.management.counters.CounterManager;
@@ -131,7 +131,7 @@ public class GetCounters {
             }
         }
 
-        return new StringBlob(collection.toString(), "application/json");
+        return Blobs.createBlob(collection.toString(), "application/json");
     }
 
 }

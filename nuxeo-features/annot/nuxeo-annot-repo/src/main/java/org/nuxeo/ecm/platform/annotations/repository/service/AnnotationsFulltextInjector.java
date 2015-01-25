@@ -23,11 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -75,7 +75,7 @@ public class AnnotationsFulltextInjector {
             return;
         }
         // strip HTML markup if any
-        BlobHolder bh = new SimpleBlobHolder(new StringBlob(annotationBody, "text/html"));
+        BlobHolder bh = new SimpleBlobHolder(Blobs.createBlob(annotationBody, "text/html"));
         ConversionService service = Framework.getService(ConversionService.class);
         if (service != null) {
             try {

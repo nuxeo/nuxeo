@@ -21,16 +21,15 @@ import java.util.Map;
  *
  * $Id$
  */
-
 import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -78,9 +77,7 @@ public class TestDocumentTemplate {
         doc.setPropertyValue("dc:subjects", new String[] { "A", "B", "C" });
         List<Map<String, Serializable>> blobs = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            Blob blob = new StringBlob("something");
-            blob.setFilename("file" + i + ".something");
-            blob.setMimeType("application/something");
+            Blob blob = Blobs.createBlob("something", "application/something", null, "file" + i + ".something");
             Map<String, Serializable> blobEntry = new HashMap<>();
             blobEntry.put("file", (Serializable) blob);
             blobEntry.put("filename", blob.getFilename());

@@ -34,7 +34,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 import org.jboss.seam.web.MultipartRequest;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.restlet.data.Request;
 
 import com.noelios.restlet.ext.servlet.ServletCall;
@@ -83,7 +83,7 @@ public class FileUploadHelper {
                 String name = names.nextElement();
                 try (InputStream in = seamMPRequest.getFileInputStream(name)) {
                     if (in != null) {
-                        Blob blob = new FileBlob(in);
+                        Blob blob = Blobs.createBlob(in);
                         blob.setFilename(seamMPRequest.getFileName(name));
                         blobs.add(blob);
                     }
@@ -100,7 +100,7 @@ public class FileUploadHelper {
             List<FileItem> fileItems = fu.parseRequest(requestContext);
             for (FileItem item : fileItems) {
                 try (InputStream is = item.getInputStream()) {
-                    Blob blob = new FileBlob(is);
+                    Blob blob = Blobs.createBlob(is);
                     blob.setFilename(item.getName());
                     blobs.add(blob);
                 }

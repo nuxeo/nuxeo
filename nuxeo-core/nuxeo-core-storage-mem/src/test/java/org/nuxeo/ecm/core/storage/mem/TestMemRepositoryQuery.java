@@ -34,11 +34,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -50,7 +49,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -119,9 +117,9 @@ public class TestMemRepositoryQuery extends MemRepositoryTestCase {
         file1.setPropertyValue("dc:description", "testfile1_description");
         String content = "Some caf\u00e9 in a restaurant.\nDrink!.\n";
         String filename = "testfile.txt";
-        StringBlob blob1 = new StringBlob(content, "text/plain");
+        Blob blob1 = Blobs.createBlob(content);
         blob1.setFilename(filename);
-        file1.setPropertyValue("content", blob1);
+        file1.setPropertyValue("content", (Serializable) blob1);
         file1.setPropertyValue("filename", filename);
         Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0);
         file1.setPropertyValue("dc:created", cal1);
@@ -385,7 +383,7 @@ public class TestMemRepositoryQuery extends MemRepositoryTestCase {
 
         // add a blob
         String s = "<html><head/><body>La la la!</body></html>";
-        Blob blob = new StringBlob(s, "text/html");
+        Blob blob = Blobs.createBlob(s, "text/html");
         childFile1.setProperty("file", "content", blob);
 
         session.saveDocument(childFile1);

@@ -24,12 +24,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
-import org.nuxeo.ecm.platform.picture.api.BlobHelper;
 import org.nuxeo.ecm.platform.picture.core.ImageUtils;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropper;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
@@ -63,7 +62,7 @@ public class IMImageUtils implements ImageUtils {
 
                 callImageMagick();
 
-                Blob targetBlob = new FileBlob(targetFile);
+                Blob targetBlob = Blobs.createBlob(targetFile);
                 Framework.trackFile(targetFile, targetBlob);
                 return targetBlob;
             } catch (CommandNotAvailable | CommandException | IOException e) {

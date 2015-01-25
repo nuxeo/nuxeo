@@ -32,11 +32,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -90,7 +90,7 @@ public class PictureChangedListener implements EventListener {
                 return;
             }
 
-            Blob blob = new FileBlob(FileUtils.getFileFromURL(fileUrl));
+            Blob blob = Blobs.createBlob(FileUtils.getFileFromURL(fileUrl));
             MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
             String mimeType = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(blob.getFilename(), blob, null);
             blob.setMimeType(mimeType);

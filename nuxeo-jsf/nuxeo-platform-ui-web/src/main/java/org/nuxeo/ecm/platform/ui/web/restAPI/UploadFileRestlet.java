@@ -31,12 +31,12 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
@@ -131,7 +131,7 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements LiveEditConst
         // persisting the blob makes it possible to read the binary content
         // of the request stream several times (mimetype sniffing, digest
         // computation, core binary storage)
-        Blob blob = new FileBlob(is);
+        Blob blob = Blobs.createBlob(is);
         blob.setFilename(filename);
 
         dm.setPropertyValue(blobPropertyName, (Serializable) blob);

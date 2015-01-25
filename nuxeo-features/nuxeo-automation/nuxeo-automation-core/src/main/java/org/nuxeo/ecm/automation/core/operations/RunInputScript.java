@@ -23,8 +23,8 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.scripting.Scripting.GroovyScript;
 import org.nuxeo.ecm.automation.core.scripting.Scripting.MvelScript;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 /**
  * Run a script given as the input of the operation (as a blob). Note that this operation is available only as
@@ -57,8 +57,7 @@ public class RunInputScript {
             throw new OperationException("Unknown scripting language " + type);
         }
         if (r != null) {
-            StringBlob b = new StringBlob(r.toString());
-            b.setMimeType("text/plain");
+            Blob b = Blobs.createBlob(r.toString());
             b.setFilename("result");
             return b;
         }

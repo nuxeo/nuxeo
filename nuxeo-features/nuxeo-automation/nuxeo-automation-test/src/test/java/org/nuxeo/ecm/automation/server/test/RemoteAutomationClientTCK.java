@@ -28,7 +28,6 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.Session;
@@ -45,6 +44,8 @@ import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOpe
 import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
 import org.nuxeo.ecm.automation.test.RemoteAutomationServerFeature;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -197,7 +198,7 @@ public class RemoteAutomationClientTCK {
         assertNotNull(folder);
         assertEquals("/FolderBlob", folder.getPath());
         File file = newFile("<doc>mydoc</doc>");
-        FileBlob blob = new FileBlob(file);
+        Blob blob = Blobs.createBlob(file);
         blob.setMimeType("text/xml");
         session.newRequest("FileManager.Import").setInput(blob).setContextProperty("currentDocument", folder.getPath()).execute();
         Documents docs = (Documents) session.newRequest(DocumentPaginatedQuery.ID).setHeader(
@@ -210,7 +211,7 @@ public class RemoteAutomationClientTCK {
         // get the data URL
         String path = map.getString("data");
         // download the file from its remote location
-        blob = (FileBlob) session.getFile(path);
+        blob = (Blob) session.getFile(path);
         assertNotNull(blob);
         assertEquals("text/xml", blob.getMimeType());
         assertEquals("<doc>mydoc</doc>", IOUtils.toString(blob.getStream(), "utf-8"));
@@ -225,7 +226,7 @@ public class RemoteAutomationClientTCK {
                 "properties", "dc:title=My File").execute();
         // upload file blob
         File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
-        FileBlob fb = new FileBlob(fieldAsJsonFile);
+        Blob fb = Blobs.createBlob(fieldAsJsonFile);
         fb.setMimeType("image/jpeg");
         session.newRequest("Blob.Attach").setHeader("X-NXVoidOperation", "true").setInput(fb).set("document", "/myfile").execute();
     }

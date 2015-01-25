@@ -26,13 +26,13 @@ import org.nuxeo.ecm.automation.core.operations.document.SetDocumentProperty;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRefList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -207,8 +207,8 @@ public class IterableOperationsTest {
         Framework.getService(EventService.class).waitForAsyncCompletion();
 
         BlobList blobs = new BlobList();
-        StringBlob b1 = new StringBlob("the content 1");
-        StringBlob b2 = new StringBlob("the content 2");
+        Blob b1 = Blobs.createBlob("the content 1");
+        Blob b2 = Blobs.createBlob("the content 2");
         blobs.add(b1);
         blobs.add(b2);
         OperationContext ctx = new OperationContext(session);

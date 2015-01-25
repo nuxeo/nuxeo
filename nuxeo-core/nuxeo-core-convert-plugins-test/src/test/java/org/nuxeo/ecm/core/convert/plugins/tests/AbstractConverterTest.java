@@ -23,14 +23,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -41,10 +42,10 @@ public abstract class AbstractConverterTest {
         return (os.indexOf("win") >= 0);
     }
 
-    protected final BlobHolder getBlobFromPath(String path) {
+    protected final BlobHolder getBlobFromPath(String path) throws IOException {
         File file = FileUtils.getResourceFileFromContext(path);
         assertTrue(file.length() > 0);
-        return new SimpleBlobHolder(new FileBlob(file));
+        return new SimpleBlobHolder(Blobs.createBlob(file));
     }
 
     protected String doTestTextConverter(String srcMT, String converter, String fileName) throws Exception {

@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
@@ -131,9 +131,13 @@ public class CommandLineConverter extends CommandLineBasedConverter {
             File[] files = outputDir.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    Blob blob = new FileBlob(file);
-                    blob.setFilename(file.getName());
-                    blobs.add(blob);
+                    try {
+                        Blob blob = Blobs.createBlob(file);
+                        blob.setFilename(file.getName());
+                        blobs.add(blob);
+                    } catch (IOException e) {
+                        throw new ConversionException("Cannot create blob", e);
+                    }
                 }
             }
         }

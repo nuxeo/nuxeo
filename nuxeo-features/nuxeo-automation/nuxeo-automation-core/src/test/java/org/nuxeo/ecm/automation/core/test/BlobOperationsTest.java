@@ -27,7 +27,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -51,11 +50,10 @@ import org.nuxeo.ecm.automation.core.operations.document.SetDocumentBlob;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -119,7 +117,7 @@ public class BlobOperationsTest {
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
         chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set("properties", "dc:title=MyDoc");
-        chain.add(SetDocumentBlob.ID).set("file", new StringBlob("blob content"));
+        chain.add(SetDocumentBlob.ID).set("file", Blobs.createBlob("blob content"));
         chain.add(GetDocumentBlob.ID);
         // chain.add(Operations.BLOB_POST).set("url", File.createTempFile("",
         // suffix));
@@ -168,15 +166,15 @@ public class BlobOperationsTest {
         ctx.setInput(src);
 
         BlobList blobs = new BlobList();
-        blobs.add(new StringBlob("blob1"));
-        blobs.add(new StringBlob("blob2"));
+        blobs.add(Blobs.createBlob("blob1"));
+        blobs.add(Blobs.createBlob("blob2"));
 
         // chain 1 is creating a list of 2 blobs.
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
         chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set("properties", "dc:title=MyDoc");
-        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", new StringBlob("blob1"));
-        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", new StringBlob("blob2"));
+        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", Blobs.createBlob("blob1"));
+        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", Blobs.createBlob("blob2"));
         chain.add(GetDocumentBlobs.ID);
 
         BlobList out = (BlobList) service.run(ctx, chain);
@@ -200,15 +198,15 @@ public class BlobOperationsTest {
         ctx.setInput(src);
 
         BlobList blobs = new BlobList();
-        blobs.add(new StringBlob("blob1"));
-        blobs.add(new StringBlob("blob2"));
+        blobs.add(Blobs.createBlob("blob1"));
+        blobs.add(Blobs.createBlob("blob2"));
 
         // chain 1 is creating a list of 2 blobs.
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
         chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set("properties", "dc:title=MyDoc");
-        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", new StringBlob("blob1"));
-        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", new StringBlob("blob2"));
+        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", Blobs.createBlob("blob1"));
+        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", Blobs.createBlob("blob2"));
         chain.add(GetDocumentBlobs.ID);
 
         BlobList out = (BlobList) service.run(ctx, chain);
@@ -233,7 +231,7 @@ public class BlobOperationsTest {
         dir.mkdirs();
 
         OperationContext ctx = new OperationContext(session);
-        Blob blob = new StringBlob("test", "text/plain");
+        Blob blob = Blobs.createBlob("test");
         blob.setFilename("myblob");
         ctx.setInput(blob);
 
@@ -263,9 +261,8 @@ public class BlobOperationsTest {
     @Test
     public void testFilenameModification() throws Exception {
         // create a file
-        Blob blob = new StringBlob("the blob content");
+        Blob blob = Blobs.createBlob("the blob content");
         blob.setFilename("initial_name.txt");
-        blob.setMimeType("text/plain");
         DocumentModel file = session.createDocumentModel(src.getPathAsString(), "blobWithName", "File");
         file.setPropertyValue("dc:title", "The File");
         file.setPropertyValue("file:content", (Serializable) blob);
@@ -295,16 +292,16 @@ public class BlobOperationsTest {
     @Test
     public void testGetAllDocumentBlobsOperation() throws Exception {
         // Create a file
-        Blob mainFile = new StringBlob("the blob content");
+        Blob mainFile = Blobs.createBlob("the blob content");
         // Create files list
         Map<String, Serializable> file = new HashMap<>();
         ArrayList<Map<String, Serializable>> files = new ArrayList<>();
         // Attach one file to the list
         File tmpFile = File.createTempFile("test", ".txt");
         FileUtils.writeFile(tmpFile, "Content");
-        FileBlob blob = new FileBlob(tmpFile);
+        Blob blob = Blobs.createBlob(tmpFile);
         Framework.trackFile(tmpFile, blob);
-        file.put("file", blob);
+        file.put("file", (Serializable) blob);
         file.put("filename", "initial_name.txt");
         files.add(file);
         // Create document
@@ -330,8 +327,8 @@ public class BlobOperationsTest {
         // Fetch two files
         File pdfMerge1 = FileUtils.getResourceFileFromContext("pdfMerge1.pdf");
         File pdfMerge2 = FileUtils.getResourceFileFromContext("pdfMerge2.pdf");
-        FileBlob pdf1 = new FileBlob(pdfMerge1);
-        FileBlob pdf2 = new FileBlob(pdfMerge2);
+        Blob pdf1 = Blobs.createBlob(pdfMerge1);
+        Blob pdf2 = Blobs.createBlob(pdfMerge2);
         pdf1.setMimeType("application/pdf");
         pdf2.setMimeType("application/pdf");
         // Add them to list

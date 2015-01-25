@@ -32,8 +32,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
@@ -74,12 +73,12 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testTilingSimple() throws ClientException {
+    public void testTilingSimple() throws Exception {
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
         assertNotNull(pts);
 
         File file = FileUtils.getResourceFileFromContext("test.jpg");
-        Blob image = new FileBlob(file);
+        Blob image = Blobs.createBlob(file);
 
         PictureTiles tiles = pts.getTilesFromBlob(image, 255, 255, 20);
 
@@ -94,12 +93,12 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testTilingSpead() throws ClientException {
+    public void testTilingSpead() throws Exception {
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
         assertNotNull(pts);
 
         File file = FileUtils.getResourceFileFromContext("test.jpg");
-        Blob image = new FileBlob(file);
+        Blob image = Blobs.createBlob(file);
 
         GimpExecutor.setUseQuickExec(false);
         image.setFilename("slow.jpg");
@@ -131,7 +130,7 @@ public class TestService extends NXRuntimeTestCase {
         pts.setWorkingDirPath(wdirPath);
 
         File file = FileUtils.getResourceFileFromContext("test.jpg");
-        Blob image = new FileBlob(file);
+        Blob image = Blobs.createBlob(file);
 
         image.setFilename("test.jpg");
         PictureTiles tiles = pts.getTilesFromBlob(image, 255, 255, 20, 0, 0, false);
@@ -150,12 +149,12 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testTilingWithShrink() throws ClientException {
+    public void testTilingWithShrink() throws Exception {
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
         assertNotNull(pts);
 
         File file = FileUtils.getResourceFileFromContext("test.jpg");
-        Blob image = new FileBlob(file);
+        Blob image = Blobs.createBlob(file);
 
         PictureTiles tiles = pts.getTilesFromBlob(image, 255, 255, 3);
 
@@ -164,7 +163,7 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testTilingSimpleMagick() throws ClientException {
+    public void testTilingSimpleMagick() throws Exception {
 
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
         assertNotNull(pts);
@@ -172,7 +171,7 @@ public class TestService extends NXRuntimeTestCase {
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
 
         File file = FileUtils.getResourceFileFromContext("test.jpg");
-        Blob image = new FileBlob(file);
+        Blob image = Blobs.createBlob(file);
 
         PictureTiles tiles = pts.getTilesFromBlob(image, 255, 255, 5);
 
@@ -192,7 +191,7 @@ public class TestService extends NXRuntimeTestCase {
         assertNotNull(pts);
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         File file = FileUtils.getResourceFileFromContext("test.jpg");
-        Blob image = new FileBlob(file);
+        Blob image = Blobs.createBlob(file);
         PictureTiles tiles = pts.getTilesFromBlob(image, 200, 200, 2);
         assertNotNull(tiles);
 
@@ -206,7 +205,7 @@ public class TestService extends NXRuntimeTestCase {
         assertNotNull(pts);
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         File file = FileUtils.getResourceFileFromContext("test.jpg");
-        Blob image = new FileBlob(file);
+        Blob image = Blobs.createBlob(file);
         PictureTiles tiles = pts.getTilesFromBlob(image, 200, 160, 2);
         assertNotNull(tiles);
 
@@ -221,7 +220,7 @@ public class TestService extends NXRuntimeTestCase {
         assertNotNull(pts);
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         File file = new File("/home/tiry/photos/orion.jpg");
-        Blob image = new FileBlob(file);
+        Blob image = Blobs.createBlob(file);
 
         long t0 = System.currentTimeMillis();
         PictureTiles tiles = pts.getTilesFromBlob(image, 100, 100, 180);
@@ -237,7 +236,7 @@ public class TestService extends NXRuntimeTestCase {
 
         PictureTilingComponent.setDefaultTiler(tiler);
         File file = FileUtils.getResourceFileFromContext("test.jpg");
-        Blob image = new FileBlob(file);
+        Blob image = Blobs.createBlob(file);
         long t0 = System.currentTimeMillis();
         int nb = 0;
 
@@ -377,7 +376,7 @@ public class TestService extends NXRuntimeTestCase {
         assertNotNull(pts);
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         File file = FileUtils.getResourceFileFromContext("chutes.jpg");
-        Blob image = new FileBlob(file);
+        Blob image = Blobs.createBlob(file);
         PictureTiles tiles = pts.getTilesFromBlob(image, 64, 64, 3);
         assertNotNull(tiles);
 

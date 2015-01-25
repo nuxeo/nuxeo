@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -33,10 +34,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
@@ -65,10 +65,10 @@ public class TestIWorkToPDF extends NXRuntimeTestCase {
         assertNotNull(cs);
     }
 
-    protected static BlobHolder getBlobFromPath(String path) {
+    protected static BlobHolder getBlobFromPath(String path) throws IOException {
         File file = FileUtils.getResourceFileFromContext(path);
         assertTrue(file.length() > 0);
-        return new SimpleBlobHolder(new FileBlob(file));
+        return new SimpleBlobHolder(Blobs.createBlob(file));
     }
 
     @Test
@@ -146,7 +146,7 @@ public class TestIWorkToPDF extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testPagesWithoutPreviewConverter() throws ClientException {
+    public void testPagesWithoutPreviewConverter() throws Exception {
         String converterName = cs.getConverterName("application/vnd.apple.pages", "application/pdf");
         assertEquals("iwork2pdf", converterName);
 

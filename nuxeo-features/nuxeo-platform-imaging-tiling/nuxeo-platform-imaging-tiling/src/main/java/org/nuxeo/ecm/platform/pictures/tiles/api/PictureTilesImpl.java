@@ -20,11 +20,13 @@
 package org.nuxeo.ecm.platform.pictures.tiles.api;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
@@ -105,17 +107,17 @@ public class PictureTilesImpl implements PictureTiles, Serializable {
         return imageFile.exists();
     }
 
-    public Blob getTile(int x, int y) throws ClientException {
+    public Blob getTile(int x, int y) throws ClientException, IOException {
         String imageFilePath = getTileFilePath(x, y);
         File imageFile = new File(imageFilePath);
         if (imageFile.exists())
-            return new FileBlob(imageFile);
+            return Blobs.createBlob(imageFile);
         else {
             PictureTilingService pts = Framework.getService(PictureTilingService.class);
             pts.completeTiles(this, x, y);
             imageFile = new File(imageFilePath);
             if (imageFile.exists())
-                return new FileBlob(imageFile);
+                return Blobs.createBlob(imageFile);
             else
                 throw new ClientException("Unable to get Tile");
         }

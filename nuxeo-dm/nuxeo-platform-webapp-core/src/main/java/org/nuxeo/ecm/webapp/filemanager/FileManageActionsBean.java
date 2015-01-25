@@ -49,13 +49,13 @@ import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -282,7 +282,7 @@ public class FileManageActionsBean implements FileManageActions {
     @Deprecated
     public String addBinaryFileFromPlugin(byte[] content, String mimetype, String fullName, String morePath)
             throws ClientException {
-        Blob blob = new ByteArrayBlob(content);
+        Blob blob = Blobs.createBlob(content);
         return addBinaryFileFromPlugin(blob, fullName, morePath);
     }
 

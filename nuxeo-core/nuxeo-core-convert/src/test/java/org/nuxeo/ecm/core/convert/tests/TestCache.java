@@ -23,9 +23,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.cache.ConversionCacheGCManager;
 import org.nuxeo.ecm.core.convert.cache.ConversionCacheHolder;
@@ -56,9 +56,7 @@ public class TestCache {
         assertNotNull(file);
         assertTrue(file.length() > 0);
 
-        Blob blob = new FileBlob(file);
-        blob.setFilename("hello.doc");
-        blob.setMimeType("application/msword");
+        Blob blob = Blobs.createBlob(file, "application/msword", null, "hello.doc");
 
         BlobHolder bh = new SimpleBlobHolder(blob);
 

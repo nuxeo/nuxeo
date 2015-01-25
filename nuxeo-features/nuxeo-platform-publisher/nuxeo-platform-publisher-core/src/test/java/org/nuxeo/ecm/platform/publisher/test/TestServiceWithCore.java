@@ -28,12 +28,12 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
@@ -92,9 +92,8 @@ public class TestServiceWithCore extends PublisherTestCase {
             Populate.self.doc2Publish = session.createDocumentModel(ws.getPathAsString(), "file", "File");
             Populate.self.doc2Publish.setProperty("dublincore", "title", "MyDoc");
 
-            Blob blob = new StringBlob("SomeDummyContent");
+            Blob blob = Blobs.createBlob("SomeDummyContent");
             blob.setFilename("dummyBlob.txt");
-            blob.setMimeType("text/plain");
             Populate.self.doc2Publish.setProperty("file", "content", blob);
 
             Populate.self.doc2Publish = session.createDocument(Populate.self.doc2Publish);

@@ -19,23 +19,26 @@
 
 package org.nuxeo.ecm.platform.convert.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
@@ -62,10 +65,10 @@ public class TestPDFToImage extends NXRuntimeTestCase {
         assertNotNull(cs);
     }
 
-    protected static BlobHolder getBlobFromPath(String path) {
+    protected static BlobHolder getBlobFromPath(String path) throws IOException {
         File file = FileUtils.getResourceFileFromContext(path);
         assertTrue(file.length() > 0);
-        return new SimpleBlobHolder(new FileBlob(file));
+        return new SimpleBlobHolder(Blobs.createBlob(file));
     }
 
     @Test

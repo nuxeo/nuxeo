@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.convert.plugins;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,9 +28,9 @@ import java.util.Map;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
@@ -50,7 +51,12 @@ public class PDF2HtmlConverter extends CommandLineBasedConverter {
         List<Blob> blobs = new ArrayList<Blob>();
 
         for (File file : files) {
-            Blob blob = new FileBlob(file);
+            Blob blob;
+            try {
+                blob = Blobs.createBlob(file);
+            } catch (IOException e) {
+                throw new ConversionException("Cannot create Blob", e);
+            }
             blob.setFilename(file.getName());
 
             if (file.getName().equalsIgnoreCase("index.html")) {

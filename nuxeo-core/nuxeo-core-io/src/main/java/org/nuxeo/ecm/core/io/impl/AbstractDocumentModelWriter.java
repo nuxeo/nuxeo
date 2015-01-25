@@ -30,12 +30,12 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -320,7 +320,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
                 if (blob == null) { // maybe the blob is embedded in Base64
                     // encoded data
                     byte[] bytes = Base64.decode(content);
-                    blob = new ByteArrayBlob(bytes);
+                    blob = Blobs.createBlob(bytes);
                 }
                 blob.setMimeType(mimeType);
                 blob.setEncoding(encoding);

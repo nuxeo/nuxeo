@@ -26,11 +26,11 @@ import javax.faces.context.FacesContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactory;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
@@ -111,7 +111,7 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
         try {
             try (InputStream iconStream = ctx.getExternalContext().getResourceAsStream(iconPath)) {
                 if (iconStream != null) {
-                    return new FileBlob(iconStream);
+                    return Blobs.createBlob(iconStream);
                 }
             }
         } catch (IOException e) {

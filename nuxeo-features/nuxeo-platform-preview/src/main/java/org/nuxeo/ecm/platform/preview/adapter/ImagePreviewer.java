@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 
 /**
@@ -45,9 +45,7 @@ public class ImagePreviewer extends AbstractPreviewer implements MimeTypePreview
             appendPreviewSettings(htmlPage);
             htmlPage.append("<img src=\"image\">");
 
-            Blob mainBlob = new StringBlob(htmlPage.toString());
-            mainBlob.setFilename("index.html");
-            mainBlob.setMimeType("text/html");
+            Blob mainBlob = Blobs.createBlob(htmlPage.toString(), "text/html", null, "index.html");
             blob.setFilename("image");
 
             blobResults.add(mainBlob);

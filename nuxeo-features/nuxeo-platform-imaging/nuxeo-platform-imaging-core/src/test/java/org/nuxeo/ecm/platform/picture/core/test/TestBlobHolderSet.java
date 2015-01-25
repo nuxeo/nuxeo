@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,12 +36,12 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -67,14 +68,13 @@ public class TestBlobHolderSet {
         root = session.getRootDocument();
     }
 
-    private List<Map<String, Serializable>> createViews() {
+    private List<Map<String, Serializable>> createViews() throws IOException {
         List<Map<String, Serializable>> views = new ArrayList<Map<String, Serializable>>();
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put("title", "Original");
-        map.put("content",
-                new FileBlob(
-                        FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER + "test.jpg"),
-                        "image/jpeg", null, "test.jpg", null));
+        map.put("content", (Serializable) Blobs.createBlob(
+                FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER + "test.jpg"),
+                "image/jpeg", null, "test.jpg"));
         map.put("filename", "test.jpg");
         views.add(map);
         return views;
@@ -94,8 +94,9 @@ public class TestBlobHolderSet {
         assertEquals(1, bh.getBlobs().size());
 
         // test write
-        blob = new FileBlob(FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER + "test.jpg"),
-                "image/jpeg", null, "logo.jpg", null);
+        blob = Blobs.createBlob(
+                FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER + "test.jpg"),
+                "image/jpeg", null, "logo.jpg");
         bh.setBlob(blob);
         session.saveDocument(picture);
         session.save();

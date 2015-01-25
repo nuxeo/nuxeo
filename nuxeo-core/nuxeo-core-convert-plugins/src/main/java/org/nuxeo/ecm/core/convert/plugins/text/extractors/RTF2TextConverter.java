@@ -30,9 +30,9 @@ import javax.swing.text.rtf.RTFEditorKit;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -53,9 +53,8 @@ public class RTF2TextConverter implements Converter {
             FileUtils.writeFile(f, text);
             Blob blob;
             try (InputStream in = new FileInputStream(f)) {
-                blob = new FileBlob(in);
+                blob = Blobs.createBlob(in, "text/plain");
             }
-            blob.setMimeType("text/plain");
             return new SimpleCachableBlobHolder(blob);
         } catch (ClientException | IOException | BadLocationException e) {
             throw new ConversionException("Error during Word2Text conversion", e);

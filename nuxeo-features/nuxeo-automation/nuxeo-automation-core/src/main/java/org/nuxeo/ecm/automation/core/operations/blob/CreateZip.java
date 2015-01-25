@@ -29,7 +29,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -68,7 +68,7 @@ public class CreateZip {
             out.finish();
             out.close();
         }
-        return new FileBlob(file, "application/zip", null, fileName, null);
+        return Blobs.createBlob(file, "application/zip", null, fileName);
     }
 
     @OperationMethod
@@ -85,7 +85,7 @@ public class CreateZip {
             out.finish();
             out.close();
         }
-        return new FileBlob(file, "application/zip", null, fileName, null);
+        return Blobs.createBlob(file, "application/zip", null, fileName);
     }
 
     protected String getFileName(Blob blob) {

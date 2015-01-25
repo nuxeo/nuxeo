@@ -25,8 +25,8 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -54,8 +54,7 @@ public class TestRunConverterOperation {
 
     @Test
     public void iCanUseTheConverterOperation() throws Exception {
-        Blob blob = new StringBlob("Test blob");
-        blob.setMimeType("text/plain");
+        Blob blob = Blobs.createBlob("Test blob");
 
         Map<String, Object> params = new HashMap<>();
         params.put("converter", NOPConverter.ID);

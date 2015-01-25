@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,10 +33,10 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.picture.PictureMigrationHandler;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
@@ -60,18 +61,18 @@ public class TestPictureMigrationHandler {
     protected CoreSession session;
 
     @Test
-    public void testPictureMigration() {
+    public void testPictureMigration() throws IOException {
         // create an "old" picture
         List<Map<String, Serializable>> views = new ArrayList<>();
         Map<String, Serializable> map = new HashMap<>();
         map.put("title", "Original");
-        Blob originalBlob = new FileBlob(FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER
-                + "test.jpg"), "image/jpeg", null, "Original_test.jpg", null);
+        Blob originalBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER
+                + "test.jpg"), "image/jpeg", null, "Original_test.jpg");
         map.put("content", (Serializable) originalBlob);
         map.put("filename", "Original_test.jpg");
         views.add(map);
-        Blob thumbnailBlob = new FileBlob(FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER
-                + "test.jpg"), "image/jpeg", null, "Thumbnail_test.jpg", null);
+        Blob thumbnailBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER
+                + "test.jpg"), "image/jpeg", null, "Thumbnail_test.jpg");
         map = new HashMap<>();
         map.put("title", "Thumbnail");
         map.put("content", (Serializable) thumbnailBlob);

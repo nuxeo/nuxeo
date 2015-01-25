@@ -36,6 +36,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -45,7 +46,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -560,7 +560,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
         document.setProperty("file", "filename", filname);
         final byte[] contentData = Base64.decodeBase64((String) contentMap.get("data"));
         // String contentType = (String) contentMap.get("mime-type") ;
-        Blob blob = new ByteArrayBlob(contentData);
+        Blob blob = Blobs.createBlob(contentData);
 
         MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
 

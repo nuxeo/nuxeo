@@ -24,8 +24,8 @@ import java.util.Calendar;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 public class BlobHolderDummyImpl extends AbstractBlobHolder {
 
@@ -36,7 +36,7 @@ public class BlobHolderDummyImpl extends AbstractBlobHolder {
 
     @Override
     public Blob getBlob() throws ClientException {
-        return new StringBlob("Test");
+        return Blobs.createBlob("Test");
     }
 
     @Override

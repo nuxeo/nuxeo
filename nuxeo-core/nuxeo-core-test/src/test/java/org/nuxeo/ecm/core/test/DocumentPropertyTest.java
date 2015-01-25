@@ -11,13 +11,16 @@
  */
 package org.nuxeo.ecm.core.test;
 
-import org.junit.runner.RunWith;
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
+import java.io.Serializable;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -35,10 +38,10 @@ public class DocumentPropertyTest {
     @Test
     public void theSessionIsUsable() throws Exception {
         DocumentModel doc = session.createDocumentModel("/default-domain/workspaces", "myfile", "File");
-        StringBlob blob = new StringBlob("test", "text/plain");
+        Blob blob = Blobs.createBlob("test");
         blob.setFilename("myfile");
         blob.setDigest("mydigest");
-        doc.setPropertyValue("file:content", blob);
+        doc.setPropertyValue("file:content", (Serializable) blob);
         doc = session.createDocument(doc);
         doc = session.getDocument(doc.getRef());
         assertEquals("myfile", doc.getPropertyValue("file:content/name"));

@@ -12,6 +12,7 @@
  */
 package org.nuxeo.ecm.core.api.blobholder;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -107,7 +108,7 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements Blob
     }
 
     @Override
-    public Blob getExternalBlobForUri(String uri) throws PropertyException {
+    public Blob getExternalBlobForUri(String uri) throws PropertyException, IOException {
         ExternalBlobAdapter adapter = getExternalBlobAdapterForUri(uri);
         if (adapter == null) {
             throw new PropertyException(String.format("No external blob adapter found for uri '%s'", uri));

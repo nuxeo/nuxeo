@@ -26,9 +26,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -48,7 +48,7 @@ public class XML2TextConverter implements Converter {
             Xml2TextHandler xml2text = new Xml2TextHandler();
             String text = xml2text.parse(stream);
 
-            return new SimpleCachableBlobHolder(new StringBlob(text, "text/plain"));
+            return new SimpleCachableBlobHolder(Blobs.createBlob(text));
         } catch (ClientException | IOException | SAXException | ParserConfigurationException e) {
             throw new ConversionException("Error during XML2Text conversion", e);
         } finally {

@@ -39,6 +39,6 @@ public interface CachableBlobHolder extends BlobHolder {
      *
      * @param path
      */
-    void load(String path);
+    void load(String path) throws IOException;
 
 }

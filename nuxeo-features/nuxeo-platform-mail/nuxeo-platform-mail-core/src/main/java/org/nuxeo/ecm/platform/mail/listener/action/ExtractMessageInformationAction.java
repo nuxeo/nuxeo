@@ -51,7 +51,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 import org.nuxeo.ecm.platform.mail.utils.MailCoreConstants;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
@@ -234,7 +234,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
     protected void getAttachmentParts(Part part, String defaultFilename, MimetypeRegistry mimeService,
             ExecutionContext context) throws MessagingException, IOException {
         String filename = getFilename(part, defaultFilename);
-        List<FileBlob> blobs = (List<FileBlob>) context.get(ATTACHMENTS_KEY);
+        List<Blob> blobs = (List<Blob>) context.get(ATTACHMENTS_KEY);
 
         if (part.isMimeType("multipart/alternative")) {
             bodyContent += getText(part);
@@ -247,25 +247,25 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
                         part.getContentType().toLowerCase().startsWith("text/")) {
                     bodyContent += decodeMailBody(part);
                 } else {
-                    FileBlob fileBlob;
+                    Blob blob;
                     try (InputStream in = part.getInputStream()) {
-                        fileBlob = new FileBlob(in);
+                        blob = Blobs.createBlob(in);
                     }
                     String mime = DEFAULT_BINARY_MIMETYPE;
                     try {
                         if (mimeService != null) {
                             ContentType contentType = new ContentType(part.getContentType());
-                            mime = mimeService.getMimetypeFromFilenameAndBlobWithDefault(filename, fileBlob,
+                            mime = mimeService.getMimetypeFromFilenameAndBlobWithDefault(filename, blob,
                                     contentType.getBaseType());
                         }
                     } catch (MessagingException | MimetypeDetectionException e) {
                         log.error(e);
                     }
-                    fileBlob.setMimeType(mime);
+                    blob.setMimeType(mime);
 
-                    fileBlob.setFilename(filename);
+                    blob.setFilename(filename);
 
-                    blobs.add(fileBlob);
+                    blobs.add(blob);
                 }
             }
 
