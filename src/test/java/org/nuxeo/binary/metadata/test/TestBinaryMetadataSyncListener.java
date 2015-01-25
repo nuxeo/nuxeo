@@ -24,9 +24,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
@@ -49,7 +50,7 @@ public class TestBinaryMetadataSyncListener {
     CoreSession session;
 
     @Test
-    public void testListener() {
+    public void testListener() throws Exception {
         // Create folder
         DocumentModel doc = session.createDocumentModel("/", "folder", "Folder");
         doc.setPropertyValue("dc:title", "Folder");
@@ -62,8 +63,7 @@ public class TestBinaryMetadataSyncListener {
 
         // Attach PDF
         File binary = FileUtils.getResourceFileFromContext("data/hello.pdf");
-        FileBlob fb = new FileBlob(binary);
-        fb.setMimeType("application/pdf");
+        Blob fb = Blobs.createBlob(binary, "application/pdf");
         DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
         session.saveDocument(doc);
 

@@ -17,14 +17,17 @@
 package org.nuxeo.binary.metadata.test;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 
 /**
@@ -51,45 +54,49 @@ public class BinaryMetadataServerInit implements RepositoryInit {
         }
 
         // Attach binaries
-        // Sound - MP3
-        doc = getFile(0, session);
-        File binary = FileUtils.getResourceFileFromContext("data/twist.mp3");
-        FileBlob fb = new FileBlob(binary);
-        fb.setMimeType("audio/mpeg3");
-        DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
-        session.saveDocument(doc);
+        try {
+            // Sound - MP3
+            doc = getFile(0, session);
+            File binary = FileUtils.getResourceFileFromContext("data/twist.mp3");
+            Blob fb = Blobs.createBlob(binary);
+            fb.setMimeType("audio/mpeg3");
+            DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
+            session.saveDocument(doc);
 
-        // PDF
-        doc = getFile(1, session);
-        binary = FileUtils.getResourceFileFromContext("data/hello.pdf");
-        fb = new FileBlob(binary);
-        fb.setMimeType("application/pdf");
-        DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
-        session.saveDocument(doc);
+            // PDF
+            doc = getFile(1, session);
+            binary = FileUtils.getResourceFileFromContext("data/hello.pdf");
+            fb = Blobs.createBlob(binary);
+            fb.setMimeType("application/pdf");
+            DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
+            session.saveDocument(doc);
 
-        // Image - PNG
-        doc = getFile(2, session);
-        binary = FileUtils.getResourceFileFromContext("data/training.png");
-        fb = new FileBlob(binary);
-        fb.setMimeType("image/png");
-        DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
-        session.saveDocument(doc);
+            // Image - PNG
+            doc = getFile(2, session);
+            binary = FileUtils.getResourceFileFromContext("data/training.png");
+            fb = Blobs.createBlob(binary);
+            fb.setMimeType("image/png");
+            DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
+            session.saveDocument(doc);
 
-        // Photoshop - PSD
-        doc = getFile(3, session);
-        binary = FileUtils.getResourceFileFromContext("data/montagehp.psd");
-        fb = new FileBlob(binary);
-        fb.setMimeType("application/octet-stream");
-        DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
-        session.saveDocument(doc);
+            // Photoshop - PSD
+            doc = getFile(3, session);
+            binary = FileUtils.getResourceFileFromContext("data/montagehp.psd");
+            fb = Blobs.createBlob(binary);
+            fb.setMimeType("application/octet-stream");
+            DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
+            session.saveDocument(doc);
 
-        // Image - JPG
-        doc = getFile(4, session);
-        binary = FileUtils.getResourceFileFromContext("data/china.jpg");
-        fb = new FileBlob(binary);
-        fb.setMimeType("image/jpeg");
-        DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
-        session.saveDocument(doc);
+            // Image - JPG
+            doc = getFile(4, session);
+            binary = FileUtils.getResourceFileFromContext("data/china.jpg");
+            fb = Blobs.createBlob(binary);
+            fb.setMimeType("image/jpeg");
+            DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
+            session.saveDocument(doc);
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
 
         session.save();
     }
