@@ -24,8 +24,8 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.core.impl.jsongraph.JsonGraphRoute;
 
@@ -58,8 +58,7 @@ public class GetGraphOperation {
         Locale locale = language != null && !language.isEmpty() ? new Locale(language) : Locale.ENGLISH;
         JsonGraphRoute unrestrictedRunner = new JsonGraphRoute(session, routeDocId, locale);
         String json = unrestrictedRunner.getJSON();
-        return new StringBlob(json.toString(), "application/json");
-
+        return Blobs.createBlob(json.toString(), "application/json");
     }
 
 }
