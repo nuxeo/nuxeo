@@ -54,7 +54,7 @@ public class PublishByMail implements IResultPublisher {
     }
 
     @Override
-    public void publish(final FileBlob file) throws ClientException {
+    public void publish(final Blob file) throws ClientException {
         file.setFilename(OUTPUT_FILE_NAME);
         new UnrestrictedSessionRunner(repositoryName) {
             @Override

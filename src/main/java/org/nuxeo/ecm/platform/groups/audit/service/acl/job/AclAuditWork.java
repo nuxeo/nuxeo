@@ -5,6 +5,8 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -118,12 +120,12 @@ public class AclAuditWork extends AbstractWork {
     }
 
     public void onAuditDone() {
-        // content to send
-        FileBlob fb = new FileBlob(getOutputFile(), "application/xls");
-        // do publish
         try {
+            // content to send
+            Blob fb = Blobs.createBlob(getOutputFile(), "application/xls");
+            // do publish
             publisher.publish(fb);
-        } catch (ClientException e) {
+        } catch (ClientException | IOException e) {
             log.error(e, e);
         }
     }

@@ -29,6 +29,7 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -114,7 +115,7 @@ public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void publish(FileBlob fileBlob) throws ClientException {
+            public void publish(Blob blob) throws ClientException {
                 // verify
                 try {
                     assertProcessInterruptStatusInOutputFile();

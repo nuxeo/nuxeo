@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -90,7 +91,7 @@ public class TestAclProcessingWork extends AbstractAclLayoutTest {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void publish(FileBlob fileBlob) throws ClientException {
+            public void publish(Blob blob) throws ClientException {
                 log.debug("audit done");
             }
         };

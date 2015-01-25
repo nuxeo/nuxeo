@@ -11,8 +11,8 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.core.mail.Mailer;
 import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.publish.IResultPublisher;
@@ -36,7 +36,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 public class TrialSendViaGmail {
 
     @Test
-    public void test() throws ClientException {
+    public void test() throws Exception {
         String repository = this.getClass().getAnnotation(RepositoryConfig.class).repositoryName();
 
         // sender account
@@ -47,7 +47,7 @@ public class TrialSendViaGmail {
 
         // content to send
         File f = new File("src/test/resources/TestAclLayoutGenerated.xls");
-        FileBlob fb = new FileBlob(f, "application/xls");
+        Blob fb = Blobs.createBlob(f, "application/xls");
         fb.setFilename(f.getName());
 
         // do send
