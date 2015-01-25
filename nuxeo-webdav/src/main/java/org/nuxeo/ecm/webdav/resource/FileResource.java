@@ -50,11 +50,11 @@ import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.ecm.webdav.jaxrs.Util;
 
@@ -98,7 +98,7 @@ public class FileResource extends ExistingResource {
         }
 
         try {
-            Blob content = new FileBlob(request.getInputStream());
+            Blob content = Blobs.createBlob(request.getInputStream());
             String contentType = request.getContentType();
             if (contentType == null) {
                 contentType = "application/octet-stream";

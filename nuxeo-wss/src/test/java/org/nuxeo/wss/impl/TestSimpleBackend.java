@@ -34,10 +34,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.webdav.backend.AbstractBackendFactory;
 import org.nuxeo.ecm.webdav.backend.Backend;
@@ -104,21 +105,21 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
 
         DocumentModel doc1 = session.createDocumentModel("/default-domain/workspaces/ws1", "doc1", "File");
         doc1.setPropertyValue("dc:title", "Doc1");
-        StringBlob blob = new StringBlob("Yo");
+        Blob blob = Blobs.createBlob("Yo");
         blob.setFilename("document1.doc");
         doc1.setProperty("file", "content", blob);
         doc1 = session.createDocument(doc1);
 
         DocumentModel doc2 = session.createDocumentModel("/default-domain/workspaces/ws2", "doc2", "File");
         doc2.setPropertyValue("dc:title", "Doc2");
-        blob = new StringBlob("Yo");
+        blob = Blobs.createBlob("Yo");
         blob.setFilename("document2.doc");
         doc2.setProperty("file", "content", blob);
         doc2 = session.createDocument(doc2);
 
         DocumentModel doc3 = session.createDocumentModel("/default-domain/workspaces/ws2/ws21", "doc3", "File");
         doc3.setPropertyValue("dc:title", "Doc3");
-        blob = new StringBlob("Yo");
+        blob = Blobs.createBlob("Yo");
         blob.setFilename("document3.doc");
         doc3.setProperty("file", "content", blob);
         doc3 = session.createDocument(doc3);
@@ -126,7 +127,7 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         DocumentModel doc4 = session.createDocumentModel("/default-domain/workspaces/ws1/folder/isolatedws", "doc4",
                 "File");
         doc4.setPropertyValue("dc:title", "Doc4");
-        blob = new StringBlob("Yo");
+        blob = Blobs.createBlob("Yo");
         blob.setFilename("document4.doc");
         doc4.setProperty("file", "content", blob);
         doc4 = session.createDocument(doc4);

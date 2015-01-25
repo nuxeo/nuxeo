@@ -34,7 +34,7 @@ import net.java.dev.webdav.jaxrs.methods.PROPFIND;
 import net.java.dev.webdav.jaxrs.methods.PROPPATCH;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.webdav.backend.Backend;
 
 /**
@@ -66,12 +66,11 @@ public class UnknownResource extends AbstractResource {
         }
 
         ensureParentExists();
-        Blob content = new FileBlob(request.getInputStream());
         String contentType = request.getContentType();
         if (contentType == null) {
             contentType = "application/octet-stream";
         }
-        content.setMimeType(contentType);
+        Blob content = Blobs.createBlob(request.getInputStream(), contentType, null);
         content.setFilename(name);
         backend.createFile(parentPath, name, content);
         backend.saveChanges();

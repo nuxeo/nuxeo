@@ -27,13 +27,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.wss.WSSException;
@@ -285,7 +285,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh != null) {
             try {
-                Blob blob = new FileBlob(is);
+                Blob blob = Blobs.createBlob(is);
                 if (fileName != null) {
                     blob.setFilename(fileName);
                 }
