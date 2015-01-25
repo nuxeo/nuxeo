@@ -17,9 +17,11 @@
 
 package org.nuxeo.ecm.platform.importer.tests;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.apache.commons.logging.Log;
@@ -50,7 +52,7 @@ public class TestRandomNodes {
         // + " target=" + target, nbNodes >= target * 0.1);
     }
 
-    protected void browse(SourceNode node) {
+    protected void browse(SourceNode node) throws IOException {
         List<SourceNode> children = node.getChildren();
         if (children == null) {
             return;

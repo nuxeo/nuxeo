@@ -25,9 +25,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.importer.properties.IndividualMetadataCollector;
 
 /**
@@ -52,8 +52,8 @@ public class FileWithIndividualMetadasSourceNode extends FileSourceNode {
     }
 
     @Override
-    public BlobHolder getBlobHolder() {
-        BlobHolder bh = new SimpleBlobHolderWithProperties(new FileBlob(file), collector.getProperties(file));
+    public BlobHolder getBlobHolder() throws IOException {
+        BlobHolder bh = new SimpleBlobHolderWithProperties(Blobs.createBlob(file), collector.getProperties(file));
         return bh;
     }
 

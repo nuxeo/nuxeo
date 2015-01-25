@@ -5,9 +5,9 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
@@ -24,7 +24,7 @@ public class PartialTextExtractor implements Converter {
             String data = blob.getString();
             int endIdx = new Double(data.length() * TEXT_RATIO).intValue();
             String txtData = data.substring(0, endIdx);
-            return new SimpleBlobHolder(new StringBlob(txtData));
+            return new SimpleBlobHolder(Blobs.createBlob(txtData));
 
         } catch (IOException e) {
             throw new ConversionException("error extracting partial text content", e);

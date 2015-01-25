@@ -80,7 +80,8 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
      * org.nuxeo.ecm.platform.importer.base.SourceNode)
      */
     @Override
-    public DocumentModel createFolderishNode(CoreSession session, DocumentModel parent, SourceNode node) {
+    public DocumentModel createFolderishNode(CoreSession session, DocumentModel parent, SourceNode node)
+            throws IOException {
 
         String name = getValidNameFromFileName(node.getName());
 
@@ -116,7 +117,8 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
         return defaultCreateLeafNode(session, parent, node);
     }
 
-    protected DocumentModel defaultCreateLeafNode(CoreSession session, DocumentModel parent, SourceNode node) {
+    protected DocumentModel defaultCreateLeafNode(CoreSession session, DocumentModel parent, SourceNode node)
+            throws IOException {
 
         BlobHolder bh = node.getBlobHolder();
         String leafTypeToUse = getDocTypeToUse(bh);

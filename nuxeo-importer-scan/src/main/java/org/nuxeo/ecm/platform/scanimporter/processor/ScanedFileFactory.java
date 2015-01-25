@@ -130,7 +130,8 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements Im
     }
 
     @Override
-    protected DocumentModel defaultCreateLeafNode(CoreSession session, DocumentModel parent, SourceNode node) {
+    protected DocumentModel defaultCreateLeafNode(CoreSession session, DocumentModel parent, SourceNode node)
+            throws IOException {
 
         BlobHolder bh = node.getBlobHolder();
 

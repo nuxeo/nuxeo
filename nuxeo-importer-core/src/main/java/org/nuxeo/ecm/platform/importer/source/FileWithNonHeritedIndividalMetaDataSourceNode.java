@@ -14,10 +14,10 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 
 public class FileWithNonHeritedIndividalMetaDataSourceNode extends FileSourceNode {
 
@@ -62,14 +62,14 @@ public class FileWithNonHeritedIndividalMetaDataSourceNode extends FileSourceNod
     }
 
     @Override
-    public BlobHolder getBlobHolder() {
+    public BlobHolder getBlobHolder() throws IOException {
         BlobHolder bh = null;
         String metadataFilename = file.getParent() + File.separator + getFileNameNoExt(file) + PROPERTY_FILE_SUFIX;
         File metadataFile = new File(metadataFilename);
         if (metadataFile.exists()) {
-            bh = new SimpleBlobHolderWithProperties(new FileBlob(file), loadPropertyFile(metadataFile));
+            bh = new SimpleBlobHolderWithProperties(Blobs.createBlob(file), loadPropertyFile(metadataFile));
         } else {
-            bh = new SimpleBlobHolder(new FileBlob(file));
+            bh = new SimpleBlobHolder(Blobs.createBlob(file));
         }
         return bh;
     }

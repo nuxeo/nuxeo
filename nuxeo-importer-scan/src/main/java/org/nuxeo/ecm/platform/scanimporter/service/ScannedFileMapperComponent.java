@@ -38,7 +38,7 @@ import org.jaxen.XPath;
 import org.jaxen.dom4j.Dom4jXPath;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.platform.scanimporter.processor.DocumentTypeMapper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -158,7 +158,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
 
                 File file = new File(filePath);
                 if (file.exists()) {
-                    Blob blob = new FileBlob(file);
+                    Blob blob = Blobs.createBlob(file);
                     if (fileName != null) {
                         blob.setFilename(fileName);
                     } else {

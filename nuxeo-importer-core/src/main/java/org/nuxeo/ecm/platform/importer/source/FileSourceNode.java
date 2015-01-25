@@ -20,12 +20,13 @@
 package org.nuxeo.ecm.platform.importer.source;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 
 /**
  * Simple Filesystem based {@link SourceNode}
@@ -44,11 +45,11 @@ public class FileSourceNode implements SourceNode {
         this.file = new File(path);
     }
 
-    public BlobHolder getBlobHolder() {
-        return new SimpleBlobHolder(new FileBlob(file));
+    public BlobHolder getBlobHolder() throws IOException {
+        return new SimpleBlobHolder(Blobs.createBlob(file));
     }
 
-    public List<SourceNode> getChildren() {
+    public List<SourceNode> getChildren() throws IOException {
 
         List<SourceNode> children = new ArrayList<SourceNode>();
 

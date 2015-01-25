@@ -92,7 +92,7 @@ public class GenericThreadedImportTask implements Runnable {
     protected List<ImportingDocumentFilter> importingDocumentFilters = new ArrayList<ImportingDocumentFilter>();
 
     protected String repositoryName;
-    
+
     private static synchronized int getNextTaskId() {
         taskCounter += 1;
         return taskCounter;
@@ -105,7 +105,7 @@ public class GenericThreadedImportTask implements Runnable {
         uploadedFiles = 0;
         taskId = "T" + getNextTaskId();
     }
-    
+
     protected GenericThreadedImportTask(CoreSession session, SourceNode rootSource, DocumentModel rootDoc,
             boolean skipContainerCreation, ImporterLogger rsLogger, int batchSize,
             ImporterDocumentModelFactory factory, ImporterThreadingPolicy threadPolicy) {
@@ -131,7 +131,7 @@ public class GenericThreadedImportTask implements Runnable {
             ImporterDocumentModelFactory factory, ImporterThreadingPolicy threadPolicy, String jobName) {
         this(null, rootSource, rootDoc, skipContainerCreation, rsLogger, batchSize, factory, threadPolicy);
         this.jobName = jobName;
-        this.repositoryName = repositoryName;        
+        this.repositoryName = repositoryName;
     }
 
     protected CoreSession getCoreSession() {
@@ -193,7 +193,7 @@ public class GenericThreadedImportTask implements Runnable {
 
     }
 
-    protected DocumentModel doCreateLeafNode(DocumentModel parent, SourceNode node) {
+    protected DocumentModel doCreateLeafNode(DocumentModel parent, SourceNode node) throws IOException {
         if (!shouldImportDocument(node)) {
             return null;
         }
@@ -275,7 +275,7 @@ public class GenericThreadedImportTask implements Runnable {
         }
     }
 
-    protected void recursiveCreateDocumentFromNode(DocumentModel parent, SourceNode node) {
+    protected void recursiveCreateDocumentFromNode(DocumentModel parent, SourceNode node) throws IOException {
 
         if (getFactory().isTargetDocumentModelFolderish(node)) {
             DocumentModel folder;
@@ -338,7 +338,7 @@ public class GenericThreadedImportTask implements Runnable {
     }
 
     public synchronized void run() {
-        TransactionHelper.startTransaction(transactionTimeout);        
+        TransactionHelper.startTransaction(transactionTimeout);
         synchronized (this) {
             if (isRunning) {
                 throw new IllegalStateException("Task already running");
@@ -364,7 +364,7 @@ public class GenericThreadedImportTask implements Runnable {
         } catch (Exception e) { // deals with interrupt below
             log.error("Error during import", e);
             ExceptionUtils.checkInterrupt(e);
-            notifyImportError();            
+            notifyImportError();
         } finally {
             log.info("End of task");
             if (session != null) {

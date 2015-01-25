@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Random;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.importer.random.DictionaryHolder;
 import org.nuxeo.ecm.platform.importer.random.HunspellDictionaryHolder;
 import org.nuxeo.ecm.platform.importer.random.RandomTextGenerator;
@@ -125,9 +125,7 @@ public class RandomTextSourceNode implements SourceNode {
         synchronized (size) {
             size += content.length();
         }
-        Blob blob = new StringBlob(content);
-        blob.setFilename(getName() + ".txt");
-        blob.setMimeType(getBlobMimeType());
+        Blob blob = Blobs.createBlob(content, getBlobMimeType(), null, getName() + ".txt");
         return new SimpleBlobHolder(blob);
     }
 

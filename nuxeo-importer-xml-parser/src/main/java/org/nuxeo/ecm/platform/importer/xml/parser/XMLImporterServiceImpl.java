@@ -44,16 +44,14 @@ import org.dom4j.tree.DefaultText;
 import org.mvel2.MVEL;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -219,24 +217,28 @@ public class XMLImporterServiceImpl {
         Map<String, Object> propValues = (Map<String, Object>) resolveComplex(el, conf);
 
         if (propValues.containsKey("content")) {
-            Blob blob = null;
-            String content = (String) propValues.get("content");
-            if (content != null && workingDirectory != null) {
-                File file = new File(workingDirectory, content.trim());
-                if (file.exists()) {
-                    blob = new FileBlob(file);
+            try {
+                Blob blob = null;
+                String content = (String) propValues.get("content");
+                if (content != null && workingDirectory != null) {
+                    File file = new File(workingDirectory, content.trim());
+                    if (file.exists()) {
+                        blob = Blobs.createBlob(file);
+                    }
                 }
+                if (blob == null) {
+                    blob = Blobs.createBlob((String) propValues.get("content"));
+                }
+                if (propValues.containsKey("mimetype")) {
+                    blob.setMimeType((String) propValues.get("mimetype"));
+                }
+                if (propValues.containsKey("filename")) {
+                    blob.setFilename((String) propValues.get("filename"));
+                }
+                return blob;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            if (blob == null) {
-                blob = new StringBlob((String) propValues.get("content"));
-            }
-            if (propValues.containsKey("mimetype")) {
-                blob.setMimeType((String) propValues.get("mimetype"));
-            }
-            if (propValues.containsKey("filename")) {
-                blob.setFilename((String) propValues.get("filename"));
-            }
-            return blob;
         }
         return null;
     }

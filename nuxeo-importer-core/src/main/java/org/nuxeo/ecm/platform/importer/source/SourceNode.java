@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.importer.source;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -32,9 +33,9 @@ public interface SourceNode {
 
     boolean isFolderish();
 
-    BlobHolder getBlobHolder();
+    BlobHolder getBlobHolder() throws IOException;
 
-    List<SourceNode> getChildren();
+    List<SourceNode> getChildren() throws IOException;
 
     String getName();
 

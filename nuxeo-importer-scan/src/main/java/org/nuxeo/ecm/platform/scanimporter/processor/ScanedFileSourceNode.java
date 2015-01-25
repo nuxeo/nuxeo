@@ -29,6 +29,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
@@ -69,16 +70,16 @@ public class ScanedFileSourceNode extends FileSourceNode {
     }
 
     @Override
-    public BlobHolder getBlobHolder() {
+    public BlobHolder getBlobHolder() throws IOException {
         if (bh == null) {
-            return new SimpleBlobHolder(new FileBlob(file));
+            return new SimpleBlobHolder(Blobs.createBlob(file));
         } else {
             return bh;
         }
     }
 
     @Override
-    public List<SourceNode> getChildren() {
+    public List<SourceNode> getChildren() throws IOException {
         List<SourceNode> children = new ArrayList<SourceNode>();
 
         ScannedFileMapperService sfms = Framework.getLocalService(ScannedFileMapperService.class);
@@ -111,7 +112,7 @@ public class ScanedFileSourceNode extends FileSourceNode {
                     }
                 }
             } else if (!useXMLMapping) {
-                ScanFileBlobHolder bh = new ScanFileBlobHolder(new FileBlob(child), sfms.getTargetLeafType());
+                ScanFileBlobHolder bh = new ScanFileBlobHolder(Blobs.createBlob(child), sfms.getTargetLeafType());
                 children.add(new ScanedFileSourceNode(child, bh));
             }
         }
