@@ -16,6 +16,15 @@
 
 package org.nuxeo.ecm.platform.rendition.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.rendition.Constants.FILES_FILES_PROPERTY;
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,8 +33,8 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mvel2.ast.AssertNode;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -33,7 +42,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -49,15 +57,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.platform.rendition.Constants.FILES_FILES_PROPERTY;
-import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
-import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
-import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -121,8 +120,8 @@ public class TestRenditionService {
         assertEquals(1, renditionDefinitions.size());
 
         // add a blob
-        StringBlob blob = new StringBlob("I am a Blob");
-        file.setPropertyValue("file:content", blob);
+        Blob blob = Blobs.createBlob("I am a Blob");
+        file.setPropertyValue("file:content", (Serializable) blob);
         file = session.saveDocument(file);
 
         // rendition should be available now
@@ -255,7 +254,7 @@ public class TestRenditionService {
     }
 
     protected Blob createTextBlob(String content, String filename) {
-        Blob blob = new StringBlob(content, "text/plain");
+        Blob blob = Blobs.createBlob(content);
         blob.setFilename(filename);
         return blob;
     }

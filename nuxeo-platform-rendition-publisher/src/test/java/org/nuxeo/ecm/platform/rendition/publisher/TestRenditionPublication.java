@@ -30,6 +30,7 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -170,7 +171,7 @@ public class TestRenditionPublication {
     }
 
     protected Blob createTextBlob(String content, String filename) {
-        Blob blob = new StringBlob(content, "text/plain");
+        Blob blob = Blobs.createBlob(content);
         blob.setFilename(filename);
         return blob;
     }

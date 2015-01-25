@@ -27,10 +27,10 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -151,7 +151,7 @@ public class TestRenditionProvider {
     protected DocumentModel createBlobDoc(String typeName) {
         DocumentModel file = session.createDocumentModel("/", "dummy-file", typeName);
         BlobHolder bh = file.getAdapter(BlobHolder.class);
-        Blob blob = new StringBlob("Dummy text", "text/plain");
+        Blob blob = Blobs.createBlob("Dummy text");
         blob.setFilename("dummy.txt");
         bh.setBlob(blob);
         return session.createDocument(file);
