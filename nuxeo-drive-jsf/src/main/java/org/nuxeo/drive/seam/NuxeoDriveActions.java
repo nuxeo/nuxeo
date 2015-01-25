@@ -18,6 +18,7 @@
 package org.nuxeo.drive.seam;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -349,7 +350,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return sb.toString();
     }
 
-    public String downloadClientPackage(String name, File file) {
+    public String downloadClientPackage(String name, File file) throws IOException {
         FacesContext facesCtx = FacesContext.getCurrentInstance();
         return ComponentUtils.downloadFile(facesCtx, name, file);
     }
