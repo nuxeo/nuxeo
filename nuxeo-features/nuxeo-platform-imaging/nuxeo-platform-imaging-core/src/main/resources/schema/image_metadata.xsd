@@ -15,6 +15,7 @@
   <xs:element name="exposure_time" type="xs:string"/>
   <xs:element name="iso_speed_ratings" type="xs:string"/>
   <xs:element name="focal_length" type="xs:double"/>
+  <xs:element name="focalLength" type="xs:string"/>
   <xs:element name="color_space" type="xs:string"/>
   <xs:element name="white_balance" type="xs:string"/>
   <xs:element name="icc_profile" type="xs:string"/>
