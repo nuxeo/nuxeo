@@ -28,10 +28,10 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -68,7 +68,7 @@ public class ScreenshotConverter extends BaseVideoConverter implements Converter
 
         Blob blob = blobHolder.getBlob();
         try (CloseableFile source = blob.getCloseableFile("." + FilenameUtils.getExtension(blob.getFilename()))) {
-            FileBlob outBlob = new FileBlob(".jpeg");
+            Blob outBlob = Blobs.createBlobWithExtension(".jpeg");
 
             CmdParameters params = new CmdParameters();
             params.addNamedParameter("inFilePath", source.getFile().getAbsolutePath());

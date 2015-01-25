@@ -29,12 +29,12 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -169,7 +169,7 @@ public class VideoHelper {
         // put a black screen if the video or its screen-shot is unreadable
         if (docModel.getProperty("picture:views").getValue(List.class).isEmpty()) {
             try (InputStream is = VideoHelper.class.getResourceAsStream("/" + MISSING_PREVIEW_PICTURE)) {
-                Blob blob = new FileBlob(is, "image/jpeg");
+                Blob blob = Blobs.createBlob(is, "image/jpeg");
                 blob.setFilename(MISSING_PREVIEW_PICTURE.replace('/', '-'));
                 PictureResourceAdapter picture = docModel.getAdapter(PictureResourceAdapter.class);
                 picture.fillPictureViews(blob, blob.getFilename(), docModel.getTitle(),

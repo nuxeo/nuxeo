@@ -15,13 +15,14 @@ package org.nuxeo.ecm.platform.video.adapter;
 import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_FACET;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactory;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
@@ -47,8 +48,12 @@ public class ThumbnailVideoFactory implements ThumbnailFactory {
             thumbnailView = picResAdapter.getPictureFromTitle("Thumbnail");
             if (thumbnailView == null) {
                 TypeInfo docType = doc.getAdapter(TypeInfo.class);
-                return new FileBlob(FileUtils.getResourceFileFromContext("nuxeo.war" + File.separator
-                        + docType.getBigIcon()));
+                try {
+                    return Blobs.createBlob(FileUtils.getResourceFileFromContext("nuxeo.war" + File.separator
+                            + docType.getBigIcon()));
+                } catch (IOException e) {
+                    throw new ClientException(e);
+                }
             }
         }
         return thumbnailView;

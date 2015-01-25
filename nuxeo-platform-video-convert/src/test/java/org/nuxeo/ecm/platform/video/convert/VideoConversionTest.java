@@ -34,9 +34,9 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
@@ -70,7 +70,7 @@ public class VideoConversionTest extends NXRuntimeTestCase {
     protected static BlobHolder getBlobFromPath(String path, String mimeType) throws IOException {
         try (InputStream is = VideoConvertersTest.class.getResourceAsStream("/" + path)) {
             assertNotNull(String.format("Failed to load resource: " + path), is);
-            Blob blob = new FileBlob(is, mimeType);
+            Blob blob = Blobs.createBlob(is, mimeType);
             blob.setFilename(FilenameUtils.getName(path));
             return new SimpleBlobHolder(blob);
         }

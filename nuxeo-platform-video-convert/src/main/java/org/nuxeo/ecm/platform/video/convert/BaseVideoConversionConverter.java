@@ -22,6 +22,7 @@ import static org.nuxeo.ecm.platform.video.convert.Constants.OUTPUT_FILE_NAME_PA
 import static org.nuxeo.ecm.platform.video.convert.Constants.OUTPUT_FILE_PATH_PARAMETER;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,10 +33,10 @@ import java.util.UUID;
 import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.convert.plugins.CommandLineBasedConverter;
@@ -119,10 +120,12 @@ public abstract class BaseVideoConversionConverter extends CommandLineBasedConve
             outFileName = unquoteValue(outFileName);
         }
 
-        Blob blob = new FileBlob(outputFile);
-        blob.setFilename(outFileName);
-        blob.setMimeType(getVideoMimeType());
-        blobs.add(blob);
+        try {
+            Blob blob = Blobs.createBlob(outputFile, getVideoMimeType(), null, outFileName);
+            blobs.add(blob);
+        } catch (IOException e) {
+            throw new ConversionException("Cannot create blob", e);
+        }
 
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("cmdOutput", (Serializable) cmdOutput);

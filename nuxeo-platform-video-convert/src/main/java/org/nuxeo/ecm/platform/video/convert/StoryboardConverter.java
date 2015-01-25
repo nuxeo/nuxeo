@@ -22,8 +22,6 @@ import static org.nuxeo.ecm.platform.video.convert.Constants.INPUT_FILE_PATH_PAR
 import static org.nuxeo.ecm.platform.video.convert.Constants.OUTPUT_FILE_PATH_PARAMETER;
 import static org.nuxeo.ecm.platform.video.convert.Constants.POSITION_PARAMETER;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,17 +29,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
@@ -131,7 +127,7 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
             // run it
             for (int i = 0; i < numberOfThumbnails; i++) {
                 long timecode = Double.valueOf(Math.floor(i * duration / numberOfThumbnails)).longValue();
-                FileBlob thumbBlob = new FileBlob(".jpeg");
+                Blob thumbBlob = Blobs.createBlobWithExtension(".jpeg");
                 params.addNamedParameter(OUTPUT_FILE_PATH_PARAMETER, thumbBlob.getFile().getAbsolutePath());
                 params.addNamedParameter(POSITION_PARAMETER, String.valueOf(timecode));
                 params.addNamedParameter(WIDTH_PARAM, commonParams.get(WIDTH_PARAM));

@@ -38,12 +38,12 @@ import org.junit.Test;
 import org.junit.internal.AssumptionViolatedException;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -80,7 +80,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         Blob blob;
         try (InputStream in = TestVideoImporterAndListeners.class.getResourceAsStream("/" + path)) {
             assertNotNull(String.format("Failed to load resource: " + path), in);
-            blob = new FileBlob(in);
+            blob = Blobs.createBlob(in);
         }
         blob.setFilename(path);
         return new SimpleBlobHolder(blob);
@@ -162,7 +162,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
     @Test
     public void testImportSmallVideo() throws Exception {
         File testFile = getTestFile();
-        Blob blob = new FileBlob(testFile, "video/mpg");
+        Blob blob = Blobs.createBlob(testFile, "video/mpg");
         blob.setFilename("Test file.mov");
         String rootPath = root.getPathAsString();
         assertNotNull(blob);
@@ -281,7 +281,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
     @Test
     public void testVideoInfo() throws Exception {
         File testFile = getTestFile();
-        Blob blob = new FileBlob(testFile, "video/mpg");
+        Blob blob = Blobs.createBlob(testFile, "video/mpg");
         blob.setFilename("Sample.mpg");
         String rootPath = root.getPathAsString();
         assertNotNull(blob);
