@@ -37,9 +37,9 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
@@ -106,6 +106,6 @@ public class QueryUsers {
         JSONObject result = new JSONObject();
         result.put("users", array);
 
-        return new StringBlob(result.toString(), "application/json");
+        return Blobs.createBlob(result.toString(), "application/json");
     }
 }
