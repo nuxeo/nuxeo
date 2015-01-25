@@ -35,11 +35,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.quota.QuotaStatsService;
@@ -160,8 +160,7 @@ public class TestExcludedBlob {
         for (int i = 0; i < size; i++) {
             sb.append('a');
         }
-        Blob blob = new StringBlob(sb.toString());
-        blob.setMimeType("text/plain");
+        Blob blob = Blobs.createBlob(sb.toString());
         blob.setFilename("FakeBlob_" + size + ".txt");
         return blob;
     }

@@ -29,12 +29,12 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.ecm.quota.size.QuotaDisplayValue;
 import org.nuxeo.ecm.quota.size.QuotaInfo;
@@ -67,7 +67,7 @@ public class GetQuotaStatisticsOperation {
             throw new ClientException("Quota not activated on doc");
         }
         String string = toJSON(qa.getQuotaInfo(), locale);
-        return new StringBlob(string, "application/json");
+        return Blobs.createBlob(string, "application/json");
     }
 
     public String toJSON(QuotaInfo quotaInfo, Locale locale) {
