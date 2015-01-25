@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.inject.Inject;
-
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
@@ -44,10 +42,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.core.util.DateTimeFormat;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoTypeHelper;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
@@ -58,6 +57,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CmisFeature.class, CmisFeatureConfiguration.class })
@@ -176,7 +177,7 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
         CoreSession session = coreSession;
         DocumentModel doc = session.createDocumentModel("/", null, "ComplexFile");
         doc.setPropertyValue("complexTest:complexItem", (Serializable) propMap);
-        StringBlob blob = new StringBlob("Test content", "text/plain");
+        Blob blob = Blobs.createBlob("Test content");
         blob.setFilename("test.txt");
         doc.setProperty("file", "content", blob);
         doc = session.createDocument(doc);

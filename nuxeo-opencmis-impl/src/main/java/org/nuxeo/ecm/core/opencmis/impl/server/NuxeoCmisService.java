@@ -103,7 +103,6 @@ import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.commons.server.ObjectInfo;
 import org.apache.chemistry.opencmis.commons.server.ProgressControlCmisService;
-import org.apache.chemistry.opencmis.commons.server.ProgressControlCmisService.Progress;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.apache.chemistry.opencmis.server.support.wrapper.AbstractCmisServiceWrapper;
@@ -113,6 +112,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -128,7 +128,6 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -497,8 +496,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             } catch (MimetypeNotFoundException e) {
                 mimeType = MimetypeRegistry.DEFAULT_MIMETYPE;
             }
-            blob = new StringBlob("", mimeType, null);
-            blob.setFilename(name);
+            blob = Blobs.createBlob("", mimeType, null, name);
         } else {
             try {
                 blob = NuxeoPropertyData.getPersistentBlob(contentStream, null);
