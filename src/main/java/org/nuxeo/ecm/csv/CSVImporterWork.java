@@ -58,13 +58,13 @@ import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.core.util.StringList;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -342,9 +342,7 @@ public class CSVImporterWork extends AbstractWork {
                             String path = FilenameUtils.normalize(blobsFolderPath + "/" + stringValue);
                             File file = new File(path);
                             if (file.exists()) {
-                                FileBlob blob = new FileBlob(file);
-                                blob.setFilename(file.getName());
-                                fieldValue = blob;
+                                fieldValue = (Serializable) Blobs.createBlob(file);
                             } else {
                                 logError(lineNumber, "The file '%s' does not exist",
                                         LABEL_CSV_IMPORTER_NOT_EXISTING_FILE, stringValue);
@@ -392,7 +390,7 @@ public class CSVImporterWork extends AbstractWork {
                         }
                     }
                     return fieldValue;
-                } catch (ParseException | NumberFormatException e) {
+                } catch (ParseException | NumberFormatException | IOException e) {
                     logError(lineNumber, "Unable to convert field '%s' with value '%s'",
                             LABEL_CSV_IMPORTER_CANNOT_CONVERT_FIELD_VALUE, headerValue, stringValue);
                     log.debug(e, e);
