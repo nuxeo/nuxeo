@@ -29,11 +29,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -179,7 +179,7 @@ public class TestContentDiffAdapter {
 
     protected void checkContentDiff(String expectedBlobPath, Blob contentDiffBlob) {
         try {
-            Blob expectedblob = new FileBlob(FileUtils.getResourceFileFromContext(expectedBlobPath));
+            Blob expectedblob = Blobs.createBlob(FileUtils.getResourceFileFromContext(expectedBlobPath));
             String expected = expectedblob.getString();
             String actual = contentDiffBlob.getString();
             if (SystemUtils.IS_OS_WINDOWS) {

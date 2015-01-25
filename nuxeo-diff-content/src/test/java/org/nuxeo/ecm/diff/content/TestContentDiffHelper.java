@@ -25,10 +25,10 @@ import java.io.Serializable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -97,13 +97,11 @@ public class TestContentDiffHelper {
         assertTrue(ContentDiffHelper.isDisplayHtmlConversion(strProp));
 
         // Non blacklisted content property (OpenDocument) => OK
-        Blob blob = new StringBlob("A non blacklisted blob");
-        blob.setMimeType("application/vnd.oasis.opendocument.text");
+        Blob blob = Blobs.createBlob("A non blacklisted blob", "application/vnd.oasis.opendocument.text");
         assertTrue(ContentDiffHelper.isDisplayHtmlConversion((Serializable) blob));
 
         // Blacklisted content property (pdf) => KO
-        blob = new StringBlob("A blacklisted blob");
-        blob.setMimeType("application/pdf");
+        blob = Blobs.createBlob("A blacklisted blob", "application/pdf");
         assertFalse(ContentDiffHelper.isDisplayHtmlConversion((Serializable) blob));
     }
 
@@ -119,14 +117,12 @@ public class TestContentDiffHelper {
 
         // Content property with a mime type associated to a content differ
         // (HTML) => KO
-        Blob blob = new StringBlob("An HTML blob");
-        blob.setMimeType("text/html");
+        Blob blob = Blobs.createBlob("An HTML blob", "text/html");
         assertFalse(ContentDiffHelper.isDisplayTextConversion((Serializable) blob));
 
         // Content property with no mime type associated to a content differ
         // (OpenDocument) => OK
-        blob = new StringBlob("An OpenDocument blob");
-        blob.setMimeType("application/vnd.oasis.opendocument.text");
+        blob = Blobs.createBlob("An OpenDocument blob", "application/vnd.oasis.opendocument.text");
         assertTrue(ContentDiffHelper.isDisplayTextConversion((Serializable) blob));
     }
 
@@ -141,7 +137,7 @@ public class TestContentDiffHelper {
         assertFalse(ContentDiffHelper.isContentProperty(strProp));
 
         // Content property => OK
-        Blob blob = new StringBlob("A content property");
+        Blob blob = Blobs.createBlob("A content property");
         assertTrue(ContentDiffHelper.isContentProperty((Serializable) blob));
     }
 

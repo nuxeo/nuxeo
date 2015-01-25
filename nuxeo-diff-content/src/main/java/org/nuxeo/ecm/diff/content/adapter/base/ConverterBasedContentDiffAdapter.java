@@ -24,12 +24,12 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentStringBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
@@ -245,9 +245,9 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
         return convertedBlobHolder;
     }
 
-    protected StringBlob getHtmlStringBlob(Blob blob) throws ContentDiffException {
+    protected Blob getHtmlStringBlob(Blob blob) throws ContentDiffException {
         try {
-            StringBlob htmlStringBlob = new StringBlob(StringEscapeUtils.escapeHtml(
+            Blob htmlStringBlob = Blobs.createBlob(StringEscapeUtils.escapeHtml(
                     new String(blob.getByteArray(), "UTF-8")).replace("\r\n", "\n").replace("\n", "<br />"));
             htmlStringBlob.setFilename(blob.getFilename());
             return htmlStringBlob;

@@ -20,14 +20,16 @@ package org.nuxeo.ecm.diff.content;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 
 /**
@@ -110,8 +112,10 @@ public class ContentDiffRepositoryInit extends DefaultRepositoryInit {
     protected Blob getBlobFromPath(String path, String mimeType) {
         File file = FileUtils.getResourceFileFromContext(path);
         assertTrue(file.length() > 0);
-        Blob blob = new FileBlob(file, mimeType);
-        blob.setFilename(path);
-        return blob;
+        try {
+            return Blobs.createBlob(file, mimeType, null, path);
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
     }
 }

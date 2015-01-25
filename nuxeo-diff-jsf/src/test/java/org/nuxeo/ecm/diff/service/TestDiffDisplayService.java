@@ -32,11 +32,11 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
@@ -107,7 +107,7 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         DocumentModel rightDoc = session.createDocumentModel("/", "myFile", "File");
         leftDoc.setPropertyValue("dc:description", "Description of my file");
         rightDoc.setPropertyValue("dc:creator", "Jack");
-        rightDoc.setPropertyValue("file:content", new StringBlob("Joe is not rich, nor is Jack."));
+        rightDoc.setPropertyValue("file:content", (Serializable) Blobs.createBlob("Joe is not rich, nor is Jack."));
         rightDoc = session.createDocument(rightDoc);
 
         // Do doc diff

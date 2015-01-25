@@ -33,10 +33,10 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
@@ -94,7 +94,7 @@ public class TestDiffDisplayServiceDefaultDisplay extends DiffDisplayServiceTest
         leftDoc.setPropertyValue("dc:creator", "Joe");
         List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
         Map<String, Serializable> file = new HashMap<String, Serializable>();
-        file.put("file", new StringBlob("Joe is not rich."));
+        file.put("file", (Serializable) Blobs.createBlob("Joe is not rich."));
         file.put("filename", "Joe.txt");
         files.add(file);
         leftDoc.setPropertyValue("files:files", (Serializable) files);
@@ -116,7 +116,7 @@ public class TestDiffDisplayServiceDefaultDisplay extends DiffDisplayServiceTest
         rightDoc.setPropertyValue("dc:creator", "Jack");
         files = new ArrayList<Map<String, Serializable>>();
         file = new HashMap<String, Serializable>();
-        file.put("file", new StringBlob("Joe is not rich, nor is Jack."));
+        file.put("file", (Serializable) Blobs.createBlob("Joe is not rich, nor is Jack."));
         file.put("filename", "Jack.pdf");
         files.add(file);
         rightDoc.setPropertyValue("files:files", (Serializable) files);

@@ -17,10 +17,12 @@
 
 package org.nuxeo.ecm.diff.test;
 
+import java.io.Serializable;
+
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 /**
  * Inits the repository for a document diff test case with 2 documents that are not of the same type.
@@ -50,7 +52,7 @@ public class DocumentDiffNotSameTypeRepositoryInit extends DocumentDiffRepositor
         // file
         // -----------------------
         doc.setPropertyValue("file:filename", "joe.doc");
-        doc.setPropertyValue("file:content", new StringBlob("Joe is bask."));
+        doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob("Joe is bask."));
 
         // -----------------------
         // simpletypes
