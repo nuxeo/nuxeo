@@ -138,9 +138,8 @@ public class NuxeoRequestControllerFilter implements Filter {
             try {
                 chain.doFilter(request, response);
             } catch (ServletException e) {
-                Throwable unwrappedError = ExceptionHelper.unwrapException(e);
-                if (ExceptionHelper.isClientAbortError(unwrappedError)) {
-                    log.warn("Client disconnected: " + unwrappedError.getMessage());
+                if (ExceptionHelper.isClientAbortError(e)) {
+                    ExceptionHelper.logClientAbort(e);
                 } else {
                     throw e;
                 }
@@ -174,9 +173,8 @@ public class NuxeoRequestControllerFilter implements Filter {
                 }
                 TransactionHelper.setTransactionRollbackOnly();
             }
-            Throwable unwrappedError = ExceptionHelper.unwrapException(e);
-            if (ExceptionHelper.isClientAbortError(unwrappedError)) {
-                log.warn("Client disconnected: " + unwrappedError.getMessage());
+            if (ExceptionHelper.isClientAbortError(e)) {
+                ExceptionHelper.logClientAbort(e);
             } else {
                 log.error(doFormatLogMessage(httpRequest, "Unhandled error was caught by the Filter"), e);
                 throw new ServletException(e);
