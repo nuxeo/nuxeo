@@ -22,6 +22,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.schema.Namespace;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaNames;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
@@ -29,6 +30,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestTypes extends NXRuntimeTestCase {
@@ -274,6 +276,119 @@ public class TestTypes extends NXRuntimeTestCase {
         assertEquals(schema.getName(), name);
         assertEquals(schema.getNamespace().uri, uri);
         assertEquals(schema.getNamespace().prefix, prefix);
+    }
+
+    @Test
+    public void testFieldFromXpath() throws Exception {
+        deployTestContrib("org.nuxeo.ecm.core.schema", "OSGI-INF/test-advanced-schema.xml");
+        SchemaManager sm = Framework.getService(SchemaManager.class);
+        assertNotNull(sm);
+        Field field = sm.getField("tp:foo");
+        assertNull(field);
+        field = sm.getField("dc:title");
+        assertEquals("title", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+        field = sm.getField("dc:contributors");
+        assertEquals("contributors", field.getName().getLocalName());
+        assertEquals("contributorList", field.getType().getName());
+        field = sm.getField("tp:stringArray");
+        assertEquals("stringArray", field.getName().getLocalName());
+        assertEquals("stringArrayType", field.getType().getName());
+        field = sm.getField("tp:stringArray/*");
+        assertEquals("item", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+        field = sm.getField("tp:stringArray/1");
+        assertEquals("item", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+        field = sm.getField("tp:complexChain");
+        assertEquals("complexChain", field.getName().getLocalName());
+        assertEquals("complexChain", field.getType().getName());
+        field = sm.getField("tp:complexChain/stringItem");
+        assertEquals("stringItem", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+        field = sm.getField("tp:complexChain/complexItem");
+        assertEquals("complexItem", field.getName().getLocalName());
+        assertEquals("complexType", field.getType().getName());
+        field = sm.getField("tp:complexList/*/stringItem");
+        assertEquals("stringItem", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+        field = sm.getField("tp:complexList/0/stringItem");
+        assertEquals("stringItem", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+
+        field = sm.getField("tp:listOfLists");
+        assertEquals("listOfLists", field.getName().getLocalName());
+        assertEquals("listOfListsType", field.getType().getName());
+        field = sm.getField("tp:listOfLists/*");
+        assertEquals("listOfListsItem", field.getName().getLocalName());
+        assertEquals("listOfListsItemType", field.getType().getName());
+        field = sm.getField("tp:listOfLists/*/stringItem");
+        assertEquals("stringItem", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+        // XXX maybe this one should resolve to null (invalid item index in xpath) (?)
+        field = sm.getField("tp:listOfLists/stringItem");
+        assertEquals("stringItem", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+        field = sm.getField("tp:listOfLists/*/stringListItem/*");
+        assertEquals("item", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+        field = sm.getField("tp:listOfLists/*/stringListItem/0");
+        assertEquals("item", field.getName().getLocalName());
+        assertEquals("string", field.getType().getName());
+        // XXX maybe this one should resolve to null (invalid item index in xpath) (?)
+        field = sm.getField("tp:listOfLists/stringListItem");
+        assertEquals("stringListItem", field.getName().getLocalName());
+        assertEquals("stringList", field.getType().getName());
+    }
+
+    @Test
+    public void testSchemaFromType() throws Exception {
+        deployTestContrib("org.nuxeo.ecm.core.schema", "OSGI-INF/test-advanced-schema.xml");
+        Schema schema = getSchema("foo");
+        assertNull(schema);
+        schema = getSchema("dc:title");
+        assertEquals("dublincore", schema.getName());
+        schema = getSchema("dc:contributors");
+        assertEquals("dublincore", schema.getName());
+        schema = getSchema("tp:stringArray");
+        assertEquals("testProperties", schema.getName());
+        schema = getSchema("tp:complexChain");
+        assertEquals("testProperties", schema.getName());
+        schema = getSchema("tp:complexChain/stringItem");
+        assertEquals("testProperties", schema.getName());
+        schema = getSchema("tp:complexChain/complexItem");
+        assertEquals("testProperties", schema.getName());
+        schema = getSchema("tp:complexList/*/stringItem");
+        assertEquals("testProperties", schema.getName());
+        schema = getSchema("tp:complexList/0/stringItem");
+        assertEquals("testProperties", schema.getName());
+
+        schema = getSchema("tp:listOfLists");
+        assertEquals("testProperties", schema.getName());
+        schema = getSchema("tp:listOfLists/*");
+        assertEquals("testProperties", schema.getName());
+        schema = getSchema("tp:listOfLists/*/stringItem");
+        assertEquals("testProperties", schema.getName());
+        // XXX maybe this one should resolve to null (invalid item index in xpath) (?)
+        schema = getSchema("tp:listOfLists/stringItem");
+        assertEquals("testProperties", schema.getName());
+        schema = getSchema("tp:listOfLists/*/stringListItem/*");
+        assertEquals("testProperties", schema.getName());
+        schema = getSchema("tp:listOfLists/*/stringListItem/0");
+        assertEquals("testProperties", schema.getName());
+        // XXX maybe this one should resolve to null (invalid item index in xpath) (?)
+        schema = getSchema("tp:listOfLists/stringListItem");
+        assertEquals("testProperties", schema.getName());
+    }
+
+    protected Schema getSchema(String xpath) {
+        SchemaManager sm = Framework.getService(SchemaManager.class);
+        assertNotNull(sm);
+        Field field = sm.getField(xpath);
+        if (field != null) {
+            return field.getDeclaringType().getSchema();
+        }
+        return null;
     }
 
 }
