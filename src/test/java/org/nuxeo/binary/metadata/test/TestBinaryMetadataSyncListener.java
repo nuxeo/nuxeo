@@ -19,6 +19,7 @@ package org.nuxeo.binary.metadata.test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +31,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -41,6 +43,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(BinaryMetadataFeature.class)
+@Deploy({ "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.core" })
 @LocalDeploy({ "org.nuxeo.binary.metadata:binary-metadata-contrib-test.xml",
         "org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
@@ -78,4 +81,43 @@ public class TestBinaryMetadataSyncListener {
         assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:description"));
     }
 
+    @Test
+    public void testEXIFandIPTC() throws IOException {
+        // Create folder
+        DocumentModel doc = session.createDocumentModel("/", "folder", "Folder");
+        doc.setPropertyValue("dc:title", "Folder");
+        session.createDocument(doc);
+
+        // Create first picture
+        doc = session.createDocumentModel("/folder", "picture", "Picture");
+        doc.setPropertyValue("dc:title", "picture");
+        doc = session.createDocument(doc);
+
+        // Attach EXIF sample
+        File binary = FileUtils.getResourceFileFromContext("data/china.jpg");
+        Blob fb = Blobs.createBlob(binary, "image/jpeg");
+        DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
+        session.saveDocument(doc);
+
+        // Verify
+        DocumentModel picture = session.getDocument(doc.getRef());
+        assertEquals("Horizontal (normal)", picture.getPropertyValue("imd:orientation"));
+        assertEquals(2.4, picture.getPropertyValue("imd:fnumber"));
+
+        // Create second picture
+        doc = session.createDocumentModel("/folder", "picture1", "Picture");
+        doc.setPropertyValue("dc:title", "picture");
+        doc = session.createDocument(doc);
+
+        // Attach IPTC sample
+        binary = FileUtils.getResourceFileFromContext("data/iptc_sample.jpg");
+        fb = Blobs.createBlob(binary, "image/jpeg");
+        DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
+        session.saveDocument(doc);
+
+        // Verify
+        picture = session.getDocument(doc.getRef());
+        assertEquals("DDP", picture.getPropertyValue("dc:source"));
+        assertEquals("ImageForum", picture.getPropertyValue("dc:rights"));
+    }
 }
