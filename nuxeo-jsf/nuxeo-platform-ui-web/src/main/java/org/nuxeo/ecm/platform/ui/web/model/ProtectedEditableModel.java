@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.model;
 
+import javax.el.ValueExpression;
 import javax.faces.model.DataModel;
 
 /**
@@ -54,5 +55,15 @@ public interface ProtectedEditableModel {
      * @see EditableModel#isRowNew()
      */
     boolean isRowNew();
+
+    /**
+     * @since 7.2
+     */
+    ValueExpression getBinding();
+
+    /**
+     * @since 7.2
+     */
+    ProtectedEditableModel getParent();
 
 }

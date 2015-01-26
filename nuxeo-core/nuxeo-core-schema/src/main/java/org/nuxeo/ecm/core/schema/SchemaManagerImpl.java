@@ -35,9 +35,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.schema.types.AnyType;
+import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.CompositeTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -655,26 +657,90 @@ public class SchemaManagerImpl implements SchemaManager {
      */
 
     @Override
-    public Field getField(String prefixedName) {
+    public Field getField(String xpath) {
         checkDirty();
-        Field field = fields.get(prefixedName);
-        if (field == null) {
-            QName qname = QName.valueOf(prefixedName);
-            String prefix = qname.getPrefix();
-            Schema schema = getSchemaFromPrefix(prefix);
-            if (schema == null) {
-                // try using the name
-                schema = getSchema(prefix);
+        Field field = null;
+        if (xpath != null && xpath.contains("/")) {
+            // need to resolve subfields
+            String[] properties = xpath.split("/");
+            Field resolvedField = getField(properties[0]);
+            for (int x = 1; x < properties.length; x++) {
+                if (resolvedField == null) {
+                    break;
+                }
+                resolvedField = getField(resolvedField, properties[x], x == properties.length - 1);
             }
-            if (schema != null) {
-                field = schema.getField(qname.getLocalName());
-                if (field != null) {
-                    // map is concurrent so parallelism is ok
-                    fields.put(prefixedName, field);
+            if (resolvedField != null) {
+                field = resolvedField;
+            }
+        } else {
+            field = fields.get(xpath);
+            if (field == null) {
+                QName qname = QName.valueOf(xpath);
+                String prefix = qname.getPrefix();
+                Schema schema = getSchemaFromPrefix(prefix);
+                if (schema == null) {
+                    // try using the name
+                    schema = getSchema(prefix);
+                }
+                if (schema != null) {
+                    field = schema.getField(qname.getLocalName());
+                    if (field != null) {
+                        // map is concurrent so parallelism is ok
+                        fields.put(xpath, field);
+                    }
                 }
             }
         }
         return field;
+    }
+
+    @Override
+    public Field getField(Field parent, String subFieldName) {
+        return getField(parent, subFieldName, true);
+    }
+
+    protected Field getField(Field parent, String subFieldName, boolean finalCall) {
+        if (parent != null) {
+            Type type = parent.getType();
+            if (type.isListType()) {
+                ListType listType = (ListType) type;
+                // remove indexes in case of multiple values
+                if ("*".equals(subFieldName)) {
+                    if (!finalCall) {
+                        return parent;
+                    } else {
+                        return resolveSubField(listType, null, true);
+                    }
+                }
+                try {
+                    Integer.valueOf(subFieldName);
+                    if (!finalCall) {
+                        return parent;
+                    } else {
+                        return resolveSubField(listType, null, true);
+                    }
+                } catch (NumberFormatException e) {
+                    return resolveSubField(listType, subFieldName, false);
+                }
+            } else if (type.isComplexType()) {
+                return ((ComplexType) type).getField(subFieldName);
+            }
+        }
+        return null;
+    }
+
+    protected Field resolveSubField(ListType listType, String subName, boolean fallbackOnSubElement) {
+        Type itemType = listType.getFieldType();
+        if (itemType.isComplexType() && subName != null) {
+            ComplexType complexType = (ComplexType) itemType;
+            Field subField = complexType.getField(subName);
+            return subField;
+        }
+        if (fallbackOnSubElement) {
+            return listType.getField();
+        }
+        return null;
     }
 
     public void flushPendingsRegistration() {

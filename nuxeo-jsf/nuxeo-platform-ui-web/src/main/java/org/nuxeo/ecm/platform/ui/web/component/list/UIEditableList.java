@@ -37,6 +37,7 @@ import javax.faces.FacesException;
 import javax.faces.component.ContextCallback;
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIForm;
 import javax.faces.component.UIInput;
 import javax.faces.component.visit.VisitCallback;
 import javax.faces.component.visit.VisitContext;
@@ -54,6 +55,7 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.platform.el.FieldAdapterManager;
 import org.nuxeo.ecm.platform.ui.web.component.ResettableComponent;
 import org.nuxeo.ecm.platform.ui.web.model.EditableModel;
+import org.nuxeo.ecm.platform.ui.web.model.ProtectedEditableModel;
 import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelImpl;
 import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelRowEvent;
 import org.nuxeo.ecm.platform.ui.web.model.impl.ProtectedEditableModelImpl;
@@ -390,7 +392,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
                 requestMap.remove(modelName);
             } else {
                 // only expose protected model
-                requestMap.put(modelName, new ProtectedEditableModelImpl(model));
+                requestMap.put(modelName, getProtectedModel(model));
             }
         }
 
@@ -416,6 +418,38 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
             }
             StampState.restoreStampState(context, stamp, state);
         }
+    }
+
+    public ProtectedEditableModel getProtectedModel(EditableModel model) {
+        return new ProtectedEditableModelImpl(model, getParentList(), getValueExpression("value"));
+    }
+
+    // parent list detection, cached
+
+    protected transient UIEditableList parentList;
+
+    protected transient boolean parentListSet = false;
+
+    protected ProtectedEditableModel getParentList() {
+        if (parentList == null && !parentListSet) {
+            UIComponent parent = getParent();
+            while (parent != null) {
+                if (parent instanceof UIForm) {
+                    // don't bother
+                    break;
+                }
+                if (parent instanceof UIEditableList) {
+                    parentList = (UIEditableList) parent;
+                    parentListSet = true;
+                    break;
+                }
+                parent = parent.getParent();
+            }
+        }
+        if (parentList != null) {
+            return parentList.getProtectedModel(parentList.getEditableModel());
+        }
+        return null;
     }
 
     /**

@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.view.facelets.CompositeFaceletHandler;
@@ -27,8 +29,8 @@ import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.ValidatorHandler;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
@@ -39,6 +41,7 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.dev.WidgetTypeDevTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
+import org.nuxeo.ecm.platform.ui.web.validator.DocumentConstraintValidator;
 
 import com.sun.faces.facelets.tag.ui.InsertHandler;
 
@@ -120,37 +123,71 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
      * <p>
      * Adds an sub insert handler slot named {@link RenderVariables.widgetTemplatingZones#inside_input_widget} when
      * widget is in edit mode.
+     * <p>
+     * Adds an sub document constraint validator handler named {@link DocumentConstraintValidator#VALIDATOR_ID} when
+     * widget is in edit mode.
+     * <p>
      *
      * @since 6.0
      */
     protected FaceletHandler getNextHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
             FaceletHandler[] subHandlers, FaceletHandlerHelper helper) {
-        return getNextHandler(ctx, tagConfig, widget, subHandlers, helper,
-                BuiltinWidgetModes.EDIT.equals(widget.getMode()));
+        boolean isEdit = BuiltinWidgetModes.EDIT.equals(widget.getMode());
+        return getNextHandler(ctx, tagConfig, widget, subHandlers, helper, isEdit, isEdit);
     }
 
     /**
-     * Returns sub handlers as computed from tag information
+     * Returns sub handlers as computed from tag information.
+     * <p>
+     * Adds an input slot if corresponding boolean parameter is true.
      *
      * @since 6.0
+     * @deprecated since 7.2, use
+     *             {@link #getNextHandler(FaceletContext, TagConfig, Widget, FaceletHandler[], FaceletHandlerHelper, boolean, boolean)}
+     *             instead
      */
     protected FaceletHandler getNextHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
             FaceletHandler[] subHandlers, FaceletHandlerHelper helper, boolean addInputSlot) {
+        return getNextHandler(ctx, tagConfig, widget, subHandlers, helper, addInputSlot, false);
+    }
+
+    /**
+     * Returns sub handlers as computed from tag information.
+     * <p>
+     * Adds an input slot if corresponding boolean parameter is true.
+     * <p>
+     * Adds an document constraint validator if corresponding boolean parameter is true.
+     *
+     * @since 7.2
+     */
+    protected FaceletHandler getNextHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers, FaceletHandlerHelper helper, boolean addInputSlot,
+            boolean addDocumentConstraintValidator) {
         FaceletHandler leaf;
-        FaceletHandler[] handlers = new FaceletHandler[] {};
+        List<FaceletHandler> handlers = new ArrayList<>();
         if (subHandlers != null && subHandlers.length > 0) {
-            handlers = (FaceletHandler[]) ArrayUtils.addAll(subHandlers, handlers);
+            for (FaceletHandler fh : subHandlers) {
+                if (fh != null && !(fh instanceof LeafFaceletHandler)) {
+                    handlers.add(fh);
+                }
+            }
         }
         if (addInputSlot) {
             FaceletHandler slot = getInputSlotHandler(ctx, tagConfig, widget, subHandlers, helper);
             if (slot != null) {
-                handlers = (FaceletHandler[]) ArrayUtils.add(handlers, slot);
+                handlers.add(slot);
             }
         }
-        if (handlers.length == 0) {
+        if (addDocumentConstraintValidator) {
+            FaceletHandler v = getDocumentConstraintValidatorHandler(ctx, tagConfig, widget, subHandlers, helper);
+            if (v != null) {
+                handlers.add(v);
+            }
+        }
+        if (handlers.size() == 0) {
             leaf = new LeafFaceletHandler();
         } else {
-            leaf = new CompositeFaceletHandler(handlers);
+            leaf = new CompositeFaceletHandler(handlers.toArray(new FaceletHandler[] {}));
         }
         return leaf;
     }
@@ -161,6 +198,15 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
                 FaceletHandlerHelper.getTagAttributes(helper.createAttribute("name",
                         RenderVariables.widgetTemplatingZones.inside_input_widget.name())), new LeafFaceletHandler());
         return new InsertHandler(config);
+    }
+
+    protected FaceletHandler getDocumentConstraintValidatorHandler(FaceletContext ctx, TagConfig tagConfig,
+            Widget widget, FaceletHandler[] subHandlers, FaceletHandlerHelper helper) {
+        // XXX maybe take into account control on widget to handle sub properties validation (or not)
+        ValidatorHandler validator = helper.getValidateHandler(tagConfig.getTagId(),
+                FaceletHandlerHelper.getTagAttributes(), new LeafFaceletHandler(),
+                DocumentConstraintValidator.VALIDATOR_ID);
+        return validator;
     }
 
 }

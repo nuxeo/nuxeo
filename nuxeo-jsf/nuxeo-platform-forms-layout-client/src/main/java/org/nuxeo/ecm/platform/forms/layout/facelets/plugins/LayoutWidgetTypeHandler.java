@@ -66,7 +66,7 @@ public class LayoutWidgetTypeHandler extends AbstractWidgetTypeHandler {
         }
         attributes = FaceletHandlerHelper.addTagAttribute(attributes, helper.createAttribute("mode", modeValue));
 
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper, false);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper, false, false);
         String widgetTagConfigId = widget.getTagConfigId();
         TagConfig layoutTagConfig = TagConfigFactory.createTagConfig(tagConfig, widgetTagConfigId, attributes, leaf);
         FaceletHandler res = new LayoutTagHandler(layoutTagConfig);

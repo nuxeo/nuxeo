@@ -46,7 +46,7 @@ public class ListWidgetElement extends AbstractWidgetElement {
         AjaxRequestManager arm = new AjaxRequestManager(AbstractTest.driver);
         arm.watchAjaxRequests();
         addElement.click();
-        arm.watchAjaxRequests();
+        arm.waitForAjaxRequests();
     }
 
     public void removeElement(int index) {
@@ -72,6 +72,11 @@ public class ListWidgetElement extends AbstractWidgetElement {
             waitForSubWidget(id, index);
         }
         return getWidget(getListSubElementId(id, index), widgetClassToProxy);
+    }
+
+    @Override
+    public String getMessageValue() {
+        return getMessageValue(":" + getWidgetId() + "_message");
     }
 
 }
