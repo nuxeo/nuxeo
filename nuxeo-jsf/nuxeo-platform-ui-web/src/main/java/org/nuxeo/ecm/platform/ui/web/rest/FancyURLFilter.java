@@ -131,6 +131,7 @@ public class FancyURLFilter implements Filter {
         } catch (IOException e) {
             String url = httpRequest.getRequestURL().toString();
             if (ExceptionHelper.isClientAbortError(e)) {
+                ExceptionHelper.logClientAbort(e);
                 log.debug(String.format("Client disconnected from URL %s : %s",
                         url, e.getMessage()));
             } else {
@@ -139,6 +140,7 @@ public class FancyURLFilter implements Filter {
         } catch (ServletException e) {
             String url = httpRequest.getRequestURL().toString();
             if (ExceptionHelper.isClientAbortError(e)) {
+                ExceptionHelper.logClientAbort(e);
                 log.debug(String.format("Client disconnected from URL %s : %s",
                         url, e.getMessage()));
             } else {

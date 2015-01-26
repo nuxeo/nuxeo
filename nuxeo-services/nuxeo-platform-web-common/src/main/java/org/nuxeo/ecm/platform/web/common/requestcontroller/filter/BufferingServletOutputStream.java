@@ -207,6 +207,7 @@ public class BufferingServletOutputStream extends ServletOutputStream {
             }
             log.debug("buffered bytes: " + len);
         }
+        boolean clientAbort = false;
         try {
             if (memory != null) {
                 memory.writeTo(outputStream);
@@ -221,10 +222,9 @@ public class BufferingServletOutputStream extends ServletOutputStream {
                     try {
                         IOUtils.copy(in, outputStream);
                     } catch (IOException e) {
-                        Throwable unwrappedError = ExceptionHelper.unwrapException(e);
-                        if (ExceptionHelper.isClientAbortError(unwrappedError)) {
-                            log.warn("Client disconnected: "
-                                    + unwrappedError.getMessage());
+                        if (ExceptionHelper.isClientAbortError(e)) {
+                            ExceptionHelper.logClientAbort(e);
+                            clientAbort = true;
                         } else {
                             throw e;
                         }
@@ -236,9 +236,11 @@ public class BufferingServletOutputStream extends ServletOutputStream {
                 }
             }
         } catch (IOException e) {
-            Throwable unwrappedError = ExceptionHelper.unwrapException(e);
-            if (ExceptionHelper.isClientAbortError(unwrappedError)) {
-                log.warn("Client disconnected : " + unwrappedError.getMessage());
+            if (ExceptionHelper.isClientAbortError(e)) {
+                if (!clientAbort) {
+                    ExceptionHelper.logClientAbort(e);
+                    clientAbort = true;
+                }
             } else {
                 throw e;
             }
@@ -251,10 +253,10 @@ public class BufferingServletOutputStream extends ServletOutputStream {
                     outputStream.flush();
                 }
             } catch (IOException e) {
-                Throwable unwrappedError = ExceptionHelper.unwrapException(e);
-                if (ExceptionHelper.isClientAbortError(unwrappedError)) {
-                    log.warn("Client disconnected : "
-                            + unwrappedError.getMessage());
+                if (ExceptionHelper.isClientAbortError(e)) {
+                    if (!clientAbort) {
+                        ExceptionHelper.logClientAbort(e);
+                    }
                 } else {
                     throw e;
                 }
