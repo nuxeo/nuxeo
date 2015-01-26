@@ -24,7 +24,6 @@ import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_C
 import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_CHECKOUT_DOCUMENT;
 import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_CREATE_DOCUMENT_FOLDER;
 import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_CREATE_FOLDER_FOLDER;
-import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_CREATE_POLICY_FOLDER;
 import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_CREATE_RELATIONSHIP_SOURCE;
 import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_CREATE_RELATIONSHIP_TARGET;
 import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_DELETE_CONTENT_DOCUMENT;
@@ -332,7 +331,6 @@ public class TestCmisBinding extends TestCmisBindingBase {
         expectedPermMap.put(CAN_GET_FOLDER_PARENT_OBJECT, set(READ));
         expectedPermMap.put(CAN_CREATE_DOCUMENT_FOLDER, set(WRITE));
         expectedPermMap.put(CAN_CREATE_FOLDER_FOLDER, set(WRITE));
-        expectedPermMap.put(CAN_CREATE_POLICY_FOLDER, set(WRITE));
         expectedPermMap.put(CAN_CREATE_RELATIONSHIP_SOURCE, set(READ));
         expectedPermMap.put(CAN_CREATE_RELATIONSHIP_TARGET, set(READ));
         expectedPermMap.put(CAN_GET_PROPERTIES_OBJECT, set(READ));

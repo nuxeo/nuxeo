@@ -24,7 +24,6 @@ import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_C
 import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_CHECKOUT_DOCUMENT;
 import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_CREATE_DOCUMENT_FOLDER;
 import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_CREATE_FOLDER_FOLDER;
-import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_CREATE_POLICY_FOLDER;
 import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_CREATE_RELATIONSHIP_SOURCE;
 import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_CREATE_RELATIONSHIP_TARGET;
 import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_DELETE_CONTENT_DOCUMENT;
@@ -299,10 +298,7 @@ public class NuxeoRepository {
         addPermissionMapping(permMap, CAN_GET_FOLDER_PARENT_OBJECT, READ);
         addPermissionMapping(permMap, CAN_CREATE_DOCUMENT_FOLDER, WRITE);
         addPermissionMapping(permMap, CAN_CREATE_FOLDER_FOLDER, WRITE);
-        if (!CallContext.BINDING_WEBSERVICES.equals(callContext.getBinding())) {
-            // don't send this for SOAP because the official XSD cannot parse it
-            addPermissionMapping(permMap, CAN_CREATE_POLICY_FOLDER, WRITE);
-        }
+        // no CAN_CREATE_POLICY_FOLDER due to spec bug
         addPermissionMapping(permMap, CAN_CREATE_RELATIONSHIP_SOURCE, READ);
         addPermissionMapping(permMap, CAN_CREATE_RELATIONSHIP_TARGET, READ);
         addPermissionMapping(permMap, CAN_GET_PROPERTIES_OBJECT, READ);
