@@ -54,7 +54,8 @@ Nuxeo-Component: OSGI-INF/authentication-contrib.xml,
  OSGI-INF/seamremotingjsbuilder-framework.xml,
  OSGI-INF/reload-jsf-contrib.xml,
  OSGI-INF/username-cache-config.xml,
- OSGI-INF/jsfblobuploader-service.xml
+ OSGI-INF/jsfblobuploader-service.xml,
+ OSGI-INF/marshallers-contrib.xml
 Import-Package: com.noelios.restlet.ext.servlet;resolution:=optional,
  com.noelios.restlet.http;resolution:=optional,
  com.sun.facelets;resolution:=optional,

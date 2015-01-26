@@ -161,6 +161,15 @@
       <artifactId>luaj-jse</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- io marshallers tests -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-io</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
   <build>
     <plugins>

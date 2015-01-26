@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,13 +41,11 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.restapi.jaxrs.io.directory.DirectoryEntriesWriter;
-import org.nuxeo.ecm.restapi.jaxrs.io.directory.DirectoryEntry;
 import org.nuxeo.ecm.restapi.jaxrs.io.directory.DirectoryEntryWriter;
-import org.nuxeo.ecm.restapi.test.BaseTest;
-import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -92,7 +92,6 @@ public class DirectoryTest extends BaseTest {
     public void itCanQueryDirectoryEntry() throws Exception {
         // Given a directoryEntry
         DocumentModel docEntry = dirSession.getEntry("test1");
-
         // When I call the Rest endpoint
         JsonNode node = getResponseAsJson(RequestType.GET, "/directory/" + TESTDIRNAME + "/test1");
 

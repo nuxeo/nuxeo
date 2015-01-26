@@ -17,7 +17,8 @@ Eclipse-LazyStart: true
 Bundle-Version: 0.0.0.SNAPSHOT
 Nuxeo-Component: OSGI-INF/DirectoryService.xml,
  OSGI-INF/directory-local-configuration.xml,
- OSGI-INF/directory-resolver-contrib.xml
+ OSGI-INF/directory-resolver-contrib.xml,
+ OSGI-INF/marshallers-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: org.apache.commons.logging,
  org.nuxeo.common.xmap.annotation,

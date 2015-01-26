@@ -13,7 +13,8 @@ Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
 Nuxeo-component: OSGI-INF/docviewurlservice-framework.xml,
- OSGI-INF/docviewurlservice-contrib.xml
+ OSGI-INF/docviewurlservice-contrib.xml,
+ OSGI-INF/marshallers-contrib.xml
 Import-Package: javax.annotation;version="1.0",
  org.apache.commons.logging,
  org.nuxeo.common.utils,

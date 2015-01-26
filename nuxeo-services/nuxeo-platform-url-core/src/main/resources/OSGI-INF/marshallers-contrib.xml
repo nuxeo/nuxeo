@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.url.marshallers" version="1.0.0">
+  <documentation>
+    Core IO registered marshallers set.
+  </documentation>
+  <extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
+    <!-- document url enricher -->
+    <register class="org.nuxeo.ecm.platform.url.io.DocumentUrlJsonEnricher" enable="true" />
+  </extension>
+</component>

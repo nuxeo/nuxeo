@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.audit.io.marshallers" version="1.0.0">
+  <documentation>
+    Core IO registered marshallers set.
+  </documentation>
+  <extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
+    <!-- preview document enricher -->
+    <register class="org.nuxeo.ecm.platform.audit.io.LogEntryJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.audit.io.LogEntryListJsonWriter" enable="true" />
+  </extension>
+</component>

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,43 +12,29 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     dmetzler
+ *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
-package org.nuxeo.ecm.restapi.jaxrs.io.directory;
+
+package org.nuxeo.ecm.directory.api;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 
-/**
- * Directory entries are basically DocumentModels. So we have to wrap them in an object that has its own writer.
- *
- * @since 5.7.3
- */
 public class DirectoryEntry {
 
     private DocumentModel doc;
 
     private String dirName;
 
-    /**
-     * @param dirName
-     * @param docEntry
-     */
     public DirectoryEntry(String dirName, DocumentModel doc) {
         this.dirName = dirName;
         this.doc = doc;
 
     }
 
-    /**
-     * @return
-     */
     public String getDirectoryName() {
         return dirName;
     }
 
-    /**
-     * @return
-     */
     public DocumentModel getDocumentModel() {
         return doc;
     }

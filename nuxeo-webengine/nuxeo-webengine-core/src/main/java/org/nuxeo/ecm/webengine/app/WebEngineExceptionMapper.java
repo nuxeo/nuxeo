@@ -16,18 +16,22 @@
  */
 package org.nuxeo.ecm.webengine.app;
 
-import com.sun.jersey.api.NotFoundException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
+
+import com.sun.jersey.api.NotFoundException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -42,6 +46,12 @@ public class WebEngineExceptionMapper implements ExceptionMapper<Throwable> {
 
     @Override
     public Response toResponse(Throwable cause) {
+        if (headers.getAcceptableMediaTypes().contains(APPLICATION_JSON_TYPE)) {
+            if (cause instanceof DocumentValidationException) {
+                DocumentValidationException dve = (DocumentValidationException) cause;
+                return Response.status(Status.BAD_REQUEST).entity(dve.getReport()).build();
+            }
+        }
         if (cause instanceof NotFoundException) {
             NotFoundException nfe = (NotFoundException) cause;
             log.debug("JAX-RS 404 Not Found: " + nfe.getNotFoundUri());

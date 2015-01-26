@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.usermanager.marshallers" version="1.0.0">
+  <documentation>
+    Core IO registered marshallers set.
+  </documentation>
+  <extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
+    <register class="org.nuxeo.ecm.platform.usermanager.io.NuxeoPrincipalJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.usermanager.io.NuxeoPrincipalJsonReader" enable="true" />
+    <register class="org.nuxeo.ecm.platform.usermanager.io.NuxeoPrincipalListJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.usermanager.io.NuxeoPrincipalListJsonReader" enable="true" />
+    <register class="org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonReader" enable="true" />
+    <register class="org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupListJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupListJsonReader" enable="true" />
+  </extension>
+</component>

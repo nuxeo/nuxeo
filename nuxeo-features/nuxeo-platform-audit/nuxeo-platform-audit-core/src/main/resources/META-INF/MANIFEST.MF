@@ -19,7 +19,8 @@ Nuxeo-Component: OSGI-INF/nxaudit-service.xml,
  OSGI-INF/core-type-contrib.xml,
  OSGI-INF/directories-contrib.xml,
  OSGI-INF/pageprovider-contrib.xml,
- OSGI-INF/nxaudit-work-config.xml
+ OSGI-INF/nxaudit-work-config.xml,
+ OSGI-INF/marshallers-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: de.odysseus.el;version="2.1.2",
  javax.annotation;version="1.0",

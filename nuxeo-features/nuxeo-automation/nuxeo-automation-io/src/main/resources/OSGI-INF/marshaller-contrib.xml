@@ -1,35 +1,19 @@
 <component name="org.nuxeo.ecm.automation.server.marshallers">
-
-  <extension target="org.nuxeo.ecm.automation.server.AutomationServer"
-    point="marshallers">
-
+  <extension point="marshallers" target="org.nuxeo.ecm.automation.server.AutomationServer">
     <marshaller>
-      <reader>org.nuxeo.ecm.automation.jaxrs.io.operations.JsonRequestReader
-      </reader>
-      <writer>org.nuxeo.ecm.automation.jaxrs.io.operations.JsonAutomationInfoWriter
-      </writer>
-      <writer>org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter
-      </writer>
-      <writer>org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentListWriter
-      </writer>
-      <writer>org.nuxeo.ecm.automation.jaxrs.io.documents.BlobsWriter
-      </writer>
-      <writer>org.nuxeo.ecm.automation.jaxrs.io.JsonLoginInfoWriter
-      </writer>
-      <writer>org.nuxeo.ecm.automation.jaxrs.io.operations.JsonOperationWriter
-      </writer>
+      <reader>org.nuxeo.ecm.automation.jaxrs.io.operations.JsonRequestReader</reader>
+      <reader>org.nuxeo.ecm.automation.jaxrs.io.operations.UrlEncodedFormRequestReader</reader>
+      <reader>org.nuxeo.ecm.automation.jaxrs.io.documents.BusinessAdapterReader</reader>
+      <writer>org.nuxeo.ecm.automation.jaxrs.io.operations.JsonAutomationInfoWriter</writer>
+      <writer>org.nuxeo.ecm.automation.jaxrs.io.documents.BlobsWriter</writer>
+      <writer>org.nuxeo.ecm.automation.jaxrs.io.JsonLoginInfoWriter</writer>
+      <writer>org.nuxeo.ecm.automation.jaxrs.io.operations.JsonOperationWriter</writer>
       <writer>org.nuxeo.ecm.automation.jaxrs.io.operations.JsonHtmlOperationWriter</writer>
-      <reader>org.nuxeo.ecm.automation.jaxrs.io.operations.UrlEncodedFormRequestReader
-      </reader>
       <writer>org.nuxeo.ecm.automation.jaxrs.io.JsonTreeWriter</writer>
       <writer>org.nuxeo.ecm.automation.jaxrs.io.JsonAdapterWriter</writer>
-      <writer>org.nuxeo.ecm.automation.jaxrs.io.JsonRecordSetWriter
-      </writer>
-      <reader>org.nuxeo.ecm.automation.jaxrs.io.documents.BusinessAdapterReader
-      </reader>
-      <writer>org.nuxeo.ecm.automation.jaxrs.io.audit.LogEntryWriter</writer>
-      <writer>org.nuxeo.ecm.automation.jaxrs.io.audit.LogEntryListWriter</writer>
+      <writer>org.nuxeo.ecm.automation.jaxrs.io.JsonRecordSetWriter</writer>
+      <!-- delegates marshalling to nuxeo-core-io MarshallerRegistry service -->
+      <writer>org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate</writer>
     </marshaller>
   </extension>
-
 </component>

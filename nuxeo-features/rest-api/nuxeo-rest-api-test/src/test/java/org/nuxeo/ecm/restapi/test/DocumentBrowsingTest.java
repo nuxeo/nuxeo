@@ -16,7 +16,12 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter.ENTITY_TYPE;
+import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.FETCH_PROPERTIES;
+import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.HEADER_PREFIX;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,6 +47,8 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.restapi.jaxrs.io.documents.ACPWriter;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.DocumentModelJsonReaderLegacy;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -58,6 +65,8 @@ import com.sun.jersey.api.client.ClientResponse;
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
+@Deploy({ "org.nuxeo.ecm.platform.ui:OSGI-INF/marshallers-contrib.xml",
+        "org.nuxeo.ecm.platform.preview:OSGI-INF/marshallers-contrib.xml" })
 public class DocumentBrowsingTest extends BaseTest {
 
     @Test
@@ -144,6 +153,7 @@ public class DocumentBrowsingTest extends BaseTest {
         JSONDocumentNode jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
         Map<String, String> headers = new HashMap<>();
         headers.put(RestConstants.X_VERSIONING_OPTION, VersioningOption.MAJOR.toString());
+        headers.put(HEADER_PREFIX + FETCH_PROPERTIES + "." + ENTITY_TYPE, "versionLabel");
         response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson(), headers);
 
         // Check if the version of the document has been returned
@@ -184,7 +194,7 @@ public class DocumentBrowsingTest extends BaseTest {
 
         // When i do a PUT request on the document with modified data
         getResponse(RequestType.PUT, "id/" + note.getId(),
-                "{\"entity-type\":\"document\",\"properties\":{\"dc:format\":\"\"}}");
+                "{\"entity-type\":\"document\",\"properties\":{\"dc:format\":null}}");
 
         // Then the document is updated
         fetchInvalidations();
@@ -192,6 +202,44 @@ public class DocumentBrowsingTest extends BaseTest {
         assertEquals(null, note.getPropertyValue("dc:format"));
         assertEquals("a value that that must not be resetted", note.getPropertyValue("dc:language"));
 
+    }
+
+    @Test
+    public void itCanSetPropertyToNullNewModeKeepEmpty() throws Exception {
+        DocumentModel note = RestServerInit.getNote(0, session);
+        note.setPropertyValue("dc:format", "a value that will be set to null");
+        session.saveDocument(note);
+
+        fetchInvalidations();
+
+        // When i do a PUT request on the document with modified data
+        getResponse(RequestType.PUT, "id/" + note.getId(),
+                "{\"entity-type\":\"document\",\"properties\":{\"dc:format\":\"\"}}");
+
+        // Then the document is updated
+        fetchInvalidations();
+        note = RestServerInit.getNote(0, session);
+        assertEquals("", note.getPropertyValue("dc:format"));
+    }
+
+    @Test
+    public void itCanSetPropertyToNullLegacyModeHeader() throws Exception {
+        DocumentModel note = RestServerInit.getNote(0, session);
+        note.setPropertyValue("dc:format", "a value that will be set to null");
+        session.saveDocument(note);
+
+        fetchInvalidations();
+
+        // When i do a PUT request on the document with modified data
+        Map<String, String> headers = new HashMap<>();
+        headers.put(DocumentModelJsonReaderLegacy.HEADER_DOCUMENT_JSON_LEGACY, Boolean.TRUE.toString());
+        getResponse(RequestType.PUT, "id/" + note.getId(),
+                "{\"entity-type\":\"document\",\"properties\":{\"dc:format\":\"\"}}", headers);
+
+        // Then the document is updated
+        fetchInvalidations();
+        note = RestServerInit.getNote(0, session);
+        assertEquals(null, note.getPropertyValue("dc:format"));
     }
 
     @Test

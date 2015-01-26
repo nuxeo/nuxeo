@@ -4,7 +4,31 @@
     Core IO registered marshallers set.
   </documentation>
   <extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
-    <register class="org.nuxeo.ecm.core.io.marshallers.json.validation.ConstraintWriter" enable="true" />
-    <register class="org.nuxeo.ecm.core.io.marshallers.json.validation.DocumentValidationReportWriter" enable="true" />
+    <!-- validation -->
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.validation.ConstraintJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.validation.ConstraintListJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.validation.DocumentValidationReportJsonWriter"
+      enable="true" />
+    <!-- document -->
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.document.DocumentPropertyJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.document.DocumentPropertiesJsonReader" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelListJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelListJsonReader" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.document.ACPJsonWriter" enable="true" />
+    <!-- document type -->
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.types.DocumentTypeJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.types.DocumentTypeListJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.types.FacetJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.types.FacetListJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.types.SchemaJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.types.SchemaListJsonWriter" enable="true" />
+    <!-- enrichers -->
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.ACLJsonEnricher" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.BasePermissionsJsonEnricher" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.BreadcrumbJsonEnricher" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.ChildrenJsonEnricher" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.ContextualParametersJsonEnricher" enable="true" />
   </extension>
 </component>

@@ -62,15 +62,16 @@ import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlobs;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.DeleteDocument;
-import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
 import org.nuxeo.ecm.automation.core.operations.document.LockDocument;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.ResultSetPageProviderOperation;
+import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
 import org.nuxeo.runtime.api.Framework;
+
 
 public abstract class AbstractAutomationClientTest {
 
@@ -561,8 +562,8 @@ public abstract class AbstractAutomationClientTest {
 
         session.newRequest(LockDocument.ID).setHeader(Constants.HEADER_NX_VOIDOP, "*").setInput(doc).execute();
 
-        doc = (Document) session.newRequest(FetchDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").set("value",
-                doc.getPath()).execute();
+        doc = (Document) session.newRequest(FetchDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").setHeader(
+                "X-NXfetch.document", "lock").set("value", doc.getPath()).execute();
 
         assertNotNull(doc.getLock());
         assertEquals("Administrator", doc.getLockOwner());

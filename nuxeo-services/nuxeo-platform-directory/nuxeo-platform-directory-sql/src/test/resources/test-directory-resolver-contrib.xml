@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.directory.autoincrementid">
+<component name="org.nuxeo.ecm.directory.resolver.test">
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="directoryResolverSchema" src="sqldirectoryschema/directoryResolverSchema.xsd" prefix="drs" />

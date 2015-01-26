@@ -15,6 +15,8 @@ package org.nuxeo.ecm.automation.core.util;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.nuxeo.ecm.automation.core.util.Paginable;
+
 /**
  * Adds page support on {@link RecordSet}
  *
