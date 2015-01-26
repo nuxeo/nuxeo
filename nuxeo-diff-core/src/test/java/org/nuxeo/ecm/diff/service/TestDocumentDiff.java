@@ -518,7 +518,7 @@ public class TestDocumentDiff extends DiffTestCase {
 
     protected final String getDigest(Blob blob) throws ClientException {
         try {
-            Binary binary = binaryManager.getBinary(blob.getStream());
+            Binary binary = binaryManager.getBinary(blob);
             if (binary != null) {
                 return binary.getDigest();
             }
