@@ -14,7 +14,7 @@
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="chains">
     <chain id="blobToPDF">
-      <operation id="Blob.Pop" />
+      <operation id="Context.PopBlob" />
       <operation id="Blob.ToPDF" />
     </chain>
   </extension>
