@@ -60,14 +60,9 @@ public class FileWriter implements MessageBodyWriter<File> {
             in = new FileInputStream(t);
             FileUtils.copy(in, entityStream);
             entityStream.flush();
-        } catch (Throwable e) {
-            Throwable unwrappedError = ExceptionHelper.unwrapException(e);
-            if (ExceptionHelper.isClientAbortError(unwrappedError)) {
-                // ignore but log as warn
-                log.warn(unwrappedError.getMessage());
-            } else if (unwrappedError instanceof IOException) {
-                // can be a broken pipe => do not display the whole stack trace
-                log.error(unwrappedError.getMessage());
+        } catch (RuntimeException | IOException e) {
+            if (ExceptionHelper.isClientAbortError(e)) {
+                ExceptionHelper.logClientAbort(e);
             } else {
                 throw WebException.wrap("Failed to render resource", e);
             }
