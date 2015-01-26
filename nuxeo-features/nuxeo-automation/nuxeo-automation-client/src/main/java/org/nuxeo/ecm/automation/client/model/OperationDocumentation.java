@@ -27,6 +27,8 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
 
     public String id;
 
+    public String[] aliases;
+
     /**
      * An array of size multiple of 2. Each pair in the array is the input and output type of a method.
      */
@@ -98,6 +100,10 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
 
     public List<Param> getParams() {
         return params;
+    }
+
+    public String[] getAliases() {
+        return aliases;
     }
 
     @Override

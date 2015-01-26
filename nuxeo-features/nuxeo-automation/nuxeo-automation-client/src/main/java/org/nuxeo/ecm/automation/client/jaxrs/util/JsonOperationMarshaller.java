@@ -37,6 +37,8 @@ public class JsonOperationMarshaller {
             jp.nextToken();
             if ("id".equals(key)) {
                 op.id = jp.getText();
+            } else if ("aliases".equals(key)) {
+                op.aliases = readStringArray(jp);
             } else if ("label".equals(key)) {
                 op.label = jp.getText();
             } else if ("category".equals(key)) {

@@ -214,6 +214,11 @@ public class JsonMarshalling {
         while (tok != null && tok != JsonToken.END_ARRAY) {
             OperationDocumentation op = JsonOperationMarshaller.read(jp);
             ops.put(op.id, op);
+            if(op.aliases!=null) {
+                for (String alias : op.aliases) {
+                    ops.put(alias, op);
+                }
+            }
             tok = jp.nextToken();
         }
     }
