@@ -24,7 +24,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -41,6 +40,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
@@ -139,7 +139,7 @@ public class TestS3BinaryManager {
 
         // store binary
         byte[] bytes = CONTENT.getBytes("UTF-8");
-        binary = binaryManager.getBinary(new ByteArrayInputStream(bytes));
+        binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         assertNotNull(binary);
 
         // get binary (from cache)
@@ -180,7 +180,7 @@ public class TestS3BinaryManager {
 
         // store binary
         byte[] bytes = CONTENT.getBytes("UTF-8");
-        binary = binaryManager.getBinary(new ByteArrayInputStream(bytes));
+        binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         assertNotNull(binary);
         assertEquals(Collections.singleton(CONTENT_MD5), listObjects());
 
@@ -191,10 +191,10 @@ public class TestS3BinaryManager {
         assertEquals(CONTENT, toString(binary.getStream()));
 
         // another binary we'll GC
-        binaryManager.getBinary(new ByteArrayInputStream(CONTENT2.getBytes("UTF-8")));
+        binaryManager.getBinary(Blobs.createBlob(CONTENT2));
 
         // another binary we'll keep
-        binaryManager.getBinary(new ByteArrayInputStream(CONTENT3.getBytes("UTF-8")));
+        binaryManager.getBinary(Blobs.createBlob(CONTENT3));
 
         assertEquals(new HashSet<>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
 
@@ -245,13 +245,13 @@ public class TestS3BinaryManager {
     public void testS3BinaryManagerOverwrite() throws Exception {
         // store binary
         byte[] bytes = CONTENT.getBytes("UTF-8");
-        Binary binary = binaryManager.getBinary(new ByteArrayInputStream(bytes));
+        Binary binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         assertNotNull(binary);
         assertEquals(bytes.length, binary.getLength());
         assertNull(Framework.getProperty("cachedBinary"));
 
         // store the same content again
-        Binary binary2 = binaryManager.getBinary(new ByteArrayInputStream(bytes));
+        Binary binary2 = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         assertNotNull(binary2);
         assertEquals(bytes.length, binary2.getLength());
         // check that S3 bucked was not called for no valid reason
@@ -270,7 +270,7 @@ public class TestS3BinaryManager {
 
         // store binary
         byte[] bytes = CONTENT.getBytes("UTF-8");
-        binaryManager.getBinary(new ByteArrayInputStream(bytes));
+        binaryManager.getBinary(Blobs.createBlob(CONTENT));
 
         S3Object o = binaryManager.amazonS3.getObject(binaryManager.bucketName, CONTENT_MD5);
         try {
