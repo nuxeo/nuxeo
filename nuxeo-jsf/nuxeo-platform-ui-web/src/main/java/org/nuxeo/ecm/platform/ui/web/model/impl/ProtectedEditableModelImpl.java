@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.model.impl;
 
+import javax.el.ValueExpression;
+
 import org.nuxeo.ecm.platform.ui.web.model.EditableModel;
 import org.nuxeo.ecm.platform.ui.web.model.ProtectedEditableModel;
 
@@ -29,8 +31,14 @@ public class ProtectedEditableModelImpl implements ProtectedEditableModel {
 
     protected final EditableModel delegate;
 
-    public ProtectedEditableModelImpl(EditableModel delegate) {
+    protected final ProtectedEditableModel parent;
+
+    protected final ValueExpression binding;
+
+    public ProtectedEditableModelImpl(EditableModel delegate, ProtectedEditableModel parent, ValueExpression binding) {
         this.delegate = delegate;
+        this.parent = parent;
+        this.binding = binding;
     }
 
     @Override
@@ -56,6 +64,31 @@ public class ProtectedEditableModelImpl implements ProtectedEditableModel {
     @Override
     public boolean isRowNew() {
         return delegate.isRowNew();
+    }
+
+    @Override
+    public ValueExpression getBinding() {
+        return binding;
+    }
+
+    @Override
+    public ProtectedEditableModel getParent() {
+        return parent;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder buf = new StringBuilder();
+        buf.append(ProtectedEditableModelImpl.class.getSimpleName());
+        buf.append(" {");
+        buf.append(" binding=");
+        buf.append(binding);
+        buf.append(", delegate=");
+        buf.append(delegate);
+        buf.append(", parent=");
+        buf.append(parent);
+        buf.append('}');
+        return buf.toString();
     }
 
 }

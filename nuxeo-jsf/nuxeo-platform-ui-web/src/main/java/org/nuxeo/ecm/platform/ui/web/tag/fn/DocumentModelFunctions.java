@@ -54,7 +54,6 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -438,23 +437,6 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return value;
     }
 
-    protected static Field getField(Field parent, String subFieldName) {
-        if (parent != null) {
-            Type type = parent.getType();
-            if (type.isListType()) {
-                Type itemType = ((ListType) type).getFieldType();
-                if (itemType.isComplexType()) {
-                    ComplexType complexType = (ComplexType) itemType;
-                    Field subField = complexType.getField(subFieldName);
-                    return subField;
-                }
-            } else if (type.isComplexType()) {
-                return ((ComplexType) type).getField(subFieldName);
-            }
-        }
-        return null;
-    }
-
     /**
      * Returns the default value for given property name.
      *
@@ -463,30 +445,17 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      */
     public static Object defaultValue(String propertyName) {
         SchemaManager tm = Framework.getService(SchemaManager.class);
-        Field field = null;
-        if (propertyName != null && propertyName.contains("/")) {
-            // need to resolve subfields
-            String[] properties = propertyName.split("/");
-            Field resolvedField = tm.getField(properties[0]);
-            for (int x = 1; x < properties.length; x++) {
-                if (resolvedField == null) {
-                    break;
-                }
-                resolvedField = getField(resolvedField, properties[x]);
-            }
-            if (resolvedField != null) {
-                field = resolvedField;
-            }
-        } else {
-            field = tm.getField(propertyName);
-        }
-
+        Field field = tm.getField(propertyName);
         Object value = null;
         if (field != null) {
             Type type = field.getType();
             if (type.isListType()) {
                 Type itemType = ((ListType) type).getFieldType();
                 value = itemType.newInstance();
+            } else if (type.isComplexType()) {
+                value = type.newInstance();
+            } else {
+                value = field.getDefaultValue();
             }
         }
         return value;

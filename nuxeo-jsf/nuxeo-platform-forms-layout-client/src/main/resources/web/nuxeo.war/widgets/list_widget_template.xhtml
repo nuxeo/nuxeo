@@ -81,6 +81,7 @@
                 template="#{templateValue}"
                 required="#{widgetProperty_required}" diff="#{widgetProperty_diff}"
                 rendered="#{isEditMode or not empty fieldOrValue}">
+                <nxu:validateDocumentConstraint handleSubProperties="false" />
                 <tr class="#{model.rowIndex % 2 == 0 ? 'dataRowEven': 'dataRowOdd'}">
                   <c:if test="#{showActions}">
                     <td class="listWidgetActions">
@@ -107,6 +108,7 @@
                 template="#{templateValue}"
                 required="#{widgetProperty_required}" diff="#{widgetProperty_diff}"
                 rendered="#{isEditMode or not empty fieldOrValue}">
+                <nxu:validateDocumentConstraint handleSubProperties="false" />
                 <tr>
                   <c:if test="#{showActions}">
                     <td class="listWidgetActions">
@@ -138,6 +140,7 @@
             template="#{templateValue}"
             required="#{widgetProperty_required}" diff="#{widgetProperty_diff}"
             rendered="#{isEditMode or not empty fieldOrValue}">
+            <nxu:validateDocumentConstraint handleSubProperties="false" />
             <h:panelGrid columns="#{isEditMode and showActions?2:1}">
               <c:if test="#{showActions}">
                 <h:panelGroup styleClass="listWidgetActionsTable">
@@ -179,6 +182,7 @@
             template="#{templateValue}"
             required="#{widgetProperty_required}" diff="#{widgetProperty_diff}"
             rendered="#{isEditMode or not empty fieldOrValue}">
+            <nxu:validateDocumentConstraint handleSubProperties="false" />
             <h:panelGrid columns="#{isEditMode and showActions?2:1}">
               <c:if test="#{showActions}">
                 <h:panelGroup styleClass="listWidgetActionsTable">
