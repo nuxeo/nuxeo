@@ -236,6 +236,7 @@ install nuxeo-dam</echo>
         <include name="nuxeo-*" />
         <include name="lucene-*" />
         <include name="commons-lang-*" />
+        <include name="commons-lang3-*" />
         <include name="freemarker-*" />
         <include name="mail-*" />
         <include name="xercesImpl-*" />

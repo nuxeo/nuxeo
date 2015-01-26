@@ -28,4 +28,6 @@ Import-Package: javax.security.auth.login,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.services.streaming
 Bundle-SymbolicName: org.nuxeo.ecm.core.io
-Nuxeo-Component: OSGI-INF/document-xml-exporter-service.xml
+Nuxeo-Component: OSGI-INF/document-xml-exporter-service.xml,
+ OSGI-INF/MarshallerRegistry.xml,
+ OSGI-INF/marshallers-contrib.xml

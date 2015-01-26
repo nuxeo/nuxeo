@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.io.MarshallerRegistry" version="1.0.0">
+  <documentation>
+    Service providing a way to register marshallers and use them.
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.io.registry.MarshallerRegistryImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.io.registry.MarshallerRegistry" />
+  </service>
+
+  <extension-point name="marshallers">
+
+    <documentation>
+      Extension Point to register or deregister a marshaller.
+      <register class="org.company.nuxeo.io.MyDocumentWriter" enable="true" />
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.io.registry.MarshallerRegistryDescriptor" />
+
+  </extension-point>
+
+</component>
