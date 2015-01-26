@@ -20,6 +20,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 5.4.2.qualifier
 Bundle-ManifestVersion: 2
 Require-Bundle: org.nuxeo.ecm.core,
+ org.nuxeo.ecm.core.io,
  javax.servlet;bundle-version="2.5.0",
  com.sun.jersey.server;bundle-version="1.1.5",
  com.sun.jersey.core;bundle-version="1.1.5"

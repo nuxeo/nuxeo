@@ -38,7 +38,7 @@ import org.nuxeo.runtime.test.runner.web.WebDriverFeature;
         "org.nuxeo.ecm.webengine.jaxrs", "org.nuxeo.ecm.webengine.base", "org.nuxeo.ecm.webengine.ui",
         "org.nuxeo.ecm.webengine.gwt", "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
         "org.nuxeo.ecm.webengine.test:login-anonymous-config.xml", "org.nuxeo.ecm.webengine.test:login-config.xml",
-        "org.nuxeo.ecm.webengine.test:runtimeserver-contrib.xml" })
+        "org.nuxeo.ecm.webengine.test:runtimeserver-contrib.xml", "org.nuxeo.ecm.core.io" })
 @Features({ PlatformFeature.class, WebDriverFeature.class, JettyTransactionalFeature.class, WebEngineFeatureCore.class })
 public class WebEngineFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
 
@@ -55,6 +55,7 @@ public class WebEngineFeature extends SimpleFeature implements WorkingDirectoryC
         runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(this);
     }
 
+    @Override
     public void configure(RuntimeHarness harness, File workingDir) throws IOException {
         SessionFactory.setDefaultRepository("test");
         File dest = new File(workingDir, "web/root.war/WEB-INF/");
