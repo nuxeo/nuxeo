@@ -75,7 +75,7 @@ public class DetectThreadDeadlocksFeature extends SimpleFeature {
     }
 
     @Override
-    public void afterRun(FeaturesRunner runner) throws Exception {
+    public void stop(FeaturesRunner runner) throws Exception {
         if (config.dumpOnFailure()) {
             notifier.removeListener(listener);
         }
