@@ -29,7 +29,6 @@ import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -44,7 +43,7 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, EmbeddedAutomationServerFeature.class })
+@Features(EmbeddedAutomationServerFeature.class)
 @Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations", "org.nuxeo.runtime.reload",
         "org.nuxeo.runtime.datasource" })
 @LocalDeploy("org.nuxeo.drive.core:drive-repo-ds.xml")

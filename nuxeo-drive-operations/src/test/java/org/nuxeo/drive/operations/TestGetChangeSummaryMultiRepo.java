@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.H2OnlyFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -60,7 +59,7 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features({ H2OnlyFeature.class, TransactionalFeature.class, EmbeddedAutomationServerFeature.class })
+@Features({ H2OnlyFeature.class, EmbeddedAutomationServerFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.drive.core", "org.nuxeo.drive.operations" })
 @LocalDeploy({ "org.nuxeo.drive.operations:drive-repo-ds.xml",
