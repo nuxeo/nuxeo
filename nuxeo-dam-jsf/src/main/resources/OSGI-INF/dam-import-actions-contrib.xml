@@ -33,13 +33,13 @@
       <operation id="Dam.Import">
         <param type="boolean" name="overwrite">true</param>
       </operation>
-      <operation id="Seam.InitContext" />
-      <operation id="Seam.AddMessage">
+      <operation id="WebUI.InitSeamContext" />
+      <operation id="WebUI.AddMessage">
         <param type="string" name="severity">INFO</param>
         <param type="string" name="message">label.dam.assets.imported</param>
       </operation>
-      <operation id="Seam.Refresh" />
-      <operation id="Seam.DestroyContext" />
+      <operation id="WebUI.Refresh" />
+      <operation id="WebUi.DestroySeamContext" />
     </chain>
 
     <chain id="Dam.ImportWithMetaDataInSeam">
@@ -51,11 +51,11 @@
         <param type="properties" name="properties">expr:Context.get("docMetaData")
         </param>
       </operation>
-      <operation id="Seam.AddMessage">
+      <operation id="WebUI.AddMessage">
         <param type="string" name="severity">INFO</param>
         <param type="string" name="message">label.dam.assets.imported</param>
       </operation>
-      <operation id="Seam.Refresh" />
+      <operation id="WebUI.Refresh" />
     </chain>
 
   </extension>
