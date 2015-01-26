@@ -112,7 +112,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
     }
 
     @Override
-    public Binary getBinary(InputStream in) throws IOException {
+    protected Binary getBinary(InputStream in) throws IOException {
         String digest = storeAndDigest(in);
         File file = getFileForDigest(digest, false);
         /*

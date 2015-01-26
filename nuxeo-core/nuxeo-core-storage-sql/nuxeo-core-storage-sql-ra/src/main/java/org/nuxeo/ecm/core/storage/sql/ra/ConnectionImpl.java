@@ -168,11 +168,6 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
-    public Binary getBinary(InputStream in) throws StorageException {
-        return getSession().getBinary(in);
-    }
-
-    @Override
     public Binary getBinary(Blob blob) throws StorageException {
         return getSession().getBinary(blob);
     }

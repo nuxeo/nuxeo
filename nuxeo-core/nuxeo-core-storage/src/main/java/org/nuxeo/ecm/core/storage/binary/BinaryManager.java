@@ -29,20 +29,6 @@ public interface BinaryManager extends Closeable {
     void initialize(BinaryManagerDescriptor descriptor) throws IOException;
 
     /**
-     * Saves the given input stream into a {@link Binary}.
-     * <p>
-     * Returns a {@link Binary} representing the stream. The {@link Binary} includes a digest that is a sufficient
-     * representation to persist it.
-     * <p>
-     * The stream is closed after use.
-     *
-     * @param in the input stream
-     * @return the corresponding binary
-     * @throws IOException
-     */
-    Binary getBinary(InputStream in) throws IOException;
-
-    /**
      * Saves the given blob into a {@link Binary}.
      * <p>
      * Returns a {@link Binary} representing the stream. The {@link Binary} includes a digest that is a sufficient

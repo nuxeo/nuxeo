@@ -43,8 +43,11 @@ public abstract class AbstractBinaryManager implements BinaryManager {
     @Override
     abstract public void initialize(BinaryManagerDescriptor binaryManagerDescriptor) throws IOException;
 
-    @Override
-    abstract public Binary getBinary(InputStream in) throws IOException;
+    /**
+     * Creates a binary value from the given input stream.
+     */
+    // not in the public API of BinaryManager anymore
+    abstract protected Binary getBinary(InputStream in) throws IOException;
 
     /*
      * This abstract implementation just opens the stream.

@@ -295,7 +295,7 @@ public class AESBinaryManager extends LocalBinaryManager {
     }
 
     @Override
-    public Binary getBinary(InputStream in) throws IOException {
+    protected Binary getBinary(InputStream in) throws IOException {
         // write to a tmp file that will be used by the returned Binary
         // TODO if stream source, avoid copy (no-copy optimization)
         File tmp = File.createTempFile("bin_", ".tmp", tmpDir);

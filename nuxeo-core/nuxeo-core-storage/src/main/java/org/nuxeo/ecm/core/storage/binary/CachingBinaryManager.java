@@ -108,7 +108,7 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
     }
 
     @Override
-    public Binary getBinary(InputStream in) throws IOException {
+    protected Binary getBinary(InputStream in) throws IOException {
         // write the input stream to a temporary file, while computing a digest
         File tmp = fileCache.getTempFile();
         OutputStream out = new FileOutputStream(tmp);

@@ -21,7 +21,6 @@ import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -57,6 +56,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.common.utils.XidImpl;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
@@ -464,8 +464,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
 
-        InputStream in = new ByteArrayInputStream("abc".getBytes("UTF-8"));
-        Binary bin = session.getBinary(in);
+        Binary bin = session.getBinary(Blobs.createBlob("abc"));
         assertEquals(3, bin.getLength());
         assertEquals("900150983cd24fb0d6963f7d28e17f72", bin.getDigest());
         assertEquals("abc", readAllBytes(bin.getStream()));
@@ -483,11 +482,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Serializable value = binProp.getValue();
         assertTrue(value instanceof Binary);
         bin = (Binary) value;
-        in = bin.getStream();
-        assertEquals(3, bin.getLength());
-        assertEquals("900150983cd24fb0d6963f7d28e17f72", bin.getDigest());
-        assertEquals("abc", readAllBytes(bin.getStream()));
-        assertEquals("abc", readAllBytes(bin.getStream())); // readable twice
+        try (InputStream in = bin.getStream()) {
+            assertEquals(3, bin.getLength());
+            assertEquals("900150983cd24fb0d6963f7d28e17f72", bin.getDigest());
+            assertEquals("abc", readAllBytes(bin.getStream()));
+            assertEquals("abc", readAllBytes(bin.getStream())); // readable twice
+        }
     }
 
     // assumes one read will read everything
@@ -572,7 +572,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     protected void addBinary(Session session, String binstr, String name) throws Exception {
-        Binary bin = session.getBinary(new ByteArrayInputStream(binstr.getBytes("UTF-8")));
+        Binary bin = session.getBinary(Blobs.createBlob(binstr));
         session.addChildNode(session.getRootNode(), name, null, "TestDoc", false).setSimpleProperty("tst:bin", bin);
     }
 

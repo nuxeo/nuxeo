@@ -12,7 +12,6 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -390,15 +389,6 @@ public interface Session extends Connection {
      * @throws StorageException
      */
     Node getLastVersion(Serializable versionSeriesId) throws StorageException;
-
-    /**
-     * Creates a binary value given an stream source.
-     *
-     * @param source the input stream
-     * @return the binary value
-     * @throws StorageException
-     */
-    Binary getBinary(InputStream source) throws StorageException;
 
     /**
      * Creates a binary value given a blob.

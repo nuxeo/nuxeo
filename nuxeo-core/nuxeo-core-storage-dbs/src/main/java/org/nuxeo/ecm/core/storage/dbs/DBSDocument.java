@@ -868,17 +868,6 @@ public class DBSDocument implements Document {
         }
     }
 
-    // BinaryManager not closed
-    @SuppressWarnings("resource")
-    protected Binary getBinary(InputStream in) throws DocumentException {
-        BinaryManager binaryManager = session.getBinaryManager();
-        try {
-            return binaryManager.getBinary(in);
-        } catch (IOException e) {
-            throw new DocumentException(e);
-        }
-    }
-
     @Override
     public Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths) throws PropertyException {
         DBSDocumentState docState = getStateMaybeProxyTarget(complexType);

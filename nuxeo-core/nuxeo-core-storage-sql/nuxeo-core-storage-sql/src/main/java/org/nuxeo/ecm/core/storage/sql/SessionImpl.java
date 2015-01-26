@@ -12,7 +12,6 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.text.Normalizer;
 import java.util.ArrayList;
@@ -313,18 +312,6 @@ public class SessionImpl implements Session, XAResource {
         BinaryManager binaryManager = repository.getBinaryManager();
         try {
             return binaryManager.getBinary(blob);
-        } catch (IOException e) {
-            throw new StorageException(e);
-        }
-    }
-
-    // don't close BinaryManager
-    @SuppressWarnings("resource")
-    @Override
-    public Binary getBinary(InputStream in) throws StorageException {
-        BinaryManager binaryManager = repository.getBinaryManager();
-        try {
-            return binaryManager.getBinary(in);
         } catch (IOException e) {
             throw new StorageException(e);
         }
