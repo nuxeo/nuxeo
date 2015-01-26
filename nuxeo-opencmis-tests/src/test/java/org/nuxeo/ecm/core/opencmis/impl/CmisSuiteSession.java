@@ -103,6 +103,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
 import org.nuxeo.ecm.core.opencmis.tests.StatusLoggingDefaultHttpInvoker;
@@ -160,6 +161,9 @@ public class CmisSuiteSession {
     protected CoreSession coreSession;
 
     @Inject
+    protected EventService eventService;
+
+    @Inject
     protected Session session;
 
     protected String rootFolderId;
@@ -191,6 +195,12 @@ public class CmisSuiteSession {
     protected void setUpData() throws Exception {
         repoDetails = Helper.makeNuxeoRepository(coreSession);
         DatabaseHelper.DATABASE.sleepForFulltext();
+    }
+
+    protected void waitForAsyncCompletion() {
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
     }
 
     @Test
@@ -783,7 +793,6 @@ public class CmisSuiteSession {
     }
 
     @Test
-    @RandomBug.Repeat(issue = "NXP-16106")
     public void testVersionBasedLocking() throws Exception {
         CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
 
@@ -803,6 +812,9 @@ public class CmisSuiteSession {
         // explicitly checked out - locked
         assertTrue(isDocumentLocked(co));
 
+        // wait for fulltext before a cancelCheckOut, which does a copy of the fulltext rows as well
+        waitForAsyncCompletion();
+
         ((Document) co).cancelCheckOut();
         session.clear(); // clear cache
         CmisObject cco = session.getObject(ob);
@@ -821,7 +833,6 @@ public class CmisSuiteSession {
     }
 
     @Test
-    @RandomBug.Repeat(issue = "NXP-16106")
     public void testDeleteObjectOrCancelCheckOut() throws Exception {
         // test cancelCheckOut
         CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
@@ -833,6 +844,9 @@ public class CmisSuiteSession {
         map.put("dc:title", "new title");
         map.put("dc:subjects", Arrays.asList("a", "b", "c"));
         ob.updateProperties(map);
+
+        // wait for fulltext before a cancelCheckOut, which does a copy of the fulltext rows as well
+        waitForAsyncCompletion();
 
         ((Document) ob).cancelCheckOut();
 
@@ -847,6 +861,9 @@ public class CmisSuiteSession {
         map.put("dc:title", "new title");
         map.put("dc:subjects", Arrays.asList("a", "b", "c"));
         ob.updateProperties(map);
+
+        // wait for fulltext before a cancelCheckOut, which does a copy of the fulltext rows as well
+        waitForAsyncCompletion();
 
         ((Document) ob).cancelCheckOut();
 
