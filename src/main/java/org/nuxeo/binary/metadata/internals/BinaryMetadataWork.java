@@ -64,7 +64,7 @@ public class BinaryMetadataWork extends AbstractWork {
     }
 
     @Override
-    public void work() {
+    public void work() throws Exception {
         setProgress(Progress.PROGRESS_INDETERMINATE);
         setStatus("Updating Metadata");
         initSession();

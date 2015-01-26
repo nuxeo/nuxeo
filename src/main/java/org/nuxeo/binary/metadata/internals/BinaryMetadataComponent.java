@@ -46,7 +46,7 @@ public class BinaryMetadataComponent extends DefaultComponent {
     protected final MetadataRuleRegistry ruleRegistry = new MetadataRuleRegistry();
 
     @Override
-    public void activate(ComponentContext context) {
+    public void activate(ComponentContext context) throws Exception {
         super.activate(context);
         if (Boolean.valueOf(Framework.getProperty(BinaryMetadataConstants.BINARY_METADATA_MONITOR,
                 Boolean.toString(log.isTraceEnabled())))) {
@@ -56,7 +56,7 @@ public class BinaryMetadataComponent extends DefaultComponent {
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
+    public void deactivate(ComponentContext context) throws Exception {
         self = null;
         super.deactivate(context);
     }
@@ -88,7 +88,7 @@ public class BinaryMetadataComponent extends DefaultComponent {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void applicationStarted(ComponentContext context) throws Exception {
         super.applicationStarted(context);
         ruleRegistry.handleApplicationStarted();
     }

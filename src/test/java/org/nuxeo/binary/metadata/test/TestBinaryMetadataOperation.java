@@ -96,7 +96,7 @@ public class TestBinaryMetadataOperation {
     }
 
     @Test
-    public void itShouldExtractBinaryMetadata() throws OperationException {
+    public void itShouldExtractBinaryMetadata() throws Exception {
         // Get mp3 file
         DocumentModel musicFile = BinaryMetadataServerInit.getFile(0, session);
         BlobHolder musicBlobHolder = musicFile.getAdapter(BlobHolder.class);
@@ -110,7 +110,7 @@ public class TestBinaryMetadataOperation {
     }
 
     @Test
-    public void itShouldApplyMetadataMapping() throws OperationException {
+    public void itShouldApplyMetadataMapping() throws Exception {
         // Get PDF document.
         DocumentModel pdfDoc = BinaryMetadataServerInit.getFile(1, session);
         operationContext.setInput(pdfDoc);
@@ -122,7 +122,7 @@ public class TestBinaryMetadataOperation {
     }
 
     @Test
-    public void itShouldWriteMetadataOnBinary() throws OperationException {
+    public void itShouldWriteMetadataOnBinary() throws Exception {
 
         /* FROM BLOB INPUT */
 
@@ -163,7 +163,7 @@ public class TestBinaryMetadataOperation {
     }
 
     @Test
-    public void itShouldPutBinaryMetadataInAutomationCtx() throws OperationException {
+    public void itShouldPutBinaryMetadataInAutomationCtx() throws Exception {
         // Get mp3 file
         DocumentModel musicFile = BinaryMetadataServerInit.getFile(0, session);
         BlobHolder musicBlobHolder = musicFile.getAdapter(BlobHolder.class);
