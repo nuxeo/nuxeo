@@ -207,7 +207,7 @@ class BasePage:
                    lastname='', company='', groups=''):
         """This method does not raise exception if user already exists"""
         fl = self.fl
-        if (not 'createUser:button_save_and_create' in fl.getBody() and not 'createUser:button_save_and_invite' in fl.getBody()):
+        if (not 'createUser:button_save' in fl.getBody() ):
             fl.assert_('createUserButton' in fl.getBody(),
                        "You should call usersAndGroupsPage first")
             fl.post(fl.server_url + "/view_admin.faces?conversationId=0NXMAIN1", params=[
@@ -224,22 +224,22 @@ class BasePage:
                     ['Faces-Request', 'partial/ajax'],
                     ['javax.faces.partial.ajax', 'true']],
                     description="View user creation form")
-            fl.assert_('createUser:immediate_creation' in fl.getBody(),
+            fl.assert_('createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation' in fl.getBody(),
                    'Wrong user creation page')
 
-	if (not 'createUser:button_save_and_create' in fl.getBody()):
+	if (not 'createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation' in ['true']):
             fl.post(fl.server_url + "/view_admin.faces", params=[
-			['createUserView:createUser:immediate_creation','on'],
-			['ajaxSingle', 'createUserView:createUser:immediate_creation'],
+			['createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation','true'],
+			['ajaxSingle', 'createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation:1'],
                         ['AJAX:EVENTS_COUNT', '1'],
                         ['createUserView:createUser', 'createUserView:createUser'],
-                        ['createUserView:createUser:immediate_creation', 'on'],
+                        ['createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation', 'true'],
                         ['javax.faces.ViewState', fl.getLastJsfState()],
-                        ['javax.faces.source', 'createUserView:createUser:immediate_creation'],
-                        ['javax.faces.partial.event', 'change'],
-                        ['javax.faces.partial.execute', 'createUserView:createUser:immediate_creation'],
+                        ['javax.faces.source', 'createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation:1'],
+                        ['javax.faces.partial.event', 'click'],
+                        ['javax.faces.partial.execute', 'createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation:1'],
                         ['javax.faces.partial.render', 'createUserView:createUser'],
-                        ['javax.faces.behavior.event', 'change'],
+                        ['javax.faces.behavior.event', 'click'],
                         ['AJAX:EVENTS_COUNT', '1'],
                         ['rfExt', 'null'],
                         ['javax.faces.partial.ajax', 'true']],
@@ -260,20 +260,20 @@ class BasePage:
 
         fl.post(fl.server_url + "/view_admin.faces", params=[
             ['createUserView:createUser', 'createUserView:createUser'],
-            ['createUserView:createUser:immediate_creation', 'on'],
+            ['createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation', 'true'],
             ['createUserView:createUser:nxl_user:nxw_username', username],
             ['createUserView:createUser:nxl_user:nxw_firstname', firstname],
             ['createUserView:createUser:nxl_user:nxw_lastname', lastname],
             ['createUserView:createUser:nxl_user:nxw_company', company],
             ['createUserView:createUser:nxl_user:nxw_email', email],
-            ['createUserView:createUser:nxl_user:nxw_firstPassword', password],
-            ['createUserView:createUser:nxl_user:nxw_secondPassword', password],
+            ['createUserView:createUser:nxl_user:nxw_passwordMatcher_firstPassword', password],
+            ['createUserView:createUser:nxl_user:nxw_passwordMatcher_secondPassword', password],
             ['createUserView:createUser:nxl_user:nxw_passwordMatcher', 'needed'],
             ['createUserView:createUser:nxl_user:nxw_groups_select2', groups],
             ['javax.faces.ViewState', jsfState],
-            ['javax.faces.source', 'createUserView:createUser:button_save_and_create'],
+            ['javax.faces.source', 'createUserView:createUser:button_save'],
             ['javax.faces.partial.event', 'click'],
-            ['javax.faces.partial.execute', 'createUserView:createUser:button_save_and_create createUserView:createUser'],
+            ['javax.faces.partial.execute', 'createUserView:createUser:button_save createUserView:createUser'],
             ['javax.faces.partial.render', 'usersPanel facesStatusMessagePanel'],
             ['javax.faces.behavior.event', 'action'],
             ['AJAX:EVENTS_COUNT', '1'],
