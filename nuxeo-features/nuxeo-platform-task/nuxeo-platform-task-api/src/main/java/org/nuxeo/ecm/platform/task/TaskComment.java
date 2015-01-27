@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.task;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +39,7 @@ public class TaskComment extends HashMap<String, Serializable> {
         super();
         this.put(TaskConstants.TASK_COMMENT_AUTHOR_KEY, author);
         this.put(TaskConstants.TASK_COMMENT_TEXT_KEY, text);
-        this.put(TaskConstants.TASK_COMMENT_CREATION_DATE_KEY, new Date());
+        this.put(TaskConstants.TASK_COMMENT_CREATION_DATE_KEY, Calendar.getInstance());
     }
 
     public TaskComment(String author, String text, Date commentDate) {
@@ -56,8 +57,8 @@ public class TaskComment extends HashMap<String, Serializable> {
         return (String) this.get(TaskConstants.TASK_COMMENT_TEXT_KEY);
     }
 
-    public Date getCreationDate() {
-        return (Date) this.get(TaskConstants.TASK_COMMENT_CREATION_DATE_KEY);
+    public Calendar getCreationDate() {
+        return (Calendar) this.get(TaskConstants.TASK_COMMENT_CREATION_DATE_KEY);
     }
 
 }
