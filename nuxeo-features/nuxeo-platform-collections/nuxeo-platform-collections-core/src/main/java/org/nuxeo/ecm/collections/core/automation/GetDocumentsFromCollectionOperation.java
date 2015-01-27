@@ -38,10 +38,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @since 5.9.4
  */
 @Operation(id = GetDocumentsFromCollectionOperation.ID, category = Constants.CAT_DOCUMENT, label = "Get documents from collection", description = "Get the list "
-        + "of documents visible by the currentUser in a collection. This is returning a list of documents.", aliases = { "Collection.GetDocumentsFromCollection" })
+        + "of documents visible by the currentUser in a collection. This is returning a list of documents.")
 public class GetDocumentsFromCollectionOperation {
 
-    public static final String ID = "Collection.GetDocuments";
+    public static final String ID = "Collection.GetDocumentsFromCollection";
 
     @Context
     protected OperationContext ctx;
