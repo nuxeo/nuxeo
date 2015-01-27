@@ -74,7 +74,6 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -718,11 +717,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         @Override
         public String getFirstValue() {
             Blob blob = getBlob(doc);
-            if (blob instanceof StorageBlob) {
-                StorageBlob sqlBlob = ((StorageBlob) blob);
-                return sqlBlob.getBinary().getDigest();
-            }
-            return null;
+            return blob == null ? null : blob.getDigest();
         }
     }
 
