@@ -64,7 +64,8 @@ public class TaskObject extends DefaultObject {
         CoreSession session = getContext().getCoreSession();
         Framework.getLocalService(DocumentRoutingService.class).endTask(session,
                 session.getDocument(new IdRef(taskId)).getAdapter(Task.class), data, action);
-        return Response.ok("completed").status(Status.OK).build();
+        Task completedTask = session.getDocument(new IdRef(taskId)).getAdapter(Task.class);
+        return Response.ok(completedTask).status(Status.OK).build();
     }
 
     @GET

@@ -29,6 +29,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
@@ -63,14 +64,17 @@ public class DocumentRouteWriter extends EntityWriter<DocumentRoute> {
             UriInfo uriInfo) throws JsonGenerationException, IOException {
         final CoreSession session = SessionFactory.getSession(request);
         final String workflowModelId = item.getModelId();
-        GraphRoute model = session.getDocument(new IdRef(workflowModelId)).getAdapter(GraphRoute.class);
-        final String workflowModelName = model.getName();
-
         jg.writeStringField("id", item.getDocument().getId());
         jg.writeStringField("name", item.getName());
         jg.writeStringField("title", item.getTitle());
-        jg.writeStringField("modelId", workflowModelId);
-        jg.writeStringField("modelName", workflowModelName);
+        if (StringUtils.isNotBlank(workflowModelId)) {
+            GraphRoute model = null;
+            String workflowModelName = null;
+            model = session.getDocument(new IdRef(workflowModelId)).getAdapter(GraphRoute.class);
+            workflowModelName = model.getName();
+            jg.writeStringField("modelId", workflowModelId);
+            jg.writeStringField("modelName", workflowModelName);
+        }
         jg.writeStringField("initiator", item.getInitiator());
 
         jg.writeArrayFieldStart("attachedDocumentIds");

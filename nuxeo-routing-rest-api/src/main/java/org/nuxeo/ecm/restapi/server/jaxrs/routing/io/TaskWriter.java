@@ -123,7 +123,7 @@ public class TaskWriter extends EntityWriter<Task> {
             jg.writeStartObject();
             jg.writeStringField("author", comment.getAuthor());
             jg.writeStringField("text", comment.getText());
-            jg.writeStringField("date", DateParser.formatW3CDateTime(comment.getCreationDate()));
+            jg.writeStringField("date", DateParser.formatW3CDateTime(comment.getCreationDate().getTime()));
             jg.writeEndObject();
         }
         jg.writeEndArray();
