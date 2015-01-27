@@ -44,7 +44,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -188,12 +187,7 @@ public final class ComponentUtils {
                     filename = "file";
                 }
                 HttpServletRequest request = (HttpServletRequest) econtext.getRequest();
-
-                String digest = null;
-                if (blob instanceof StorageBlob) {
-                    digest = ((StorageBlob) blob).getBinary().getDigest();
-                }
-
+                String digest = blob.getDigest();
                 try {
                     String previousToken = request.getHeader("If-None-Match");
                     if (previousToken != null && previousToken.equals(digest)) {

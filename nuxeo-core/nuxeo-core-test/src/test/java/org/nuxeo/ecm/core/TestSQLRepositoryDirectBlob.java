@@ -39,11 +39,11 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
 import org.nuxeo.ecm.core.storage.binary.DefaultBinaryManager;
+import org.nuxeo.ecm.core.storage.binary.BinaryBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 /**
@@ -111,7 +111,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
         Binary binary = binaryManager.getBinary(digest);
         assertNotNull("Missing file for digest: " + digest, binary);
         String filename = "doc.txt";
-        Blob blob = new StorageBlob(binary, filename, "text/plain", "utf-8", binary.getDigest(), binary.getLength());
+        Blob blob = new BinaryBlob(binary, filename, "text/plain", "utf-8", binary.getDigest(), binary.getLength());
         file.setProperty("file", "filename", filename);
         file.setProperty("file", "content", blob);
         session.saveDocument(file);

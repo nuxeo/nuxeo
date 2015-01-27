@@ -9,7 +9,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage;
+package org.nuxeo.ecm.core.storage.binary;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,12 +18,11 @@ import java.io.Serializable;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
-import org.nuxeo.ecm.core.storage.binary.Binary;
 
 /**
  * A {@link Blob} wrapping a {@link Binary} value.
  */
-public class StorageBlob extends AbstractBlob implements Serializable {
+public class BinaryBlob extends AbstractBlob implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -31,7 +30,7 @@ public class StorageBlob extends AbstractBlob implements Serializable {
 
     protected final long length;
 
-    public StorageBlob(Binary binary, String filename, String mimeType, String encoding, String digest, long length) {
+    public BinaryBlob(Binary binary, String filename, String mimeType, String encoding, String digest, long length) {
         this.binary = binary;
         this.length = length;
         setFilename(filename);
@@ -80,10 +79,10 @@ public class StorageBlob extends AbstractBlob implements Serializable {
      */
     @Override
     protected boolean equalsStream(Blob blob) {
-        if (!(blob instanceof StorageBlob)) {
+        if (!(blob instanceof BinaryBlob)) {
             return super.equalsStream(blob);
         }
-        StorageBlob other = (StorageBlob) blob;
+        BinaryBlob other = (BinaryBlob) blob;
         if (binary == null) {
             return other.binary == null;
         } else if (other.binary == null) {

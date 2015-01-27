@@ -78,9 +78,9 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
 import org.nuxeo.ecm.core.storage.PartialList;
-import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.binary.Binary;
+import org.nuxeo.ecm.core.storage.binary.BinaryBlob;
 import org.nuxeo.ecm.core.storage.lock.LockException;
 import org.nuxeo.ecm.core.storage.sql.ACLRow;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -898,8 +898,8 @@ public class SQLSession implements Session {
     protected void readComplexProperty(ComplexProperty complexProperty, Node node) throws PropertyException {
         if (complexProperty instanceof BlobProperty) {
             try {
-                StorageBlob value = readBlob(node);
-                complexProperty.init(value);
+                Blob blob = readBlob(node);
+                complexProperty.init((Serializable) blob);
                 return;
             } catch (StorageException e) {
                 throw new PropertyException("Property: " + complexProperty.getName(), e);
@@ -971,8 +971,8 @@ public class SQLSession implements Session {
                 return;
             }
             try {
-                StorageBlob value = readBlob(node);
-                prefetch.put(xpath, value);
+                Blob blob = readBlob(node);
+                prefetch.put(xpath, (Serializable) blob);
                 return;
             } catch (StorageException e) {
                 throw new PropertyException("Property: " + xpath, e);
@@ -1116,7 +1116,7 @@ public class SQLSession implements Session {
         }
     }
 
-    protected StorageBlob readBlob(Node node) throws StorageException {
+    protected Blob readBlob(Node node) throws StorageException {
         Binary binary = (Binary) node.getSimpleProperty(BLOB_DATA).getValue();
         if (binary == null) {
             return null;
@@ -1126,7 +1126,7 @@ public class SQLSession implements Session {
         String encoding = node.getSimpleProperty(BLOB_ENCODING).getString();
         String digest = node.getSimpleProperty(BLOB_DIGEST).getString();
         Long length = node.getSimpleProperty(BLOB_LENGTH).getLong();
-        return new StorageBlob(binary, name, mimeType, encoding, digest, length.longValue());
+        return new BinaryBlob(binary, name, mimeType, encoding, digest, length.longValue());
     }
 
     protected void writeBlobProperty(BlobProperty blobProperty, Node node, SQLDocument doc) throws StorageException,
@@ -1222,9 +1222,6 @@ public class SQLSession implements Session {
      * @throws DocumentException
      */
     public Binary getBinary(Blob blob) throws DocumentException {
-        if (blob instanceof StorageBlob) {
-            return ((StorageBlob) blob).getBinary();
-        }
         try {
             return session.getBinary(blob);
         } catch (StorageException e) {

@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.ListDiff;
-import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
@@ -344,7 +343,7 @@ public class EditorImageActionsBean extends InputController implements EditorIma
         int position = 0;
         for (Map<String, Serializable> prop : transcodedVideos) {
             if (type.equals(prop.get("name"))) {
-                StorageBlob content = (StorageBlob) prop.get("content");
+                Blob content = (Blob) prop.get("content");
                 String blobPropertyName = "vid:transcodedVideos/" + position + "/content";
                 return DocumentModelFunctions.bigFileUrl(video, blobPropertyName, content.getFilename());
             }

@@ -19,7 +19,6 @@ package org.nuxeo.ecm.core.storage.dbs;
 import static java.lang.Boolean.TRUE;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -70,9 +69,9 @@ import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.State;
-import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
+import org.nuxeo.ecm.core.storage.binary.BinaryBlob;
 import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
 import org.nuxeo.runtime.api.Framework;
@@ -709,8 +708,8 @@ public class DBSDocument implements Document {
             return;
         }
         if (complexProperty instanceof BlobProperty) {
-            StorageBlob value = readBlob(state);
-            complexProperty.init(value);
+            Blob blob = readBlob(state);
+            complexProperty.init((Serializable) blob);
             return;
         }
         for (Property property : complexProperty) {
@@ -790,7 +789,7 @@ public class DBSDocument implements Document {
         return copy;
     }
 
-    protected StorageBlob readBlob(State state) {
+    protected Blob readBlob(State state) {
         Serializable data = state.get(KEY_BLOB_DATA);
         if (data == null) {
             return null;
@@ -804,7 +803,7 @@ public class DBSDocument implements Document {
         String encoding = (String) state.get(KEY_BLOB_ENCODING);
         String digest = (String) state.get(KEY_BLOB_DIGEST);
         Long length = (Long) state.get(KEY_BLOB_LENGTH);
-        return new StorageBlob(binary, name, mimeType, encoding, digest, length.longValue());
+        return new BinaryBlob(binary, name, mimeType, encoding, digest, length.longValue());
     }
 
     protected void writeBlobProperty(BlobProperty blobProperty, State state) throws PropertyException {
@@ -857,9 +856,6 @@ public class DBSDocument implements Document {
     // BinaryManager not closed
     @SuppressWarnings("resource")
     protected Binary getBinary(Blob blob) throws DocumentException {
-        if (blob instanceof StorageBlob) {
-            return ((StorageBlob) blob).getBinary();
-        }
         BinaryManager binaryManager = session.getBinaryManager();
         try {
             return binaryManager.getBinary(blob);

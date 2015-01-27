@@ -19,9 +19,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.storage.StorageBlob;
-import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.platform.ui.web.download.DownloadServlet.ByteRange;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 
@@ -104,7 +103,7 @@ public class TestDownloadServlet {
     private void doTestETagHeader(Boolean match) throws Exception {
         // Given a blob
         String blobValue = "Hello World";
-        StorageBlob blob = getBlobWithFakeDigest(blobValue, "12345");
+        Blob blob = getBlobWithFakeDigest(blobValue, "12345");
 
         // When i send a request a given digest
         String digestToTest = getDigestToTest(match, blob);
@@ -130,7 +129,7 @@ public class TestDownloadServlet {
      * @return
      * @since 5.8
      */
-    private String getDigestToTest(Boolean match, StorageBlob blob) {
+    private String getDigestToTest(Boolean match, Blob blob) {
         if (match == null) {
             return null;
         } else if (match == true) {
@@ -180,7 +179,7 @@ public class TestDownloadServlet {
     }
 
     /**
-     * Forges a StorageBlob with a string value and an expected digest.
+     * Forges a Blob with a string value and an expected digest.
      *
      * @param stringValue
      * @param digest
@@ -188,14 +187,10 @@ public class TestDownloadServlet {
      * @throws IOException
      * @since 5.8
      */
-    private StorageBlob getBlobWithFakeDigest(String stringValue, String digest) throws IOException {
-        Binary binary = mock(Binary.class);
-        final byte[] bytes = stringValue.getBytes();
-        InputStream in = new ByteArrayInputStream(bytes);
-        StorageBlob blob = new StorageBlob(binary, "myFile.txt", "text/plain", "UTF-8", digest, bytes.length);
-        when(binary.getStream()).thenReturn(in);
-        when(binary.getDigest()).thenReturn(digest);
-        when(binary.getLength()).thenReturn((long) bytes.length);
+    private Blob getBlobWithFakeDigest(String stringValue, String digest) throws IOException {
+        Blob blob = Blobs.createBlob(stringValue);
+        blob.setFilename("myFile.txt");
+        blob.setDigest(digest);
         return blob;
     }
 }

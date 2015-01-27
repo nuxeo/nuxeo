@@ -44,7 +44,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
@@ -271,12 +270,7 @@ public class DownloadServlet extends HttpServlet {
         InputStream in = blob.getStream();
         OutputStream out = resp.getOutputStream();
         try {
-
-            String digest = null;
-            if (blob instanceof StorageBlob) {
-                digest = ((StorageBlob) blob).getBinary().getDigest();
-            }
-
+            String digest = blob.getDigest();
             String previousToken = req.getHeader("If-None-Match");
             if (previousToken != null && previousToken.equals(digest)) {
                 resp.sendError(HttpServletResponse.SC_NOT_MODIFIED);

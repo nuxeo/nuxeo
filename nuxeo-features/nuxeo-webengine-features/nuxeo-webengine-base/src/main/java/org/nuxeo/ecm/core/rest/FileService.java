@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.webengine.WebException;
@@ -96,10 +95,8 @@ public class FileService extends DefaultAdapter {
                 }
             }
 
-            EntityTag etag = null;
-            if (blob instanceof StorageBlob) {
-                etag = new EntityTag(((StorageBlob) blob).getBinary().getDigest());
-            }
+            String digest = blob.getDigest();
+            EntityTag etag = digest == null ? null : new EntityTag(digest);
 
             if (etag != null) {
                 ResponseBuilder builder = request.evaluatePreconditions(etag);

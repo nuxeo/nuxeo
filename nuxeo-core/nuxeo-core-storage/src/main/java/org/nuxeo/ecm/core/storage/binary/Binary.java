@@ -38,10 +38,6 @@ public class Binary implements Serializable {
 
     protected long length;
 
-    public Binary(File file, String digest) {
-        this(file, digest, null);
-    }
-
     protected Binary(String digest, String reponame) {
         this(null, digest, reponame);
     }
