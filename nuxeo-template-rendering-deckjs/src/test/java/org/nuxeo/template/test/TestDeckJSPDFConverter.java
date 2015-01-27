@@ -19,6 +19,7 @@ package org.nuxeo.template.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.List;
 
@@ -31,7 +32,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -51,14 +51,14 @@ public class TestDeckJSPDFConverter {
     @Inject
     protected CoreSession session;
 
+    @Inject
+    protected CommandLineExecutorService cles;
+
     @Test
     public void testSampleDocument() throws Exception {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
-        assertNotNull(cles);
         CommandAvailability commandAvailability = cles.getCommandAvailability(DeckJSConverterConstants.PHANTOM_JS_COMMAND_NAME);
-        if (!commandAvailability.isAvailable()) {
-            return;
-        }
+        assumeTrue("phantomjs not available", commandAvailability.isAvailable());
+
         PathRef ref = new PathRef("default-domain/workspaces/templatesamples/");
         DocumentModel sampleFolder = session.getDocument(ref);
         assertNotNull(sampleFolder);
