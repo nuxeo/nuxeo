@@ -72,7 +72,7 @@
       if (params.directoryName && params.directoryName.length > 0) {
         opName = 'Directory.SuggestEntries';
       } else {
-        opName = 'Document.PageProvider';
+        opName = 'Repository.PageProvider';
       }
     }
     return opName;
@@ -106,7 +106,7 @@
     } else if (params.operationId == 'UserGroup.Suggestion') {
       temp.searchTerm = query.term;
       temp.searchType = params.userSuggestionSearchType;
-    } else if (params.operationId == 'Document.PageProvider') {
+    } else if (params.operationId == 'Repository.PageProvider') {
       // build default operation for Document
       temp.searchTerm = query.term + "%";
       temp.query = params.query;
@@ -210,7 +210,7 @@
     var op = null;
     if (restoreSeamCtx && typeof currentConversationId != 'undefined') {
       // If Seam context is available, let's restore it
-      op = jQuery().automation('Seam.RunOperation', automationParams);
+      op = jQuery().automation('WebUI.RunOperationInSeam', automationParams);
     } else {
       op = jQuery().automation(opName, automationParams);
     }
