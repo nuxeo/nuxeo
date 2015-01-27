@@ -121,6 +121,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
 /**
@@ -1190,42 +1191,60 @@ public class CmisSuiteSession {
         Thread.sleep(1000); // otherwise sometimes fails to set up again
         session = cmisFeatureSession.setUpCmisSession(coreSession.getRepositoryName());
 
-        String complexStringProp = "\"stringProp\":\"testString1\"";
-        String complexDatePropMillis = "\"dateProp\":1234500000000";
-        String complexDatePropW3C = "\"dateProp\":\"2009-02-13T04:40:00.00Z\"";
-        String complexMiscProps = "\"boolProp\":null,\"enumProp\":null,\"arrayProp\":[],\"intProp\":null,\"floatProp\":null";
-        String expectedPropsMillis = String.format("{%s,%s,%s}", complexStringProp, complexDatePropMillis,
-                complexMiscProps);
-        String expectedPropsW3C = String.format("{%s,%s,%s}", complexStringProp, complexDatePropW3C, complexMiscProps);
+        ObjectMapper om = new ObjectMapper();
+        Map<String, Object> inputMap = new HashMap<>();
+        inputMap.put("stringProp", "testString1");
+        Long dateAsLong = Long.valueOf(1234500000000L);
+        String dateAsString = "2009-02-13T04:40:00.00Z";
+
         Map<String, Serializable> properties = new HashMap<>();
         properties.put(PropertyIds.OBJECT_TYPE_ID, "ComplexFile");
         properties.put(PropertyIds.NAME, "complexfile");
-        properties.put("complexTest:complexItem", "{" + complexStringProp + "," + complexDatePropMillis + "}");
         Document doc;
         List<String> docIds = new ArrayList<String>();
+
+        // date as long timestamp
+        inputMap.put("dateProp", dateAsLong);
+        properties.put("complexTest:complexItem", om.writeValueAsString(inputMap));
         doc = session.getRootFolder().createDocument(properties, null, null, null, null, null,
                 NuxeoSession.DEFAULT_CONTEXT);
         docIds.add(doc.getId());
-        properties.put("complexTest:complexItem", "{" + complexStringProp + "," + complexDatePropW3C + "}");
+
+        // date as w3c string
+        inputMap.put("dateProp", dateAsString);
+        properties.put("complexTest:complexItem", om.writeValueAsString(inputMap));
         doc = session.getRootFolder().createDocument(properties, null, null, null, null, null,
                 NuxeoSession.DEFAULT_CONTEXT);
         docIds.add(doc.getId());
-        String expectedProps = (isBrowser) ? expectedPropsMillis : expectedPropsW3C;
+
+        Map<String, Object> expectedMap = new HashMap<>();
+        expectedMap.put("stringProp", "testString1");
+        expectedMap.put("dateProp", isBrowser ? dateAsLong : dateAsString);
+        expectedMap.put("boolProp", null);
+        expectedMap.put("enumProp", null);
+        expectedMap.put("arrayProp", new ArrayList<String>(0));
+        expectedMap.put("intProp", null);
+        expectedMap.put("floatProp", null);
+
         for (String docId : docIds) {
             doc = (Document) session.getObject(docId);
-            assertEquals(expectedProps, doc.getPropertyValue("complexTest:complexItem"));
+            String res = (String) doc.getPropertyValue("complexTest:complexItem");
+            assertEquals(expectedMap, om.readValue(res, Map.class));
         }
 
         if (!isBrowser) {
             return;
         }
 
+        expectedMap.put("dateProp", dateAsString);
+
         session = createBrowserCmisSession(coreSession.getRepositoryName(),
                 ((CmisFeatureSessionHttp) cmisFeatureSession).serverURI);
         try {
             for (String docId : docIds) {
                 doc = (Document) session.getObject(docId);
-                assertEquals(expectedPropsW3C, doc.getPropertyValue("complexTest:complexItem"));
+                String res = (String) doc.getPropertyValue("complexTest:complexItem");
+                assertEquals(expectedMap, om.readValue(res, Map.class));
             }
         } finally {
             session.clear();

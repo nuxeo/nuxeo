@@ -153,6 +153,14 @@
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-juli</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
     <!-- scope provided -->
     <dependency>
       <groupId>javax.resource</groupId>
