@@ -328,7 +328,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         // Debian / Ubuntu
         // TODO: remove when Debian package is available
         packages.add(new DesktopPackageDefinition(
-                "https://github.com/nuxeo/nuxeo-drive/#ubuntudebian-and-other-linux-variants-client",
+                "https://github.com/nuxeo/nuxeo-drive/tree/1.4#ubuntudebian-and-other-linux-variants-client",
                 "user.center.nuxeoDrive.platform.ubuntu.docLinkTitle", "ubuntu"));
         return packages;
     }
