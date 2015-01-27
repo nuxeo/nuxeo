@@ -73,7 +73,7 @@ public class TaskListWriter extends EntityListWriter<Task> {
 
     @Override
     protected void writeItem(JsonGenerator jg, Task item) throws ClientException, IOException {
-     // do nothing, everything is done in #writeTo
+        // do nothing, everything is done in #writeTo
     }
 
     @Override

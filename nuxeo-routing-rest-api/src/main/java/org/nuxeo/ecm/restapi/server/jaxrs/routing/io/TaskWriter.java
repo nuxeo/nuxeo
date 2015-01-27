@@ -51,7 +51,7 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Button;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskComment;
-import org.nuxeo.ecm.restapi.server.jaxrs.routing.io.util.JsonComplexTypeEncoder;
+import org.nuxeo.ecm.restapi.server.jaxrs.routing.io.util.JsonEncodeDecodeUtils;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
 
@@ -79,18 +79,22 @@ public class TaskWriter extends EntityWriter<Task> {
             throws JsonGenerationException, IOException {
         CoreSession session = null;
         GraphRoute workflowInstance = null;
+        GraphNode node = null;
         String workflowInstanceId = item.getProcessId();
+        final String nodeId = item.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
         if (request != null) {
             session = SessionFactory.getSession(request);
         }
         if (session != null && StringUtils.isNotBlank(workflowInstanceId)) {
             DocumentModel workflowInstanceDoc = session.getDocument(new IdRef(workflowInstanceId));
             workflowInstance = workflowInstanceDoc.getAdapter(GraphRoute.class);
+            node = workflowInstance.getNode(nodeId);
         }
 
         jg.writeStringField("id", item.getDocument().getId());
         jg.writeStringField("name", item.getName());
-        jg.writeStringField("workflowId", item.getProcessId());
+        jg.writeStringField("workflowId", workflowInstanceId);
+        jg.writeStringField("nodeId", nodeId);
         jg.writeStringField("state", item.getDocument().getCurrentLifeCycleState());
         jg.writeStringField("directive", item.getDirective());
         jg.writeStringField("created", DateParser.formatW3CDateTime(item.getCreated()));
@@ -126,21 +130,14 @@ public class TaskWriter extends EntityWriter<Task> {
 
         jg.writeFieldName("variables");
         jg.writeStartObject();
-        // add taskVariables
-        for (Entry<String, String> e : item.getVariables().entrySet()) {
-            jg.writeStringField(e.getKey(), e.getValue());
+        // add nodeVariables
+        for (Entry<String, Serializable> e : node.getVariables().entrySet()) {
+            writeVariableEntry(e, jg, request);
         }
         // add workflow variables
         if (workflowInstance != null) {
             for (Entry<String, Serializable> e : workflowInstance.getVariables().entrySet()) {
-
-                if (e.getValue() instanceof Blob) {
-                    jg.writeFieldName(e.getKey());
-                    JsonComplexTypeEncoder.encodeBlob((Blob) e.getValue(), jg, request);
-                } else {
-                    jg.writeObjectField(e.getKey(), e.getValue());
-                }
-
+                writeVariableEntry(e, jg, request);
             }
         }
         jg.writeEndObject();
@@ -148,10 +145,6 @@ public class TaskWriter extends EntityWriter<Task> {
         if (session != null) {
             jg.writeFieldName("taskInfo");
             jg.writeStartObject();
-            DocumentModel doc = session.getDocument(new IdRef(item.getProcessId()));
-            GraphRoute route = doc.getAdapter(GraphRoute.class);
-            GraphNode node = route.getNode(item.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY));
-
             final ActionManager actionManager = Framework.getService(ActionManager.class);
             jg.writeArrayFieldStart("taskActions");
             for (Button button : node.getTaskButtons()) {
@@ -198,6 +191,15 @@ public class TaskWriter extends EntityWriter<Task> {
     @Override
     protected String getEntityType() {
         return ENTITY_TYPE;
+    }
+
+    protected static void writeVariableEntry(Entry<String, Serializable> e, JsonGenerator jg, HttpServletRequest request) throws JsonGenerationException, IOException {
+        if (e.getValue() instanceof Blob) {
+            jg.writeFieldName(e.getKey());
+            JsonEncodeDecodeUtils.encodeBlob((Blob) e.getValue(), jg, request);
+        } else {
+            jg.writeObjectField(e.getKey(), e.getValue());
+        }
     }
 
 }

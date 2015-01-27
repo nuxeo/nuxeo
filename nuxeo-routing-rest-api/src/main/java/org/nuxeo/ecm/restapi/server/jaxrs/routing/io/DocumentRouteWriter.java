@@ -33,8 +33,11 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
+import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
 /**
  * @since 7.2
@@ -56,11 +59,18 @@ public class DocumentRouteWriter extends EntityWriter<DocumentRoute> {
         writeDocumentRoute(jg, item, request, uriInfo);
     }
 
-    public static void writeDocumentRoute(JsonGenerator jg, DocumentRoute item, HttpServletRequest request, UriInfo uriInfo) throws JsonGenerationException, IOException {
+    public static void writeDocumentRoute(JsonGenerator jg, DocumentRoute item, HttpServletRequest request,
+            UriInfo uriInfo) throws JsonGenerationException, IOException {
+        final CoreSession session = SessionFactory.getSession(request);
+        final String workflowModelId = item.getModelId();
+        GraphRoute model = session.getDocument(new IdRef(workflowModelId)).getAdapter(GraphRoute.class);
+        final String workflowModelName = model.getName();
+
         jg.writeStringField("id", item.getDocument().getId());
         jg.writeStringField("name", item.getName());
         jg.writeStringField("title", item.getTitle());
-        jg.writeStringField("modelId", item.getModelId());
+        jg.writeStringField("modelId", workflowModelId);
+        jg.writeStringField("modelName", workflowModelName);
         jg.writeStringField("initiator", item.getInitiator());
 
         jg.writeArrayFieldStart("attachedDocumentIds");
@@ -84,7 +94,8 @@ public class DocumentRouteWriter extends EntityWriter<DocumentRoute> {
             String graphResourceUrl = "";
             if (item.isValidated()) {
                 // it is a model
-                graphResourceUrl = uriInfo.getBaseUri() + "api/v1/workflowModel/" + item.getDocument().getName() + "/graph";
+                graphResourceUrl = uriInfo.getBaseUri() + "api/v1/workflowModel/" + item.getDocument().getName()
+                        + "/graph";
             } else {
                 // it is an instance
                 graphResourceUrl = uriInfo.getBaseUri() + "api/v1/workflow/" + item.getDocument().getId() + "/graph";

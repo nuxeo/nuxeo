@@ -19,19 +19,27 @@
 package org.nuxeo.ecm.restapi.server.jaxrs.routing.io.util;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletRequest;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
  * @since 7.2
  */
-public class JsonComplexTypeEncoder {
+public class JsonEncodeDecodeUtils {
 
-    public static void encodeBlob(Blob blob, JsonGenerator jg, ServletRequest request) throws JsonGenerationException, IOException {
+    public static void encodeBlob(Blob blob, JsonGenerator jg, ServletRequest request) throws JsonGenerationException,
+            IOException {
         if (blob == null) {
             jg.writeNull();
             return;
@@ -66,6 +74,30 @@ public class JsonComplexTypeEncoder {
         // TODO encode data url
 
         jg.writeEndObject();
+    }
+
+    public static Map<String, Serializable> decodeVariables(JsonNode jsnode,
+            Map<String, Serializable> originalVariables, CoreSession session) throws ClassNotFoundException,
+            IOException {
+        Map<String, Serializable> variables = new HashMap<String, Serializable>();
+        Iterator<Entry<String, JsonNode>> it = jsnode.getFields();
+        while (it.hasNext()) {
+            Entry<String, JsonNode> variable = it.next();
+            String key = variable.getKey();
+            JsonNode value = variable.getValue();
+            /*
+             * Serializable originalValue = node.getVariables().get(key); Serializable readValue = null; if
+             * (originalValue instanceof List) { readValue = jsnode.traverse().readValueAs(ArrayList.class); } else if
+             * (value.isTextual()) { readValue = jsnode.getTextValue(); } else if (jsnode.isNumber()) { readValue =
+             * jsnode.getNumberValue(); } else if (originalValue instanceof Boolean) { readValue =
+             * jsnode.getBooleanValue(); } else { readValue = (Serializable) codecService.read(jsnode.traverse(),
+             * Thread.currentThread().getContextClassLoader(), SessionFactory.getSession(request)); } variables.put(key,
+             * readValue);
+             */
+
+            variables.put(key, value.getTextValue());
+        }
+        return variables;
     }
 
 }

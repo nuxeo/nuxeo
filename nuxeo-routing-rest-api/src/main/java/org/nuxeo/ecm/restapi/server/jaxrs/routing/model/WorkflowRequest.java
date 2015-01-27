@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public class WorkflowRequest {
 
-    protected List<String> documentIds = new ArrayList<String>();
+    protected List<String> attachedDocumentIds = new ArrayList<String>();
 
     protected Map<String, Serializable> variables;
 
@@ -38,8 +38,8 @@ public class WorkflowRequest {
         super();
     }
 
-    public List<String> getDocumentIds() {
-        return documentIds;
+    public List<String> getAttachedDocumentIds() {
+        return attachedDocumentIds;
     }
 
     public String getWorkflowModelName() {
@@ -50,8 +50,8 @@ public class WorkflowRequest {
         return variables;
     }
 
-    public void setDocumentIds(List<String> documentIds) {
-        this.documentIds = documentIds;
+    public void setAttachedDocumentIds(List<String> attachedDocumentIds) {
+        this.attachedDocumentIds = attachedDocumentIds;
     }
 
     public void setWorkflowModelName(String workflowModelName) {

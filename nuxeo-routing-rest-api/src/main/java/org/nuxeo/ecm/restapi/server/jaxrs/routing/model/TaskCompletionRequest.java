@@ -18,6 +18,7 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs.routing.model;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public class TaskCompletionRequest {
 
     protected String comment;
 
-    protected Map<String, String> variables;
+    protected Map<String, Serializable> variables;
 
     public TaskCompletionRequest() {
         super();
@@ -56,7 +57,7 @@ public class TaskCompletionRequest {
         return data;
     }
 
-    public Map<String, String> getVariables() {
+    public Map<String, Serializable> getVariables() {
         return variables;
     }
 
@@ -64,7 +65,7 @@ public class TaskCompletionRequest {
         this.comment = comment;
     }
 
-    public void setVariables(Map<String, String> nodeVariables) {
+    public void setVariables(Map<String, Serializable> nodeVariables) {
         this.variables = nodeVariables;
     }
 
