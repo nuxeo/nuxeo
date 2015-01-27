@@ -80,7 +80,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//input[@id='createUserView:createUser:immediate_creation']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation:1']</td>
 	<td></td>
 </tr>
 <tr>
@@ -115,12 +115,12 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstPassword']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_passwordMatcher_firstPassword']</td>
 	<td>susan1</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUserView:createUser:nxl_user:nxw_secondPassword']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_passwordMatcher_secondPassword']</td>
 	<td>susan1</td>
 </tr>
 <tr>
@@ -130,7 +130,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//input[@value='Save']</td>
+	<td>//input[@id='createUserView:createUser:button_save']</td>
 	<td></td>
 </tr>
 <tr>
@@ -218,7 +218,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//input[@value='Save']</td>
+	<td>//input[@id='createGroupView:createGroup:button_save']</td>
 	<td></td>
 </tr>
 <tr>
@@ -615,7 +615,12 @@
 </tr>
 <tr>
 	<td>waitForElementPresent</td>
-	<td>id=createGroupView:createGroup:button_save_and_create</td>
+	<td>id=createGroupView:createGroup:checkbox_createAnother</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>id=createGroupView:createGroup:button_save</td>
 	<td></td>
 </tr>
 <tr>
