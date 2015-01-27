@@ -23,7 +23,7 @@ import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.audio.mp3.MP3File;
 import org.jaudiotagger.tag.TagException;
-import org.jaudiotagger.tag.id3.ID3v23Frame;
+import org.jaudiotagger.tag.id3.AbstractID3v2Frame;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyAPIC;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -84,8 +84,8 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
             if (file.hasID3v2Tag()) {
                 Iterator it = file.getID3v2Tag().getFrameOfType("APIC");
                 if (it != null && it.hasNext()) {
-                    ID3v23Frame id3v2 = (ID3v23Frame) it.next();
-                    FrameBodyAPIC framePic = (FrameBodyAPIC) id3v2.getBody();
+                    AbstractID3v2Frame frame = (AbstractID3v2Frame) it.next();
+                    FrameBodyAPIC framePic = (FrameBodyAPIC) frame.getBody();
                     thumbnailBlob = Blobs.createBlob(framePic.getImageData());
                 }
             }
