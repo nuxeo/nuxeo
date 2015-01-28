@@ -25,6 +25,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,7 +43,6 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.plexus.util.dag.CycleDetectedException;
 import org.codehaus.plexus.util.dag.DAG;
 import org.codehaus.plexus.util.dag.TopologicalSorter;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
@@ -941,6 +941,21 @@ public final class ThemeManager implements Registrable {
 
     public List<Style> getSortedNamedStyles(String themeName) {
         List<Style> namedStyles = getNamedStyles(themeName);
+
+        // sort styles to have a deterministic topological sort
+        List<String> names = new ArrayList<>(namedStyles.size());
+        Map<String, Style> allStyles = new HashMap<>();
+        for (Style style : namedStyles) {
+            String name = style.getName();
+            names.add(name);
+            allStyles.put(name, style);
+        }
+        Collections.sort(names);
+        namedStyles = new ArrayList<>(namedStyles.size());
+        for (String name : names) {
+            namedStyles.add(allStyles.get(name));
+        }
+
         DAG graph = new DAG();
         for (Style s : namedStyles) {
             String styleName = s.getName();
