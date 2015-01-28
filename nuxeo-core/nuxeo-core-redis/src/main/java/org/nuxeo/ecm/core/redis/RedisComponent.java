@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.work.WorkManagerImpl;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
@@ -91,11 +92,19 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
                     return;
                 }
                 Framework.removeListener(this);
-                executor = null;
-                executor.getPool().destroy();
+                try {
+                    executor.getPool().destroy();
+                } finally {
+                    executor = null;
+                }
             }
         });
         handleNewExecutor(config.newExecutor());
+    }
+
+    @Override
+    public int getApplicationStartedOrder() {
+        return ((DefaultComponent) Framework.getRuntime().getComponentInstance("org.nuxeo.ecm.core.work.service").getInstance()).getApplicationStartedOrder() - 1;
     }
 
     public void handleNewExecutor(RedisExecutor executor) {

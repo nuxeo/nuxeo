@@ -44,7 +44,6 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.ecm.core.event.EventServiceComponent;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
@@ -99,6 +98,11 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     protected final WorkCompletionSynchronizer completionSynchronizer = new WorkCompletionSynchronizer("all");
 
     protected WorkQueuing queuing = newWorkQueuing(MemoryWorkQueuing.class);
+
+    @Override
+    public void activate(ComponentContext context) {
+        Framework.addListener(new ShutdownListener());
+    }
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
@@ -260,7 +264,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public void applicationStarted(ComponentContext context) {
-        Framework.addListener(new ShutdownListener());
         init();
     }
 
