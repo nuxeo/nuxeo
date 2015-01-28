@@ -19,11 +19,13 @@
 
 package org.nuxeo.ecm.platform.ui.web.tag.handler;
 
+import javax.el.ValueExpression;
+import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
 import javax.faces.view.facelets.ComponentConfig;
-import javax.faces.view.facelets.MetaRuleset;
+import javax.faces.view.facelets.FaceletContext;
 
-import org.nuxeo.ecm.platform.ui.web.tag.jsf.DefaultValueHolderRule;
+import org.nuxeo.ecm.platform.ui.web.binding.DefaultValueExpression;
 
 import com.sun.faces.facelets.tag.jsf.html.HtmlComponentHandler;
 
@@ -41,18 +43,15 @@ public class GenericHtmlComponentHandler extends HtmlComponentHandler {
     }
 
     /**
-     * Create meta rule set as regular html component, adding a default value holder rule.
-     *
-     * @see DefaultValueHolderRule
+     * Overrides the "value" value expression to handle default value mapping.
      */
-    @Override
-    @SuppressWarnings("rawtypes")
-    protected MetaRuleset createMetaRuleset(Class type) {
-        MetaRuleset m = super.createMetaRuleset(type);
-        if (ValueHolder.class.isAssignableFrom(type)) {
-            m.addRule(DefaultValueHolderRule.Instance);
+    public void onComponentCreated(FaceletContext ctx, UIComponent c, UIComponent parent) {
+        if (ValueHolder.class.isAssignableFrom(c.getClass())) {
+            ValueExpression dve = c.getValueExpression("defaultValue");
+            if (dve != null) {
+                c.setValueExpression("value", new DefaultValueExpression(c.getValueExpression("value"), dve));
+            }
         }
-        return m;
     }
 
 }
