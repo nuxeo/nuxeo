@@ -67,11 +67,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import com.google.inject.Inject;
 
 /**
- * Various test that verify quota Sizes are updated accordingly to various
- * operations.
- *
- * Due to the asynchronous nature of size update, these test rely on
- * {@link Thread#sleep(long)} and can fail because of that.
+ * Various test that verify quota Sizes are updated accordingly to various operations. Due to the asynchronous nature of
+ * size update, these test rely on {@link Thread#sleep(long)} and can fail because of that.
  *
  * @since 5.6
  */
@@ -487,8 +484,7 @@ public class TestDocumentsSizeUpdater {
 
                 dump();
 
-                DocumentModel copiedFile = session.getChildren(
-                        secondSubFolderRef).get(0);
+                DocumentModel copiedFile = session.getChildren(secondSubFolderRef).get(0);
 
                 assertQuota(getFirstFile(), 100L, 100L);
                 assertQuota(getSecondFile(), 200L, 200L);
@@ -518,13 +514,10 @@ public class TestDocumentsSizeUpdater {
             public void run() throws Exception {
 
                 dump();
-                DocumentModel copiedFolder = session.getChildren(
-                        secondFolderRef).get(0);
+                DocumentModel copiedFolder = session.getChildren(secondFolderRef).get(0);
 
-                DocumentModel copiedFirstFile = session.getChild(
-                        copiedFolder.getRef(), "file1");
-                DocumentModel copiedSecondFile = session.getChild(
-                        copiedFolder.getRef(), "file2");
+                DocumentModel copiedFirstFile = session.getChild(copiedFolder.getRef(), "file1");
+                DocumentModel copiedSecondFile = session.getChild(copiedFolder.getRef(), "file2");
 
                 assertQuota(getFirstFile(), 100L, 100L);
                 assertQuota(getSecondFile(), 200L, 200L);
@@ -630,13 +623,11 @@ public class TestDocumentsSizeUpdater {
                 try {
                     // now try to update one
                     DocumentModel firstFile = session.getDocument(firstFileRef);
-                    firstFile.setPropertyValue("file:content",
-                            (Serializable) getFakeBlob(250));
+                    firstFile.setPropertyValue("file:content", (Serializable) getFakeBlob(250));
                     firstFile = session.saveDocument(firstFile);
                 } catch (Exception e) {
                     if (QuotaExceededException.isQuotaExceededException(e)) {
-                        System.out.println("raised expected Exception "
-                                + QuotaExceededException.unwrap(e).getMessage());
+                        System.out.println("raised expected Exception " + QuotaExceededException.unwrap(e).getMessage());
                         canNotExceedQuota = true;
                     }
                     TransactionHelper.setTransactionRollbackOnly();
@@ -673,13 +664,11 @@ public class TestDocumentsSizeUpdater {
                 try {
                     // now try to update one
                     DocumentModel firstFile = session.getDocument(firstFileRef);
-                    firstFile.setPropertyValue("file:content",
-                            (Serializable) getFakeBlob(250));
+                    firstFile.setPropertyValue("file:content", (Serializable) getFakeBlob(250));
                     firstFile = session.saveDocument(firstFile);
                 } catch (Exception e) {
                     if (QuotaExceededException.isQuotaExceededException(e)) {
-                        System.out.println("raised expected Exception "
-                                + QuotaExceededException.unwrap(e).getMessage());
+                        System.out.println("raised expected Exception " + QuotaExceededException.unwrap(e).getMessage());
                         canNotExceedQuota = true;
                     }
                     TransactionHelper.setTransactionRollbackOnly();
@@ -731,8 +720,7 @@ public class TestDocumentsSizeUpdater {
                     firstFile.checkOut();
                 } catch (Exception e) {
                     if (QuotaExceededException.isQuotaExceededException(e)) {
-                        System.out.println("raised expected Exception "
-                                + QuotaExceededException.unwrap(e).getMessage());
+                        System.out.println("raised expected Exception " + QuotaExceededException.unwrap(e).getMessage());
                         canNotExceedQuota = true;
                     }
                     TransactionHelper.setTransactionRollbackOnly();
@@ -767,8 +755,7 @@ public class TestDocumentsSizeUpdater {
                 assertFalse(ws.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET));
 
                 String updaterName = "documentsSizeUpdater";
-                quotaStatsService.launchInitialStatisticsComputation(
-                        updaterName, session.getRepositoryName());
+                quotaStatsService.launchInitialStatisticsComputation(updaterName, session.getRepositoryName());
                 WorkManager workManager = Framework.getLocalService(WorkManager.class);
                 String queueId = workManager.getCategoryQueueId(QuotaStatsInitialWork.CATEGORY_QUOTA_INITIAL);
 
@@ -946,8 +933,7 @@ public class TestDocumentsSizeUpdater {
             public void run() throws Exception {
 
                 dump();
-                DocumentModel copiedFile = session.getChildren(
-                        secondSubFolderRef).get(0);
+                DocumentModel copiedFile = session.getChildren(secondSubFolderRef).get(0);
 
                 assertQuota(getFirstFile(), 380, 480, 0, 100);
                 assertQuota(getSecondFile(), 200, 200, 0, 0);
@@ -1007,12 +993,10 @@ public class TestDocumentsSizeUpdater {
             @Override
             public void run() throws Exception {
 
-                QuotaAware qaSecFolder = getSecondFolder().getAdapter(
-                        QuotaAware.class);
+                QuotaAware qaSecFolder = getSecondFolder().getAdapter(QuotaAware.class);
                 assertEquals(200L, qaSecFolder.getMaxQuota());
 
-                QuotaAware qaFirstFolder = getFirstFolder().getAdapter(
-                        QuotaAware.class);
+                QuotaAware qaFirstFolder = getFirstFolder().getAdapter(QuotaAware.class);
 
                 boolean canSetQuota = true;
                 try {
@@ -1022,8 +1006,7 @@ public class TestDocumentsSizeUpdater {
                 }
                 assertFalse(canSetQuota);
 
-                QuotaAware qaSecSubFolder = getSecondSubFolder().getAdapter(
-                        QuotaAware.class);
+                QuotaAware qaSecSubFolder = getSecondSubFolder().getAdapter(QuotaAware.class);
                 canSetQuota = true;
                 try {
                     qaSecSubFolder.setMaxQuota(50L, true);
@@ -1100,8 +1083,7 @@ public class TestDocumentsSizeUpdater {
                 List<DocumentModel> versions = session.getVersions(firstFileRef);
                 for (DocumentModel documentModel : versions) {
                     if ("0.1".equals(documentModel.getVersionLabel())) {
-                        firstFile = session.restoreToVersion(firstFileRef,
-                                documentModel.getRef(), true, true);
+                        firstFile = session.restoreToVersion(firstFileRef, documentModel.getRef(), true, true);
                     }
                 }
                 firstFileRef = firstFile.getRef();
@@ -1163,13 +1145,11 @@ public class TestDocumentsSizeUpdater {
                 try {
                     // now try to update one
                     DocumentModel firstFile = session.getDocument(firstFileRef);
-                    firstFile.setPropertyValue("file:content",
-                            (Serializable) getStreamBlob(250));
+                    firstFile.setPropertyValue("file:content", (Serializable) getStreamBlob(250));
                     firstFile = session.saveDocument(firstFile);
                 } catch (Exception e) {
                     if (QuotaExceededException.isQuotaExceededException(e)) {
-                        System.out.println("raised expected Exception "
-                                + QuotaExceededException.unwrap(e).getMessage());
+                        System.out.println("raised expected Exception " + QuotaExceededException.unwrap(e).getMessage());
                         canNotExceedQuota = true;
                     }
                     TransactionHelper.setTransactionRollbackOnly();
@@ -1190,18 +1170,15 @@ public class TestDocumentsSizeUpdater {
             @Override
             public void run() throws Exception {
                 try (CoreSession userSession = settings.openSessionAs("toto")) {
-                    DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(
-                            userSession, null);
+                    DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
                     assertNotNull(uw);
                 }
                 try (CoreSession userSession = settings.openSessionAs("titi")) {
-                    DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(
-                            userSession, null);
+                    DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
                     assertNotNull(uw);
                 }
                 quotaStatsService.activateQuotaOnUserWorkspaces(300L, session);
-                quotaStatsService.launchSetMaxQuotaOnUserWorkspaces(300L,
-                        session.getRootDocument(), session);
+                quotaStatsService.launchSetMaxQuotaOnUserWorkspaces(300L, session.getRootDocument(), session);
 
             }
         });
@@ -1224,17 +1201,13 @@ public class TestDocumentsSizeUpdater {
                 assertEquals(300L, titiUWQuota.getMaxQuota());
 
                 // create content in the 2 user workspaces
-                DocumentModel firstFile = session.createDocumentModel(
-                        totoUW.getPathAsString(), "file1", "File");
-                firstFile.setPropertyValue("file:content",
-                        (Serializable) getFakeBlob(200));
+                DocumentModel firstFile = session.createDocumentModel(totoUW.getPathAsString(), "file1", "File");
+                firstFile.setPropertyValue("file:content", (Serializable) getFakeBlob(200));
                 firstFile = session.createDocument(firstFile);
                 firstFile = session.saveDocument(firstFile);
 
-                DocumentModel secondFile = session.createDocumentModel(
-                        titiUW.getPathAsString(), "file2", "File");
-                secondFile.setPropertyValue("file:content",
-                        (Serializable) getFakeBlob(200));
+                DocumentModel secondFile = session.createDocumentModel(titiUW.getPathAsString(), "file2", "File");
+                secondFile.setPropertyValue("file:content", (Serializable) getFakeBlob(200));
                 secondFile = session.createDocument(secondFile);
                 secondFile = session.saveDocument(secondFile);
 
@@ -1257,10 +1230,8 @@ public class TestDocumentsSizeUpdater {
 
                 boolean canAddContent = true;
                 try {
-                    DocumentModel secondFile = session.createDocumentModel(
-                            titiUW.getPathAsString(), "file2", "File");
-                    secondFile.setPropertyValue("file:content",
-                            (Serializable) getFakeBlob(200));
+                    DocumentModel secondFile = session.createDocumentModel(titiUW.getPathAsString(), "file2", "File");
+                    secondFile.setPropertyValue("file:content", (Serializable) getFakeBlob(200));
                     secondFile = session.createDocument(secondFile);
                     secondFile = session.saveDocument(secondFile);
                 } catch (Exception e) {
@@ -1272,10 +1243,8 @@ public class TestDocumentsSizeUpdater {
 
                 canAddContent = true;
                 try {
-                    DocumentModel firstFile = session.createDocumentModel(
-                            totoUW.getPathAsString(), "file1", "File");
-                    firstFile.setPropertyValue("file:content",
-                            (Serializable) getFakeBlob(200));
+                    DocumentModel firstFile = session.createDocumentModel(totoUW.getPathAsString(), "file1", "File");
+                    firstFile.setPropertyValue("file:content", (Serializable) getFakeBlob(200));
                     firstFile = session.createDocument(firstFile);
                     firstFile = session.saveDocument(firstFile);
                 } catch (Exception e) {
@@ -1304,8 +1273,7 @@ public class TestDocumentsSizeUpdater {
         for (int i = 0; i < size; i++) {
             sb.append('a');
         }
-        InputStreamSource src = new InputStreamSource(new ByteArrayInputStream(
-                sb.toString().getBytes()));
+        InputStreamSource src = new InputStreamSource(new ByteArrayInputStream(sb.toString().getBytes()));
         Blob blob = new StreamingBlob(src);
         blob.setMimeType("text/plain");
         blob.setFilename("FakeBlob_" + size + ".txt");
@@ -1322,29 +1290,25 @@ public class TestDocumentsSizeUpdater {
         isr.run(new RunnableWithException() {
             @Override
             public void run() throws Exception {
-                DocumentModel ws = session.createDocumentModel("/", "ws",
-                        "Workspace");
+                DocumentModel ws = session.createDocumentModel("/", "ws", "Workspace");
                 ws = session.createDocument(ws);
                 ws = session.saveDocument(ws);
                 wsRef = ws.getRef();
 
-                DocumentModel firstFolder = session.createDocumentModel(
-                        ws.getPathAsString(), "folder1", "Folder");
+                DocumentModel firstFolder = session.createDocumentModel(ws.getPathAsString(), "folder1", "Folder");
                 firstFolder = session.createDocument(firstFolder);
                 firstFolder = session.saveDocument(firstFolder);
                 firstFolderRef = firstFolder.getRef();
 
-                DocumentModel firstSubFolder = session.createDocumentModel(
-                        firstFolder.getPathAsString(), "subfolder1", "Folder");
+                DocumentModel firstSubFolder = session.createDocumentModel(firstFolder.getPathAsString(), "subfolder1",
+                        "Folder");
                 firstSubFolder = session.createDocument(firstSubFolder);
                 firstSubFolder = session.saveDocument(firstSubFolder);
 
                 firstSubFolderRef = firstSubFolder.getRef();
 
-                DocumentModel firstFile = session.createDocumentModel(
-                        firstSubFolder.getPathAsString(), "file1", "File");
-                firstFile.setPropertyValue("file:content",
-                        (Serializable) getFakeBlob(100));
+                DocumentModel firstFile = session.createDocumentModel(firstSubFolder.getPathAsString(), "file1", "File");
+                firstFile.setPropertyValue("file:content", (Serializable) getFakeBlob(100));
                 firstFile = session.createDocument(firstFile);
                 firstFile = session.saveDocument(firstFile);
                 if (checkInFirstFile) {
@@ -1353,23 +1317,21 @@ public class TestDocumentsSizeUpdater {
 
                 firstFileRef = firstFile.getRef();
 
-                DocumentModel secondFile = session.createDocumentModel(
-                        firstSubFolder.getPathAsString(), "file2", "File");
-                secondFile.setPropertyValue("file:content",
-                        (Serializable) getFakeBlob(200));
+                DocumentModel secondFile = session.createDocumentModel(firstSubFolder.getPathAsString(), "file2",
+                        "File");
+                secondFile.setPropertyValue("file:content", (Serializable) getFakeBlob(200));
 
                 secondFile = session.createDocument(secondFile);
                 secondFile = session.saveDocument(secondFile);
                 secondFileRef = secondFile.getRef();
 
-                DocumentModel secondSubFolder = session.createDocumentModel(
-                        firstFolder.getPathAsString(), "subfolder2", "Folder");
+                DocumentModel secondSubFolder = session.createDocumentModel(firstFolder.getPathAsString(),
+                        "subfolder2", "Folder");
                 secondSubFolder = session.createDocument(secondSubFolder);
                 secondSubFolder = session.saveDocument(secondSubFolder);
                 secondSubFolderRef = secondSubFolder.getRef();
 
-                DocumentModel secondFolder = session.createDocumentModel(
-                        ws.getPathAsString(), "folder2", "Folder");
+                DocumentModel secondFolder = session.createDocumentModel(ws.getPathAsString(), "folder2", "Folder");
                 secondFolder = session.createDocument(secondFolder);
                 secondFolder = session.saveDocument(secondFolder);
                 secondFolderRef = secondFolder.getRef();
@@ -1414,8 +1376,7 @@ public class TestDocumentsSizeUpdater {
                 DocumentModel ws = session.getDocument(wsRef);
                 DocumentModel firstFile = session.getDocument(firstFileRef);
 
-                ws.setPropertyValue("file:content",
-                        (Serializable) getFakeBlob(50));
+                ws.setPropertyValue("file:content", (Serializable) getFakeBlob(50));
                 ws = session.saveDocument(ws);
 
                 List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
@@ -1472,8 +1433,7 @@ public class TestDocumentsSizeUpdater {
                 DocumentModel ws = session.getDocument(wsRef);
                 DocumentModel firstFile = session.getDocument(firstFileRef);
 
-                ws.setPropertyValue("file:content",
-                        (Serializable) getFakeBlob(50));
+                ws.setPropertyValue("file:content", (Serializable) getFakeBlob(50));
                 ws = session.saveDocument(ws);
 
                 List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
@@ -1487,8 +1447,7 @@ public class TestDocumentsSizeUpdater {
 
                 firstFile.setPropertyValue("files:files", (Serializable) files);
                 // create minor version
-                firstFile.putContextData(VersioningService.VERSIONING_OPTION,
-                        VersioningOption.MINOR);
+                firstFile.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
                 firstFile = session.saveDocument(firstFile);
             }
         });
@@ -1505,8 +1464,7 @@ public class TestDocumentsSizeUpdater {
                 DocumentModel firstFile = session.getDocument(firstFileRef);
 
                 firstFile.setPropertyValue("dc:title", "a version");
-                firstFile.putContextData(VersioningService.VERSIONING_OPTION,
-                        VersioningOption.MINOR);
+                firstFile.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
                 firstFile = session.saveDocument(firstFile);
             }
         });
@@ -1552,22 +1510,19 @@ public class TestDocumentsSizeUpdater {
 
                 List<DocumentModel> docs = new ArrayList<DocumentModel>();
                 docs.add(session.getDocument(firstFileRef));
-                Framework.getLocalService(TrashService.class).trashDocuments(
-                        docs);
+                Framework.getLocalService(TrashService.class).trashDocuments(docs);
             }
         });
     }
 
-    protected void doDeleteFileContent(final DocumentRef fileRef)
-            throws Exception {
+    protected void doDeleteFileContent(final DocumentRef fileRef) throws Exception {
         isr.run(new RunnableWithException() {
             @Override
             public void run() throws Exception {
 
                 List<DocumentModel> docs = new ArrayList<DocumentModel>();
                 docs.add(session.getDocument(fileRef));
-                Framework.getLocalService(TrashService.class).trashDocuments(
-                        docs);
+                Framework.getLocalService(TrashService.class).trashDocuments(docs);
             }
         });
     }
@@ -1579,8 +1534,7 @@ public class TestDocumentsSizeUpdater {
 
                 List<DocumentModel> docs = new ArrayList<DocumentModel>();
                 docs.add(session.getDocument(firstFileRef));
-                Framework.getLocalService(TrashService.class).undeleteDocuments(
-                        docs);
+                Framework.getLocalService(TrashService.class).undeleteDocuments(docs);
             }
         });
     }
@@ -1617,15 +1571,14 @@ public class TestDocumentsSizeUpdater {
             }
             System.out.print(doc.getId() + " " + doc.getPathAsString());
             if (doc.hasSchema("uid")) {
-                System.out.print(" ("
-                        + doc.getPropertyValue("uid:major_version") + "."
+                System.out.print(" (" + doc.getPropertyValue("uid:major_version") + "."
                         + doc.getPropertyValue("uid:minor_version") + ")");
             }
 
             if (doc.hasFacet(DOCUMENTS_SIZE_STATISTICS_FACET)) {
                 QuotaAware qa = doc.getAdapter(QuotaAware.class);
-                System.out.println(" [ quota : " + qa.getTotalSize() + "("
-                        + qa.getInnerSize() + ") / " + qa.getMaxQuota() + "]");
+                System.out.println(" [ quota : " + qa.getTotalSize() + "(" + qa.getInnerSize() + ") / "
+                        + qa.getMaxQuota() + "]");
                 // System.out.println(" with Quota facet");
             } else {
                 System.out.println(" no Quota facet !!!");
@@ -1638,30 +1591,24 @@ public class TestDocumentsSizeUpdater {
         assertTrue(doc.hasFacet(DOCUMENTS_SIZE_STATISTICS_FACET));
         QuotaAware qa = doc.getAdapter(QuotaAware.class);
         assertNotNull(qa);
-        assertEquals("inner:" + innerSize + " total:" + totalSize, "inner:"
-                + qa.getInnerSize() + " total:" + qa.getTotalSize());
+        assertEquals("inner:" + innerSize + " total:" + totalSize,
+                "inner:" + qa.getInnerSize() + " total:" + qa.getTotalSize());
     }
 
-    protected void assertQuota(DocumentModel doc, long innerSize,
-            long totalSize, long trashSize) {
+    protected void assertQuota(DocumentModel doc, long innerSize, long totalSize, long trashSize) {
         QuotaAware qa = doc.getAdapter(QuotaAware.class);
         assertNotNull(qa);
-        assertEquals("inner:" + innerSize + " total:" + totalSize + " trash:"
-                + trashSize,
-                "inner:" + qa.getInnerSize() + " total:" + qa.getTotalSize()
-                        + " trash:" + qa.getTrashSize());
+        assertEquals("inner:" + innerSize + " total:" + totalSize + " trash:" + trashSize, "inner:" + qa.getInnerSize()
+                + " total:" + qa.getTotalSize() + " trash:" + qa.getTrashSize());
     }
 
-    protected void assertQuota(DocumentModel doc, long innerSize,
-            long totalSize, long trashSize, long versionsSize) {
+    protected void assertQuota(DocumentModel doc, long innerSize, long totalSize, long trashSize, long versionsSize) {
         QuotaAware qa = doc.getAdapter(QuotaAware.class);
         assertNotNull(qa);
-        assertEquals(
-                "inner:" + innerSize + " total:" + totalSize + " trash:"
-                        + trashSize + " versions: " + versionsSize,
-                "inner:" + qa.getInnerSize() + " total:" + qa.getTotalSize()
-                        + " trash:" + qa.getTrashSize() + " versions: "
-                        + qa.getVersionsSize());
+        assertEquals("inner:" + innerSize + " total:" + totalSize + " trash:" + trashSize + " versions: "
+                + versionsSize,
+                "inner:" + qa.getInnerSize() + " total:" + qa.getTotalSize() + " trash:" + qa.getTrashSize()
+                        + " versions: " + qa.getVersionsSize());
     }
 
     /**

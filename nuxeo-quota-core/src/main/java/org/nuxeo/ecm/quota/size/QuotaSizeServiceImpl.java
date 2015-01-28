@@ -29,8 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author dmetzler
  * @since 5.7
  */
-public class QuotaSizeServiceImpl extends DefaultComponent implements
-        QuotaSizeService {
+public class QuotaSizeServiceImpl extends DefaultComponent implements QuotaSizeService {
 
     private Set<String> excludedPathList = new HashSet<String>();
 
@@ -42,28 +41,22 @@ public class QuotaSizeServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if ("exclusions".equals(extensionPoint)) {
             BlobExcludeDescriptor descriptor = (BlobExcludeDescriptor) contribution;
-            LOG.info(String.format(
-                    "Adding %s to size quota computation's blacklist",
-                    descriptor.getPathRegexp()));
+            LOG.info(String.format("Adding %s to size quota computation's blacklist", descriptor.getPathRegexp()));
             excludedPathList.add(descriptor.getPathRegexp());
         }
 
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if ("exclusions".equals(extensionPoint)) {
             BlobExcludeDescriptor descriptor = (BlobExcludeDescriptor) contribution;
             String pathRegexp = descriptor.getPathRegexp();
             if (excludedPathList.contains(pathRegexp)) {
-                LOG.info(String.format(
-                        "Removing %s from size quota computation's blacklist",
-                        pathRegexp));
+                LOG.info(String.format("Removing %s from size quota computation's blacklist", pathRegexp));
                 excludedPathList.remove(pathRegexp);
 
             }

@@ -46,14 +46,12 @@ public interface QuotaAware {
 
     void addTrashSize(long additionalSize, boolean save) throws ClientException;
 
-    void addVersionsSize(long additionalSize, boolean save)
-            throws ClientException;
+    void addVersionsSize(long additionalSize, boolean save) throws ClientException;
 
     void save() throws ClientException;
 
     /**
-     * @since 5.7 allows to save the document without notifying
-     *        DublincoreListener and the notification service
+     * @since 5.7 allows to save the document without notifying DublincoreListener and the notification service
      */
     void save(boolean disableNotifications) throws ClientException;
 
@@ -61,8 +59,7 @@ public interface QuotaAware {
 
     void setMaxQuota(long maxSize, boolean save) throws ClientException;
 
-    void setMaxQuota(long maxSize, boolean save, boolean skipValidation)
-            throws ClientException;
+    void setMaxQuota(long maxSize, boolean save, boolean skipValidation) throws ClientException;
 
     QuotaInfo getQuotaInfo();
 

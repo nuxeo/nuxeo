@@ -34,23 +34,19 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 public interface QuotaStatsUpdater {
 
     /**
-     * Update the statistics for the given {@code docCtx} and {@code event}.
-     * Signature was changed in 5.6 to pass the Event instead of the eventName
-     * to allow the implementer to rollback the transaction if needed
+     * Update the statistics for the given {@code docCtx} and {@code event}. Signature was changed in 5.6 to pass the
+     * Event instead of the eventName to allow the implementer to rollback the transaction if needed
      * 
      * @param session an unrestricted {@link CoreSession} to be used
      */
-    void updateStatistics(CoreSession session, DocumentEventContext docCtx,
-            Event event) throws ClientException;
+    void updateStatistics(CoreSession session, DocumentEventContext docCtx, Event event) throws ClientException;
 
     /**
-     * Compute the initial statistics on the whole repository for this
-     * {@code QuotaStatsUpdater}.
+     * Compute the initial statistics on the whole repository for this {@code QuotaStatsUpdater}.
      * 
      * @param session an unrestricted {@link CoreSession} to be used
      */
-    void computeInitialStatistics(CoreSession session,
-            final QuotaStatsInitialWork currentWorker);
+    void computeInitialStatistics(CoreSession session, final QuotaStatsInitialWork currentWorker);
 
     public void setName(String name);
 

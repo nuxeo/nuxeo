@@ -21,7 +21,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author dmetzler
- *
  */
 @XObject("exclude")
 public class BlobExcludeDescriptor {
@@ -35,6 +34,5 @@ public class BlobExcludeDescriptor {
     public void setPathRegexp(String pathRegexp) {
         this.pathRegexp = pathRegexp;
     }
-
 
 }

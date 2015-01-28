@@ -27,11 +27,9 @@ import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.ecm.quota.size.QuotaAwareDocumentFactory;
 
 /**
- * Sets the quota on the user workspace if a global quota was set on all user
- * workspaces
+ * Sets the quota on the user workspace if a global quota was set on all user workspaces
  *
  * @since 5.7
- *
  */
 public class QuotaUserWorkspaceListener implements EventListener {
 
@@ -48,8 +46,7 @@ public class QuotaUserWorkspaceListener implements EventListener {
         DocumentModel userWorkspace = ((DocumentEventContext) ctx).getSourceDocument();
         CoreSession session = userWorkspace.getCoreSession();
         DocumentModel userWorkspacesRoot = session.getDocument(userWorkspace.getParentRef());
-        if (userWorkspacesRoot == null
-                || !"UserWorkspacesRoot".equals(userWorkspacesRoot.getType())) {
+        if (userWorkspacesRoot == null || !"UserWorkspacesRoot".equals(userWorkspacesRoot.getType())) {
             return;
         }
         QuotaAware qaUserWorkspaces = userWorkspacesRoot.getAdapter(QuotaAware.class);
