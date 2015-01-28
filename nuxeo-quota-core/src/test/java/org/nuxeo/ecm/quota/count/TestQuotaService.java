@@ -71,7 +71,6 @@ public class TestQuotaService {
     protected EventService eventService;
 
     @Test
-    @Ignore(NXP14769)
     public void testSetQuotaOnUserWorkspaces() throws Exception {
         DocumentRef uwRef1;
         DocumentRef uwRef2;
