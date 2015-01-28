@@ -227,23 +227,23 @@ class BasePage:
             fl.assert_('createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation' in fl.getBody(),
                    'Wrong user creation page')
 
-	if (not 'createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation' in ['true']):
-            fl.post(fl.server_url + "/view_admin.faces", params=[
-			['createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation','true'],
-			['ajaxSingle', 'createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation:1'],
-                        ['AJAX:EVENTS_COUNT', '1'],
-                        ['createUserView:createUser', 'createUserView:createUser'],
-                        ['createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation', 'true'],
-                        ['javax.faces.ViewState', fl.getLastJsfState()],
-                        ['javax.faces.source', 'createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation:1'],
-                        ['javax.faces.partial.event', 'click'],
-                        ['javax.faces.partial.execute', 'createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation:1'],
-                        ['javax.faces.partial.render', 'createUserView:createUser'],
-                        ['javax.faces.behavior.event', 'click'],
-                        ['AJAX:EVENTS_COUNT', '1'],
-                        ['rfExt', 'null'],
-                        ['javax.faces.partial.ajax', 'true']],
-                    description="Set immediate user creation")
+	
+        fl.post(fl.server_url + "/view_admin.faces", params=[
+		['createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation','true'],
+		['ajaxSingle', 'createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation:1'],
+                    ['AJAX:EVENTS_COUNT', '1'],
+                    ['createUserView:createUser', 'createUserView:createUser'],
+                    ['createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation', 'true'],
+                    ['javax.faces.ViewState', fl.getLastJsfState()],
+                    ['javax.faces.source', 'createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation:1'],
+                    ['javax.faces.partial.event', 'click'],
+                    ['javax.faces.partial.execute', 'createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation:1'],
+                    ['javax.faces.partial.render', 'createUserView:createUser'],
+                    ['javax.faces.behavior.event', 'click'],
+                    ['AJAX:EVENTS_COUNT', '1'],
+                    ['rfExt', 'null'],
+                    ['javax.faces.partial.ajax', 'true']],
+                description="Set immediate user creation")
 
 	# The assert is removed because the body contains now the Ajax
         # response and not the body of the page so the assert will
