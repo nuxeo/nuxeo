@@ -26,6 +26,7 @@ import javax.faces.view.facelets.MetadataTarget;
 import javax.faces.view.facelets.TagAttribute;
 
 import org.nuxeo.ecm.platform.ui.web.binding.DefaultValueExpression;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
 
 /**
  * Value holder rule, handling a default value using a {@link DefaultValueExpression} when a "defaultValue" attribute is
@@ -35,6 +36,8 @@ import org.nuxeo.ecm.platform.ui.web.binding.DefaultValueExpression;
  * already available on the component.
  *
  * @since 5.7.3
+ * @deprecated since 7.2: since this is a mixup between several attributes, this is not handled by rules anymore, see
+ *             {@link GenericHtmlComponentHandler#onComponentCreated(FaceletContext, UIComponent, UIComponent)}
  */
 public class DefaultValueHolderRule extends MetaRule {
 
