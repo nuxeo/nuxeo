@@ -244,13 +244,13 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
                     if (size % DEFAULT_BATCH_SIZE == 0) {
                         QuotaMaxSizeSetterWork work = new QuotaMaxSizeSetterWork(maxSize, ids,
                                 session.getRepositoryName());
-                        workManager.schedule(work);
-                        ids.clear();
+                        workManager.schedule(work, true);
+                        ids = new ArrayList<String>(); // don't reuse list
                     }
                 }
                 if (ids.size() > 0) {
                     QuotaMaxSizeSetterWork work = new QuotaMaxSizeSetterWork(maxSize, ids, session.getRepositoryName());
-                    workManager.schedule(work);
+                    workManager.schedule(work, true);
                 }
             }
         }.runUnrestricted();

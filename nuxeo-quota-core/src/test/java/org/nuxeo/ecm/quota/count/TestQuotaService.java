@@ -70,8 +70,6 @@ public class TestQuotaService {
     @Inject
     protected EventService eventService;
 
-    public static final String NXP14769 = "NXP-14769: NoSuchDocumentException";
-
     @Test
     @Ignore(NXP14769)
     public void testSetQuotaOnUserWorkspaces() throws Exception {
@@ -122,6 +120,7 @@ public class TestQuotaService {
         assertEquals(0, workManager.getQueueSize("quota", null));
         assertTrue((Long) uw1.getPropertyValue("dss:maxSize") == 100L);
         assertTrue((Long) uw2.getPropertyValue("dss:maxSize") == 100L);
+        TransactionHelper.commitOrRollbackTransaction();
     }
 
 }
