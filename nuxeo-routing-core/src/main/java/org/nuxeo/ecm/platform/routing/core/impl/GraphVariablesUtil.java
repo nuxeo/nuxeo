@@ -69,9 +69,9 @@ public class GraphVariablesUtil {
                 Serializable value = hasFacet ? doc.getPropertyValue(name) : null;
                 if (value instanceof Calendar) {
                     if (mapToJSON) {
-                        value = ((Calendar) value).getTime();
-                    } else {
                         value = DateParser.formatW3CDateTime(((Calendar) value).getTime());
+                    } else {
+                        value = ((Calendar) value).getTime();
                     }
                 }
                 if (mapToJSON) {
