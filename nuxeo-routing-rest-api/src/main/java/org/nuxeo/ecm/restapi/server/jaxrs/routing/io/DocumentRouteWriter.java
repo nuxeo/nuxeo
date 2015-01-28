@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
+import org.nuxeo.ecm.restapi.server.jaxrs.routing.io.util.JsonEncodeDecodeUtils;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
 /**
@@ -67,13 +68,13 @@ public class DocumentRouteWriter extends EntityWriter<DocumentRoute> {
         jg.writeStringField("id", item.getDocument().getId());
         jg.writeStringField("name", item.getName());
         jg.writeStringField("title", item.getTitle());
+        jg.writeStringField("state", item.getDocument().getCurrentLifeCycleState());
         if (StringUtils.isNotBlank(workflowModelId)) {
             GraphRoute model = null;
             String workflowModelName = null;
             model = session.getDocument(new IdRef(workflowModelId)).getAdapter(GraphRoute.class);
             workflowModelName = model.getName();
-            jg.writeStringField("modelId", workflowModelId);
-            jg.writeStringField("modelName", workflowModelName);
+            jg.writeStringField("workflowModelName", workflowModelName);
         }
         jg.writeStringField("initiator", item.getInitiator());
 
@@ -87,14 +88,12 @@ public class DocumentRouteWriter extends EntityWriter<DocumentRoute> {
 
         if (item instanceof GraphRoute) {
             GraphRoute graphRoute = (GraphRoute) item;
-            jg.writeArrayFieldStart("variables");
+            jg.writeFieldName("variables");
+            jg.writeStartObject();
             for (Entry<String, Serializable> e : graphRoute.getVariables().entrySet()) {
-                jg.writeStartObject();
-                jg.writeStringField("key", e.getKey());
-                jg.writeObjectField("value", e.getValue());
-                jg.writeEndObject();
+                JsonEncodeDecodeUtils.encodeVariableEntry(e, jg, request);
             }
-            jg.writeEndArray();
+            jg.writeEndObject();
             String graphResourceUrl = "";
             if (item.isValidated()) {
                 // it is a model

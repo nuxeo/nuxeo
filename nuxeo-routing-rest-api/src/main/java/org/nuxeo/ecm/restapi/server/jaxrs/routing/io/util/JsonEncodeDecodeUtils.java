@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
@@ -98,6 +99,16 @@ public class JsonEncodeDecodeUtils {
             variables.put(key, value.getTextValue());
         }
         return variables;
+    }
+
+    public static void encodeVariableEntry(Entry<String, Serializable> e, JsonGenerator jg, HttpServletRequest request)
+            throws JsonGenerationException, IOException {
+        if (e.getValue() instanceof Blob) {
+            jg.writeFieldName(e.getKey());
+            JsonEncodeDecodeUtils.encodeBlob((Blob) e.getValue(), jg, request);
+        } else {
+            jg.writeObjectField(e.getKey(), e.getValue());
+        }
     }
 
 }

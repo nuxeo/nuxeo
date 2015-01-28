@@ -93,13 +93,21 @@ public class TaskWriter extends EntityWriter<Task> {
 
         jg.writeStringField("id", item.getDocument().getId());
         jg.writeStringField("name", item.getName());
-        jg.writeStringField("workflowId", workflowInstanceId);
-        jg.writeStringField("nodeId", nodeId);
+        jg.writeStringField("workflowInstanceId", workflowInstanceId);
+        if (workflowInstance != null) {
+            final String workflowModelId = workflowInstance.getModelId();
+            if (StringUtils.isNotBlank(workflowModelId)) {
+                GraphRoute model = null;
+                String workflowModelName = null;
+                model = session.getDocument(new IdRef(workflowModelId)).getAdapter(GraphRoute.class);
+                workflowModelName = model.getName();
+                jg.writeStringField("workflowModelName", workflowModelName);
+            }
+        }
         jg.writeStringField("state", item.getDocument().getCurrentLifeCycleState());
         jg.writeStringField("directive", item.getDirective());
         jg.writeStringField("created", DateParser.formatW3CDateTime(item.getCreated()));
         jg.writeStringField("dueDate", DateParser.formatW3CDateTime(item.getDueDate()));
-        jg.writeStringField("type", item.getType());
         jg.writeStringField("nodeName", item.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY));
 
         jg.writeArrayFieldStart("targetDocumentIds");
@@ -132,12 +140,12 @@ public class TaskWriter extends EntityWriter<Task> {
         jg.writeStartObject();
         // add nodeVariables
         for (Entry<String, Serializable> e : node.getVariables().entrySet()) {
-            writeVariableEntry(e, jg, request);
+            JsonEncodeDecodeUtils.encodeVariableEntry(e, jg, request);
         }
         // add workflow variables
         if (workflowInstance != null) {
             for (Entry<String, Serializable> e : workflowInstance.getVariables().entrySet()) {
-                writeVariableEntry(e, jg, request);
+                JsonEncodeDecodeUtils.encodeVariableEntry(e, jg, request);
             }
         }
         jg.writeEndObject();
@@ -169,6 +177,7 @@ public class TaskWriter extends EntityWriter<Task> {
 
             jg.writeArrayFieldStart("schemas");
             for (String schema : node.getDocument().getSchemas()) {
+                // TODO only keep functional schema once adaptation done
                 jg.writeStartObject();
                 jg.writeStringField("name", schema);
                 jg.writeStringField("url", uriInfo.getBaseUri() + "api/v1/config/schemas/" + schema);
@@ -193,7 +202,8 @@ public class TaskWriter extends EntityWriter<Task> {
         return ENTITY_TYPE;
     }
 
-    protected static void writeVariableEntry(Entry<String, Serializable> e, JsonGenerator jg, HttpServletRequest request) throws JsonGenerationException, IOException {
+    protected static void writeVariableEntry(Entry<String, Serializable> e, JsonGenerator jg, HttpServletRequest request)
+            throws JsonGenerationException, IOException {
         if (e.getValue() instanceof Blob) {
             jg.writeFieldName(e.getKey());
             JsonEncodeDecodeUtils.encodeBlob((Blob) e.getValue(), jg, request);

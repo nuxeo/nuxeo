@@ -377,16 +377,16 @@ public class WorkflowEndpointTest extends BaseTest {
                 getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        final String firstModelId = node.get("modelId").getTextValue();
+        final String workflowModelName1 = node.get("workflowModelName").getTextValue();
 
         // Initiate a second SerialDocumentReview workflow
         response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
-        final String secondModelId = node.get("modelId").getTextValue();
+        final String workflowModelName2= node.get("workflowModelName").getTextValue();
 
-        assertEquals(firstModelId, secondModelId);
+        assertEquals(workflowModelName1, workflowModelName2);
 
         // Check we have two pending tasks
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
