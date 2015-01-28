@@ -133,6 +133,7 @@ public class TestQuotaService {
         assertEquals(0, workManager.getQueueSize("quota", null));
         assertTrue((Long) uw1.getPropertyValue("dss:maxSize") == 100L);
         assertTrue((Long) uw2.getPropertyValue("dss:maxSize") == 100L);
+        TransactionHelper.commitOrRollbackTransaction();
     }
 
     public CoreSession openSessionAs(String username) throws ClientException {
