@@ -3,17 +3,24 @@
 <component name="org.nuxeo.ecm.core.redis.config">
 
 <#if "${nuxeo.redis.enabled}" == "true">
-  <extension target="org.nuxeo.ecm.core.redis.RedisService"
+  <extension target="org.nuxeo.ecm.core.redis"
     point="configuration">
-    <redis>
+    <server>
       <prefix>${nuxeo.redis.prefix}</prefix>
       <host>${nuxeo.redis.host}</host>
       <port>${nuxeo.redis.port}</port>
       <password>${nuxeo.redis.password}</password>
       <database>${nuxeo.redis.database}</database>
       <timeout>${nuxeo.redis.timeout}</timeout>
-    </redis>
+    </server>
   </extension>
+
+
+<#if "${nuxeo.lock.manager}" == "redis">
+  <extension target="org.nuxeo.ecm.core.storage.lock.LockManagerService" point="lockmanager">
+    <lockmanager name="default" class="org.nuxeo.ecm.core.redis.contribs.RedisLockManager" />
+  </extension>
+</#if>
 
 <#if "${nuxeo.work.queuing}" == "redis">
   <extension target="org.nuxeo.ecm.core.work.service" point="implementation">
