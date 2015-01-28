@@ -64,8 +64,8 @@ public class DirectoryCache {
     protected final Counter sizeCounter;
 
     private final static Log log = LogFactory.getLog(DirectoryCache.class);
-    
-    
+
+
     protected DirectoryCache(String name) {
         this.name = name;
         hitsCounter = metrics.counter(MetricRegistry.name("nuxeo",
@@ -136,7 +136,9 @@ public class DirectoryCache {
                     hitsCounter.inc();
                 }
             }
-            try {
+            return dm;
+            /*try {
+
                 if (dm == null) {
                     return null;
                 }
@@ -150,7 +152,7 @@ public class DirectoryCache {
             } catch (CloneNotSupportedException e) {
                 // will never happen as long a DocumentModelImpl is used
                 return dm;
-            }
+            }*/
         } catch (IOException e) {
             throw new DirectoryException(e);
         }
