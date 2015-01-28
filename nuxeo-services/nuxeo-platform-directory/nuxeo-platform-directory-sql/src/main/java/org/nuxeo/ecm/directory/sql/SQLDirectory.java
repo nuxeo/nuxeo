@@ -357,7 +357,7 @@ public class SQLDirectory extends AbstractDirectory {
     }
 
     @Override
-    public synchronized Session getSession() throws DirectoryException {
+    public Session getSession() throws DirectoryException {
         if (dialect == null) {
             initConnection();
         }
