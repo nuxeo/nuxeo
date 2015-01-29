@@ -81,8 +81,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
 
     protected boolean dontClearCompletedWork;
 
-    private static void assertSetEquals(List<String> expected,
-            List<String> actual) {
+    private static void assertSetEquals(List<String> expected, List<String> actual) {
         assertEquals(new HashSet<String>(expected), new HashSet<String>(actual));
     }
 
@@ -97,8 +96,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
 
     protected void doDeploy() throws Exception {
         deployBundle("org.nuxeo.ecm.core.event");
-        deployContrib("org.nuxeo.ecm.core.event.test",
-                "test-workmanager-config.xml");
+        deployContrib("org.nuxeo.ecm.core.event.test", "test-workmanager-config.xml");
     }
 
     @Override
@@ -164,8 +162,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
 
     @Test
     public void testWorkManagerScheduling() throws Exception {
-        assertEquals(Collections.emptyList(),
-                service.listWorkIds(QUEUE, COMPLETED));
+        assertEquals(Collections.emptyList(), service.listWorkIds(QUEUE, COMPLETED));
         int duration = 5000; // 2s
         SleepWork work1 = new SleepWork(duration, false, "1");
         SleepWork work2 = new SleepWork(duration, false, "2");
@@ -179,12 +176,9 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertEquals(RUNNING, service.getWorkState("2"));
         assertEquals(SCHEDULED, service.getWorkState("3"));
         assertEquals(Arrays.asList("3"), service.listWorkIds(QUEUE, SCHEDULED));
-        assertSetEquals(Arrays.asList("1", "2"),
-                service.listWorkIds(QUEUE, RUNNING));
-        assertSetEquals(Arrays.asList("1", "2", "3"),
-                service.listWorkIds(QUEUE, null));
-        assertEquals(Collections.emptyList(),
-                service.listWorkIds(QUEUE, COMPLETED));
+        assertSetEquals(Arrays.asList("1", "2"), service.listWorkIds(QUEUE, RUNNING));
+        assertSetEquals(Arrays.asList("1", "2", "3"), service.listWorkIds(QUEUE, null));
+        assertEquals(Collections.emptyList(), service.listWorkIds(QUEUE, COMPLETED));
 
         // disabled IF_NOT_* features
         if (Boolean.FALSE.booleanValue()) {
@@ -205,20 +199,16 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         service.schedule(work7, Scheduling.CANCEL_SCHEDULED);
         assertEquals(SCHEDULED, work7.getWorkInstanceState());
 
-        boolean completed = service.awaitCompletion(duration * 2,
-                TimeUnit.MILLISECONDS);
+        boolean completed = service.awaitCompletion(duration * 2, TimeUnit.MILLISECONDS);
         assertTrue(completed);
 
         assertEquals(COMPLETED, service.getWorkState("1"));
         assertEquals(COMPLETED, service.getWorkState("2"));
         assertEquals(COMPLETED, service.getWorkState("3"));
-        assertEquals(Collections.emptyList(),
-                service.listWorkIds(QUEUE, SCHEDULED));
-        assertEquals(Collections.emptyList(),
-                service.listWorkIds(QUEUE, RUNNING));
+        assertEquals(Collections.emptyList(), service.listWorkIds(QUEUE, SCHEDULED));
+        assertEquals(Collections.emptyList(), service.listWorkIds(QUEUE, RUNNING));
         assertEquals(Collections.emptyList(), service.listWorkIds(QUEUE, null));
-        assertSetEquals(Arrays.asList("1", "2", "3"),
-                service.listWorkIds(QUEUE, COMPLETED));
+        assertSetEquals(Arrays.asList("1", "2", "3"), service.listWorkIds(QUEUE, COMPLETED));
     }
 
     @Test
@@ -244,15 +234,13 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         // or put in the suspended queue (persistent)
 
         dontClearCompletedWork = true;
-        boolean terminated = service.shutdown(duration * 2,
-                TimeUnit.MILLISECONDS);
+        boolean terminated = service.shutdown(duration * 2, TimeUnit.MILLISECONDS);
         assertTrue(terminated);
 
         // check work state
         assertEquals(SCHEDULED, work1.getWorkInstanceState());
         assertEquals(SCHEDULED, work2.getWorkInstanceState());
-        assertEquals(persistent() ? SCHEDULED : CANCELED,
-                work3.getWorkInstanceState());
+        assertEquals(persistent() ? SCHEDULED : CANCELED, work3.getWorkInstanceState());
         long remaining1 = work1.durationMillis;
         long remaining2 = work2.durationMillis;
         long remaining3 = work3.durationMillis;
@@ -266,8 +254,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assumeTrue(persistent());
 
         // disable SleepWork queue
-        deployContrib("org.nuxeo.ecm.core.event.test",
-                "test-workmanager-disablequeue.xml");
+        deployContrib("org.nuxeo.ecm.core.event.test", "test-workmanager-disablequeue.xml");
 
         int duration = 2000; // 2s
         SleepWork work1 = new SleepWork(duration, false);
@@ -307,8 +294,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assumeTrue(persistent());
 
         // disable all queues
-        deployContrib("org.nuxeo.ecm.core.event.test",
-                "test-workmanager-disablequeue2.xml");
+        deployContrib("org.nuxeo.ecm.core.event.test", "test-workmanager-disablequeue2.xml");
         int duration = 2000; // 2s
         SleepWork work1 = new SleepWork(duration, false);
         service.schedule(work1);

@@ -38,7 +38,7 @@ public class TestSchedulerService extends NXRuntimeTestCase {
     protected void waitUntilDummyEventListenerIsCalled(int maxRetry, int minCountValue) throws Exception {
         long count = DummyEventListener.getCount();
         int retry = 0;
-        while (count<minCountValue && retry < maxRetry*2) {
+        while (count < minCountValue && retry < maxRetry * 2) {
             Thread.sleep(500);
             count = DummyEventListener.getCount();
             retry++;
@@ -50,18 +50,14 @@ public class TestSchedulerService extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.event");
-        deployContrib("org.nuxeo.ecm.core.event.test",
-                "OSGI-INF/test-scheduler-eventlistener.xml");
+        deployContrib("org.nuxeo.ecm.core.event.test", "OSGI-INF/test-scheduler-eventlistener.xml");
         fireFrameworkStarted();
         DummyEventListener.setCount(0);
     }
 
-
-
     @Test
     public void testScheduleRegistration() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.event.test",
-                "OSGI-INF/test-scheduler-config.xml");
+        deployContrib("org.nuxeo.ecm.core.event.test", "OSGI-INF/test-scheduler-config.xml");
         fireFrameworkStarted();
         waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
         long count = DummyEventListener.getCount();
@@ -100,8 +96,7 @@ public class TestSchedulerService extends NXRuntimeTestCase {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.SECOND, 3);
         @SuppressWarnings("boxing")
-        String cronExpression = String.format("%s %s %s %s %s ? %s",
-                cal.get(Calendar.SECOND), //
+        String cronExpression = String.format("%s %s %s %s %s ? %s", cal.get(Calendar.SECOND), //
                 cal.get(Calendar.MINUTE), //
                 cal.get(Calendar.HOUR_OF_DAY), //
                 cal.get(Calendar.DAY_OF_MONTH), //
@@ -122,14 +117,12 @@ public class TestSchedulerService extends NXRuntimeTestCase {
 
     @Test
     public void testDisableSchedule() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.event.test",
-                "OSGI-INF/test-scheduler-config.xml");
+        deployContrib("org.nuxeo.ecm.core.event.test", "OSGI-INF/test-scheduler-config.xml");
         fireFrameworkStarted();
         waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
         long count = DummyEventListener.getCount();
         assertTrue(count >= 1);
-        deployContrib("org.nuxeo.ecm.core.event.test",
-                "OSGI-INF/test-scheduler-disabled-config.xml");
+        deployContrib("org.nuxeo.ecm.core.event.test", "OSGI-INF/test-scheduler-disabled-config.xml");
         count = DummyEventListener.getCount();
         Thread.sleep(5000);
         long newCount = DummyEventListener.getCount();
@@ -138,17 +131,15 @@ public class TestSchedulerService extends NXRuntimeTestCase {
 
     @Test
     public void testOverrideSchedule() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.event.test",
-                "OSGI-INF/test-scheduler-config.xml");
+        deployContrib("org.nuxeo.ecm.core.event.test", "OSGI-INF/test-scheduler-config.xml");
         fireFrameworkStarted();
         waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
         long count = DummyEventListener.getCount();
         assertTrue(count >= 1);
-        deployContrib("org.nuxeo.ecm.core.event.test",
-                "OSGI-INF/test-scheduler-override-config.xml");
+        deployContrib("org.nuxeo.ecm.core.event.test", "OSGI-INF/test-scheduler-override-config.xml");
         long newCount = DummyEventListener.getNewCount();
         int retry = 0;
-        while (newCount<=0 && retry < 20) {
+        while (newCount <= 0 && retry < 20) {
             Thread.sleep(500);
             newCount = DummyEventListener.getNewCount();
             retry++;

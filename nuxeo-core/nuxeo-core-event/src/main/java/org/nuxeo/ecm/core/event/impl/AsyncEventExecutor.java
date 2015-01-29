@@ -61,14 +61,12 @@ public class AsyncEventExecutor {
         return workManager.shutdown(timeoutMillis, TimeUnit.MILLISECONDS);
     }
 
-    public boolean waitForCompletion(long timeoutMillis)
-            throws InterruptedException {
+    public boolean waitForCompletion(long timeoutMillis) throws InterruptedException {
         WorkManager workManager = getWorkManager();
         return workManager.awaitCompletion(timeoutMillis, TimeUnit.MILLISECONDS);
     }
 
-    public void run(final List<EventListenerDescriptor> listeners,
-            EventBundle bundle) {
+    public void run(final List<EventListenerDescriptor> listeners, EventBundle bundle) {
         for (EventListenerDescriptor listener : listeners) {
             EventBundle filtered = listener.filterBundle(bundle);
             if (filtered.isEmpty()) {
@@ -176,16 +174,13 @@ public class AsyncEventExecutor {
         public void cleanUp(boolean ok, Exception e) {
             super.cleanUp(ok, e);
             bundle.disconnect();
-            if (e != null && !(e instanceof InterruptedException)
-                    && !(e instanceof ConcurrentUpdateException)) {
-                log.error("Failed to execute async event " + bundle.getName()
-                        + " on listener " + listenerName, e);
+            if (e != null && !(e instanceof InterruptedException) && !(e instanceof ConcurrentUpdateException)) {
+                log.error("Failed to execute async event " + bundle.getName() + " on listener " + listenerName, e);
             }
             if (listener != null) {
                 EventStats stats = Framework.getLocalService(EventStats.class);
                 if (stats != null) {
-                    stats.logAsyncExec(listener, System.currentTimeMillis()
-                            - getStartTime());
+                    stats.logAsyncExec(listener, System.currentTimeMillis() - getStartTime());
                 }
                 listener = null;
             }

@@ -22,8 +22,8 @@ import org.nuxeo.ecm.core.event.EventListener;
 
 /**
  * Dummy listener that just adds a property in the event context
- * @author tmartins <tm@nuxeo.com>
  *
+ * @author tmartins <tm@nuxeo.com>
  */
 public class DummyInlineListener implements EventListener {
 

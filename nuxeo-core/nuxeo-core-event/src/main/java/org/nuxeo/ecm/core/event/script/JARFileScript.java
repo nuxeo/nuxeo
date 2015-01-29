@@ -25,6 +25,7 @@ import java.net.URL;
 public class JARFileScript extends Script {
 
     protected final URL url;
+
     protected final File jar;
 
     public JARFileScript(File jar, URL url) {

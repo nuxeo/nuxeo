@@ -19,14 +19,14 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 /**
- * Simulates a compiled script for scripts that don't support
- * compilation.
+ * Simulates a compiled script for scripts that don't support compilation.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class FakeCompiledScript extends CompiledScript {
 
     protected final ScriptEngine engine;
+
     protected final Script script;
 
     public FakeCompiledScript(ScriptEngine engine, Script script) {

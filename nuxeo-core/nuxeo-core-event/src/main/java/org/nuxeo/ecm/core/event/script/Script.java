@@ -35,9 +35,11 @@ import org.nuxeo.common.utils.FileUtils;
 public abstract class Script {
 
     public static boolean trackChanges = true;
+
     public static ScriptEngineManager scripting;
 
     public CompiledScript script;
+
     public long lastModified = -1;
 
     public static ScriptEngineManager getScripting() {

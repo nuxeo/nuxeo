@@ -28,8 +28,7 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 
 /**
- * Light Event implementation. Used to reduce memory footprint of {@link Event}
- * stacked in {@link EventBundle}.
+ * Light Event implementation. Used to reduce memory footprint of {@link Event} stacked in {@link EventBundle}.
  *
  * @author Thierry Delprat
  */
@@ -57,8 +56,7 @@ public class ShallowEvent extends EventImpl {
 
         EventContext newCtx = null;
         if (ctx instanceof DocumentEventContext) {
-            newCtx = new DocumentEventContext(null, ctx.getPrincipal(),
-                    (DocumentModel) newArgs.get(0),
+            newCtx = new DocumentEventContext(null, ctx.getPrincipal(), (DocumentModel) newArgs.get(0),
                     (DocumentRef) newArgs.get(1));
         } else {
             newCtx = new EventContextImpl(null, ctx.getPrincipal());
@@ -77,12 +75,10 @@ public class ShallowEvent extends EventImpl {
             newProps.put(prop.getKey(), propValue);
         }
         newCtx.setProperties(newProps);
-        return new ShallowEvent(event.getName(), newCtx, event.getFlags(),
-                event.getTime());
+        return new ShallowEvent(event.getName(), newCtx, event.getFlags(), event.getTime());
     }
 
-    public ShallowEvent(String name, EventContext ctx, int flags,
-            long creationTime) {
+    public ShallowEvent(String name, EventContext ctx, int flags, long creationTime) {
         super(name, ctx, flags, creationTime);
     }
 

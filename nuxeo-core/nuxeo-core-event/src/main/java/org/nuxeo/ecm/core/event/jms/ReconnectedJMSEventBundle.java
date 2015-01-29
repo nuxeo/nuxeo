@@ -25,8 +25,7 @@ import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.event.impl.ReconnectedEventBundleImpl;
 
 /**
- * Default implementation for an {@link EventBundle} that needs to be reconnected
- * to a usable Session.
+ * Default implementation for an {@link EventBundle} that needs to be reconnected to a usable Session.
  *
  * @author tiry
  */

@@ -50,9 +50,8 @@ public class WorkQueueDescriptor {
     public int maxThreads = 4;
 
     /**
-     * If this is {@code true}, then a priority queue is used instead of a
-     * regular queue. In this case, the {@link Work} instances in the queue must
-     * implement {@link Comparable} and are prioritized according to their
+     * If this is {@code true}, then a priority queue is used instead of a regular queue. In this case, the {@link Work}
+     * instances in the queue must implement {@link Comparable} and are prioritized according to their
      * {@code compareTo()} method.
      *
      * @since 5.7
@@ -67,9 +66,8 @@ public class WorkQueueDescriptor {
     public Set<String> categories = Collections.emptySet();
 
     /**
-     * When specified, make the blocking queue bounded, so submission will
-     * block until space become available. This option can not be used with
-     * a priority queue.
+     * When specified, make the blocking queue bounded, so submission will block until space become available. This
+     * option can not be used with a priority queue.
      *
      * @since 5.7
      */
@@ -77,16 +75,14 @@ public class WorkQueueDescriptor {
     public int capacity = -1;
 
     /**
-     * Whether queuing of work instances to this queue is enabled for this Nuxeo
-     * instance.
+     * Whether queuing of work instances to this queue is enabled for this Nuxeo instance.
      */
     public boolean isQueuingEnabled() {
         return !Boolean.FALSE.equals(queuing);
     }
 
     /**
-     * Whether processing of work instances from this queue is enabled for this
-     * Nuxeo instance.
+     * Whether processing of work instances from this queue is enabled for this Nuxeo instance.
      */
     public boolean isProcessingEnabled() {
         return !Boolean.FALSE.equals(processing);

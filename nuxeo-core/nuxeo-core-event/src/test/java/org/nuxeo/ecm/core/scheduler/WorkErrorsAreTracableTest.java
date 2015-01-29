@@ -63,6 +63,7 @@ public class WorkErrorsAreTracableTest {
          *
          */
         private static final long serialVersionUID = 1L;
+
         protected Work sub;
 
         @Override
@@ -113,20 +114,18 @@ public class WorkErrorsAreTracableTest {
         assertEquals(work.getSchedulePath(), cause.path());
     }
 
-    protected WorkSchedulePath.Trace awaitFailure(Work work)
-            throws InterruptedException, NoLogCaptureFilterException {
+    protected WorkSchedulePath.Trace awaitFailure(Work work) throws InterruptedException, NoLogCaptureFilterException {
         boolean completed = manager.awaitCompletion(1000, TimeUnit.MILLISECONDS);
         assertTrue(completed);
         result.assertHasEvent();
         LoggingEvent loggingEvent = result.getCaughtEvents().get(0);
-        WorkSchedulePath.Trace trace = (WorkSchedulePath.Trace)loggingEvent.getThrowableInformation().getThrowable();
+        WorkSchedulePath.Trace trace = (WorkSchedulePath.Trace) loggingEvent.getThrowableInformation().getThrowable();
         assertIsRootWork(work, trace);
         return trace;
     }
 
     protected void assertIsRootWork(Work work, WorkSchedulePath.Trace error) {
-        for (Throwable cause = error.getCause(); cause != null
-                && cause != error; error = (WorkSchedulePath.Trace) cause) {
+        for (Throwable cause = error.getCause(); cause != null && cause != error; error = (WorkSchedulePath.Trace) cause) {
             ;
         }
         assertEquals(work.getSchedulePath(), error.path());

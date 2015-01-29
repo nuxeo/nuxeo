@@ -16,7 +16,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 
-
 @MXBean
 public class WorkSchedulePath implements Serializable {
 
@@ -26,8 +25,8 @@ public class WorkSchedulePath implements Serializable {
 
     public static final Log log = LogFactory.getLog(WorkSchedulePath.class);
 
-    public static boolean captureStack = Boolean.parseBoolean(Framework.getProperty("work.schedule.captureStack", "false")) ||
-            log.isTraceEnabled();
+    public static boolean captureStack = Boolean.parseBoolean(Framework.getProperty("work.schedule.captureStack",
+            "false")) || log.isTraceEnabled();
 
     public static WorkSchedulePath EMPTY = new WorkSchedulePath();
 
@@ -60,7 +59,7 @@ public class WorkSchedulePath implements Serializable {
 
     public static void newInstance(Work work) {
         Work entered = enteredLocal.get();
-        WorkSchedulePath  path = new WorkSchedulePath(entered == null ? EMPTY : entered.getSchedulePath(), work);
+        WorkSchedulePath path = new WorkSchedulePath(entered == null ? EMPTY : entered.getSchedulePath(), work);
         work.setSchedulePath(path);
     }
 
@@ -69,7 +68,7 @@ public class WorkSchedulePath implements Serializable {
             throw new AssertionError("thread local leak, chain should not be re-rentrant");
         }
         enteredLocal.set(work);
-     }
+    }
 
     public static void handleReturn() {
         enteredLocal.remove();

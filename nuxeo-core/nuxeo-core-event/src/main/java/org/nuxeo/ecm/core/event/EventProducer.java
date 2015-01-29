@@ -13,7 +13,6 @@ package org.nuxeo.ecm.core.event;
 
 import org.nuxeo.ecm.core.api.ClientException;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

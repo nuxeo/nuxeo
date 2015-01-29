@@ -51,8 +51,7 @@ public class DummyPostCommitEventListener implements PostCommitEventListener {
                 interruptCount.incrementAndGet();
             }
         }
-        if (properties.get("concurrentexception") != null
-                && handledCount() == 1) {
+        if (properties.get("concurrentexception") != null && handledCount() == 1) {
             throw new ConcurrentUpdateException();
         }
     }

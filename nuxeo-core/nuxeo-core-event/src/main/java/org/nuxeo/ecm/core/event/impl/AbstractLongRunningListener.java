@@ -30,19 +30,16 @@ import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Abstract class that helps building an Asynchronous listeners that will handle
- * a long running process.
+ * Abstract class that helps building an Asynchronous listeners that will handle a long running process.
  * <p/>
- * By default, {@link org.nuxeo.ecm.core.event.PostCommitEventListener} are executed in a {@link org.nuxeo.ecm.core.work.api.Work}
- * that will take care of starting/comitting the transaction.
+ * By default, {@link org.nuxeo.ecm.core.event.PostCommitEventListener} are executed in a
+ * {@link org.nuxeo.ecm.core.work.api.Work} that will take care of starting/comitting the transaction.
  * <p/>
- * If the listener requires a long processing this will create long transactions
- * that are not good. To avoid this behavior, this base class split the
- * processing in 3 steps :
+ * If the listener requires a long processing this will create long transactions that are not good. To avoid this
+ * behavior, this base class split the processing in 3 steps :
  * <ul>
  * <li>pre processing : transactional first step</li>
- * <li>long running : long running processing that should not require
- * transactional resources</li>
+ * <li>long running : long running processing that should not require transactional resources</li>
  * <li>post processing : transactional final step
  * </ul>
  * <p/>
@@ -50,10 +47,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *
  * @since 5.7.2
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
-public abstract class AbstractLongRunningListener implements
-        PostCommitFilteringEventListener {
+public abstract class AbstractLongRunningListener implements PostCommitFilteringEventListener {
 
     protected static final Log log = LogFactory.getLog(AbstractLongRunningListener.class);
 
@@ -66,14 +61,11 @@ public abstract class AbstractLongRunningListener implements
 
             boolean doContinue = false;
             // do pre-processing and commit transaction
-            ReconnectedEventBundleImpl preProcessBunle = new ReconnectedEventBundleImpl(
-                    events);
+            ReconnectedEventBundleImpl preProcessBunle = new ReconnectedEventBundleImpl(events);
             try {
                 doContinue = handleEventPreprocessing(preProcessBunle, data);
             } catch (ClientException e) {
-                log.error(
-                        "Long Running listener canceled after failed execution of preprocessing",
-                        e);
+                log.error("Long Running listener canceled after failed execution of preprocessing", e);
                 throw e;
             } finally {
                 TransactionHelper.commitOrRollbackTransaction();
@@ -86,13 +78,9 @@ public abstract class AbstractLongRunningListener implements
             // do main-processing in a non transactional context
             // a new CoreSession will be open by ReconnectedEventBundleImpl
             try {
-                doContinue = handleEventLongRunning(
-                        ((ReconnectedEventBundleImpl) events).getEventNames(),
-                        data);
+                doContinue = handleEventLongRunning(((ReconnectedEventBundleImpl) events).getEventNames(), data);
             } catch (ClientException e) {
-                log.error(
-                        "Long Running listener canceled after failed execution of main run",
-                        e);
+                log.error("Long Running listener canceled after failed execution of main run", e);
                 throw e;
             } finally {
                 ((ReconnectedEventBundleImpl) events).disconnect();
@@ -104,15 +92,12 @@ public abstract class AbstractLongRunningListener implements
 
             // do final-processing in a new transaction
             // a new CoreSession will be open by ReconnectedEventBundleImpl
-            ReconnectedEventBundleImpl postProcessEventBundle = new ReconnectedEventBundleImpl(
-                    events);
+            ReconnectedEventBundleImpl postProcessEventBundle = new ReconnectedEventBundleImpl(events);
             try {
                 TransactionHelper.startTransaction();
                 handleEventPostprocessing(postProcessEventBundle, data);
             } catch (ClientException e) {
-                log.error(
-                        "Long Running listener canceled after failed execution of main run",
-                        e);
+                log.error("Long Running listener canceled after failed execution of main run", e);
                 throw e;
             } finally {
                 TransactionHelper.commitOrRollbackTransaction();
@@ -131,8 +116,8 @@ public abstract class AbstractLongRunningListener implements
      * @return true of processing should continue, false otherwise
      * @throws ClientExceptions
      */
-    protected abstract boolean handleEventPreprocessing(EventBundle events,
-            Map<String, Object> data) throws ClientException;
+    protected abstract boolean handleEventPreprocessing(EventBundle events, Map<String, Object> data)
+            throws ClientException;
 
     /**
      * Will be executed in a non transactional context
@@ -146,18 +131,17 @@ public abstract class AbstractLongRunningListener implements
      * @return true of processing should continue, false otherwise
      * @throws ClientException
      */
-    protected abstract boolean handleEventLongRunning(List<String> eventNames,
-            Map<String, Object> data) throws ClientException;
+    protected abstract boolean handleEventLongRunning(List<String> eventNames, Map<String, Object> data)
+            throws ClientException;
 
     /**
      * Finish processing in a dedicated Transaction
      *
      * @param events {@link EventBundle} received
-     * @param data an map that may have been filled by handleEventPreprocessing
-     *            and handleEventLongRunning
+     * @param data an map that may have been filled by handleEventPreprocessing and handleEventLongRunning
      * @throws ClientException
      */
-    protected abstract void handleEventPostprocessing(EventBundle events,
-            Map<String, Object> data) throws ClientException;
+    protected abstract void handleEventPostprocessing(EventBundle events, Map<String, Object> data)
+            throws ClientException;
 
 }

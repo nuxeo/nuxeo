@@ -17,12 +17,8 @@
 package org.nuxeo.ecm.core.event.impl;
 
 /**
- * @author matic
- *
- * Let other thread pool executor register themselves for shutdown
- *
+ * @author matic Let other thread pool executor register themselves for shutdown
  * @since 5.6
- *
  */
 public interface AsyncWaitHook {
 

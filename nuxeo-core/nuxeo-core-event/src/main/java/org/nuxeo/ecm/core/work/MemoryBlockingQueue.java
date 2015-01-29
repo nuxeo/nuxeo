@@ -30,17 +30,15 @@ import org.nuxeo.ecm.core.work.api.Work;
 /**
  * Memory-based {@link BlockingQueue}.
  * <p>
- * In addition, this implementation also keeps a set of {@link Work} ids in the
- * queue when the queue elements are {@link WorkHolder}s.
+ * In addition, this implementation also keeps a set of {@link Work} ids in the queue when the queue elements are
+ * {@link WorkHolder}s.
  */
 public class MemoryBlockingQueue extends NuxeoBlockingQueue {
 
     /**
-     * A {@link LinkedBlockingQueue} that blocks on {@link #offer} and prevents
-     * starvation deadlocks on reentrant calls.
+     * A {@link LinkedBlockingQueue} that blocks on {@link #offer} and prevents starvation deadlocks on reentrant calls.
      */
-    private static class ReentrantLinkedBlockingQueue<T> extends
-            LinkedBlockingQueue<T> {
+    private static class ReentrantLinkedBlockingQueue<T> extends LinkedBlockingQueue<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -51,8 +49,7 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
         /**
          * Creates a {@link LinkedBlockingQueue} with a maximum capacity.
          * <p>
-         * If the capacity is -1 then this is treated as a regular unbounded
-         * {@link LinkedBlockingQueue}.
+         * If the capacity is -1 then this is treated as a regular unbounded {@link LinkedBlockingQueue}.
          *
          * @param capacity the capacity, or -1 for unbounded
          */
@@ -86,8 +83,7 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
             }
             // turn non-blocking offer into a blocking put
             try {
-                if (Thread.currentThread().getName().startsWith(
-                        WorkManagerImpl.THREAD_PREFIX)) {
+                if (Thread.currentThread().getName().startsWith(WorkManagerImpl.THREAD_PREFIX)) {
                     // use the full queue capacity for reentrant call
                     put(e);
                 } else {
@@ -112,8 +108,7 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
     /**
      * Creates a {@link BlockingQueue} with a maximum capacity.
      * <p>
-     * If the capacity is -1 then this is treated as a regular unbounded
-     * {@link LinkedBlockingQueue}.
+     * If the capacity is -1 then this is treated as a regular unbounded {@link LinkedBlockingQueue}.
      *
      * @param capacity the capacity, or -1 for unbounded
      */
@@ -217,8 +212,7 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
     }
 
     @Override
-    public Runnable poll(long timeout, TimeUnit unit)
-            throws InterruptedException {
+    public Runnable poll(long timeout, TimeUnit unit) throws InterruptedException {
         long nanos = unit.toNanos(timeout);
         nanos = awaitActivation(nanos);
         if (nanos <= 0) {

@@ -40,8 +40,7 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 
 /**
- * Serializable representation of an {@link EventBundle} that is used for JMS
- * forwarding.
+ * Serializable representation of an {@link EventBundle} that is used for JMS forwarding.
  *
  * @author Thierry Delprat
  */
@@ -85,14 +84,11 @@ public class SerializableEventBundle implements Serializable {
 
             serializableEvent.put("name", event.getName());
             serializableEvent.put("time", Long.toString(event.getTime()));
-            serializableEvent.put("contextProperties",
-                    (Serializable) event.getContext().getProperties());
+            serializableEvent.put("contextProperties", (Serializable) event.getContext().getProperties());
             if (evtSession != null) {
-                serializableEvent.put("contextSessionId",
-                        evtSession.getSessionId());
+                serializableEvent.put("contextSessionId", evtSession.getSessionId());
             }
-            serializableEvent.put("principal",
-                    event.getContext().getPrincipal().getName());
+            serializableEvent.put("principal", event.getContext().getPrincipal().getName());
 
             serializableEvent.put("contextSessionRepositoryName", repoName);
 
@@ -107,13 +103,11 @@ public class SerializableEventBundle implements Serializable {
             for (Object arg : args) {
                 if (arg instanceof DocumentModel) {
                     DocumentModel doc = (DocumentModel) arg;
-                    String strRepresentation = doc.getRepositoryName() + ":"
-                            + doc.getId() + ":" + doc.getType() + ":"
+                    String strRepresentation = doc.getRepositoryName() + ":" + doc.getId() + ":" + doc.getType() + ":"
                             + doc.getPathAsString();
                     listArgs.add("DOCREF:" + strRepresentation);
                 } else if (arg instanceof Serializable) {
-                    log.debug("Adding serializable argument of class "
-                            + arg.getClass().getCanonicalName());
+                    log.debug("Adding serializable argument of class " + arg.getClass().getCanonicalName());
                     listArgs.add((Serializable) arg);
                 } else {
                     listArgs.add(null);
@@ -126,8 +120,7 @@ public class SerializableEventBundle implements Serializable {
     }
 
     // Should not be necessary since this is noww done in CoreSession
-    protected Map<String, Serializable> filterContextProperties(
-            Map<String, Serializable> properties) {
+    protected Map<String, Serializable> filterContextProperties(Map<String, Serializable> properties) {
         Map<String, Serializable> serializableProps = new HashMap<String, Serializable>();
 
         for (String key : properties.keySet()) {
@@ -136,8 +129,7 @@ public class SerializableEventBundle implements Serializable {
                 Serializable serializableValue = (Serializable) value;
                 serializableProps.put(key, serializableValue);
             } else {
-                log.error("ContextMap contains non serializable object under key "
-                        + key);
+                log.error("ContextMap contains non serializable object under key " + key);
             }
         }
         return serializableProps;
@@ -165,12 +157,10 @@ public class SerializableEventBundle implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    public EventBundle reconstructEventBundle(CoreSession session)
-            throws CannotReconstruct {
+    public EventBundle reconstructEventBundle(CoreSession session) throws CannotReconstruct {
 
         if (!session.getRepositoryName().equals(coreInstanceName)) {
-            throw new CannotReconstruct(
-                    "This session can not be used on this Bundle");
+            throw new CannotReconstruct("This session can not be used on this Bundle");
         }
         EventBundle bundle = new EventBundleRelayedViaJMS();
 
@@ -184,8 +174,7 @@ public class SerializableEventBundle implements Serializable {
             Long time = Long.parseLong((String) evt.get("time"));
 
             Map<String, Serializable> ctxProperties = (Map<String, Serializable>) evt.get("contextProperties");
-            Principal principal = new SimplePrincipal(
-                    (String) evt.get("principal"));
+            Principal principal = new SimplePrincipal((String) evt.get("principal"));
 
             List<Serializable> listArgs = (List<Serializable>) evt.get("args");
 
@@ -206,13 +195,9 @@ public class SerializableEventBundle implements Serializable {
                             if (session != null && session.exists(idRef)) {
                                 doc = session.getDocument(idRef);
                             } else {
-                                String parentPath = new Path(part[4]).removeLastSegments(
-                                        1).toString();
-                                doc = new DocumentModelImpl(
-                                        session.getSessionId(), part[3],
-                                        part[2], new Path(part[4]), null,
-                                        idRef, new PathRef(parentPath), null,
-                                        null, null, null);
+                                String parentPath = new Path(part[4]).removeLastSegments(1).toString();
+                                doc = new DocumentModelImpl(session.getSessionId(), part[3], part[2],
+                                        new Path(part[4]), null, idRef, new PathRef(parentPath), null, null, null, null);
                             }
                         } catch (ClientException e) {
                             // TODO
@@ -230,8 +215,7 @@ public class SerializableEventBundle implements Serializable {
 
             EventContext ctx;
             if ((Boolean) evt.get("isDocumentEventContext")) {
-                ctx = new DocumentEventContext(session, principal,
-                        (DocumentModel) args[0], (DocumentRef) args[1]);
+                ctx = new DocumentEventContext(session, principal, (DocumentModel) args[0], (DocumentRef) args[1]);
                 // XXX we loose other args ...
             } else {
                 ctx = new EventContextImpl(session, principal);

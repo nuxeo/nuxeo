@@ -21,8 +21,7 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class ScriptingPostCommitEventListener implements
-        PostCommitEventListener {
+public class ScriptingPostCommitEventListener implements PostCommitEventListener {
 
     protected final Script script;
 

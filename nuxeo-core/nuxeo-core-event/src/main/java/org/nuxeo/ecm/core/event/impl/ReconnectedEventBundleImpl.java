@@ -41,8 +41,7 @@ import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Default implementation for an {@link EventBundle} that need to be
- * reconnected to a usable Session.
+ * Default implementation for an {@link EventBundle} that need to be reconnected to a usable Session.
  *
  * @author tiry
  */
@@ -87,16 +86,14 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
             try {
                 reconnectedCoreSession = CoreInstance.openCoreSessionSystem(repoName);
             } catch (Exception e) {
-                log.error("Error while openning core session on repo "
-                        + repoName, e);
+                log.error("Error while openning core session on repo " + repoName, e);
                 return null;
             }
         } else {
             // Sanity Check
             if (!reconnectedCoreSession.getRepositoryName().equals(repoName)) {
                 if (repoName != null) {
-                    throw new IllegalStateException(
-                            "Can no reconnected a Bundle tied to several Core instances !");
+                    throw new IllegalStateException("Can no reconnected a Bundle tied to several Core instances !");
                 }
             }
         }
@@ -114,8 +111,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                 List<Object> newArgs = new ArrayList<Object>();
                 for (Object arg : ctx.getArguments()) {
                     Object newArg = arg;
-                    if (refetchDocumentModel(session, arg)
-                            && session.getPrincipal() != null) {
+                    if (refetchDocumentModel(session, arg) && session.getPrincipal() != null) {
                         DocumentModel oldDoc = (DocumentModel) arg;
                         DocumentRef ref = oldDoc.getRef();
                         if (ref != null) {
@@ -127,8 +123,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                                     newArg = new DeletedDocumentModel(oldDoc);
                                 }
                             } catch (ClientException e) {
-                                log.error("Can not refetch Doc with ref "
-                                        + ref.toString(), e);
+                                log.error("Can not refetch Doc with ref " + ref.toString(), e);
                             }
                         }
                     }
@@ -138,8 +133,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
                 EventContext newCtx = null;
                 if (ctx instanceof DocumentEventContext) {
-                    newCtx = new DocumentEventContext(session,
-                            ctx.getPrincipal(), (DocumentModel) newArgs.get(0),
+                    newCtx = new DocumentEventContext(session, ctx.getPrincipal(), (DocumentModel) newArgs.get(0),
                             (DocumentRef) newArgs.get(1));
                 } else {
                     newCtx = new EventContextImpl(session, ctx.getPrincipal());
@@ -156,32 +150,26 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                             if (session.exists(oldRef)) {
                                 propValue = session.getDocument(oldRef);
                             } else {
-                                log.warn("Listener "
-                                        + (listenerName == null ? "" : "'"
-                                                + listenerName + "' ")
-                                        + "cannot refetch missing document: "
-                                        + oldRef + " ("
+                                log.warn("Listener " + (listenerName == null ? "" : "'" + listenerName + "' ")
+                                        + "cannot refetch missing document: " + oldRef + " ("
                                         + oldDoc.getPathAsString() + ")");
                             }
                         } catch (ClientException e) {
-                            log.error("Can not refetch Doc with ref " + oldRef,
-                                    e);
+                            log.error("Can not refetch Doc with ref " + oldRef, e);
                         }
                     }
                     // XXX treat here other cases !!!!
                     newProps.put(prop.getKey(), propValue);
                 }
                 newCtx.setProperties(newProps);
-                Event newEvt = new EventImpl(event.getName(), newCtx,
-                        event.getFlags(), event.getTime());
+                Event newEvt = new EventImpl(event.getName(), newCtx, event.getFlags(), event.getTime());
                 reconnectedEvents.add(newEvt);
             }
         }
         return reconnectedEvents;
     }
 
-    protected boolean refetchDocumentModel(CoreSession session,
-            Object eventProperty) {
+    protected boolean refetchDocumentModel(CoreSession session, Object eventProperty) {
         if (eventProperty instanceof DocumentModel && session != null) {
             DocumentModel doc = (DocumentModel) eventProperty;
             if (Boolean.TRUE.equals(doc.getContextData(SKIP_REFETCH_DOCUMENT_CONTEXT_KEY))) {
@@ -237,8 +225,8 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
         if (reconnectedCoreSession != null) {
             reconnectedCoreSession.close();
         }
-        reconnectedCoreSession=null;
-        reconnectedEvents=null;
+        reconnectedCoreSession = null;
+        reconnectedEvents = null;
         if (loginCtx != null) {
             try {
                 loginCtx.logout();

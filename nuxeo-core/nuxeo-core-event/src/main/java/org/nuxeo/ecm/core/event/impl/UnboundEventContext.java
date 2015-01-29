@@ -20,8 +20,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.event.Event;
 
 /**
- * Minimal eventContext implementation that can be
- * used for events that are not bound to a CoreSession.
+ * Minimal eventContext implementation that can be used for events that are not bound to a CoreSession.
  *
  * @author Thierry Delprat
  */

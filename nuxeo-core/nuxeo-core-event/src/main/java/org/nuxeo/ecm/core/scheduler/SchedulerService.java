@@ -31,10 +31,8 @@ public interface SchedulerService {
      */
     void registerSchedule(Schedule schedule);
 
-
     /**
-     * Registers a schedule.
-     * Add all parameters to eventContext.
+     * Registers a schedule. Add all parameters to eventContext.
      *
      * @param schedule
      * @param parameters

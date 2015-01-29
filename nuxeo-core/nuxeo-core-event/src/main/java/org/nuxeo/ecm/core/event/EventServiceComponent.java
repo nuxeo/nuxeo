@@ -20,8 +20,8 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Event Service Component, allowing registration of contributions and doing the
- * event service shutdown upon deactivation.
+ * Event Service Component, allowing registration of contributions and doing the event service shutdown upon
+ * deactivation.
  */
 public class EventServiceComponent extends DefaultComponent {
 
@@ -54,8 +54,7 @@ public class EventServiceComponent extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (EVENT_LISTENER_XP.equals(extensionPoint)) {
             EventListenerDescriptor descriptor = (EventListenerDescriptor) contribution;
@@ -65,8 +64,7 @@ public class EventServiceComponent extends DefaultComponent {
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (EVENT_LISTENER_XP.equals(extensionPoint)) {
             service.removeEventListener((EventListenerDescriptor) contribution);
@@ -76,8 +74,7 @@ public class EventServiceComponent extends DefaultComponent {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (EventService.class == adapter || EventProducer.class == adapter
-                || EventServiceAdmin.class == adapter) {
+        if (EventService.class == adapter || EventProducer.class == adapter || EventServiceAdmin.class == adapter) {
             return (T) service;
         }
         return null;

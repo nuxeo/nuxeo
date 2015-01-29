@@ -16,7 +16,7 @@ package org.nuxeo.ecm.core.event.impl;
 
 import java.util.Comparator;
 
-public class EventListenerDescriptorComparator  implements Comparator<EventListenerDescriptor> {
+public class EventListenerDescriptorComparator implements Comparator<EventListenerDescriptor> {
 
     @Override
     public int compare(EventListenerDescriptor o1, EventListenerDescriptor o2) {

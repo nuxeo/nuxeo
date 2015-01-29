@@ -16,9 +16,8 @@ import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 
 /**
  * @author <a href="mailto:ei@nuxeo.com">Eugen Ionica</a>
- *
  */
-public class DeletedDocumentModel extends ShallowDocumentModel{
+public class DeletedDocumentModel extends ShallowDocumentModel {
 
     private static final long serialVersionUID = 1L;
 

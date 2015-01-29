@@ -22,8 +22,7 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Sync listener that calls the cleanup method of the work manager. Designed to
- * be called periodically.
+ * Sync listener that calls the cleanup method of the work manager. Designed to be called periodically.
  *
  * @since 5.6
  */
