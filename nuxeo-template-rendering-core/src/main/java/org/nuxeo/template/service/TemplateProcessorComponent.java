@@ -386,7 +386,9 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
             if (tbd.getTemplateNames().size() == 1) {
                 // remove the whole facet since there is no more binding
                 targetDoc.removeFacet(TemplateBasedDocumentAdapterImpl.TEMPLATEBASED_FACET);
-                log.error("detach after removeFacet, ck=" + targetDoc.getCacheKey());
+                if (log.isDebugEnabled()) {
+                    log.debug("detach after removeFacet, ck=" + targetDoc.getCacheKey());
+                }
                 if (save) {
                     docAfterDetach = targetDoc.getCoreSession().saveDocument(targetDoc);
                 }
