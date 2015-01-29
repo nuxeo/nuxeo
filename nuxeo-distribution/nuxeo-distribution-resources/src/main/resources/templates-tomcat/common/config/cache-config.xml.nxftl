@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.cache.config">
 
-  <#if "${nuxeo.cache.type}" == "redis">
+  <#if "${nuxeo.redis.enabled}" == "true" && "${nuxeo.cache.type}" == "redis">
     <#assign className = "org.nuxeo.ecm.core.redis.contribs.RedisCache" />
   <#else>
     <#assign className = "org.nuxeo.ecm.core.cache.InMemoryCacheImpl" />

@@ -50,6 +50,7 @@ nuxeo.redis.password=
 nuxeo.redis.database=0
 nuxeo.redis.timeout=2000
 nuxeo.work.queuing=redis
+nuxeo.lock.manager=redis
 
 # MongoDB
 nuxeo.mongodb.server=
