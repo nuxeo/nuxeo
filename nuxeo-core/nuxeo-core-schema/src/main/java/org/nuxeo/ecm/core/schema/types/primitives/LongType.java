@@ -38,34 +38,22 @@ public final class LongType extends PrimitiveType {
 
     @Override
     public boolean validate(Object object) {
-        try {
-            Object converted = convert(object);
-            return converted == null || converted instanceof Number;
-        } catch (RuntimeException e) {
-            return false;
-        }
+        return object instanceof Number;
     }
 
     @Override
     public Object convert(Object value) {
-        if (value == null) {
-            return null;
-        }
         if (value instanceof Long) {
             return value;
         } else if (value instanceof Number) {
             return Long.valueOf(((Number) value).longValue());
-        } else if (value instanceof String) {
-            if (StringUtils.isBlank((String) value)) {
-                return null;
-            }
+        } else {
             try {
                 return Long.valueOf((String) value);
             } catch (NumberFormatException e) {
-                throw new RuntimeException(e);
+                return null;
             }
         }
-        return value;
     }
 
     @Override

@@ -39,13 +39,23 @@ public class DateType extends PrimitiveType {
 
     @Override
     public boolean validate(Object object) {
-        Object converted = convert(object);
-        return converted == null || converted instanceof Date || converted instanceof Calendar;
+        return object instanceof Date || object instanceof Calendar;
     }
 
     @Override
     public Object convert(Object value) {
-        return value;
+        if (value instanceof Date) {
+            return value;
+        } else if (value instanceof Calendar) {
+            return value;
+        } else {
+            // TODO
+            try {
+                return Integer.valueOf((String) value);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
     }
 
     @Override
