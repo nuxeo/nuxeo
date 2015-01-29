@@ -24,7 +24,7 @@
   <c:forEach var="contributor"
     items="#{currentDocument.dc.contributors}">
     <span class="user creator">
-      <a href="#{baseURL}user/#{contributor}">
+      <a href="#{nxu:userUrl('user', contributor, null, false)}">
         <h:outputText value="#{nxu:userFullName(contributor)}" />
       </a>
     </span>

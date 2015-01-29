@@ -434,9 +434,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     public String viewUser(String userName) throws ClientException {
         webActions.setCurrentTabIds(MAIN_TAB_HOME + "," + USERS_TAB);
         setSelectedUser(userName);
-        showUserOrGroup = true;
-        // do not reset the state before actually viewing the user
-        shouldResetStateOnTabChange = false;
+        setShowUser(Boolean.TRUE.toString());
         return VIEW_HOME;
     }
 
@@ -453,6 +451,8 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
      */
     public void setShowUser(String showUser) {
         showUserOrGroup = Boolean.valueOf(showUser);
+        // do not reset the state before actually viewing the user
+        shouldResetStateOnTabChange = false;
     }
 
     protected void fireSeamEvent(String eventName) {
