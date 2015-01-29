@@ -58,7 +58,6 @@ import org.nuxeo.ecm.quota.size.QuotaExceededException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
@@ -72,7 +71,6 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ QuotaFeature.class })
 @TransactionalConfig
-@RandomBug.Repeat(issue = "NXP-14442, NXP-14444")
 public class TestDocumentsSizeUpdater {
 
     @Inject
