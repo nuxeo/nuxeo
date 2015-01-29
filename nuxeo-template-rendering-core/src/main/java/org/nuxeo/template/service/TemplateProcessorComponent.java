@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2012-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Thierry Delprat
+ *
+ */
 package org.nuxeo.template.service;
 
 import java.util.ArrayList;
@@ -73,6 +90,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         outputFormatRegistry = null;
     }
 
+    @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (PROCESSOR_XP.equals(extensionPoint)) {
             processorRegistry.addContribution((TemplateProcessorDescriptor) contribution);
@@ -85,6 +103,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         }
     }
 
+    @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (PROCESSOR_XP.equals(extensionPoint)) {
             processorRegistry.removeContribution((TemplateProcessorDescriptor) contribution);
@@ -131,8 +150,8 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         return processor;
     }
 
+    @Override
     public void addContextExtensions(DocumentModel currentDocument, DocumentWrapper wrapper, Map<String, Object> ctx) {
-
         Map<String, ContextExtensionFactoryDescriptor> factories = contextExtensionRegistry.getExtensionFactories();
         for (String name : factories.keySet()) {
             ContextExtensionFactory factory = factories.get(name).getExtensionFactory();
@@ -149,9 +168,9 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         }
     }
 
+    @Override
     public List<String> getReservedContextKeywords() {
-
-        List<String> keywords = new ArrayList<String>();
+        List<String> keywords = new ArrayList<>();
         Map<String, ContextExtensionFactoryDescriptor> factories = contextExtensionRegistry.getExtensionFactories();
         for (String name : factories.keySet()) {
             keywords.add(name);
@@ -163,13 +182,13 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         return keywords;
     }
 
+    @Override
     public Map<String, ContextExtensionFactoryDescriptor> getRegistredContextExtensions() {
         return contextExtensionRegistry.getExtensionFactories();
     }
 
     protected TemplateProcessorDescriptor findProcessorByMimeType(String mt) {
-
-        List<TemplateProcessorDescriptor> candidates = new ArrayList<TemplateProcessorDescriptor>();
+        List<TemplateProcessorDescriptor> candidates = new ArrayList<>();
         for (TemplateProcessorDescriptor desc : processorRegistry.getRegistredProcessors()) {
             if (desc.getSupportedMimeTypes().contains(mt)) {
                 if (desc.isDefaultProcessor()) {
@@ -186,8 +205,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
     }
 
     protected TemplateProcessorDescriptor findProcessorByExtension(String extension) {
-
-        List<TemplateProcessorDescriptor> candidates = new ArrayList<TemplateProcessorDescriptor>();
+        List<TemplateProcessorDescriptor> candidates = new ArrayList<>();
         for (TemplateProcessorDescriptor desc : processorRegistry.getRegistredProcessors()) {
             if (desc.getSupportedExtensions().contains(extension)) {
                 if (desc.isDefaultProcessor()) {
@@ -234,15 +252,14 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         return sb.toString();
     }
 
+    @Override
     public List<DocumentModel> getAvailableTemplateDocs(CoreSession session, String targetType) throws ClientException {
-
         String query = buildTemplateSearchQuery(targetType);
-
         return session.query(query);
     }
 
     protected <T> List<T> wrap(List<DocumentModel> docs, Class<T> adapter) {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         for (DocumentModel doc : docs) {
             T adapted = doc.getAdapter(adapter);
             if (adapted != null) {
@@ -252,15 +269,16 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         return result;
     }
 
+    @Override
     public List<TemplateSourceDocument> getAvailableOfficeTemplates(CoreSession session, String targetType)
             throws ClientException {
-
         String query = buildTemplateSearchQuery(targetType);
         query = query + " AND tmpl:useAsMainContent=1";
         List<DocumentModel> docs = session.query(query);
         return wrap(docs, TemplateSourceDocument.class);
     }
 
+    @Override
     public List<TemplateSourceDocument> getAvailableTemplates(CoreSession session, String targetType)
             throws ClientException {
         List<DocumentModel> filtredResult = getAvailableTemplateDocs(session, targetType);
@@ -269,7 +287,6 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
 
     @Override
     public List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(DocumentModel source) throws ClientException {
-
         StringBuffer sb = new StringBuffer(
                 "select * from Document where ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 AND ");
         sb.append(TemplateBindings.BINDING_PROP_NAME + "/*/" + TemplateBinding.TEMPLATE_ID_KEY);
@@ -278,7 +295,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         sb.append("'");
         DocumentModelList docs = source.getCoreSession().query(sb.toString());
 
-        List<TemplateBasedDocument> result = new ArrayList<TemplateBasedDocument>();
+        List<TemplateBasedDocument> result = new ArrayList<>();
         for (DocumentModel doc : docs) {
             TemplateBasedDocument templateBasedDocument = doc.getAdapter(TemplateBasedDocument.class);
             if (templateBasedDocument != null) {
@@ -288,15 +305,17 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         return result;
     }
 
+    @Override
     public Collection<TemplateProcessorDescriptor> getRegisteredTemplateProcessors() {
         return processorRegistry.getRegistredProcessors();
     }
 
+    @Override
     public Map<String, List<String>> getTypeMapping() {
         if (type2Template == null) {
             synchronized (this) {
                 if (type2Template == null) {
-                    type2Template = new ConcurrentHashMap<String, List<String>>();
+                    type2Template = new ConcurrentHashMap<>();
                     TemplateMappingFetcher fetcher = new TemplateMappingFetcher();
                     try {
                         fetcher.runUnrestricted();
@@ -310,12 +329,13 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         return type2Template;
     }
 
+    @Override
     public synchronized void registerTypeMapping(DocumentModel doc) throws ClientException {
         TemplateSourceDocument tmpl = doc.getAdapter(TemplateSourceDocument.class);
         if (tmpl != null) {
             Map<String, List<String>> mapping = getTypeMapping();
             // check existing mapping for this docId
-            List<String> boundTypes = new ArrayList<String>();
+            List<String> boundTypes = new ArrayList<>();
             for (String type : mapping.keySet()) {
                 if (mapping.get(type) != null) {
                     if (mapping.get(type).contains(doc.getId())) {
@@ -335,7 +355,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
             for (String type : tmpl.getForcedTypes()) {
                 List<String> templates = mapping.get(type);
                 if (templates == null) {
-                    templates = new ArrayList<String>();
+                    templates = new ArrayList<>();
                     mapping.put(type, templates);
                 }
                 if (!templates.contains(doc.getId())) {
@@ -345,6 +365,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         }
     }
 
+    @Override
     public DocumentModel makeTemplateBasedDocument(DocumentModel targetDoc, DocumentModel sourceTemplateDoc,
             boolean save) throws ClientException {
         targetDoc.addFacet(TemplateBasedDocumentAdapterImpl.TEMPLATEBASED_FACET);
@@ -353,6 +374,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         return tmplBased.setTemplate(sourceTemplateDoc, save);
     }
 
+    @Override
     public DocumentModel detachTemplateBasedDocument(DocumentModel targetDoc, String templateName, boolean save)
             throws ClientException {
         DocumentModel docAfterDetach = null;
