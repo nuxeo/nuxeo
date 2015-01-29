@@ -19,62 +19,20 @@
 
 package org.nuxeo.ecm.platform.picture.api.adapters;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants;
 
 public class PictureBlobHolder extends DocumentBlobHolder {
 
     public PictureBlobHolder(DocumentModel doc, String path) {
         super(doc, path);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void setBlob(Blob blob) throws ClientException {
-        xPathFilename = null;
-        super.setBlob(blob);
-        // check if there are templates
-        ArrayList<Map<String, Object>> pictureConversions = null;
-
-        CoreSession session = doc.getCoreSession();
-        DocumentModel parent;
-        if (session.exists(doc.getRef())) {
-            parent = session.getParentDocument(doc.getRef());
-        } else {
-            Path parentPath = doc.getPath().removeLastSegments(1);
-            parent = session.getDocument(new PathRef(parentPath.toString()));
-        }
-
-        if (parent != null && ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME.equals(parent.getType())) {
-            // use PictureBook Properties
-            pictureConversions = (ArrayList<Map<String, Object>>) parent.getPropertyValue("picturebook:picturetemplates");
-            if (pictureConversions.isEmpty()) {
-                pictureConversions = null;
-            }
-        }
-
-        // upload blob and create views
-        PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
-        String filename = blob == null ? null : blob.getFilename();
-        String title = (String) doc.getPropertyValue("dc:title"); // re-set
-        try {
-            picture.fillPictureViews(blob, filename, title, pictureConversions);
-        } catch (IOException e) {
-            throw new ClientException(e.toString(), e);
-        }
     }
 
     @Override
