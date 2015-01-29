@@ -74,8 +74,8 @@ public class QueryUsers {
 
             users.addAll(userManager.searchUsers(filter, filter.keySet()));
         } else {
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
             for (String field : FULLTEXT_FIELDS) {
+                Map<String, Serializable> filter = new HashMap<String, Serializable>();
                 filter.put(field, pattern);
 
                 if (!StringUtils.isBlank(tenantId)) {
