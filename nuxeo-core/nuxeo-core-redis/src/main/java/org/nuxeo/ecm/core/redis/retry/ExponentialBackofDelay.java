@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,7 @@ public class ExponentialBackofDelay extends SimpleDelay {
 
     @Override
     protected long computeDelay() {
-        int delay =  base * (1 << ++attempt);
+        int delay = base * (1 << ++attempt);
         return TimeUnit.MILLISECONDS.convert(delay, TimeUnit.SECONDS);
     }
 

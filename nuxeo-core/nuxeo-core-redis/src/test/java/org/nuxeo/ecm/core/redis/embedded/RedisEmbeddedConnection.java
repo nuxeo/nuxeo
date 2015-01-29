@@ -37,20 +37,18 @@ public class RedisEmbeddedConnection extends EmbeddedJedis {
     }
 
     @Override
-    public List<String> lrange(final String key, final long start,
-            final long end) {
+    public List<String> lrange(final String key, final long start, final long end) {
         return super.lrange(key, start, end);
     }
 
     @Override
-    public List<byte[]> lrange(final byte[] key, final long start,
-            final long end) {
-        return super.lrange(key, (int)start, (int)end);
+    public List<byte[]> lrange(final byte[] key, final long start, final long end) {
+        return super.lrange(key, (int) start, (int) end);
     }
 
     @Override
     public Long lrem(byte[] key, long count, byte[] value) {
-        return super.lrem(key,(int)count,value);
+        return super.lrem(key, (int) count, value);
     }
 
     @Override

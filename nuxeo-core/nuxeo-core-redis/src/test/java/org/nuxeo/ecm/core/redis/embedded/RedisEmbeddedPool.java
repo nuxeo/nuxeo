@@ -19,6 +19,6 @@ public class RedisEmbeddedPool extends Pool<Jedis> {
     }
 
     public void setError(RedisEmbeddedGuessConnectionError error) {
-        ((RedisEmbeddedFactory)internalPool.getFactory()).error = error;
+        ((RedisEmbeddedFactory) internalPool.getFactory()).error = error;
     }
 }

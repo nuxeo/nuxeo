@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -62,16 +62,14 @@ public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
 
         @Override
         public LuaValue call(LuaValue luaOpcode, LuaValue luaKey) {
-            String opcode = (String) CoerceLuaToJava.coerce(luaOpcode,
-                    String.class);
+            String opcode = (String) CoerceLuaToJava.coerce(luaOpcode, String.class);
             String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
             switch (opcode.toLowerCase()) {
             case "get": {
                 return valueOfOrFalse(connection.get(key));
             }
             case "del": {
-                return valueOfOrFalse(connection.del((String[]) CoerceLuaToJava.coerce(
-                        luaKey, String[].class)));
+                return valueOfOrFalse(connection.del((String[]) CoerceLuaToJava.coerce(luaKey, String[].class)));
             }
             case "keys": {
                 LuaTable table = LuaValue.tableOf();
@@ -86,10 +84,8 @@ public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
         }
 
         @Override
-        public LuaValue call(LuaValue luaOpcode, LuaValue luaKey,
-                LuaValue luaArg) {
-            String opcode = (String) CoerceLuaToJava.coerce(luaOpcode,
-                    String.class);
+        public LuaValue call(LuaValue luaOpcode, LuaValue luaKey, LuaValue luaArg) {
+            String opcode = (String) CoerceLuaToJava.coerce(luaOpcode, String.class);
             String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
             String arg = (String) CoerceLuaToJava.coerce(luaArg, String.class);
             switch (opcode.toLowerCase()) {

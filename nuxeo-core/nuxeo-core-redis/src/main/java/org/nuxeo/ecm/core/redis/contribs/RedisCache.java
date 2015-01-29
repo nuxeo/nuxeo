@@ -51,19 +51,17 @@ public class RedisCache extends AbstractCache {
 
     protected final String namespace;
 
-
     public RedisCache(CacheDescriptor desc) {
         super(desc);
         executor = Framework.getService(RedisExecutor.class);
-        namespace = Framework.getService(RedisAdmin.class).namespace("cache",name);
+        namespace = Framework.getService(RedisAdmin.class).namespace("cache", name);
     }
 
     protected String formatKey(String key) {
         return namespace.concat(key);
     }
 
-    protected Serializable deserializeValue(byte[] workBytes)
-            throws IOException {
+    protected Serializable deserializeValue(byte[] workBytes) throws IOException {
         if (workBytes == null) {
             return null;
         }
@@ -112,7 +110,7 @@ public class RedisCache extends AbstractCache {
 
             @Override
             public Void call(Jedis jedis) throws Exception {
-                jedis.del(new String[] { formatKey(key)});
+                jedis.del(new String[] { formatKey(key) });
                 return null;
             }
         });
@@ -124,8 +122,7 @@ public class RedisCache extends AbstractCache {
     }
 
     @Override
-    public void put(final String key, final Serializable value)
-            throws IOException {
+    public void put(final String key, final Serializable value) throws IOException {
         executor.execute(new RedisCallable<Void>() {
 
             @Override

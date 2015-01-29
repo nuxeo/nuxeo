@@ -29,8 +29,7 @@ import org.nuxeo.ecm.core.work.api.Work;
 /**
  * Redis-based {@link BlockingQueue}.
  * <p>
- * It has unlimited capacity, so never blocks on {@link #put} and
- * {@link #offer} always returns {@code true}.
+ * It has unlimited capacity, so never blocks on {@link #put} and {@link #offer} always returns {@code true}.
  *
  * @since 5.8
  */
@@ -63,15 +62,13 @@ public class RedisBlockingQueue extends NuxeoBlockingQueue {
     }
 
     @Override
-    public Runnable poll(long timeout, TimeUnit unit)
-            throws InterruptedException {
+    public Runnable poll(long timeout, TimeUnit unit) throws InterruptedException {
         long nanos = unit.toNanos(timeout);
         nanos = awaitActivation(nanos);
         if (nanos <= 0) {
             return null;
         }
-        long end = System.currentTimeMillis()
-                + TimeUnit.NANOSECONDS.toMillis(nanos);
+        long end = System.currentTimeMillis() + TimeUnit.NANOSECONDS.toMillis(nanos);
         for (;;) {
             Runnable r = poll();
             if (r != null) {

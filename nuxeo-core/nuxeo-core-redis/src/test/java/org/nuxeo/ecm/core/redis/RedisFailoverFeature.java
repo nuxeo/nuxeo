@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,20 +19,18 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features(RedisFeature.class)
-@Config(mode = Mode.embedded, guessError=RedisEmbeddedGuessConnectionError.OnRandomCall.class)
+@Config(mode = Mode.embedded, guessError = RedisEmbeddedGuessConnectionError.OnRandomCall.class)
 public class RedisFailoverFeature extends SimpleFeature {
 
     RedisEmbeddedPool pool;
 
     @Override
     public void start(FeaturesRunner runner) throws Exception {
-        pool = (RedisEmbeddedPool) Framework.getLocalService(
-                RedisExecutor.class).getPool();
+        pool = (RedisEmbeddedPool) Framework.getLocalService(RedisExecutor.class).getPool();
     }
 
     @Override
-    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
+    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
         Config config = runner.getConfig(method, Config.class);
         if (pool instanceof RedisEmbeddedPool) {
             pool.setError(config.guessError().newInstance());

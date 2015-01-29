@@ -31,8 +31,7 @@ public class RedisFailoverExecutor implements RedisExecutor {
     }
 
     @Override
-    public <T> T execute(final RedisCallable<T> callable) throws IOException,
-            JedisConnectionException {
+    public <T> T execute(final RedisCallable<T> callable) throws IOException, JedisConnectionException {
         try {
             return new Retry().retry(new Retry.Block<T>() {
 
@@ -49,8 +48,7 @@ public class RedisFailoverExecutor implements RedisExecutor {
 
             }, new ExponentialBackofDelay(1, timeout));
         } catch (FailException cause) {
-            throw new JedisConnectionException("Cannot reconnect to jedis ..",
-                    cause);
+            throw new JedisConnectionException("Cannot reconnect to jedis ..", cause);
         }
     }
 

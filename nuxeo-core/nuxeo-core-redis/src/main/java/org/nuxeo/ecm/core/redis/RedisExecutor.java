@@ -24,14 +24,13 @@ public interface RedisExecutor {
     public static final RedisExecutor NOOP = new RedisExecutor() {
 
         @Override
-        public <T> T execute(RedisCallable<T> call) throws IOException,
-                JedisException {
+        public <T> T execute(RedisCallable<T> call) throws IOException, JedisException {
             throw new UnsupportedOperationException("No redis executor available");
         }
 
         @Override
         public Pool<Jedis> getPool() {
-          throw new UnsupportedOperationException("No pool available");
+            throw new UnsupportedOperationException("No pool available");
         }
 
     };

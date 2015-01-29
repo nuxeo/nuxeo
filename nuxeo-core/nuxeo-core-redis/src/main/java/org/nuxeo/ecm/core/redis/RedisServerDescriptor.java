@@ -40,8 +40,7 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
     @XNode("host")
     public void setHost(String name) {
         if (hosts.length == 0) {
-            hosts = new RedisHostDescriptor[] { new RedisHostDescriptor(name,
-                    Protocol.DEFAULT_PORT) };
+            hosts = new RedisHostDescriptor[] { new RedisHostDescriptor(name, Protocol.DEFAULT_PORT) };
         } else {
             hosts[0].name = name;
         }
@@ -50,8 +49,7 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
     @XNode("port")
     public void setHost(int port) {
         if (hosts.length == 0) {
-            hosts = new RedisHostDescriptor[] { new RedisHostDescriptor(
-                    "localhost", port) };
+            hosts = new RedisHostDescriptor[] { new RedisHostDescriptor("localhost", port) };
         } else {
             hosts[0].port = port;
         }
@@ -90,9 +88,8 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
             throw new RuntimeException("Only one host supported");
         }
         RedisHostDescriptor host = selectHost();
-        return new RedisPoolExecutor(new JedisPool(new JedisPoolConfig(), host.name, host.port,
-                timeout, StringUtils.defaultIfBlank(password, null),
-                database));
+        return new RedisPoolExecutor(new JedisPool(new JedisPoolConfig(), host.name, host.port, timeout,
+                StringUtils.defaultIfBlank(password, null), database));
 
     }
 }

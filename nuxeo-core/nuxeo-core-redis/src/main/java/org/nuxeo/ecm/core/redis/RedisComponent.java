@@ -57,14 +57,12 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         }
 
         @Override
-        public void contributionUpdated(String id, RedisPoolDescriptor contrib,
-                RedisPoolDescriptor newOrigContrib) {
+        public void contributionUpdated(String id, RedisPoolDescriptor contrib, RedisPoolDescriptor newOrigContrib) {
             config = contrib;
         }
 
         @Override
-        public void contributionRemoved(String id,
-                RedisPoolDescriptor origContrib) {
+        public void contributionRemoved(String id, RedisPoolDescriptor origContrib) {
             config = null;
         }
     };
@@ -72,14 +70,12 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
     protected String delsha;
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (contribution instanceof RedisPoolDescriptor) {
             registry.addContribution((RedisPoolDescriptor) contribution);
         } else {
-            super.registerContribution(contribution, extensionPoint,
-                    contributor);
+            super.registerContribution(contribution, extensionPoint, contributor);
         }
     }
 
@@ -155,7 +151,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
     @Override
     public String namespace(String... names) {
         StringBuilder builder = new StringBuilder("nuxeo:");
-        for (String name:names) {
+        for (String name : names) {
             builder.append(name).append(":");
         }
         return builder.toString();

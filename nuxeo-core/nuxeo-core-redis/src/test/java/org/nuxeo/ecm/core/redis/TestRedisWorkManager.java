@@ -19,8 +19,8 @@ package org.nuxeo.ecm.core.redis;
 import org.nuxeo.ecm.core.work.WorkManagerTest;
 
 /**
- * Test of the WorkManager using Redis. Does not run if no Redis is configured
- * through the properties of {@link RedisFeature}.
+ * Test of the WorkManager using Redis. Does not run if no Redis is configured through the properties of
+ * {@link RedisFeature}.
  *
  * @since 5.8
  */

@@ -24,8 +24,7 @@ public class RedisPoolExecutor implements RedisExecutor {
     }
 
     @Override
-    public <T> T execute(RedisCallable<T> callable) throws IOException,
-            JedisException {
+    public <T> T execute(RedisCallable<T> callable) throws IOException, JedisException {
         Jedis jedis = pool.getResource();
         boolean brokenResource = false;
         try {
@@ -37,8 +36,7 @@ public class RedisPoolExecutor implements RedisExecutor {
             if (cause instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }
-            throw new RuntimeException(
-                    "Caught error in redis invoke, wrapping it", cause);
+            throw new RuntimeException("Caught error in redis invoke, wrapping it", cause);
         } finally {
             if (brokenResource) {
                 pool.returnBrokenResource(jedis);

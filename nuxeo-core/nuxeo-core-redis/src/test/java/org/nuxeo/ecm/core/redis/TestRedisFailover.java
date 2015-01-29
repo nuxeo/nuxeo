@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,12 +24,13 @@ import redis.clients.jedis.exceptions.JedisException;
 
 @RunWith(FeaturesRunner.class)
 @Features(RedisFailoverFeature.class)
-@RedisFeature.Config(guessError=RedisEmbeddedGuessConnectionError.OnEveryCall.class )
+@RedisFeature.Config(guessError = RedisEmbeddedGuessConnectionError.OnEveryCall.class)
 public class TestRedisFailover {
 
-    @Inject protected RedisExecutor executor;
+    @Inject
+    protected RedisExecutor executor;
 
-    @Test(expected=JedisConnectionException.class)
+    @Test(expected = JedisConnectionException.class)
     public void cannotRetry() throws JedisException, IOException {
         executor.execute(new RedisCallable<Void>() {
 
