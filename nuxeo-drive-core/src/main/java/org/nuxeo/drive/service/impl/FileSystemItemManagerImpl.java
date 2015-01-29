@@ -49,7 +49,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class FileSystemItemManagerImpl implements FileSystemItemManager {
 
-    private static final Log log = LogFactory.getLog(DefaultFileSystemItemFactory.class);
+    private static final Log log = LogFactory.getLog(FileSystemItemManagerImpl.class);
 
     /*------------- Opened sessions against each repository ----------------*/
     protected final ThreadLocal<Map<String, CoreSession>> openedSessions = new ThreadLocal<Map<String, CoreSession>>() {
