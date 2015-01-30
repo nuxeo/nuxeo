@@ -41,8 +41,14 @@ public class AutomationInfo {
         Map<String, OperationDocumentation> map = new HashMap<String, OperationDocumentation>();
         for (OperationDocumentation doc : ops) {
             map.put(doc.id, doc);
+            if (doc.getAliases() != null) {
+                for (String alias : doc.getAliases()) {
+                    map.put(alias, doc);
+                }
+            }
         }
-        chains = new ArrayList<OperationDocumentation>();
+        chains = new ArrayList<>();
+        NEXT_CHAIN:
         for (OperationChain chain : service.getOperationChains()) {
             OperationDocumentation doc = new OperationDocumentation(chain.getId());
             doc.description = chain.getDescription();
@@ -58,7 +64,7 @@ public class AutomationInfo {
                 if (opdoc == null) {
                     log.error("Unable to find Operation " + ops.get(0).id() + " that is used by chain " + chain.getId()
                             + ", chain will be discarded");
-                    continue;
+                    continue NEXT_CHAIN;
                 }
                 doc.signature = opdoc.signature;
             } else {
@@ -68,7 +74,7 @@ public class AutomationInfo {
                     if (opdoc == null) {
                         log.error("Unable to find Operation " + o.id() + " that is used by chain " + chain.getId()
                                 + ", chain will be discarded");
-                        continue;
+                        continue NEXT_CHAIN;
                     }
                     sigs.add(opdoc.signature);
                 }
