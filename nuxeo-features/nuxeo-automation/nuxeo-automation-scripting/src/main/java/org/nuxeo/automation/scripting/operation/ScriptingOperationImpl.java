@@ -1,3 +1,19 @@
+/*
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Thierry Delprat <tdelprat@nuxeo.com>
+ */
 package org.nuxeo.automation.scripting.operation;
 
 import java.util.List;
@@ -17,6 +33,9 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * @since 7.2
+ */
 public class ScriptingOperationImpl {
 
     protected final ScriptRunner runner;
@@ -51,44 +70,30 @@ public class ScriptingOperationImpl {
             return null;
         }
         if (res instanceof ScriptObjectMirror) {
-            Object unwrapped =  MarshalingHelper.unwrap((ScriptObjectMirror)res);
-            
+            Object unwrapped = MarshalingHelper.unwrap((ScriptObjectMirror) res);
+
             if (unwrapped instanceof List<?>) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 List<?> l = (List<?>) unwrapped;
                 for (Object item : l) {
                     if (item instanceof DocumentModel) {
-                        docs.add((DocumentModel)item);
+                        docs.add((DocumentModel) item);
                     }
                 }
-                if (docs.size()==l.size() && docs.size()>0) {
+                if (docs.size() == l.size() && docs.size() > 0) {
                     return docs;
-                }            
-            }            
+                }
+            }
             return unwrapped;
         }
         return res;
-        
-    }
-/*
-    protected ScriptableMap wrap(OperationContext ctx) {
-        return wrap(ctx.getVars());
-    }
 
-    protected ScriptableMap wrap(Map<String, Object> vars) {
-        return new ScriptableMap(vars);
     }
-
-    protected NativeObject wrap2(OperationContext ctx) {
-        return wrap2(ctx.getVars());
-    }
-
-    protected NativeObject wrap2(Map<String, Object> vars) {
-        NativeObject no = new NativeObject();
-        for (String k : vars.keySet()) {
-            no.defineProperty(k, vars.get(k), NativeObject.READONLY);
-        }
-        return no;
-    }
-*/
+    /*
+     * protected ScriptableMap wrap(OperationContext ctx) { return wrap(ctx.getVars()); } protected ScriptableMap
+     * wrap(Map<String, Object> vars) { return new ScriptableMap(vars); } protected NativeObject wrap2(OperationContext
+     * ctx) { return wrap2(ctx.getVars()); } protected NativeObject wrap2(Map<String, Object> vars) { NativeObject no =
+     * new NativeObject(); for (String k : vars.keySet()) { no.defineProperty(k, vars.get(k), NativeObject.READONLY); }
+     * return no; }
+     */
 }

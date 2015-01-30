@@ -1,4 +1,11 @@
-var m = mapper.callMe({'p1': 1, 'p2' : 'str', 'p3' : [1, 2, { 'a' : 1, 'b' : 2} ]});
+var m = mapper.callMe({
+  'p1': 1,
+  'p2': 'str',
+  'p3': [1, 2, {
+    'a': 1,
+    'b': 2
+  }]
+});
 
 print(m.p1);
 print(m["p1"]);

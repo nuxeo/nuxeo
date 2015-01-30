@@ -7,7 +7,7 @@
        <inputType>string</inputType>
        <outputType>string</outputType>
        <param name="lang" type="string"/>
-       
+
        <script>
          function run(ctx, input, params) {
            if (params.lang === "fr") {
@@ -16,43 +16,41 @@
              return "Hello " + input;
            }
          }
-       </script>       
+       </script>
     </scriptedOperation>
 
     <scriptedOperation id="Scripting.AddFacetInSubTree">
        <inputType>Document</inputType>
-       <outputType>Documents</outputType>       
+       <outputType>Documents</outputType>
        <param name="facet" type="string"/>
        <param name="type" type="string"/>
-       
+
        <script><![CDATA[
          function run(ctx, input, params) {
-         
-           var query = "select * from " + params.type + " where ecm:path startswith '";
-           query = query + input.getPathAsString();
-           query = query + "'";
-           
-           //println("query = " + query);
-           var subDocs = Document.Query(null, {
-    			"query": query
-		   });
-		   
-		   //println("Query run with " + subDocs.size() + " result");
-		   
-		   var updated = [];
-		   for (var i = 0; i < subDocs.size(); i++) {
-		      var doc = subDocs.get(i);
-		      if (!doc.hasFacet(params.facet)) {
-		         doc.addFacet(params.facet);		         		         
-		         updated.push(Document.Save(doc,{}));
-		      }
-		   }		   
-           return updated;         
-         }
+
+            var query = "select * from " + params.type + " where ecm:path startswith '";
+            query = query + input.getPathAsString();
+            query = query + "'";
+
+            //println("query = " + query);
+            var subDocs = Document.Query(null, {
+                "query": query
+            });
+            //println("Query run with " + subDocs.size() + " result");
+            var updated = [];
+            for (var i = 0; i < subDocs.size(); i++) {
+                var doc = subDocs.get(i);
+                if (!doc.hasFacet(params.facet)) {
+                    doc.addFacet(params.facet);
+                    updated.push(Document.Save(doc, {}));
+                }
+            }
+            return updated;
+        }
          ]]>
-       </script>       
+       </script>
     </scriptedOperation>
-        
+
   </extension>
 
   <extension point="chains"
