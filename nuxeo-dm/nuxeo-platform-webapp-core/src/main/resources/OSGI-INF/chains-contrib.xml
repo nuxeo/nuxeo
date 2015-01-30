@@ -5,7 +5,7 @@
 
     <chain id="addCurrentDocumentToWorklist">
       <operation id="Context.FetchDocument" />
-      <operation id="WebUi.AddToWorklist" />
+      <operation id="WebUI.AddToWorklist" />
       <operation id="WebUI.AddMessage">
         <param type="string" name="severity">INFO</param>
         <param type="string" name="message">label.document.added.to.worklist</param>

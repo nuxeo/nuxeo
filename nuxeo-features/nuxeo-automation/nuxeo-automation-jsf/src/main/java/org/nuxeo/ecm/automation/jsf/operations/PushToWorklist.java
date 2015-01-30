@@ -29,7 +29,7 @@ import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.DEFAULT_
 @Operation(id = PushToWorklist.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Push to Worklist", description = "Add the input document(s) to worklist. Returns back the document(s)", aliases = { "Seam.AddToWorklist" })
 public class PushToWorklist {
 
-    public static final String ID = "WebUi.AddToWorklist";
+    public static final String ID = "WebUI.AddToWorklist";
 
     @Context
     protected OperationContext ctx;

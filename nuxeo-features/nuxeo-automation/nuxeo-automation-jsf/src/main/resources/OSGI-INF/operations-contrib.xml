@@ -69,8 +69,8 @@
       <operation id="WebUI.InitSeamContext" />
       <operation id="UserWorkspace.CreateDocumentFromBlob" />
       <operation id="Document.Save" />
-      <operation id="WebUi.AddToWorklist" />
-      <operation id="WebUi.DestroySeamContext" />
+      <operation id="WebUI.AddToWorklist" />
+      <operation id="WebUI.DestroySeamContext" />
     </chain>
     <chain id="Blob.ImportClipboard">
       <aliases>
@@ -80,7 +80,7 @@
       <operation id="UserWorkspace.CreateDocumentFromBlob" />
       <operation id="Document.Save" />
       <operation id="WebUI.AddToClipboard" />
-      <operation id="WebUi.DestroySeamContext" />
+      <operation id="WebUI.DestroySeamContext" />
     </chain>
     <chain id="SeamActions.GET">
       <operation id="WebUI.RunOperationInSeam">

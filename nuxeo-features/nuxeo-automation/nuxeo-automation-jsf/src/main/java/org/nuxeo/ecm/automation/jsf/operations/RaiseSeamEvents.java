@@ -32,7 +32,7 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 @Operation(id = RaiseSeamEvents.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Raise Seam events", description = "Raise Seam events without parameters. This is a void operation - the input object is returned back as the output", aliases = { "Seam.RaiseEvents" })
 public class RaiseSeamEvents {
 
-    public static final String ID = "WebUi.RaiseSeamEvents";
+    public static final String ID = "WebUI.RaiseSeamEvents";
 
     @Param(name = "seamEvents", required = true)
     protected StringList seamEvents;

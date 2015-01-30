@@ -32,7 +32,7 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 @Operation(id = DestroySeamContext.ID, category = Constants.CAT_UI, label = "Destroy Seam Context", description = "Cleanup up Seam context", aliases = { "Seam.DestroyContext" })
 public class DestroySeamContext {
 
-    public static final String ID = "WebUi.DestroySeamContext";
+    public static final String ID = "WebUI.DestroySeamContext";
 
     @Param(name = "conversationId", required = false)
     protected String conversationId;
