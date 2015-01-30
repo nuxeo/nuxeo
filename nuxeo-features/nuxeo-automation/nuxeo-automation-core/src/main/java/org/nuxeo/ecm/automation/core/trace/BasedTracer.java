@@ -53,7 +53,7 @@ public abstract class BasedTracer implements OperationCallback {
 
     protected void pushContext(OperationType newChain) {
         if (chain != null) {
-            callingStacks.push(new Trace(parent, chain, calls));
+            // callingStacks.push(new Trace(parent, chain, calls));
             parent = calls.isEmpty() ? null : calls.getLast();
             calls.clear();
         }
@@ -92,7 +92,7 @@ public abstract class BasedTracer implements OperationCallback {
 
     @Override
     public void onOutput(Object output) {
-        saveTrace(new Trace(parent, chain, calls, output));
+       // saveTrace(new Trace(parent, chain, calls, output));
     }
 
     @Override
