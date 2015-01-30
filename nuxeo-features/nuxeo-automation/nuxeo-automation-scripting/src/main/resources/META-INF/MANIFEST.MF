@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Name: org.nuxeo.ecm.automation.scripting
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/automation-scripting-service.xml
+Bundle-SymbolicName: org.nuxeo.ecm.automation.scripting

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.automation.scripting.AutomationScriptingComponent" version="1.0">
+
+  <require>org.nuxeo.ecm.core.operation.OperationServiceComponent</require>
+
+  <implementation class="org.nuxeo.automation.scripting.AutomationScriptingComponent" />
+
+  <service>
+      <provide interface="org.nuxeo.automation.scripting.AutomationScriptingService" />
+  </service>
+
+  <extension-point name="operation">
+    <documentation>
+    </documentation>
+    
+    <object
+      class="org.nuxeo.automation.scripting.operation.ScriptingOperationDescriptor" />
+  </extension-point>
+
+</component>
