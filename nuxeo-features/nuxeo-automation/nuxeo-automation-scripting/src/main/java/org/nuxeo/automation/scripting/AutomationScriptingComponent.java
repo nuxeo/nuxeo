@@ -78,8 +78,7 @@ public class AutomationScriptingComponent extends DefaultComponent implements Au
             try {
                 as.putOperation(type, true);
             } catch (OperationException e) {
-                // TODO: move putting operation elsewhere
-                log.error(e);
+                throw new AutomationScriptingException(e);
             }
         } else {
             super.registerContribution(contribution, extensionPoint, contributor);
