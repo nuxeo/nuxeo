@@ -1,4 +1,4 @@
-var root = Document.Fetch(null, {
+var root = Repository.GetDocument(null, {
     "value": "/"
 });
 
@@ -30,7 +30,7 @@ for (var i = 1; i < 10; i++) {
     newDocs.push(newDoc);
 }
 
-var evenDocs = Document.Query(null, {
+var evenDocs = Repository.Query(null, {
     "query": "select * from Document where dc:nature='even'"
 });
 
