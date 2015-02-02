@@ -69,12 +69,11 @@
     <nxu:set var="initialLayoutName"
       value="#{widget.properties['initialLayoutName']}"
       resolveTwice="true" cache="false">
-    <nxu:set var="toggledLayoutName"
+    <nxu:set var="toggledLayoutNameFromW"
       value="#{widget.properties['toggledLayoutName']}"
       resolveTwice="true" cache="true">
     <nxu:set var="toggledLayoutName"
-      blockMerge="true"
-      value="#{nxu:test(empty toggledLayoutName, initialLayoutName, toggledLayoutName)}"
+      value="#{nxu:test(empty toggledLayoutNameFromW, initialLayoutName, toggledLayoutNameFromW)}"
       cache="false">
 
       <ui:decorate template="/widgets/incl/foldable_box_template.xhtml">
