@@ -68,7 +68,7 @@
 
     <nxu:set var="initialLayoutName"
       value="#{widget.properties['initialLayoutName']}"
-      resolveTwice="true" cache="true">
+      resolveTwice="true" cache="false">
     <nxu:set var="toggledLayoutName"
       value="#{widget.properties['toggledLayoutName']}"
       resolveTwice="true" cache="true">
@@ -124,7 +124,9 @@
             enctype="multipart/form-data"
             rendered="#{not layoutToggled}">
 
-            <ui:insert name="initial_mode_content" />
+            <nxu:set var="layoutWidgetMode" value="#{initialMode}">
+              <ui:insert name="initial_mode_content" />
+            </nxu:set>
 
             <c:if test="#{canToggleMode and (hideHeader or not widgetProperty_displayToggleActionInHeader)}">
               <p class="buttonsGadget">
@@ -158,12 +160,14 @@
                   </script>
                 </c:if>
 
-                <ui:insert name="toggled_mode_content" />
+                <nxu:set var="layoutWidgetMode" value="#{toggledMode}">
+                  <ui:insert name="toggled_mode_content" />
 
-                <c:if test="#{showEditOptions and nxd:isDocumentModel(fieldOrValue)}">
-                  <nxl:layout name="document_edit_form_options"
-                    mode="#{layoutWidgetMode}" value="#{fieldOrValue}" />
-                </c:if>
+                  <c:if test="#{showEditOptions and nxd:isDocumentModel(fieldOrValue)}">
+                    <nxl:layout name="document_edit_form_options"
+                      mode="#{layoutWidgetMode}" value="#{fieldOrValue}" />
+                  </c:if>
+                </nxu:set>
 
                 <p class="buttonsGadget">
 
