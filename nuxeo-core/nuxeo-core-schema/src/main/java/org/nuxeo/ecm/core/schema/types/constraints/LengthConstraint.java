@@ -25,7 +25,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.common.utils.i18n.I18NUtils;
 
 /**
  * This constraints checks whether an object's String representation size is in some interval.
@@ -141,7 +140,7 @@ public class LengthConstraint extends AbstractConstraint {
         pathTokens.add(subKey);
         String key = StringUtils.join(pathTokens, '.');
         Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
-        String message = I18NUtils.getMessageString(MESSAGES_BUNDLE, key, params, computedLocale);
+        String message = getMessageString(MESSAGES_BUNDLE, key, params, computedLocale);
         if (message != null && !message.trim().isEmpty() && !key.equals(message)) {
             // use a custom constraint message if there's one
             return message;

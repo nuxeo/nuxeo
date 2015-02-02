@@ -22,8 +22,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.MissingResourceException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 
 /**
@@ -40,6 +43,8 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 public abstract class AbstractConstraint implements Constraint {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Log log = LogFactory.getLog(AbstractConstraint.class);
 
     private static final String HARD_CODED_CONTRAINT_ERROR_MESSAGE = "The constraint '%s' failed for value %s";
 
@@ -70,14 +75,14 @@ public abstract class AbstractConstraint implements Constraint {
         }
         Object[] params = new Object[] { computedInvalidValue };
         Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
-        String message = I18NUtils.getMessageString(MESSAGES_BUNDLE, keyConstraint, params, computedLocale);
+        String message = getMessageString(MESSAGES_BUNDLE, keyConstraint, params, computedLocale);
 
         if (message != null && !message.trim().isEmpty() && !keyConstraint.equals(message)) {
             // use a constraint specific message if there's one
             return message;
         } else {
             params = new Object[] { computedInvalidValue, toString() };
-            message = I18NUtils.getMessageString(MESSAGES_BUNDLE, MESSAGES_KEY, params, computedLocale);
+            message = getMessageString(MESSAGES_BUNDLE, MESSAGES_KEY, params, computedLocale);
             if (message != null && !message.trim().isEmpty() && !keyConstraint.equals(message)) {
                 // use a generic message if there's one
                 return message;
@@ -85,6 +90,21 @@ public abstract class AbstractConstraint implements Constraint {
                 // use a hard coded message
                 return String.format(HARD_CODED_CONTRAINT_ERROR_MESSAGE, toString(), computedInvalidValue);
             }
+        }
+    }
+
+    /**
+     * Try to get the message from the given message bundle. If the bundle is not found or the key is not found, return
+     * null.
+     *
+     * @since 7.2
+     */
+    public static String getMessageString(String bundleName, String key, Object[] params, Locale locale) {
+        try {
+            return I18NUtils.getMessageString(MESSAGES_BUNDLE, key, params, locale);
+        } catch (MissingResourceException e) {
+            log.warn("No bundle found", e);
+            return null;
         }
     }
 

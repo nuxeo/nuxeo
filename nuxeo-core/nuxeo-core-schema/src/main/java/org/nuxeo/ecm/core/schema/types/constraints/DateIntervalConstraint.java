@@ -30,7 +30,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.i18n.I18NUtils;
 
 /**
  * This constraint ensures a date is in an interval.
@@ -200,7 +199,7 @@ public class DateIntervalConstraint extends AbstractConstraint {
         pathTokens.add(DateIntervalConstraint.NAME);
         pathTokens.add(subKey);
         String key = StringUtils.join(pathTokens, '.');
-        String message = I18NUtils.getMessageString(MESSAGES_BUNDLE, key, params, computedLocale);
+        String message = getMessageString(MESSAGES_BUNDLE, key, params, computedLocale);
         if (message != null && !message.trim().isEmpty() && !key.equals(message)) {
             // use a custom constraint message if there's one
             return message;

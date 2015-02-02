@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -64,6 +66,8 @@ import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
  * @since 7.1
  */
 public class ConstraintViolation implements Serializable {
+
+    private static final Log log = LogFactory.getLog(ConstraintViolation.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -125,7 +129,13 @@ public class ConstraintViolation implements Serializable {
         }
         Object[] params = new Object[] { computedInvalidValue };
         Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
-        String message = I18NUtils.getMessageString(Constraint.MESSAGES_BUNDLE, key, params, computedLocale);
+        String message = null;
+        try {
+            message = I18NUtils.getMessageString(Constraint.MESSAGES_BUNDLE, key, params, computedLocale);
+        } catch (Exception e) {
+            log.warn("No bundle found", e);
+            message = null;
+        }
         if (message != null && !message.trim().isEmpty() && !key.equals(message)) {
             // use the message if there's one
             return message;

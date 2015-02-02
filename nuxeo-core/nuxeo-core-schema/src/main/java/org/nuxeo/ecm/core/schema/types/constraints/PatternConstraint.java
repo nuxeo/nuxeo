@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.common.utils.i18n.I18NUtils;
 
 /**
  * This constraint ensures some object's String representation match a pattern.
@@ -91,7 +90,7 @@ public class PatternConstraint extends AbstractConstraint {
         String key = StringUtils.join(pathTokens, '.');
         Object[] params = new Object[] { getPattern() };
         Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
-        String message = I18NUtils.getMessageString(MESSAGES_BUNDLE, key, params, computedLocale);
+        String message = getMessageString(MESSAGES_BUNDLE, key, params, computedLocale);
         if (message != null && !message.trim().isEmpty() && !key.equals(message)) {
             // use a custom constraint message if there's one
             return message;
