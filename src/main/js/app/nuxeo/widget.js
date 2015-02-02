@@ -21,6 +21,10 @@ class Widget {
     this.conn = conn;
     this.widget = definition;
 
+    if (!this.widget.fields) {
+      return;
+    }
+
     // TODO(nfgs): Handle multiple fields
     this.field = this.widget.fields[0].fieldName;
 
@@ -39,8 +43,8 @@ class Widget {
   get name() { return this.widget.name; }
   get label() { return this.widget.labels.any; }
   get type() { return this.widget.type; }
-  set type(t) { return this.widget.type = t; }
-  get properties() { return (this.widget.properties) ? this.widget.properties.any : {} }
+  set type(t) { this.widget.type = t; }
+  get properties() { return (this.widget.properties) ? this.widget.properties.any : {}; }
   set properties(p) { this.widget.properties = p; }
 }
 
