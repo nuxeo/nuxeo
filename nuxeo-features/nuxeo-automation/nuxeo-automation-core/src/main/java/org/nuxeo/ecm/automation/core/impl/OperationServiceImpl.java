@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -382,7 +383,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
     @Override
     public OperationType[] getOperations() {
-        Collection<OperationType> values = operations.lookup().values();
+        HashSet<OperationType> values = new HashSet<>(operations.lookup().values());
         return values.toArray(new OperationType[values.size()]);
     }
 
@@ -470,7 +471,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     @Override
     public List<OperationDocumentation> getDocumentation() throws OperationException {
         List<OperationDocumentation> result = new ArrayList<OperationDocumentation>();
-        Collection<OperationType> ops = operations.lookup().values();
+        HashSet<OperationType> ops = new HashSet<>(operations.lookup().values());
         OperationCompoundExceptionBuilder errorBuilder = new OperationCompoundExceptionBuilder();
         for (OperationType ot : ops.toArray(new OperationType[ops.size()])) {
             try {
