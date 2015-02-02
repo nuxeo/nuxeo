@@ -21,10 +21,7 @@ import static org.jboss.seam.ScopeType.EVENT;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
 
-import com.google.common.base.Joiner;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -49,21 +46,16 @@ public class SpreadsheetActions implements Serializable {
     protected ContentViewService contentViewService;
 
     public String urlFor(ContentView contentView) throws UnsupportedEncodingException {
-        Map<String, String> params = new HashMap<>();
-
-        // Set the pageprovider name
-        params.put("pp", contentView.getPageProvider().getName());
+        String cv = "";
 
         // Set the content view state
         ContentViewState state = contentViewService.saveContentView(contentView);
         if (state != null) {
             String json = JSONContentViewState.toJSON(state, false);
             String encoded = Base64.encodeBytes(json.getBytes(), Base64.DONT_BREAK_LINES);
-            encoded = URLEncoder.encode(encoded, "UTF-8");
-            params.put("cv", encoded);
+            cv = URLEncoder.encode(encoded, "UTF-8");
         }
 
-        return VirtualHostHelper.getContextPathProperty() + "/spreadsheet/index.html?"
-            + Joiner.on('&').withKeyValueSeparator("=").join(params);
+        return VirtualHostHelper.getContextPathProperty() + "/spreadsheet/index.html?cv=" + cv;
     }
 }

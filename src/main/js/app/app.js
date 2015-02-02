@@ -106,7 +106,7 @@ function run() {
       var layout = (cv && cv.resultLayout && cv.resultLayout.name) || 'spreadsheet_listing',
           resultColumns = cv && cv.resultColumns;
 
-      var pageProvider = pp || 'spreadsheet_query';
+      var pageProvider = (cv) ? cv.pageProviderName : (pp || 'spreadsheet_query');
 
       // Setup the SpreadSheet
       sheet = new Spreadsheet($('#grid'), nx, layout, resultColumns, pageProvider);
