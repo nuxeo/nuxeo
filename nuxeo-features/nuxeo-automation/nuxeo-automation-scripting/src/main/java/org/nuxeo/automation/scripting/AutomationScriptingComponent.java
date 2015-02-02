@@ -17,6 +17,7 @@
 package org.nuxeo.automation.scripting;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,8 +50,6 @@ public class AutomationScriptingComponent extends DefaultComponent implements Au
     protected ScriptEngineManager engineManager;
 
     protected Compilable compiler;
-
-    protected int nbFunctions = 0;
 
     protected String jsWrapper = null;
 
@@ -98,55 +97,57 @@ public class AutomationScriptingComponent extends DefaultComponent implements Au
     }
 
     public synchronized String getJSWrapper(boolean refresh) {
-
         if (jsWrapper == null || refresh) {
-            nbFunctions = 0;
             StringBuffer sb = new StringBuffer();
-
             AutomationService as = Framework.getService(AutomationService.class);
-
-            Map<String, List<OperationType>> opMap = new HashMap<String, List<OperationType>>();
-            List<OperationType> flatOps = new ArrayList<>();
-
+            Map<String, List<String>> opMap = new HashMap<>();
+            List<String> flatOps = new ArrayList<>();
+            List<String> ids = new ArrayList<>();
             for (OperationType op : as.getOperations()) {
-                String id = op.getId();
-                int idx = id.indexOf(".");
-                if (idx > 0) {
-                    String obName = id.substring(0, idx);
-                    List<OperationType> ops = opMap.get(obName);
-                    if (ops == null) {
-                        ops = new ArrayList<>();
-                    }
-                    ops.add(op);
-                    opMap.put(obName, ops);
-                } else {
-                    flatOps.add(op);
+                ids.add(op.getId());
+                if (op.getAliases() != null) {
+                    Collections.addAll(ids, op.getAliases());
                 }
             }
-
+            // Create js object related to operation categories
+            for(String id: ids){
+                parseAutomationIDSForScripting(opMap, flatOps, id);
+            }
             for (String obName : opMap.keySet()) {
-                List<OperationType> ops = opMap.get(obName);
-                sb.append("\nvar " + obName + "={};");
-
-                for (OperationType op : ops) {
-                    generateFunction(sb, op);
+                List<String> ops = opMap.get(obName);
+                sb.append("\nvar ").append(obName).append("={};");
+                for (String opId : ops) {
+                    generateFunction(sb, opId);
                 }
             }
-            for (OperationType op : flatOps) {
-                generateFunction(sb, op);
+            for (String opId : flatOps) {
+                generateFunction(sb, opId);
             }
-
             jsWrapper = sb.toString();
-
         }
         return jsWrapper;
     }
 
-    protected void generateFunction(StringBuffer sb, OperationType op) {
-        sb.append("\n" + op.getId() + " = function(input,params) {");
-        sb.append("\nreturn automation.executeOperation('" + op.getId() + "', input , params);");
+    protected void parseAutomationIDSForScripting(Map<String, List<String>> opMap, List<String> flatOps, String id) {
+        int idx = id.indexOf(".");
+        if (idx > 0) {
+            String obName = id.substring(0, idx);
+            List<String> ops = opMap.get(obName);
+            if (ops == null) {
+                ops = new ArrayList<>();
+            }
+            ops.add(id);
+            opMap.put(obName, ops);
+        } else {
+            // Flat operation: no need of category
+            flatOps.add(id);
+        }
+    }
+
+    protected void generateFunction(StringBuffer sb, String opId) {
+        sb.append("\n" + opId + " = function(input,params) {");
+        sb.append("\nreturn automation.executeOperation('" + opId + "', input , params);");
         sb.append("\n};");
-        nbFunctions++;
     }
 
     public ScriptRunner getRunner(CoreSession session) throws ScriptException {
@@ -156,11 +157,11 @@ public class AutomationScriptingComponent extends DefaultComponent implements Au
     }
 
     public ScriptRunner getRunner() throws ScriptException {
-        ScriptRunner runner = null;
-        if (!preCompile) {
-            runner = new ScriptRunner(engineManager, getJSWrapper());
-        } else {
+        ScriptRunner runner;
+        if (preCompile) {
             runner = new ScriptRunner(engineManager, getCompiledJSWrapper());
+        } else {
+            runner = new ScriptRunner(engineManager, getJSWrapper());
         }
         return runner;
     }
