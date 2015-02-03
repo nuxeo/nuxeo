@@ -45,9 +45,11 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
+import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 import org.nuxeo.elasticsearch.work.ScrollingIndexingWorker;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -58,7 +60,7 @@ import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     private static final Log log = LogFactory.getLog(ElasticSearchIndexingImpl.class);
@@ -80,46 +82,45 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     @Override
-    public void indexNow(List<IndexingCommand> cmds) throws ClientException {
-        // we count all commands even those coming from async children worker
-        // which are not scheduled
-        int nbCommands = cmds.size();
-        esa.totalCommandRunning.addAndGet(nbCommands);
-        try {
-            // uncomment to simulate long indexing which timeout postcommit
-            // try {Thread.sleep(1000);} catch (InterruptedException e) { }
-            processBulkDeleteCommands(cmds);
-            Context stopWatch = bulkIndexTimer.time();
-            try {
-                processBulkIndexCommands(cmds);
-            } finally {
-                stopWatch.stop();
-            }
-        } finally {
-            esa.totalCommandRunning.addAndGet(-nbCommands);
-        }
-        esa.totalCommandProcessed.addAndGet(nbCommands);
+    public void runIndexingWorker(List<IndexingCommand> cmds) {
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
-    public void reindex(String repositoryName, String nxql) {
+    public void runReindexingWorker(String repositoryName, String nxql) {
         if (nxql == null || nxql.isEmpty()) {
             throw new IllegalArgumentException("Expecting an NXQL query");
         }
-        esa.totalCommandRunning.incrementAndGet();
-        try {
-            ScrollingIndexingWorker worker = new ScrollingIndexingWorker(repositoryName, nxql);
-            WorkManager wm = Framework.getLocalService(WorkManager.class);
-            wm.schedule(worker);
-        } finally {
-            esa.totalCommandRunning.decrementAndGet();
+        ScrollingIndexingWorker worker = new ScrollingIndexingWorker(repositoryName, nxql);
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        wm.schedule(worker);
+    }
+
+    @Override
+    public void indexNonRecursive(List<IndexingCommand> cmds) throws ClientException {
+        int nbCommands = cmds.size();
+        if (nbCommands == 1) {
+            indexNonRecursive(cmds.get(0));
+            return;
         }
+        // simulate long indexing
+        // try {Thread.sleep(1000);} catch (InterruptedException e) { }
+
+        processBulkDeleteCommands(cmds);
+        Context stopWatch = bulkIndexTimer.time();
+        try {
+            processBulkIndexCommands(cmds);
+        } finally {
+            stopWatch.stop();
+        }
+        esa.totalCommandProcessed.addAndGet(nbCommands);
+        refreshIfNeeded(cmds);
     }
 
     void processBulkDeleteCommands(List<IndexingCommand> cmds) {
         // Can be optimized with a single delete by query
         for (IndexingCommand cmd : cmds) {
-            if (IndexingCommand.DELETE.equals(cmd.getName())) {
+            if (cmd.getType() == Type.DELETE) {
                 Context stopWatch = deleteTimer.time();
                 try {
                     processDeleteCommand(cmd);
@@ -133,22 +134,20 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     void processBulkIndexCommands(List<IndexingCommand> cmds) throws ClientException {
         BulkRequestBuilder bulkRequest = esa.getClient().prepareBulk();
         for (IndexingCommand cmd : cmds) {
-            String id = cmd.getDocId();
-            if (IndexingCommand.UNKOWN_DOCUMENT_ID.equals(id) || (IndexingCommand.DELETE.equals(cmd.getName()))) {
-                continue;
-            }
-            if (log.isTraceEnabled()) {
-                log.trace("Sending bulk indexing request to Elasticsearch: " + cmd);
-            }
-            if (cmd.getTargetDocument() == null) {
-                log.warn("Skipping cmd because targetDocument is null " + cmd);
+            if (cmd.getType() == Type.DELETE) {
                 continue;
             }
             try {
                 IndexRequestBuilder idxRequest = buildEsIndexingRequest(cmd);
-                bulkRequest.add(idxRequest);
-            } catch (ClientException e) {
-                log.error("Fail to create indexing request for cmd: " + cmd, e);
+                if (idxRequest != null) {
+                    bulkRequest.add(idxRequest);
+                }
+            } catch (ClientException | IllegalArgumentException e) {
+                if (e.getCause() instanceof NoSuchDocumentException) {
+                    log.info("Skip indexing command to bulk, doc does not exists anymore: " + cmd);
+                } else {
+                    log.error("Skip indexing command to bulk, fail to create request: " + cmd, e);
+                }
             }
         }
         if (bulkRequest.numberOfActions() > 0) {
@@ -164,53 +163,61 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
     }
 
+    protected void refreshIfNeeded(List<IndexingCommand> cmds) {
+        for (IndexingCommand cmd : cmds) {
+            if (refreshIfNeeded(cmd))
+                return;
+        }
+    }
+
+    private boolean refreshIfNeeded(IndexingCommand cmd) {
+        if (cmd.isSync()) {
+            esa.refresh();
+            return true;
+        }
+        return false;
+    }
+
     @Override
-    public void indexNow(IndexingCommand cmd) throws ClientException {
-        if (cmd.getTargetDocument() == null && IndexingCommand.UNKOWN_DOCUMENT_ID.equals(cmd.getDocId())) {
-            esa.totalCommandProcessed.addAndGet(1);
-            return;
-        }
-        esa.totalCommandRunning.incrementAndGet();
-        if (log.isTraceEnabled()) {
-            log.trace("Sending indexing request to Elasticsearch: " + cmd.toString());
-        }
-        if (IndexingCommand.DELETE.equals(cmd.getName())) {
-            Context stopWatch = deleteTimer.time();
-            try {
+    public void indexNonRecursive(IndexingCommand cmd) throws ClientException {
+        Context stopWatch = null;
+        try {
+            if (cmd.getType() == Type.DELETE) {
+                stopWatch = deleteTimer.time();
                 processDeleteCommand(cmd);
-            } finally {
-                stopWatch.stop();
-                esa.totalCommandProcessed.addAndGet(1);
-                esa.totalCommandRunning.decrementAndGet();
-            }
-        } else {
-            Context stopWatch = indexTimer.time();
-            try {
+            } else {
+                stopWatch = indexTimer.time();
                 processIndexCommand(cmd);
-            } finally {
-                stopWatch.stop();
-                esa.totalCommandProcessed.addAndGet(1);
-                esa.totalCommandRunning.decrementAndGet();
             }
+            refreshIfNeeded(cmd);
+        } finally {
+            if (stopWatch != null) {
+                stopWatch.stop();
+            }
+            esa.totalCommandProcessed.incrementAndGet();
         }
     }
 
     void processIndexCommand(IndexingCommand cmd) {
-        String docId = cmd.getDocId();
-        if (IndexingCommand.UNKOWN_DOCUMENT_ID.equals(docId) || cmd.getTargetDocument() == null) {
-            log.warn("Skipping cmd because targetDocument is null " + cmd);
-            return;
-        }
         IndexRequestBuilder request;
         try {
             request = buildEsIndexingRequest(cmd);
-        } catch (ClientException e) {
-            log.error("Fail to create indexing request for cmd: " + cmd, e);
+        } catch (ClientException | IllegalStateException e) {
+            if (e.getCause() instanceof NoSuchDocumentException) {
+                request = null;
+            } else {
+                log.error("Fail to create request for indexing command: " + cmd, e);
+                return;
+            }
+        }
+        if (request == null) {
+            log.info("Cancel indexing command because target document does not exists anymore: " + cmd);
             return;
         }
         if (log.isDebugEnabled()) {
             log.debug(String.format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                    esa.getRepositoryIndex(cmd.getRepository()), DOC_TYPE, docId, request.request().toString()));
+                    esa.getRepositoryIndex(cmd.getRepositoryName()), DOC_TYPE, cmd.getTargetDocumentId(),
+                    request.request().toString()));
         }
         request.execute().actionGet();
     }
@@ -224,20 +231,20 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     void processDeleteCommandNonRecursive(IndexingCommand cmd) {
-        String indexName = esa.getRepositoryIndex(cmd.getRepository());
-        DeleteRequestBuilder request = esa.getClient().prepareDelete(indexName, DOC_TYPE, cmd.getDocId());
+        String indexName = esa.getRepositoryIndex(cmd.getRepositoryName());
+        DeleteRequestBuilder request = esa.getClient().prepareDelete(indexName, DOC_TYPE, cmd.getTargetDocumentId());
         if (log.isDebugEnabled()) {
             log.debug(String.format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s'", indexName,
-                    DOC_TYPE, cmd.getDocId()));
+                    DOC_TYPE, cmd.getTargetDocumentId()));
         }
         request.execute().actionGet();
     }
 
     void processDeleteCommandRecursive(IndexingCommand cmd) {
-        String indexName = esa.getRepositoryIndex(cmd.getRepository());
+        String indexName = esa.getRepositoryIndex(cmd.getRepositoryName());
         // we don't want to rely on target document because the document can be
         // already removed
-        String docPath = getPathOfDocFromEs(cmd.getRepository(), cmd.getDocId());
+        String docPath = getPathOfDocFromEs(cmd.getRepositoryName(), cmd.getTargetDocumentId());
         if (docPath == null) {
             if (!Framework.isTestModeSet()) {
                 log.warn("Trying to delete a non existing doc: " + cmd.toString());
@@ -280,24 +287,29 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         return ret.getField(PATH_FIELD).getValue().toString();
     }
 
+    /**
+     * Return indexing request or null if the doc does not exists anymore.
+     *
+     * @throws ClientException in case of pb to get the document or generate json
+     * @throws java.lang.IllegalStateException if the command is not attached to a session
+     */
     IndexRequestBuilder buildEsIndexingRequest(IndexingCommand cmd) throws ClientException {
         DocumentModel doc = cmd.getTargetDocument();
+        if (doc == null) {
+            return null;
+        }
         try {
             JsonFactory factory = new JsonFactory();
             XContentBuilder builder = jsonBuilder();
             JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
             JsonESDocumentWriter.writeESDocument(jsonGen, doc, cmd.getSchemas(), null);
-            return esa.getClient().prepareIndex(esa.getRepositoryIndex(cmd.getRepository()), DOC_TYPE, cmd.getDocId()).setSource(
-                    builder);
+        return esa.getClient().prepareIndex(esa.getRepositoryIndex(cmd.getRepositoryName()), DOC_TYPE,
+                cmd.getTargetDocumentId()).setSource(builder);
+        } catch (ClientException e) {
+            throw e;
         } catch (Exception e) {
-            throw new ClientException("Unable to create index request for Document " + cmd.getDocId(), e);
+            throw new ClientException("Unable to create index request for Document " + cmd.getTargetDocumentId(), e);
         }
-    }
-
-    @Override
-    public void scheduleIndexing(IndexingCommand cmd) throws ClientException {
-        // impl of scheduling is left to the ESService
-        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override

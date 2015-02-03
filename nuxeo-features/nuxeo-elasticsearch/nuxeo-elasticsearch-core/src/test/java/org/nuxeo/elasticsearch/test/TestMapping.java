@@ -17,8 +17,8 @@
 
 package org.nuxeo.elasticsearch.test;
 
-import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -53,8 +53,8 @@ public class TestMapping {
     private int commandProcessed;
 
     public void startCountingCommandProcessed() {
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(0, esa.getPendingWorkerCount());
+        Assert.assertEquals(0, esa.getPendingCommandCount());
         commandProcessed = esa.getTotalCommandProcessed();
     }
 
@@ -79,8 +79,8 @@ public class TestMapping {
         }
     }
 
-    @After
-    public void cleanupIndexed() throws Exception {
+    @Before
+    public void setUpMapping() throws Exception {
         esa.initIndexes(true);
     }
 

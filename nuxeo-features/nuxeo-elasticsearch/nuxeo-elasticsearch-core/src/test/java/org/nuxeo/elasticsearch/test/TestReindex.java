@@ -18,9 +18,13 @@
 package org.nuxeo.elasticsearch.test;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.poi.hslf.blip.WMF;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -30,6 +34,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.trash.TrashService;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -45,6 +50,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
+
 /**
  * Test "on the fly" indexing via the listener system
  *
@@ -56,9 +62,6 @@ import com.google.inject.Inject;
 @Deploy({ "org.nuxeo.ecm.platform.tag" })
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestReindex {
-
-    @Inject
-    RepositoryElasticSearchFeature repoFeature;
 
     @Inject
     protected CoreSession session;
@@ -78,13 +81,16 @@ public class TestReindex {
     @Inject
     protected TagService tagService;
 
+    @Inject
+    RepositoryElasticSearchFeature repoFeature;
+
     private int commandProcessed;
 
     private boolean syncMode = false;
 
     public void startCountingCommandProcessed() {
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(0, esa.getPendingWorkerCount());
+        Assert.assertEquals(0, esa.getPendingCommandCount());
         commandProcessed = esa.getTotalCommandProcessed();
     }
 
@@ -118,6 +124,11 @@ public class TestReindex {
         syncMode = true;
     }
 
+    @Before
+    public void setupIndex() throws Exception {
+        esa.initIndexes(true);
+    }
+
     @After
     public void disableSynchronousMode() {
         ElasticSearchInlineListener.useSyncIndexing.set(false);
@@ -133,11 +144,6 @@ public class TestReindex {
         }
     }
 
-    @After
-    public void cleanupIndexed() throws Exception {
-        esa.initIndexes(true);
-    }
-
     @Test
     public void shouldReindexDocument() throws Exception {
         buildDocs();
@@ -148,20 +154,20 @@ public class TestReindex {
             ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
             DocumentModelList coreDocs = session.query(nxql);
             DocumentModelList docs = ess.query(new NxQueryBuilder(adminSession).nxql(nxql).limit(100));
-            // Assert.assertEquals(coreDocs.totalSize(), docs.totalSize());
+
             Assert.assertEquals(getDigest(coreDocs), getDigest(docs));
+            Assert.assertEquals(coreDocs.totalSize(), docs.totalSize());
             // can not do that because of NXP-16154
             // Assert.assertEquals(getDigest(coreDocs), 42, docs.totalSize());
             esa.initIndexes(true);
             esa.refresh();
             DocumentModelList docs2 = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
             Assert.assertEquals(0, docs2.totalSize());
-            esi.reindex(session.getRepositoryName(), "SELECT * FROM Document");
-            esi.reindex(session.getRepositoryName(), "SELECT * FROM Relation");
+            esi.runReindexingWorker(session.getRepositoryName(), "SELECT * FROM Document");
+            esi.runReindexingWorker(session.getRepositoryName(), "SELECT * FROM Relation");
             waitForIndexing();
             docs2 = ess.query(new NxQueryBuilder(adminSession).nxql(nxql).limit(100));
-
-            Assert.assertEquals(getDigest(docs), getDigest(docs2));
+            Assert.assertEquals(getDigest(coreDocs), getDigest(docs2));
         } finally {
             repoFeature.closeSession(adminSession);
         }

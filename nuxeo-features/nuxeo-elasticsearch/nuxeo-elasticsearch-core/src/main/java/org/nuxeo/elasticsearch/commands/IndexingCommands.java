@@ -12,24 +12,27 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo
+ *     Thierry Delprat
+ *     Benoit Delbosc
  */
 package org.nuxeo.elasticsearch.commands;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 
 /*
  * This class holds a list of indexing commands and manages de-duplication
@@ -38,7 +41,7 @@ public class IndexingCommands {
 
     protected final List<IndexingCommand> commands = new ArrayList<>();
 
-    protected final List<String> commandNames = new ArrayList<>();
+    protected final Set<Type> commandTypes = new HashSet<>();
 
     protected DocumentModel targetDocument;
 
@@ -52,119 +55,59 @@ public class IndexingCommands {
         this.targetDocument = targetDocument;
     }
 
-    public IndexingCommand add(String command, boolean sync, boolean recurse) {
-        IndexingCommand cmd;
-        if (sync && recurse) {
-            // split into 2 commands one sync and an async recurse
-            cmd = new IndexingCommand(targetDocument, command, true, false);
-            add(cmd);
-            cmd = new IndexingCommand(targetDocument, command, false, true);
-
-        } else {
-            cmd = new IndexingCommand(targetDocument, command, sync, recurse);
-        }
-        return add(cmd);
+    public void add(Type type, boolean sync, boolean recurse) {
+        IndexingCommand cmd = new IndexingCommand(targetDocument, type, sync, recurse);
+        add(cmd);
     }
 
-    protected IndexingCommand find(String command) {
+    protected IndexingCommand find(Type command) {
         for (IndexingCommand cmd : commands) {
-            if (cmd.name.equals(command)) {
+            if (cmd.type == command) {
                 return cmd;
             }
         }
         return null;
     }
 
-    public IndexingCommand add(IndexingCommand command) {
-
+    protected void add(IndexingCommand command) {
         if (command == null) {
-            return null;
+            return;
         }
-
-        if (commandNames.contains(command.name)) {
-            IndexingCommand existing = find(command.name);
-            if (existing.canBeMerged(command)) {
-                existing.merge(command);
-                return null;
+        if (commandTypes.contains(command.type)) {
+            IndexingCommand existing = find(command.type);
+            if (existing.merge(command)) {
+                return;
             }
-        } else if (commandNames.contains(IndexingCommand.INSERT)) {
-            if (command.name.equals(IndexingCommand.DELETE)) {
+        } else if (commandTypes.contains(Type.INSERT)) {
+            if (command.type == Type.DELETE) {
                 // index and delete in the same tx
                 clear();
             } else if (command.isSync()) {
                 // switch to sync if possible
-                find(IndexingCommand.INSERT).makeSync();
+                find(Type.INSERT).makeSync();
             }
             // we already have an index command, don't care about the new command
-            return null;
+            return;
         }
-
-        if (command.name.equals(IndexingCommand.DELETE)) {
+        if (command.type == Type.DELETE) {
             // no need to keep event before delete.
             clear();
         }
-
         commands.add(command);
-        commandNames.add(command.name);
-        return command;
+        commandTypes.add(command.type);
     }
 
     protected void clear() {
         commands.clear();
-        commandNames.clear();
+        commandTypes.clear();
     }
 
     public DocumentModel getTargetDocument() {
         return targetDocument;
     }
 
-    public boolean contains(String command) {
-        return commandNames.contains(command);
-    }
-
-    public String toJSON() throws IOException {
-        StringWriter out = new StringWriter();
-        JsonFactory factory = new JsonFactory();
-        JsonGenerator jsonGen = factory.createJsonGenerator(out);
-        jsonGen.writeStartArray();
-        for (IndexingCommand cmd : commands) {
-            cmd.toJSON(jsonGen);
-        }
-        jsonGen.writeEndArray();
-        out.flush();
-        jsonGen.close();
-        return out.toString();
-    }
-
-    public static IndexingCommands fromJSON(CoreSession session, String json) throws ClientException {
-        try {
-            JsonFactory jsonFactory = new JsonFactory();
-            JsonParser jp = jsonFactory.createJsonParser(json);
-            try {
-                return fromJSON(session, jp);
-            } finally {
-                jp.close();
-            }
-        } catch (Exception e) {
-            throw ClientException.wrap(e);
-        }
-    }
-
-    public static IndexingCommands fromJSON(CoreSession session, JsonParser jp) throws Exception {
-        IndexingCommands cmds = new IndexingCommands();
-        JsonToken token = jp.nextToken();
-        if (token != JsonToken.START_ARRAY) {
-            return null;
-        }
-        while (token != JsonToken.END_ARRAY) {
-            IndexingCommand cmd = IndexingCommand.fromJSON(session, jp);
-            if (cmd == null) {
-                break;
-            } else {
-                cmds.add(cmd);
-            }
-        }
-        return cmds;
+    public boolean contains(Type command) {
+        return commandTypes.contains(command);
     }
 
     public List<IndexingCommand> getCommands() {

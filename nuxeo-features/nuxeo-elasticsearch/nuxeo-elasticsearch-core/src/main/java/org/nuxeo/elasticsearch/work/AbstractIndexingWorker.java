@@ -17,10 +17,13 @@
 
 package org.nuxeo.elasticsearch.work;
 
-import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Abstract class for sharing code between ElasticSearch related workers
@@ -31,25 +34,39 @@ public abstract class AbstractIndexingWorker extends BaseIndexingWorker {
 
     private static final long serialVersionUID = 1L;
 
-    protected final IndexingCommand cmd;
-
-    protected final String path;
+    protected final List<IndexingCommand> cmds;
 
     public AbstractIndexingWorker(IndexingCommand cmd) {
         super();
-        this.cmd = cmd;
-        path = cmd.getTargetDocument().getPathAsString();
-        cmd.disconnect();
+        this.cmds = new ArrayList<>(1);
+        this.cmds.add(cmd);
+        this.repositoryName = cmd.getRepositoryName();
+        this.docId = cmd.getTargetDocumentId();
+    }
+
+    public AbstractIndexingWorker(String repositoryName, List<IndexingCommand> cmds) {
+        super();
+        this.cmds = cmds;
+        this.repositoryName = repositoryName;
+        if (! cmds.isEmpty()) {
+            this.docId = cmds.get(0).getTargetDocumentId();
+        }
     }
 
     @Override
     public void doWork() throws Exception {
-        CoreSession session = initSession(repositoryName);
-        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
-        cmd.refresh(session);
-        doIndexingWork(esi, cmd);
+        initSession();
+        try {
+            for (IndexingCommand cmd : cmds) {
+                cmd.attach(session);
+            }
+            ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
+            doIndexingWork(esi, cmds);
+        } finally {
+            closeSession();
+        }
     }
 
-    protected abstract void doIndexingWork(ElasticSearchIndexing esi, IndexingCommand cmd) throws Exception;
+    protected abstract void doIndexingWork(ElasticSearchIndexing esi, List<IndexingCommand> cmds) throws ClientException;
 
 }

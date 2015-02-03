@@ -46,8 +46,8 @@ import com.codahale.metrics.Timer.Context;
 /**
  * @since 5.9.6
  */
-public class ElasticsearchServiceImpl implements ElasticSearchService {
-    private static final Log log = LogFactory.getLog(ElasticsearchServiceImpl.class);
+public class ElasticSearchServiceImpl implements ElasticSearchService {
+    private static final Log log = LogFactory.getLog(ElasticSearchServiceImpl.class);
 
     // Metrics
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
@@ -58,7 +58,7 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
 
     private final ElasticSearchAdminImpl esa;
 
-    public ElasticsearchServiceImpl(ElasticSearchAdminImpl esa) {
+    public ElasticSearchServiceImpl(ElasticSearchAdminImpl esa) {
         this.esa = esa;
         searchTimer = registry.timer(MetricRegistry.name("nuxeo", "elasticsearch", "service", "search"));
         fetchTimer = registry.timer(MetricRegistry.name("nuxeo", "elasticsearch", "service", "fetch"));

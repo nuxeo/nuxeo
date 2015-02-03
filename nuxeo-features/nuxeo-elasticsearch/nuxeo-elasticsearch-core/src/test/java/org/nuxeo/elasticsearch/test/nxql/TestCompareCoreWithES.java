@@ -51,6 +51,7 @@ public class TestCompareCoreWithES {
 
     @Before
     public void initWorkingDocuments() throws Exception {
+        esa.initIndexes(true);
         if (!TransactionHelper.isTransactionActive()) {
             TransactionHelper.startTransaction();
         }
@@ -94,12 +95,13 @@ public class TestCompareCoreWithES {
         // wait for async jobs
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(0, esa.getPendingWorkerCount());
+        Assert.assertEquals(0, esa.getPendingCommandCount());
 
         esa.refresh();
         TransactionHelper.startTransaction();
     }
+
 
     @After
     public void cleanWorkingDocuments() throws Exception {

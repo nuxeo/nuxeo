@@ -19,6 +19,7 @@ package org.nuxeo.elasticsearch.web.admin;
 import static org.jboss.seam.ScopeType.EVENT;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -110,13 +111,13 @@ public class ElasticSearchManager {
    public void startReindexAll() throws Exception {
         log.warn("Re-indexing the entire repository: " + repositoryName);
         esa.dropAndInitRepositoryIndex(repositoryName);
-        esi.reindex(repositoryName, "SELECT ecm:uuid FROM Document");
+        esi.runReindexingWorker(repositoryName, "SELECT ecm:uuid FROM Document");
     }
 
     public void startReindexNxql() throws Exception {
         log.warn(String.format("Re-indexing from a NXQL query: %s on repository: %s",
                 getNxql(), repositoryName));
-        esi.reindex(repositoryName, getNxql());
+        esi.runReindexingWorker(repositoryName, getNxql());
     }
 
     public void startReindexFrom() throws Exception {
@@ -128,8 +129,8 @@ public class ElasticSearchManager {
                     "Try to remove %s and its children from %s repository index", rootId,
                     repositoryName));
             String jsonCmd = String.format(JSON_DELETE_CMD, rootId, repositoryName);
-            IndexingCommand rmCmd = IndexingCommand.fromJSON(session, jsonCmd);
-            esi.indexNow(rmCmd);
+            IndexingCommand rmCmd = IndexingCommand.fromJSON(jsonCmd);
+            esi.runIndexingWorker(Arrays.asList(rmCmd));
 
             DocumentRef ref = new IdRef(rootId);
             if (session.exists(ref)) {
@@ -137,8 +138,8 @@ public class ElasticSearchManager {
                 log.warn(String.format(
                         "Re-indexing document: %s and its children on repository: %s",
                         doc, repositoryName));
-                IndexingCommand cmd = new IndexingCommand(doc, false, true);
-                esi.scheduleIndexing(cmd);
+                IndexingCommand cmd = new IndexingCommand(doc, IndexingCommand.Type.UPDATE, false, true);
+                esi.runIndexingWorker(Arrays.asList(cmd));
             }
         } finally {
             CoreInstance.getInstance().close(session);
@@ -191,11 +192,11 @@ public class ElasticSearchManager {
     }
 
     public String getPendingCommands() {
-        return Integer.valueOf(esa.getPendingCommands()).toString();
+        return Integer.valueOf(esa.getPendingCommandCount()).toString();
     }
 
     public String getRunningCommands() {
-        return Integer.valueOf(esa.getRunningCommands()).toString();
+        return Integer.valueOf(esa.getRunningWorkerCount()).toString();
     }
 
     public String getTotalCommandProcessed() {

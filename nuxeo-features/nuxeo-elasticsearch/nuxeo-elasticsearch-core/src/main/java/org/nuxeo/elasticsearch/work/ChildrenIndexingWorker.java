@@ -19,7 +19,10 @@ package org.nuxeo.elasticsearch.work;
 
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelIterator;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -33,11 +36,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ChildrenIndexingWorker extends AbstractIndexingWorker implements Work {
 
-    private static final int LIMIT = 50;
-
     private static final long serialVersionUID = 1L;
-
-    private static final String QUERY = "SELECT * FROM Document WHERE ecm:parentId = '%s' ORDER BY dc:created ASC";
 
     public ChildrenIndexingWorker(IndexingCommand cmd) {
         super(cmd);
@@ -45,45 +44,55 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements Wo
 
     @Override
     public String getTitle() {
-        String title = " ElasticSearch indexing children for doc " + cmd.getDocId() + " in repository "
-                + cmd.getRepository();
-        if (path != null) {
-            title = title + " (" + path + ")";
-        }
-        return title;
+        return " ElasticSearch indexing children for cmd " + (cmds.isEmpty() ? "null" : cmds.get(0));
     }
 
     @Override
-    protected void doIndexingWork(ElasticSearchIndexing esi, IndexingCommand cmd) throws Exception {
-        DocumentModel doc = cmd.getTargetDocument();
-        long offset = 0;
-        List<DocumentModel> documentsToBeIndexed = session.query(String.format(QUERY, doc.getRef()), null, LIMIT,
-                offset, false);
-
-        while (documentsToBeIndexed != null && !documentsToBeIndexed.isEmpty()) {
-
-            session.save(); // Process cache invalidation
-
-            for (DocumentModel child : documentsToBeIndexed) {
-
-                IndexingCommand childCommand = cmd.clone(child);
-
-                if (!esi.isAlreadyScheduled(childCommand)) {
-                    esi.indexNow(childCommand);
-                }
-                if (child.isFolder()) {
-                    ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(childCommand);
-                    WorkManager wm = Framework.getLocalService(WorkManager.class);
-                    wm.schedule(subWorker);
-                }
-            }
-
-            if (documentsToBeIndexed.size() < LIMIT) {
-                break;
-            }
-            offset += LIMIT;
-            documentsToBeIndexed = session.query(String.format(QUERY, doc.getRef()), null, LIMIT, offset, false);
+    protected void doIndexingWork(ElasticSearchIndexing esi, List<IndexingCommand> cmds) throws ClientException {
+        if (cmds.isEmpty()) {
+            return;
         }
+        IndexingCommand cmd = cmds.get(0);
+        DocumentModel doc = getDocument(cmd);
+        if (doc == null) {
+            return;
+        }
+        DocumentModelIterator iter = session.getChildrenIterator(doc.getRef());
+        while (iter.hasNext()) {
+            // Add a session save to process cache invalidation
+            session.save();
+            DocumentModel child = iter.next();
+
+            IndexingCommand childCommand = cmd.clone(child);
+
+            if (!esi.isAlreadyScheduled(childCommand)) {
+                esi.indexNonRecursive(childCommand);
+            }
+            if (child.isFolder()) {
+                ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(childCommand);
+                WorkManager wm = Framework.getLocalService(WorkManager.class);
+                wm.schedule(subWorker);
+            }
+        }
+
+    }
+
+    private DocumentModel getDocument(IndexingCommand cmd) throws ClientException {
+        DocumentModel doc;
+        try {
+            doc = cmd.getTargetDocument();
+        } catch (ClientException e) {
+            if (e.getCause() instanceof NoSuchDocumentException) {
+                doc = null;
+            } else {
+                throw e;
+            }
+        }
+        if (doc == null) {
+            // doc has been deleted
+            return null;
+        }
+        return doc;
     }
 
 }

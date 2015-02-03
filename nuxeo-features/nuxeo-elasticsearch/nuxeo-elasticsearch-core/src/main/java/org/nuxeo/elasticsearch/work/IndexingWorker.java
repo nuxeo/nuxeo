@@ -17,9 +17,9 @@
 
 package org.nuxeo.elasticsearch.work;
 
-import java.util.Arrays;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -35,35 +35,51 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
 
     private static final long serialVersionUID = 1L;
 
-    public IndexingWorker(IndexingCommand cmd) {
-        super(cmd);
+    public IndexingWorker(String repositoryName, List<IndexingCommand> cmds) {
+        super(repositoryName, cmds);
     }
 
     @Override
     public String getTitle() {
-        String title = " ElasticSearch indexing for doc " + cmd.getDocId() + " in repository " + cmd.getRepository();
-        if (path != null) {
-            title = title + " (" + path + ")";
-        }
-        return title;
+        return " ElasticSearch indexing for docs: " + getCmdsDigest();
     }
 
-    protected final List<String> recursableCommands = Arrays.asList(IndexingCommand.UPDATE, IndexingCommand.INSERT,
-            IndexingCommand.UPDATE_SECURITY);
-
     protected boolean needRecurse(IndexingCommand cmd) {
-        return cmd.isRecurse() && recursableCommands.contains(cmd.getName());
+        if (cmd.isRecurse()) {
+            switch (cmd.getType()) {
+            case INSERT:
+            case UPDATE:
+            case UPDATE_SECURITY:
+                return true;
+            case DELETE:
+                // recurse deletion is done atomically
+                return false;
+            }
+        }
+        return false;
     }
 
     @Override
-    protected void doIndexingWork(ElasticSearchIndexing esi, IndexingCommand cmd) throws Exception {
-
-        esi.indexNow(cmd);
-        if (needRecurse(cmd)) {
-            ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(cmd);
-            WorkManager wm = Framework.getLocalService(WorkManager.class);
-            wm.schedule(subWorker);
+    protected void doIndexingWork(ElasticSearchIndexing esi, List<IndexingCommand> cmds) {
+        try {
+            esi.indexNonRecursive(cmds);
+        } catch (ClientException e) {
+            throw new IllegalStateException("Fail to index cmds: "  + cmds, e);
+        }
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        for (IndexingCommand cmd : cmds) {
+            if (needRecurse(cmd)) {
+                ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(cmd);
+                wm.schedule(subWorker);
+            }
         }
     }
 
+    public String getCmdsDigest() {
+        String ret = "";
+        for (IndexingCommand cmd : cmds) {
+            ret += " " + cmd.getId();
+        }
+        return ret;
+    }
 }

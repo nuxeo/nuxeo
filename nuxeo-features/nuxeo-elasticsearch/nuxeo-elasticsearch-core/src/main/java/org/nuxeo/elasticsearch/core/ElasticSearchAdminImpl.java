@@ -36,7 +36,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -57,18 +56,16 @@ import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     private static final Log log = LogFactory.getLog(ElasticSearchAdminImpl.class);
 
     final AtomicInteger totalCommandProcessed = new AtomicInteger(0);
 
-    final AtomicInteger totalCommandRunning = new AtomicInteger(0);
+    private final Map<String, String> indexNames = new HashMap<>();
 
-    private final Map<String, String> indexNames = new HashMap<String, String>();
-
-    private final Map<String, String> repoNames = new HashMap<String, String>();
+    private final Map<String, String> repoNames = new HashMap<>();
 
     private final Map<String, ElasticSearchIndexConfig> indexConfig;
 
@@ -128,12 +125,12 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     private Node createEmbeddedNode(ElasticSearchLocalConfig conf) {
         log.info("ES embedded Node Initializing (local in JVM)");
+        if (conf == null) {
+            throw new IllegalStateException("No embedded configuration defined");
+        }
         if (!Framework.isTestModeSet()) {
             log.warn("Elasticsearch embedded configuration is ONLY for testing"
                     + " purpose. You need to create a dedicated Elasticsearch" + " cluster for production.");
-        }
-        if (conf == null) {
-            conf = getDefaultLocalConfig();
         }
         Builder sBuilder = ImmutableSettings.settingsBuilder();
         sBuilder.put("http.enabled", conf.httpEnabled()).put("path.data", conf.getDataPath()).put(
@@ -162,8 +159,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     private Client connectToRemote(ElasticSearchRemoteConfig config) {
         log.info("Connecting to remote ES cluster: " + config);
         Builder builder = ImmutableSettings.settingsBuilder().put("cluster.name", config.getClusterName()).put(
-                "client.transport.nodes_sampler_interval", config.getSamplerInterval()).put("index.number_of_shards",
-                config.getNumberOfShards()).put("index.number_of_replicas", config.getNumberOfReplicas()).put(
+                "client.transport.nodes_sampler_interval", config.getSamplerInterval()).put(
                 "client.transport.ping_timeout", config.getPingTimeout()).put("client.transport.ignore_cluster_name",
                 config.isIgnoreClusterName()).put("client.transport.sniff", config.isClusterSniff());
         Settings settings = builder.build();
@@ -198,20 +194,10 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
             client.admin().indices().status(new IndicesStatusRequest()).get();
         } catch (InterruptedException | ExecutionException | NoNodeAvailableException e) {
-            String message = "Failed to connect to elasticsearch: " + e.getMessage();
+            String message = "Failed to connect to elasticsearch, check addressList and clusterName: " + e.getMessage();
             log.error(message, e);
             throw new RuntimeException(message, e);
         }
-    }
-
-    private ElasticSearchLocalConfig getDefaultLocalConfig() {
-        ElasticSearchLocalConfig ret = new ElasticSearchLocalConfig();
-        ret.setHttpEnabled(true);
-        ret.setIndexStorageType("memory");
-        ret.setNodeName("nuxeoTestNode");
-        // use something random so we don't join an existing cluster
-        ret.setClusterName("nuxeoTestCluster-" + RandomStringUtils.randomAlphanumeric(6));
-        return ret;
     }
 
     private void initializeIndexes() {
@@ -220,7 +206,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                 log.info("Associate index " + conf.getName() + " with repository: " + conf.getRepositoryName());
                 indexNames.put(conf.getRepositoryName(), conf.getName());
                 repoNames.put(conf.getName(), conf.getRepositoryName());
-                Set<String> set = new LinkedHashSet<String>();
+                Set<String> set = new LinkedHashSet<>();
                 if (includeSourceFields != null) {
                     set.addAll(Arrays.asList(includeSourceFields));
                 }
@@ -317,7 +303,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     @Override
     public List<String> getRepositoryNames() {
-        return Collections.unmodifiableList(new ArrayList<String>(indexNames.keySet()));
+        return Collections.unmodifiableList(new ArrayList<>(indexNames.keySet()));
     }
 
     void initIndex(ElasticSearchIndexConfig conf, boolean dropIfExists) {
@@ -362,13 +348,19 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     }
 
     @Override
-    public int getPendingDocs() {
+    public int getPendingCommandCount() {
         // impl of scheduling is left to the ESService
         throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
-    public int getPendingCommands() {
+    public int getPendingWorkerCount() {
+        // impl of scheduling is left to the ESService
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public int getRunningWorkerCount() {
         // impl of scheduling is left to the ESService
         throw new UnsupportedOperationException("Not implemented");
     }
@@ -376,11 +368,6 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     @Override
     public int getTotalCommandProcessed() {
         return totalCommandProcessed.get();
-    }
-
-    @Override
-    public int getRunningCommands() {
-        return totalCommandRunning.get();
     }
 
     @Override

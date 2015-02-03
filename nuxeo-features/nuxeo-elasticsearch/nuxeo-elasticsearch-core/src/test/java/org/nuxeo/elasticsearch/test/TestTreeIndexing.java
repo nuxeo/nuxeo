@@ -78,8 +78,8 @@ public class TestTreeIndexing {
     private boolean syncMode = false;
 
     public void startCountingCommandProcessed() {
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(0, esa.getPendingCommandCount());
+        Assert.assertEquals(0, esa.getRunningWorkerCount());
         commandProcessed = esa.getTotalCommandProcessed();
     }
 
@@ -354,6 +354,7 @@ public class TestTreeIndexing {
         DocumentRef ref = new PathRef("/folder0/folder1/folder2");
         Assert.assertTrue(session.exists(ref));
         session.followTransition(ref, "delete");
+        session.save();
         startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
         // let the bulkLifeCycleChangeListener do its work
@@ -365,8 +366,8 @@ public class TestTreeIndexing {
         startTransaction();
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("select * from Document where ecm:currentLifeCycleState != 'deleted'"));
         // for (DocumentModel doc : docs) {
-        // System.out.println(doc.getPathAsString());
-        // }
+        //  System.out.println(doc.getPathAsString());
+        //}
         Assert.assertEquals(2, docs.totalSize());
     }
 
