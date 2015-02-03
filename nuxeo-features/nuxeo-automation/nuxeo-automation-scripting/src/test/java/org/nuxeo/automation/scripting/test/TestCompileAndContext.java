@@ -36,6 +36,8 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+import static junit.framework.TestCase.assertNotNull;
+
 /**
  * @since 7.2
  */
@@ -48,20 +50,20 @@ public class TestCompileAndContext {
 
     @Test
     public void serviceShouldBeDeclared() throws Exception {
-        AutomationScriptingService ass = Framework.getService(AutomationScriptingService.class);
-        Assert.assertNotNull(ass);
+        AutomationScriptingService automationScriptingService = Framework.getService(AutomationScriptingService.class);
+        assertNotNull(automationScriptingService);
 
-        String jsWrapper = ass.getJSWrapper();
-        Assert.assertNotNull(jsWrapper);
+        String jsWrapper = automationScriptingService.getJSWrapper();
+        assertNotNull(jsWrapper);
 
         ScriptEngineManager engineManager = new ScriptEngineManager();
         ScriptEngine engine = engineManager.getEngineByName("Nashorn");
-        Assert.assertNotNull(engine);
+        assertNotNull(engine);
 
         engine.eval(jsWrapper);
 
         InputStream stream = this.getClass().getResourceAsStream("/checkWrapper.js");
-        Assert.assertNotNull(stream);
+        assertNotNull(stream);
         engine.eval(IOUtils.toString(stream));
 
     }

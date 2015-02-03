@@ -64,9 +64,9 @@ public class AutomationMapper {
                 }
             } else {
                 if (value != null) {
-                    params.put((String) k, value.toString());
+                    params.put(k, value.toString());
                 } else {
-                    params.put((String) k, null);
+                    params.put(k, null);
                 }
             }
         }
@@ -76,13 +76,13 @@ public class AutomationMapper {
     protected void populateContext(OperationContext ctx, Object input) {
 
         if (input instanceof String) {
-            ctx.setInput((String) input);
+            ctx.setInput(input);
         } else if (input instanceof DocumentModel) {
-            ctx.setInput((DocumentModel) input);
+            ctx.setInput(input);
         } else if (input instanceof DocumentRef) {
-            ctx.setInput((DocumentRef) input);
+            ctx.setInput(input);
         } else if (input instanceof Blob) {
-            ctx.setInput((Blob) input);
+            ctx.setInput(input);
         } else if (input instanceof ScriptObjectMirror) {
             ctx.setInput(extractProperties((ScriptObjectMirror) input));
         }
