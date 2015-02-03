@@ -828,7 +828,13 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         }
 
         processFacetsAndChildren(context, PhaseId.RENDER_RESPONSE);
+        encodeTemplate(context);
     }
+
+    protected void encodeTemplate(FacesContext context) {
+        // helper method to be overriden by UIJavascriptList
+    }
+
 
     // events
     /**
