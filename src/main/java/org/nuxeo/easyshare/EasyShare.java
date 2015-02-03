@@ -77,7 +77,7 @@ public class EasyShare extends ModuleRoot {
 
                     Date today = new Date();
                     if (today.after(docFolder.getProperty("dc:expired").getValue(Date.class))) {
-                        return getView("denied");
+                        return getView("expired").arg("docFolder", docFolder);
                     }
 
                     DocumentModelList docList = session.getChildren(docRef);
