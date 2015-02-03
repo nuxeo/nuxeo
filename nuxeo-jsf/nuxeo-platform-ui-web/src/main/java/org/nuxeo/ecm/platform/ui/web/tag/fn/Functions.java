@@ -72,6 +72,8 @@ public final class Functions {
 
     public static final Pattern YEAR_PATTERN = Pattern.compile("y+");
 
+    protected static final Log log = LogFactory.getLog(Functions.class); 
+    
     public enum BytePrefix {
 
         SI(1000, new String[] { "", "k", "M", "G", "T", "P", "E", "Z", "Y" }, new String[] { "", "kilo", "mega",
