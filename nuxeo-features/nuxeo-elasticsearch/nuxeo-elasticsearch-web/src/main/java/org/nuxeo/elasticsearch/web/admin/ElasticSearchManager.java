@@ -52,6 +52,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 
+import javax.faces.model.SelectItem;
+
 /**
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
@@ -65,7 +67,7 @@ public class ElasticSearchManager {
             .getLog(ElasticSearchManager.class);
 
     private static final String DEFAULT_NXQL_QUERY = "SELECT * FROM Document";
-    private static final String JSON_DELETE_CMD = "{\"id\":\"IndexingCommand-reindex\",\"name\":\"ES_DELETE\",\"docId\":\"%s\",\"repo\":\"%s\",\"recurse\":true,\"sync\":true}";
+    private static final String JSON_DELETE_CMD = "{\"id\":\"IndexingCommand-reindex\",\"type\":\"DELETE\",\"docId\":\"%s\",\"repo\":\"%s\",\"recurse\":true,\"sync\":true}";
 
     @In(create = true)
     protected ElasticSearchAdmin esa;
@@ -250,8 +252,12 @@ public class ElasticSearchManager {
         return rootId;
     }
 
-    public List<String> getRepositoryNames() {
-        return esa.getRepositoryNames();
+    public List<SelectItem> getRepositoryNames() {
+        List<SelectItem> ret = new ArrayList<>();
+        for (String repoName : esa.getRepositoryNames()) {
+            ret.add(new SelectItem(repoName));
+        }
+        return ret;
     }
 
     public void setRootId(String rootId) {
