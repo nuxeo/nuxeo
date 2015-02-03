@@ -497,6 +497,17 @@
     </component>
   </tag>
   <tag>
+    <tag-name>jsInputList</tag-name>
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.list.UIJavascriptList
+      </component-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.binding.alias.AliasAnchorComponentHandler
+      </handler-class>
+    </component>
+  </tag>
+  <tag>
     <tag-name>editor</tag-name>
     <component>
       <component-type>

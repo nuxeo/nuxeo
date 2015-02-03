@@ -522,6 +522,15 @@
 
     <component>
       <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.list.UIJavascriptList
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.list.UIJavascriptList
+      </component-class>
+    </component>
+
+    <component>
+      <component-type>
         org.nuxeo.ecm.platform.ui.web.component.document.RestDocumentLink
       </component-type>
       <component-class>
