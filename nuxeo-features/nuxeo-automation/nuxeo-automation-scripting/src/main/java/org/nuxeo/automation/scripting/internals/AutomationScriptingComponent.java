@@ -30,6 +30,7 @@ import org.nuxeo.automation.scripting.internals.operation.ScriptingTypeImpl;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.metrics.MetricInvocationHandler;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -59,6 +60,11 @@ public class AutomationScriptingComponent extends DefaultComponent {
         engineManager = new ScriptEngineManager();
         if (preCompile) {
             compiler = (Compilable) engineManager.getEngineByName(AutomationScriptingConstants.NASHORN_ENGINE);
+        }
+        if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_MONITOR,
+                Boolean.toString(log.isTraceEnabled())))) {
+            scriptingService = MetricInvocationHandler.newProxy
+                    (scriptingService, AutomationScriptingService.class);
         }
         self = this;
     }
