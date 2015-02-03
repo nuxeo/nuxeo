@@ -111,6 +111,12 @@
           <properties mode="any">
             <property name="nxl_colspan_0">1</property>
           </properties>
+          <widget>hasNotification</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
           <widget>contactEmail</widget>
         </row>
       </rows>
@@ -166,6 +172,18 @@
           <field>eshare:shareComment</field>
         </fields>
       </widget>
+      <widget name="hasNotification" type="checkbox">
+        <labels>
+          <label mode="any">Active notification</label>
+        </labels>
+        <helpLabels>
+          <label mode="any">If active, download and access notifications are sent to the contact email.</label>
+        </helpLabels>
+        <translated>false</translated>
+        <fields>
+          <field>eshare:hasNotification</field>
+        </fields>
+      </widget>
       <widget name="contactEmail" type="text">
         <labels>
           <label mode="any">Contact Email</label>
@@ -207,6 +225,12 @@
             <property name="nxl_colspan_0">1</property>
           </properties>
           <widget>expired</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>hasNotification</widget>
         </row>
         <row>
           <properties mode="any">
@@ -265,6 +289,18 @@
           <property name="required">true</property>
         </properties>
       </widget>
+      <widget name="hasNotification" type="checkbox">
+        <labels>
+          <label mode="any">Active notification</label>
+        </labels>
+        <helpLabels>
+          <label mode="any">If active, download and access notifications are sent to the contact email.</label>
+        </helpLabels>
+        <translated>false</translated>
+        <fields>
+          <field>eshare:hasNotification</field>
+        </fields>
+      </widget>
       <widget name="contactEmail" type="text">
         <labels>
           <label mode="any">ContactEmail</label>
@@ -303,6 +339,12 @@
             <property name="nxl_colspan_0">1</property>
           </properties>
           <widget>shareComment</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>hasNotification</widget>
         </row>
         <row>
           <properties mode="any">
@@ -347,6 +389,18 @@
         <translated>false</translated>
         <fields>
           <field>eshare:shareComment</field>
+        </fields>
+      </widget>
+      <widget name="hasNotification" type="checkbox">
+        <labels>
+          <label mode="any">Active notification</label>
+        </labels>
+        <helpLabels>
+          <label mode="any">If active, download and access notifications are sent to the contact email.</label>
+        </helpLabels>
+        <translated>false</translated>
+        <fields>
+          <field>eshare:hasNotification</field>
         </fields>
       </widget>
       <widget name="contactEmail" type="text">

@@ -34,4 +34,5 @@
   </xs:complexType>  
   <xs:element name="contactEmail" type="xs:string"/>
   <xs:element name="shareComment" type="xs:string"/>
+  <xs:element name="hasNotification" type="xs:boolean" default="true" />
 </xs:schema>
