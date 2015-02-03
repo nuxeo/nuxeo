@@ -195,6 +195,11 @@
         <fields>
           <field>eshare:contactEmail</field>
         </fields>
+        <properties widgetMode="any">
+          <property name="defaultValue">
+              #{currentUser.getEmail()}
+          </property>
+        </properties>
       </widget>
     </layout>
     <layout name="layout@EasyShareFolder-edit">
