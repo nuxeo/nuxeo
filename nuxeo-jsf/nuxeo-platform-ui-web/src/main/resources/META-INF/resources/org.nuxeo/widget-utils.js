@@ -46,6 +46,20 @@ nuxeo.utils = (function(m) {
     jQuery(document.getElementById(eltId)).select2(params);
   };
 
+  m.addFromListTemplate = function(templateElement, countElement) {
+    var tel = jQuery(templateElement);
+    var cel = jQuery(countElement);
+    var count = parseInt(cel.val());
+    // clone + make sure it's displayed
+    var el = tel.clone().show();
+    // replace TEMPLATE_ITEM markers by new value
+    jQuery(el).html(el.html().replace(/TEMPLATE_INDEX_MARKER/g, count));
+    // update counter
+    cel.val(count + 1);
+    // place in the DOM
+    tel.before(el);
+  };
+
   return m
 
 }(nuxeo.utils || {}));

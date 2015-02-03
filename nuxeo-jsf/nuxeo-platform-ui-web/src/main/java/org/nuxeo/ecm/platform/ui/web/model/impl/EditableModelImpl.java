@@ -174,7 +174,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         if (data == null) {
             return false;
         }
-        return index >= 0 && index < data.size();
+        return (index == -2) || (index >= 0 && index < data.size());
     }
 
     @Override
@@ -239,6 +239,10 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         } else if (!isRowAvailable()) {
             throw new IllegalArgumentException();
         } else {
+            if (index == -2) {
+                // FIXME: should return template binding
+                return null;
+            }
             return data.get(index);
         }
     }
@@ -257,7 +261,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
 
     @Override
     public void setRowIndex(int rowIndex) {
-        if (rowIndex < -1) {
+        if (rowIndex < -2) {
             throw new IllegalArgumentException();
         }
         int old = index;
