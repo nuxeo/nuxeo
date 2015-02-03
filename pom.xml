@@ -11,10 +11,6 @@
   <name>easyshare-plugin</name>
   <description>Anonymous File Sharing</description>
 
-  <properties>
-    <easyshare.studio.version>1.0.6</easyshare.studio.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -56,11 +52,6 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>nuxeo-studio</groupId>
-      <artifactId>easyshare</artifactId>
-      <version>${easyshare.studio.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
