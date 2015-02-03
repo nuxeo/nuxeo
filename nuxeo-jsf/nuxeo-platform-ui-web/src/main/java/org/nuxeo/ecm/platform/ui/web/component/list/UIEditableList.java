@@ -70,7 +70,6 @@ import com.sun.faces.facelets.tag.jsf.ComponentSupport;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-// XXX AT: review this completely in regards of JSF2
 public class UIEditableList extends UIInput implements NamingContainer, ResettableComponent {
 
     public static final String COMPONENT_TYPE = UIEditableList.class.getName();
@@ -98,13 +97,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
 
         private static final long serialVersionUID = 4730664880938551346L;
 
-        private transient boolean _hasEvent = false;
-
         private transient Object _value;
-
-        // this is true if this is the first request for this viewID and
-        // processDecodes was not called:
-        private transient boolean _isFirstRender = true;
 
         private transient boolean _isInitialized = false;
 
@@ -227,6 +220,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         }
     }
 
+    @SuppressWarnings("rawtypes")
     protected static boolean valueChanged(Object cached, Object current) {
         boolean changed = false;
         if (cached == null) {
@@ -820,7 +814,8 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
      * Override container client id resolution to handle recursion.
      */
     @Override
-    public String getContainerClientId(FacesContext context) {
+    @SuppressWarnings("deprecation")
+       public String getContainerClientId(FacesContext context) {
         String id = super.getClientId(context);
         int index = getRowIndex();
         if (index != -1) {
@@ -920,11 +915,6 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
      */
     @Override
     public void queueEvent(FacesEvent event) {
-        if (event.getSource() == this) {
-            InternalState iState = getInternalState(true);
-            iState._hasEvent = true;
-        }
-
         // we want to wrap up the event so we can execute it in the correct
         // context (with the correct rowKey/rowData):
         Integer currencyKey = getRowKey();
@@ -1065,13 +1055,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
 
         initializeState(false);
 
-        InternalState iState = getInternalState(true);
-        iState._isFirstRender = false;
-
         flushCachedModel();
-
-        // Make sure _hasEvent is false.
-        iState._hasEvent = false;
 
         pushComponentToEL(context, this);
         processFacetsAndChildren(context, PhaseId.APPLY_REQUEST_VALUES);
@@ -1185,6 +1169,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         }
     }
 
+    @SuppressWarnings("rawtypes")
     private void executeValidate(FacesContext context) {
         try {
             EditableModel model = getEditableModel();
