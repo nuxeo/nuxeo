@@ -11,6 +11,20 @@
 
   <extension-point name="operation">
     <documentation>
+      <scriptedOperation id="Scripting.HelloWorld">
+        <inputType>string</inputType>
+        <outputType>string</outputType>
+        <param name="lang" type="string"/>
+        <script>
+          function run(ctx, input, params) {
+          if (params.lang === "fr") {
+          return "Bonjour " + input;
+          } else {
+          return "Hello " + input;
+          }
+          }
+        </script>
+      </scriptedOperation>
     </documentation>
     
     <object
