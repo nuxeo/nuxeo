@@ -39,13 +39,11 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
 
     protected CompiledScript compiledJSWrapper = null;
 
-    @Override
-    public String getJSWrapper() {
+    protected String getJSWrapper() {
         return getJSWrapper(false);
     }
 
-    @Override
-    public String getJSWrapper(boolean refresh) {
+    protected String getJSWrapper(boolean refresh) {
         if (jsWrapper == null || refresh) {
             StringBuffer sb = new StringBuffer();
             AutomationService as = Framework.getService(AutomationService.class);
@@ -84,8 +82,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         return runner;
     }
 
-    @Override
-    public ScriptRunner getRunner() throws ScriptException {
+    protected ScriptRunner getRunner() throws ScriptException {
         ScriptRunner runner;
         if (AutomationScriptingComponent.preCompile) {
             runner = new ScriptRunner(AutomationScriptingComponent.self.engineManager, getCompiledJSWrapper());

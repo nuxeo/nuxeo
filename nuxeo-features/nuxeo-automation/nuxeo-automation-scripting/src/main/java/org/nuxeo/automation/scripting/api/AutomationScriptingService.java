@@ -26,11 +26,13 @@ import org.nuxeo.ecm.core.api.CoreSession;
  */
 public interface AutomationScriptingService {
 
-    String getJSWrapper();
-
-    String getJSWrapper(boolean refresh);
-
+    /**
+     * Get the script runner for a given core session.
+     *
+     * @param session the core session
+     * @return the runner
+     * @throws ScriptException
+     */
     ScriptRunner getRunner(CoreSession session) throws ScriptException;
 
-    ScriptRunner getRunner() throws ScriptException;
 }
