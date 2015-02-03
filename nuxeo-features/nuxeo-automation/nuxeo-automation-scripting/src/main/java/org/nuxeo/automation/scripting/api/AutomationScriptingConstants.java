@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,24 +12,16 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Thierry Delprat <tdelprat@nuxeo.com>
+ *     vpasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.automation.scripting;
-
-import javax.script.ScriptException;
-
-import org.nuxeo.ecm.core.api.CoreSession;
+package org.nuxeo.automation.scripting.api;
 
 /**
  * @since 7.2
  */
-public interface AutomationScriptingService {
+public class AutomationScriptingConstants {
 
-    String getJSWrapper();
+    public static final String NASHORN_ENGINE = "Nashorn";
 
-    String getJSWrapper(boolean refresh);
-
-    ScriptRunner getRunner(CoreSession session) throws ScriptException;
-
-    ScriptRunner getRunner() throws ScriptException;
+    public static final String AUTOMATION_MAPPER_KEY = "automation";
 }

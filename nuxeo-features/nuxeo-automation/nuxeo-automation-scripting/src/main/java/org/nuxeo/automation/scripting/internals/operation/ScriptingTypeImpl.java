@@ -14,7 +14,7 @@
  * Contributors:
  *     Thierry Delprat <tdelprat@nuxeo.com>
  */
-package org.nuxeo.automation.scripting.operation;
+package org.nuxeo.automation.scripting.internals.operation;
 
 import java.net.URL;
 import java.util.Arrays;

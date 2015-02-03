@@ -14,7 +14,7 @@
  * Contributors:
  *     vpasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.automation.scripting;
+package org.nuxeo.automation.scripting.api;
 
 import org.nuxeo.ecm.core.api.ClientException;
 

@@ -33,7 +33,7 @@ import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.nuxeo.automation.scripting.MarshalingHelper;
+import org.nuxeo.automation.scripting.internals.MarshalingHelper;
 
 /**
  * @since 7.2

@@ -14,15 +14,23 @@
  * Contributors:
  *     Thierry Delprat <tdelprat@nuxeo.com>
  */
-package org.nuxeo.automation.scripting.operation;
+package org.nuxeo.automation.scripting.api;
 
-import java.util.Map;
+import javax.script.ScriptException;
+
+import org.nuxeo.automation.scripting.internals.ScriptRunner;
+import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
  * @since 7.2
  */
-public interface ScriptingOperationInterface {
+public interface AutomationScriptingService {
 
-    Object run(Map<String, Object> ctx, Object input, Map<String, Object> parameters);
+    String getJSWrapper();
 
+    String getJSWrapper(boolean refresh);
+
+    ScriptRunner getRunner(CoreSession session) throws ScriptException;
+
+    ScriptRunner getRunner() throws ScriptException;
 }

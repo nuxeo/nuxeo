@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.automation.scripting.AutomationScriptingComponent" version="1.0">
+<component name="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" version="1.0">
 
   <require>org.nuxeo.ecm.core.operation.OperationServiceComponent</require>
 
-  <implementation class="org.nuxeo.automation.scripting.AutomationScriptingComponent" />
+  <implementation class="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" />
 
   <service>
-      <provide interface="org.nuxeo.automation.scripting.AutomationScriptingService" />
+      <provide interface="org.nuxeo.automation.scripting.api.AutomationScriptingService" />
   </service>
 
   <extension-point name="operation">
@@ -14,7 +14,7 @@
     </documentation>
     
     <object
-      class="org.nuxeo.automation.scripting.operation.ScriptingOperationDescriptor" />
+      class="org.nuxeo.automation.scripting.internals.operation.ScriptingOperationDescriptor" />
   </extension-point>
 
 </component>

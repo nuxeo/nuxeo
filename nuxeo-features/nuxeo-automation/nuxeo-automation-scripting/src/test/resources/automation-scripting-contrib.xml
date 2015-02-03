@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.automation.scripting.testContrib" version="1.0">
 
-  <extension target="org.nuxeo.automation.scripting.AutomationScriptingComponent" point="operation">
+  <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="operation">
 
     <scriptedOperation id="Scripting.HelloWorld">
        <inputType>string</inputType>

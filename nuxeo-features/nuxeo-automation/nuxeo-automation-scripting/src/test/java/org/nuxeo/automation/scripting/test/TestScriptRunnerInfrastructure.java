@@ -29,9 +29,9 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.automation.scripting.AutomationScriptingService;
-import org.nuxeo.automation.scripting.ScriptRunner;
-import org.nuxeo.automation.scripting.operation.ScriptingTypeImpl;
+import org.nuxeo.automation.scripting.api.AutomationScriptingService;
+import org.nuxeo.automation.scripting.internals.ScriptRunner;
+import org.nuxeo.automation.scripting.internals.operation.ScriptingTypeImpl;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;

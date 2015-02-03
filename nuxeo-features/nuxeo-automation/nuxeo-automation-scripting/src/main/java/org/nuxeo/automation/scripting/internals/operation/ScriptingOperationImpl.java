@@ -14,7 +14,7 @@
  * Contributors:
  *     Thierry Delprat <tdelprat@nuxeo.com>
  */
-package org.nuxeo.automation.scripting.operation;
+package org.nuxeo.automation.scripting.internals.operation;
 
 import java.util.List;
 import java.util.Map;
@@ -23,9 +23,9 @@ import javax.script.ScriptException;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
-import org.nuxeo.automation.scripting.AutomationScriptingService;
-import org.nuxeo.automation.scripting.MarshalingHelper;
-import org.nuxeo.automation.scripting.ScriptRunner;
+import org.nuxeo.automation.scripting.api.AutomationScriptingService;
+import org.nuxeo.automation.scripting.internals.MarshalingHelper;
+import org.nuxeo.automation.scripting.internals.ScriptRunner;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.DocumentModel;

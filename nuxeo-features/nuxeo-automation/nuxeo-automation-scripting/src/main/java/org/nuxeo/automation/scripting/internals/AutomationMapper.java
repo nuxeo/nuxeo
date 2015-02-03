@@ -14,7 +14,7 @@
  * Contributors:
  *     Thierry Delprat <tdelprat@nuxeo.com>
  */
-package org.nuxeo.automation.scripting;
+package org.nuxeo.automation.scripting.internals;
 
 import java.io.Serializable;
 import java.util.HashMap;

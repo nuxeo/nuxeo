@@ -14,7 +14,7 @@
  * Contributors:
  *     Thierry Delprat <tdelprat@nuxeo.com>
  */
-package org.nuxeo.automation.scripting;
+package org.nuxeo.automation.scripting.internals;
 
 import java.io.InputStream;
 
@@ -25,6 +25,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.apache.commons.io.IOUtils;
+import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
@@ -46,13 +47,13 @@ public class ScriptRunner {
 
     public ScriptRunner(ScriptEngineManager engineManager, String jsBinding) {
         this.engineManager = engineManager;
-        engine = engineManager.getEngineByName("Nashorn");
+        engine = engineManager.getEngineByName(AutomationScriptingConstants.NASHORN_ENGINE);
         this.jsBinding = jsBinding;
     }
 
     public ScriptRunner(ScriptEngineManager engineManager, CompiledScript jsBinding) {
         this.engineManager = engineManager;
-        engine = engineManager.getEngineByName("Nashorn");
+        engine = engineManager.getEngineByName(AutomationScriptingConstants.NASHORN_ENGINE);
         this.compiledJSWrapper = jsBinding;
     }
 
@@ -91,7 +92,7 @@ public class ScriptRunner {
 
     public <T> T getInterface(Class<T> javaInterface, String script) throws Exception {
         initialize();
-        engine.put("automation", new AutomationMapper(session));
+        engine.put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY, new AutomationMapper(session));
         engine.eval(script);
         Invocable inv = (Invocable) engine;
         return inv.getInterface(javaInterface);
