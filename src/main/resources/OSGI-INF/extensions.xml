@@ -489,7 +489,7 @@
     </versioningRule>
   </extension>
   <extension target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService" point="templates">
-    <template name="easyShareEmail" src="data/templates/easyShareEmail.ftl"/>
+    <template name="easyShareDownload" src="data/templates/easyShareDownload.ftl"/>
   </extension>
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
     <chain id="addToAShareDocument">

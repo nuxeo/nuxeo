@@ -165,7 +165,7 @@ public class EasyShare extends ModuleRoot {
                             mailProps.put("subject", "EasyShare Download Notification");
                             mailProps.put("body", "File " + fileName + " from " + shareName + " downloaded by "
                                     + request.getRemoteAddr());
-                            mailProps.put("template", "easyShareEmail");
+                            mailProps.put("template", "easyShareDownload");
                             emailer.sendmail(mailProps);
                             log.debug("Easyshare: completed email");
                         } catch (MessagingException ex) {
