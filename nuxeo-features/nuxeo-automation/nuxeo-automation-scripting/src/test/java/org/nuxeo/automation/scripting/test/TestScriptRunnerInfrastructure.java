@@ -20,13 +20,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import jdk.nashorn.api.scripting.ScriptUtils;
 import junit.framework.Assert;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
@@ -68,33 +72,37 @@ public class TestScriptRunnerInfrastructure {
     @Inject
     AutomationService automationService;
 
+
+    ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+
+    @Before
+    public void setUpStreams() {
+        System.setOut(new PrintStream(outContent));
+    }
+
+    @After
+    public void cleanUpStreams() {
+        System.setOut(null);
+    }
+
     @Test
     public void serviceShouldBeDeclared() {
-        AutomationScriptingService ass = Framework.getService(AutomationScriptingService.class);
-        assertNotNull(ass);
+        AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
+        assertNotNull(scriptingService);
     }
 
     @Test
     public void shouldExecuteSimpleScript() throws Exception {
+        AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
+        assertNotNull(scriptingService);
 
-        AutomationScriptingService ass = Framework.getService(AutomationScriptingService.class);
-        assertNotNull(ass);
-
-        long t0 = System.currentTimeMillis();
-        String js = ass.getJSWrapper(true);
-        System.out.println("wrapper generation time : " + (System.currentTimeMillis() - t0) + " ms");
-
-        ScriptRunner runner = ass.getRunner(session);
+        ScriptRunner runner = scriptingService.getRunner(session);
         assertNotNull(runner);
-
-        System.out.println("wrapper compile time : " + runner.initialize() + " ms");
 
         InputStream stream = this.getClass().getResourceAsStream("/simpleAutomationScript.js");
         assertNotNull(stream);
-
-        t0 = System.currentTimeMillis();
         runner.run(stream);
-        System.out.println("script exec time : " + (System.currentTimeMillis() - t0) + " ms");
+        assertEquals("Created even Documents\n",outContent.toString());
     }
 
     @Test

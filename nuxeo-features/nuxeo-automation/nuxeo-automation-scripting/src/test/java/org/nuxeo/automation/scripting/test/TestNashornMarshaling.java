@@ -16,6 +16,8 @@
  */
 package org.nuxeo.automation.scripting.test;
 
+import static junit.framework.TestCase.assertNotNull;
+
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -33,12 +35,34 @@ import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
 import org.nuxeo.automation.scripting.internals.MarshalingHelper;
 
 /**
  * @since 7.2
  */
 public class TestNashornMarshaling {
+
+    @Test
+    public void test() throws Exception {
+        ScriptEngineManager engineManager = new ScriptEngineManager();
+        ScriptEngine engine = engineManager.getEngineByName(AutomationScriptingConstants.NASHORN_ENGINE);
+        assertNotNull(engine);
+
+        Compilable compiler = (Compilable) engine;
+        assertNotNull(compiler);
+
+        InputStream stream = this.getClass().getResourceAsStream("/testScript.js");
+        assertNotNull(stream);
+        String js = IOUtils.toString(stream);
+
+        CompiledScript compiled = compiler.compile(new StringReader(js));
+
+        engine.put("mapper", new Mapper());
+
+        compiled.eval(engine.getContext());
+
+    }
 
     public class Mapper {
 
@@ -74,27 +98,6 @@ public class TestNashornMarshaling {
 
             return MarshalingHelper.wrap(data);
         }
-
-    }
-
-    @Test
-    public void test() throws Exception {
-        ScriptEngineManager engineManager = new ScriptEngineManager();
-        ScriptEngine engine = engineManager.getEngineByName("Nashorn");
-        Assert.assertNotNull(engine);
-
-        Compilable compiler = (Compilable) engine;
-        Assert.assertNotNull(compiler);
-
-        InputStream stream = this.getClass().getResourceAsStream("/testScript.js");
-        Assert.assertNotNull(stream);
-        String js = IOUtils.toString(stream);
-
-        CompiledScript compiled = compiler.compile(new StringReader(js));
-
-        engine.put("mapper", new Mapper());
-
-        compiled.eval(engine.getContext());
 
     }
 }

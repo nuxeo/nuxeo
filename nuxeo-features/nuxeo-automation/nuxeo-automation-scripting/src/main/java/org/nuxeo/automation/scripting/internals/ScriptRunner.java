@@ -45,10 +45,18 @@ public class ScriptRunner {
 
     protected CoreSession session;
 
+    /**
+     * @return JS binding script loaded in Nashorn.
+     */
+    public String getJsBinding() {
+        return jsBinding;
+    }
+
     public ScriptRunner(ScriptEngineManager engineManager, String jsBinding) {
         this.engineManager = engineManager;
         engine = engineManager.getEngineByName(AutomationScriptingConstants.NASHORN_ENGINE);
         this.jsBinding = jsBinding;
+
     }
 
     public ScriptRunner(ScriptEngineManager engineManager, CompiledScript jsBinding) {

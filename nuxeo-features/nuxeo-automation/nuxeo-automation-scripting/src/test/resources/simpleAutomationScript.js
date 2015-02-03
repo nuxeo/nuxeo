@@ -33,5 +33,6 @@ for (var i = 1; i < 10; i++) {
 var evenDocs = Repository.Query(null, {
     "query": "select * from Document where dc:nature='even'"
 });
-
-print("Created " + evenDocs.size() + " even Documents");
+if(evenDocs.size()>0) {
+    print("Created even Documents");
+}
