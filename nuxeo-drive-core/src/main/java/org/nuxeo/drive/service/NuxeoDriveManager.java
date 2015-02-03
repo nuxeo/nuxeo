@@ -91,8 +91,7 @@ public interface NuxeoDriveManager {
     public void handleFolderDeletion(IdRef ref) throws ClientException;
 
     /**
-     * Gets a summary of document changes in all repositories or in the repository against which the given session is
-     * bound depending on the {@code allRepositories} parameter, for the given user's synchronization roots, since the
+     * Gets a summary of document changes in all repositories for the given user's synchronization roots, since the
      * user's device last successful synchronization date.
      * <p>
      * The summary includes:
@@ -103,12 +102,9 @@ public interface NuxeoDriveManager {
      * <li>A status code</li>
      * </ul>
      *
-     * @param allRepositories if true then the document changes are retrieved from all repositories, else only from the
-     *            one against which the given session is bound
-     * @param userName the id of the Nuxeo Drive user
-     * @param session active CoreSession instance to the repository hosting the user's synchronization roots
+     * @param principal
      * @param lastSyncRootRefs the map keyed by repository names of document refs for the synchronization roots that
-     *            were active during last synchornization
+     *            were active during last synchronization
      * @param lastSuccessfulSync the last successful synchronization date of the user's device. This time is expected to
      *            be in milliseconds since 1970-01-01 UTC as measured on the Nuxeo server clock, typically set to the
      *            value returned by {@link FileSystemChangeSummary#getSyncDate()} of the previous call to
@@ -120,9 +116,8 @@ public interface NuxeoDriveManager {
             long lastSuccessfulSync) throws ClientException;
 
     /**
-     * Gets a summary of document changes in all repositories or in the repository against which the given session is
-     * bound depending on the {@code allRepositories} parameter, for the given user's synchronization roots, from the
-     * lower bound sent by the user's device.
+     * Gets a summary of document changes in all repositories for the given user's synchronization roots, from the lower
+     * bound sent by the user's device.
      * <p>
      * The summary includes:
      * <ul>
@@ -132,12 +127,9 @@ public interface NuxeoDriveManager {
      * <li>A status code</li>
      * </ul>
      *
-     * @param allRepositories if true then the document changes are retrieved from all repositories, else only from the
-     *            one against which the given session is bound
-     * @param userName the id of the Nuxeo Drive user
-     * @param session active CoreSession instance to the repository hosting the user's synchronization roots
+     * @param principal
      * @param lastSyncRootRefs the map keyed by repository names of document refs for the synchronization roots that
-     *            were active during last synchornization
+     *            were active during last synchronization
      * @param lowerBound the lower bound sent by the user's device. Typically set to the value returned by
      *            {@link FileSystemChangeSummary#getUpperBound()} of the previous call to
      *            {@link NuxeoDriveManager#getChangeSummaryIntegerBounds(Principal, Map, long)} or 0 for catching every
