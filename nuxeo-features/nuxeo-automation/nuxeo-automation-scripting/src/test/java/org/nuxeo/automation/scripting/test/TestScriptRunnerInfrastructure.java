@@ -65,7 +65,7 @@ public class TestScriptRunnerInfrastructure {
     CoreSession session;
 
     @Inject
-    AutomationService as;
+    AutomationService automationService;
 
     @Test
     public void serviceShouldBeDeclared() {
@@ -99,7 +99,7 @@ public class TestScriptRunnerInfrastructure {
     @Test
     public void simpleScriptingOperationShouldBeAvailable() throws Exception {
 
-        OperationType type = as.getOperation("Scripting.HelloWorld");
+        OperationType type = automationService.getOperation("Scripting.HelloWorld");
         assertNotNull(type);
         assertTrue(type instanceof ScriptingTypeImpl);
 
@@ -111,12 +111,12 @@ public class TestScriptRunnerInfrastructure {
 
         params.put("lang", "fr");
         ctx.setInput("John");
-        Object result = as.run(ctx, "Scripting.HelloWorld", params);
+        Object result = automationService.run(ctx, "Scripting.HelloWorld", params);
         assertEquals("Bonjour John", result.toString());
 
         params.put("lang", "en");
         ctx.setInput("John");
-        result = as.run(ctx, "Scripting.HelloWorld", params);
+        result = automationService.run(ctx, "Scripting.HelloWorld", params);
         assertEquals("Hello John", result.toString());
 
     }
@@ -141,7 +141,7 @@ public class TestScriptRunnerInfrastructure {
         params.put("facet", "HiddenInNavigation");
         params.put("type", "File");
         ctx.setInput(root);
-        Object result = as.run(ctx, "Scripting.AddFacetInSubTree", params);
+        Object result = automationService.run(ctx, "Scripting.AddFacetInSubTree", params);
         assertTrue(result instanceof DocumentModelList);
 
     }
@@ -153,7 +153,7 @@ public class TestScriptRunnerInfrastructure {
         Map<String, Object> params = new HashMap<>();
 
         ctx.setInput("John");
-        Object result = as.run(ctx, "Scripting.ChainedHello", params);
+        Object result = automationService.run(ctx, "Scripting.ChainedHello", params);
         assertEquals("Hello Bonjour John", result.toString());
 
     }
