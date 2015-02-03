@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="${skinPath}/css/nuxeo-easyshare-embedded.css">
   <link rel="stylesheet" href="${skinPath}/css/normalize.css">
   <link rel="stylesheet" href="${skinPath}/css/site.css">
+  <link rel="stylesheet" href="/nuxeo/css/nuxeo-easyshare-override.css">
   <link rel="shortcut icon" href="${skinPath}/img/favicon.ico"/>
 </head>
 
