@@ -71,13 +71,13 @@ public class EasyShare extends ModuleRoot {
                 if (session.exists(docRef)) {
                     DocumentModel docFolder = session.getDocument(docRef);
 
+                    if (!docFolder.getType().equals("EasyShareFolder")) {
+                        return Response.serverError().status(Response.Status.NOT_FOUND).build();
+                    }
+
                     Date today = new Date();
                     if (today.after(docFolder.getProperty("dc:expired").getValue(Date.class))) {
                         return getView("denied");
-                    }
-
-                    if (!docFolder.getType().equals("EasyShareFolder")) {
-                        return Response.serverError().status(Response.Status.NOT_FOUND).build();
                     }
 
                     DocumentModelList docList = session.getChildren(docRef);
