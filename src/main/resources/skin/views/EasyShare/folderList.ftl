@@ -7,10 +7,14 @@
     <#include "includes/header.ftl">
 
     <content>
-      <div class="comment">
-        <i class="icon-user"></i>
-        <blockquote>${docFolder.easysharefolder.shareComment}</blockquote>
-      </div>
+
+      <#if docFolder.easysharefolder.shareComment?length &gt; 0 >
+        <div class="comment">
+          <i class="icon-user"></i>
+          <blockquote>${docFolder.easysharefolder.shareComment}</blockquote>
+        </div>
+      </#if>
+
       <div class="shared-items">
         <#list docList as doc>
 
@@ -21,9 +25,11 @@
             <i class="icon-download"></i>
           </a>
         </#list>
+
         <#if !docList>
           <div class="empty"><i class="icon-unhappy"></i>There is no files in this folder.</div>
         </#if>
+
     </content>
 
   </div>
