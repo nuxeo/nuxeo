@@ -5,10 +5,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <title>
   <@block name="title">
-    Nuxeo - EasyShare
+    ${Context.getMessage("easyshare.label.title")}
   </@block>
   </title>
-  <meta name="description" content="Nuxeo Easy Share Folder">
+  <meta name="description" content="${Context.getMessage("easyshare.label.description")}">
   <meta name="viewport" content="width=device-width">
 
   <script src="${skinPath}/javascript/jquery-1.7.1.min.js" charset="utf-8"></script>
@@ -26,7 +26,7 @@
   <div class="wrapper">
     <div class="nuxeo-logo"></div>
     <main class="share-box">
-    <@block name="content">The Content</@block>
+    <@block name="content">${Context.getMessage("easyshare.label.content")}</@block>
     </main>
   </div>
 </section>

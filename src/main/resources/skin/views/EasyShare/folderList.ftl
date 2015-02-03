@@ -27,7 +27,7 @@
         </#list>
 
         <#if !docList>
-          <div class="empty"><i class="icon-unhappy"></i>There is no files in this folder.</div>
+          <div class="empty"><i class="icon-unhappy"></i>${Context.getMessage("easyshare.label.nofiles")}</div>
         </#if>
 
     </content>

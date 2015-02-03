@@ -3,7 +3,7 @@
   <@block name="content">
 
   <div>
-    <div class="denied"><i class="icon-unhappy"></i>Oh no! This folder doesn't exist.</div>
+    <div class="denied"><i class="icon-unhappy"></i>${Context.getMessage("easyshare.label.denied")}</div>
   </div>
 
   </@block>
