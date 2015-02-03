@@ -3,11 +3,9 @@
   <@block name="content">
 
   <div>
-    <header>
-      <h2>${docFolder.title}</h2>
-      <detail>Shared by <a title="email address" href="mailto:${docFolder.easysharefolder.contactEmail}">
-      ${docFolder.easysharefolder.contactEmail}</a></detail>
-    </header>
+
+    <#include "includes/header.ftl">
+
     <content>
       <div class="comment">
         <i class="icon-user"></i>
@@ -27,6 +25,7 @@
           <div class="empty"><i class="icon-unhappy"></i>There is no files in this folder.</div>
         </#if>
     </content>
+
   </div>
 
   </@block>
