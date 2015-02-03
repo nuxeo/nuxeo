@@ -29,6 +29,7 @@
         <type>File</type>
         <type>Picture</type>
         <type>Video</type>
+        <type>Note</type>
       </subtypes>
       <layouts mode="create">
         <layout>layout@EasyShareFolder-create</layout>
