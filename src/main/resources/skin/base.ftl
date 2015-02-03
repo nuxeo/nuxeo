@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <title>
-     <@block name="title">
-     Nuxeo - EasyShare
-     </@block>
+  <@block name="title">
+    Nuxeo - EasyShare
+  </@block>
   </title>
   <meta name="description" content="Nuxeo Easy Share Folder">
   <meta name="viewport" content="width=device-width">
@@ -18,28 +18,20 @@
   <link rel="stylesheet" href="${skinPath}/css/nuxeo-easyshare-embedded.css">
   <link rel="stylesheet" href="${skinPath}/css/normalize.css">
   <link rel="stylesheet" href="${skinPath}/css/site.css">
-  <link rel="shortcut icon" href="${skinPath}/img/favicon.ico" />
+  <link rel="shortcut icon" href="${skinPath}/img/favicon.ico"/>
   <link rel="stylesheet" href="//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/css/xnav.css" type="text/css">
 </head>
 
 <body>
 
-
-
-  <!--header>
-    <@block name="header">Nuxeo - Easy Share  </@block>
-  </header -->
-
-  <section>
-    <div class="wrapper">
-      <div class="nuxeo-logo">
-        <img src="${skinPath}/img/nuxeo_logo.png" />
-      </div>
-      <main class="share-box">
-        <@block name="content">The Content</@block>
-      </main>
-    </div>
-  </section>
+<section>
+  <div class="wrapper">
+    <div class="nuxeo-logo"></div>
+    <main class="share-box">
+    <@block name="content">The Content</@block>
+    </main>
+  </div>
+</section>
 
 </body>
 </html>
