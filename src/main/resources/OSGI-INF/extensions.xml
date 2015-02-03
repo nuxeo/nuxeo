@@ -420,18 +420,17 @@
     </layout>
     <layout name="layout@EasyShareFolder-header">
       <templates>
-        <template mode="any">/layouts/easyshare_layout_template.xhtml</template>
+        <template mode="any">/layouts/layout_div_template.xhtml</template>
       </templates>
-      <properties mode="any">
-        <property name="styleClass">easyShareFolderHeader</property>
-        <property name="widgetsDisplay">no_label</property>
-      </properties>
       <rows>
         <row>
           <properties mode="any">
             <property name="nxl_colspan_0">3</property>
           </properties>
-          <widget>title</widget>
+          <widget>header_title_and_permlink</widget>
+        </row>
+        <row>
+          <widget>header_description</widget>
         </row>
         <row>
           <properties mode="any">
@@ -449,29 +448,7 @@
           </properties>
           <widget>shareComment</widget>
         </row>
-        <row>
-          <properties mode="any">
-            <property name="nxl_colspan_0">1</property>
-            <property name="nxl_colspan_1">1</property>
-            <property name="nxl_colspan_2">1</property>
-          </properties>
-          <widget>documentAction</widget>
-          <widget/>
-          <widget/>
-        </row>
       </rows>
-      <widget name="title" type="text">
-        <labels>
-          <label mode="any">label.dublincore.title</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>dc:title</field>
-        </fields>
-        <properties widgetMode="view">
-          <property name="styleClass">headerTitle</property>
-        </properties>
-      </widget>
       <widget name="creator" type="text">
         <labels>
           <label mode="any">label.dublincore.creator</label>
@@ -520,19 +497,7 @@
           <field>eshare:shareComment</field>
         </fields>
         <properties widgetMode="view">
-          <property name="styleClass">detail headerComment</property>
-        </properties>
-      </widget>
-      <widget name="documentAction" type="documentAction">
-        <labels>
-          <label mode="any"></label>
-        </labels>
-        <translated>false</translated>
-        <fields/>
-        <properties widgetMode="view">
-          <property name="useAjaxForm">false</property>
-          <property name="actionId">showEasyShareURL</property>
-          <property name="actionsDisplay">buttons</property>
+          <property name="styleClass">detail quote headerComment</property>
         </properties>
       </widget>
     </layout>
