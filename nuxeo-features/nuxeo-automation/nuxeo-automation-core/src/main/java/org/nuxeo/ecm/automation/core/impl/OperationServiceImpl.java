@@ -168,11 +168,11 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
         Boolean mainChain = true;
         CompiledChainImpl chain;
         if (params == null) {
-            params = new HashMap<String, Object>();
+            params = new HashMap<>();
         }
         ctx.put(Constants.VAR_RUNTIME_CHAIN, params);
         // Put Chain parameters into the context - even for cached chains
-        if (params != null && !params.isEmpty()) {
+        if (!params.isEmpty()) {
             ctx.put(Constants.VAR_RUNTIME_CHAIN, params);
         }
         OperationCallback tracer;
