@@ -106,23 +106,25 @@ public class UserNameResolverHelper implements EventListener {
     protected String computeUserFullName(String login) {
 
         UserManager um = Framework.getService(UserManager.class);
-
         String dname = um.getUserDirectoryName();
         Session dirSession = Framework.getService(DirectoryService.class).open(dname);
 
-        DocumentModel entry = dirSession.getEntry(login, false);
-
-        if (entry == null) {
-            // virtual user ?
-            NuxeoPrincipal principal = um.getPrincipal(login);
-            if (principal != null) {
-                return computeUserFullName(principal);
+        try {
+            DocumentModel entry = dirSession.getEntry(login, false);    
+            if (entry == null) {
+                // virtual user ?
+                NuxeoPrincipal principal = um.getPrincipal(login);
+                if (principal != null) {
+                    return computeUserFullName(principal);
+                } else {
+                    return login;
+                }
             } else {
-                return login;
+                DataModel model = entry.getDataModel(um.getUserSchemaName());
+                return computeUserFullName(model);
             }
-        } else {
-            DataModel model = entry.getDataModel(um.getUserSchemaName());
-            return computeUserFullName(model);
+        } finally {
+            dirSession.close();
         }
     }
 
