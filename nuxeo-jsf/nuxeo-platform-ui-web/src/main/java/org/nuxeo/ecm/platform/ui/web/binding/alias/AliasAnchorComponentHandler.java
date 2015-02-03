@@ -32,10 +32,10 @@ import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
 import com.sun.faces.facelets.el.VariableMapperWrapper;
 
 /**
- * Generic HTML component handler that ensures that {@link AliasTagHandler} usage within this handler will make sure
- * components are anchored in the tree.
+ * Generic HTML component handler ensuring that sub handlers extending {@link AliasTagHandler} will anchor their
+ * components in the tree.
  * <p>
- * This is helpful when expôsing variables depending on a variabled only available at render time (like a list or
+ * This is helpful when exposing variables depending on a variable that is only available at render time (like a list or
  * dataTable component), to ensure accurate resolution of variables at render time.
  *
  * @since 6.0
