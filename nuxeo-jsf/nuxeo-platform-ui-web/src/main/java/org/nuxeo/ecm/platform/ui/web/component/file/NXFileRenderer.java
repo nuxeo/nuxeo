@@ -78,10 +78,7 @@ public class NXFileRenderer extends FileRenderer {
                     // Nuxeo patch: transform into serializable blob right away, and do not set component transient
                     // component.setTransient(true);
                     // setSubmittedValue(component, cur);
-                    String filename = FileUtils.retrieveFilename(cur);
-                    String mimetype = cur.getContentType();
-                    setSubmittedValue(component,
-                            FileUtils.createSerializableBlob(cur.getInputStream(), filename, mimetype));
+                    setSubmittedValue(component, FileUtils.createBlob(cur));
                 }
             }
         } catch (IOException ioe) {
