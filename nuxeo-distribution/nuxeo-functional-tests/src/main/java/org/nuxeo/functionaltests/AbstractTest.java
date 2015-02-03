@@ -54,7 +54,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.MethodRule;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.functionaltests.fragment.WebFragment;
@@ -70,7 +69,6 @@ import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -622,7 +620,7 @@ public abstract class AbstractTest {
 
         return wait.until(new Function<T, T>() {
             @Override
-            public T apply(@SuppressWarnings("hiding") T page) {
+            public T apply(T page) {
                 String notLoaded = anyElementNotLoaded(elements, fieldNames);
                 if (notLoaded == null) {
                     return page;
