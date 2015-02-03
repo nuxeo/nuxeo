@@ -12,14 +12,12 @@
   <meta name="viewport" content="width=device-width">
 
   <script src="${skinPath}/javascript/jquery-1.7.1.min.js" charset="utf-8"></script>
-  <script type="text/javascript" src="//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/js/xnav_get.js" charset="utf-8"></script>
 
   <link href='//fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="${skinPath}/css/nuxeo-easyshare-embedded.css">
   <link rel="stylesheet" href="${skinPath}/css/normalize.css">
   <link rel="stylesheet" href="${skinPath}/css/site.css">
   <link rel="shortcut icon" href="${skinPath}/img/favicon.ico"/>
-  <link rel="stylesheet" href="//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/css/xnav.css" type="text/css">
 </head>
 
 <body>
