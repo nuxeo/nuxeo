@@ -47,9 +47,8 @@ public class ScriptingOperationImpl {
     protected final String source;
 
     public ScriptingOperationImpl(String source, OperationContext ctx, Map<String, Object> args) throws ScriptException {
-        AutomationScriptingService ass = Framework.getService(AutomationScriptingService.class);
-        runner = ass.getRunner();
-        runner.setCoreSession(ctx.getCoreSession());
+        AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
+        runner = scriptingService.getRunner(ctx.getCoreSession());
         this.ctx = ctx;
         this.args = args;
         this.source = source;
@@ -89,11 +88,25 @@ public class ScriptingOperationImpl {
         return res;
 
     }
-    /*
-     * protected ScriptableMap wrap(OperationContext ctx) { return wrap(ctx.getVars()); } protected ScriptableMap
-     * wrap(Map<String, Object> vars) { return new ScriptableMap(vars); } protected NativeObject wrap2(OperationContext
-     * ctx) { return wrap2(ctx.getVars()); } protected NativeObject wrap2(Map<String, Object> vars) { NativeObject no =
-     * new NativeObject(); for (String k : vars.keySet()) { no.defineProperty(k, vars.get(k), NativeObject.READONLY); }
-     * return no; }
-     */
+
+//    protected ScriptableMap wrap(OperationContext ctx) {
+//        return wrap(ctx.getVars());
+//    }
+//
+//    protected ScriptableMap wrap(Map<String, Object> vars) {
+//        return new ScriptableMap(vars);
+//    }
+//
+//    protected NativeObject wrap2(OperationContext ctx) {
+//        return wrap2(ctx.getVars());
+//    }
+//
+//    protected NativeObject wrap2(Map<String, Object> vars) {
+//        NativeObject no = new NativeObject();
+//        for (String k : vars.keySet()) {
+//            no.defineProperty(k, vars.get(k), NativeObject.READONLY);
+//        }
+//        return no;
+//    }
+
 }
