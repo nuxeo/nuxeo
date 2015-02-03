@@ -40,6 +40,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
+import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
+import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
@@ -153,24 +155,10 @@ public class EasyShare extends ModuleRoot {
                         }
 
                         // Email notification
-                        String email = docFolder.getProperty("eshare:contactEmail").getValue(String.class);
-                        String fileName = blob.getFilename();
-                        String shareName = docFolder.getName();
-                        try {
-                            log.debug("Easyshare: starting email");
-                            EmailHelper emailer = new EmailHelper();
-                            Map<String, Object> mailProps = new Hashtable<String, Object>();
-                            mailProps.put("mail.from", "system@nuxeo.com");
-                            mailProps.put("mail.to", email);
-                            mailProps.put("subject", "EasyShare Download Notification");
-                            mailProps.put("body", "File " + fileName + " from " + shareName + " downloaded by "
-                                    + request.getRemoteAddr());
-                            mailProps.put("template", "easyShareDownload");
-                            emailer.sendmail(mailProps);
-                            log.debug("Easyshare: completed email");
-                        } catch (MessagingException ex) {
-                            log.error("Cannot send easyShare notification email", ex);
-                        }
+                        Map mail = new HashMap<>();
+                        mail.put("template", "easyShareDownload");
+                        mail.put("filename", blob.getFilename());
+                        sendNotification("easyShareDownload", docFolder, mail);
 
                         return Response.ok(blob.getStream(), blob.getMimeType()).build();
 
@@ -184,6 +172,47 @@ public class EasyShare extends ModuleRoot {
                 }
             }
         }.runUnrestricted(fileId);
+
+    }
+
+    public void sendNotification(String notification, DocumentModel docFolder, Map<String, Object> mail) {
+
+        //Email notification
+        String email = docFolder.getProperty("eshare:contactEmail").getValue(String.class);
+        try {
+            log.debug("Easyshare: starting email");
+            EmailHelper emailHelper = new EmailHelper();
+            Map<String, Object> mailProps = new Hashtable<String, Object>();
+            mailProps.put("mail.from", Framework.getProperty("mail.from", "system@nuxeo.com"));
+            mailProps.put("mail.to", email);
+            mailProps.put("ip", this.request.getRemoteAddr());
+            mailProps.put("docFolder", docFolder);
+
+            try {
+                Notification notif = NotificationServiceHelper.getNotificationService().getNotificationByName(notification);
+
+                String subject = notif.getSubject() == null ? "Alert" : notif.getSubject();
+                if (notif.getSubjectTemplate() != null) {
+                    subject = notif.getSubjectTemplate();
+                }
+
+                subject = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix() + " " + subject;
+
+                mailProps.put("subject", subject);
+                mailProps.put("template", notif.getTemplate());
+
+                mailProps.putAll(mail);
+
+                emailHelper.sendmail(mailProps);
+
+            } catch (ClientException e) {
+                log.warn(e.getMessage());
+            }
+
+            log.debug("Easyshare: completed email");
+        } catch (Exception ex) {
+            log.error("Cannot send easyShare notification email", ex);
+        }
 
     }
 

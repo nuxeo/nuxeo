@@ -488,6 +488,13 @@
       </options>
     </versioningRule>
   </extension>
+  <extension target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService" point="notifications">
+    <notification name="easyShareDownload" channel="email"
+                  enabled="true" availableIn="Workspace" autoSubscribed="true"
+                  template="easyShareDownload" subject="EasyShare download notification">
+      <event name="easyShareDownload"/>
+    </notification>
+  </extension>
   <extension target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService" point="templates">
     <template name="easyShareDownload" src="data/templates/easyShareDownload.ftl"/>
   </extension>
