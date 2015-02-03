@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import jdk.nashorn.api.scripting.ScriptUtils;
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -142,8 +143,8 @@ public class TestScriptRunnerInfrastructure {
         params.put("type", "File");
         ctx.setInput(root);
         Object result = automationService.run(ctx, "Scripting.AddFacetInSubTree", params);
-        assertTrue(result instanceof DocumentModelList);
-
+        DocumentModel[] docs = (DocumentModel[]) ScriptUtils.convert(result, DocumentModel[].class);
+        assertEquals(5, docs.length);
     }
 
     @Test
