@@ -19,8 +19,13 @@
 
 package org.nuxeo.ecm.platform.ui.web.util.files;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import javax.servlet.http.Part;
 
@@ -77,6 +82,51 @@ public class FileUtils {
         } catch (IOException e) {
             log.error(e);
         }
+        return blob;
+    }
+
+    /**
+     * Creates a Blob from a {@link Part}.
+     * <p>
+     * Attempts to capture the underlying temporary file, if one exists. This needs to use reflection to avoid having
+     * dependencies on the application server.
+     *
+     * @param part the servlet part
+     * @return the blob
+     * @since 7.2
+     */
+    public static Blob createBlob(Part part) throws IOException {
+        Blob blob = null;
+        try {
+            // part : org.apache.catalina.core.ApplicationPart
+            // part.fileItem : org.apache.tomcat.util.http.fileupload.disk.DiskFileItem
+            // part.fileItem.isInMemory() : false if on disk
+            // part.fileItem.getStoreLocation() : java.io.File
+            Field fileItemField = part.getClass().getDeclaredField("fileItem");
+            fileItemField.setAccessible(true);
+            Object fileItem = fileItemField.get(part);
+            if (fileItem != null) {
+                Method isInMemoryMethod = fileItem.getClass().getDeclaredMethod("isInMemory");
+                boolean inMemory = ((Boolean) isInMemoryMethod.invoke(fileItem)).booleanValue();
+                if (!inMemory) {
+                    Method getStoreLocationMethod = fileItem.getClass().getDeclaredMethod("getStoreLocation");
+                    File file = (File) getStoreLocationMethod.invoke(fileItem);
+                    if (file != null) {
+                        // move the file to a temporary blob we own
+                        blob = Blobs.createBlobWithExtension(null);
+                        Files.move(file.toPath(), blob.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    }
+                }
+            }
+        } catch (ReflectiveOperationException | SecurityException | IllegalArgumentException e) {
+            // unknown Part implementation
+        }
+        if (blob == null) {
+            // if we couldn't get to the file, use the InputStream
+            blob = Blobs.createBlob(part.getInputStream());
+        }
+        blob.setMimeType(part.getContentType());
+        blob.setFilename(retrieveFilename(part));
         return blob;
     }
 

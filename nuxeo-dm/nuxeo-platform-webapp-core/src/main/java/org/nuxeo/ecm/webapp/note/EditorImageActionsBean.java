@@ -180,10 +180,8 @@ public class EditorImageActionsBean extends InputController implements EditorIma
             final int fileIndex = filesList == null ? 0 : filesList.size();
 
             final Map<String, Object> props = new HashMap<String, Object>();
-            String filename = FileUtils.retrieveFilename(uploadedImage);
-            Blob blob = FileUtils.createSerializableBlob(uploadedImage.getInputStream(), filename,
-                    uploadedImage.getContentType());
-            props.put("filename", filename);
+            Blob blob = FileUtils.createBlob(uploadedImage);
+            props.put("filename", blob.getFilename());
             props.put("file", blob);
             final ListDiff listDiff = new ListDiff();
             listDiff.add(props);
@@ -192,7 +190,7 @@ public class EditorImageActionsBean extends InputController implements EditorIma
             documentManager.saveDocument(doc);
             documentManager.save();
 
-            imageUrl = DocumentModelFunctions.complexFileUrl("downloadFile", doc, fileIndex, filename);
+            imageUrl = DocumentModelFunctions.complexFileUrl("downloadFile", doc, fileIndex, blob.getFilename());
 
             isImageUploaded = true;
 
