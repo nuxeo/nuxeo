@@ -448,12 +448,15 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         Set<IdRef> references = new LinkedHashSet<IdRef>();
         Set<String> paths = new LinkedHashSet<String>();
         IterableQueryResult results = session.queryAndFetch(query, NXQL.NXQL);
-        for (Map<String, Serializable> result : results) {
-            IdRef docRef = new IdRef(result.get("ecm:uuid").toString());
-            references.add(docRef);
-            paths.add(session.getDocument(docRef).getPathAsString());
+        try {
+            for (Map<String, Serializable> result : results) {
+                IdRef docRef = new IdRef(result.get("ecm:uuid").toString());
+                references.add(docRef);
+                paths.add(session.getDocument(docRef).getPathAsString());
+            }
+        } finally {
+            results.close();
         }
-        results.close();
         SynchronizationRoots repoSyncRoots = new SynchronizationRoots(session.getRepositoryName(), paths, references);
         syncRoots.put(session.getRepositoryName(), repoSyncRoots);
         return syncRoots;
