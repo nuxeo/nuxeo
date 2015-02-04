@@ -31,6 +31,7 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -64,36 +65,37 @@ public class DefaultTopLevelFolderItem extends AbstractVirtualFolderItem {
         Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getLocalService(NuxeoDriveManager.class).getSynchronizationRoots(
                 principal);
         for (String repositoryName : syncRootsByRepo.keySet()) {
-            CoreSession session = getSession(repositoryName);
-            Set<IdRef> syncRootRefs = syncRootsByRepo.get(repositoryName).getRefs();
-            Iterator<IdRef> syncRootRefsIt = syncRootRefs.iterator();
-            while (syncRootRefsIt.hasNext()) {
-                IdRef idRef = syncRootRefsIt.next();
-                // TODO: ensure sync roots cache is up-to-date if ACL
-                // change, for now need to check permission
-                // See https://jira.nuxeo.com/browse/NXP-11146
-                if (!session.hasPermission(idRef, SecurityConstants.READ)) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "User %s has no READ access on synchronization root %s, not including it in children.",
-                                session.getPrincipal().getName(), idRef));
+            try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+                Set<IdRef> syncRootRefs = syncRootsByRepo.get(repositoryName).getRefs();
+                Iterator<IdRef> syncRootRefsIt = syncRootRefs.iterator();
+                while (syncRootRefsIt.hasNext()) {
+                    IdRef idRef = syncRootRefsIt.next();
+                    // TODO: ensure sync roots cache is up-to-date if ACL
+                    // change, for now need to check permission
+                    // See https://jira.nuxeo.com/browse/NXP-11146
+                    if (!session.hasPermission(idRef, SecurityConstants.READ)) {
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format(
+                                    "User %s has no READ access on synchronization root %s, not including it in children.",
+                                    session.getPrincipal().getName(), idRef));
+                        }
+                        continue;
                     }
-                    continue;
-                }
-                DocumentModel doc = session.getDocument(idRef);
-                FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(doc, this);
-                if (child == null) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "Synchronization root %s cannot be adapted as a FileSystemItem, not including it in children.",
-                                idRef));
+                    DocumentModel doc = session.getDocument(idRef);
+                    FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(doc, this);
+                    if (child == null) {
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format(
+                                    "Synchronization root %s cannot be adapted as a FileSystemItem, not including it in children.",
+                                    idRef));
+                        }
+                        continue;
                     }
-                    continue;
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Including synchronization root %s in children.", idRef));
+                    }
+                    children.add(child);
                 }
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Including synchronization root %s in children.", idRef));
-                }
-                children.add(child);
             }
         }
         Collections.sort(children);

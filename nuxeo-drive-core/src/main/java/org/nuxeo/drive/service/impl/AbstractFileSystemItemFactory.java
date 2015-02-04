@@ -28,6 +28,7 @@ import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -134,8 +135,11 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
      */
     @Override
     public boolean exists(String id, Principal principal) throws ClientException {
-        try {
-            DocumentModel doc = getDocumentByFileSystemId(id, principal);
+        String[] idFragments = parseFileSystemId(id);
+        String repositoryName = idFragments[1];
+        String docId = idFragments[2];
+        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+            DocumentModel doc = getDocumentById(docId, session);
             return isFileSystemItem(doc);
         } catch (ClientException e) {
             if (e.getCause() instanceof NoSuchDocumentException) {
@@ -151,8 +155,11 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
 
     @Override
     public FileSystemItem getFileSystemItemById(String id, Principal principal) throws ClientException {
-        try {
-            DocumentModel doc = getDocumentByFileSystemId(id, principal);
+        String[] idFragments = parseFileSystemId(id);
+        String repositoryName = idFragments[1];
+        String docId = idFragments[2];
+        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+            DocumentModel doc = getDocumentById(docId, session);
             return getFileSystemItem(doc);
         } catch (ClientException e) {
             if (e.getCause() instanceof NoSuchDocumentException) {
@@ -164,18 +171,20 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
                 throw e;
             }
         }
-
     }
 
     @Override
     public FileSystemItem getFileSystemItemById(String id, String parentId, Principal principal) throws ClientException {
-        try {
+        String[] idFragments = parseFileSystemId(id);
+        String repositoryName = idFragments[1];
+        String docId = idFragments[2];
+        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             FileSystemItem parentItem = Framework.getService(FileSystemItemAdapterService.class).getFileSystemItemFactoryForId(
                     parentId).getFileSystemItemById(parentId, principal);
             if (!(parentItem instanceof FolderItem)) {
                 throw new ClientException(String.format("FileSystemItem with id %s should be a FolderItem", parentId));
             }
-            DocumentModel doc = getDocumentByFileSystemId(id, principal);
+            DocumentModel doc = getDocumentById(docId, session);
             return getFileSystemItem(doc, (FolderItem) parentItem);
         } catch (ClientException e) {
             if (e.getCause() instanceof NoSuchDocumentException) {
@@ -190,6 +199,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
 
     }
 
+    @Deprecated
     @Override
     public DocumentModel getDocumentByFileSystemId(String id, Principal principal) throws ClientException {
         // Parse id, expecting

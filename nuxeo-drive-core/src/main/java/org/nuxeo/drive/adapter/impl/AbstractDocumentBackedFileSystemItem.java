@@ -32,6 +32,7 @@ import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -190,16 +191,28 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
     /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void delete() throws ClientException {
-        DocumentModel doc = getDocument(getSession());
-        FileSystemItemFactory parentFactory = getFileSystemItemAdapterService().getFileSystemItemFactoryForId(parentId);
-        // Handle removal from a collection sync root
-        if (CollectionSyncRootFolderItemFactory.FACTORY_NAME.equals(parentFactory.getName())) {
-            DocumentModel collection = parentFactory.getDocumentByFileSystemId(parentId, principal);
-            Framework.getService(CollectionManager.class).removeFromCollection(collection, doc, getSession());
-        } else {
-            List<DocumentModel> docs = new ArrayList<DocumentModel>();
-            docs.add(doc);
-            getTrashService().trashDocuments(docs);
+        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+            DocumentModel doc = getDocument(session);
+            FileSystemItemFactory parentFactory = getFileSystemItemAdapterService().getFileSystemItemFactoryForId(
+                    parentId);
+            // Handle removal from a collection sync root
+            if (CollectionSyncRootFolderItemFactory.FACTORY_NAME.equals(parentFactory.getName())) {
+                String[] idFragments = parseFileSystemId(parentId);
+                String parentRepositoryName = idFragments[1];
+                String parentDocId = idFragments[2];
+                if (!parentRepositoryName.equals(repositoryName)) {
+                    throw new UnsupportedOperationException(
+                            String.format(
+                                    "Found collection member: %s [repo=%s] in a different repository from the collection one: %s [repo=%s].",
+                                    doc, repositoryName, parentDocId, parentRepositoryName));
+                }
+                DocumentModel collection = getDocumentById(parentDocId, session);
+                Framework.getService(CollectionManager.class).removeFromCollection(collection, doc, session);
+            } else {
+                List<DocumentModel> docs = new ArrayList<DocumentModel>();
+                docs.add(doc);
+                getTrashService().trashDocuments(docs);
+            }
         }
     }
 
@@ -213,18 +226,18 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
         AbstractDocumentBackedFileSystemItem docBackedDest = (AbstractDocumentBackedFileSystemItem) dest;
         String destRepoName = docBackedDest.getRepositoryName();
         DocumentRef destDocRef = new IdRef(docBackedDest.getDocId());
+        String sessionRepo = repositoryName;
         // If source and destination repository are different, use a core
         // session bound to the destination repository
-        CoreSession session;
-        if (repositoryName.equals(destRepoName)) {
-            session = getSession();
-        } else {
-            session = getSession(destRepoName);
+        if (!repositoryName.equals(destRepoName)) {
+            sessionRepo = destRepoName;
         }
-        if (!session.hasPermission(destDocRef, SecurityConstants.ADD_CHILDREN)) {
-            return false;
+        try (CoreSession session = CoreInstance.openCoreSession(sessionRepo, principal)) {
+            if (!session.hasPermission(destDocRef, SecurityConstants.ADD_CHILDREN)) {
+                return false;
+            }
+            return true;
         }
-        return true;
     }
 
     @Override
@@ -236,10 +249,11 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
         // If source and destination repository are different, delete source and
         // create doc in destination
         if (repositoryName.equals(destRepoName)) {
-            CoreSession session = getSession();
-            DocumentModel movedDoc = session.move(sourceDocRef, destDocRef, null);
-            session.save();
-            return getFileSystemItemAdapterService().getFileSystemItem(movedDoc, dest);
+            try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+                DocumentModel movedDoc = session.move(sourceDocRef, destDocRef, null);
+                session.save();
+                return getFileSystemItemAdapterService().getFileSystemItem(movedDoc, dest);
+            }
         } else {
             // TODO: implement move to another repository
             throw new UnsupportedOperationException("Multi repository move is not supported yet.");
@@ -247,10 +261,6 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
     }
 
     /*--------------------- Protected -------------------------*/
-    protected CoreSession getSession() throws ClientException {
-        return getSession(repositoryName);
-    }
-
     protected final String computeId(String docId) {
         StringBuilder sb = new StringBuilder();
         sb.append(super.getId());
@@ -273,6 +283,10 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
     }
 
     protected DocumentModel getDocument(CoreSession session) throws ClientException {
+        return session.getDocument(new IdRef(docId));
+    }
+
+    protected DocumentModel getDocumentById(String docId, CoreSession session) throws ClientException {
         return session.getDocument(new IdRef(docId));
     }
 

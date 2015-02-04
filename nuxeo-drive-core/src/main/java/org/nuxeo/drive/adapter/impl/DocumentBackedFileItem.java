@@ -24,6 +24,7 @@ import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -77,29 +78,32 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void rename(String name) throws ClientException {
-        /* Update doc properties */
-        CoreSession session = getSession();
-        DocumentModel doc = getDocument(session);
-        // Handle versioning
-        versionIfNeeded(doc, session);
-        BlobHolder bh = getBlobHolder(doc);
-        Blob blob = getBlob(bh);
-        blob.setFilename(name);
-        bh.setBlob(blob);
-        updateDocTitleIfNeeded(doc, name);
-        doc = session.saveDocument(doc);
-        session.save();
-        /* Update FileSystemItem attributes */
-        this.name = name;
-        updateDownloadURL();
-        updateLastModificationDate(doc);
+        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+            /* Update doc properties */
+            DocumentModel doc = getDocument(session);
+            // Handle versioning
+            versionIfNeeded(doc, session);
+            BlobHolder bh = getBlobHolder(doc);
+            Blob blob = getBlob(bh);
+            blob.setFilename(name);
+            bh.setBlob(blob);
+            updateDocTitleIfNeeded(doc, name);
+            doc = session.saveDocument(doc);
+            session.save();
+            /* Update FileSystemItem attributes */
+            this.name = name;
+            updateDownloadURL();
+            updateLastModificationDate(doc);
+        }
     }
 
     /*--------------------- FileItem -----------------*/
     @Override
     public Blob getBlob() throws ClientException {
-        DocumentModel doc = getDocument(getSession());
-        return getBlob(doc);
+        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+            DocumentModel doc = getDocument(session);
+            return getBlob(doc);
+        }
     }
 
     @Override
@@ -124,27 +128,28 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
 
     @Override
     public void setBlob(Blob blob) throws ClientException {
-        /* Update doc properties */
-        CoreSession session = getSession();
-        DocumentModel doc = getDocument(session);
-        // Handle versioning
-        versionIfNeeded(doc, session);
-        // If blob's filename is empty, set it to the current name
-        String blobFileName = blob.getFilename();
-        if (StringUtils.isEmpty(blobFileName)) {
-            blob.setFilename(name);
-        } else {
-            updateDocTitleIfNeeded(doc, blobFileName);
-            name = blobFileName;
-            updateDownloadURL();
+        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+            /* Update doc properties */
+            DocumentModel doc = getDocument(session);
+            // Handle versioning
+            versionIfNeeded(doc, session);
+            // If blob's filename is empty, set it to the current name
+            String blobFileName = blob.getFilename();
+            if (StringUtils.isEmpty(blobFileName)) {
+                blob.setFilename(name);
+            } else {
+                updateDocTitleIfNeeded(doc, blobFileName);
+                name = blobFileName;
+                updateDownloadURL();
+            }
+            BlobHolder bh = getBlobHolder(doc);
+            bh.setBlob(blob);
+            doc = session.saveDocument(doc);
+            session.save();
+            /* Update FileSystemItem attributes */
+            updateLastModificationDate(doc);
+            updateDigest(doc);
         }
-        BlobHolder bh = getBlobHolder(doc);
-        bh.setBlob(blob);
-        doc = session.saveDocument(doc);
-        session.save();
-        /* Update FileSystemItem attributes */
-        updateLastModificationDate(doc);
-        updateDigest(doc);
     }
 
     /*--------------------- Protected -----------------*/

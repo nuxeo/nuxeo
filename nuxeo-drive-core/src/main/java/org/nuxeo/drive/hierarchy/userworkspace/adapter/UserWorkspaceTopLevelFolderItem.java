@@ -27,6 +27,8 @@ import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.VirtualFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
 
@@ -100,7 +102,9 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
         // Register user workspace as a synchronization root if it is not
         // already the case
         if (!getNuxeoDriveManager().isSynchronizationRoot(principal, userWorkspace)) {
-            getNuxeoDriveManager().registerSynchronizationRoot(principal, userWorkspace, getSession());
+            try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+                getNuxeoDriveManager().registerSynchronizationRoot(principal, userWorkspace, session);
+            }
         }
 
         List<FileSystemItem> children = new ArrayList<FileSystemItem>();

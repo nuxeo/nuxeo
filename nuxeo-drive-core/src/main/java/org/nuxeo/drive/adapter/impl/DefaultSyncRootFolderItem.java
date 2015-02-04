@@ -20,6 +20,7 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
@@ -52,9 +53,10 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem implemen
 
     @Override
     public void delete() throws ClientException {
-        CoreSession session = getSession();
-        DocumentModel doc = getDocument(session);
-        Framework.getLocalService(NuxeoDriveManager.class).unregisterSynchronizationRoot(principal, doc, session);
+        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+            DocumentModel doc = getDocument(session);
+            Framework.getLocalService(NuxeoDriveManager.class).unregisterSynchronizationRoot(principal, doc, session);
+        }
     }
 
     @Override

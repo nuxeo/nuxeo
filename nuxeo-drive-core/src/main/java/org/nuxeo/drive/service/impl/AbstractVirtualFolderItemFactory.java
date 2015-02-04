@@ -151,6 +151,7 @@ public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderI
         return getFileSystemItemById(id, principal);
     }
 
+    @Deprecated
     @Override
     public DocumentModel getDocumentByFileSystemId(String id, Principal principal) throws ClientException {
         throw new UnsupportedOperationException(String.format(

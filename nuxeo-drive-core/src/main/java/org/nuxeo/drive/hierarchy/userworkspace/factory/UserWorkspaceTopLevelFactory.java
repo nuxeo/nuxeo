@@ -26,10 +26,10 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceHelper;
 import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceTopLevelFolderItem;
-import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.drive.service.impl.AbstractFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -119,29 +119,17 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory 
     /*----------------------- TopLevelFolderItemFactory ---------------------*/
     @Override
     public FolderItem getTopLevelFolderItem(Principal principal) throws ClientException {
-        DocumentModel userWorkspace = getUserPersonalWorkspace(principal);
-        return (FolderItem) getFileSystemItem(userWorkspace);
-    }
-
-    /*------------------- Protected ------------------- */
-    protected DocumentModel getUserPersonalWorkspace(Principal principal) throws ClientException {
-        UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         // TODO: handle multiple repositories
-        CoreSession session = getSession(repositoryManager.getDefaultRepositoryName(), principal);
-        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
-        if (userWorkspace == null) {
-            throw new ClientException(String.format("No personal workspace found for user %s.", principal.getName()));
+        try (CoreSession session = CoreInstance.openCoreSession(repositoryManager.getDefaultRepositoryName(), principal)) {
+            UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
+            DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
+            if (userWorkspace == null) {
+                throw new ClientException(
+                        String.format("No personal workspace found for user %s.", principal.getName()));
+            }
+            return (FolderItem) getFileSystemItem(userWorkspace);
         }
-        return userWorkspace;
-    }
-
-    protected CoreSession getSession(String repositoryName, Principal principal) throws ClientException {
-        return getFileSystemItemManager().getSession(repositoryName, principal);
-    }
-
-    protected FileSystemItemManager getFileSystemItemManager() {
-        return Framework.getLocalService(FileSystemItemManager.class);
     }
 
 }

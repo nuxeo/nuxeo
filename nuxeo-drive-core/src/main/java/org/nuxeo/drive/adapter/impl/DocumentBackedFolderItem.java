@@ -30,6 +30,7 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -79,57 +80,61 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void rename(String name) throws ClientException {
-        // Update doc properties
-        CoreSession session = getSession();
-        DocumentModel doc = getDocument(session);
-        doc.setPropertyValue("dc:title", name);
-        doc = session.saveDocument(doc);
-        session.save();
-        // Update FileSystemItem attributes
-        this.docTitle = name;
-        this.name = name;
-        updateLastModificationDate(doc);
+        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+            // Update doc properties
+            DocumentModel doc = getDocument(session);
+            doc.setPropertyValue("dc:title", name);
+            doc = session.saveDocument(doc);
+            session.save();
+            // Update FileSystemItem attributes
+            this.docTitle = name;
+            this.name = name;
+            updateLastModificationDate(doc);
+        }
     }
 
     /*--------------------- FolderItem -----------------*/
     @Override
     @SuppressWarnings("unchecked")
     public List<FileSystemItem> getChildren() throws ClientException {
-        PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CORE_SESSION_PROPERTY, (Serializable) getSession());
-        PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                FOLDER_ITEM_CHILDREN_PAGE_PROVIDER, null, null, 0L, props, docId);
-        Long pageSize = childrenPageProvider.getPageSize();
+        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+            PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
+            Map<String, Serializable> props = new HashMap<String, Serializable>();
+            props.put(CORE_SESSION_PROPERTY, (Serializable) session);
+            PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                    FOLDER_ITEM_CHILDREN_PAGE_PROVIDER, null, null, 0L, props, docId);
+            Long pageSize = childrenPageProvider.getPageSize();
 
-        List<FileSystemItem> children = new ArrayList<FileSystemItem>();
-        int nbChildren = 0;
-        boolean reachedPageSize = false;
-        boolean hasNextPage = true;
-        // Since query results are filtered, make sure we iterate on PageProvider to get at most its page size number of
-        // FileSystemItems
-        while (nbChildren < pageSize && hasNextPage) {
-            List<DocumentModel> dmChildren = childrenPageProvider.getCurrentPage();
-            for (DocumentModel dmChild : dmChildren) {
-                FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(dmChild, this);
-                if (child != null) {
-                    children.add(child);
-                    nbChildren++;
-                    if (nbChildren == pageSize) {
-                        reachedPageSize = true;
-                        break;
+            List<FileSystemItem> children = new ArrayList<FileSystemItem>();
+            int nbChildren = 0;
+            boolean reachedPageSize = false;
+            boolean hasNextPage = true;
+            // Since query results are filtered, make sure we iterate on PageProvider to get at most its page size
+            // number of
+            // FileSystemItems
+            while (nbChildren < pageSize && hasNextPage) {
+                List<DocumentModel> dmChildren = childrenPageProvider.getCurrentPage();
+                for (DocumentModel dmChild : dmChildren) {
+                    FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(dmChild, this);
+                    if (child != null) {
+                        children.add(child);
+                        nbChildren++;
+                        if (nbChildren == pageSize) {
+                            reachedPageSize = true;
+                            break;
+                        }
+                    }
+                }
+                if (!reachedPageSize) {
+                    hasNextPage = childrenPageProvider.isNextPageAvailable();
+                    if (hasNextPage) {
+                        childrenPageProvider.nextPage();
                     }
                 }
             }
-            if (!reachedPageSize) {
-                hasNextPage = childrenPageProvider.isNextPageAvailable();
-                if (hasNextPage) {
-                    childrenPageProvider.nextPage();
-                }
-            }
-        }
 
-        return children;
+            return children;
+        }
     }
 
     @Override
@@ -139,8 +144,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
 
     @Override
     public FolderItem createFolder(String name) throws ClientException {
-        try {
-            DocumentModel folder = getFileManager().createFolder(getSession(), name, docPath);
+        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+            DocumentModel folder = getFileManager().createFolder(session, name, docPath);
             if (folder == null) {
                 throw new ClientException(
                         String.format(
@@ -157,9 +162,9 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     @Override
     public FileItem createFile(Blob blob) throws ClientException {
         String fileName = blob.getFilename();
-        try {
+        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             // TODO: manage conflict (overwrite should not necessarily be true)
-            DocumentModel file = getFileManager().createDocumentFromBlob(getSession(), blob, docPath, true, fileName);
+            DocumentModel file = getFileManager().createDocumentFromBlob(session, blob, docPath, true, fileName);
             if (file == null) {
                 throw new ClientException(
                         String.format(

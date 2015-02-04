@@ -23,9 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
-import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -207,14 +205,6 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     }
 
     /*--------------------- Protected ---------------------*/
-    protected CoreSession getSession(String repositoryName) throws ClientException {
-        return getFileSystemItemManager().getSession(repositoryName, principal);
-    }
-
-    protected FileSystemItemManager getFileSystemItemManager() {
-        return Framework.getLocalService(FileSystemItemManager.class);
-    }
-
     protected FileSystemItemAdapterService getFileSystemItemAdapterService() {
         return Framework.getLocalService(FileSystemItemAdapterService.class);
     }

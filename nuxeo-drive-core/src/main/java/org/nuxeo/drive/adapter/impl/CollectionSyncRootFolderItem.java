@@ -30,6 +30,8 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -62,22 +64,23 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem impl
     @Override
     @SuppressWarnings("unchecked")
     public List<FileSystemItem> getChildren() throws ClientException {
+        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+            PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
+            Map<String, Serializable> props = new HashMap<String, Serializable>();
+            props.put(CORE_SESSION_PROPERTY, (Serializable) session);
+            PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                    CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER, null, null, 0L, props, docId);
+            List<DocumentModel> dmChildren = childrenPageProvider.getCurrentPage();
 
-        PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CORE_SESSION_PROPERTY, (Serializable) getSession());
-        PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER, null, null, 0L, props, docId);
-        List<DocumentModel> dmChildren = childrenPageProvider.getCurrentPage();
-
-        List<FileSystemItem> children = new ArrayList<FileSystemItem>(dmChildren.size());
-        for (DocumentModel dmChild : dmChildren) {
-            FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(dmChild, this);
-            if (child != null) {
-                children.add(child);
+            List<FileSystemItem> children = new ArrayList<FileSystemItem>(dmChildren.size());
+            for (DocumentModel dmChild : dmChildren) {
+                FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(dmChild, this);
+                if (child != null) {
+                    children.add(child);
+                }
             }
+            return children;
         }
-        return children;
     }
 
     @Override

@@ -62,6 +62,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
         }
     };
 
+    @Deprecated
     @Override
     public CoreSession getSession(String repositoryName, Principal principal) throws ClientException {
         final String sessionKey = repositoryName + "/" + principal.getName();

@@ -25,6 +25,7 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.impl.FileSystemItemManagerImpl;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
@@ -47,7 +48,10 @@ public interface FileSystemItemManager {
 
     /**
      * Gets a session bound to the given repository for the given principal.
+     *
+     * @deprecated since 7.2, use {@link CoreInstance#openCoreSession(String, Principal)} instead.
      */
+    @Deprecated
     CoreSession getSession(String repositoryName, Principal principal) throws ClientException;
 
     /*------------- Read operations ----------------*/
