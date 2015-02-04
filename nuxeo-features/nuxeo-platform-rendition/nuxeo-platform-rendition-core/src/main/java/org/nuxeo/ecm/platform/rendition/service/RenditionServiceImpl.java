@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.extension.DefaultAutomationRenditionProvider;
@@ -64,7 +63,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     @Override
     public void activate(ComponentContext context) {
-        renditionDefinitions = new HashMap<String, RenditionDefinition>();
+        renditionDefinitions = new HashMap<>();
         super.activate(context);
     }
 
@@ -77,13 +76,13 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     @Override
     @Deprecated
     public List<RenditionDefinition> getDeclaredRenditionDefinitions() {
-        return new ArrayList<RenditionDefinition>(renditionDefinitions.values());
+        return new ArrayList<>(renditionDefinitions.values());
     }
 
     @Override
     @Deprecated
     public List<RenditionDefinition> getDeclaredRenditionDefinitionsForProviderType(String providerType) {
-        List<RenditionDefinition> defs = new ArrayList<RenditionDefinition>();
+        List<RenditionDefinition> defs = new ArrayList<>();
         for (RenditionDefinition def : getDeclaredRenditionDefinitions()) {
             if (def.getProviderType().equals(providerType)) {
                 defs.add(def);
@@ -94,7 +93,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     @Override
     public List<RenditionDefinition> getAvailableRenditionDefinitions(DocumentModel doc) {
-        List<RenditionDefinition> defs = new ArrayList<RenditionDefinition>();
+        List<RenditionDefinition> defs = new ArrayList<>();
         for (RenditionDefinition def : renditionDefinitions.values()) {
             if (def.getProvider().isAvailable(doc, def)) {
                 defs.add(def);
@@ -278,7 +277,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     public List<Rendition> getAvailableRenditions(DocumentModel doc) throws RenditionException {
 
-        List<Rendition> renditions = new ArrayList<Rendition>();
+        List<Rendition> renditions = new ArrayList<>();
 
         if (doc.isProxy()) {
             return renditions;

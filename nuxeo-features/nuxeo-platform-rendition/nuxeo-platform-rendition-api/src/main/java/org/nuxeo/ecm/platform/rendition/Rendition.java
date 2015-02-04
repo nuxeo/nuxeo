@@ -27,65 +27,49 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
  * Interface hiding the actual rendition implementation and allowing for Lazy computation of the rendition blobs.
  * <p>
  * RenditionDefinition is partially wrapper in the {@link Rendition}
- * 
+ *
  * @since 5.6
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public interface Rendition {
 
     /**
-     * get icon file name
-     * 
-     * @return
+     * Returns icon file name
      */
     String getIcon();
 
     /**
-     * get the {@link RenditionDefinition} name
-     * 
-     * @return
+     * Returns the {@link RenditionDefinition} name
      */
     String getName();
 
     /**
-     * get the {@link RenditionDefinition} label s@return
+     * Returns the {@link RenditionDefinition} label s@return
      */
     String getLabel();
 
     /**
-     * Get the King of the {@link RenditionDefinition}
-     * 
-     * @return
+     * Returns the King of the {@link RenditionDefinition}
      */
     String getKind();
 
     /**
-     * return the type of the provider that was used to generate the rendition
-     * 
-     * @return
+     * Returns the type of the provider that was used to generate the rendition
      */
     String getProviderType();
 
     /**
      * Indicates if the Rendition is stored or live
-     * 
-     * @return
      */
     boolean isStored();
 
     /**
-     * Return rendered Blob
-     * 
-     * @return
-     * @throws RenditionException
+     * Returns rendered Blob
      */
     Blob getBlob() throws RenditionException;
 
     /**
-     * Return rendered Blobs
-     * 
-     * @return
-     * @throws RenditionException
+     * Returns rendered Blobs
      */
     List<Blob> getBlobs() throws RenditionException;
 
@@ -94,17 +78,13 @@ public interface Rendition {
      * <p>
      * In case of a Live rendition it will be the target document and in case of stored Rendition it will be the
      * Rendition document it self
-     * 
-     * @return
      */
     DocumentModel getHostDocument();
 
     /**
-     * Get last modification date.
+     * Returns last modification date.
      * <p>
-     * returns current time for live renditions
-     * 
-     * @return
+     * Returns current time for live renditions.
      */
 
     Calendar getModificationDate();
