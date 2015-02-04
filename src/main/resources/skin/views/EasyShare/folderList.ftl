@@ -17,10 +17,10 @@
 
       <div class="shared-items">
         <#list docList as doc>
-
-          <a class="item" title="document name" href="${docFolder.id}/${doc.id}/${This.getFileName(doc)}">
+          <#assign filename=This.getFileName(doc)>
+          <a class="item" title="${filename}" href="${docFolder.id}/${doc.id}/${filename}">
         <span class="document">
-          <i class="icon-file"></i>${doc.title} - ${This.getFileName(doc)}
+          <i class="icon-file"></i>${doc.title}<#if filename != doc.title> - ${filename}</#if>
         </span>
             <i class="icon-download"></i>
           </a>
