@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.schema.types.SimpleType;
+import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
@@ -77,6 +78,13 @@ public class TestDirectoryEntryResolver extends SQLDirectoryTestCase {
         entry2 = session2.getEntry(ENTRY_ID);
         session2.close();
         doc = coreSession.createDocumentModel("/", "doc1", "DirectoryReferencer");
+    }
+
+    @Test
+    public void supportedClasses() throws Exception {
+        List<Class<?>> classes = new DirectoryEntryResolver().getManagedClasses();
+        assertEquals(1, classes.size());
+        assertTrue(classes.contains(DirectoryEntry.class));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -172,8 +180,8 @@ public class TestDirectoryEntryResolver extends SQLDirectoryTestCase {
         parameters.put(PARAM_DIRECTORY, REFERENCED_DIRECTORY1);
         derr.configure(parameters);
         Object entity = derr.fetch(ENTRY_ID);
-        assertTrue(entity instanceof DocumentModel);
-        assertEquals(ENTRY_LABEL, ((DocumentModel) entity).getPropertyValue("drs:label"));
+        assertTrue(entity instanceof DirectoryEntry);
+        assertEquals(ENTRY_LABEL, ((DirectoryEntry) entity).getDocumentModel().getPropertyValue("drs:label"));
     }
 
     @Test
@@ -269,10 +277,12 @@ public class TestDirectoryEntryResolver extends SQLDirectoryTestCase {
     @Test
     public void testRefCorrectValues() {
         doc.setPropertyValue(REF1_XPATH, ENTRY_ID);
-        DocumentModel document = (DocumentModel) doc.getProperty(REF1_XPATH).getObjectResolver().fetch();
+        DirectoryEntry entry = (DirectoryEntry) doc.getProperty(REF1_XPATH).getObjectResolver().fetch();
+        DocumentModel document = entry.getDocumentModel();
         assertNotNull(document);
         assertEquals(ENTRY_LABEL, document.getPropertyValue("drs:label"));
-        document = (DocumentModel) doc.getObjectResolver(REF1_XPATH).fetch();
+        entry = (DirectoryEntry) doc.getObjectResolver(REF1_XPATH).fetch();
+        document = entry.getDocumentModel();
         assertNotNull(document);
         assertEquals(ENTRY_LABEL, document.getPropertyValue("drs:label"));
         document = doc.getProperty(REF1_XPATH).getObjectResolver().fetch(DocumentModel.class);

@@ -46,6 +46,13 @@ public interface ObjectResolver {
     void configure(Map<String, String> parameters) throws IllegalArgumentException, IllegalArgumentException;
 
     /**
+     * Returns the resolved object types.
+     *
+     * @since 7.2
+     */
+    List<Class<?>> getManagedClasses();
+
+    /**
      * Provides this resolver name.
      *
      * @return The resolver name.

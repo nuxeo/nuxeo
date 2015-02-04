@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.core.api.model.resolver;
 
+import java.util.List;
+
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
 /**
@@ -25,6 +27,13 @@ import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
  * @since 7.1
  */
 public interface PropertyObjectResolver {
+
+    /**
+     * {@link ObjectResolver#getManagedClasses()}
+     *
+     * @since 7.2
+     */
+    List<Class<?>> getManagedClasses();
 
     /**
      * {@link ObjectResolver#validate(Object)}

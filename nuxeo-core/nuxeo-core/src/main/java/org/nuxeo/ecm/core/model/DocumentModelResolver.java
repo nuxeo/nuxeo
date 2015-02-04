@@ -18,8 +18,10 @@
 package org.nuxeo.ecm.core.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -98,6 +100,17 @@ public class DocumentModelResolver implements ObjectResolver {
 
     public MODE getMode() {
         return mode;
+    }
+
+    private List<Class<?>> managedClasses = null;
+
+    @Override
+    public List<Class<?>> getManagedClasses() {
+        if (managedClasses == null) {
+            managedClasses = new ArrayList<Class<?>>();
+            managedClasses.add(DocumentModel.class);
+        }
+        return managedClasses;
     }
 
     @Override

@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.core.api.model.resolver;
 
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
@@ -32,6 +34,11 @@ public class PropertyObjectResolverImpl implements PropertyObjectResolver {
     public PropertyObjectResolverImpl(Property property, ObjectResolver resolver) {
         this.property = property;
         this.resolver = resolver;
+    }
+
+    @Override
+    public List<Class<?>> getManagedClasses() {
+        return resolver.getManagedClasses();
     }
 
     @Override

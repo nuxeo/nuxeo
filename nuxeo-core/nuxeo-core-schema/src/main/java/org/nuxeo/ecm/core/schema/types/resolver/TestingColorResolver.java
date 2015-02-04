@@ -1,8 +1,10 @@
 package org.nuxeo.ecm.core.schema.types.resolver;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -31,6 +33,17 @@ public class TestingColorResolver implements ObjectResolver {
     private MODE mode;
 
     private Map<String, Serializable> parameters;
+
+    private List<Class<?>> managedClasses = null;
+
+    @Override
+    public List<Class<?>> getManagedClasses() {
+        if (managedClasses == null) {
+            managedClasses = new ArrayList<Class<?>>();
+            managedClasses.add(Color.class);
+        }
+        return managedClasses;
+    }
 
     @Override
     public void configure(Map<String, String> parameters) throws IllegalStateException, IllegalArgumentException {

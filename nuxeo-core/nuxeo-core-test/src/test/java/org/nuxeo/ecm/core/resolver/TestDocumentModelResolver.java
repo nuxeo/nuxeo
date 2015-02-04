@@ -68,6 +68,13 @@ public class TestDocumentModelResolver {
         session.save();
     }
 
+    @Test
+    public void supportedClasses() throws Exception {
+        List<Class<?>> classes = new DocumentModelResolver().getManagedClasses();
+        assertEquals(1, classes.size());
+        assertTrue(classes.contains(DocumentModel.class));
+    }
+
     @Test(expected = IllegalStateException.class)
     public void testLifecycleNoConfigurationFetch() {
         new DocumentModelResolver().fetch("/doc1");

@@ -70,6 +70,47 @@ public class TestUserManagerResolver extends UserManagerTestCase {
         doc = session.createDocumentModel("/", "doc1", "TestResolver");
     }
 
+    @Test
+    public void defaultSupportedClasses() throws Exception {
+        List<Class<?>> classes = new UserManagerResolver().getManagedClasses();
+        assertEquals(2, classes.size());
+        assertTrue(classes.contains(NuxeoPrincipal.class));
+        assertTrue(classes.contains(NuxeoGroup.class));
+    }
+
+    @Test
+    public void userAndGroupSupportedClasses() throws Exception {
+        UserManagerResolver umr = new UserManagerResolver();
+        Map<String, String> parameters = new HashMap<String, String>();
+        umr.configure(parameters);
+        List<Class<?>> classes = umr.getManagedClasses();
+        assertEquals(2, classes.size());
+        assertTrue(classes.contains(NuxeoPrincipal.class));
+        assertTrue(classes.contains(NuxeoGroup.class));
+    }
+
+    @Test
+    public void userSupportedClasses() throws Exception {
+        UserManagerResolver umr = new UserManagerResolver();
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_USER);
+        umr.configure(parameters);
+        List<Class<?>> classes = umr.getManagedClasses();
+        assertEquals(1, classes.size());
+        assertTrue(classes.contains(NuxeoPrincipal.class));
+    }
+
+    @Test
+    public void groupSupportedClasses() throws Exception {
+        UserManagerResolver umr = new UserManagerResolver();
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_GROUP);
+        umr.configure(parameters);
+        List<Class<?>> classes = umr.getManagedClasses();
+        assertEquals(1, classes.size());
+        assertTrue(classes.contains(NuxeoGroup.class));
+    }
+
     @Test(expected = IllegalStateException.class)
     public void testLifecycleNoConfigurationFetch() {
         new UserManagerResolver().fetch("usr:Administrator");

@@ -18,13 +18,16 @@
 package org.nuxeo.ecm.directory;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
+import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -77,6 +80,17 @@ public class DirectoryEntryResolver implements ObjectResolver {
 
     public void setDirectory(Directory directory) {
         this.directory = directory;
+    }
+
+    private List<Class<?>> managedClasses = null;
+
+    @Override
+    public List<Class<?>> getManagedClasses() {
+        if (managedClasses == null) {
+            managedClasses = new ArrayList<Class<?>>();
+            managedClasses.add(DirectoryEntry.class);
+        }
+        return managedClasses;
     }
 
     @Override
@@ -135,7 +149,11 @@ public class DirectoryEntryResolver implements ObjectResolver {
             String id = (String) value;
             Session session = directory.getSession();
             try {
-                return session.getEntry(id);
+                DocumentModel doc = session.getEntry(id);
+                if (doc != null) {
+                    return new DirectoryEntry(directory.getName(), doc);
+                }
+                return null;
             } finally {
                 session.close();
             }
@@ -146,10 +164,13 @@ public class DirectoryEntryResolver implements ObjectResolver {
     @Override
     public <T> T fetch(Class<T> type, Object value) throws IllegalStateException {
         checkConfig();
-        DocumentModel doc = (DocumentModel) fetch(value);
+        DirectoryEntry doc = (DirectoryEntry) fetch(value);
         if (doc != null) {
             if (type.isInstance(doc)) {
                 return type.cast(doc);
+            }
+            if (type.isInstance(doc.getDocumentModel())) {
+                return type.cast(doc.getDocumentModel());
             }
         }
         return null;
@@ -158,12 +179,19 @@ public class DirectoryEntryResolver implements ObjectResolver {
     @Override
     public Serializable getReference(Object entity) throws IllegalStateException {
         checkConfig();
-        if (entity != null && entity instanceof DocumentModel) {
-            DocumentModel doc = (DocumentModel) entity;
-            if (!doc.hasSchema(schema)) {
-                return null;
+        DocumentModel entry = null;
+        if (entity != null) {
+            if (entity instanceof DirectoryEntry) {
+                entry = ((DirectoryEntry) entity).getDocumentModel();
+            } else if (entity instanceof DocumentModel) {
+                entry = (DocumentModel) entity;
             }
-            return (Serializable) doc.getProperty(schema, idField);
+            if (entry != null) {
+                if (!entry.hasSchema(schema)) {
+                    return null;
+                }
+                return (Serializable) entry.getProperty(schema, idField);
+            }
         }
         return null;
     }

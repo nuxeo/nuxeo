@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.api.model.resolver;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -51,6 +52,11 @@ public class DocumentPropertyObjectResolverImpl implements PropertyObjectResolve
         this.doc = doc;
         this.xpath = xpath;
         this.resolver = resolver;
+    }
+
+    @Override
+    public List<Class<?>> getManagedClasses() {
+        return resolver.getManagedClasses();
     }
 
     @Override

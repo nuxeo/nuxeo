@@ -18,8 +18,10 @@
 package org.nuxeo.ecm.platform.usermanager;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -85,6 +87,22 @@ public class UserManagerResolver implements ObjectResolver {
             userManager = Framework.getService(UserManager.class);
         }
         return userManager;
+    }
+
+    private List<Class<?>> managedClasses = null;
+
+    @Override
+    public List<Class<?>> getManagedClasses() {
+        if (managedClasses == null) {
+            managedClasses = new ArrayList<Class<?>>();
+            if (includingUsers) {
+                managedClasses.add(NuxeoPrincipal.class);
+            }
+            if (includingGroups) {
+                managedClasses.add(NuxeoGroup.class);
+            }
+        }
+        return managedClasses;
     }
 
     @Override
