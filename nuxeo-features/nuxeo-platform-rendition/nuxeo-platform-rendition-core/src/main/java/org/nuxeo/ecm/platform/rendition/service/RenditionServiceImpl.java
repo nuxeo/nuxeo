@@ -54,6 +54,10 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     private static final Log log = LogFactory.getLog(RenditionServiceImpl.class);
 
+    /**
+     * @deprecated since 7.2. Not used.
+     */
+    @Deprecated
     protected AutomationService automationService;
 
     protected Map<String, RenditionDefinition> renditionDefinitions;
@@ -71,11 +75,13 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     }
 
     @Override
+    @Deprecated
     public List<RenditionDefinition> getDeclaredRenditionDefinitions() {
         return new ArrayList<RenditionDefinition>(renditionDefinitions.values());
     }
 
     @Override
+    @Deprecated
     public List<RenditionDefinition> getDeclaredRenditionDefinitionsForProviderType(String providerType) {
         List<RenditionDefinition> defs = new ArrayList<RenditionDefinition>();
         for (RenditionDefinition def : getDeclaredRenditionDefinitions()) {
@@ -138,19 +144,12 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         return versionRef;
     }
 
+    /**
+     * @deprecated since 7.2. Not used.
+     */
+    @Deprecated
     protected AutomationService getAutomationService() throws RenditionException {
-        if (automationService == null) {
-            try {
-                automationService = Framework.getService(AutomationService.class);
-            } catch (Exception e) {
-                final String errMsg = "Error connecting to AutomationService. " + e.getMessage();
-                throw new RenditionException(errMsg, "", e);
-            }
-            if (automationService == null) {
-                throw new RenditionException("AutomationService service not bound");
-            }
-        }
-        return automationService;
+        return Framework.getService(AutomationService.class);
     }
 
     @Override
