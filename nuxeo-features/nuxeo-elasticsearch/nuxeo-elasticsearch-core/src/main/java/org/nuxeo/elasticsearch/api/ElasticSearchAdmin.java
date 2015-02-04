@@ -20,6 +20,7 @@ package org.nuxeo.elasticsearch.api;
 
 import java.util.List;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import org.elasticsearch.client.Client;
 
 /**
@@ -60,12 +61,19 @@ public interface ElasticSearchAdmin {
     List<String> getRepositoryNames();
 
     /**
-     * Returns true if there are indexing activities. This include currently running, scheduled and asynchronous
-     * recursive jobs.
+     * Returns true if there are indexing activities scheduled or running.
      *
      * @since 5.9.5
      */
     boolean isIndexingInProgress();
+
+    /**
+     * A {@link java.util.concurrent.Future} that accepts callback on completion when all the indexing
+     * worker are done.
+     *
+     * @since 7.2
+     */
+    ListenableFuture<Boolean> prepareWaitForIndexing();
 
     /**
      * Refresh all document indexes, immediately after the operation occurs, so that the updated document appears in

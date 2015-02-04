@@ -18,6 +18,7 @@
 package org.nuxeo.elasticsearch.test;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -28,6 +29,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -68,29 +71,33 @@ public class TestManualIndexing {
     @Inject
     ElasticSearchAdmin esa;
 
+    @Inject
+    protected WorkManager workManager;
+
+
     private int commandProcessed;
 
-    private boolean syncMode = false;
-
-    public void startCountingCommandProcessed() {
-        Assert.assertEquals(0, esa.getPendingWorkerCount());
-        Assert.assertEquals(0, esa.getPendingCommandCount());
-        commandProcessed = esa.getTotalCommandProcessed();
-    }
-
+    // Number of processed command since the startTransaction
     public void assertNumberOfCommandProcessed(int processed) throws Exception {
         Assert.assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
     }
 
     /**
-     * Wait for sync and async job and refresh the index
+     * Wait for async worker completion then wait for indexing completion
      */
-    public void waitForIndexing() throws Exception {
-        for (int i = 0; (i < 100) && esa.isIndexingInProgress(); i++) {
-            Thread.sleep(100);
-        }
-        Assert.assertFalse("Strill indexing in progress", esa.isIndexingInProgress());
+    public void waitForCompletion() throws Exception {
+        workManager.awaitCompletion(20, TimeUnit.SECONDS);
+        esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
         esa.refresh();
+    }
+
+    protected void startTransaction() {
+        if (!TransactionHelper.isTransactionActive()) {
+            TransactionHelper.startTransaction();
+        }
+        Assert.assertEquals(0, esa.getPendingWorkerCount());
+        Assert.assertEquals(0, esa.getPendingCommandCount());
+        commandProcessed = esa.getTotalCommandProcessed();
     }
 
     @Before
@@ -107,7 +114,6 @@ public class TestManualIndexing {
         doc = session.createDocument(doc);
         session.save();
 
-        startCountingCommandProcessed();
         // sync non recursive
         IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT, true, false);
         esi.indexNonRecursive(cmd);
@@ -154,18 +160,17 @@ public class TestManualIndexing {
 
         // now commit and wait for post commit indexing
         TransactionHelper.commitOrRollbackTransaction();
-        // ask for async indexing
-        startCountingCommandProcessed();
+        waitForCompletion();
+        startTransaction();
+
         IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT, false, false);
         esi.runIndexingWorker(Arrays.asList(cmd));
-        esa.refresh();
-        assertNumberOfCommandProcessed(0);
-
-        waitForIndexing();
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
         assertNumberOfCommandProcessed(1);
 
         // both docs are here
-        TransactionHelper.startTransaction();
+        startTransaction();
         searchResponse = esa.getClient().prepareSearch(IDX_NAME).setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(
                 0).setSize(60).execute().actionGet();
         // System.out.println(searchResponse.getHits().getAt(0).sourceAsString());

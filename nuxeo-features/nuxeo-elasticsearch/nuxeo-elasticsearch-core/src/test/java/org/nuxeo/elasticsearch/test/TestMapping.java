@@ -17,6 +17,7 @@
 
 package org.nuxeo.elasticsearch.test;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +36,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
+import java.util.concurrent.TimeUnit;
+
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.tag" })
@@ -52,12 +55,6 @@ public class TestMapping {
 
     private int commandProcessed;
 
-    public void startCountingCommandProcessed() {
-        Assert.assertEquals(0, esa.getPendingWorkerCount());
-        Assert.assertEquals(0, esa.getPendingCommandCount());
-        commandProcessed = esa.getTotalCommandProcessed();
-    }
-
     public void assertNumberOfCommandProcessed(int processed) throws Exception {
         Assert.assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
     }
@@ -66,10 +63,7 @@ public class TestMapping {
      * Wait for sync and async job and refresh the index
      */
     public void waitForIndexing() throws Exception {
-        for (int i = 0; (i < 100) && esa.isIndexingInProgress(); i++) {
-            Thread.sleep(100);
-        }
-        Assert.assertFalse("Still indexing in progress", esa.isIndexingInProgress());
+        esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
         esa.refresh();
     }
 
@@ -77,6 +71,9 @@ public class TestMapping {
         if (!TransactionHelper.isTransactionActive()) {
             TransactionHelper.startTransaction();
         }
+        Assert.assertEquals(0, esa.getPendingWorkerCount());
+        Assert.assertEquals(0, esa.getPendingCommandCount());
+        commandProcessed = esa.getTotalCommandProcessed();
     }
 
     @Before
@@ -102,7 +99,6 @@ public class TestMapping {
         doc.setPropertyValue("dc:description", "lower case desc");
         doc = session.createDocument(doc);
 
-        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
         waitForIndexing();
         assertNumberOfCommandProcessed(3);

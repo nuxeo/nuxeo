@@ -17,6 +17,8 @@
 
 package org.nuxeo.elasticsearch.test;
 
+import org.junit.After;
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -26,6 +28,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
@@ -35,6 +38,14 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 public class RepositoryElasticSearchFeature extends SimpleFeature {
+    @Override
+    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+        // make sure there is an active Tx to do the cleanup, so we don't hide previous assertion
+        if (!TransactionHelper.isTransactionActive()) {
+            TransactionHelper.startTransaction();
+        }
+        super.afterMethodRun(runner, method, test);
+    }
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {

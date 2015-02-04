@@ -34,7 +34,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import com.google.inject.Inject;
 
 /**
- * 
+ *
  * @since 7.2
  */
 @RunWith(FeaturesRunner.class)
@@ -65,7 +65,6 @@ public class TestDynamicMapping extends TestMapping {
                         "2015-01-01T12:30:00"));
         doc = session.saveDocument(doc);
 
-        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
         waitForIndexing();
         assertNumberOfCommandProcessed(1);
