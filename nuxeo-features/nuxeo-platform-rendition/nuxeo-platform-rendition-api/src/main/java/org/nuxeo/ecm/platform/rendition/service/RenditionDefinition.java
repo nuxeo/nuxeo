@@ -17,8 +17,12 @@
 package org.nuxeo.ecm.platform.rendition.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Definition of a rendition.
@@ -66,6 +70,12 @@ public class RenditionDefinition {
 
     @XNode("contentType")
     protected String contentType;
+
+    /**
+     * @since 7.2
+     */
+    @XNodeList(value = "filters/filter-id", type = ArrayList.class, componentType = String.class)
+    protected List<String> filterIds;
 
     public String getName() {
         return name;
@@ -123,4 +133,7 @@ public class RenditionDefinition {
         return visible;
     }
 
+    public List<String> getFilterIds() {
+        return filterIds;
+    }
 }

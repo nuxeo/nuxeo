@@ -57,6 +57,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -65,13 +66,20 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
-        "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.rendition.api",
+        "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.actions", "org.nuxeo.ecm.platform.rendition.api",
         "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.automation.core",
         "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.mimetype.core" })
 @LocalDeploy("org.nuxeo.ecm.platform.rendition.core:test-rendition-contrib.xml")
 public class TestRenditionService {
 
+    public static final String RENDITION_CORE = "org.nuxeo.ecm.platform.rendition.core";
+
+    private static final String RENDITION_FILTERS_COMPONENT_LOCATION = "test-rendition-filters-contrib.xml";
+
     public static final String PDF_RENDITION_DEFINITION = "pdf";
+
+    @Inject
+    protected RuntimeHarness runtimeHarness;
 
     @Inject
     protected CoreSession session;
@@ -355,6 +363,28 @@ public class TestRenditionService {
         DocumentModel folder = session.createDocumentModel("/", "dummy-folder", "Folder");
         folder = session.createDocument(folder);
         renditionService.storeRendition(folder, PDF_RENDITION_DEFINITION);
+    }
+
+    @Test
+    public void shouldFilterRenditionDefinitions() throws Exception {
+        runtimeHarness.deployContrib(RENDITION_CORE, RENDITION_FILTERS_COMPONENT_LOCATION);
+
+        DocumentModel doc = session.createDocumentModel("/", "note", "Note");
+        doc = session.createDocument(doc);
+        List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
+        assertEquals(2, availableRenditionDefinitions.size());
+
+        doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+        availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
+        assertEquals(2, availableRenditionDefinitions.size());
+
+        doc.setPropertyValue("dc:rights", "Unauthorized");
+        session.saveDocument(doc);
+        availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
+        assertEquals(1, availableRenditionDefinitions.size());
+
+        runtimeHarness.undeployContrib(RENDITION_CORE, RENDITION_FILTERS_COMPONENT_LOCATION);
     }
 
 }

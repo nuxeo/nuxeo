@@ -8,6 +8,9 @@
       <icon>/icons/pdf.png</icon>
       <contentType>application/pdf</contentType>
       <operationChain>blobToPDF</operationChain>
+      <filters>
+        <filter-id>allowPDFRendition</filter-id>
+      </filters>
     </renditionDefinition>
   </extension>
 
@@ -17,6 +20,13 @@
       <operation id="Context.PopBlob" />
       <operation id="Blob.ToPDF" />
     </chain>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="allowPDFRendition" />
+
   </extension>
 
 </component>
