@@ -118,6 +118,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -394,6 +395,7 @@ public class CmisSuiteSession {
     }
 
     @Test
+    @RandomBug.Repeat(issue = "NXP-16198")
     public void testContentStream() throws Exception {
         Document file = (Document) session.getObjectByPath("/testfolder1/testfile1");
 
