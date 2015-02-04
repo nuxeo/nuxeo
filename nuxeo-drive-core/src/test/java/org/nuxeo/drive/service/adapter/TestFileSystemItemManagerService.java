@@ -170,11 +170,6 @@ public class TestFileSystemItemManagerService {
     public void testReadOperations() throws Exception {
 
         // ------------------------------------------------------
-        // Check #getSession
-        // ------------------------------------------------------
-        // TODO
-
-        // ------------------------------------------------------
         // Check #getTopLevelChildren
         // ------------------------------------------------------
         List<FileSystemItem> topLevelChildren = fileSystemItemManagerService.getTopLevelFolder(principal).getChildren();
@@ -297,10 +292,8 @@ public class TestFileSystemItemManagerService {
         // ------------------------------------------------------
         // Check #getChildren
         // ------------------------------------------------------
-        // Need to flush VCS cache for the session obtained by
-        // FileSystemItemManager#getSession(String repositoryName, Principal
-        // principal) in DocumentBackedFolderItem#getChildren() to be aware of
-        // changes in the current session
+        // Need to flush VCS cache for the session used in DocumentBackedFolderItem#getChildren() to be aware of changes
+        // in the current session
         session.save();
         children = fileSystemItemManagerService.getChildren(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 principal);

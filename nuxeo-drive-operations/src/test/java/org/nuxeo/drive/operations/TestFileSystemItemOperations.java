@@ -249,10 +249,7 @@ public class TestFileSystemItemOperations {
 
         // Deleted file system item
         file1.followTransition("delete");
-        // Need to flush VCS cache to be aware of changes in the session used by
-        // the file system item obtained by
-        // FileSystemItemManager#getSession(String
-        // repositoryName, Principal principal)
+        // Need to flush VCS cache to be aware of changes in the session used by the file system item
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         fileSystemItemExistsJSON = (Blob) clientSession.newRequest(NuxeoDriveFileSystemItemExists.ID).set("id",
@@ -327,10 +324,7 @@ public class TestFileSystemItemOperations {
 
         // Get deleted file
         file1.followTransition("delete");
-        // Need to flush VCS cache to be aware of changes in the session used by
-        // the file system item obtained by
-        // FileSystemItemManager#getSession(String
-        // repositoryName, Principal principal)
+        // Need to flush VCS cache to be aware of changes in the session used by the file system item
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         fileSystemItemJSON = (Blob) clientSession.newRequest(NuxeoDriveGetFileSystemItem.ID).set("id",
@@ -370,10 +364,7 @@ public class TestFileSystemItemOperations {
         DocumentBackedFolderItem newFolder = mapper.readValue(newFolderJSON.getStream(), DocumentBackedFolderItem.class);
         assertNotNull(newFolder);
 
-        // Need to flush VCS cache to be aware of changes in the session used by
-        // the file system item obtained by
-        // FileSystemItemManager#getSession(String
-        // repositoryName, Principal principal)
+        // Need to flush VCS cache to be aware of changes in the session used by the file system item
         session.save();
 
         DocumentModel newFolderDoc = session.getDocument(new PathRef("/folder2/newFolder"));
@@ -403,10 +394,7 @@ public class TestFileSystemItemOperations {
         DocumentBackedFileItem newFile = mapper.readValue(newFileJSON.getStream(), DocumentBackedFileItem.class);
         assertNotNull(newFile);
 
-        // Need to flush VCS cache to be aware of changes in the session used by
-        // the file system item obtained by
-        // FileSystemItemManager#getSession(String
-        // repositoryName, Principal principal)
+        // Need to flush VCS cache to be aware of changes in the session used by the file system item
         session.save();
 
         DocumentModel newFileDoc = session.getDocument(new PathRef("/folder1/subFolder1/New file.odt"));
@@ -443,10 +431,7 @@ public class TestFileSystemItemOperations {
         DocumentBackedFileItem updatedFile = mapper.readValue(updatedFileJSON.getStream(), DocumentBackedFileItem.class);
         assertNotNull(updatedFile);
 
-        // Need to flush VCS cache to be aware of changes in the session used by
-        // the file system item obtained by
-        // FileSystemItemManager#getSession(String
-        // repositoryName, Principal principal)
+        // Need to flush VCS cache to be aware of changes in the session used by the file system item
         session.save();
 
         DocumentModel updatedFileDoc = session.getDocument(new IdRef(file1.getId()));
@@ -480,10 +465,7 @@ public class TestFileSystemItemOperations {
         // ------------------------------------------------------
         clientSession.newRequest(NuxeoDriveDelete.ID).set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).execute();
 
-        // Need to flush VCS cache to be aware of changes in the session used by
-        // the file system item obtained by
-        // FileSystemItemManager#getSession(String
-        // repositoryName, Principal principal)
+        // Need to flush VCS cache to be aware of changes in the session used by the file system item
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
@@ -529,10 +511,7 @@ public class TestFileSystemItemOperations {
         assertNotNull(renamedFileItem);
         assertEquals("Renamed file 1.odt", renamedFileItem.getName());
 
-        // Need to flush VCS cache to be aware of changes in the session used by
-        // the file system item obtained by
-        // FileSystemItemManager#getSession(String
-        // repositoryName, Principal principal)
+        // Need to flush VCS cache to be aware of changes in the session used by the file system item
         session.save();
 
         DocumentModel renamedFileDoc = session.getDocument(new IdRef(file1.getId()));
@@ -557,10 +536,7 @@ public class TestFileSystemItemOperations {
         assertNotNull(renamedFolderItem);
         assertEquals("Renamed sub-folder 1", renamedFolderItem.getName());
 
-        // Need to flush VCS cache to be aware of changes in the session used by
-        // the file system item obtained by
-        // FileSystemItemManager#getSession(String
-        // repositoryName, Principal principal)
+        // Need to flush VCS cache to be aware of changes in the session used by the file system item
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
@@ -579,10 +555,7 @@ public class TestFileSystemItemOperations {
         assertNotNull(renamedSyncRootItem);
         assertEquals("New name for sync root", renamedSyncRootItem.getName());
 
-        // Need to flush VCS cache to be aware of changes in the session used by
-        // the file system item obtained by
-        // FileSystemItemManager#getSession(String
-        // repositoryName, Principal principal)
+        // Need to flush VCS cache to be aware of changes in the session used by the file system item
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
@@ -772,10 +745,7 @@ public class TestFileSystemItemOperations {
         assertNotNull(movedFileItem);
         assertEquals("First file.odt", movedFileItem.getName());
 
-        // Need to flush VCS cache to be aware of changes in the session used by
-        // the file system item obtained by
-        // FileSystemItemManager#getSession(String repositoryName, Principal
-        // principal)
+        // Need to flush VCS cache to be aware of changes in the session used by the file system item
         session.save();
 
         DocumentModel movedFileDoc = session.getDocument(new IdRef(file1.getId()));
