@@ -29,6 +29,8 @@ import org.nuxeo.ecm.core.api.Blob;
  */
 public class NuxeoContentStream implements CacheHeaderContentStream, LastModifiedContentStream {
 
+    public static long LAST_MODIFIED;
+
     protected final Blob blob;
 
     protected final GregorianCalendar lastModified;
@@ -94,6 +96,7 @@ public class NuxeoContentStream implements CacheHeaderContentStream, LastModifie
 
     @Override
     public GregorianCalendar getLastModified() {
+        LAST_MODIFIED = lastModified == null ? 0 : lastModified.getTimeInMillis();
         return lastModified;
     }
 

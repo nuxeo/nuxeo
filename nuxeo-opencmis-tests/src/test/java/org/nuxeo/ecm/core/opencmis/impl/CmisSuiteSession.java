@@ -84,6 +84,8 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.commons.httpclient.util.DateUtil;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -105,6 +107,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
+import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoContentStream;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
 import org.nuxeo.ecm.core.opencmis.tests.StatusLoggingDefaultHttpInvoker;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
@@ -136,6 +139,8 @@ import com.google.inject.Inject;
 @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 public class CmisSuiteSession {
+
+    private static final Log log = LogFactory.getLog(CmisSuiteSession.class);
 
     public static final String BASE_RESOURCE = "jetty-test";
 
@@ -420,7 +425,10 @@ public class CmisSuiteSession {
                 request.removeHeaders("If-None-Match");
                 request.setHeader("If-Modified-Since", lastModified);
                 response = client.execute(request);
-                assertEquals(HttpServletResponse.SC_NOT_MODIFIED, response.getStatusLine().getStatusCode());
+                String debug = "lastModified=" + lastModifiedCalendar.getTimeInMillis() + " If-Modified-Since="
+                        + lastModified + " NuxeoContentStream last=" + NuxeoContentStream.LAST_MODIFIED;
+                log.warn("DEBUG NXP-16198 " + debug);
+                assertEquals(debug, HttpServletResponse.SC_NOT_MODIFIED, response.getStatusLine().getStatusCode());
             } finally {
                 client.getConnectionManager().shutdown();
             }
