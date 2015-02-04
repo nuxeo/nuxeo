@@ -27,6 +27,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import javax.transaction.Transaction;
 
@@ -54,14 +57,19 @@ import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
 import org.nuxeo.elasticsearch.core.ElasticSearchAdminImpl;
 import org.nuxeo.elasticsearch.core.ElasticSearchIndexingImpl;
 import org.nuxeo.elasticsearch.core.ElasticSearchServiceImpl;
+import org.nuxeo.elasticsearch.core.IndexingMonitor;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
-import org.nuxeo.elasticsearch.work.BaseIndexingWorker;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
+import org.nuxeo.elasticsearch.work.ScrollingIndexingWorker;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 
 /**
  * Component used to configure and manage ElasticSearch integration
@@ -98,6 +106,10 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     private ElasticSearchServiceImpl ess;
 
     protected JsonESDocumentWriter jsonESDocumentWriter;
+
+    private ListeningExecutorService waiterExecutorService;
+
+    private IndexingMonitor indexingMonitor;
 
     // Nuxeo Component impl ======================================é=============
     @Override
@@ -149,7 +161,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
             break;
         default:
             throw new IllegalStateException("Invalid EP: " + extensionPoint);
-        }
+       }
     }
 
     @Override
@@ -158,9 +170,11 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
             log.info("Elasticsearch service is disabled");
             return;
         }
+        indexingMonitor = new IndexingMonitor();
         esa = new ElasticSearchAdminImpl(localConfig, remoteConfig, indexConfig);
         esi = new ElasticSearchIndexingImpl(esa, jsonESDocumentWriter);
         ess = new ElasticSearchServiceImpl(esa);
+        initListenerThreadPool();
         processStackedCommands();
     }
 
@@ -237,12 +251,12 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     @Override
     public int getPendingWorkerCount() {
-        return BaseIndexingWorker.getPendingWorkerCount();
+        return indexingMonitor.getPendingWorkerCount();
     }
 
     @Override
     public int getRunningWorkerCount() {
-        return BaseIndexingWorker.getRunningWorkerCount();
+        return indexingMonitor.getRunningWorkerCount();
     }
 
     @Override
@@ -252,7 +266,30 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     @Override
     public boolean isIndexingInProgress() {
-        return (getPendingWorkerCount() > 0 || getRunningWorkerCount() > 0);
+        return indexingMonitor.getTotalWorkerCount() > 0;
+    }
+
+    @Override
+    public ListenableFuture<Boolean> prepareWaitForIndexing() {
+        return waiterExecutorService.submit(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                indexingMonitor.waitForWorkerToComplete();
+                return true;
+            }
+        });
+    }
+
+    private static class NamedThreadFactory implements ThreadFactory {
+        @SuppressWarnings("NullableProblems")
+        @Override
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "waitForEsIndexing");
+        }
+    }
+
+    protected void initListenerThreadPool() {
+        waiterExecutorService = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(new NamedThreadFactory()));
     }
 
     @Override
@@ -344,7 +381,8 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         }
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         for (String repositoryName : asyncCommands.keySet()) {
-            IndexingWorker idxWork = new IndexingWorker(repositoryName, asyncCommands.get(repositoryName));
+            IndexingWorker idxWork = new IndexingWorker(indexingMonitor, repositoryName,
+                    asyncCommands.get(repositoryName));
             wm.schedule(idxWork, false);
         }
     }
@@ -356,7 +394,8 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         Transaction transaction = TransactionHelper.suspendTransaction();
         try {
             for (String repositoryName : syncCommands.keySet()) {
-                IndexingWorker idxWork = new IndexingWorker(repositoryName, syncCommands.get(repositoryName));
+                IndexingWorker idxWork = new IndexingWorker(indexingMonitor, repositoryName,
+                        syncCommands.get(repositoryName));
                 idxWork.run();
             }
         } finally {
@@ -369,7 +408,12 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     @Override
     public void runReindexingWorker(String repositoryName, String nxql) {
-        esi.runReindexingWorker(repositoryName, nxql);
+        if (nxql == null || nxql.isEmpty()) {
+            throw new IllegalArgumentException("Expecting an NXQL query");
+        }
+        ScrollingIndexingWorker worker = new ScrollingIndexingWorker(indexingMonitor, repositoryName, nxql);
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        wm.schedule(worker);
     }
 
     // ES Search ===============================================================
@@ -394,7 +438,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     @Deprecated
     @Override
     public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
-            SortInfo... sortInfos) throws ClientException {
+                                   SortInfo... sortInfos) throws ClientException {
         NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder).limit(limit).offset(offset).addSort(
                 sortInfos);
         return query(query);

@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
+import org.nuxeo.elasticsearch.core.IndexingMonitor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -34,8 +35,8 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
 
     private static final long serialVersionUID = 1L;
 
-    public IndexingWorker(String repositoryName, List<IndexingCommand> cmds) {
-        super(repositoryName, cmds);
+    public IndexingWorker(IndexingMonitor monitor, String repositoryName, List<IndexingCommand> cmds) {
+        super(monitor, repositoryName, cmds);
     }
 
     @Override
@@ -64,7 +65,7 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         for (IndexingCommand cmd : cmds) {
             if (needRecurse(cmd)) {
-                ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(cmd);
+                ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(monitor, cmd);
                 wm.schedule(subWorker);
             }
         }

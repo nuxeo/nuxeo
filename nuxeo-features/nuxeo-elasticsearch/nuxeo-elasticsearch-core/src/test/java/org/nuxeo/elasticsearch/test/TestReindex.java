@@ -18,6 +18,7 @@
 package org.nuxeo.elasticsearch.test;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -30,7 +31,9 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.trash.TrashService;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -45,6 +48,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
+
+
 
 /**
  * Test "on the fly" indexing via the listener system
@@ -76,39 +81,37 @@ public class TestReindex {
     @Inject
     protected TagService tagService;
 
-    private int commandProcessed;
+    @Inject
+    protected WorkManager workManager;
 
     private boolean syncMode = false;
 
-    public void startCountingCommandProcessed() {
-        Assert.assertEquals(0, esa.getPendingWorkerCount());
-        Assert.assertEquals(0, esa.getPendingCommandCount());
-        commandProcessed = esa.getTotalCommandProcessed();
-    }
+    private int commandProcessed;
 
+    // Number of processed command since the startTransaction
     public void assertNumberOfCommandProcessed(int processed) throws Exception {
         Assert.assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
     }
 
-    public void _waitForIndexing() throws Exception {
-        int count = 10;
-        for (int i = 0; (i < 1000) && (count > 0); i++) {
-            Thread.sleep(100);
-            if (esa.isIndexingInProgress()) {
-                count = 3;
-            } else {
-                count--;
-            }
-        }
+    /**
+     * Wait for async worker completion then wait for indexing completion
+     */
+    public void waitForCompletion() throws Exception {
+        workManager.awaitCompletion(20, TimeUnit.SECONDS);
+        esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
+        esa.refresh();
     }
 
-    /**
-     * Wait for sync and async job and refresh the index
-     */
-    public void waitForIndexing() throws Exception {
-        _waitForIndexing();
-        Assert.assertFalse("Still indexing in progress", esa.isIndexingInProgress());
-        esa.refresh();
+    protected void startTransaction() {
+        if (syncMode) {
+            ElasticSearchInlineListener.useSyncIndexing.set(true);
+        }
+        if (!TransactionHelper.isTransactionActive()) {
+            TransactionHelper.startTransaction();
+        }
+        Assert.assertEquals(0, esa.getPendingWorkerCount());
+        Assert.assertEquals(0, esa.getPendingCommandCount());
+        commandProcessed = esa.getTotalCommandProcessed();
     }
 
     public void activateSynchronousMode() throws Exception {
@@ -125,15 +128,6 @@ public class TestReindex {
     public void disableSynchronousMode() {
         ElasticSearchInlineListener.useSyncIndexing.set(false);
         syncMode = false;
-    }
-
-    public void startTransaction() {
-        if (syncMode) {
-            ElasticSearchInlineListener.useSyncIndexing.set(true);
-        }
-        if (!TransactionHelper.isTransactionActive()) {
-            TransactionHelper.startTransaction();
-        }
     }
 
     @Test
@@ -156,7 +150,7 @@ public class TestReindex {
         Assert.assertEquals(0, docs2.totalSize());
         esi.runReindexingWorker(session.getRepositoryName(), "SELECT * FROM Document");
         esi.runReindexingWorker(session.getRepositoryName(), "SELECT * FROM Relation");
-        waitForIndexing();
+        waitForCompletion();
         docs2 = ess.query(new NxQueryBuilder(session).nxql(nxql).limit(100));
 
         Assert.assertEquals(getDigest(coreDocs), getDigest(docs2));
@@ -180,7 +174,7 @@ public class TestReindex {
         session.save();
 
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
+        waitForCompletion();
         startTransaction();
 
         for (int i = 0; i < 5; i++) {
@@ -193,7 +187,7 @@ public class TestReindex {
             }
         }
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
+        waitForCompletion();
     }
 
     protected String getDigest(DocumentModelList docs) {

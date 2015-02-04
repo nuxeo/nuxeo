@@ -100,12 +100,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     @Override
     public void runReindexingWorker(String repositoryName, String nxql) {
-        if (nxql == null || nxql.isEmpty()) {
-            throw new IllegalArgumentException("Expecting an NXQL query");
-        }
-        ScrollingIndexingWorker worker = new ScrollingIndexingWorker(repositoryName, nxql);
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
-        wm.schedule(worker);
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override

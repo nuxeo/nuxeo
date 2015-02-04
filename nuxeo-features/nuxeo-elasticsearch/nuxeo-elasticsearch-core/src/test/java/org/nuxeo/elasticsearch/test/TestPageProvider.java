@@ -68,22 +68,35 @@ public class TestPageProvider {
     @Inject
     ElasticSearchAdmin esa;
 
+    @Inject
+    protected WorkManager workManager;
+
+    @Inject
+    ElasticSearchService ess;
+
     private int commandProcessed;
 
-    private void startCountingCommandProcessed() {
-        Assert.assertNotNull(esa);
+    // Number of processed command since the startTransaction
+    public void assertNumberOfCommandProcessed(int processed) throws Exception {
+        Assert.assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
+    }
+
+    /**
+     * Wait for async worker completion then wait for indexing completion
+     */
+    public void waitForCompletion() throws Exception {
+        workManager.awaitCompletion(20, TimeUnit.SECONDS);
+        esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
+        esa.refresh();
+    }
+
+    protected void startTransaction() {
+        if (!TransactionHelper.isTransactionActive()) {
+            TransactionHelper.startTransaction();
+        }
         Assert.assertEquals(0, esa.getPendingWorkerCount());
         Assert.assertEquals(0, esa.getPendingCommandCount());
         commandProcessed = esa.getTotalCommandProcessed();
-    }
-
-    private void assertNumberOfCommandProcessed(int processed) throws InterruptedException {
-        Assert.assertNotNull(esa);
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-        Assert.assertEquals(0, esa.getPendingWorkerCount());
-        Assert.assertEquals(0, esa.getPendingCommandCount());
-        Assert.assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
     }
 
     @Test
@@ -94,28 +107,24 @@ public class TestPageProvider {
         PageProviderDefinition ppdef = pps.getPageProviderDefinition("NATIVE_PP_PATTERN");
         Assert.assertNotNull(ppdef);
 
-        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
         PageProvider<?> pp = pps.getPageProvider("NATIVE_PP_PATTERN", ppdef, null, null, pageSize, (long) 0, props);
         Assert.assertNotNull(pp);
 
         // create 10 docs
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-        Assert.assertNotNull(ess);
+        startTransaction();
         for (int i = 0; i < 10; i++) {
             DocumentModel doc = session.createDocumentModel("/", "testDoc" + i, "File");
             doc.setPropertyValue("dc:title", "TestMe" + i);
             doc = session.createDocument(doc);
         }
-        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
-
+        waitForCompletion();
         assertNumberOfCommandProcessed(10);
 
-        TransactionHelper.startTransaction();
-        esa.refresh();
-
+        startTransaction();
         // get current page
         List<DocumentModel> p = (List<DocumentModel>) pp.getCurrentPage();
         Assert.assertEquals(10, pp.getResultsCount());
@@ -148,21 +157,17 @@ public class TestPageProvider {
         Assert.assertNotNull(pp);
 
         // create 10 docs
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-        Assert.assertNotNull(ess);
+        startTransaction();
         for (int i = 0; i < 10; i++) {
             DocumentModel doc = session.createDocumentModel("/", "testDoc" + i, "File");
             doc.setPropertyValue("dc:title", "TestMe" + i);
             doc = session.createDocument(doc);
         }
-        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
-
+        waitForCompletion();
         assertNumberOfCommandProcessed(10);
 
-        TransactionHelper.startTransaction();
-        esa.refresh();
-
+        startTransaction();
         // get current page
         List<DocumentModel> p = (List<DocumentModel>) pp.getCurrentPage();
         Assert.assertEquals(10, pp.getResultsCount());
@@ -190,20 +195,17 @@ public class TestPageProvider {
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
         PageProvider<?> pp = pps.getPageProvider("nxql_search", ppdef, null, null, pageSize, (long) 0, props);
-
+        startTransaction();
         // create 10 docs
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-        Assert.assertNotNull(ess);
         for (int i = 0; i < 10; i++) {
             DocumentModel doc = session.createDocumentModel("/", "testDoc" + i, "File");
             doc.setPropertyValue("dc:title", "TestMe" + i);
             doc = session.createDocument(doc);
         }
-        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
         assertNumberOfCommandProcessed(10);
-        TransactionHelper.startTransaction();
-        esa.refresh();
+        startTransaction();
 
         // get current page
         String[] params = { "Select * from File where dc:title LIKE 'Test%'" };
@@ -230,7 +232,7 @@ public class TestPageProvider {
 
         PageProviderDefinition ppdef = pps.getPageProviderDefinition("NXQL_PP_FIXED_PART");
         Assert.assertNotNull(ppdef);
-        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> props = new HashMap<>();
         DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
         String[] sources = { "Source1", "Source2" };
         model.setProperty("advanced_search", "source_agg", sources);
@@ -238,18 +240,17 @@ public class TestPageProvider {
         long pageSize = 5;
         PageProvider<?> pp = pps.getPageProvider("NXQL_PP_FIXED_PART", ppdef, model, null, pageSize, (long) 0, props);
         // create 10 docs
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-        Assert.assertNotNull(ess);
+        startTransaction();
         for (int i = 0; i < 10; i++) {
             DocumentModel doc = session.createDocumentModel("/", "testDoc" + i, "File");
             doc.setPropertyValue("dc:title", "TestMe" + i);
             doc = session.createDocument(doc);
         }
-        startCountingCommandProcessed();
+
         TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
         assertNumberOfCommandProcessed(10);
-        TransactionHelper.startTransaction();
-        esa.refresh();
+        startTransaction();
 
         String[] params = { session.getRootDocument().getId() };
         pp.setParameters(params);
@@ -343,7 +344,7 @@ public class TestPageProvider {
         assertEqualsEvenUnderWindows(json, qb.toString());
 
         // don't take into account empty list
-        list = new ArrayList<String>();
+        list = new ArrayList<>();
         model.setPropertyValue("search:subjects", (Serializable) list);
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, null, true);
         assertEqualsEvenUnderWindows("{\n" + "  \"match_all\" : { }\n" + "}", qb.toString());

@@ -17,9 +17,8 @@
 
 package org.nuxeo.elasticsearch.work;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.nuxeo.ecm.core.work.AbstractWork;
+import org.nuxeo.elasticsearch.core.IndexingMonitor;
 
 /**
  * Abstract class for sharing the worker state
@@ -27,22 +26,11 @@ import org.nuxeo.ecm.core.work.AbstractWork;
 public abstract class BaseIndexingWorker extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
+    protected final transient IndexingMonitor monitor;
 
-    private static final AtomicInteger pendingWorkerCount = new AtomicInteger(0);
-
-    private static final AtomicInteger runningWorkerCount = new AtomicInteger(0);
-
-
-    public static int getPendingWorkerCount() {
-        return pendingWorkerCount.get();
-    }
-
-    public static int getRunningWorkerCount() {
-        return runningWorkerCount.get();
-    }
-
-    public BaseIndexingWorker() {
-        pendingWorkerCount.incrementAndGet();
+    BaseIndexingWorker(IndexingMonitor monitor) {
+        monitor.incrementWorker();
+        this.monitor = monitor;
     }
 
     @Override
@@ -52,12 +40,11 @@ public abstract class BaseIndexingWorker extends AbstractWork {
 
     @Override
     public void work() {
-        runningWorkerCount.incrementAndGet();
-        pendingWorkerCount.decrementAndGet();
+        monitor.incrementRunningWorker();
         try {
             doWork();
         } finally {
-            runningWorkerCount.decrementAndGet();
+            monitor.decrementWorker();
         }
     }
 
