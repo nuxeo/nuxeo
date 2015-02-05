@@ -376,7 +376,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
      * This method should be called right after the rowData changes. It sets up the var EL variable to be the current
      * rowData. It also sets up the internal states of all the stamps of this component to match this new rowData.
      */
-    protected final void postRowDataChange() {
+    protected final void postRowDataChange(Object oldRequestValue) {
         StampState stampState = getStampState();
         FacesContext context = getFacesContext();
         Object currencyObj = getRowKey();
@@ -387,7 +387,11 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
             Map<String, Object> requestMap = context.getExternalContext().getRequestMap();
             EditableModel model = getEditableModel();
             if (model == null || !model.isRowAvailable()) {
-                requestMap.remove(modelName);
+                if (oldRequestValue != null) {
+                    requestMap.put(modelName, oldRequestValue);
+                } else {
+                    requestMap.remove(modelName);
+                }
             } else {
                 // only expose protected model
                 requestMap.put(modelName, new ProtectedEditableModelImpl(model));
@@ -574,9 +578,10 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
      * @param rowIndex The rowIndex of the row that should be made current. Use -1 to clear the current row.
      */
     public void setRowIndex(int rowIndex) {
+        Object oldValue = saveRequestMapModelValue();
         preRowDataChange();
         getEditableModel().setRowIndex(rowIndex);
-        postRowDataChange();
+        postRowDataChange(oldValue);
     }
 
     /**
@@ -593,8 +598,9 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         // better, as events may change the data too, in which case we would
         // want the state to be saved).
         // preRowDataChange();
+        Object oldRequestValue = saveRequestMapModelValue();
         getEditableModel().setRowKey(rowKey);
-        postRowDataChange();
+        postRowDataChange(oldRequestValue);
     }
 
     /**
@@ -883,8 +889,12 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         // we want to wrap up the event so we can execute it in the correct
         // context (with the correct rowKey/rowData):
         Integer currencyKey = getRowKey();
-        event = new EditableModelRowEvent(this, event, currencyKey);
-        super.queueEvent(event);
+        if (currencyKey == null) {
+            // not a row event
+            super.queueEvent(event);
+        } else {
+            super.queueEvent(new EditableModelRowEvent(this, event, currencyKey));
+        }
     }
 
     private boolean requiresRowIteration(VisitContext ctx) {
@@ -896,6 +906,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         int processed = 0;
         int oldIndex = getRowIndex();
         int rowIndex = getRowIndex();
+        boolean rowChanged = false;
         int rows = 0;
         if (visitRows) {
             rowIndex = -1;
@@ -915,6 +926,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
                     // Expose the current row in the specified
                     // request attribute
                     setRowIndex(++rowIndex);
+                    rowChanged = true;
                     if (!isRowAvailable()) {
                         break; // Scrolled past the last row
                     }
@@ -941,8 +953,10 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         } catch (Exception e) {
             exception = e;
         } finally {
-            setRowIndex(oldIndex);
-            restoreRequestMapModelValue(requestMapValue);
+            if (rowChanged) {
+                setRowIndex(oldIndex);
+                restoreRequestMapModelValue(requestMapValue);
+            }
         }
         if (exception != null) {
             if (exception instanceof RuntimeException) {
@@ -969,7 +983,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
     }
 
     /**
-     * Rough adapt of the UI data behaviour, some
+     * Rough adapt of the UI data behaviour.
      */
     @Override
     public boolean visitTree(VisitContext context, VisitCallback callback) {
@@ -983,7 +997,9 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         int oldRowIndex = -1;
         if (visitRows) {
             oldRowIndex = getRowIndex();
-            setRowIndex(-1);
+            if (oldRowIndex != -1) {
+                setRowIndex(-1);
+            }
         }
 
         pushComponentToEL(facesContext, null);
@@ -1001,7 +1017,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
             }
         } finally {
             popComponentFromEL(facesContext);
-            if (visitRows) {
+            if (visitRows && oldRowIndex != -1) {
                 setRowIndex(oldRowIndex);
             }
         }
@@ -1122,11 +1138,13 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         Exception exception = null;
         List<UIComponent> stamps = getChildren();
         int oldIndex = getRowIndex();
+        boolean rowChanged = false;
         int end = getRowCount();
         Object requestMapValue = saveRequestMapModelValue();
         try {
             int first = 0;
             for (int i = first; i < end; i++) {
+                rowChanged = true;
                 setRowIndex(i);
                 if (isRowAvailable()) {
                     for (UIComponent stamp : stamps) {
@@ -1146,8 +1164,10 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         } catch (Exception e) {
             exception = e;
         } finally {
-            setRowIndex(oldIndex);
-            restoreRequestMapModelValue(requestMapValue);
+            if (rowChanged) {
+                setRowIndex(oldIndex);
+                restoreRequestMapModelValue(requestMapValue);
+            }
         }
         if (exception != null) {
             if (exception instanceof RuntimeException) {
@@ -1214,11 +1234,13 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         List<UIComponent> stamps = getChildren();
         int oldIndex = getRowIndex();
         int end = getRowCount();
+        boolean rowChanged = false;
         boolean found = false;
         Object requestMapValue = saveRequestMapModelValue();
         try {
             int first = 0;
             for (int i = first; i < end; i++) {
+                rowChanged = true;
                 setRowIndex(i);
                 if (isRowAvailable()) {
                     for (UIComponent stamp : stamps) {
@@ -1231,8 +1253,10 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         } catch (Exception e) {
             exception = e;
         } finally {
-            setRowIndex(oldIndex);
-            restoreRequestMapModelValue(requestMapValue);
+            if (rowChanged) {
+                setRowIndex(oldIndex);
+                restoreRequestMapModelValue(requestMapValue);
+            }
         }
         if (exception != null) {
             if (exception instanceof RuntimeException) {
