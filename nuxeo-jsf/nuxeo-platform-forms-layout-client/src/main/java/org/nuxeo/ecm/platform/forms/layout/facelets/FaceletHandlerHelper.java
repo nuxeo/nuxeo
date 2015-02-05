@@ -173,7 +173,9 @@ public final class FaceletHandlerHelper {
      * Generates a unique id from counters persisted in given map
      *
      * @since 5.7
+     * @deprecated since 7.2, see {@link NuxeoLayoutIdManagerBean}
      */
+    @Deprecated
     public static String generateUniqueId(String base, Map<String, Integer> counters) {
         // strip base of any remnant counter name
         base = stripUniqueIdBase(base);
