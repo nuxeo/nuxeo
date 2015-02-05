@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
+import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolver;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriter;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
@@ -53,7 +54,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.LongType;
  * Format is:
  *
  * <pre>
- * "stringPropertyValue"
+ * "stringPropertyValue"  <-- for string property, each property may be fetched if a resolver is associated with that property and if a parameter fetch:document=propXPath is present, in this case, an object will be marshalled as value
  * or
  * true|false  <- for boolean property
  * or
@@ -101,7 +102,9 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
     protected void writeScalarProperty(JsonGenerator jg, Property prop) throws IOException {
         Type type = prop.getType();
         Object value = prop.getValue();
-        writeScalarPropertyValue(jg, type, value);
+        if (!fetchProperty(jg, prop)) {
+            writeScalarPropertyValue(jg, type, value);
+        }
     }
 
     private void writeScalarPropertyValue(JsonGenerator jg, Type type, Object value) throws IOException {
@@ -120,6 +123,42 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
         } else {
             jg.writeString(type.encode(value));
         }
+    }
+
+    protected boolean fetchProperty(JsonGenerator jg, Property prop) throws IOException {
+        if (prop.getValue() == null) {
+            return false;
+        }
+        boolean fetched = false;
+        PropertyObjectResolver resolver = prop.getObjectResolver();
+        if (resolver != null) {
+            String propertyPath = prop.getPath().replaceFirst("/", "");
+            String genericPropertyPath = propertyPath.replaceAll("\\[[0-9]*\\]", "");
+            Set<String> fetchElements = ctx.getFetched(ENTITY_TYPE);
+            boolean fetch = false;
+            for (String fetchElement : fetchElements) {
+                if ("properties".equals(fetchElement) || propertyPath.startsWith(fetchElement)
+                        || genericPropertyPath.startsWith(fetchElement)) {
+                    fetch = true;
+                    break;
+                }
+            }
+            if (fetch) {
+                Object object = resolver.fetch();
+                if (object != null) {
+                    try {
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        writeEntity(object, baos);
+                        jg.writeRawValue(baos.toString());
+                        fetched = true;
+                    } catch (MarshallingException e) {
+                        log.error("Unable to marshall as json the entity referenced by the property " + prop.getPath(),
+                                e);
+                    }
+                }
+            }
+        }
+        return fetched;
     }
 
     protected void writeListProperty(JsonGenerator jg, Property prop) throws IOException {

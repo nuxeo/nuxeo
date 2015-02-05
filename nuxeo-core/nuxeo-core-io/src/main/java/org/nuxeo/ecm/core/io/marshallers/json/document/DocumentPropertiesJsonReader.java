@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
 import org.nuxeo.ecm.core.api.model.impl.PropertyFactory;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonReader;
+import org.nuxeo.ecm.core.io.registry.MarshallingException;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -46,6 +47,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
 import javax.inject.Inject;
 
@@ -128,9 +130,31 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
     }
 
     private void fillScalarProperty(Property property, JsonNode jn) throws IOException {
-        Type type = property.getType();
         Object value = null;
-        value = getPropertyValue(type, jn);
+        if (jn.isObject()) {
+            ObjectResolver resolver = property.getType().getObjectResolver();
+            if (resolver == null) {
+                throw new MarshallingException("Unable to parse the property " + property.getPath());
+            }
+            Object object = null;
+            for (Class<?> clazz : resolver.getManagedClasses()) {
+                try {
+                    object = readEntity(clazz, clazz, jn);
+                } catch (Exception e) {
+                    continue;
+                }
+            }
+            if (object == null) {
+                throw new MarshallingException("Unable to parse the property " + property.getPath());
+            }
+            value = resolver.getReference(object);
+            if (value == null) {
+                throw new MarshallingException("Property " + property.getPath()
+                        + " value cannot be resolved by the matching resolver " + resolver.getName());
+            }
+        } else {
+            value = getPropertyValue(property.getType(), jn);
+        }
         property.setValue(value);
     }
 
