@@ -47,6 +47,7 @@ import org.nuxeo.automation.scripting.internals.MarshalingHelper;
 import org.nuxeo.automation.scripting.internals.ScriptRunner;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -61,7 +62,7 @@ import com.google.inject.Inject;
  * @since 7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class })
+@Features({ TransactionalFeature.class, CoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.automation.core" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @LocalDeploy({ "org.nuxeo.ecm.automation.scripting:OSGI-INF/automation-scripting-service.xml" })
@@ -104,7 +105,7 @@ public class TestCompileAndContext {
     }
 
     @Test
-    public void testNashorn() throws Exception {
+    public void testNashornPrecompilation() throws Exception {
         ScriptEngineManager engineManager = new ScriptEngineManager();
         ScriptEngine engine = engineManager.getEngineByName(AutomationScriptingConstants.NASHORN_ENGINE);
         assertNotNull(engine);
@@ -121,6 +122,16 @@ public class TestCompileAndContext {
         engine.put("mapper", new Mapper());
 
         compiled.eval(engine.getContext());
+        assertEquals("1\n" +
+                "str\n" +
+                "[1, 2, {a=1, b=2}]\n" +
+                "{a=1, b=2}\n" +
+                "This is a string\n" +
+                "This is a string\n" +
+                "2\n" +
+                "[A, B, C]\n" +
+                "{a=salut, b=from java}\n" +
+                "done\n", outContent.toString());
 
     }
 

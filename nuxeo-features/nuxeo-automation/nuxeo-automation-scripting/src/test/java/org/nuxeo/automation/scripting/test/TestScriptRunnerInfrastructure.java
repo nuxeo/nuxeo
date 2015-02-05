@@ -35,7 +35,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.automation.scripting.internals.ScriptRunner;
-import org.nuxeo.automation.scripting.internals.operation.ScriptingTypeImpl;
+import org.nuxeo.automation.scripting.internals.operation
+        .ScriptingOperationTypeImpl;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
@@ -44,7 +45,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -59,7 +59,7 @@ import com.google.inject.Inject;
  * @since 7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, CoreFeature.class })
+@Features({ CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.automation.scripting" })
@@ -110,7 +110,7 @@ public class TestScriptRunnerInfrastructure {
 
         OperationType type = automationService.getOperation("Scripting.HelloWorld");
         assertNotNull(type);
-        assertTrue(type instanceof ScriptingTypeImpl);
+        assertTrue(type instanceof ScriptingOperationTypeImpl);
 
         Param[] paramDefs = type.getDocumentation().getParams();
         assertEquals(1, paramDefs.length);
@@ -118,16 +118,15 @@ public class TestScriptRunnerInfrastructure {
         OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = new HashMap<>();
 
-        params.put("lang", "fr");
-        ctx.setInput("John");
-        Object result = automationService.run(ctx, "Scripting.HelloWorld", params);
-        assertEquals("Bonjour John", result.toString());
-
         params.put("lang", "en");
         ctx.setInput("John");
-        result = automationService.run(ctx, "Scripting.HelloWorld", params);
+        Object result = automationService.run(ctx, "Scripting.HelloWorld", params);
         assertEquals("Hello John", result.toString());
 
+        params.put("lang", "fr");
+        ctx.setInput("John");
+        result = automationService.run(ctx, "Scripting.HelloWorld", params);
+        assertEquals("Bonjour John", result.toString());
     }
 
     @Test
@@ -137,7 +136,7 @@ public class TestScriptRunnerInfrastructure {
 
         for (int i = 0; i < 5; i++) {
             DocumentModel doc = session.createDocumentModel("/", "new" + i, "File");
-            doc = session.createDocument(doc);
+            session.createDocument(doc);
         }
 
         session.save();
@@ -151,8 +150,8 @@ public class TestScriptRunnerInfrastructure {
         params.put("type", "File");
         ctx.setInput(root);
         Object result = automationService.run(ctx, "Scripting.AddFacetInSubTree", params);
-        DocumentModel[] docs = (DocumentModel[]) ScriptUtils.convert(result, DocumentModel[].class);
-        assertEquals(5, docs.length);
+        DocumentModelList docs = (DocumentModelList) result;
+        assertEquals(5, docs.size());
     }
 
     @Test

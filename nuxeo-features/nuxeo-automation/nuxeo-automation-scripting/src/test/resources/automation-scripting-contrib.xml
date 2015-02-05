@@ -12,7 +12,7 @@
          function run(ctx, input, params) {
            if (params.lang === "fr") {
              return "Bonjour " + input;
-           } else {
+           } else if (params.lang == "en") {
              return "Hello " + input;
            }
          }
