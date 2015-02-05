@@ -20,7 +20,6 @@ import java.io.InputStream;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
@@ -43,8 +42,7 @@ public class ScriptRunner {
     public ScriptRunner(String jsBinding) {
         if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE,
                 AutomationScriptingConstants.DEFAULT_PRECOMPILE_STATUS))) {
-            engine = new NashornScriptEngineFactory().getScriptEngine(
-                    "--persistent-code-cache", "--class-cache-size=50");
+            engine = new NashornScriptEngineFactory().getScriptEngine(AutomationScriptingConstants.NASHORN_OPTIONS);
         } else {
             engine = new NashornScriptEngineFactory().getScriptEngine();
         }
