@@ -18,6 +18,7 @@ package org.nuxeo.automation.scripting.internals;
 
 import java.io.InputStream;
 
+import javax.script.Compilable;
 import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -108,6 +109,10 @@ public class ScriptRunner {
 
     public Invocable getInvocable() {
         return (Invocable) engine;
+    }
+
+    public Compilable getCompilable() {
+        return (Compilable) engine;
     }
 
 }
