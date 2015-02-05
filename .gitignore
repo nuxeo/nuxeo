@@ -31,4 +31,5 @@ dependency-tree.log
 target
 marketplace
 nuxeo-webengine/nuxeo-webengine-gwt/war/
+nashorn_code_cache/
 
