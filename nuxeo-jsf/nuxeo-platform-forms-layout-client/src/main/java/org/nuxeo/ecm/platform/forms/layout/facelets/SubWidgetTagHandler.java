@@ -91,6 +91,12 @@ public class SubWidgetTagHandler extends TagHandler {
 
         int subWidgetCounter = 0;
         for (Widget subWidget : subWidgets) {
+            // set unique id on widget before exposing it to the context, but assumes iteration could be done several
+            // times => do not generate id again if already set
+            if (subWidget != null && subWidget.getId() == null) {
+                WidgetTagHandler.generateWidgetId(helper, subWidget, false);
+            }
+
             // expose widget variables
             Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
             ExpressionFactory eFactory = ctx.getExpressionFactory();

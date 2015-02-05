@@ -94,9 +94,11 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
 
         int widgetCounter = 0;
         for (Widget widget : widgets) {
-            // set unique id on widget and sub widgets before exposing them to
-            // the context
-            WidgetTagHandler.generateWidgetIdsRecursive(helper, widget);
+            // set unique id on widget before exposing it to the context, but assumes iteration could be done several
+            // times => do not generate id again if already set
+            if (widget != null && widget.getId() == null) {
+                WidgetTagHandler.generateWidgetId(helper, widget, false);
+            }
 
             // expose widget variables
             Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();

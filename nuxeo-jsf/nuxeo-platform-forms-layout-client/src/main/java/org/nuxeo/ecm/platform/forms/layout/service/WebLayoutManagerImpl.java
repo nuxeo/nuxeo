@@ -562,18 +562,9 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
             return output;
         } else {
             FaceletHandler[] subHandlers = null;
-            Widget[] subWidgets = widget.getSubWidgets();
             List<FaceletHandler> subHandlersList = new ArrayList<FaceletHandler>();
             if (nextHandler != null) {
                 subHandlersList.add(nextHandler);
-            }
-            if (subWidgets != null) {
-                for (Widget subWidget : subWidgets) {
-                    FaceletHandler h = getFaceletHandler(ctx, config, subWidget, null);
-                    if (h != null) {
-                        subHandlersList.add(h);
-                    }
-                }
             }
             if (!subHandlersList.isEmpty()) {
                 subHandlers = subHandlersList.toArray(new FaceletHandler[0]);

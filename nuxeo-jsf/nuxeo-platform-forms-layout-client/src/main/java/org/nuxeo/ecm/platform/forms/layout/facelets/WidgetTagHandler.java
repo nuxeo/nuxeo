@@ -201,11 +201,10 @@ public class WidgetTagHandler extends MetaTagHandler {
             }
             VariableMapper orig = ctx.getVariableMapper();
             if (widgetInstanceBuilt) {
-                // expose widget variable to the context as layout row has not
-                // done it already, and set unique id on widget and sub widgets
-                // before exposing them to the context
+                // expose widget variable to the context as layout row has not done it already, and set unique id on
+                // widget before exposing it to the context
                 FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-                WidgetTagHandler.generateWidgetIdsRecursive(helper, widgetInstance);
+                WidgetTagHandler.generateWidgetId(helper, widgetInstance, false);
 
                 VariableMapper vm = new VariableMapperWrapper(orig);
                 ctx.setVariableMapper(vm);
@@ -240,14 +239,23 @@ public class WidgetTagHandler extends MetaTagHandler {
     }
 
     public static void generateWidgetIdsRecursive(FaceletHandlerHelper helper, Widget widget) {
+        generateWidgetId(helper, widget, true);
+    }
+
+    /**
+     * @since 7.2
+     */
+    public static void generateWidgetId(FaceletHandlerHelper helper, Widget widget, boolean recursive) {
         if (widget == null) {
             return;
         }
         widget.setId(helper.generateWidgetId(widget.getName()));
-        Widget[] subWidgets = widget.getSubWidgets();
-        if (subWidgets != null) {
-            for (Widget subWidget : subWidgets) {
-                generateWidgetIdsRecursive(helper, subWidget);
+        if (recursive) {
+            Widget[] subWidgets = widget.getSubWidgets();
+            if (subWidgets != null) {
+                for (Widget subWidget : subWidgets) {
+                    generateWidgetIdsRecursive(helper, subWidget);
+                }
             }
         }
     }

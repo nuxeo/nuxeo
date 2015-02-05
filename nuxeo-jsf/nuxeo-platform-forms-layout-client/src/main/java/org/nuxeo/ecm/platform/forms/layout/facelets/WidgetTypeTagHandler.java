@@ -260,10 +260,9 @@ public class WidgetTypeTagHandler extends TagHandler {
         // TODO NXP-13280: expose widget controls too when they can be
         // retrieved from tag attributes
         try {
-            // set unique id on widget and sub widgets before exposing them to
-            // the context
+            // set unique id on widget before exposing it to the context
             FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-            WidgetTagHandler.generateWidgetIdsRecursive(helper, widget);
+            WidgetTagHandler.generateWidgetId(helper, widget, false);
 
             boolean resolveOnlyBool = false;
             if (resolveOnly != null) {
