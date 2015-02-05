@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.script.CompiledScript;
 import javax.script.ScriptException;
 
+import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationType;
@@ -77,18 +78,15 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
 
     @Override
     public ScriptRunner getRunner(CoreSession session) throws ScriptException {
-        ScriptRunner runner = getRunner();
-        runner.setCoreSession(session);
-        return runner;
-    }
-
-    protected ScriptRunner getRunner() throws ScriptException {
-        ScriptRunner runner;
-        if (AutomationScriptingComponent.preCompile) {
-            runner = new ScriptRunner(AutomationScriptingComponent.self.engineManager, getCompiledJSWrapper());
-        } else {
-            runner = new ScriptRunner(AutomationScriptingComponent.self.engineManager, getJSWrapper());
+        if (runner == null) {
+            if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE,
+                    "false"))) {
+                runner = new ScriptRunner(engineManager, getCompiledJSWrapper());
+            } else {
+                runner = new ScriptRunner(engineManager, getJSWrapper());
+            }
         }
+        runner.setCoreSession(session);
         return runner;
     }
 

@@ -26,4 +26,7 @@ public class AutomationScriptingConstants {
     public static final String AUTOMATION_MAPPER_KEY = "automation";
 
     public static final String AUTOMATION_SCRIPTING_MONITOR = "automation.scripting.monitor.enable";
+
+    public static final String AUTOMATION_SCRIPTING_PRECOMPILE = "automation.scripting.precompile.enable";
+
 }
