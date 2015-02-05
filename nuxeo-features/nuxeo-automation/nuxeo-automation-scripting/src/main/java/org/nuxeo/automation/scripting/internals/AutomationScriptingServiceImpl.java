@@ -39,15 +39,9 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
 
     protected String jsWrapper = null;
 
-    protected CompiledScript compiledJSWrapper = null;
-
     protected ScriptRunner runner;
 
     protected ScriptEngineManager engineManager = new ScriptEngineManager();
-
-    protected String getJSWrapper() {
-        return getJSWrapper(false);
-    }
 
     protected String getJSWrapper(boolean refresh) {
         if (jsWrapper == null || refresh) {
@@ -82,25 +76,17 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     }
 
     @Override
+    public String getJSWrapper() {
+        return getJSWrapper(false);
+    }
+
+    @Override
     public ScriptRunner getRunner(CoreSession session) throws ScriptException {
         if (runner == null) {
-            if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE,
-                    "false"))) {
-                runner = new ScriptRunner(engineManager, getCompiledJSWrapper());
-            } else {
-                runner = new ScriptRunner(engineManager, getJSWrapper());
-            }
+            runner = new ScriptRunner(engineManager, getJSWrapper());
         }
         runner.setCoreSession(session);
         return runner;
-    }
-
-    protected synchronized CompiledScript getCompiledJSWrapper() throws ScriptException {
-        if (compiledJSWrapper == null) {
-            String script = getJSWrapper(false);
-            compiledJSWrapper = runner.getCompilable().compile(script);
-        }
-        return compiledJSWrapper;
     }
 
     protected void parseAutomationIDSForScripting(Map<String, List<String>> opMap, List<String> flatOps, String id) {

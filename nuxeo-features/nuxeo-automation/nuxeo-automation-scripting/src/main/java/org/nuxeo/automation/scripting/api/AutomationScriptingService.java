@@ -26,6 +26,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
  */
 public interface AutomationScriptingService {
 
+    String getJSWrapper();
+
     /**
      * Get the script runner for a given core session.
      *

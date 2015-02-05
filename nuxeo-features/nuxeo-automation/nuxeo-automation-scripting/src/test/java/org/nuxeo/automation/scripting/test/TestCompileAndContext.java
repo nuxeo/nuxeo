@@ -92,14 +92,9 @@ public class TestCompileAndContext {
         ScriptEngine engine = engineManager.getEngineByName(AutomationScriptingConstants.NASHORN_ENGINE);
         assertNotNull(engine);
 
-        ScriptRunner runner = automationScriptingService.getRunner(session);
-
-        String jsBinding = runner.getJsBinding();
-        ScriptObjectMirror script = (ScriptObjectMirror) engine.eval(jsBinding);
-        assertNotNull(script);
-
         InputStream stream = this.getClass().getResourceAsStream("/checkWrapper.js");
         assertNotNull(stream);
+        engine.eval(automationScriptingService.getJSWrapper());
         engine.eval(IOUtils.toString(stream));
         assertEquals("Hello\n", outContent.toString());
     }
