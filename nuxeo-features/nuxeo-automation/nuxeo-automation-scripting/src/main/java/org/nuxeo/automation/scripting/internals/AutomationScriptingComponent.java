@@ -74,6 +74,18 @@ public class AutomationScriptingComponent extends DefaultComponent {
     }
 
     @Override
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        if (XP_OPERATION.equals(extensionPoint)) {
+            AutomationService automationService = Framework.getLocalService(AutomationService.class);
+            ScriptingOperationDescriptor desc = (ScriptingOperationDescriptor) contribution;
+            ScriptingOperationTypeImpl type = new ScriptingOperationTypeImpl(automationService, desc);
+            automationService.removeOperation(type);
+        } else {
+            log.error("Unknown extension point " + extensionPoint);
+        }
+    }
+
+    @Override
     public void deactivate(ComponentContext context) {
         self = null;
         super.deactivate(context);
