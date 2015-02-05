@@ -925,7 +925,7 @@
 	<td>id=listOfListsWidgetLayout_view_form:nxl_listOfListsWidgetLayout_1:nxw_listOfListsWidget_1:nxw_listOfListsWidget_1_input:0:nxw_stringListItem_1:nxw_stringListItem_1_input:1:nxw_stringListSubItem_1</td>
 	<td></td>
 </tr>
-<!-- test for NXP-5576 bug -->
+<!-- non regression tests for NXP-5576-->
 <tr>
 	<td>verifyElementNotPresent</td>
 	<td>id=listOfListsWidgetLayout_edit_form:nxl_listOfListsWidgetLayout:nxw_listOfListsWidget:nxw_listOfListsWidget_input:1:nxw_stringItem</td>
@@ -951,6 +951,7 @@
 	<td>listOfListsWidgetLayout_edit_form:nxl_listOfListsWidgetLayout:nxw_listOfListsWidget:nxw_listOfListsWidget_input:1:nxw_stringItem</td>
 	<td></td>
 </tr>
+<!-- non regression tests for NXP-6933-->
 <tr>
 	<td>open</td>
 	<td>layoutDemo</td>
@@ -960,6 +961,116 @@
 	<td>open</td>
 	<td>layoutDemo/listWidget</td>
 	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>listArrayWidgetLayout_edit_form:nxl_listArrayWidgetLayout:nxw_listArrayWidget:nxw_listArrayWidget_input:0:nxw_listItem</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>listArrayWidgetLayout_edit_form:nxl_listArrayWidgetLayout:nxw_listArrayWidget:nxw_listArrayWidget_add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>listArrayWidgetLayout_edit_form:nxl_listArrayWidgetLayout:nxw_listArrayWidget:nxw_listArrayWidget_add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>listArrayWidgetLayout_edit_form:nxl_listArrayWidgetLayout:nxw_listArrayWidget:nxw_listArrayWidget_input:0:nxw_listItem</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>listArrayWidgetLayout_edit_form:nxl_listArrayWidgetLayout:nxw_listArrayWidget:nxw_listArrayWidget_input:1:nxw_listItem</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>listArrayWidgetLayout_edit_form:nxl_listArrayWidgetLayout:nxw_listArrayWidget:nxw_listArrayWidget_input:0:nxw_listItem</td>
+	<td>AAA</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>listArrayWidgetLayout_edit_form:nxl_listArrayWidgetLayout:nxw_listArrayWidget:nxw_listArrayWidget_input:1:nxw_listItem</td>
+	<td>BBB</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>listArrayWidgetLayout_edit_form:nxl_listArrayWidgetLayout:nxw_listArrayWidget:nxw_listArrayWidget_input:0:nxw_listArrayWidget_delete</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>listArrayWidgetLayout_edit_form:nxl_listArrayWidgetLayout:nxw_listArrayWidget:nxw_listArrayWidget_input:0:nxw_listItem</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>listArrayWidgetLayout_edit_form:nxl_listArrayWidgetLayout:nxw_listArrayWidget:nxw_listArrayWidget_input:1:nxw_listItem</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>listArrayWidgetLayout_edit_form:nxl_listArrayWidgetLayout:nxw_listArrayWidget:nxw_listArrayWidget_input:0:nxw_listItem</td>
+	<td>BBB</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>listArrayWidgetLayout_edit_form:listArrayWidgetLayout_edit_form_submitButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=listArrayWidgetLayout_view_form:nxl_listArrayWidgetLayout_1:nxw_listArrayWidget_1:nxw_listArrayWidget_1_input:0:nxw_listItem_1</td>
+	<td>BBB</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>listArrayWidgetLayout_edit_form:nxl_listArrayWidgetLayout:nxw_listArrayWidget:nxw_listArrayWidget_input:0:nxw_listItem</td>
+	<td>BBB</td>
 </tr>
 </tbody></table>
 </body>
