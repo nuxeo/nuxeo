@@ -18,12 +18,12 @@ package org.nuxeo.automation.scripting.internals;
 
 import java.io.InputStream;
 
-import javax.script.Compilable;
-import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+
+import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
@@ -38,23 +38,22 @@ public class ScriptRunner {
 
     protected final ScriptEngine engine;
 
-    protected CompiledScript compiledJSWrapper;
-
     protected CoreSession session;
 
-    public ScriptRunner(ScriptEngineManager engineManager, String jsBinding) {
-        engine = engineManager.getEngineByName(AutomationScriptingConstants.NASHORN_ENGINE);
+    public ScriptRunner(String jsBinding) {
+        if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE,
+                AutomationScriptingConstants.DEFAULT_PRECOMPILE_STATUS))) {
+            engine = new NashornScriptEngineFactory().getScriptEngine(
+                    "--persistent-code-cache", "--class-cache-size=50");
+        } else {
+            engine = new NashornScriptEngineFactory().getScriptEngine();
+        }
         initialize(jsBinding);
     }
 
     protected void initialize(String jsBinding) {
         try {
-            if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE,
-                    AutomationScriptingConstants.DEFAULT_PRECOMPILE_STATUS))) {
-                compiledJSWrapper = ((Compilable) engine).compile(jsBinding);
-            } else {
-                engine.eval(jsBinding);
-            }
+            engine.eval(jsBinding);
         } catch (ScriptException e) {
             throw new AutomationScriptingException(e);
         }
@@ -66,12 +65,7 @@ public class ScriptRunner {
 
     public void run(String script) throws ScriptException {
         engine.put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY, new AutomationMapper(session));
-        if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE,
-                AutomationScriptingConstants.DEFAULT_PRECOMPILE_STATUS))) {
-            compiledJSWrapper.eval(engine.getContext());
-        } else {
-            engine.eval(script);
-        }
+        engine.eval(script);
     }
 
     public void setCoreSession(CoreSession session) {

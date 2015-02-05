@@ -41,8 +41,6 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
 
     protected ScriptRunner runner;
 
-    protected ScriptEngineManager engineManager = new ScriptEngineManager();
-
     protected String getJSWrapper(boolean refresh) {
         if (jsWrapper == null || refresh) {
             StringBuffer sb = new StringBuffer();
@@ -83,7 +81,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     @Override
     public ScriptRunner getRunner(CoreSession session) throws ScriptException {
         if (runner == null) {
-            runner = new ScriptRunner(engineManager, getJSWrapper());
+            runner = new ScriptRunner(getJSWrapper());
         }
         runner.setCoreSession(session);
         return runner;
