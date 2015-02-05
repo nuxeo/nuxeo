@@ -29,4 +29,5 @@ public class AutomationScriptingConstants {
 
     public static final String AUTOMATION_SCRIPTING_PRECOMPILE = "automation.scripting.precompile.enable";
 
+    public static final String DEFAULT_PRECOMPILE_STATUS = "false";
 }
