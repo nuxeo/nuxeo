@@ -58,9 +58,15 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
 
     protected final TagConfig config;
 
+    /**
+     * @since 7.2
+     */
+    protected final TagAttribute recomputeIds;
+
     public LayoutRowWidgetTagHandler(TagConfig config) {
         super(config);
         this.config = config;
+        recomputeIds = getAttribute("recomputeIds");
     }
 
     /**
@@ -92,11 +98,16 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
             return;
         }
 
+        boolean recomputeIdsBool = false;
+        if (recomputeIds != null) {
+            recomputeIdsBool = recomputeIds.getBoolean(ctx);
+        }
+
         int widgetCounter = 0;
         for (Widget widget : widgets) {
             // set unique id on widget before exposing it to the context, but assumes iteration could be done several
-            // times => do not generate id again if already set
-            if (widget != null && widget.getId() == null) {
+            // times => do not generate id again if already set, unless specified by attribute "recomputeIds"
+            if (widget != null && (widget.getId() == null || recomputeIdsBool)) {
                 WidgetTagHandler.generateWidgetId(helper, widget, false);
             }
 

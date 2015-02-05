@@ -56,9 +56,15 @@ public class SubWidgetTagHandler extends TagHandler {
 
     protected final TagConfig config;
 
+    /**
+     * @since 7.2
+     */
+    protected final TagAttribute recomputeIds;
+
     public SubWidgetTagHandler(TagConfig config) {
         super(config);
         this.config = config;
+        recomputeIds = getAttribute("recomputeIds");
     }
 
     /**
@@ -89,11 +95,16 @@ public class SubWidgetTagHandler extends TagHandler {
             return;
         }
 
+        boolean recomputeIdsBool = false;
+        if (recomputeIds != null) {
+            recomputeIdsBool = recomputeIds.getBoolean(ctx);
+        }
+
         int subWidgetCounter = 0;
         for (Widget subWidget : subWidgets) {
             // set unique id on widget before exposing it to the context, but assumes iteration could be done several
-            // times => do not generate id again if already set
-            if (subWidget != null && subWidget.getId() == null) {
+            // times => do not generate id again if already set, unless specified by attribute "recomputeIds"
+            if (subWidget != null && (subWidget.getId() == null || recomputeIdsBool)) {
                 WidgetTagHandler.generateWidgetId(helper, subWidget, false);
             }
 
