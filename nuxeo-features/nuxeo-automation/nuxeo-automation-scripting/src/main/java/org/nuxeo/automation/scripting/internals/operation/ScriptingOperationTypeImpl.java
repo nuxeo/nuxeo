@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.script.ScriptException;
 
+import org.nuxeo.automation.scripting.api.AutomationScriptingException;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
@@ -41,13 +42,14 @@ import org.nuxeo.ecm.core.api.DocumentRefList;
 /**
  * @since 7.2
  */
-public class ScriptingTypeImpl implements OperationType {
+public class ScriptingOperationTypeImpl implements OperationType {
 
     protected final AutomationService service;
 
     protected final ScriptingOperationDescriptor desc;
 
-    public ScriptingTypeImpl(AutomationService service, ScriptingOperationDescriptor desc) {
+    public ScriptingOperationTypeImpl(AutomationService service,
+            ScriptingOperationDescriptor desc) {
         this.service = service;
         this.desc = desc;
     }
@@ -71,26 +73,6 @@ public class ScriptingTypeImpl implements OperationType {
         return doc;
     }
 
-    protected String getParamDocumentationType(Class<?> type, boolean isIterable) {
-        String t;
-        if (DocumentModel.class.isAssignableFrom(type) || DocumentRef.class.isAssignableFrom(type)) {
-            t = isIterable ? Constants.T_DOCUMENTS : Constants.T_DOCUMENT;
-        } else if (DocumentModelList.class.isAssignableFrom(type) || DocumentRefList.class.isAssignableFrom(type)) {
-            t = Constants.T_DOCUMENTS;
-        } else if (BlobList.class.isAssignableFrom(type)) {
-            t = Constants.T_BLOBS;
-        } else if (Blob.class.isAssignableFrom(type)) {
-            t = isIterable ? Constants.T_BLOBS : Constants.T_BLOB;
-        } else if (URL.class.isAssignableFrom(type)) {
-            t = Constants.T_RESOURCE;
-        } else if (Calendar.class.isAssignableFrom(type)) {
-            t = Constants.T_DATE;
-        } else {
-            t = type.getSimpleName().toLowerCase();
-        }
-        return t;
-    }
-
     @Override
     public String getId() {
         return desc.getId();
@@ -111,14 +93,6 @@ public class ScriptingTypeImpl implements OperationType {
         return methods;
     }
 
-    protected InvokableMethod runMethod() {
-        try {
-            return new InvokableMethod(this, ScriptingOperationImpl.class.getMethod("run", Object.class));
-        } catch (NoSuchMethodException | SecurityException e) {
-            throw new UnsupportedOperationException("Cannot use reflection for run method", e);
-        }
-    }
-
     @Override
     public AutomationService getService() {
         return service;
@@ -132,22 +106,44 @@ public class ScriptingTypeImpl implements OperationType {
     @SuppressWarnings("unchecked")
     @Override
     public Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException {
-
-        // XXX cache the ScriptingOperationImpl to avoid create new Engine instance ?
-        // => would be interesting to share the engine across diffrent op inside the same chain ?
-
         if (ctx.getVars().containsKey(Constants.VAR_RUNTIME_CHAIN)) {
-            // WTF !!!
             args.putAll((Map<String, Object>) ctx.getVars().get(Constants.VAR_RUNTIME_CHAIN));
         }
-        ScriptingOperationImpl impl = null;
+        ScriptingOperationImpl impl;
         try {
             impl = new ScriptingOperationImpl(desc.getScript(), ctx, args);
         } catch (ScriptException e) {
-            // TODO: check this out to find another solution or let it down.
-            throw new OperationException(e);
+            throw new AutomationScriptingException(e);
         }
         return impl;
+    }
+
+    protected String getParamDocumentationType(Class<?> type, boolean isIterable) {
+        String t;
+        if (DocumentModel.class.isAssignableFrom(type) || DocumentRef.class.isAssignableFrom(type)) {
+            t = isIterable ? Constants.T_DOCUMENTS : Constants.T_DOCUMENT;
+        } else if (DocumentModelList.class.isAssignableFrom(type) || DocumentRefList.class.isAssignableFrom(type)) {
+            t = Constants.T_DOCUMENTS;
+        } else if (BlobList.class.isAssignableFrom(type)) {
+            t = Constants.T_BLOBS;
+        } else if (Blob.class.isAssignableFrom(type)) {
+            t = isIterable ? Constants.T_BLOBS : Constants.T_BLOB;
+        } else if (URL.class.isAssignableFrom(type)) {
+            t = Constants.T_RESOURCE;
+        } else if (Calendar.class.isAssignableFrom(type)) {
+            t = Constants.T_DATE;
+        } else {
+            t = type.getSimpleName().toLowerCase();
+        }
+        return t;
+    }
+
+    protected InvokableMethod runMethod() {
+        try {
+            return new InvokableMethod(this, ScriptingOperationImpl.class.getMethod("run", Object.class));
+        } catch (NoSuchMethodException | SecurityException e) {
+            throw new UnsupportedOperationException("Cannot use reflection for run method", e);
+        }
     }
 
 }
