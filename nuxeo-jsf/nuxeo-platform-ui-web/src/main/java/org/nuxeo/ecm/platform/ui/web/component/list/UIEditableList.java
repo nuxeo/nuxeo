@@ -305,6 +305,8 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         Object value = getValue();
         iState._value = value;
         iState._model = createEditableModel(iState._model, value);
+        // also reset sub components state
+        iState._stampState = null;
     }
 
     /**
@@ -413,8 +415,11 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
                 Object iniStateObj = getCurrencyKeyForInitialStampState();
                 state = stampState.get(iniStateObj, stampId);
                 if (state == null) {
-                    log.error("There was no initial stamp state for currencyKey:" + currencyObj
-                            + " and currencyKeyForInitialStampState:" + iniStateObj + " and stampId:" + stampId);
+                    // can happen in case model has been reset, see #resetCachedModel
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Missing stamp state on '%s' for stampId=%s and key=%s", getId(),
+                                stampId, iniStateObj));
+                    }
                     continue;
                 }
             }
