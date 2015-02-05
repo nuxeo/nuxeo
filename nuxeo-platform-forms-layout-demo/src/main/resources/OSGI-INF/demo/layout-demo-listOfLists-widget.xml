@@ -81,14 +81,34 @@
             </properties>
             <subWidgets>
               <widget name="stringListSubItem" type="text">
-                <labels>
-                  <label mode="any"></label>
-                </labels>
                 <fields>
                   <field>#{value}</field>
                   <!-- equivalent field definition alternative:
                     <field></field>
                   -->
+                </fields>
+              </widget>
+            </subWidgets>
+          </widget>
+          <widget name="stringListItem2" type="list">
+            <fields>
+              <field>stringListItem2</field>
+            </fields>
+            <labels>
+              <label mode="any">String list item 2</label>
+            </labels>
+            <properties mode="any">
+              <property name="listTemplateItem">
+                #{nxd:propertyDefaultValue('lds:listOfLists/stringListItem2')}
+              </property>
+            </properties>
+            <properties widgetMode="any">
+              <property name="hideSubLabels">true</property>
+            </properties>
+            <subWidgets>
+              <widget name="stringListSubItem2" type="text">
+                <fields>
+                  <field></field>
                 </fields>
               </widget>
             </subWidgets>

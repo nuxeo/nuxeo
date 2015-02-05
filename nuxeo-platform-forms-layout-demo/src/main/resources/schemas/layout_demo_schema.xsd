@@ -103,6 +103,7 @@
       <xs:element name="stringItem" type="xs:string" />
       <xs:element name="stringArrayItem" type="nxs:stringArrayType" />
       <xs:element name="stringListItem" type="nxs:stringListType" />
+      <xs:element name="stringListItem2" type="nxs:stringListType" />
     </xs:sequence>
   </xs:complexType>
 

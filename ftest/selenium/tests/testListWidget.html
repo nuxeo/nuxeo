@@ -820,6 +820,52 @@
 	<td>id=listOfListsWidgetLayout_edit_form:nxl_listOfListsWidgetLayout:nxw_listOfListsWidget:nxw_listOfListsWidget_input:0:nxw_stringListItem:nxw_stringListItem_input:1:nxw_stringListSubItem</td>
 	<td>test sublist 2</td>
 </tr>
+<!-- non regression tests for NXP-16406 -->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=listOfListsWidgetLayout_edit_form:nxl_listOfListsWidgetLayout:nxw_listOfListsWidget:nxw_listOfListsWidget_input:0:nxw_stringListItem2:nxw_stringListItem2_add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>id=listOfListsWidgetLayout_edit_form:nxl_listOfListsWidgetLayout:nxw_listOfListsWidget:nxw_listOfListsWidget_input:0:nxw_stringListItem2:nxw_stringListItem2_input:0:nxw_stringListSubItem2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=listOfListsWidgetLayout_edit_form:nxl_listOfListsWidgetLayout:nxw_listOfListsWidget:nxw_listOfListsWidget_input:0:nxw_stringListItem2:nxw_stringListItem2_input:0:nxw_stringListSubItem2</td>
+	<td>test sublist bis</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=listOfListsWidgetLayout_edit_form:nxl_listOfListsWidgetLayout:nxw_listOfListsWidget:nxw_listOfListsWidget_input:0:nxw_stringListItem2:nxw_stringListItem2_add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=listOfListsWidgetLayout_edit_form:nxl_listOfListsWidgetLayout:nxw_listOfListsWidget:nxw_listOfListsWidget_input:0:nxw_stringListItem2:nxw_stringListItem2_input:1:nxw_stringListSubItem2</td>
+	<td>test sublist 2 bis</td>
+</tr>
 <tr>
 	<td>watchA4jRequests</td>
 	<td></td>
@@ -859,6 +905,16 @@
 	<td>verifyText</td>
 	<td>id=listOfListsWidgetLayout_view_form:nxl_listOfListsWidgetLayout_1:nxw_listOfListsWidget_1:nxw_listOfListsWidget_1_input:0:nxw_stringListItem_1:nxw_stringListItem_1_input:1:nxw_stringListSubItem_1</td>
 	<td>test sublist 2</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=listOfListsWidgetLayout_view_form:nxl_listOfListsWidgetLayout_1:nxw_listOfListsWidget_1:nxw_listOfListsWidget_1_input:0:nxw_stringListItem2_1:nxw_stringListItem2_1_input:0:nxw_stringListSubItem2_1</td>
+	<td>test sublist bis</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=listOfListsWidgetLayout_view_form:nxl_listOfListsWidgetLayout_1:nxw_listOfListsWidget_1:nxw_listOfListsWidget_1_input:0:nxw_stringListItem2_1:nxw_stringListItem2_1_input:1:nxw_stringListSubItem2_1</td>
+	<td>test sublist 2 bis</td>
 </tr>
 <tr>
 	<td>watchA4jRequests</td>
@@ -914,6 +970,16 @@
 	<td>verifyText</td>
 	<td>id=listOfListsWidgetLayout_view_form:nxl_listOfListsWidgetLayout_1:nxw_listOfListsWidget_1:nxw_listOfListsWidget_1_input:0:nxw_stringListItem_1:nxw_stringListItem_1_input:0:nxw_stringListSubItem_1</td>
 	<td>test sublist</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=listOfListsWidgetLayout_view_form:nxl_listOfListsWidgetLayout_1:nxw_listOfListsWidget_1:nxw_listOfListsWidget_1_input:0:nxw_stringListItem2_1:nxw_stringListItem2_1_input:0:nxw_stringListSubItem2_1</td>
+	<td>test sublist bis</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=listOfListsWidgetLayout_view_form:nxl_listOfListsWidgetLayout_1:nxw_listOfListsWidget_1:nxw_listOfListsWidget_1_input:0:nxw_stringListItem2_1:nxw_stringListItem2_1_input:1:nxw_stringListSubItem2_1</td>
+	<td>test sublist 2 bis</td>
 </tr>
 <tr>
 	<td>verifyElementNotPresent</td>
