@@ -80,6 +80,7 @@ EXT_ARGS = {}
 
 MAX_FULL_TEXT_TRIES = 2
 FULL_TEXT_WAIT = 2
+VERSION_WAIT = 2 # for MySQL versions
 
 import os
 CMIS_BINDING = os.environ.get('CMIS_BINDING')

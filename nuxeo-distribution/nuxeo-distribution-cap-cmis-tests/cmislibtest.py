@@ -313,17 +313,20 @@ class RepositoryTest(CmisTestBase):
             print 'The test doc cannot be checked out...skipping'
             return
         pwc = doc10.checkout()
+        sleep(settings.VERSION_WAIT)
         doc11 = pwc.checkin(major='false')  # checkin a minor version, 1.1
         if not doc11.allowableActions['canCheckOut']:
             print 'The test doc cannot be checked out...skipping'
             return
         pwc = doc11.checkout()
+        sleep(settings.VERSION_WAIT)
         doc20 = pwc.checkin()  # checkin a major version, 2.0
         doc20Id = doc20.getObjectId()
         if not doc20.allowableActions['canCheckOut']:
             print 'The test doc cannot be checked out...skipping'
             return
         pwc = doc20.checkout()
+        sleep(settings.VERSION_WAIT)
         doc21 = pwc.checkin(major='false')  # checkin a minor version, 2.1
         doc21Id = doc21.getObjectId()
 
@@ -953,17 +956,20 @@ class DocumentTest(CmisTestBase):
             print 'The test doc cannot be checked out...skipping'
             return
         pwc = doc10.checkout()
+        sleep(settings.VERSION_WAIT)
         doc11 = pwc.checkin(major='false')  # checkin a minor version, 1.1
         if not doc11.allowableActions['canCheckOut']:
             print 'The test doc cannot be checked out...skipping'
             return
         pwc = doc11.checkout()
+        sleep(settings.VERSION_WAIT)
         doc20 = pwc.checkin()  # checkin a major version, 2.0
         doc20Id = doc20.getObjectId()
         if not doc20.allowableActions['canCheckOut']:
             print 'The test doc cannot be checked out...skipping'
             return
         pwc = doc20.checkout()
+        sleep(settings.VERSION_WAIT)
         doc21 = pwc.checkin(major='false')  # checkin a minor version, 2.1
         doc21Id = doc21.getObjectId()
 
@@ -983,11 +989,13 @@ class DocumentTest(CmisTestBase):
             print 'The test doc cannot be checked out...skipping'
             return
         pwc = doc10.checkout()
+        sleep(settings.VERSION_WAIT)
         doc11 = pwc.checkin(major='false')  # checkin a minor version, 1.1
         if not doc11.allowableActions['canCheckOut']:
             print 'The test doc cannot be checked out...skipping'
             return
         pwc = doc11.checkout()
+        sleep(settings.VERSION_WAIT)
         doc20 = pwc.checkin()  # checkin a major version, 2.0
         # what comes back from a checkin may not include all props, so reload
         doc20.reload()
@@ -996,6 +1004,7 @@ class DocumentTest(CmisTestBase):
             print 'The test doc cannot be checked out...skipping'
             return
         pwc = doc20.checkout()
+        sleep(settings.VERSION_WAIT)
         doc21 = pwc.checkin(major='false')  # checkin a minor version, 2.1
         # what comes back from a checkin may not include all props, so reload
         doc21.reload()
