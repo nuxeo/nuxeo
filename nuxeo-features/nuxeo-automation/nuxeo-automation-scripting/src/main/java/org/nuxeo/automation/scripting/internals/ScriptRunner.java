@@ -98,12 +98,12 @@ public class ScriptRunner {
         this.session = session;
     }
 
-    public <T> T getInterface(Class<T> javaInterface, String script) throws Exception {
+    public <T> T getInterface(Class<T> scriptingOperationInterface, String script) throws Exception {
         initialize();
         engine.put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY, new AutomationMapper(session));
         engine.eval(script);
         Invocable inv = (Invocable) engine;
-        return inv.getInterface(javaInterface);
+        return inv.getInterface(scriptingOperationInterface);
     }
 
     public Invocable getInvocable() {
