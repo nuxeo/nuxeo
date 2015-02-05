@@ -33,6 +33,8 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Class injected/published in Nashorn engine to execute automation service.
+ *
  * @since 7.2
  */
 public class AutomationMapper {
@@ -44,11 +46,11 @@ public class AutomationMapper {
     }
 
     public Object executeOperation(String opId, Object input, ScriptObjectMirror parameters) throws Exception {
-        AutomationService as = Framework.getService(AutomationService.class);
+        AutomationService automationService = Framework.getService(AutomationService.class);
         OperationContext ctx = new OperationContext(session);
         populateContext(ctx, input);
         Map<String, Object> params = unwrapParameters(parameters);
-        return as.run(ctx, opId, params);
+        return automationService.run(ctx, opId, params);
     }
 
     protected Map<String, Object> unwrapParameters(ScriptObjectMirror parameters) {
