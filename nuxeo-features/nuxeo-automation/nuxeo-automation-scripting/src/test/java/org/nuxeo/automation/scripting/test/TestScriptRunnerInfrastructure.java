@@ -26,7 +26,6 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import jdk.nashorn.api.scripting.ScriptUtils;
 import junit.framework.Assert;
 
 import org.junit.After;
