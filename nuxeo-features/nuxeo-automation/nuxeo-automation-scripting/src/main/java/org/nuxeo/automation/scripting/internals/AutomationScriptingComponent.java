@@ -16,9 +16,6 @@
  */
 package org.nuxeo.automation.scripting.internals;
 
-import javax.script.Compilable;
-import javax.script.ScriptEngineManager;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
@@ -26,9 +23,11 @@ import org.nuxeo.automation.scripting.api.AutomationScriptingException;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.automation.scripting.internals.operation
         .ScriptingOperationDescriptor;
-import org.nuxeo.automation.scripting.internals.operation.ScriptingTypeImpl;
+import org.nuxeo.automation.scripting.internals.operation
+        .ScriptingOperationTypeImpl;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.core.impl.OperationServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.metrics.MetricInvocationHandler;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -42,41 +41,30 @@ public class AutomationScriptingComponent extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(AutomationScriptingComponent.class);
 
-    protected static AutomationScriptingComponent self;
+    public static AutomationScriptingComponent self;
 
-    protected ScriptEngineManager engineManager;
+    public static final String XP_OPERATION = "operation";
 
-    protected Compilable compiler;
-
-    protected static final boolean preCompile = false;
-
-    public static final String EP_OPERATION = "operation";
-
-    protected AutomationScriptingService scriptingService = new AutomationScriptingServiceImpl();
+    public AutomationScriptingService scriptingService = new AutomationScriptingServiceImpl();
 
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        engineManager = new ScriptEngineManager();
-        if (preCompile) {
-            compiler = (Compilable) engineManager.getEngineByName(AutomationScriptingConstants.NASHORN_ENGINE);
-        }
         if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_MONITOR,
                 Boolean.toString(log.isTraceEnabled())))) {
-            scriptingService = MetricInvocationHandler.newProxy
-                    (scriptingService, AutomationScriptingService.class);
+            scriptingService = MetricInvocationHandler.newProxy(scriptingService, AutomationScriptingService.class);
         }
         self = this;
     }
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (EP_OPERATION.equals(extensionPoint)) {
+        if (XP_OPERATION.equals(extensionPoint)) {
+            AutomationService automationService = Framework.getLocalService(AutomationService.class);
             ScriptingOperationDescriptor desc = (ScriptingOperationDescriptor) contribution;
-            AutomationService as = Framework.getService(AutomationService.class);
-            ScriptingTypeImpl type = new ScriptingTypeImpl(as, desc);
+            ScriptingOperationTypeImpl type = new ScriptingOperationTypeImpl(automationService, desc);
             try {
-                as.putOperation(type, true);
+                automationService.putOperation(type, true);
             } catch (OperationException e) {
                 throw new AutomationScriptingException(e);
             }

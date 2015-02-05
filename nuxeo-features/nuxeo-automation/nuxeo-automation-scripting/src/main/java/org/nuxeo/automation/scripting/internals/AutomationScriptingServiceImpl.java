@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.script.CompiledScript;
+import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
@@ -39,6 +40,10 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     protected String jsWrapper = null;
 
     protected CompiledScript compiledJSWrapper = null;
+
+    protected ScriptRunner runner;
+
+    protected ScriptEngineManager engineManager = new ScriptEngineManager();
 
     protected String getJSWrapper() {
         return getJSWrapper(false);
@@ -93,7 +98,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     protected synchronized CompiledScript getCompiledJSWrapper() throws ScriptException {
         if (compiledJSWrapper == null) {
             String script = getJSWrapper(false);
-            compiledJSWrapper = AutomationScriptingComponent.self.compiler.compile(script);
+            compiledJSWrapper = runner.getCompilable().compile(script);
         }
         return compiledJSWrapper;
     }
