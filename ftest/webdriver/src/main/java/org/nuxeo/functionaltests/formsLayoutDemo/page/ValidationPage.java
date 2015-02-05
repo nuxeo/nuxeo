@@ -122,9 +122,9 @@ public class ValidationPage {
         assertEquals("", l.getWidget("nxw_title").getMessageValue());
         assertEquals("Value is required", l.getWidget("nxw_groupCode").getMessageValue());
         assertEquals("This value must match the format \".*\\S.*\".",
-                l.getWidget("nxw_manager:nxw_firstname").getMessageValue("_message_1"));
+                l.getWidget("nxw_manager:nxw_firstname").getMessageValue());
         assertEquals("This value must match the format \"[A-Z][a-z '-]+\".",
-                l.getWidget("nxw_manager:nxw_lastname").getMessageValue("_message_1"));
+                l.getWidget("nxw_manager:nxw_lastname").getMessageValue());
         ListWidgetElement slist = l.getWidget("nxw_roles", ListWidgetElement.class);
         assertEquals("", slist.getMessageValue());
         ListWidgetElement list = l.getWidget("nxw_users", ListWidgetElement.class);
@@ -136,34 +136,34 @@ public class ValidationPage {
         assertEquals("", l.getWidget("nxw_title").getMessageValue());
         assertEquals("'invalid string' is not a number. Example: 99", l.getWidget("nxw_groupCode").getMessageValue());
         assertEquals("This value must match the format \".*\\S.*\".",
-                l.getWidget("nxw_manager:nxw_firstname").getMessageValue("_message_1"));
+                l.getWidget("nxw_manager:nxw_firstname").getMessageValue());
         assertEquals("This value must match the format \"[A-Z][a-z '-]+\".",
-                l.getWidget("nxw_manager:nxw_lastname").getMessageValue("_message_1"));
+                l.getWidget("nxw_manager:nxw_lastname").getMessageValue());
         ListWidgetElement slist = l.getWidget("nxw_roles", ListWidgetElement.class);
         assertEquals("", slist.getMessageValue());
         assertEquals("This value must match the format \"[a-zA-Z0-9]+\".",
-                slist.getSubWidget("nxw_role", 0, false).getMessageValue("_message_1"));
+                slist.getSubWidget("nxw_role", 0, false).getMessageValue());
         ListWidgetElement list = l.getWidget("nxw_users", ListWidgetElement.class);
         assertEquals("", slist.getMessageValue());
         assertEquals("This value must match the format \".*\\S.*\".",
-                list.getSubWidget("nxw_fn", 0, false).getMessageValue("_message_1"));
+                list.getSubWidget("nxw_fn", 0, false).getMessageValue());
         assertEquals("This value must match the format \"[A-Z][a-z '-]+\".",
-                list.getSubWidget("nxw_ln", 0, false).getMessageValue("_message_1"));
+                list.getSubWidget("nxw_ln", 0, false).getMessageValue());
     }
 
     public void checkLayoutValid() {
         LayoutElement l = getLayout();
         assertEquals("", l.getWidget("nxw_title").getMessageValue());
         assertEquals("", l.getWidget("nxw_groupCode").getMessageValue());
-        assertEquals("", l.getWidget("nxw_manager:nxw_firstname").getMessageValue("_message_1"));
-        assertEquals("", l.getWidget("nxw_manager:nxw_lastname").getMessageValue("_message_1"));
+        assertEquals("", l.getWidget("nxw_manager:nxw_firstname").getMessageValue());
+        assertEquals("", l.getWidget("nxw_manager:nxw_lastname").getMessageValue());
         ListWidgetElement slist = l.getWidget("nxw_roles", ListWidgetElement.class);
         assertEquals("", slist.getMessageValue());
-        assertEquals("", slist.getSubWidget("nxw_role", 0, false).getMessageValue("_message_1"));
+        assertEquals("", slist.getSubWidget("nxw_role", 0, false).getMessageValue());
         ListWidgetElement list = l.getWidget("nxw_users", ListWidgetElement.class);
         assertEquals("", list.getMessageValue());
-        assertEquals("", list.getSubWidget("nxw_fn", 0, false).getMessageValue("_message_1"));
-        assertEquals("", list.getSubWidget("nxw_ln", 0, false).getMessageValue("_message_1"));
+        assertEquals("", list.getSubWidget("nxw_fn", 0, false).getMessageValue());
+        assertEquals("", list.getSubWidget("nxw_ln", 0, false).getMessageValue());
     }
 
 }
