@@ -121,7 +121,6 @@ public class TestService {
     @Test
     public void verifyPrepareWaitForIndexingListener() throws Exception {
         ListenableFuture<Boolean> futureRet = esa.prepareWaitForIndexing();
-        Assert.assertFalse(futureRet.isDone());
         final Boolean[] callbackRet = { false };
         Futures.addCallback(futureRet, new FutureCallback<Boolean>() {
             @Override
