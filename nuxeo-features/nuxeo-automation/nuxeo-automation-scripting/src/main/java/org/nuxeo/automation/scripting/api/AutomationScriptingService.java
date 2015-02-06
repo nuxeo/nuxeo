@@ -26,6 +26,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
  */
 public interface AutomationScriptingService {
 
+    /**
+     * @return The default JS binding wrapper injected into Nashorn.
+     */
     String getJSWrapper();
 
     /**
