@@ -144,6 +144,7 @@ public class TestReindex {
         }
     }
 
+    @Ignore("NXP-16212 (?)")
     @Test
     public void shouldReindexDocument() throws Exception {
         buildDocs();
