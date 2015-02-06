@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.rendition.service.RenditionDefinition.providers.test">
+
+  <require>org.nuxeo.ecm.platform.rendition.contrib</require>
+
+  <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService"
+    point="renditionDefinitionProviders">
+
+    <renditionDefinitionProvider name="dummyRenditionDefinitionProviderForNote"
+      class="org.nuxeo.ecm.platform.rendition.service.DummyRenditionDefinitionProvider">
+      <filters>
+        <filter-id>onlyForNote</filter-id>
+      </filters>
+    </renditionDefinitionProvider>
+
+    <renditionDefinitionProvider name="dummyRenditionDefinitionProviderForFile"
+      class="org.nuxeo.ecm.platform.rendition.service.DummyRenditionDefinitionProvider">
+      <filters>
+        <filter-id>onlyForFile</filter-id>
+        <filter-id>unauthorized</filter-id>
+      </filters>
+    </renditionDefinitionProvider>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="onlyForNote">
+      <rule grant="true">
+        <type>Note</type>
+      </rule>
+    </filter>
+
+    <filter id="onlyForFile">
+      <rule grant="true">
+        <type>File</type>
+      </rule>
+    </filter>
+
+    <filter id="unauthorized">
+      <rule grant="false">
+        <condition>#{currentDocument.dc.rights == "Unauthorized"}</condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

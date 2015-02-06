@@ -56,6 +56,8 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     public static final String RENDITION_DEFINITIONS_EP = "renditionDefinitions";
 
+    public static final String RENDITON_DEFINION_PROVIDERS_EP = "renditionDefinitionProviders";
+
     private static final Log log = LogFactory.getLog(RenditionServiceImpl.class);
 
     /**
@@ -66,15 +68,19 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     protected Map<String, RenditionDefinition> renditionDefinitions;
 
+    protected RenditionDefinitionProviderRegistry renditionDefinitionProviderRegistry;
+
     @Override
     public void activate(ComponentContext context) {
         renditionDefinitions = new HashMap<>();
+        renditionDefinitionProviderRegistry = new RenditionDefinitionProviderRegistry();
         super.activate(context);
     }
 
     @Override
     public void deactivate(ComponentContext context) {
         renditionDefinitions = null;
+        renditionDefinitionProviderRegistry = null;
         super.deactivate(context);
     }
 
@@ -105,6 +111,12 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
             }
 
         }
+
+        List<RenditionDefinitionProvider> renditionDefinitionProviders = renditionDefinitionProviderRegistry.getRenditionDefinitionProviders(doc);
+        for (RenditionDefinitionProvider provider : renditionDefinitionProviders) {
+            defs.addAll(provider.getRenditionDefinitions(doc));
+        }
+
         // XXX what about "lost renditions" ?
         return defs;
     }
@@ -172,6 +184,8 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (RENDITION_DEFINITIONS_EP.equals(extensionPoint)) {
             registerRendition((RenditionDefinition) contribution);
+        } else if (RENDITON_DEFINION_PROVIDERS_EP.equals(extensionPoint)) {
+            renditionDefinitionProviderRegistry.addContribution((RenditionDefinitionProviderDescriptor) contribution);
         }
     }
 
@@ -292,6 +306,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         }
     }
 
+    @Override
     public List<Rendition> getAvailableRenditions(DocumentModel doc) throws RenditionException {
 
         List<Rendition> renditions = new ArrayList<>();

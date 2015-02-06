@@ -76,6 +76,8 @@ public class TestRenditionService {
 
     private static final String RENDITION_FILTERS_COMPONENT_LOCATION = "test-rendition-filters-contrib.xml";
 
+    private static final String RENDITION_DEFINITION_PROVIDERS_COMPONENT_LOCATION = "test-rendition-definition-providers-contrib.xml";
+
     public static final String PDF_RENDITION_DEFINITION = "pdf";
 
     @Inject
@@ -385,6 +387,28 @@ public class TestRenditionService {
         assertEquals(1, availableRenditionDefinitions.size());
 
         runtimeHarness.undeployContrib(RENDITION_CORE, RENDITION_FILTERS_COMPONENT_LOCATION);
+    }
+
+    @Test
+    public void shouldFilterRenditionDefinitionProviders() throws Exception {
+        runtimeHarness.deployContrib(RENDITION_CORE, RENDITION_DEFINITION_PROVIDERS_COMPONENT_LOCATION);
+
+        DocumentModel doc = session.createDocumentModel("/", "note", "Note");
+        doc = session.createDocument(doc);
+        List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
+        assertEquals(3, availableRenditionDefinitions.size());
+
+        doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+        availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
+        assertEquals(3, availableRenditionDefinitions.size());
+
+        doc.setPropertyValue("dc:rights", "Unauthorized");
+        session.saveDocument(doc);
+        availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
+        assertEquals(1, availableRenditionDefinitions.size());
+
+        runtimeHarness.undeployContrib(RENDITION_CORE, RENDITION_DEFINITION_PROVIDERS_COMPONENT_LOCATION);
     }
 
 }

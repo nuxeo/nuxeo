@@ -136,4 +136,48 @@ public class RenditionDefinition {
     public List<String> getFilterIds() {
         return filterIds;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public void setKind(String kind) {
+        this.kind = kind;
+    }
+
+    public void setOperationChain(String operationChain) {
+        this.operationChain = operationChain;
+    }
+
+    public void setAllowEmptyBlob(boolean allowEmptyBlob) {
+        this.allowEmptyBlob = allowEmptyBlob;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public void setProviderClass(Class<? extends RenditionProvider> providerClass) {
+        this.providerClass = providerClass;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public void setFilterIds(List<String> filterIds) {
+        this.filterIds = filterIds;
+    }
 }
