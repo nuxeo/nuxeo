@@ -153,7 +153,7 @@
     <apachedshared.version>0.9.7</apachedshared.version>
     <gwt.version>2.5.1</gwt.version>
     <guice.version>3.0</guice.version>
-    <jersey.version>1.17.1</jersey.version>
+    <jersey.version>1.18.3</jersey.version>
     <jetty.mortbay.version>6.1.26</jetty.mortbay.version>
     <shindig.version>1.1-BETA5-incubating-nx1</shindig.version>
     <apache.axiom.version>1.2.5</apache.axiom.version>
@@ -2035,7 +2035,7 @@
       </dependency>
       <dependency>
         <groupId>cglib</groupId>
-        <artifactId>cglib</artifactId>
+        <artifactId>cglib-nodep</artifactId>
         <version>2.2</version>
       </dependency>
       <dependency>
@@ -2850,11 +2850,10 @@
         <version>1.0.2.GA-nx</version>
       </dependency>
 
-      <!-- patched jersey JAR to exclude javax.ws.rs package -->
       <dependency>
+        <!-- note that this contains all of javax.ws.rs:jsr311-api -->
         <groupId>com.sun.jersey</groupId>
         <artifactId>jersey-core</artifactId>
-        <classifier>minimal</classifier>
         <version>${jersey.version}</version>
       </dependency>
       <dependency>
@@ -2887,11 +2886,6 @@
         <groupId>com.sun.jersey.contribs</groupId>
         <artifactId>jersey-multipart</artifactId>
         <version>${jersey.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.ws.rs</groupId>
-        <artifactId>jsr311-api</artifactId>
-        <version>1.1.1</version>
       </dependency>
 
       <dependency>
@@ -3835,10 +3829,9 @@
         <version>3.0.0</version>
       </dependency>
       <dependency>
-        <groupId>asm</groupId>
+        <groupId>org.ow2.asm</groupId>
         <artifactId>asm</artifactId>
-        <!-- asm 3.1 required by jersey-server -->
-        <version>3.1</version>
+        <version>5.0.3</version>
       </dependency>
 
       <dependency>
@@ -3936,6 +3929,13 @@
         <groupId>net.java.dev.webdav</groupId>
         <artifactId>webdav-jaxrs</artifactId>
         <version>1.1.1</version>
+        <exclusions>
+          <!-- use com.sun.jersey:jersey-core instead -->
+          <exclusion>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -4237,6 +4237,11 @@
           <exclusion>
             <groupId>javax.faces</groupId>
             <artifactId>jsf-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <!-- we use org.ow2.asm:asm instead, which CXF seems to accept -->
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -4855,6 +4860,24 @@
               <requireJavaVersion>
                 <version>[1.7,)</version>
               </requireJavaVersion>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>javax.ws.rs:jsr311-api</exclude> <!-- included in com.sun.jersey:jersey-core -->
+                </excludes>
+                <message>javax.ws.rs:jsr311-api must not be used, use com.sun.jersey:jersey-core instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>asm:asm</exclude> <!-- use more recent org.ow2.asm:asm instead -->
+                </excludes>
+                <message>asm:asm must not be used, use org.ow2.asm:asm instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>cglib:cglib</exclude> <!-- use cglib:cglib-nodep instead to avoid pulling old asm -->
+                </excludes>
+                <message>cglib:cglib must not be used, use cglib:cglib-nodep instead</message>
+              </bannedDependencies>
             </rules>
             <skip>false</skip>
           </configuration>
@@ -5184,6 +5207,12 @@
             <executions>
               <execution>
                 <id>enforce-plugin-versions</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>enforce-banned-dependencies</id>
                 <goals>
                   <goal>enforce</goal>
                 </goals>

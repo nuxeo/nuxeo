@@ -101,8 +101,8 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>javax.ws.rs</groupId>
-      <artifactId>jsr311-api</artifactId>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-core</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>

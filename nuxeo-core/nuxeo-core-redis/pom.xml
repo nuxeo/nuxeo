@@ -85,9 +85,8 @@
       <type>test-jar</type>
     </dependency>
     <dependency>
-      <!-- put before com.lordofthejars:nosqlunit-redis, which depends on cglib:cglib-nodep -->
       <groupId>cglib</groupId>
-      <artifactId>cglib</artifactId>
+      <artifactId>cglib-nodep</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
