@@ -96,7 +96,7 @@ public class ExceptionHelper {
     }
 
     public static void logClientAbort(Exception e) {
-        log.warn("Client disconnected: " + unwrapException(e).getMessage());
+        log.debug("Client disconnected: " + unwrapException(e).getMessage());
     }
 
 }
