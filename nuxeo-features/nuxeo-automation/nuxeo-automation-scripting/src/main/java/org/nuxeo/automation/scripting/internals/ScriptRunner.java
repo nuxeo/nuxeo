@@ -35,23 +35,25 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ScriptRunner {
 
-    protected final ScriptEngine engine;
-
-    protected CoreSession session;
+    protected final ThreadLocal<ScriptEngine> engines = new ThreadLocal<ScriptEngine>(){
+        @Override
+        protected ScriptEngine initialValue() {
+            if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE,
+                    AutomationScriptingConstants.DEFAULT_PRECOMPILE_STATUS))) {
+                return new NashornScriptEngineFactory().getScriptEngine(AutomationScriptingConstants.NASHORN_OPTIONS);
+            } else {
+                return new NashornScriptEngineFactory().getScriptEngine();
+            }
+        }
+    };
 
     public ScriptRunner(String jsBinding) {
-        if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE,
-                AutomationScriptingConstants.DEFAULT_PRECOMPILE_STATUS))) {
-            engine = new NashornScriptEngineFactory().getScriptEngine(AutomationScriptingConstants.NASHORN_OPTIONS);
-        } else {
-            engine = new NashornScriptEngineFactory().getScriptEngine();
-        }
         initialize(jsBinding);
     }
 
     protected void initialize(String jsBinding) {
         try {
-            engine.eval(jsBinding);
+            engines.get().eval(jsBinding);
         } catch (ScriptException e) {
             throw new AutomationScriptingException(e);
         }

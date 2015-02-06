@@ -24,6 +24,7 @@ import javax.script.ScriptException;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import jdk.nashorn.internal.objects.NativeArray;
 
+import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.automation.scripting.internals.AutomationScriptingComponent;
 import org.nuxeo.automation.scripting.internals.MarshalingHelper;
 import org.nuxeo.automation.scripting.internals.ScriptRunner;
@@ -34,13 +35,14 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 7.2
  */
 public class ScriptingOperationImpl {
 
-    protected final ScriptRunner runner;
+    protected ScriptRunner runner;
 
     protected final OperationContext ctx;
 
@@ -49,7 +51,6 @@ public class ScriptingOperationImpl {
     protected final String source;
 
     public ScriptingOperationImpl(String source, OperationContext ctx, Map<String, Object> args) throws ScriptException {
-        runner = AutomationScriptingComponent.self.scriptingService.getRunner(ctx.getCoreSession());
         this.ctx = ctx;
         this.args = args;
         this.source = source;
@@ -57,7 +58,9 @@ public class ScriptingOperationImpl {
 
     public Object run(Object input) throws Exception {
         try {
-            ScriptingOperationInterface itf = runner.getInterface(ScriptingOperationInterface.class, source);
+            AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
+            runner = scriptingService.getRunner();
+            ScriptingOperationInterface itf = runner.getInterface(ScriptingOperationInterface.class, source, ctx.getCoreSession());
             return wrapResult(itf.run(ctx.getVars(), input, args));
         } catch (ScriptException e) {
             throw new OperationException(e);

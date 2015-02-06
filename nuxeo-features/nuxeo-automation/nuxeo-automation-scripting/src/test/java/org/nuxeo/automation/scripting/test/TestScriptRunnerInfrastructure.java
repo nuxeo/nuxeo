@@ -165,4 +165,35 @@ public class TestScriptRunnerInfrastructure {
 
     }
 
+    @Test
+    public void testMultiThread() throws InterruptedException {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = new HashMap<>();
+        ctx.setInput("John");
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    ctx.setInput("Vlad");
+                    Object result = automationService.run(ctx, "Scripting.ChainedHello", params);
+                    assertEquals("Hello Bonjour Vlad", result.toString());
+                } catch (Exception e) {
+                }
+            }
+        };
+        Thread t2 = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Object result = automationService.run(ctx, "Scripting.ChainedHello", params);
+                    assertEquals("Hello Bonjour John", result.toString());
+                } catch (Exception e) {
+                }
+            }
+        };
+        t.start();
+        t2.start();
+        t.join();
+        t2.join();
+    }
 }
