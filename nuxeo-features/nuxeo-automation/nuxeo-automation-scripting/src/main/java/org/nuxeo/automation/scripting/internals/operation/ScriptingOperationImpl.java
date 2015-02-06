@@ -22,17 +22,18 @@ import java.util.Map;
 import javax.script.ScriptException;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import jdk.nashorn.internal.objects.NativeArray;
 
-import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.automation.scripting.internals.AutomationScriptingComponent;
 import org.nuxeo.automation.scripting.internals.MarshalingHelper;
 import org.nuxeo.automation.scripting.internals.ScriptRunner;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.core.util.BlobList;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 7.2
@@ -84,9 +85,20 @@ public class ScriptingOperationImpl {
                 }
             }
             return unwrapped;
+        } else if (res instanceof NativeArray) {
+            Object[] resList = ((NativeArray) res).asObjectArray();
+            DocumentModelList documentModelList = new DocumentModelListImpl();
+            BlobList blobList = new BlobList();
+            for (Object entry : resList) {
+                if (entry instanceof DocumentModel) {
+                    documentModelList.add((DocumentModel) entry);
+                } else if (entry instanceof Blob) {
+                    blobList.add((Blob) entry);
+                }
+            }
+            return documentModelList.isEmpty() ? blobList : documentModelList;
         }
         return res;
-
     }
 
 //    protected ScriptableMap wrap(OperationContext ctx) {
