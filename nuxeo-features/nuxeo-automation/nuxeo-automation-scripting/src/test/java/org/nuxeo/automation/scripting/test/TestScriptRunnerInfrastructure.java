@@ -30,6 +30,7 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
@@ -95,19 +96,20 @@ public class TestScriptRunnerInfrastructure {
         AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
         assertNotNull(scriptingService);
 
-        ScriptRunner runner = scriptingService.getRunner(session);
+        ScriptRunner runner = scriptingService.getRunner();
         assertNotNull(runner);
 
         InputStream stream = this.getClass().getResourceAsStream("/simpleAutomationScript.js");
         assertNotNull(stream);
-        runner.run(stream);
+        runner.run(stream, session);
         assertEquals("Created even Documents\n",outContent.toString());
     }
 
     @Test
     public void simpleScriptingOperationShouldBeAvailable() throws Exception {
 
-        OperationType type = automationService.getOperation("Scripting.HelloWorld");
+        OperationType type = automationService.getOperation("Scripting" +
+                ".HelloWorld");
         assertNotNull(type);
         assertTrue(type instanceof ScriptingOperationTypeImpl);
 
@@ -139,7 +141,8 @@ public class TestScriptRunnerInfrastructure {
         }
 
         session.save();
-        DocumentModelList res = session.query("select * from File where  ecm:mixinType = 'HiddenInNavigation'");
+        DocumentModelList res = session.query("select * from File where  " +
+                "ecm:mixinType = 'HiddenInNavigation'");
         Assert.assertEquals(0, res.size());
 
         OperationContext ctx = new OperationContext(session);
@@ -160,7 +163,8 @@ public class TestScriptRunnerInfrastructure {
         Map<String, Object> params = new HashMap<>();
 
         ctx.setInput("John");
-        Object result = automationService.run(ctx, "Scripting.ChainedHello", params);
+        Object result = automationService.run(ctx, "Scripting.ChainedHello",
+                params);
         assertEquals("Hello Bonjour John", result.toString());
 
     }
