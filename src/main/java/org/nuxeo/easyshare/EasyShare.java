@@ -70,16 +70,7 @@ public class EasyShare extends ModuleRoot {
             return Response.serverError().status(Response.Status.NOT_FOUND).build();
           }
 
-          Date today = new Date();
-          if (today.after(docFolder.getProperty("dc:expired").getValue(Date.class))) {
-
-            //Email notification
-            Map mail = new HashMap<>();
-            mail.put("template", "easyShareExpired");
-            mail.put("docFolder", docFolder);
-
-            sendNotification("easyShareExpired", docFolder, mail);
-
+          if (!checkIfShareIsValid(docFolder)) {
             return getView("expired").arg("docFolder", docFolder);
           }
 
@@ -112,6 +103,22 @@ public class EasyShare extends ModuleRoot {
 
   }
 
+  private boolean checkIfShareIsValid(DocumentModel docFolder) {
+    Date today = new Date();
+    if (today.after(docFolder.getProperty("dc:expired").getValue(Date.class))) {
+
+      //Email notification
+      Map mail = new HashMap<>();
+      mail.put("template", "easyShareExpired");
+
+      sendNotification("easyShareExpired", docFolder, mail);
+
+      return false;
+
+    }
+    return true;
+  }
+
   public String getFileName(DocumentModel doc) throws ClientException {
     BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
     if (blobHolder != null && blobHolder.getBlob() != null) {
@@ -130,19 +137,17 @@ public class EasyShare extends ModuleRoot {
         if (session.exists(docRef)) {
           try {
             DocumentModel doc = session.getDocument(docRef);
+            DocumentModel docFolder = session.getDocument(doc.getParentRef());
+
+            if (!checkIfShareIsValid(docFolder)) {
+              return Response.serverError().status(Response.Status.NOT_FOUND).build();
+            }
 
             Blob blob = doc.getAdapter(BlobHolder.class).getBlob();
-            DocumentModel docFolder = session.getDocument(doc.getParentRef());
 
             // Audit Log
             OperationContext ctx = new OperationContext(session);
             ctx.setInput(doc);
-
-            Date today = new Date();
-            if (today.after(docFolder.getProperty("dc:expired").getValue(Date.class))) {
-              return Response.serverError().status(Response.Status.NOT_FOUND).build();
-
-            }
 
             // Audit.Log operation parameter setting
             Map<String, Object> params = new HashMap<String, Object>();
