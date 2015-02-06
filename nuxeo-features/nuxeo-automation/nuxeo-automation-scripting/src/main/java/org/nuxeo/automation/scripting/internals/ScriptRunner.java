@@ -57,22 +57,19 @@ public class ScriptRunner {
         }
     }
 
-    public void run(InputStream in) throws Exception {
-        run("(function(){" + IOUtils.toString(in, "UTF-8") + "})();");
+    public void run(InputStream in, CoreSession session) throws Exception {
+        run("(function(){" + IOUtils.toString(in, "UTF-8") + "})();", session);
     }
 
-    public void run(String script) throws ScriptException {
-        engine.put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY, new AutomationMapper(session));
-        engine.eval(script);
+    public void run(String script, CoreSession session) throws ScriptException {
+        engines.get().put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY,
+                new AutomationMapper(session));
+        engines.get().eval(script);
     }
 
-    public void setCoreSession(CoreSession session) {
-        this.session = session;
-    }
-
-    public <T> T getInterface(Class<T> scriptingOperationInterface, String script) throws Exception {
-        run(script);
-        Invocable inv = (Invocable) engine;
+    public <T> T getInterface(Class<T> scriptingOperationInterface, String script, CoreSession session) throws Exception {
+        run(script, session);
+        Invocable inv = (Invocable) engines.get();
         return inv.getInterface(scriptingOperationInterface);
     }
 

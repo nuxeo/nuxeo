@@ -79,11 +79,10 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     }
 
     @Override
-    public ScriptRunner getRunner(CoreSession session) throws ScriptException {
+    public ScriptRunner getRunner() throws ScriptException {
         if (runner == null) {
             runner = new ScriptRunner(getJSWrapper());
         }
-        runner.setCoreSession(session);
         return runner;
     }
 
