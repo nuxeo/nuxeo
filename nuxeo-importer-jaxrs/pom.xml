@@ -31,8 +31,8 @@
       <artifactId>nuxeo-webengine-base</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.ws.rs</groupId>
-      <artifactId>jsr311-api</artifactId>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
