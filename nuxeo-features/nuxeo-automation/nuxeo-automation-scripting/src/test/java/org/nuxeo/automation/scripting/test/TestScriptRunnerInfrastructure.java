@@ -196,4 +196,25 @@ public class TestScriptRunnerInfrastructure {
         t.join();
         t2.join();
     }
+
+    @Ignore("NXP-16477")
+    @Test
+    public void testIsolationScriptCtx() throws Exception {
+        AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
+        assertNotNull(scriptingService);
+
+        ScriptRunner runner = scriptingService.getRunner();
+        assertNotNull(runner);
+
+        InputStream stream = this.getClass().getResourceAsStream("/scriptCtxIsolation.js");
+        assertNotNull(stream);
+        runner.run(stream, session);
+        assertEquals("[object Object]\n",outContent.toString());
+
+        stream = this.getClass().getResourceAsStream("/scriptCtxIsolation.js");
+        assertNotNull(stream);
+        runner.run(stream, session);
+        // Failing returning "[object Object]\n" + "toto\n"
+        assertEquals("[object Object]\n" + "[object Object]\n",outContent.toString());
+    }
 }
