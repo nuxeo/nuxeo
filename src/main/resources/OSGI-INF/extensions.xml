@@ -106,12 +106,6 @@
           <properties mode="any">
             <property name="nxl_colspan_0">1</property>
           </properties>
-          <widget>shareComment</widget>
-        </row>
-        <row>
-          <properties mode="any">
-            <property name="nxl_colspan_0">1</property>
-          </properties>
           <widget>hasNotification</widget>
         </row>
         <row>
@@ -138,6 +132,9 @@
         <labels>
           <label mode="any">label.dublincore.description</label>
         </labels>
+        <helpLabels>
+          <label mode="any">label.eshare.description.help</label>
+        </helpLabels>
         <translated>true</translated>
         <fields>
           <field>dc:description</field>
@@ -160,18 +157,6 @@
         <properties widgetMode="edit">
           <property name="required">true</property>
         </properties>
-      </widget>
-      <widget name="shareComment" type="textarea">
-        <labels>
-          <label mode="any">label.eshare.shareComment</label>
-        </labels>
-        <helpLabels>
-          <label mode="any">label.eshare.shareComment.help</label>
-        </helpLabels>
-        <translated>true</translated>
-        <fields>
-          <field>eshare:shareComment</field>
-        </fields>
       </widget>
       <widget name="hasNotification" type="checkbox">
         <labels>
@@ -230,12 +215,6 @@
           <properties mode="any">
             <property name="nxl_colspan_0">1</property>
           </properties>
-          <widget>shareComment</widget>
-        </row>
-        <row>
-          <properties mode="any">
-            <property name="nxl_colspan_0">1</property>
-          </properties>
           <widget>hasNotification</widget>
         </row>
         <row>
@@ -272,15 +251,6 @@
         <translated>true</translated>
         <fields>
           <field>dc:expired</field>
-        </fields>
-      </widget>
-      <widget name="shareComment" type="text">
-        <labels>
-          <label mode="any">label.eshare.shareComment</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>eshare:shareComment</field>
         </fields>
       </widget>
       <widget name="hasNotfication" type="checkbox">
@@ -329,12 +299,6 @@
           <widget>expired</widget>
           <widget>contactEmail</widget>
         </row>
-        <row>
-          <properties mode="any">
-            <property name="nxl_colspan_0">3</property>
-          </properties>
-          <widget>shareComment</widget>
-        </row>
       </rows>
       <widget name="creator" type="text">
         <labels>
@@ -373,18 +337,6 @@
         <properties widgetMode="view">
           <property name="title">Creator's Email</property>
           <property name="styleClass">detail tag headerEmail</property>
-        </properties>
-      </widget>
-      <widget name="shareComment" type="text">
-        <labels>
-          <label mode="any">label.eshare.shareComment</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>eshare:shareComment</field>
-        </fields>
-        <properties widgetMode="view">
-          <property name="styleClass">detail quote headerComment</property>
         </properties>
       </widget>
     </layout>

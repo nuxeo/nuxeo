@@ -8,10 +8,10 @@
 
     <content>
 
-      <#if docFolder.easysharefolder.shareComment?length &gt; 0 >
+      <#if docFolder.dublincore.description?length &gt; 0 >
         <div class="comment">
           <i class="icon-user"></i>
-          <blockquote>${docFolder.easysharefolder.shareComment}</blockquote>
+          <blockquote>${docFolder.dublincore.description}</blockquote>
         </div>
       </#if>
 
