@@ -1,1 +1,1 @@
-File ${filename} from ${docFolder.name} downloaded by ${ip}
+File ${filename} from ${docShare.name} downloaded by ${ip}

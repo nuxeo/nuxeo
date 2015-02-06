@@ -88,7 +88,7 @@ header detail {
 
 .share-box .comment {
   background-color: #003B85;
-  margin: 0 -60px 30px;
+  margin: 0 -60px 5px;
   padding: 20px 60px;
 }
 
@@ -173,4 +173,54 @@ header detail {
 
 .item .icon-file {
   margin-right: .5em;
+}
+
+.pageNavigationControls {
+  border: medium none;
+  margin: 1em;
+  padding: 0;
+  text-align: center;
+}
+
+.currentPageStatus {
+    color: #777;
+    padding-top: .3em;
+    vertical-align: top;
+    font-weight: bold;
+    margin: 0 .5em;
+    font-size: .9em;
+    display: inline-block;
+}
+
+.pageNavigationControls input[type="image"] {
+    border: 1px solid #ddd !important;
+    background-color: #fff;
+    margin: 0;
+    padding: .3em;
+    border-radius: 2px;
+}
+
+.pageNavigationControls a[disabled=disabled] input {
+    opacity: .2;
+    filter: alpha(opacity=20);
+    background-color: transparent;
+    border-color: transparent !important;
+    cursor: default;
+}
+
+.action_bar {
+  background: none #fff;
+  border-radius: 2px;
+  text-decoration: none;
+  margin: .6em 0;
+  border: 1px solid;
+  color: #000;
+  font-size: .9em;
+  line-height: 1.3em;
+  font-weight: bold;
+  display: inline-block;
+  border-color: #c9c9c9;
+  padding: .3em .7em .4em;
+  white-space: nowrap;
+  cursor: pointer;
 }

@@ -6,7 +6,11 @@
     <schema name="easysharefolder" prefix="eshare" src="data/schemas/easysharefolder.xsd"/>
   </extension>
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
-    <doctype name="EasyShareFolder" extends="Folder">
+    <doctype name="EasyShareFolder" extends="Document">
+      <facet name="Collection"/>
+      <facet name="NotCollectionMember"/>
+      <schema name="dublincore"/>
+      <schema name="common"/>
       <schema name="easysharefolder"/>
       <schema name="uid"/>
     </doctype>
@@ -24,13 +28,6 @@
       <bigIcon>/img/easyshare_100.png</bigIcon>
       <description>EasyShareFolder.description</description>
       <default-view>view_documents</default-view>
-      <subtypes>
-        <type>Audio</type>
-        <type>File</type>
-        <type>Picture</type>
-        <type>Video</type>
-        <type>Note</type>
-      </subtypes>
       <layouts mode="create">
         <layout>layout@EasyShareFolder-edit</layout>
       </layouts>
@@ -62,14 +59,11 @@
     </type>
   </extension>
   <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
-    <action id="shareDocsFromWorkflow" label="Share in Easy Share Folder" enabled="true" order="0" type="link" immediate="false" icon="/img/addtoeasyshare.png" link="#{operationActionBean.doOperation('addToAShareDocument')}">
-      <category>DEFAULT_LIST</category>
-      <filter id="filter@shareDocsFromWorkflow">
-        <rule grant="true">
-          <permission>ReadWrite</permission>
-          <type>EasyShareFolder</type>
-        </rule>
-      </filter>
+    <action id="TAB_VIEW">
+      <filter-id>denyForEasyShareFolder</filter-id>
+    </action>
+    <action id="TAB_RELATIONS">
+      <filter-id>denyForEasyShareFolder</filter-id>
     </action>
   </extension>
   <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService" point="typeFilter">
@@ -287,7 +281,10 @@
           <widget>header_title_and_permlink</widget>
         </row>
         <row>
-          <widget>header_description</widget>
+          <properties mode="any">
+            <property name="nxl_colspan_0">3</property>
+          </properties>
+          <widget>collection_header_description</widget>
         </row>
         <row>
           <properties mode="any">
@@ -300,6 +297,19 @@
           <widget>contactEmail</widget>
         </row>
       </rows>
+      <widget name="collection_header_description" type="textarea">
+        <fields>
+          <field>dc:description</field>
+        </fields>
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <properties mode="any">
+          <property name="styleClass">
+            currentDocumentDescription quote
+          </property>
+        </properties>
+      </widget>
       <widget name="creator" type="text">
         <labels>
           <label mode="any">label.dublincore.creator</label>
@@ -414,6 +424,12 @@
         <condition>#{typeManager.getAllowedSubTypes(document.getType(), document).size() &gt; 0}</condition>
       </rule>
     </filter>
+    <filter id="denyForEasyShareFolder">
+      <rule grant="false">
+        <type>EasyShareFolder</type>
+      </rule>
+    </filter>
+
   </extension>
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="widgettypes">
 
