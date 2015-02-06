@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -223,9 +224,11 @@ public final class ComponentUtils {
                         response.flushBuffer();
                     }
                 } catch (IOException e) {
-                    // XXX: better throw the exception instead of hiding the
-                    // root cause of a potential error
-                    log.error("Error while downloading the file: " + filename);
+                    if (ExceptionHelper.isClientAbortError(e)) {
+                        ExceptionHelper.logClientAbort(e);
+                    } else {
+                        log.error("Error while downloading the file: " + filename, e);
+                    }
                 }
                 faces.responseComplete();
             }
