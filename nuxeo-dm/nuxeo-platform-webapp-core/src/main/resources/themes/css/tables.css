@@ -344,3 +344,29 @@ table.palettePreviewColors td div {
 .vocabularyEntryContent .dataInput {
   border: none;
   margin-bottom: 1.4em }
+
+.listItem .moveUpBtn,
+.listItem .moveDownBtn,
+.listItem .deleteBtn {
+  display: block;
+  width: 16px;
+  height: 16px; }
+
+.listItem .moveUpBtn {
+  background-image: url('${basePath}/icons/go_up.png'); }
+
+.listItem .moveDownBtn {
+  background-image: url('${basePath}/icons/go_down.png'); }
+
+.listItem .deleteBtn {
+  background-image: url('${basePath}/icons/delete.png'); }
+
+.listItem:nth-of-type(1) .moveUpBtn {
+  pointer-events: none;
+  cursor: default;
+  background-image: url('${basePath}/icons/inactive_go_up.png'); }
+
+.listItem:nth-last-of-type(2) .moveDownBtn {
+  pointer-events: none;
+  cursor: default;
+  background-image: url('${basePath}/icons/inactive_go_down.png'); }

@@ -18,15 +18,17 @@
 package org.nuxeo.ecm.platform.ui.web.component.list;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseId;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -48,7 +50,7 @@ public class UIJavascriptList extends UIEditableList {
 
     protected static final String TEMPLATE_INDEX_MARKER = "TEMPLATE_INDEX_MARKER";
 
-    protected static final String ITEMS_COUNTER_ID = "itemsCounter";
+    protected static final String ROW_INDEXES_PARAM = "rowIndex[]";
 
     protected static final String IS_LIST_TEMPLATE_VAR = "isListTemplate";
 
@@ -114,22 +116,22 @@ public class UIJavascriptList extends UIEditableList {
     }
 
     @SuppressWarnings("deprecation")
-    protected int retrieveCountFromRequest(FacesContext context) {
+    protected int[] retrieveRowIndexesFromRequest(FacesContext context) {
 
-        UIComponent component = findComponent(ITEMS_COUNTER_ID);
-        if (!(component instanceof UIInput)) {
-            throw new IllegalArgumentException("Invalid sub component with id " + ITEMS_COUNTER_ID);
-        }
+        Map<String, String[]> requestMap = context.getExternalContext().getRequestParameterValuesMap();
 
-        Map<String, String> requestMap = context.getExternalContext().getRequestParameterMap();
-        String clientId = getClientId() + NamingContainer.SEPARATOR_CHAR + TEMPLATE_INDEX_MARKER
-                + NamingContainer.SEPARATOR_CHAR + ITEMS_COUNTER_ID;
-        String v = requestMap.get(clientId);
+        String clientId = getClientId() + NamingContainer.SEPARATOR_CHAR + ROW_INDEXES_PARAM;
+        String[] v = requestMap.get(clientId);
+
         try {
-            return Integer.valueOf(v);
+            int[] indexes = new int[v.length - 1]; // skip the last value since it comes from the template
+            for (int i = 0; i < indexes.length; i++) {
+                indexes[i] = Integer.valueOf(v[i]);
+            }
+            return indexes;
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(String.format("Invalid value '%s' for counter component with id '%s'",
-                    v, clientId));
+            throw new IllegalArgumentException(String.format("Invalid value '%s' for row indexes: '%s'",
+                    StringUtils.join(v, ","), clientId));
         }
     }
 
@@ -137,19 +139,34 @@ public class UIJavascriptList extends UIEditableList {
         List<UIComponent> stamps = getChildren();
         int oldIndex = getRowIndex();
         int end = getRowCount();
-        if (phaseId == PhaseId.APPLY_REQUEST_VALUES) {
-            // if processing decodes, do not rely on current counter in datamodel, retrieve counter from request
-            end = retrieveCountFromRequest(context);
+
+        // A map with the new index for each row key
+        Map<Integer, Integer> keyIndexMap = new HashMap<>();
+
+        if (phaseId == PhaseId.APPLY_REQUEST_VALUES || phaseId == PhaseId.UPDATE_MODEL_VALUES) {
+            // if processing decodes retrieve row indexes from request
+            int[] rowIndexes = retrieveRowIndexesFromRequest(context);
+
+            for (int i = 0; i < rowIndexes.length; i++) {
+                int idx = rowIndexes[i];
+                keyIndexMap.put(idx, i);
+                // determine the row count
+                if (idx >= end) {
+                    end = idx + 1;
+                }
+            }
         }
+
         Object requestMapValue = saveRequestMapModelValue();
         try {
-            int first = 0;
-            for (int i = first; i < end; i++) {
-                setRowIndex(i);
+            // update values and add new rows if needed
+            for (int idx = 0; idx < end; idx++) {
+                setRowIndex(idx);
+
                 if (!isRowAvailable()) {
                     // might be a new value
                     // XXX to refine
-                    getEditableModel().insertValue(i, getTemplate());
+                    getEditableModel().insertValue(idx, getTemplate());
                 }
                 if (isRowAvailable()) {
                     for (UIComponent stamp : stamps) {
@@ -159,13 +176,42 @@ public class UIJavascriptList extends UIEditableList {
                         // detect changes during process update phase and fill
                         // the EditableModel list diff.
                         if (isRowModified()) {
-                            recordValueModified(i, getRowData());
+                            recordValueModified(idx, getRowData());
                         }
                     }
                 } else {
                     break;
                 }
             }
+
+            if (phaseId == PhaseId.UPDATE_MODEL_VALUES) {
+
+                // rows to delete
+                List<Integer> toDelete = new ArrayList<>();
+
+                // move rows
+                for (int i = 0; i < end; i++) {
+                    setRowKey(i);
+                    int curIdx = getRowIndex();
+
+                    // This row has been deleted
+                    if (!keyIndexMap.containsKey(i)) {
+                        toDelete.add(i);
+                    } else { // This row has been moved
+                        int newIdx = keyIndexMap.get(i);
+                        if (curIdx != newIdx) {
+                            getEditableModel().moveValue(curIdx, newIdx);
+                        }
+                    }
+                }
+
+                // delete rows
+                for (int i : toDelete) {
+                    setRowKey(i);
+                    getEditableModel().removeValue(getRowIndex());
+                }
+            }
+
         } finally {
             setRowIndex(oldIndex);
             restoreRequestMapModelValue(requestMapValue);
