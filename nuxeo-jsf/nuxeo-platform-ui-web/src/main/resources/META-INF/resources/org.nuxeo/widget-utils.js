@@ -46,18 +46,31 @@ nuxeo.utils = (function(m) {
     jQuery(document.getElementById(eltId)).select2(params);
   };
 
-  m.addFromListTemplate = function(templateElement, countElement) {
-    var tel = jQuery(templateElement);
-    var cel = jQuery(countElement);
-    var count = parseInt(cel.val());
+  m.addFromListTemplate = function(templateElement) {
+    var tel = jQuery(templateElement),
+        count = tel.siblings('.listItem').length;
+
     // clone + make sure it's displayed
     var el = tel.clone().show();
     // replace TEMPLATE_ITEM markers by new value
     jQuery(el).html(el.html().replace(/TEMPLATE_INDEX_MARKER/g, count));
-    // update counter
-    cel.val(count + 1);
     // place in the DOM
     tel.before(el);
+    return false;
+  };
+
+  m.deleteFromList = function(rowElement) {
+    rowElement.remove();
+    return false;
+  };
+
+  m.moveUpList = function(rowElement) {
+    rowElement.insertBefore(rowElement.prev());
+    return false;
+  };
+
+  m.moveDownList = function(rowElement) {
+    rowElement.insertAfter(rowElement.next());
     return false;
   };
 
