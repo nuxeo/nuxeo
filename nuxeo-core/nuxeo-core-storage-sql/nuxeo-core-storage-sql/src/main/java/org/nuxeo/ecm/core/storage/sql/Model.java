@@ -1459,6 +1459,7 @@ public class Model {
                 ACL_GRANT_KEY, true));
         allPathPropertyInfos.put("ecm:acl.name/*", new ModelProperty(PropertyType.STRING, fragmentName, ACL_NAME_KEY,
                 true));
+        allPathPropertyInfos.put("ecm:acl.pos/*", new ModelProperty(PropertyType.LONG, fragmentName, ACL_POS_KEY, true));
     }
 
     /**

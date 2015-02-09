@@ -132,6 +132,13 @@ public class NXQL {
     public static final String ECM_ACL_NAME = "name";
 
     /**
+     * Suffix for ecm:acl, like in {@code ecm:acl/}{@code *}{@code /pos}
+     *
+     * @since 6.0-HF06, 7.2
+     */
+    public static final String ECM_ACL_POS = "pos";
+
+    /**
      * Escapes a string into a single-quoted string for NXQL.
      * <p>
      * Any single quote or backslash characters are escaped with a backslash.

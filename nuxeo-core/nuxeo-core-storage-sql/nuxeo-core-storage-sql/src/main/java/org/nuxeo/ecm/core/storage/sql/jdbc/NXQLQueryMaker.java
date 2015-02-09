@@ -152,6 +152,8 @@ public class NXQLQueryMaker implements QueryMaker {
 
     public static final String ECM_SIMPLE_ACP_NAME = NXQL.ECM_ACL + "/*/" + NXQL.ECM_ACL_NAME;
 
+    public static final String ECM_SIMPLE_ACP_POS = NXQL.ECM_ACL + "/*/" + NXQL.ECM_ACL_POS;
+
     public static final String ECM_TAG_STAR = NXQL.ECM_TAG + "/*";
 
     protected static final String TABLE_HIER_ALIAS = "_H";
@@ -1310,7 +1312,8 @@ public class NXQLQueryMaker implements QueryMaker {
             } else if (name.startsWith(NXQL.ECM_ACL)) {
                 String simple = simpleXPath(name);
                 if (simple.equals(ECM_SIMPLE_ACP_PRINCIPAL) || simple.equals(ECM_SIMPLE_ACP_PERMISSION)
-                        || simple.equals(ECM_SIMPLE_ACP_GRANT) || simple.equals(ECM_SIMPLE_ACP_NAME)) {
+                        || simple.equals(ECM_SIMPLE_ACP_GRANT) || simple.equals(ECM_SIMPLE_ACP_NAME)
+                        || simple.equals(ECM_SIMPLE_ACP_POS)) {
                     // ok
                 } else {
                     throw new QueryMakerException("Unknown field: " + name);
