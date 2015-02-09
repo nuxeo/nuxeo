@@ -46,7 +46,7 @@ public class TracerFactory implements TracerFactoryMBean {
 
     protected static final Integer CACHE_MAXIMUM_SIZE = 1000;
 
-    protected static final Integer CACHE_TIMEOUT = 1;
+    protected static final Integer CACHE_TIMEOUT = 10;
 
     private static final Log log = LogFactory.getLog(TracerFactory.class);
 
@@ -60,7 +60,7 @@ public class TracerFactory implements TracerFactoryMBean {
 
     public TracerFactory() {
         tracesCache = CacheBuilder.newBuilder().concurrencyLevel(CACHE_CONCURRENCY_LEVEL).maximumSize(
-                CACHE_MAXIMUM_SIZE).expireAfterWrite(CACHE_TIMEOUT, TimeUnit.HOURS).build();
+                CACHE_MAXIMUM_SIZE).expireAfterWrite(CACHE_TIMEOUT, TimeUnit.MINUTES).build();
         recording = Framework.isBooleanPropertyTrue(AUTOMATION_TRACE_PROPERTY);
         printableTraces = Framework.getProperty(AUTOMATION_TRACE_PRINTABLE_PROPERTY, "*");
     }
