@@ -19,8 +19,10 @@ package org.nuxeo.automation.scripting.internals;
 import java.io.InputStream;
 
 import javax.script.Invocable;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
+import javax.script.SimpleScriptContext;
 
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 
@@ -35,6 +37,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ScriptRunner {
 
+    protected final String jsBinding;
+
     protected final ThreadLocal<ScriptEngine> engines = new ThreadLocal<ScriptEngine>(){
         @Override
         protected ScriptEngine initialValue() {
@@ -48,15 +52,7 @@ public class ScriptRunner {
     };
 
     public ScriptRunner(String jsBinding) {
-        initialize(jsBinding);
-    }
-
-    protected void initialize(String jsBinding) {
-        try {
-            engines.get().eval(jsBinding);
-        } catch (ScriptException e) {
-            throw new AutomationScriptingException(e);
-        }
+        this.jsBinding = jsBinding;
     }
 
     public void run(InputStream in, CoreSession session) throws Exception {
@@ -64,9 +60,13 @@ public class ScriptRunner {
     }
 
     public void run(String script, CoreSession session) throws ScriptException {
-        engines.get().put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY,
+        ScriptContext scriptContext = new SimpleScriptContext();
+        ScriptEngine engine = engines.get();
+        engine.setContext(scriptContext);
+        engine.eval(jsBinding);
+        engine.put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY,
                 new AutomationMapper(session));
-        engines.get().eval(script);
+        engine.eval(script);
     }
 
     public <T> T getInterface(Class<T> scriptingOperationInterface, String script, CoreSession session) throws Exception {
