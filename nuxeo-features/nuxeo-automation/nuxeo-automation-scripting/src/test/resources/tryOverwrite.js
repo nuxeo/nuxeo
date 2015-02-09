@@ -1,0 +1,2 @@
+
+Document.Fetch="toto";

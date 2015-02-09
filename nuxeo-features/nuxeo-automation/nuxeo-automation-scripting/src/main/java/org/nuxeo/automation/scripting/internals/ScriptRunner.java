@@ -39,17 +39,23 @@ public class ScriptRunner {
 
     protected final String jsBinding;
 
+    public static boolean useOneEnginePerThread=true;
+
     protected final ThreadLocal<ScriptEngine> engines = new ThreadLocal<ScriptEngine>(){
         @Override
         protected ScriptEngine initialValue() {
-            if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE,
-                    AutomationScriptingConstants.DEFAULT_PRECOMPILE_STATUS))) {
-                return new NashornScriptEngineFactory().getScriptEngine(AutomationScriptingConstants.NASHORN_OPTIONS);
-            } else {
-                return new NashornScriptEngineFactory().getScriptEngine();
-            }
+           return getEngine();
         }
     };
+
+    protected ScriptEngine getEngine() {
+        if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE,
+                AutomationScriptingConstants.DEFAULT_PRECOMPILE_STATUS))) {
+            return new NashornScriptEngineFactory().getScriptEngine(AutomationScriptingConstants.NASHORN_OPTIONS);
+        } else {
+            return new NashornScriptEngineFactory().getScriptEngine();
+        }
+    }
 
     public ScriptRunner(String jsBinding) {
         this.jsBinding = jsBinding;
@@ -61,7 +67,7 @@ public class ScriptRunner {
 
     public void run(String script, CoreSession session) throws ScriptException {
         ScriptContext scriptContext = new SimpleScriptContext();
-        ScriptEngine engine = engines.get();
+        ScriptEngine engine = useOneEnginePerThread ? engines.get() : getEngine();
         engine.setContext(scriptContext);
         engine.eval(jsBinding);
         engine.put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY,

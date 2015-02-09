@@ -141,6 +141,60 @@ public class TestCompileAndContext {
         System.err.println("DEBUG: Logic A toke " + (end - start) + " MilliSeconds");
     }
 
+    protected String getScriptWithRandomContent(String content) {
+        // change the content of the script !
+        return "var t=" + System.currentTimeMillis() + content;
+    }
+
+    @Test
+    public void checkScriptingEngineCostAndIsolation() throws Exception {
+
+        ScriptRunner.useOneEnginePerThread=true;
+
+        InputStream stream = this.getClass().getResourceAsStream("/QuickScript.js");
+        assertNotNull(stream);
+        String js = IOUtils.toString(stream);
+
+        long t0 = System.currentTimeMillis();
+        scriptingService.getRunner().run(getScriptWithRandomContent(js), session);
+        long t1 = System.currentTimeMillis();
+        System.err.println("Initial Exec = " + (t1-t0));
+
+
+        t0 = System.currentTimeMillis();
+        scriptingService.getRunner().run(getScriptWithRandomContent(js), session);
+        t1 = System.currentTimeMillis();
+        System.err.println("Second Exec = " + (t1-t0));
+
+        int nbIter = 50;
+
+        long t = t1-t0;
+        for (int i = 0; i < nbIter; i++) {
+            t0 = System.currentTimeMillis();
+            scriptingService.getRunner().run(getScriptWithRandomContent(js), session);
+            t1 = System.currentTimeMillis();
+            System.err.println("Exec = " + (t1-t0));
+            t+=t1-t0;
+        }
+
+        System.err.println("AvgExec = " + (t/(nbIter + 1.0)));
+
+        // now we check isolation
+
+        stream = this.getClass().getResourceAsStream("/checkIsolation.js");
+        assertNotNull(stream);
+        String check = IOUtils.toString(stream);
+
+        scriptingService.getRunner().run(check, session);
+
+        scriptingService.getRunner().run(check, session);
+
+        scriptingService.getRunner().run("Document.Fetch=\"toto\";", session);
+
+        scriptingService.getRunner().run(check, session);
+    }
+
+
 
     public class Mapper {
 
