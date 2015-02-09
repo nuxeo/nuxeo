@@ -123,6 +123,11 @@
       <redirect />
     </navigation-case>
     <navigation-case>
+      <from-outcome>toggleableLayoutWidget</from-outcome>
+      <to-view-id>/layoutDemo/demoWidgets/toggleableLayoutWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
       <from-outcome>actionsWidget</from-outcome>
       <to-view-id>/layoutDemo/demoWidgets/actionsWidget.xhtml</to-view-id>
       <redirect />

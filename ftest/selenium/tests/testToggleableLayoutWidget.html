@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8080/nuxeo/" />
+<title>testToggleableLayoutWidget</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">testToggleableLayoutWidget</td></tr>
+</thead><tbody>
+<tr>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>layoutDemo</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>layoutDemo/toggleableLayoutWidget</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextNotPresent</td>
+	<td>ERROR</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>Value is required</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_initialForm:nxl_heading:nxw_title</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_initialForm:nxl_heading:nxw_title</td>
+	<td>My title</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_initialForm:nxl_heading:nxw_description</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_initialForm:nxl_heading:nxw_description</td>
+	<td>My description</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_headerForm:nxw_toggleableLayoutWidget_header_toggleAction</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_headerForm:nxw_toggleableLayoutWidget_header_toggleAction</td>
+	<td>Edit</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_headerForm:nxw_toggleableLayoutWidget_header_toggleAction</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_headerForm:nxw_toggleableLayoutWidget_header_toggleAction</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_headerForm:nxw_toggleableLayoutWidget_header_toggleAction</td>
+	<td>Cancel</td>
+</tr>
+<!-- Check cancel actions in both header and form -->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_headerForm:nxw_toggleableLayoutWidget_header_toggleAction</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_headerForm:nxw_toggleableLayoutWidget_header_toggleAction</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_headerForm:nxw_toggleableLayoutWidget_header_toggleAction</td>
+	<td>Edit</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_headerForm:nxw_toggleableLayoutWidget_header_toggleAction</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxw_toggleableLayoutWidget_cancelToggleAction</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxw_toggleableLayoutWidget_cancelToggleAction</td>
+	<td>Cancel</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxw_toggleableLayoutWidget_cancelToggleAction</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_headerForm:nxw_toggleableLayoutWidget_header_toggleAction</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxw_toggleableLayoutWidget_saveDemoToggleableLayout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxw_toggleableLayoutWidget_saveDemoToggleableLayout</td>
+	<td>Save</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_heading_1:nxw_title_1</td>
+	<td>My title</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_heading_1:nxw_description_1</td>
+	<td>My description</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_demoToggleableLayout:nxw_textareaWidget</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_demoToggleableLayout:nxw_datetimeWidgetInputDate</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_demoToggleableLayout:nxw_intWidget</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxw_toggleableLayoutWidget_saveDemoToggleableLayout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Value is required</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_heading_1:nxw_title_1</td>
+	<td>My title changed</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_heading_1:nxw_description_1</td>
+	<td>My description changed</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_demoToggleableLayout:nxw_textareaWidget</td>
+	<td>text</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_demoToggleableLayout:nxw_datetimeWidgetInputDate</td>
+	<td>2/9/2015 12:00 PM</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_demoToggleableLayout:nxw_intWidget</td>
+	<td>42</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxw_toggleableLayoutWidget_saveDemoToggleableLayout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>Value is required</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_initialForm:nxl_heading:nxw_title</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_initialForm:nxl_heading:nxw_title</td>
+	<td>My title changed</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_initialForm:nxl_heading:nxw_description</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_initialForm:nxl_heading:nxw_description</td>
+	<td>My description changed</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_headerForm:nxw_toggleableLayoutWidget_header_toggleAction</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_heading_1:nxw_title_1</td>
+	<td>My title changed</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_heading_1:nxw_description_1</td>
+	<td>My description changed</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_demoToggleableLayout:nxw_textareaWidget</td>
+	<td>text</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_demoToggleableLayout:nxw_datetimeWidgetInputDate</td>
+	<td>2/9/2015 12:00 PM</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_demoToggleableLayout:nxw_intWidget</td>
+	<td>42</td>
+</tr>
+</tbody></table>
+</body>
+</html>

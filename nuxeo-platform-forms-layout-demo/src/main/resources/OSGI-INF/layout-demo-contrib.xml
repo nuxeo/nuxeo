@@ -100,7 +100,8 @@
         </fields>
       </preview>
       <layouts>
-        <layout name="fileWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-file-widget.xml" />
+        <layout name="fileWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-file-widget.xml"
+          useAjaxForm="false" />
         <layout name="fileWidgetListingLayout" isListing="true"
           src="sources/OSGI-INF/demo/layout-demo-file-listing-widget.xml" />
       </layouts>
@@ -366,75 +367,6 @@
       </layouts>
     </widgetType>
 
-    <!--
-      <widgetType name="singleDocumentSuggestion">
-      <label>Document suggestion</label>
-      <viewId>single_document_suggestion</viewId>
-      <category>standard</category>
-      <preview enabled="true">
-      <fields>
-      <field>lds:select_doc_field</field>
-      </fields>
-      <defaultProperties>
-      <property name="width">200</property>
-      <property name="minChars">2</property>
-      <property name="helpLabel">Type at least {0} "a" to display suggestion
-      </property>
-      <property name="repository">layoutDemo</property>
-      <property name="query">
-      select * from Document where dc:title LIKE ?
-      </property>
-      <property name="documentSchemas">dublincore,layout_demo_schema,common
-      </property>
-      <property name="suggestionFormatter">myformatter</property>
-      <property name="selectionFormatter">myformatter</property>
-      <property name="inlinejs"> <![CDATA[
-      function myformatter(doc) {
-      var markup = "<table><tr>";
-      markup += "<td style='padding:2px'><img src='/nuxeo" + doc.properties['common:icon']
-      + "'/></td>";
-      markup += "<td style='padding:2px'>" + doc.title + " (" + doc.properties['dc:creator']
-      + ")</td>";
-      markup += "</tr></table>";
-      return markup;
-      }]]></property>
-      </defaultProperties>
-      </preview>
-      <layouts>
-      <layout name="singleDocumentSuggestionLayout"
-      src="sources/OSGI-INF/demo/layout-demo-singleDocumentSuggestion-widget.xml"
-      />
-      </layouts>
-      </widgetType>
-
-      <widgetType name="multipleDocumentsSuggestion">
-      <label>Multiple documents suggestion</label>
-      <viewId>multiple_documents_suggestion</viewId>
-      <category>standard</category>
-      <preview enabled="true">
-      <fields>
-      <field>lds:select_docs_multi_fields</field>
-      </fields>
-      <defaultProperties>
-      <property name="width">200</property>
-      <property name="minChars">2</property>
-      <property name="helpLabel">Type at least {0} "a" to display suggestion
-      </property>
-      <property name="repository">layoutDemo</property>
-      <property name="query">
-      select * from Document where dc:title LIKE ?
-      </property>
-      <property name="documentSchemas">dublincore,layout_demo_schema</property>
-      </defaultProperties>
-      </preview>
-      <layouts>
-      <layout name="multipleDocumentsSuggestionLayout"
-      src="sources/OSGI-INF/demo/layout-demo-multipleDocumentsSuggestion-widget.xml"
-      />
-      </layouts>
-      </widgetType>
-    -->
-
     <widgetType name="checkbox">
       <label>Checkbox</label>
       <viewId>checkboxWidget</viewId>
@@ -485,7 +417,7 @@
         <layout name="complexListWidgetLayout2"
           src="sources/OSGI-INF/demo/layout-demo-complex-list2-widget.xml" />
         <!-- disabled: need to handle file size restriction -->
-        <!-- <layout name="fileListWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-file-list-widget.xml"
+        <!-- <layout name="fileListWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-file-list-widget.xml" 
           /> -->
         <layout name="listOfListsWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-listOfLists-widget.xml" />
@@ -498,7 +430,7 @@
       <category>custom</category>
       <layouts>
         <!-- TODO? -->
-        <!-- <layout name="templateWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-template-widget.xml"
+        <!-- <layout name="templateWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-template-widget.xml" 
           /> -->
       </layouts>
     </widgetType>
@@ -536,13 +468,34 @@
       </preview>
     </widgetType>
 
+    <widgetType name="toggleableLayoutWithForms">
+      <label>Toggleable form</label>
+      <viewId>toggleableLayoutWidget</viewId>
+      <category>custom</category>
+      <layouts>
+        <layout name="toggleableLayout"
+          src="sources/OSGI-INF/demo/layout-demo-toggleable-layout-widget.xml"
+          addForm="false" hideEditMode="true" />
+      </layouts>
+      <preview enabled="true">
+        <fields>
+          <field></field>
+        </fields>
+        <defaultProperties>
+          <property name="initialLayoutName">heading</property>
+          <property name="toggledLayoutName">heading demoToggleableLayout</property>
+        </defaultProperties>
+      </preview>
+    </widgetType>
+
     <widgetType name="actions">
       <label>Actions</label>
       <viewId>actionsWidget</viewId>
       <category>custom</category>
       <layouts>
         <layout name="actionsWidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-actions-widget.xml" />
+          src="sources/OSGI-INF/demo/layout-demo-actions-widget.xml"
+          useAjaxForm="false" />
       </layouts>
       <preview enabled="true">
         <fields>

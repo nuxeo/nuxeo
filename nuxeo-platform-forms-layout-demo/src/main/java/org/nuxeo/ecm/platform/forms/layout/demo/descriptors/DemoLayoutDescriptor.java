@@ -41,6 +41,24 @@ public class DemoLayoutDescriptor implements DemoLayout {
     @XNode("@hideViewMode")
     protected boolean hideViewMode = false;
 
+    /**
+     * @since 7.2
+     */
+    @XNode("@hideEditMode")
+    protected boolean hideEditMode = false;
+
+    /**
+     * @since 7.2
+     */
+    @XNode("@addForm")
+    protected boolean addForm = true;
+
+    /**
+     * @since 7.2
+     */
+    @XNode("@useAjaxForm")
+    protected boolean useAjaxForm = true;
+
     public String getName() {
         return name;
     }
@@ -56,6 +74,21 @@ public class DemoLayoutDescriptor implements DemoLayout {
     @Override
     public boolean isHideViewMode() {
         return hideViewMode;
+    }
+
+    @Override
+    public boolean isHideEditMode() {
+        return hideEditMode;
+    }
+
+    @Override
+    public boolean isAddForm() {
+        return addForm;
+    }
+
+    @Override
+    public boolean isUseAjaxForm() {
+        return useAjaxForm;
     }
 
 }
