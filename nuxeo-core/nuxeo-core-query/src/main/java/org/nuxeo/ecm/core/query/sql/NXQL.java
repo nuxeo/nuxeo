@@ -100,34 +100,34 @@ public class NXQL {
     /** @since 6.0 */
     public static final String ECM_ANCESTORID = "ecm:ancestorId";
 
-    /** @since 7.2 */
+    /** @since 6.0-HF06, 7.2 */
     public static final String ECM_ACL = "ecm:acl";
 
     /**
      * Suffix for ecm:acl, like in {@code ecm:acl/}{@code *}{@code /principal}
      *
-     * @since 7.2
+     * @since 6.0-HF06, 7.2
      */
     public static final String ECM_ACL_PRINCIPAL = "principal";
 
     /**
      * Suffix for ecm:acl, like in {@code ecm:acl/}{@code *}{@code /permission}
      *
-     * @since 7.2
+     * @since 6.0-HF06, 7.2
      */
     public static final String ECM_ACL_PERMISSION = "permission";
 
     /**
      * Suffix for ecm:acl, like in {@code ecm:acl/}{@code *}{@code /grant}
      *
-     * @since 7.2
+     * @since 6.0-HF06, 7.2
      */
     public static final String ECM_ACL_GRANT = "grant";
 
     /**
      * Suffix for ecm:acl, like in {@code ecm:acl/}{@code *}{@code /name}
      *
-     * @since 7.2
+     * @since 6.0-HF06, 7.2
      */
     public static final String ECM_ACL_NAME = "name";
 
