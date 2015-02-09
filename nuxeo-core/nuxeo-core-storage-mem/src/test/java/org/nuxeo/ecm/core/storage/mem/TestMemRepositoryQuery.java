@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Test;
@@ -1246,6 +1247,92 @@ public class TestMemRepositoryQuery extends MemRepositoryTestCase {
             actual.add(d.getId());
         }
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testQueryACL() throws Exception {
+        createDocs();
+        DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(new ACE("bob", "Browse", true));
+        acl.add(new ACE("steve", "Read", true));
+        acl.add(ACE.BLOCK);
+        acp.addACL(acl);
+        folder1.setACP(acp, true);
+        session.save();
+
+        String queryBase = "SELECT * FROM Document WHERE ecm:isProxy = 0 AND ";
+
+        // simple query
+        checkQueryACL(1, queryBase + "ecm:acl/*/principal = 'bob'");
+
+        // documents with both bob and steve
+        checkQueryACL(1, queryBase + "ecm:acl/*/principal = 'bob' AND ecm:acl/*/principal = 'steve'");
+
+        // bob cannot be steve, no match
+        checkQueryACL(0, queryBase + "ecm:acl/*1/principal = 'bob' AND ecm:acl/*1/principal = 'steve'");
+
+        // bob with Browse
+        checkQueryACL(1, queryBase + "ecm:acl/*1/principal = 'bob' AND ecm:acl/*1/permission = 'Browse'");
+
+        // bob with Browse granted
+        checkQueryACL(1, queryBase
+                + "ecm:acl/*1/principal = 'bob' AND ecm:acl/*1/permission = 'Browse' AND ecm:acl/*1/grant = 1");
+
+        // bob with Browse denied, no match
+        checkQueryACL(0, queryBase
+                + "ecm:acl/*1/principal = 'bob' AND ecm:acl/*1/permission = 'Browse' AND ecm:acl/*1/grant = 0");
+
+        // bob with Read, no match
+        checkQueryACL(0, queryBase + "ecm:acl/*1/principal = 'bob' AND ecm:acl/*1/permission = 'Read'");
+
+        // a bob and a Read
+        checkQueryACL(1, queryBase + "ecm:acl/*/principal = 'bob' AND ecm:acl/*/permission = 'Read'");
+
+        // block
+        checkQueryACL(1, queryBase
+                + "ecm:acl/*1/principal = 'Everyone' AND ecm:acl/*1/permission = 'Everything' AND ecm:acl/*1/grant = 0");
+    }
+
+    protected void checkQueryACL(int expected, String query) {
+        DocumentModelList dml = session.query(query);
+        assertEquals(expected, dml.size());
+
+        IterableQueryResult res = session.queryAndFetch(query, "NXQL");
+        long size = res.size();
+        res.close();
+        assertEquals(expected, size);
+    }
+
+    @Test
+    public void testQueryACLReturnedValue() throws Exception {
+        createDocs();
+        DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(new ACE("bob", "Browse", true));
+        acl.add(new ACE("steve", "Read", true));
+        acl.add(ACE.BLOCK);
+        acp.addACL(acl);
+        folder1.setACP(acp, true);
+        session.save();
+
+        IterableQueryResult res;
+        // simple query
+        res = session.queryAndFetch(
+                "SELECT ecm:uuid, ecm:acl/*1/name, ecm:acl/*1/principal, ecm:acl/*1/permission FROM Document WHERE ecm:isProxy = 0 AND "
+                        + "ecm:acl/*1/permission in ('Read', 'Browse') AND ecm:acl/*1/grant = 1", "NXQL");
+        assertEquals(2, res.size());
+        Set<String> set = new HashSet<>();
+        for (Map<String, Serializable> map : res) {
+            set.add(map.get("ecm:acl/*1/name") + ":" + map.get("ecm:acl/*1/principal") + ":"
+                    + map.get("ecm:acl/*1/permission"));
+        }
+        res.close();
+        assertEquals(new HashSet<>(Arrays.asList("local:bob:Browse", "local:steve:Read")), set);
     }
 
     @Test
