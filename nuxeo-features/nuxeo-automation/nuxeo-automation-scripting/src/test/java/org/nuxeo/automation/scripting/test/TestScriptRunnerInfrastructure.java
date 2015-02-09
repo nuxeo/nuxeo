@@ -30,7 +30,6 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
@@ -201,7 +200,6 @@ public class TestScriptRunnerInfrastructure {
         t2.join();
     }
 
-    @Ignore("NXP-16477")
     @Test
     public void testIsolationScriptCtx() throws Exception {
         AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
