@@ -41,8 +41,6 @@ public class AutomationScriptingComponent extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(AutomationScriptingComponent.class);
 
-    public static AutomationScriptingComponent self;
-
     public static final String XP_OPERATION = "operation";
 
     public AutomationScriptingService scriptingService = new AutomationScriptingServiceImpl();
@@ -54,7 +52,6 @@ public class AutomationScriptingComponent extends DefaultComponent {
                 Boolean.toString(log.isTraceEnabled())))) {
             scriptingService = MetricInvocationHandler.newProxy(scriptingService, AutomationScriptingService.class);
         }
-        self = this;
     }
 
     @Override
@@ -87,7 +84,6 @@ public class AutomationScriptingComponent extends DefaultComponent {
 
     @Override
     public void deactivate(ComponentContext context) {
-        self = null;
         super.deactivate(context);
     }
 
