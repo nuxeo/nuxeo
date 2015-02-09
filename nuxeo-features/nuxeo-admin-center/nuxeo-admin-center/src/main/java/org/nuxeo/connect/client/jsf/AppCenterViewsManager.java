@@ -220,10 +220,9 @@ public class AppCenterViewsManager implements Serializable {
             return;
         }
         PackageManager pm = Framework.getLocalService(PackageManager.class);
-        List<DownloadablePackage> pkgs = pm.listAllStudioRemotePackages();
-
+        // TODO NXP-16228: should directly request the SNAPSHOT package (if only we knew its name!)
+        List<DownloadablePackage> pkgs = pm.listRemoteAssociatedStudioPackages();
         DownloadablePackage snapshotPkg = StudioSnapshotHelper.getSnapshot(pkgs);
-
         studioSnapshotUpdateError = null;
         resetStudioSnapshotValidationStatus();
         if (snapshotPkg != null) {
@@ -282,32 +281,29 @@ public class AppCenterViewsManager implements Serializable {
     protected FileTime getLastUpdateDate() {
         if (lastUpdate == null) {
             PackageManager pm = Framework.getLocalService(PackageManager.class);
-            List<DownloadablePackage> pkgs = pm.listAllStudioRemotePackages();
+            // TODO NXP-16228: should directly request the SNAPSHOT package (if only we knew its name!)
+            List<DownloadablePackage> pkgs = pm.listRemoteAssociatedStudioPackages();
             DownloadablePackage snapshotPkg = StudioSnapshotHelper.getSnapshot(pkgs);
             if (snapshotPkg != null) {
+                PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
                 try {
-                    PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
                     LocalPackage pkg = pus.getPackage(snapshotPkg.getId());
                     if (pkg != null) {
-                        // it would have been easier if this API returned a
-                        // date or FileTime instance, as parsing the date to
-                        // format it differently is always a pain
                         lastUpdate = pus.getInstallDate(pkg.getId());
                     }
                 } catch (PackageException e) {
                     log.error(e);
                 }
             }
-            return lastUpdate;
-        } else {
-            return lastUpdate;
         }
+        return lastUpdate;
     }
 
     public String getStudioInstallationStatus() {
         if (studioSnapshotStatus == null) {
             PackageManager pm = Framework.getLocalService(PackageManager.class);
-            List<DownloadablePackage> pkgs = pm.listAllStudioRemotePackages();
+            // TODO NXP-16228: should directly request the SNAPSHOT package (if only we knew its name!)
+            List<DownloadablePackage> pkgs = pm.listRemoteAssociatedStudioPackages();
             LocalPackage pkg = null;
             DownloadablePackage snapshotPkg = StudioSnapshotHelper.getSnapshot(pkgs);
             if (snapshotPkg != null) {
