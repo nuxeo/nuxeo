@@ -64,6 +64,12 @@ public class DemoWidgetTypeDescriptor implements Serializable {
     @XNode("preview@hideViewMode")
     protected boolean previewHideViewMode = false;
 
+    /**
+     * @since 7.2
+     */
+    @XNode("preview@hideEditMode")
+    protected boolean previewHideEditMode = false;
+
     @XNodeList(value = "preview/fields/field", type = ArrayList.class, componentType = String.class)
     protected List<String> fields;
 
@@ -109,6 +115,13 @@ public class DemoWidgetTypeDescriptor implements Serializable {
 
     public boolean isPreviewHideViewMode() {
         return previewHideViewMode;
+    }
+
+    /**
+     * @since 7.2
+     */
+    public boolean isPreviewHideEditMode() {
+        return previewHideEditMode;
     }
 
     public List<String> getFields() {

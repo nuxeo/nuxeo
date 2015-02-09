@@ -166,6 +166,8 @@ public class LayoutDemoContext implements Serializable {
     public DocumentModel getBareDemoDocument() throws ClientException {
         if (bareDemoDocument == null) {
             bareDemoDocument = generateBareDemoDocument();
+            bareDemoDocument.setPropertyValue("dc:title", "My title");
+            bareDemoDocument.setPropertyValue("dc:description", "My description");
         }
         return bareDemoDocument;
     }

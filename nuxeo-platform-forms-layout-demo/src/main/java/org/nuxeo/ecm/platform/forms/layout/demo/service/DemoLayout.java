@@ -36,4 +36,19 @@ public interface DemoLayout extends Serializable {
      */
     boolean isHideViewMode();
 
+    /**
+     * @since 7.2
+     */
+    boolean isHideEditMode();
+
+    /**
+     * @since 7.2
+     */
+    public boolean isAddForm();
+
+    /**
+     * @since 7.2
+     */
+    public boolean isUseAjaxForm();
+
 }
