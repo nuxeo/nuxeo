@@ -1449,6 +1449,16 @@ public class Model {
         String fragmentName = ACL_TABLE_NAME;
         addCollectionFragmentInfos(fragmentName, PropertyType.COLL_ACL, ACL_POS_KEY, keysType);
         addPropertyInfo(ACL_PROP, PropertyType.COLL_ACL, fragmentName, null, false, null, null);
+        // for query
+        // composed of NXQL.ECM_ACL and NXQL.ECM_ACL_PRINCIPAL etc.
+        allPathPropertyInfos.put("ecm:acl.principal/*", new ModelProperty(PropertyType.STRING, fragmentName,
+                ACL_USER_KEY, true));
+        allPathPropertyInfos.put("ecm:acl.permission/*", new ModelProperty(PropertyType.STRING, fragmentName,
+                ACL_PERMISSION_KEY, true));
+        allPathPropertyInfos.put("ecm:acl.grant/*", new ModelProperty(PropertyType.BOOLEAN, fragmentName,
+                ACL_GRANT_KEY, true));
+        allPathPropertyInfos.put("ecm:acl.name/*", new ModelProperty(PropertyType.STRING, fragmentName, ACL_NAME_KEY,
+                true));
     }
 
     /**

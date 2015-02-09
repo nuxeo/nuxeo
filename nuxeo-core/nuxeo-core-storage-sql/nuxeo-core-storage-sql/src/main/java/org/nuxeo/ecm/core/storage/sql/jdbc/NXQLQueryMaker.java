@@ -143,6 +143,14 @@ public class NXQLQueryMaker implements QueryMaker {
 
     public static final String RELATION_TABLE = "relation";
 
+    public static final String ECM_SIMPLE_ACP_PRINCIPAL = NXQL.ECM_ACL + "/*/" + NXQL.ECM_ACL_PRINCIPAL;
+
+    public static final String ECM_SIMPLE_ACP_PERMISSION = NXQL.ECM_ACL + "/*/" + NXQL.ECM_ACL_PERMISSION;
+
+    public static final String ECM_SIMPLE_ACP_GRANT = NXQL.ECM_ACL + "/*/" + NXQL.ECM_ACL_GRANT;
+
+    public static final String ECM_SIMPLE_ACP_NAME = NXQL.ECM_ACL + "/*/" + NXQL.ECM_ACL_NAME;
+
     public static final String ECM_TAG_STAR = NXQL.ECM_TAG + "/*";
 
     protected static final String TABLE_HIER_ALIAS = "_H";
@@ -1293,6 +1301,14 @@ public class NXQLQueryMaker implements QueryMaker {
                     checkProperty(name); // may throw
                 }
                 // else all is done in fulltext match info
+            } else if (name.startsWith(NXQL.ECM_ACL)) {
+                String simple = simpleXPath(name);
+                if (simple.equals(ECM_SIMPLE_ACP_PRINCIPAL) || simple.equals(ECM_SIMPLE_ACP_PERMISSION)
+                        || simple.equals(ECM_SIMPLE_ACP_GRANT) || simple.equals(ECM_SIMPLE_ACP_NAME)) {
+                    // ok
+                } else {
+                    throw new QueryMakerException("Unknown field: " + name);
+                }
             } else if (name.startsWith(NXQL.ECM_PREFIX)) {
                 throw new QueryMakerException("Unknown field: " + name);
             } else {
@@ -1453,7 +1469,7 @@ public class NXQLQueryMaker implements QueryMaker {
             return arraySubQuery;
         }
 
-        protected Column getSpecialColumn(String name) {
+        protected ColumnInfo getSpecialColumnInfo(String name) {
             String propertyName = null;
             Table table = null;
             String fragmentKey = null;
@@ -1537,6 +1553,15 @@ public class NXQLQueryMaker implements QueryMaker {
                 String hierContextKey = "_tag_hierarchy" + suffix;
                 table = getFragmentTable(Join.INNER, rel, hierContextKey, fragmentName, model.MAIN_KEY, -1, false,
                         TYPE_TAGGING);
+            } else if (name.startsWith(NXQL.ECM_ACL)) {
+                // get index and suffix; we already checked that there are two slashes
+                int i = name.indexOf('/');
+                int j = name.lastIndexOf('/');
+                String index = name.substring(i + 1, j); // like "*1"
+                String suffix = name.substring(j + 1); // like "principal"
+                // re-create pseudo property name, which the Model mapped to a ModelProperty
+                String newName = NXQL.ECM_ACL + '.' + suffix + '/' + index;
+                return getRegularColumnInfo(newName);
             } else {
                 throw new QueryMakerException("No such property: " + name);
             }
@@ -1550,7 +1575,8 @@ public class NXQLQueryMaker implements QueryMaker {
                     table = getFragmentTable(dataHierTable, fragmentName, fragmentName, -1, false);
                 }
             }
-            return table.getColumn(fragmentKey);
+            Column column = table.getColumn(fragmentKey);
+            return new ColumnInfo(column, -1, false, false);
         }
 
         /**
@@ -1558,8 +1584,7 @@ public class NXQLQueryMaker implements QueryMaker {
          */
         public ColumnInfo getColumnInfo(String name) {
             if (name.startsWith(NXQL.ECM_PREFIX)) {
-                Column column = getSpecialColumn(name);
-                return new ColumnInfo(column, -1, false, false);
+                return getSpecialColumnInfo(name);
             } else {
                 return getRegularColumnInfo(name);
             }

@@ -100,6 +100,37 @@ public class NXQL {
     /** @since 6.0 */
     public static final String ECM_ANCESTORID = "ecm:ancestorId";
 
+    /** @since 6.0-HF06, 7.2 */
+    public static final String ECM_ACL = "ecm:acl";
+
+    /**
+     * Suffix for ecm:acl, like in {@code ecm:acl/}{@code *}{@code /principal}
+     *
+     * @since 6.0-HF06, 7.2
+     */
+    public static final String ECM_ACL_PRINCIPAL = "principal";
+
+    /**
+     * Suffix for ecm:acl, like in {@code ecm:acl/}{@code *}{@code /permission}
+     *
+     * @since 6.0-HF06, 7.2
+     */
+    public static final String ECM_ACL_PERMISSION = "permission";
+
+    /**
+     * Suffix for ecm:acl, like in {@code ecm:acl/}{@code *}{@code /grant}
+     *
+     * @since 6.0-HF06, 7.2
+     */
+    public static final String ECM_ACL_GRANT = "grant";
+
+    /**
+     * Suffix for ecm:acl, like in {@code ecm:acl/}{@code *}{@code /name}
+     *
+     * @since 6.0-HF06, 7.2
+     */
+    public static final String ECM_ACL_NAME = "name";
+
     /**
      * Escapes a string into a single-quoted string for NXQL.
      * <p>
