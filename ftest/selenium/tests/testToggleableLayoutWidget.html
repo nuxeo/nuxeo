@@ -193,8 +193,13 @@
 	<td>My description</td>
 </tr>
 <tr>
-	<td>verifyValue</td>
-	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_demoToggleableLayout:nxw_textareaWidget</td>
+	<td>verifyElementPresent</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_demoToggleableLayout:nxw_htmlWidget_ifr</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_demoToggleableLayout:nxw_htmlWidget_ifr</td>
 	<td></td>
 </tr>
 <tr>
@@ -238,9 +243,9 @@
 	<td>My description changed</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_demoToggleableLayout:nxw_textareaWidget</td>
-	<td>text</td>
+	<td>runScript</td>
+	<td>tinyMCE.activeEditor.setContent('&lt;b&gt;Bold&lt;/b&gt; content')</td>
+	<td></td>
 </tr>
 <tr>
 	<td>type</td>
@@ -318,9 +323,19 @@
 	<td>My description changed</td>
 </tr>
 <tr>
-	<td>verifyValue</td>
-	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_demoToggleableLayout:nxw_textareaWidget</td>
-	<td>text</td>
+	<td>selectFrame</td>
+	<td>id=nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:nxl_demoToggleableLayout:nxw_htmlWidget_ifr</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>xpath=//p</td>
+	<td>Bold content</td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyValue</td>
