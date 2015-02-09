@@ -19,7 +19,9 @@
 
 package org.nuxeo.ecm.platform.ui.web.directory;
 
+import java.io.IOException;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -33,6 +35,10 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.DirectoryException;
 
+import com.sun.faces.renderkit.Attribute;
+import com.sun.faces.renderkit.AttributeManager;
+import com.sun.faces.renderkit.RenderKitUtils;
+
 /**
  * Renderer for directory entry.
  *
@@ -42,8 +48,46 @@ public class DirectoryEntryOutputRenderer extends Renderer {
 
     private static final Log log = LogFactory.getLog(DirectoryHelper.class);
 
+    private static final Attribute[] OUTPUT_ATTRIBUTES = AttributeManager.getAttributes(AttributeManager.Key.OUTPUTTEXT);
+
     @Override
-    public void encodeBegin(FacesContext context, UIComponent component) {
+    public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
+        String toWrite = getEntryLabel(context, component);
+
+        ResponseWriter writer = context.getResponseWriter();
+        boolean isOutput = false;
+
+        String style = (String) component.getAttributes().get("style");
+        String styleClass = (String) component.getAttributes().get("styleClass");
+        String dir = (String) component.getAttributes().get("dir");
+        String lang = (String) component.getAttributes().get("lang");
+        String title = (String) component.getAttributes().get("title");
+        Map<String, Object> passthroughAttributes = component.getPassThroughAttributes(false);
+        boolean hasPassthroughAttributes = null != passthroughAttributes && !passthroughAttributes.isEmpty();
+
+        boolean renderSpan = styleClass != null || style != null || dir != null || lang != null || title != null
+                || hasPassthroughAttributes;
+        if (renderSpan) {
+            writer.startElement("span", component);
+            if (null != styleClass) {
+                writer.writeAttribute("class", styleClass, "styleClass");
+            }
+            // style is rendered as a passthru attribute
+            RenderKitUtils.renderPassThruAttributes(context, writer, component, OUTPUT_ATTRIBUTES);
+
+        }
+        if (toWrite != null) {
+            writer.write(toWrite);
+        }
+
+        if (renderSpan) {
+            writer.endElement("span");
+        }
+
+    }
+
+    @SuppressWarnings("deprecation")
+    protected String getEntryLabel(FacesContext context, UIComponent component) {
         DirectoryEntryOutputComponent dirComponent = (DirectoryEntryOutputComponent) component;
         String entryId = (String) dirComponent.getValue();
         if (entryId == null) {
@@ -94,15 +138,7 @@ public class DirectoryEntryOutputRenderer extends Renderer {
             // default rendering: the entry id itself
             toWrite = entryId;
         }
-        try {
-            if (toWrite != null) {
-                ResponseWriter writer = context.getResponseWriter();
-                writer.writeText(toWrite, null);
-                writer.flush();
-            }
-        } catch (Exception e) {
-            log.error("IOException trying to write on the response", e);
-        }
+        return toWrite;
     }
 
     protected static String translate(FacesContext context, String label) {

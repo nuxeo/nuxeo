@@ -2350,6 +2350,12 @@
                 <row>
                   <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -2442,6 +2448,12 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
                 </row>
               </rows>
             </layout>
@@ -2541,6 +2553,12 @@
                 <row>
                   <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -2636,6 +2654,12 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
                 </row>
               </rows>
             </layout>
