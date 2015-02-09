@@ -32,6 +32,7 @@ import javax.script.Compilable;
 import javax.script.CompiledScript;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
@@ -39,6 +40,7 @@ import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
@@ -71,6 +73,8 @@ public class TestCompileAndContext {
     @Inject
     CoreSession session;
 
+    @Inject AutomationScriptingService scriptingService;
+
     ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
     @Before
@@ -85,22 +89,19 @@ public class TestCompileAndContext {
 
     @Test
     public void serviceShouldBeDeclared() throws Exception {
-        AutomationScriptingService automationScriptingService = Framework.getService(AutomationScriptingService.class);
-        assertNotNull(automationScriptingService);
-
         ScriptEngineManager engineManager = new ScriptEngineManager();
         ScriptEngine engine = engineManager.getEngineByName(AutomationScriptingConstants.NASHORN_ENGINE);
         assertNotNull(engine);
 
         InputStream stream = this.getClass().getResourceAsStream("/checkWrapper.js");
         assertNotNull(stream);
-        engine.eval(automationScriptingService.getJSWrapper());
+        engine.eval(scriptingService.getJSWrapper());
         engine.eval(IOUtils.toString(stream));
         assertEquals("Hello\n", outContent.toString());
     }
 
     @Test
-    public void testNashornPrecompilation() throws Exception {
+    public void testNashornWithCompile() throws Exception {
         ScriptEngineManager engineManager = new ScriptEngineManager();
         ScriptEngine engine = engineManager.getEngineByName(AutomationScriptingConstants.NASHORN_ENGINE);
         assertNotNull(engine);
@@ -127,8 +128,19 @@ public class TestCompileAndContext {
                 "[A, B, C]\n" +
                 "{a=salut, b=from java}\n" +
                 "done\n", outContent.toString());
-
     }
+
+    @Ignore("just for perf testing purpose")
+    @Test
+    public void testPerf() throws ScriptException {
+        long start = System.currentTimeMillis();
+        for(int i=0;i<500;i++) {
+            scriptingService.getRunner().run(scriptingService.getJSWrapper(), session);
+        }
+        long end = System.currentTimeMillis();
+        System.err.println("DEBUG: Logic A toke " + (end - start) + " MilliSeconds");
+    }
+
 
     public class Mapper {
 
