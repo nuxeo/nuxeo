@@ -41,7 +41,7 @@
       </templates>
       <rows>
         <row>
-          <widget>textareaWidget</widget>
+          <widget>htmlWidget</widget>
         </row>
         <row>
           <widget>datetimeWidget</widget>
@@ -51,13 +51,13 @@
           <widget>checkboxWidget</widget>
         </row>
       </rows>
-      <widget name="textareaWidget" type="textarea">
+      <widget name="htmlWidget" type="htmltext">
         <labels>
-          <label mode="any">Textarea widget</label>
+          <label mode="any">HTML widget</label>
         </labels>
         <translated>false</translated>
         <fields>
-          <field>lds:textareaField</field>
+          <field>lds:htmlField</field>
         </fields>
         <properties widgetMode="edit">
           <property name="required">true</property>
