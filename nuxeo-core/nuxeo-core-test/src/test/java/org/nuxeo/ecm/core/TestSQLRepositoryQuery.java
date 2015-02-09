@@ -1370,6 +1370,9 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         // block
         checkQueryACL(1, queryBase
                 + "ecm:acl/*1/principal = 'Everyone' AND ecm:acl/*1/permission = 'Everything' AND ecm:acl/*1/grant = 0");
+
+        // explicit array index
+        checkQueryACL(1, queryBase + "ecm:acl/1/principal = 'bob'");
     }
 
     protected void checkQueryACL(int expected, String query) {
@@ -1409,6 +1412,22 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         }
         res.close();
         assertEquals(new HashSet<>(Arrays.asList("local:bob:Browse", "local:steve:Read")), set);
+
+        // read full ACL
+        res = session.queryAndFetch(
+                "SELECT ecm:uuid, ecm:acl/*1/name, ecm:acl/*1/pos, ecm:acl/*1/principal, ecm:acl/*1/permission, ecm:acl/*1/grant FROM Document WHERE ecm:isProxy = 0 AND "
+                        + "ecm:acl/*/principal = 'bob'", "NXQL");
+        assertEquals(4, res.size());
+        set = new HashSet<>();
+        for (Map<String, Serializable> map : res) {
+            set.add(map.get("ecm:acl/*1/name") + ":" + map.get("ecm:acl/*1/pos") + ":"
+                    + map.get("ecm:acl/*1/principal") + ":" + map.get("ecm:acl/*1/permission") + ":"
+                    + map.get("ecm:acl/*1/grant"));
+        }
+        res.close();
+        assertEquals(
+                new HashSet<>(Arrays.asList("local:0:Administrator:Everything:true", "local:1:bob:Browse:true",
+                        "local:2:steve:Read:true", "local:3:Everyone:Everything:false")), set);
     }
 
     @Test
