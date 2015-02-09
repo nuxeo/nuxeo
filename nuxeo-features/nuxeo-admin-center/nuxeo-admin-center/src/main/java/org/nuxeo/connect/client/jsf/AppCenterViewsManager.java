@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -45,6 +45,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.connect.client.ui.SharedPackageListingsSettings;
 import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
@@ -548,7 +549,7 @@ public class AppCenterViewsManager implements Serializable {
      * @since 5.7.1
      */
     public void setStudioSnapshotValidationStatus(ValidationStatus status) {
-        this.studioSnapshotValidationStatus = status;
+        studioSnapshotValidationStatus = status;
     }
 
     /**
