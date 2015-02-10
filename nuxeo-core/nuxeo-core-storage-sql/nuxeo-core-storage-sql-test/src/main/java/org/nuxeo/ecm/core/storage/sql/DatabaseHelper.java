@@ -19,8 +19,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -185,6 +187,7 @@ public abstract class DatabaseHelper {
             throws SQLException {
         DatabaseMetaData metadata = connection.getMetaData();
         List<String> tableNames = new LinkedList<String>();
+        Set<String> truncateFirst = new HashSet<String>();
         ResultSet rs = metadata.getTables(catalog, schemaPattern, "%", new String[] { "TABLE" });
         while (rs.next()) {
             String tableName = rs.getString("TABLE_NAME");
@@ -205,8 +208,8 @@ public abstract class DatabaseHelper {
                 continue;
             }
             if ("ACLR_MODIFIED".equals(tableName) && DATABASE instanceof DatabaseOracle) {
-                // skip temporary table on Oracle, cannot be dropped
-                continue;
+                // global temporary table on Oracle, must TRUNCATE before DROP
+                truncateFirst.add(tableName);
             }
             tableNames.add(tableName);
         }
@@ -228,6 +231,10 @@ public abstract class DatabaseHelper {
         }
         Statement st = connection.createStatement();
         for (String tableName : tableNames) {
+            if (truncateFirst.contains(tableName)) {
+                String sql = String.format("TRUNCATE TABLE \"%s\"", tableName);
+                executeSql(st, sql);
+            }
             String sql = String.format(statement, tableName);
             executeSql(st, sql);
         }
