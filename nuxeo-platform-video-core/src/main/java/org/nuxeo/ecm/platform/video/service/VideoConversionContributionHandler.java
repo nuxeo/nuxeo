@@ -69,6 +69,14 @@ public class VideoConversionContributionHandler extends ContributionFragmentRegi
         dst.setConverter(src.getConverter());
         dst.setHeight(src.getHeight());
         dst.setEnabled(src.isEnabled());
+
+        if (src.isRenditionSet()) {
+            dst.setRendition(src.isRendition());
+        }
+
+        if (src.isRenditionVisibleSet()) {
+            dst.setRenditionVisible(src.isRenditionVisible());
+        }
     }
 
 }

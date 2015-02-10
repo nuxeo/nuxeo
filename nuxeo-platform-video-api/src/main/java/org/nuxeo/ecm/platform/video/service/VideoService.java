@@ -96,4 +96,9 @@ public interface VideoService {
      */
     VideoConversionStatus getProgressStatus(String repositoryName, String docId, String conversionName);
 
+    /**
+     * @since 7.2
+     */
+    VideoConversion getVideoConversion(String conversionName);
+
 }

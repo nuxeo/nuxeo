@@ -182,4 +182,8 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
         }
     }
 
+    @Override
+    public VideoConversion getVideoConversion(String conversionName) {
+        return videoConversions.registry.get(conversionName);
+    }
 }

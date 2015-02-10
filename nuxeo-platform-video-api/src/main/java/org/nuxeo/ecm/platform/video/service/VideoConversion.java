@@ -41,6 +41,12 @@ public class VideoConversion implements Cloneable {
     @XNode("@enabled")
     private boolean enabled = true;
 
+    @XNode("@rendition")
+    private Boolean rendition;
+
+    @XNode("@renditionVisible")
+    private Boolean renditionVisible;
+
     public String getName() {
         return name;
     }
@@ -67,6 +73,30 @@ public class VideoConversion implements Cloneable {
 
     public void setHeight(long height) {
         this.height = height;
+    }
+
+    public boolean isRenditionVisible() {
+        return renditionVisible == null || renditionVisible;
+    }
+
+    public boolean isRenditionVisibleSet() {
+        return renditionVisible != null;
+    }
+
+    public boolean isRendition() {
+        return rendition == null || rendition;
+    }
+
+    public boolean isRenditionSet() {
+        return rendition != null;
+    }
+
+    public void setRendition(Boolean rendition) {
+        this.rendition = rendition;
+    }
+
+    public void setRenditionVisible(Boolean renditionVisible) {
+        this.renditionVisible = renditionVisible;
     }
 
     @Override
