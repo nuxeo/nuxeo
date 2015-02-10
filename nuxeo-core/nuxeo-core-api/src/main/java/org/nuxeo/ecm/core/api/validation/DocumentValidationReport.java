@@ -29,7 +29,7 @@ public class DocumentValidationReport {
 
     protected List<ConstraintViolation> violations;
 
-    DocumentValidationReport(List<ConstraintViolation> violations) {
+    public DocumentValidationReport(List<ConstraintViolation> violations) {
         super();
         this.violations = violations;
     }
