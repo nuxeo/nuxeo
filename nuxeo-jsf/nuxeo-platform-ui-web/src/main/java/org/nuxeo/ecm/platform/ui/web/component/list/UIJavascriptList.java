@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.ui.web.component.list;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,11 +27,13 @@ import java.util.Map;
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.context.ResponseWriter;
 import javax.faces.event.PhaseId;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 
 import com.sun.faces.facelets.tag.jsf.ComponentSupport;
 
@@ -80,7 +83,7 @@ public class UIJavascriptList extends UIEditableList {
      * <p>
      * This element will be used on client side by js code to handle addition of a new element.
      */
-    protected void encodeTemplate(FacesContext context) {
+    protected void encodeTemplate(FacesContext context) throws IOException {
         int oldIndex = getRowIndex();
         setRowIndex(-2);
 
@@ -92,6 +95,14 @@ public class UIJavascriptList extends UIEditableList {
         }
         Object oldIsTemplateBoolean = requestMap.remove(IS_LIST_TEMPLATE_VAR);
         requestMap.put(IS_LIST_TEMPLATE_VAR, Boolean.TRUE);
+
+        // render the template as escaped html
+        ResponseWriter oldResponseWriter = context.getResponseWriter();
+        StringWriter cacheingWriter = new StringWriter();
+
+        ResponseWriter newResponseWriter = context.getResponseWriter().cloneWithWriter(cacheingWriter);
+
+        context.setResponseWriter(newResponseWriter);
 
         if (getChildCount() > 0) {
             for (UIComponent kid : getChildren()) {
@@ -105,6 +116,18 @@ public class UIJavascriptList extends UIEditableList {
                 }
             }
         }
+
+        cacheingWriter.flush();
+        cacheingWriter.close();
+
+        context.setResponseWriter(oldResponseWriter);
+
+        String html = Functions.htmlEscape(cacheingWriter.toString());
+        ResponseWriter writer = context.getResponseWriter();
+        writer.write("<script type='text/x-html-template'>");
+        writer.write(html);
+        writer.write("</script>");
+
         setRowIndex(oldIndex);
 
         // restore
@@ -124,7 +147,7 @@ public class UIJavascriptList extends UIEditableList {
         String[] v = requestMap.get(clientId);
 
         try {
-            int[] indexes = new int[v.length - 1]; // skip the last value since it comes from the template
+            int[] indexes = new int[v.length];
             for (int i = 0; i < indexes.length; i++) {
                 indexes[i] = Integer.valueOf(v[i]);
             }

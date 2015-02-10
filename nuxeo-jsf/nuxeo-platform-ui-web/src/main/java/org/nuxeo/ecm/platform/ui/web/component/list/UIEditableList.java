@@ -815,7 +815,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
      */
     @Override
     @SuppressWarnings("deprecation")
-       public String getContainerClientId(FacesContext context) {
+    public String getContainerClientId(FacesContext context) {
         String id = super.getClientId(context);
         int index = getRowIndex();
         if (index != -1) {
@@ -865,10 +865,9 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         encodeTemplate(context);
     }
 
-    protected void encodeTemplate(FacesContext context) {
+    protected void encodeTemplate(FacesContext context) throws IOException {
         // helper method to be overriden by UIJavascriptList
     }
-
 
     // events
     /**

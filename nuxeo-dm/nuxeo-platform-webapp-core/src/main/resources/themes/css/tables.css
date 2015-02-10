@@ -366,7 +366,7 @@ table.palettePreviewColors td div {
   cursor: default;
   background-image: url('${basePath}/icons/inactive_go_up.png'); }
 
-.listItem:nth-last-of-type(2) .moveDownBtn {
+.listItem:nth-last-of-type(1) .moveDownBtn {
   pointer-events: none;
   cursor: default;
   background-image: url('${basePath}/icons/inactive_go_down.png'); }
