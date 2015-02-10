@@ -48,12 +48,14 @@ nuxeo.utils = (function(m) {
 
   m.addFromListTemplate = function(templateElement) {
     var tel = jQuery(templateElement),
-        count = tel.siblings('.listItem').length;
+        count = templateElement.siblings('.listItem').length;
 
-    // clone + make sure it's displayed
-    var el = tel.clone().show();
-    // replace TEMPLATE_ITEM markers by new value
-    jQuery(el).html(el.html().replace(/TEMPLATE_INDEX_MARKER/g, count));
+    // unescape our template's html content
+    var text = jQuery('<textarea/>').html(tel.html()).val();
+    // replace our marker with the row index
+    text = text.trim().replace(/TEMPLATE_INDEX_MARKER/g, count);
+    // parse the html (including scripts)
+    var el = jQuery.parseHTML(text, document, true);
     // place in the DOM
     tel.before(el);
     return false;

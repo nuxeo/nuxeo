@@ -48,6 +48,7 @@
     value="#{nxu:test(empty widgetProperty_listTemplateItem, nxd:propertyDefaultValue(propValueForTemplate), widgetProperty_listTemplateItem)}" />
   <c:set var="showActions"
     value="#{isEditMode and (not widgetProperty_hideDeleteButton or widgetProperty_orderable)}" />
+  <c:set var="listClientId" value="#{widget.id}_input" />
   <a4j:region id="#{widget.id}_region">
     <a4j:outputPanel id="#{widget.id}_panel"
       styleClass="widgetPanel listWidgetPanel #{widgetProperty_styleClass}"
@@ -82,9 +83,8 @@
                 diff="#{widgetProperty_diff}"
                 rendered="#{isEditMode or not empty fieldOrValue}">
                 <nxu:validateDocumentConstraint handleSubProperties="false" />
-                <nxu:set var="listClientId" value="#{widget.id}_input">
-                <tr class="#{model.rowIndex % 2 == 0 ? 'dataRowEven': 'dataRowOdd'} listItem"
-                    style="#{isListTemplate?'display:none;':''}">
+
+                <tr class="#{model.rowIndex % 2 == 0 ? 'dataRowEven': 'dataRowOdd'} listItem">
                   <td style="display:none;">
                     <h:inputHidden>
                       <f:passThroughAttribute name="name" value="#{nxu:componentAbsoluteId(component, listClientId).substring(1)}:rowIndex[]"/>
@@ -103,18 +103,17 @@
                     </td>
                   </nxl:subWidget>
                 </tr>
-                <ui:fragment rendered="#{isListTemplate and isEditMode and not widgetProperty_hideAddButton}">
-                  <tr>
-                    <td>
-                      <a class="button smallButton listWidgetActionAdd" href="#nogo"
-                        onclick="return nuxeo.utils.addFromListTemplate(jQuery(this).closest('tr').prev())">
-                        <h:outputText value="#{messages['command.add']}" />
-                      </a>
-                    </td>
-                  </tr>
-                </ui:fragment>
-                </nxu:set>
               </nxu:jsInputList>
+              <ui:fragment rendered="#{isEditMode and not widgetProperty_hideAddButton}">
+                <tr>
+                  <td>
+                    <a class="button smallButton listWidgetActionAdd" href="#nogo"
+                       onclick="return nuxeo.utils.addFromListTemplate(jQuery(this).closest('tr').prev())">
+                      <h:outputText value="#{messages['command.add']}" />
+                    </a>
+                  </td>
+                </tr>
+              </ui:fragment>
             </tbody>
           </table>
         </c:when>
@@ -129,8 +128,7 @@
                 diff="#{widgetProperty_diff}"
                 rendered="#{isEditMode or not empty fieldOrValue}">
                 <nxu:validateDocumentConstraint handleSubProperties="false" />
-                <nxu:set var="listClientId" value="#{widget.id}_input">
-                <tr style="#{isListTemplate?'display:none;':''}">
+                <tr>
                   <td style="display:none;">
                     <h:inputHidden>
                       <f:passThroughAttribute name="name" value="#{nxu:componentAbsoluteId(component, listClientId).substring(1)}:rowIndex[]"/>
@@ -156,14 +154,13 @@
                     </td>
                   </nxl:subWidget>
                 </tr>
-                <ui:fragment rendered="#{isListTemplate and isEditMode and not widgetProperty_hideAddButton}">
-                  <a class="button smallButton listWidgetActionAdd" href="#nogo"
-                    onclick="return nuxeo.utils.addFromListTemplate(jQuery(this).prev())">
-                    <h:outputText value="#{messages['command.add']}" />
-                  </a>
-                </ui:fragment>
-                </nxu:set>
               </nxu:jsInputList>
+              <ui:fragment rendered="#{isListTemplate and isEditMode and not widgetProperty_hideAddButton}">
+                <a class="button smallButton listWidgetActionAdd" href="#nogo"
+                   onclick="return nuxeo.utils.addFromListTemplate(jQuery(this).prev())">
+                  <h:outputText value="#{messages['command.add']}" />
+                </a>
+              </ui:fragment>
             </tbody>
           </table>
         </c:when>
@@ -176,9 +173,7 @@
             diff="#{widgetProperty_diff}"
             rendered="#{isEditMode or not empty fieldOrValue}">
             <nxu:validateDocumentConstraint handleSubProperties="false" />
-            <nxu:set var="listClientId" value="#{widget.id}_input">
-            <h:panelGrid columns="#{isEditMode and showActions?2:1}"
-              style="#{isListTemplate?'display:none;':''}">
+            <h:panelGrid columns="#{isEditMode and showActions?2:1}">
               <h:inputHidden>
                 <f:passThroughAttribute name="name" value="#{nxu:componentAbsoluteId(component, listClientId).substring(1)}:rowIndex[]"/>
                 <f:attribute name="value" value="#{isListTemplate ? 'TEMPLATE_INDEX_MARKER' : model.rowIndex}"/>
@@ -214,16 +209,14 @@
                 </table>
               </h:panelGroup>
             </h:panelGrid>
-
-            <ui:fragment rendered="#{isListTemplate and isEditMode and not widgetProperty_hideAddButton}">
-              <a class="button smallButton listWidgetActionAdd" href="#nogo"
-                onclick="return nuxeo.utils.addFromListTemplate(jQuery(this).prev(), jQuery(this).next());">
-                <h:outputText value="#{messages['command.add']}" />
-              </a>
-            </ui:fragment>
-
-            </nxu:set>
           </nxu:jsInputList>
+
+          <ui:fragment rendered="#{isEditMode and not widgetProperty_hideAddButton}">
+            <a class="button smallButton listWidgetActionAdd" href="#nogo"
+               onclick="return nuxeo.utils.addFromListTemplate(jQuery(this).prev());">
+              <h:outputText value="#{messages['command.add']}" />
+            </a>
+          </ui:fragment>
         </c:when>
 
         <c:otherwise>
@@ -235,9 +228,7 @@
             diff="#{widgetProperty_diff}"
             rendered="#{isEditMode or not empty fieldOrValue}">
             <nxu:validateDocumentConstraint handleSubProperties="false" />
-            <nxu:set var="listClientId" value="#{widget.id}_input">
-            <h:panelGrid columns="#{isEditMode and showActions?2:1}"
-              style="#{isListTemplate?'display:none;':''}" styleClass="listItem">
+            <h:panelGrid columns="#{isEditMode and showActions?2:1}" styleClass="listItem">
               <c:if test="#{showActions}">
                 <h:panelGroup styleClass="listWidgetActionsTable">
                   <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
@@ -246,7 +237,7 @@
               <h:panelGroup>
                 <h:inputHidden>
                   <f:passThroughAttribute name="name" value="#{nxu:componentAbsoluteId(component, listClientId).substring(1)}:rowIndex[]"/>
-                  <f:attribute name="value" value="#{model.rowIndex == -2 ? 'TEMPLATE_INDEX_MARKER' : model.rowIndex}"/>
+                  <f:attribute name="value" value="#{isListTemplate ? 'TEMPLATE_INDEX_MARKER' : model.rowIndex}"/>
                 </h:inputHidden>
                 <table>
                   <tbody>
@@ -271,15 +262,14 @@
                 </table>
               </h:panelGroup>
             </h:panelGrid>
-
-            <ui:fragment rendered="#{isListTemplate and isEditMode and not widgetProperty_hideAddButton}">
-              <a class="button smallButton listWidgetActionAdd" href="#nogo"
-                 onclick="return nuxeo.utils.addFromListTemplate(jQuery(this).prev());">
-                <h:outputText value="#{messages['command.add']}" />
-              </a>
-            </ui:fragment>
-            </nxu:set>
           </nxu:jsInputList>
+
+          <ui:fragment rendered="#{isEditMode and not widgetProperty_hideAddButton}">
+            <a class="button smallButton listWidgetActionAdd" href="#nogo"
+               onclick="return nuxeo.utils.addFromListTemplate(jQuery(this).prev());">
+              <h:outputText value="#{messages['command.add']}" />
+            </a>
+          </ui:fragment>
         </c:otherwise>
 
       </c:choose>
