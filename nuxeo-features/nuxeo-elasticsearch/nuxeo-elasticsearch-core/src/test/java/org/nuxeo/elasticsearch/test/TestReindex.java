@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -131,7 +130,6 @@ public class TestReindex {
         syncMode = false;
     }
 
-    @Ignore("NXP-16212 (?)")
     @Test
     public void shouldReindexDocument() throws Exception {
         buildDocs();
