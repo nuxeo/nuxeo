@@ -690,7 +690,7 @@
         <label mode="any">
           Activate localization of vocabulary labels. Labels are
           translated as usual picking values in messages*.properties files.
-          Database localizatioàn should also be activated if localized labels
+          Database localization should also be activated if localized labels
           are provided by the vocabulary itself.
         </label>
       </helpLabels>
