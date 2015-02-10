@@ -30,6 +30,7 @@ import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
@@ -96,30 +97,37 @@ public class HttpConnector implements Connector {
         }
         HttpResponse resp = http.execute(httpReq, ctx);
         HttpEntity entity = resp.getEntity();
-        int status = resp.getStatusLine().getStatusCode();
-        if (entity == null) {
-            if (status < 400) {
-                return null;
-            }
-            throw new RemoteException(status, "ServerError", "Server Error",
-                    "");
-        }
-        Header ctypeHeader = entity.getContentType();
-        if (ctypeHeader == null) { // handle broken responses with no ctype
-            if (status != 200) {
-                // this may happen when login failed
+        try {
+            int status = resp.getStatusLine().getStatusCode();
+            if (entity == null) {
+                if (status < 400) {
+                    return null;
+                }
                 throw new RemoteException(status, "ServerError",
                         "Server Error", "");
             }
-            return null; // cannot handle responses with no ctype
+            Header ctypeHeader = entity.getContentType();
+            if (ctypeHeader == null) { // handle broken responses with no ctype
+                if (status != 200) {
+                    // this may happen when login failed
+                    throw new RemoteException(status, "ServerError",
+                            "Server Error", "");
+                }
+                return null; // cannot handle responses with no ctype
+            }
+            String ctype = ctypeHeader.getValue().toLowerCase();
+            String disp = null;
+            Header[] hdisp = resp.getHeaders("Content-Disposition");
+            if (hdisp != null && hdisp.length > 0) {
+                disp = hdisp[0].getValue();
+            }
+            return request.handleResult(status, ctype, disp,
+                    entity.getContent());
+        } finally {
+            // needed to properly release resources and return the connection to
+            // the pool
+            EntityUtils.consume(entity);
         }
-        String ctype = ctypeHeader.getValue().toLowerCase();
-        String disp = null;
-        Header[] hdisp = resp.getHeaders("Content-Disposition");
-        if (hdisp != null && hdisp.length > 0) {
-            disp = hdisp[0].getValue();
-        }
-        return request.handleResult(status, ctype, disp, entity.getContent());
     }
 
 }
