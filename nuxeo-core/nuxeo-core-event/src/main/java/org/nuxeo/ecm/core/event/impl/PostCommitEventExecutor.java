@@ -44,7 +44,13 @@ public class PostCommitEventExecutor {
 
     private static final Log log = LogFactory.getLog(PostCommitEventExecutor.class);
 
-    public static final int DEFAULT_TIMEOUT_MS = 300; // 300ms
+    public static final String TIMEOUT_MS_PROP = "org.nuxeo.ecm.core.event.tx.PostCommitExecutor.timeoutMs";
+
+    public static final int DEFAULT_TIMEOUT_MS = 300; // 0.3s
+
+    public static final int DEFAULT_TIMEOUT_TEST_MS = 60000; // 1 min
+
+    private Integer defaultTimeoutMs;
 
     public static final String DEFAULT_BULK_TIMEOUT_S = "600"; // 10min
 
@@ -93,6 +99,19 @@ public class PostCommitEventExecutor {
         ((ThreadPoolExecutor) executor).allowCoreThreadTimeOut(true);
     }
 
+    protected int getDefaultTimeoutMs() {
+        if (defaultTimeoutMs == null) {
+            if (Framework.getProperty(TIMEOUT_MS_PROP) != null) {
+                defaultTimeoutMs = Integer.parseInt(Framework.getProperty(TIMEOUT_MS_PROP));
+            } else if (Framework.isTestModeSet()) {
+                defaultTimeoutMs = DEFAULT_TIMEOUT_TEST_MS;
+            } else {
+                defaultTimeoutMs = DEFAULT_TIMEOUT_MS;
+            }
+        }
+        return defaultTimeoutMs;
+    }
+
     public void shutdown(long timeoutMillis) throws InterruptedException {
         executor.shutdown();
         executor.awaitTermination(timeoutMillis, TimeUnit.MILLISECONDS);
@@ -102,7 +121,7 @@ public class PostCommitEventExecutor {
     }
 
     public void run(List<EventListenerDescriptor> listeners, EventBundle event) {
-        run(listeners, event, DEFAULT_TIMEOUT_MS, false);
+        run(listeners, event, getDefaultTimeoutMs(), false);
     }
 
     public void runBulk(List<EventListenerDescriptor> listeners, EventBundle event) {
