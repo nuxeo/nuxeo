@@ -39,7 +39,7 @@ public abstract class BaseIndexingWorker extends AbstractWork {
     }
 
     @Override
-    public void work() {
+    public void work() throws Exception {
         monitor.incrementRunningWorker();
         try {
             doWork();
