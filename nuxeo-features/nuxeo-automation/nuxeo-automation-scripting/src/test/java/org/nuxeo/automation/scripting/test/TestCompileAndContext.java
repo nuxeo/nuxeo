@@ -149,8 +149,6 @@ public class TestCompileAndContext {
     @Test
     public void checkScriptingEngineCostAndIsolation() throws Exception {
 
-        ScriptRunner.useOneEnginePerThread=true;
-
         InputStream stream = this.getClass().getResourceAsStream("/QuickScript.js");
         assertNotNull(stream);
         String js = IOUtils.toString(stream);
@@ -158,13 +156,13 @@ public class TestCompileAndContext {
         long t0 = System.currentTimeMillis();
         scriptingService.getRunner().run(getScriptWithRandomContent(js), session);
         long t1 = System.currentTimeMillis();
-        System.err.println("Initial Exec = " + (t1-t0));
+        //System.err.println("Initial Exec = " + (t1-t0));
 
 
         t0 = System.currentTimeMillis();
         scriptingService.getRunner().run(getScriptWithRandomContent(js), session);
         t1 = System.currentTimeMillis();
-        System.err.println("Second Exec = " + (t1-t0));
+        //System.err.println("Second Exec = " + (t1-t0));
 
         int nbIter = 50;
 
@@ -173,11 +171,11 @@ public class TestCompileAndContext {
             t0 = System.currentTimeMillis();
             scriptingService.getRunner().run(getScriptWithRandomContent(js), session);
             t1 = System.currentTimeMillis();
-            System.err.println("Exec = " + (t1-t0));
+            //System.err.println("Exec = " + (t1-t0));
             t+=t1-t0;
         }
 
-        System.err.println("AvgExec = " + (t/(nbIter + 1.0)));
+        //System.err.println("AvgExec = " + (t/(nbIter + 1.0)));
 
         // now we check isolation
 

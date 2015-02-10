@@ -39,8 +39,6 @@ public class ScriptRunner {
 
     protected final String jsBinding;
 
-    public static boolean useOneEnginePerThread=true;
-
     protected final ThreadLocal<ScriptEngine> engines = new ThreadLocal<ScriptEngine>(){
         @Override
         protected ScriptEngine initialValue() {
@@ -66,9 +64,8 @@ public class ScriptRunner {
     }
 
     public void run(String script, CoreSession session) throws ScriptException {
-        ScriptContext scriptContext = new SimpleScriptContext();
-        ScriptEngine engine = useOneEnginePerThread ? engines.get() : getEngine();
-        engine.setContext(scriptContext);
+        ScriptEngine engine = engines.get();
+        engine.setContext(new SimpleScriptContext());
         engine.eval(jsBinding);
         engine.put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY,
                 new AutomationMapper(session));
