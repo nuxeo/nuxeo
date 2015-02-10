@@ -6,7 +6,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-<c:if test="#{!empty currentDocumentRenditions}">
+<c:if test="#{!empty currentDocumentVisibleRenditions}">
 
   <h3 class="summaryTitle">
     <h:outputText value="#{messages['label.summary.renditions.title']}" />
@@ -14,7 +14,7 @@
 
   <h:outputText value="#{messages['label.summary.renditions.header']}" />
 
-  <nxu:dataTable value="#{currentDocumentRenditions}"
+  <nxu:dataTable value="#{currentDocumentVisibleRenditions}"
     var="rendition" styleClass="dataOutput">
     <nxu:column styleClass="iconColumn">
       <nxu:graphicImage value="#{rendition.icon}" />

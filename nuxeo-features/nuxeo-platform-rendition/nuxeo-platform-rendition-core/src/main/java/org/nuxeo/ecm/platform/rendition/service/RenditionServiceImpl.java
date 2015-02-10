@@ -112,10 +112,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
         }
 
-        List<RenditionDefinitionProvider> renditionDefinitionProviders = renditionDefinitionProviderRegistry.getRenditionDefinitionProviders(doc);
-        for (RenditionDefinitionProvider provider : renditionDefinitionProviders) {
-            defs.addAll(provider.getRenditionDefinitions(doc));
-        }
+        defs.addAll(renditionDefinitionProviderRegistry.getRenditionDefinitions(doc));
 
         // XXX what about "lost renditions" ?
         return defs;
@@ -265,8 +262,11 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
         RenditionDefinition renditionDefinition = renditionDefinitions.get(renditionName);
         if (renditionDefinition == null) {
-            String message = "The rendition definition '%s' is not registered";
-            throw new RenditionException(String.format(message, renditionName), "label.rendition.not.defined");
+            renditionDefinition = renditionDefinitionProviderRegistry.getRenditionDefinition(renditionName, doc);
+            if (renditionDefinition == null) {
+                String message = "The rendition definition '%s' is not registered";
+                throw new RenditionException(String.format(message, renditionName), "label.rendition.not.defined");
+            }
         }
 
         if (!renditionDefinition.getProvider().isAvailable(doc, renditionDefinition)) {
@@ -308,7 +308,11 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     @Override
     public List<Rendition> getAvailableRenditions(DocumentModel doc) throws RenditionException {
+        return getAvailableRenditions(doc, false);
+    }
 
+    @Override
+    public List<Rendition> getAvailableRenditions(DocumentModel doc, boolean onlyVisible) throws RenditionException {
         List<Rendition> renditions = new ArrayList<>();
 
         if (doc.isProxy()) {
@@ -318,9 +322,11 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         List<RenditionDefinition> defs = getAvailableRenditionDefinitions(doc);
         if (defs != null) {
             for (RenditionDefinition def : defs) {
-                Rendition rendition = getRendition(doc, def.getName());
-                if (rendition != null) {
-                    renditions.add(rendition);
+                if (!onlyVisible || onlyVisible && def.isVisible()) {
+                    Rendition rendition = getRendition(doc, def.getName());
+                    if (rendition != null) {
+                        renditions.add(rendition);
+                    }
                 }
             }
         }

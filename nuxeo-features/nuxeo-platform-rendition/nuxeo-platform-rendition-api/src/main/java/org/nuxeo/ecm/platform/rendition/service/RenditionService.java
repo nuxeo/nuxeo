@@ -101,4 +101,17 @@ public interface RenditionService {
      */
     List<Rendition> getAvailableRenditions(DocumentModel doc) throws RenditionException;
 
+    /**
+     * Returns a {@code List} of {@code Rendition} available on the given Document.
+     * <p>
+     * If {@code onlyVisible} is true, returns only the rendition marked as visible.
+     * <p>
+     * The order of the List does not depend on the registering order.
+     * <p>
+     * The returned rendition may be live or stored
+     *
+     * @since 7.2
+     */
+    List<Rendition> getAvailableRenditions(DocumentModel doc, boolean onlyVisible) throws RenditionException;
+
 }

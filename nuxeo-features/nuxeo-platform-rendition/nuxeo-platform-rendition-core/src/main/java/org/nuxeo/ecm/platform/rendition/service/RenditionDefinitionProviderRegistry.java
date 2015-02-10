@@ -41,18 +41,27 @@ public class RenditionDefinitionProviderRegistry extends
 
     protected Map<String, RenditionDefinitionProviderDescriptor> descriptors = new HashMap<>();
 
-    public List<RenditionDefinitionProvider> getRenditionDefinitionProviders(DocumentModel doc) {
-        List<RenditionDefinitionProvider> providers = new ArrayList<>();
+    public List<RenditionDefinition> getRenditionDefinitions(DocumentModel doc) {
+        List<RenditionDefinition> renditionDefinitions = new ArrayList<>();
+
         for (RenditionDefinitionProviderDescriptor descriptor : descriptors.values()) {
             if (canUseRenditionDefinitionProvider(descriptor, doc)) {
                 RenditionDefinitionProvider provider = descriptor.getProvider();
-                if (provider != null) {
-                    providers.add(provider);
-                }
+                renditionDefinitions.addAll(provider.getRenditionDefinitions(doc));
             }
         }
 
-        return providers;
+        return renditionDefinitions;
+    }
+
+    public RenditionDefinition getRenditionDefinition(String name, DocumentModel doc) {
+        List<RenditionDefinition> renditionDefinitions = getRenditionDefinitions(doc);
+        for (RenditionDefinition renditionDefinition : renditionDefinitions) {
+            if (renditionDefinition.getName().equals(name)) {
+                return renditionDefinition;
+            }
+        }
+        return null;
     }
 
     protected boolean canUseRenditionDefinitionProvider(
