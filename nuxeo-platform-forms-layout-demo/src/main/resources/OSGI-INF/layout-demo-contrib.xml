@@ -443,7 +443,7 @@
         <layout name="containerWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-container-widget.xml" />
       </layouts>
-      <preview enabled="true">
+      <preview enabled="true" hideEditMode="true">
         <fields>
           <field></field>
         </fields>
@@ -477,13 +477,20 @@
           src="sources/OSGI-INF/demo/layout-demo-toggleable-layout-widget.xml"
           addForm="false" hideEditMode="true" />
       </layouts>
-      <preview enabled="true">
+      <!-- XXX: maybe enable when toggle actually works inside the frame -->
+      <preview enabled="false" hideEditMode="true">
         <fields>
           <field></field>
         </fields>
         <defaultProperties>
           <property name="initialLayoutName">heading</property>
           <property name="toggledLayoutName">heading demoToggleableLayout</property>
+          <property name="useAjaxForm">true</property>
+          <property name="displayToggleActionInHeader">true</property>
+          <!-- hook up specific actions for demo -->
+          <property name="canToggleMode">true</property>
+          <property name="hideDefaultActions">true</property>
+          <property name="additionalActionsCategory">TOGGLEABLE_LAYOUT_DEMO</property>
         </defaultProperties>
       </preview>
     </widgetType>
@@ -497,7 +504,8 @@
           src="sources/OSGI-INF/demo/layout-demo-actions-widget.xml"
           useAjaxForm="false" />
       </layouts>
-      <preview enabled="true">
+      <!-- XXX: maybe enable when toggle actually works inside the frame -->
+      <preview enabled="false" hideEditMode="true">
         <fields>
           <field></field>
         </fields>
