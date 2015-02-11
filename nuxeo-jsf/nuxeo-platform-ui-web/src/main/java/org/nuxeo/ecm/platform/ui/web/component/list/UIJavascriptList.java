@@ -85,56 +85,62 @@ public class UIJavascriptList extends UIEditableList {
      */
     protected void encodeTemplate(FacesContext context) throws IOException {
         int oldIndex = getRowIndex();
-        setRowIndex(-2);
-
-        // expose a boolean that can be used on client side to hide this element without disturbing the DOM
+        Object requestMapValue = saveRequestMapModelValue();
         Map<String, Object> requestMap = getFacesContext().getExternalContext().getRequestMap();
         boolean hasVar = false;
         if (requestMap.containsKey(IS_LIST_TEMPLATE_VAR)) {
             hasVar = true;
         }
         Object oldIsTemplateBoolean = requestMap.remove(IS_LIST_TEMPLATE_VAR);
-        requestMap.put(IS_LIST_TEMPLATE_VAR, Boolean.TRUE);
 
-        // render the template as escaped html
-        ResponseWriter oldResponseWriter = context.getResponseWriter();
-        StringWriter cacheingWriter = new StringWriter();
+        try {
+            setRowIndex(-2);
 
-        ResponseWriter newResponseWriter = context.getResponseWriter().cloneWithWriter(cacheingWriter);
+            // expose a boolean that can be used on client side to hide this element without disturbing the DOM
+            requestMap.put(IS_LIST_TEMPLATE_VAR, Boolean.TRUE);
 
-        context.setResponseWriter(newResponseWriter);
+            // render the template as escaped html
+            ResponseWriter oldResponseWriter = context.getResponseWriter();
+            StringWriter cacheingWriter = new StringWriter();
 
-        if (getChildCount() > 0) {
-            for (UIComponent kid : getChildren()) {
-                if (!kid.isRendered()) {
-                    continue;
-                }
-                try {
-                    ComponentSupport.encodeRecursive(context, kid);
-                } catch (IOException err) {
-                    log.error("Error while rendering component " + kid);
+            ResponseWriter newResponseWriter = context.getResponseWriter().cloneWithWriter(cacheingWriter);
+
+            context.setResponseWriter(newResponseWriter);
+
+            if (getChildCount() > 0) {
+                for (UIComponent kid : getChildren()) {
+                    if (!kid.isRendered()) {
+                        continue;
+                    }
+                    try {
+                        ComponentSupport.encodeRecursive(context, kid);
+                    } catch (IOException err) {
+                        log.error("Error while rendering component " + kid);
+                    }
                 }
             }
-        }
 
-        cacheingWriter.flush();
-        cacheingWriter.close();
+            cacheingWriter.flush();
+            cacheingWriter.close();
 
-        context.setResponseWriter(oldResponseWriter);
+            context.setResponseWriter(oldResponseWriter);
 
-        String html = Functions.htmlEscape(cacheingWriter.toString());
-        ResponseWriter writer = context.getResponseWriter();
-        writer.write("<script type='text/x-html-template'>");
-        writer.write(html);
-        writer.write("</script>");
+            String html = Functions.htmlEscape(cacheingWriter.toString());
+            ResponseWriter writer = context.getResponseWriter();
+            writer.write("<script type='text/x-html-template'>");
+            writer.write(html);
+            writer.write("</script>");
 
-        setRowIndex(oldIndex);
+            setRowIndex(oldIndex);
 
-        // restore
-        if (hasVar) {
-            requestMap.put(IS_LIST_TEMPLATE_VAR, oldIsTemplateBoolean);
-        } else {
-            requestMap.remove(IS_LIST_TEMPLATE_VAR);
+        } finally {
+            // restore
+            if (hasVar) {
+                requestMap.put(IS_LIST_TEMPLATE_VAR, oldIsTemplateBoolean);
+            } else {
+                requestMap.remove(IS_LIST_TEMPLATE_VAR);
+            }
+            restoreRequestMapModelValue(requestMapValue);
         }
     }
 
