@@ -18,10 +18,14 @@
 package org.nuxeo.ecm.platform.ui.web.component.list;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
+import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
+import javax.faces.event.PhaseId;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,6 +47,8 @@ public class UIJavascriptList extends UIEditableList {
     private static final Log log = LogFactory.getLog(UIJavascriptList.class);
 
     protected static final String TEMPLATE_INDEX_MARKER = "TEMPLATE_INDEX_MARKER";
+
+    protected static final String ITEMS_COUNTER_ID = "itemsCounter";
 
     protected static final String IS_LIST_TEMPLATE_VAR = "isListTemplate";
 
@@ -104,6 +110,65 @@ public class UIJavascriptList extends UIEditableList {
             requestMap.put(IS_LIST_TEMPLATE_VAR, oldIsTemplateBoolean);
         } else {
             requestMap.remove(IS_LIST_TEMPLATE_VAR);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    protected int retrieveCountFromRequest(FacesContext context) {
+
+        UIComponent component = findComponent(ITEMS_COUNTER_ID);
+        if (!(component instanceof UIInput)) {
+            throw new IllegalArgumentException("Invalid sub component with id " + ITEMS_COUNTER_ID);
+        }
+
+        Map<String, String> requestMap = context.getExternalContext().getRequestParameterMap();
+        String clientId = getClientId() + NamingContainer.SEPARATOR_CHAR + TEMPLATE_INDEX_MARKER
+                + NamingContainer.SEPARATOR_CHAR + ITEMS_COUNTER_ID;
+        String v = requestMap.get(clientId);
+        try {
+            return Integer.valueOf(v);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(String.format("Invalid value '%s' for counter component with id '%s'",
+                    v, clientId));
+        }
+    }
+
+    protected void processFacetsAndChildren(final FacesContext context, final PhaseId phaseId) {
+        List<UIComponent> stamps = getChildren();
+        int oldIndex = getRowIndex();
+        int end = getRowCount();
+        if (phaseId == PhaseId.APPLY_REQUEST_VALUES) {
+            // if processing decodes, do not rely on current counter in datamodel, retrieve counter from request
+            end = retrieveCountFromRequest(context);
+        }
+        Object requestMapValue = saveRequestMapModelValue();
+        try {
+            int first = 0;
+            for (int i = first; i < end; i++) {
+                setRowIndex(i);
+                if (!isRowAvailable()) {
+                    // might be a new value
+                    // XXX to refine
+                    getEditableModel().insertValue(i, getTemplate());
+                }
+                if (isRowAvailable()) {
+                    for (UIComponent stamp : stamps) {
+                        processComponent(context, stamp, phaseId);
+                    }
+                    if (phaseId == PhaseId.UPDATE_MODEL_VALUES) {
+                        // detect changes during process update phase and fill
+                        // the EditableModel list diff.
+                        if (isRowModified()) {
+                            recordValueModified(i, getRowData());
+                        }
+                    }
+                } else {
+                    break;
+                }
+            }
+        } finally {
+            setRowIndex(oldIndex);
+            restoreRequestMapModelValue(requestMapValue);
         }
     }
 
