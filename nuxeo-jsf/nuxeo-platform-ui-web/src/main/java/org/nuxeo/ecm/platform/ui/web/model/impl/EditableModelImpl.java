@@ -274,10 +274,10 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         if (data == null) {
             return null;
         } else if (!isRowAvailable()) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("No row available on " + this);
         } else {
             if (index == -2) {
-                // FIXME: should return template binding
+                // XXX return template instead (?)
                 return null;
             }
             return data.get(index);
