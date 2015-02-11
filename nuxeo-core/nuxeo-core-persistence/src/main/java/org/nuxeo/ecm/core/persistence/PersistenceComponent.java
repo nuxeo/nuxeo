@@ -16,10 +16,17 @@
  */
 package org.nuxeo.ecm.core.persistence;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.dialect.Oracle10gDialect;
+import org.hibernate.dialect.resolver.BasicDialectResolver;
+import org.hibernate.dialect.resolver.DialectFactory;
+import org.hibernate.dialect.resolver.DialectResolverSet;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -32,8 +39,33 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class PersistenceComponent extends DefaultComponent
         implements HibernateConfigurator, PersistenceProviderFactory {
 
+    private static final Log log = LogFactory.getLog(PersistenceComponent.class);
+
     protected final Map<String, HibernateConfiguration> registry =
             new HashMap<String, HibernateConfiguration>();
+
+    {
+        // do this statically once, as we're patching a static variable
+        registerOracle12DialectResolver();
+    }
+
+    /**
+     * Registers with Hibernate a dialect resolver to recognize Oracle 12.
+     *
+     * @since 7.2
+     */
+    // We can't easily use DialectFactory's Environment.DIALECT_RESOLVERS because we would have
+    // to set it before Hibernate's classloading which we can't control.
+    protected static void registerOracle12DialectResolver() {
+        try {
+            Field f = DialectFactory.class.getDeclaredField("DIALECT_RESOLVERS");
+            f.setAccessible(true);
+            DialectResolverSet resolvers = (DialectResolverSet) f.get(null);
+            resolvers.addResolverAtFirst(new BasicDialectResolver("Oracle", 12, Oracle10gDialect.class));
+        } catch (ReflectiveOperationException | SecurityException e) {
+            log.error("Cannot patch Hibernate to support Oracle 12", e);
+        }
+    }
 
     @Override
     public int getApplicationStartedOrder() {
