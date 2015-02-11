@@ -15,6 +15,8 @@
  */
 package org.nuxeo.automation.scripting.internals;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,10 +24,16 @@ import java.util.List;
 import java.util.Map;
 
 import javax.script.CompiledScript;
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import javax.script.SimpleScriptContext;
 
+import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
+import org.nuxeo.automation.scripting.api.AutomationScriptingException;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationType;
@@ -78,12 +86,47 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         return getJSWrapper(false);
     }
 
-    @Override
-    public ScriptRunner getRunner() throws ScriptException {
-        if (runner == null) {
-            runner = new ScriptRunner(getJSWrapper());
+    protected final ThreadLocal<ScriptEngine> engines = new ThreadLocal<ScriptEngine>(){
+        @Override
+        protected ScriptEngine initialValue() {
+            return getEngine();
         }
-        return runner;
+    };
+
+    protected ScriptEngine getEngine() {
+        if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE,
+                AutomationScriptingConstants.DEFAULT_PRECOMPILE_STATUS))) {
+            return new NashornScriptEngineFactory().getScriptEngine(AutomationScriptingConstants.NASHORN_OPTIONS);
+        } else {
+            return new NashornScriptEngineFactory().getScriptEngine();
+        }
+    }
+
+    @Override
+    public void run(InputStream in, CoreSession session) throws ScriptException {
+        try {
+            run(IOUtils.toString(in, "UTF-8"), session);
+        } catch (IOException e) {
+            throw new AutomationScriptingException(e);
+        }
+    }
+
+    @Override
+    public void run(String script, CoreSession session) throws ScriptException {
+        ScriptEngine engine = engines.get();
+        engine.setContext(new SimpleScriptContext());
+        engine.eval(getJSWrapper());
+        engine.put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY,
+                new AutomationMapper(session));
+        engine.eval(script);
+    }
+
+    @Override
+    public <T> T getInterface(Class<T> scriptingOperationInterface, String
+            script, CoreSession session) throws ScriptException {
+        run(script, session);
+        Invocable inv = (Invocable) engines.get();
+        return inv.getInterface(scriptingOperationInterface);
     }
 
     protected void parseAutomationIDSForScripting(Map<String, List<String>> opMap, List<String> flatOps, String id) {

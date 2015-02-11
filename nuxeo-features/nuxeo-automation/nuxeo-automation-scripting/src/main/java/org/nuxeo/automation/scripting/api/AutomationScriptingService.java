@@ -16,9 +16,10 @@
  */
 package org.nuxeo.automation.scripting.api;
 
+import java.io.InputStream;
+
 import javax.script.ScriptException;
 
-import org.nuxeo.automation.scripting.internals.ScriptRunner;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
@@ -32,11 +33,29 @@ public interface AutomationScriptingService {
     String getJSWrapper();
 
     /**
-     * Get the script runner for a given core session.
-     *
-     * @return the runner
+     * Run Automation Scripting with given 'JavaScript' InputStream and CoreSession.
+     * @param in
+     * @param session
      * @throws ScriptException
      */
-    ScriptRunner getRunner() throws ScriptException;
+    void run(InputStream in, CoreSession session) throws ScriptException;
 
+    /**
+     * Run Automation Scripting for a given 'JavaScript' script and CoreSession.
+     * @param script
+     * @param session
+     * @throws ScriptException
+     */
+    void run(String script, CoreSession session) throws ScriptException;
+
+    /**
+     * @param scriptingOperationInterface
+     * @param script
+     * @param session
+     * @param <T>
+     * @return
+     * @throws ScriptException
+     */
+    <T> T getInterface(Class<T> scriptingOperationInterface, String script,
+            CoreSession session) throws ScriptException;
 }
