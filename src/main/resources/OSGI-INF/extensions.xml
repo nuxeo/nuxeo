@@ -354,18 +354,23 @@
   <extension target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService" point="notifications">
     <notification name="easyShareDownload" channel="email"
                   enabled="true" availableIn="Workspace" autoSubscribed="true"
-                  template="easyShareDownload" subject="EasyShare download notification">
+                  template="easyShareDownload" subject="EasyShare download notification"
+                  subjectTemplate="easyShareDownloadSubject">
       <event name="easyShareDownload"/>
     </notification>
     <notification name="easyShareExpired" channel="email"
                   enabled="true" availableIn="Workspace" autoSubscribed="true"
-                  template="easyShareExpired" subject="EasyShare expired notification">
+                  template="easyShareExpired"
+                  subject="EasyShare expired notification"
+                  subjectTemplate="easyShareExpiredSubject">
       <event name="easyShareExpired"/>
     </notification>
   </extension>
   <extension target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService" point="templates">
-    <template name="easyShareDownload" src="data/templates/easyShareDownload.ftl"/>
-    <template name="easyShareExpired" src="data/templates/easyShareExpired.ftl"/>
+    <template name="easyShareDownload" src="templates/easyShareDownload.ftl"/>
+    <template name="easyShareExpired" src="templates/easyShareExpired.ftl"/>
+    <template name="easyShareDownloadSubject" src="templates/easyShareDownloadSubject.ftl"/>
+    <template name="easyShareExpiredSubject" src="templates/easyShareExpiredSubject.ftl"/>
   </extension>
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
     <chain id="addToAShareDocument">

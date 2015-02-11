@@ -21,8 +21,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.notification.api.Notification;
@@ -109,8 +115,6 @@ public class EasyShare extends ModuleRoot {
 
       //Email notification
       Map mail = new HashMap<>();
-      mail.put("template", "easyShareExpired");
-
       sendNotification("easyShareExpired", docFolder, mail);
 
       return false;
@@ -165,7 +169,6 @@ public class EasyShare extends ModuleRoot {
 
             // Email notification
             Map mail = new HashMap<>();
-            mail.put("template", "easyShareDownload");
             mail.put("filename", blob.getFilename());
             sendNotification("easyShareDownload", docFolder, mail);
 
@@ -203,15 +206,12 @@ public class EasyShare extends ModuleRoot {
         try {
           Notification notif = NotificationServiceHelper.getNotificationService().getNotificationByName(notification);
 
-          String subject = notif.getSubject() == null ? "Alert" : notif.getSubject();
           if (notif.getSubjectTemplate() != null) {
-            subject = notif.getSubjectTemplate();
+            mailProps.put(NotificationConstants.SUBJECT_TEMPLATE_KEY, notif.getSubjectTemplate());
           }
 
-          subject = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix() + " " + subject;
-
-          mailProps.put("subject", subject);
-          mailProps.put("template", notif.getTemplate());
+          mailProps.put(NotificationConstants.SUBJECT_KEY, NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix() + " " + notif.getSubject());
+          mailProps.put(NotificationConstants.TEMPLATE_KEY, notif.getTemplate());
 
           mailProps.putAll(mail);
 
