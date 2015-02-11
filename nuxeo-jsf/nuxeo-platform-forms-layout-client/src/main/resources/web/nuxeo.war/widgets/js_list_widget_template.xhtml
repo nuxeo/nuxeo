@@ -98,13 +98,17 @@
                   </nxl:subWidget>
                 </tr>
                 <ui:fragment rendered="#{isListTemplate and isEditMode and not widgetProperty_hideAddButton}">
-                  <a class="button smallButton listWidgetActionAdd" href="#nogo"
-                    onclick="nuxeo.utils.addFromListTemplate(jQuery(this).prev(), jQuery(this).next()); return false;">
-                    <h:outputText value="#{messages['command.add']}" />
-                  </a>
-                  <h:inputHidden id="itemsCounter">
-                    <f:attribute name="value" value="#{model.rowCount}" />
-                  </h:inputHidden>
+                  <tr>
+                    <td>
+                      <a class="button smallButton listWidgetActionAdd" href="#nogo"
+                        onclick="return nuxeo.utils.addFromListTemplate(jQuery(this).prev(), jQuery(this).next());">
+                        <h:outputText value="#{messages['command.add']}" />
+                      </a>
+                      <h:inputHidden id="itemsCounter">
+                        <f:attribute name="value" value="#{model.rowCount}" />
+                      </h:inputHidden>
+                    </td>
+                  </tr>
                 </ui:fragment>
               </nxu:jsInputList>
             </tbody>
@@ -143,7 +147,7 @@
                 </tr>
                 <ui:fragment rendered="#{isListTemplate and isEditMode and not widgetProperty_hideAddButton}">
                   <a class="button smallButton listWidgetActionAdd" href="#nogo"
-                    onclick="nuxeo.utils.addFromListTemplate(jQuery(this).prev(), jQuery(this).next()); return false;">
+                    onclick="return nuxeo.utils.addFromListTemplate(jQuery(this).prev(), jQuery(this).next());">
                     <h:outputText value="#{messages['command.add']}" />
                   </a>
                   <h:inputHidden id="itemsCounter">
@@ -199,7 +203,7 @@
 
             <ui:fragment rendered="#{isListTemplate and isEditMode and not widgetProperty_hideAddButton}">
               <a class="button smallButton listWidgetActionAdd" href="#nogo"
-                onclick="nuxeo.utils.addFromListTemplate(jQuery(this).prev(), jQuery(this).next()); return false;">
+                onclick="return nuxeo.utils.addFromListTemplate(jQuery(this).prev(), jQuery(this).next());">
                 <h:outputText value="#{messages['command.add']}" />
               </a>
               <h:inputHidden id="itemsCounter">
@@ -253,7 +257,7 @@
 
             <ui:fragment rendered="#{isListTemplate and isEditMode and not widgetProperty_hideAddButton}">
               <a class="button smallButton listWidgetActionAdd" href="#nogo"
-                onclick="nuxeo.utils.addFromListTemplate(jQuery(this).prev(), jQuery(this).next()); return false;">
+                onclick="return nuxeo.utils.addFromListTemplate(jQuery(this).prev(), jQuery(this).next());">
                 <h:outputText value="#{messages['command.add']}" />
               </a>
               <h:inputHidden id="itemsCounter">

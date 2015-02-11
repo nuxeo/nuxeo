@@ -58,6 +58,7 @@ nuxeo.utils = (function(m) {
     cel.val(count + 1);
     // place in the DOM
     tel.before(el);
+    return false;
   };
 
   return m
