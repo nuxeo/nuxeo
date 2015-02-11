@@ -25,9 +25,7 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import jdk.nashorn.internal.objects.NativeArray;
 
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
-import org.nuxeo.automation.scripting.internals.AutomationScriptingComponent;
 import org.nuxeo.automation.scripting.internals.MarshalingHelper;
-import org.nuxeo.automation.scripting.internals.ScriptRunner;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.util.BlobList;
@@ -41,8 +39,6 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.2
  */
 public class ScriptingOperationImpl {
-
-    protected ScriptRunner runner;
 
     protected final OperationContext ctx;
 
@@ -59,8 +55,7 @@ public class ScriptingOperationImpl {
     public Object run(Object input) throws Exception {
         try {
             AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
-            runner = scriptingService.getRunner();
-            ScriptingOperationInterface itf = runner.getInterface(ScriptingOperationInterface.class, source, ctx.getCoreSession());
+            ScriptingOperationInterface itf = scriptingService.getInterface(ScriptingOperationInterface.class, source, ctx.getCoreSession());
             return wrapResult(itf.run(ctx.getVars(), input, args));
         } catch (ScriptException e) {
             throw new OperationException(e);

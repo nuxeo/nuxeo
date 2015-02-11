@@ -23,14 +23,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
+
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
 import org.nuxeo.automation.scripting.api.AutomationScriptingException;
@@ -46,8 +45,6 @@ import org.nuxeo.runtime.api.Framework;
 public class AutomationScriptingServiceImpl implements AutomationScriptingService {
 
     protected String jsWrapper = null;
-
-    protected ScriptRunner runner;
 
     protected String getJSWrapper(boolean refresh) {
         if (jsWrapper == null || refresh) {

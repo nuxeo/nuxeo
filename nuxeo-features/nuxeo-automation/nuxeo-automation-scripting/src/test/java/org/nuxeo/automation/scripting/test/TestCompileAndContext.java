@@ -35,8 +35,8 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
-
 import junit.framework.Assert;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -46,13 +46,11 @@ import org.junit.runner.RunWith;
 import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.automation.scripting.internals.MarshalingHelper;
-import org.nuxeo.automation.scripting.internals.ScriptRunner;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -130,12 +128,12 @@ public class TestCompileAndContext {
                 "done\n", outContent.toString());
     }
 
-    @Ignore("just for perf testing purpose")
+    @Ignore("for performance testing purpose")
     @Test
     public void testPerf() throws ScriptException {
         long start = System.currentTimeMillis();
         for(int i=0;i<500;i++) {
-            scriptingService.getRunner().run(scriptingService.getJSWrapper(), session);
+            scriptingService.run(scriptingService.getJSWrapper(), session);
         }
         long end = System.currentTimeMillis();
         System.err.println("DEBUG: Logic A toke " + (end - start) + " MilliSeconds");
@@ -146,6 +144,7 @@ public class TestCompileAndContext {
         return "var t=" + System.currentTimeMillis() + content;
     }
 
+    @Ignore("for performance testing purpose")
     @Test
     public void checkScriptingEngineCostAndIsolation() throws Exception {
 
@@ -154,13 +153,13 @@ public class TestCompileAndContext {
         String js = IOUtils.toString(stream);
 
         long t0 = System.currentTimeMillis();
-        scriptingService.getRunner().run(getScriptWithRandomContent(js), session);
+        scriptingService.run(getScriptWithRandomContent(js), session);
         long t1 = System.currentTimeMillis();
         //System.err.println("Initial Exec = " + (t1-t0));
 
 
         t0 = System.currentTimeMillis();
-        scriptingService.getRunner().run(getScriptWithRandomContent(js), session);
+        scriptingService.run(getScriptWithRandomContent(js), session);
         t1 = System.currentTimeMillis();
         //System.err.println("Second Exec = " + (t1-t0));
 
@@ -169,7 +168,7 @@ public class TestCompileAndContext {
         long t = t1-t0;
         for (int i = 0; i < nbIter; i++) {
             t0 = System.currentTimeMillis();
-            scriptingService.getRunner().run(getScriptWithRandomContent(js), session);
+            scriptingService.run(getScriptWithRandomContent(js), session);
             t1 = System.currentTimeMillis();
             //System.err.println("Exec = " + (t1-t0));
             t+=t1-t0;
@@ -183,13 +182,13 @@ public class TestCompileAndContext {
         assertNotNull(stream);
         String check = IOUtils.toString(stream);
 
-        scriptingService.getRunner().run(check, session);
+        scriptingService.run(check, session);
 
-        scriptingService.getRunner().run(check, session);
+        scriptingService.run(check, session);
 
-        scriptingService.getRunner().run("Document.Fetch=\"toto\";", session);
+        scriptingService.run("Document.Fetch=\"toto\";", session);
 
-        scriptingService.getRunner().run(check, session);
+        scriptingService.run(check, session);
     }
 
 

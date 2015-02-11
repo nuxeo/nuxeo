@@ -33,7 +33,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
-import org.nuxeo.automation.scripting.internals.ScriptRunner;
 import org.nuxeo.automation.scripting.internals.operation
         .ScriptingOperationTypeImpl;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -71,7 +70,6 @@ public class TestScriptRunnerInfrastructure {
     @Inject
     AutomationService automationService;
 
-
     ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
     @Before
@@ -95,20 +93,16 @@ public class TestScriptRunnerInfrastructure {
         AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
         assertNotNull(scriptingService);
 
-        ScriptRunner runner = scriptingService.getRunner();
-        assertNotNull(runner);
-
         InputStream stream = this.getClass().getResourceAsStream("/simpleAutomationScript.js");
         assertNotNull(stream);
-        runner.run(stream, session);
-        assertEquals("Created even Documents\n",outContent.toString());
+        scriptingService.run(stream, session);
+        assertEquals("Created even Documents\n", outContent.toString());
     }
 
     @Test
     public void simpleScriptingOperationShouldBeAvailable() throws Exception {
 
-        OperationType type = automationService.getOperation("Scripting" +
-                ".HelloWorld");
+        OperationType type = automationService.getOperation("Scripting" + ".HelloWorld");
         assertNotNull(type);
         assertTrue(type instanceof ScriptingOperationTypeImpl);
 
@@ -140,8 +134,7 @@ public class TestScriptRunnerInfrastructure {
         }
 
         session.save();
-        DocumentModelList res = session.query("select * from File where  " +
-                "ecm:mixinType = 'HiddenInNavigation'");
+        DocumentModelList res = session.query("select * from File where  " + "ecm:mixinType = 'HiddenInNavigation'");
         Assert.assertEquals(0, res.size());
 
         OperationContext ctx = new OperationContext(session);
@@ -162,8 +155,7 @@ public class TestScriptRunnerInfrastructure {
         Map<String, Object> params = new HashMap<>();
 
         ctx.setInput("John");
-        Object result = automationService.run(ctx, "Scripting.ChainedHello",
-                params);
+        Object result = automationService.run(ctx, "Scripting.ChainedHello", params);
         assertEquals("Hello Bonjour John", result.toString());
 
     }
@@ -173,27 +165,21 @@ public class TestScriptRunnerInfrastructure {
         OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = new HashMap<>();
         ctx.setInput("John");
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    ctx.setInput("Vlad");
-                    Object result = automationService.run(ctx, "Scripting.ChainedHello", params);
-                    assertEquals("Hello Bonjour Vlad", result.toString());
-                } catch (Exception e) {
-                }
+        Thread t = new Thread(() -> {
+            try {
+                ctx.setInput("Vlad");
+                Object result = automationService.run(ctx, "Scripting.ChainedHello", params);
+                assertEquals("Hello Bonjour Vlad", result.toString());
+            } catch (Exception e) {
             }
-        };
-        Thread t2 = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Object result = automationService.run(ctx, "Scripting.ChainedHello", params);
-                    assertEquals("Hello Bonjour John", result.toString());
-                } catch (Exception e) {
-                }
+        });
+        Thread t2 = new Thread(() -> {
+            try {
+                Object result = automationService.run(ctx, "Scripting.ChainedHello", params);
+                assertEquals("Hello Bonjour John", result.toString());
+            } catch (Exception e) {
             }
-        };
+        });
         t.start();
         t2.start();
         t.join();
@@ -205,18 +191,15 @@ public class TestScriptRunnerInfrastructure {
         AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
         assertNotNull(scriptingService);
 
-        ScriptRunner runner = scriptingService.getRunner();
-        assertNotNull(runner);
-
         InputStream stream = this.getClass().getResourceAsStream("/scriptCtxIsolation.js");
         assertNotNull(stream);
-        runner.run(stream, session);
-        assertEquals("[object Object]\n",outContent.toString());
+        scriptingService.run(stream, session);
+        assertEquals("[object Object]\n", outContent.toString());
 
         stream = this.getClass().getResourceAsStream("/scriptCtxIsolation.js");
         assertNotNull(stream);
-        runner.run(stream, session);
+        scriptingService.run(stream, session);
         // Failing returning "[object Object]\n" + "toto\n"
-        assertEquals("[object Object]\n" + "[object Object]\n",outContent.toString());
+        assertEquals("[object Object]\n" + "[object Object]\n", outContent.toString());
     }
 }

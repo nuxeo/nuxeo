@@ -27,7 +27,6 @@ import org.nuxeo.automation.scripting.internals.operation
         .ScriptingOperationTypeImpl;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.automation.core.impl.OperationServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.metrics.MetricInvocationHandler;
 import org.nuxeo.runtime.model.ComponentContext;
