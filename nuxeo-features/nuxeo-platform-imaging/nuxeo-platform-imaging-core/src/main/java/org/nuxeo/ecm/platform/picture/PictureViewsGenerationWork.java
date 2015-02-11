@@ -74,7 +74,13 @@ public class PictureViewsGenerationWork extends AbstractWork {
         ArrayList<Map<String, Object>> pictureTemplates = null;
         PictureResourceAdapter picture = workingDocument.getAdapter(PictureResourceAdapter.class);
         Blob blob = (Blob) fileProp.getValue();
-        String filename = blob == null ? null : blob.getFilename();
+        if (blob == null) {
+            // do not compute views
+            setStatus("Done");
+            return;
+        }
+
+        String filename = blob.getFilename();
         String title = workingDocument.getTitle();
         picture.fillPictureViews(blob, filename, title, pictureTemplates);
 
