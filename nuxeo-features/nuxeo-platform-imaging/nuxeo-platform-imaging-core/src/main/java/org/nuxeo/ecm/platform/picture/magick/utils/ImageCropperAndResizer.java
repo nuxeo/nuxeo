@@ -32,18 +32,15 @@ public class ImageCropperAndResizer extends MagickExecutor {
 
     public static final String DEFAULT_MAP_COMPONENTS = "rgb";
 
-    public static void cropAndResize(String inputFilePath,
-            String outputFilePath, int tileWidth, int tileHeight, int offsetX,
-            int offsetY, int targetWidth, int targetHeight)
-            throws CommandNotAvailable, CommandException {
-        cropAndResize(inputFilePath, outputFilePath, tileWidth, tileHeight,
-                offsetX, offsetY, targetWidth, targetHeight, null);
+    public static void cropAndResize(String inputFilePath, String outputFilePath, int tileWidth, int tileHeight,
+            int offsetX, int offsetY, int targetWidth, int targetHeight) throws CommandNotAvailable, CommandException {
+        cropAndResize(inputFilePath, outputFilePath, tileWidth, tileHeight, offsetX, offsetY, targetWidth,
+                targetHeight, null);
     }
 
     /** @since 5.9.5. */
-    public static void cropAndResize(String inputFilePath,
-            String outputFilePath, int tileWidth, int tileHeight, int offsetX,
-            int offsetY, int targetWidth, int targetHeight, String mapComponents)
+    public static void cropAndResize(String inputFilePath, String outputFilePath, int tileWidth, int tileHeight,
+            int offsetX, int offsetY, int targetWidth, int targetHeight, String mapComponents)
             throws CommandNotAvailable, CommandException {
 
         if (mapComponents == null) {

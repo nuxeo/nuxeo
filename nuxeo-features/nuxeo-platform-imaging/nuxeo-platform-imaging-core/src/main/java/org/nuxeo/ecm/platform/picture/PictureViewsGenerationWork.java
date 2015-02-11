@@ -34,8 +34,7 @@ public class PictureViewsGenerationWork extends AbstractWork {
 
     protected final String xpath;
 
-    public PictureViewsGenerationWork(String repositoryName, String docId,
-            String xpath) {
+    public PictureViewsGenerationWork(String repositoryName, String docId, String xpath) {
         super(repositoryName + ':' + docId + ':' + xpath + ":pictureView");
         setDocument(repositoryName, docId);
         this.xpath = xpath;
@@ -97,16 +96,14 @@ public class PictureViewsGenerationWork extends AbstractWork {
     }
 
     /**
-     * Fire a {@code PICTURE_VIEWS_GENERATION_DONE_EVENT} event when no other
-     * PictureViewsGenerationWork is scheduled for this document.
+     * Fire a {@code PICTURE_VIEWS_GENERATION_DONE_EVENT} event when no other PictureViewsGenerationWork is scheduled
+     * for this document.
      *
      * @since 5.8
      */
-    protected void firePictureViewsGenerationDoneEvent(DocumentModel doc)
-            throws ClientException {
+    protected void firePictureViewsGenerationDoneEvent(DocumentModel doc) throws ClientException {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        List<String> workIds = workManager.listWorkIds(
-                CATEGORY_PICTURE_GENERATION, null);
+        List<String> workIds = workManager.listWorkIds(CATEGORY_PICTURE_GENERATION, null);
         int worksCount = 0;
         for (String workId : workIds) {
             if (workId.equals(getId())) {
@@ -116,8 +113,7 @@ public class PictureViewsGenerationWork extends AbstractWork {
                 }
             }
         }
-        DocumentEventContext ctx = new DocumentEventContext(session,
-                session.getPrincipal(), doc);
+        DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         Event event = ctx.newEvent(PICTURE_VIEWS_GENERATION_DONE_EVENT);
         Framework.getLocalService(EventService.class).fireEvent(event);
     }

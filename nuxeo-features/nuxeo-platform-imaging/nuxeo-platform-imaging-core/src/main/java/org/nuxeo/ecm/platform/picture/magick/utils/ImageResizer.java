@@ -27,16 +27,15 @@ import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 
 /**
- * Unit command to extract a simplified view of a JPEG file using ImageMagick =
- * extract the needed picture information to reach the target definition level
+ * Unit command to extract a simplified view of a JPEG file using ImageMagick = extract the needed picture information
+ * to reach the target definition level
  *
  * @author tiry
  */
 public class ImageResizer extends MagickExecutor {
 
-    public static ImageInfo resize(String inputFile, String outputFile,
-            int targetWidth, int targetHeight, int targetDepth)
-            throws CommandNotAvailable, CommandException {
+    public static ImageInfo resize(String inputFile, String outputFile, int targetWidth, int targetHeight,
+            int targetDepth) throws CommandNotAvailable, CommandException {
         if (targetDepth == -1) {
             targetDepth = ImageIdentifier.getInfo(inputFile).getDepth();
         }

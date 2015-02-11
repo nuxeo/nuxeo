@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.picture.core.mistral;
 
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COLORSPACE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COMMENT;
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COPYRIGHT;
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_DESCRIPTION;
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_EQUIPMENT;
@@ -38,10 +37,6 @@ import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_PIXEL_YD
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_VRESOLUTION;
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WHITEBALANCE;
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WIDTH;
-import it.tidalwave.image.EditableImage;
-import it.tidalwave.image.Rational;
-import it.tidalwave.image.metadata.EXIFDirectory;
-import it.tidalwave.image.op.ReadOp;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -50,17 +45,19 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.platform.picture.ExifHelper;
 import org.nuxeo.ecm.platform.picture.IPTCHelper;
 import org.nuxeo.ecm.platform.picture.core.MetadataUtils;
 
 import com.drew.imaging.jpeg.JpegProcessingException;
 
+import it.tidalwave.image.EditableImage;
+import it.tidalwave.image.Rational;
+import it.tidalwave.image.metadata.EXIFDirectory;
+import it.tidalwave.image.op.ReadOp;
+
 /**
- *
  * @author Max Stepanov
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- *
  */
 public class MistralMetadataUtils implements MetadataUtils {
 
@@ -73,8 +70,7 @@ public class MistralMetadataUtils implements MetadataUtils {
         Map<String, Object> metadata = new HashMap<String, Object>();
 
         try {
-            EditableImage image = EditableImage.create(new ReadOp(
-                    blob.getStream(), ReadOp.Type.METADATA));
+            EditableImage image = EditableImage.create(new ReadOp(blob.getStream(), ReadOp.Type.METADATA));
             EXIFDirectory exif = image.getEXIFDirectory();
 
             // CB: NXP-4348 - Return correct values for image width/height
@@ -98,8 +94,7 @@ public class MistralMetadataUtils implements MetadataUtils {
             }
 
             if (exif.isDateTimeOriginalAvailable()) {
-                metadata.put(META_ORIGINALDATE,
-                        exif.getDateTimeOriginalAsDate());
+                metadata.put(META_ORIGINALDATE, exif.getDateTimeOriginalAsDate());
             }
 
             if (exif.isXResolutionAvailable() && exif.isYResolutionAvailable()) {
@@ -107,8 +102,7 @@ public class MistralMetadataUtils implements MetadataUtils {
                 metadata.put(META_VRESOLUTION, exif.getYResolution().intValue());
             }
 
-            if (exif.isPixelXDimensionAvailable()
-                    && exif.isPixelYDimensionAvailable()) {
+            if (exif.isPixelXDimensionAvailable() && exif.isPixelYDimensionAvailable()) {
                 metadata.put(META_PIXEL_XDIMENSION, exif.getPixelXDimension());
                 metadata.put(META_PIXEL_YDIMENSION, exif.getPixelYDimension());
             }
@@ -135,8 +129,7 @@ public class MistralMetadataUtils implements MetadataUtils {
             }
 
             if (exif.isFocalLengthAvailable()) {
-                metadata.put(META_FOCALLENGTH,
-                        exif.getFocalLength().doubleValue());
+                metadata.put(META_FOCALLENGTH, exif.getFocalLength().doubleValue());
             }
 
             if (exif.isColorSpaceAvailable()) {
@@ -144,8 +137,7 @@ public class MistralMetadataUtils implements MetadataUtils {
             }
 
             if (exif.isWhiteBalanceAvailable()) {
-                metadata.put(META_WHITEBALANCE,
-                        exif.getWhiteBalance().toString().toLowerCase());
+                metadata.put(META_WHITEBALANCE, exif.getWhiteBalance().toString().toLowerCase());
             }
 
             if (exif.isInterColourProfileAvailable()) {
@@ -160,11 +152,8 @@ public class MistralMetadataUtils implements MetadataUtils {
                 metadata.put(META_FNUMBER, exif.getFNumber().doubleValue());
             }
         } catch (IOException e) {
-            log.warn("Failed to get EXIF metadata for the file: "
-                    + blob.getFilename());
-            log.debug(
-                    "Failed to get EXIF metadata for the file: "
-                            + blob.getFilename(), e);
+            log.warn("Failed to get EXIF metadata for the file: " + blob.getFilename());
+            log.debug("Failed to get EXIF metadata for the file: " + blob.getFilename(), e);
         }
 
         try {
@@ -173,13 +162,9 @@ public class MistralMetadataUtils implements MetadataUtils {
                 IPTCHelper.extractMetadata(blob.getStream(), metadata);
             }
         } catch (IOException e) {
-            log.error(
-                    "Failed to get IPTC metadata for the file:"
-                            + blob.getFilename(), e);
+            log.error("Failed to get IPTC metadata for the file:" + blob.getFilename(), e);
         } catch (JpegProcessingException e) {
-            log.error(
-                    "Failed to get IPTC metadata for the file:"
-                            + blob.getFilename(), e);
+            log.error("Failed to get IPTC metadata for the file:" + blob.getFilename(), e);
         }
 
         return metadata;

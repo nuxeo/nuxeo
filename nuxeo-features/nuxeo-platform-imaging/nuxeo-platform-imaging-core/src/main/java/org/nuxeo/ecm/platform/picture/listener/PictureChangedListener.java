@@ -51,8 +51,7 @@ import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Listener updating pre-filling the views of a Picture if the main Blob has
- * changed.
+ * Listener updating pre-filling the views of a Picture if the main Blob has changed.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
@@ -91,23 +90,20 @@ public class PictureChangedListener implements EventListener {
 
     protected void preFillPictureViews(CoreSession session, DocumentModel doc) {
         try {
-            URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(
-                    getEmptyPicturePath());
+            URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(getEmptyPicturePath());
             if (fileUrl == null) {
                 return;
             }
 
             Blob blob = new FileBlob(FileUtils.getFileFromURL(fileUrl));
             MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
-            String mimeType = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(
-                    blob.getFilename(), blob, null);
+            String mimeType = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(blob.getFilename(), blob, null);
             blob.setMimeType(mimeType);
 
             DocumentModel parentDoc = getParentDocument(session, doc);
 
             List<Map<String, Object>> pictureTemplates = null;
-            if (parentDoc != null
-                    && PICTUREBOOK_TYPE_NAME.equals(parentDoc.getType())) {
+            if (parentDoc != null && PICTUREBOOK_TYPE_NAME.equals(parentDoc.getType())) {
                 // use PictureBook Properties
                 pictureTemplates = (ArrayList<Map<String, Object>>) parentDoc.getPropertyValue("picturebook:picturetemplates");
                 if (pictureTemplates.isEmpty()) {
@@ -121,12 +117,10 @@ public class PictureChangedListener implements EventListener {
             }
 
             PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
-            adapter.preFillPictureViews(blob, pictureTemplates,
-                    emptyPictureImageInfo);
+            adapter.preFillPictureViews(blob, pictureTemplates, emptyPictureImageInfo);
         } catch (Exception e) {
             log.debug(e, e);
-            log.error("Error while pre-filling picture views: "
-                    + e.getMessage());
+            log.error("Error while pre-filling picture views: " + e.getMessage());
         }
     }
 
@@ -134,8 +128,7 @@ public class PictureChangedListener implements EventListener {
         return EMPTY_PICTURE_PATH;
     }
 
-    protected DocumentModel getParentDocument(CoreSession session,
-            DocumentModel doc) throws ClientException {
+    protected DocumentModel getParentDocument(CoreSession session, DocumentModel doc) throws ClientException {
         DocumentModel parent;
         if (session.exists(doc.getRef())) {
             parent = session.getParentDocument(doc.getRef());

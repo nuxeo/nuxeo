@@ -44,8 +44,7 @@ public class TestMagickExecutors extends SQLRepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployContrib("org.nuxeo.ecm.platform.picture.core",
-                "OSGI-INF/commandline-imagemagick-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.picture.core", "OSGI-INF/commandline-imagemagick-contrib.xml");
     }
 
     @Test
@@ -65,13 +64,11 @@ public class TestMagickExecutors extends SQLRepositoryTestCase {
 
     @Test
     public void testJpegSimplier() throws Exception {
-        String outputFile = System.getProperty("java.io.tmpdir")
-                + "/test_small.jpg";
+        String outputFile = System.getProperty("java.io.tmpdir") + "/test_small.jpg";
 
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
-        ImageInfo info = ImageResizer.resize(file.getAbsolutePath(),
-                outputFile, 20, 20, 8);
+        ImageInfo info = ImageResizer.resize(file.getAbsolutePath(), outputFile, 20, 20, 8);
         assertNotNull(info);
 
         File out = new File(outputFile);
@@ -82,13 +79,11 @@ public class TestMagickExecutors extends SQLRepositoryTestCase {
 
     @Test
     public void testCropper() throws Exception {
-        String outputFilePath = System.getProperty("java.io.tmpdir")
-                + "/test_crop.jpg";
+        String outputFilePath = System.getProperty("java.io.tmpdir") + "/test_crop.jpg";
 
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
-        ImageCropper.crop(file.getAbsolutePath(), outputFilePath, 255, 255, 10,
-                10);
+        ImageCropper.crop(file.getAbsolutePath(), outputFilePath, 255, 255, 10, 10);
 
         File out = new File(outputFilePath);
         assertTrue(out.exists());
@@ -103,13 +98,11 @@ public class TestMagickExecutors extends SQLRepositoryTestCase {
 
     @Test
     public void testCropperAndResize() throws Exception {
-        String outputFilePath = System.getProperty("java.io.tmpdir")
-                + "/test_crop_resized.jpg";
+        String outputFilePath = System.getProperty("java.io.tmpdir") + "/test_crop_resized.jpg";
 
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
-        ImageCropperAndResizer.cropAndResize(file.getAbsolutePath(),
-                outputFilePath, 255, 255, 10, 10, 200, 200);
+        ImageCropperAndResizer.cropAndResize(file.getAbsolutePath(), outputFilePath, 255, 255, 10, 10, 200, 200);
 
         File out = new File(outputFilePath);
         assertTrue(out.exists());
@@ -126,8 +119,7 @@ public class TestMagickExecutors extends SQLRepositoryTestCase {
     public void testConverterWithBmp() throws Exception {
         File file = FileUtils.getResourceFileFromContext("images/andy.bmp");
 
-        String outputFilePath = System.getProperty("java.io.tmpdir")
-                + "/andy.jpg";
+        String outputFilePath = System.getProperty("java.io.tmpdir") + "/andy.jpg";
 
         ImageConverter.convert(file.getAbsolutePath(), outputFilePath);
 
@@ -141,8 +133,7 @@ public class TestMagickExecutors extends SQLRepositoryTestCase {
     public void testConverterWithGif() throws Exception {
         File file = FileUtils.getResourceFileFromContext("images/cat.gif");
 
-        String outputFilePath = System.getProperty("java.io.tmpdir")
-                + "/cat.jpg";
+        String outputFilePath = System.getProperty("java.io.tmpdir") + "/cat.jpg";
 
         ImageConverter.convert(file.getAbsolutePath(), outputFilePath);
 

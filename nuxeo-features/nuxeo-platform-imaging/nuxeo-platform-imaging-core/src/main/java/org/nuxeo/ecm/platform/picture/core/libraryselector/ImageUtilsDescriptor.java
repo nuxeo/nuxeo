@@ -36,8 +36,7 @@ public class ImageUtilsDescriptor {
         return name;
     }
 
-    public ImageUtils getNewInstance() throws InstantiationException,
-            IllegalAccessException {
+    public ImageUtils getNewInstance() throws InstantiationException, IllegalAccessException {
         return adapterClass.newInstance();
     }
 }

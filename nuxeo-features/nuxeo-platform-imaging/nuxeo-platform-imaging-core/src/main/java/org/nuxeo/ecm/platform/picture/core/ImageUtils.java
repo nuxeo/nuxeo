@@ -33,8 +33,7 @@ public interface ImageUtils {
     Blob rotate(Blob blob, int angle);
 
     /**
-     * Returns {@code true} if this ImageUtils can be used, {@code false}
-     * otherwise
+     * Returns {@code true} if this ImageUtils can be used, {@code false} otherwise
      */
     boolean isAvailable();
 

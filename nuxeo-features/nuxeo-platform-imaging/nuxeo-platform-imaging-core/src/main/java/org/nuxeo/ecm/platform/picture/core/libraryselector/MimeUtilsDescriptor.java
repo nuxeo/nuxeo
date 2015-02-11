@@ -36,8 +36,7 @@ public class MimeUtilsDescriptor {
         return name;
     }
 
-    public MimeUtils getNewInstance() throws InstantiationException,
-            IllegalAccessException {
+    public MimeUtils getNewInstance() throws InstantiationException, IllegalAccessException {
         return adapterClass.newInstance();
     }
 
