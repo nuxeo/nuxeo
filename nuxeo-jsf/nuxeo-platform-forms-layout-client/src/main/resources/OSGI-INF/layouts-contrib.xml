@@ -2804,7 +2804,7 @@
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
-      <property name="template">/widgets/list_widget_template.xhtml</property>
+      <property name="template">/widgets/js_list_widget_template.xhtml</property>
     </widgetType>
 
     <widgetType name="complex">
