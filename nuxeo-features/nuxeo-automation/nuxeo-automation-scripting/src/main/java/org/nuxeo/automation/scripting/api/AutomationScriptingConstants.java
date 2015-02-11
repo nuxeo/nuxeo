@@ -31,5 +31,6 @@ public class AutomationScriptingConstants {
 
     public static final String DEFAULT_PRECOMPILE_STATUS = "true";
 
-    public static final String[] NASHORN_OPTIONS = new String[] { "--persistent-code-cache", "--class-cache-size=50" };
+    public static final String[] NASHORN_OPTIONS = new String[] { "-strict", "--persistent-code-cache",
+            "--class-cache-size=50" };
 }
