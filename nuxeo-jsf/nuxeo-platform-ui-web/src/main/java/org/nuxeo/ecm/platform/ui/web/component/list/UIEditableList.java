@@ -1121,7 +1121,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         }
     }
 
-    protected final void processFacetsAndChildren(final FacesContext context, final PhaseId phaseId) {
+    protected void processFacetsAndChildren(final FacesContext context, final PhaseId phaseId) {
         List<UIComponent> stamps = getChildren();
         int oldIndex = getRowIndex();
         boolean rowChanged = false;

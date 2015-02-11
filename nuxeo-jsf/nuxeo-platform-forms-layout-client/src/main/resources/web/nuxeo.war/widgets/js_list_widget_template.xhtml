@@ -76,14 +76,15 @@
               </c:if>
             </thead>
             <tbody>
-              <nxu:inputList value="#{fieldOrValue}"
+              <nxu:jsInputList value="#{fieldOrValue}"
                 id="#{widget.id}_input" model="model"
                 template="#{templateValue}"
                 required="#{widgetProperty_required}"
                 diff="#{widgetProperty_diff}"
                 rendered="#{isEditMode or not empty fieldOrValue}">
                 <nxu:validateDocumentConstraint handleSubProperties="false" />
-                <tr class="#{model.rowIndex % 2 == 0 ? 'dataRowEven': 'dataRowOdd'}">
+                <tr class="#{model.rowIndex % 2 == 0 ? 'dataRowEven': 'dataRowOdd'}"
+                    style="#{isListTemplate?'display:none;':''}">
                   <c:if test="#{showActions}">
                     <td class="listWidgetActions">
                       <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
@@ -96,7 +97,16 @@
                     </td>
                   </nxl:subWidget>
                 </tr>
-              </nxu:inputList>
+                <ui:fragment rendered="#{isListTemplate and isEditMode and not widgetProperty_hideAddButton}">
+                  <a class="button smallButton listWidgetActionAdd" href="#nogo"
+                    onclick="nuxeo.utils.addFromListTemplate(jQuery(this).prev(), jQuery(this).next()); return false;">
+                    <h:outputText value="#{messages['command.add']}" />
+                  </a>
+                  <h:inputHidden id="itemsCounter">
+                    <f:attribute name="value" value="#{model.rowCount}" />
+                  </h:inputHidden>
+                </ui:fragment>
+              </nxu:jsInputList>
             </tbody>
           </table>
         </c:when>
@@ -104,14 +114,14 @@
         <c:when test="#{widgetProperty_display == 'inline'}">
           <table class="widgetTable listWidgetTable #{widgetProperty_styleClass}">
             <tbody>
-              <nxu:inputList value="#{fieldOrValue}"
+              <nxu:jsInputList value="#{fieldOrValue}"
                 id="#{widget.id}_input" model="model"
                 template="#{templateValue}"
                 required="#{widgetProperty_required}"
                 diff="#{widgetProperty_diff}"
                 rendered="#{isEditMode or not empty fieldOrValue}">
                 <nxu:validateDocumentConstraint handleSubProperties="false" />
-                <tr>
+                <tr style="#{isListTemplate?'display:none;':''}">
                   <c:if test="#{showActions}">
                     <td class="listWidgetActions">
                       <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
@@ -131,20 +141,30 @@
                     </td>
                   </nxl:subWidget>
                 </tr>
-              </nxu:inputList>
+                <ui:fragment rendered="#{isListTemplate and isEditMode and not widgetProperty_hideAddButton}">
+                  <a class="button smallButton listWidgetActionAdd" href="#nogo"
+                    onclick="nuxeo.utils.addFromListTemplate(jQuery(this).prev(), jQuery(this).next()); return false;">
+                    <h:outputText value="#{messages['command.add']}" />
+                  </a>
+                  <h:inputHidden id="itemsCounter">
+                    <f:attribute name="value" value="#{model.rowCount}" />
+                  </h:inputHidden>
+                </ui:fragment>
+              </nxu:jsInputList>
             </tbody>
           </table>
         </c:when>
 
         <c:when test="#{widgetProperty_display == 'block_top'}">
-          <nxu:inputList value="#{fieldOrValue}"
+          <nxu:jsInputList value="#{fieldOrValue}"
             id="#{widget.id}_input" model="model"
             template="#{templateValue}"
             required="#{widgetProperty_required}"
             diff="#{widgetProperty_diff}"
             rendered="#{isEditMode or not empty fieldOrValue}">
             <nxu:validateDocumentConstraint handleSubProperties="false" />
-            <h:panelGrid columns="#{isEditMode and showActions?2:1}">
+            <h:panelGrid columns="#{isEditMode and showActions?2:1}"
+              style="#{isListTemplate?'display:none;':''}">
               <c:if test="#{showActions}">
                 <h:panelGroup styleClass="listWidgetActionsTable">
                   <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
@@ -176,18 +196,31 @@
                 </table>
               </h:panelGroup>
             </h:panelGrid>
-          </nxu:inputList>
+
+            <ui:fragment rendered="#{isListTemplate and isEditMode and not widgetProperty_hideAddButton}">
+              <a class="button smallButton listWidgetActionAdd" href="#nogo"
+                onclick="nuxeo.utils.addFromListTemplate(jQuery(this).prev(), jQuery(this).next()); return false;">
+                <h:outputText value="#{messages['command.add']}" />
+              </a>
+              <h:inputHidden id="itemsCounter">
+                <f:attribute name="value" value="#{model.rowCount}" />
+              </h:inputHidden>
+            </ui:fragment>
+
+          </nxu:jsInputList>
         </c:when>
 
         <c:otherwise>
-          <nxu:inputList value="#{fieldOrValue}"
-            id="#{widget.id}_input" model="model"
+          <nxu:jsInputList value="#{fieldOrValue}"
+            id="#{widget.id}_input"
+            model="model"
             template="#{templateValue}"
             required="#{widgetProperty_required}"
             diff="#{widgetProperty_diff}"
             rendered="#{isEditMode or not empty fieldOrValue}">
             <nxu:validateDocumentConstraint handleSubProperties="false" />
-            <h:panelGrid columns="#{isEditMode and showActions?2:1}">
+            <h:panelGrid columns="#{isEditMode and showActions?2:1}"
+              style="#{isListTemplate?'display:none;':''}">
               <c:if test="#{showActions}">
                 <h:panelGroup styleClass="listWidgetActionsTable">
                   <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
@@ -217,7 +250,17 @@
                 </table>
               </h:panelGroup>
             </h:panelGrid>
-          </nxu:inputList>
+
+            <ui:fragment rendered="#{isListTemplate and isEditMode and not widgetProperty_hideAddButton}">
+              <a class="button smallButton listWidgetActionAdd" href="#nogo"
+                onclick="nuxeo.utils.addFromListTemplate(jQuery(this).prev(), jQuery(this).next()); return false;">
+                <h:outputText value="#{messages['command.add']}" />
+              </a>
+              <h:inputHidden id="itemsCounter">
+                <f:attribute name="value" value="#{model.rowCount}" />
+              </h:inputHidden>
+            </ui:fragment>
+          </nxu:jsInputList>
         </c:otherwise>
 
       </c:choose>
@@ -226,18 +269,6 @@
         id="#{widget.id}_message" />
 
     </a4j:outputPanel>
-
-    <c:if test="#{isEditMode and not widgetProperty_hideAddButton}">
-      <a4j:commandLink immediate="true"
-        actionListener="#{editableListBean.performAction}"
-        render="#{widget.id}_panel"
-        id="#{widget.id}_add"
-        styleClass="button smallButton listWidgetActionAdd">
-        <f:param name="for" value="#{widget.id}_input" />
-        <f:param name="type" value="add" />
-        <h:outputText value="#{messages['command.add']}" />
-      </a4j:commandLink>
-    </c:if>
 
   </a4j:region>
 
