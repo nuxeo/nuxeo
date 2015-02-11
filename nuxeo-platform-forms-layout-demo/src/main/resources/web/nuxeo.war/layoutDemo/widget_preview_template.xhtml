@@ -43,6 +43,7 @@
             </nxl:layout>
             <c:forEach var="layoutDef"
               items="#{currentWidgetTypeDef.configuration.getPropertyLayouts(widgetPreviewMode, 'any')}">
+              <nxu:set var="resolveHelpTwice" value="false">
               <nxl:layout definition="#{layoutDef}"
                 mode="edit_demo_preview"
                 value="#{widgetPreviewLayoutDef.properties}"
@@ -51,6 +52,7 @@
                   <f:ajax render="layoutDemoPreviewFrame" execute="@form" />
                 </ui:define>
               </nxl:layout>
+              </nxu:set>
             </c:forEach>
             <nxl:layout name="layout_demo_widget_custom_properties"
               mode="edit" value="#{widgetPreviewLayoutDef}">

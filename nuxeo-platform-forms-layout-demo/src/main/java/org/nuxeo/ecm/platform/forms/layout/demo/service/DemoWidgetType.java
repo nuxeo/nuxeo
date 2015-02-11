@@ -47,6 +47,11 @@ public interface DemoWidgetType extends Serializable {
      */
     boolean isPreviewHideViewMode();
 
+    /**
+     * @since 7.2
+     */
+    boolean isPreviewHideEditMode();
+
     List<String> getFields();
 
     Map<String, Serializable> getDefaultProperties();

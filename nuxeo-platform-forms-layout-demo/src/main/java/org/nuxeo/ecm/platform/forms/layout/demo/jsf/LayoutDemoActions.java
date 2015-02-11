@@ -43,7 +43,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
-import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.ecm.platform.forms.layout.demo.service.DemoWidgetType;
@@ -204,25 +203,19 @@ public class LayoutDemoActions implements Serializable {
         }
         PreviewLayoutDefinition def = new PreviewLayoutDefinition(widgetType.getName(), widgetType.getFields(), props);
 
-        LayoutStore lm = Framework.getLocalService(LayoutStore.class);
-        WidgetTypeDefinition wtDef = lm.getWidgetTypeDefinition(widgetType.getWidgetTypeCategory(), type);
         if (def != null) {
-            WidgetTypeConfiguration wtConf = wtDef.getConfiguration();
-            if (wtConf.isAcceptingSubWidgets()) {
-                // add some subwidgets for preview needs, hardcoded right now
-                if ("list".equals(type)) {
-                    LayoutDefinition ldef = webLayoutManager.getLayoutDefinition("complexListWidgetLayout");
-                    def.setSubWidgets(retrieveSubWidgets(ldef));
-                } else if ("complex".equals(type)) {
-                    LayoutDefinition ldef = webLayoutManager.getLayoutDefinition("complexWidgetLayout");
-                    def.setSubWidgets(retrieveSubWidgets(ldef));
-                } else if ("container".equals(type)) {
-                    LayoutDefinition ldef = webLayoutManager.getLayoutDefinition("containerWidgetLayout");
-                    def.setSubWidgets(retrieveSubWidgets(ldef));
-                    def.setHandlingLabels(Boolean.TRUE);
-                }
-            }
-            if ("actions".equals(type)) {
+            // add some special conf for preview needs, hardcoded right now
+            if ("list".equals(type)) {
+                LayoutDefinition ldef = webLayoutManager.getLayoutDefinition("complexListWidgetLayout");
+                def.setSubWidgets(retrieveSubWidgets(ldef));
+            } else if ("complex".equals(type)) {
+                LayoutDefinition ldef = webLayoutManager.getLayoutDefinition("complexWidgetLayout");
+                def.setSubWidgets(retrieveSubWidgets(ldef));
+            } else if ("container".equals(type)) {
+                LayoutDefinition ldef = webLayoutManager.getLayoutDefinition("containerWidgetLayout");
+                def.setSubWidgets(retrieveSubWidgets(ldef));
+                def.setHandlingLabels(Boolean.TRUE);
+            } else if ("actions".equals(type) || "toggleableLayoutWithForms".equals(type)) {
                 def.setHandlingLabels(Boolean.TRUE);
             }
         }

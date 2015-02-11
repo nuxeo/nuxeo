@@ -43,6 +43,8 @@ public class DemoWidgetTypeImpl implements DemoWidgetType {
 
     protected boolean previewHideViewMode;
 
+    protected boolean previewHideEditMode;
+
     protected List<String> fields;
 
     protected Map<String, Serializable> defaultProperties;
@@ -50,7 +52,7 @@ public class DemoWidgetTypeImpl implements DemoWidgetType {
     protected List<DemoLayout> demoLayouts;
 
     public DemoWidgetTypeImpl(String name, String label, String viewId, String category, String widgetTypeCategory,
-            boolean previewEnabled, boolean previewHideViewMode, List<String> fields,
+            boolean previewEnabled, boolean previewHideViewMode, boolean previewHideEditMode, List<String> fields,
             Map<String, Serializable> defaultProperties, List<DemoLayout> demoLayouts) {
         super();
         this.name = name;
@@ -60,6 +62,7 @@ public class DemoWidgetTypeImpl implements DemoWidgetType {
         this.widgetTypeCategory = widgetTypeCategory;
         this.previewEnabled = previewEnabled;
         this.previewHideViewMode = previewHideViewMode;
+        this.previewHideEditMode = previewHideEditMode;
         this.fields = fields;
         this.defaultProperties = defaultProperties;
         this.demoLayouts = demoLayouts;
@@ -97,6 +100,11 @@ public class DemoWidgetTypeImpl implements DemoWidgetType {
     @Override
     public boolean isPreviewHideViewMode() {
         return previewHideViewMode;
+    }
+
+    @Override
+    public boolean isPreviewHideEditMode() {
+        return previewHideEditMode;
     }
 
     public List<String> getFields() {
