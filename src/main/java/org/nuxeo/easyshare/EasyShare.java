@@ -61,6 +61,7 @@ public class EasyShare extends ModuleRoot {
 
   private static final String DEFAULT_PAGE_INDEX = "0";
   private static final Long PAGE_SIZE = 20L;
+  private static final String SHARE_DOC_TYPE = "EasyShareFolder";
   private static AutomationService automationService;
   protected final Log log = LogFactory.getLog(EasyShare.class);
 
@@ -77,7 +78,7 @@ public class EasyShare extends ModuleRoot {
         if (session.exists(docRef)) {
           DocumentModel docShare = session.getDocument(docRef);
 
-          if (!docShare.getType().equals("EasyShareFolder")) {
+          if (!SHARE_DOC_TYPE.equals(docShare.getType())) {
             return Response.serverError().status(Response.Status.NOT_FOUND).build();
           }
 
@@ -146,7 +147,7 @@ public class EasyShare extends ModuleRoot {
           "ecm:isCheckedInVersion = 0 AND " +
           "ecm:currentLifeCycleState != 'deleted'";
 
-    } else if ("EasyShareFolder".equals(documentModel.getType())) {
+    } else if (SHARE_DOC_TYPE.equals(documentModel.getType())) {
       return "SELECT * FROM Document where ecm:mixinType != 'HiddenInNavigation' AND " +
           "ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' " +
           "AND collectionMember:collectionIds/* = '" + documentModel.getId() + "'";
