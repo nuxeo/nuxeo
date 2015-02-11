@@ -86,7 +86,7 @@
                 <tr class="#{model.rowIndex % 2 == 0 ? 'dataRowEven': 'dataRowOdd'}">
                   <c:if test="#{showActions}">
                     <td class="listWidgetActions">
-                      <ui:include src="/widgets/list_widget_template_actions.xhtml" />
+                      <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
                     </td>
                   </c:if>
                   <nxl:subWidget>
@@ -114,7 +114,7 @@
                 <tr>
                   <c:if test="#{showActions}">
                     <td class="listWidgetActions">
-                      <ui:include src="/widgets/list_widget_template_actions.xhtml" />
+                      <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
                     </td>
                   </c:if>
                   <nxl:subWidget>
@@ -147,7 +147,7 @@
             <h:panelGrid columns="#{isEditMode and showActions?2:1}">
               <c:if test="#{showActions}">
                 <h:panelGroup styleClass="listWidgetActionsTable">
-                  <ui:include src="/widgets/list_widget_template_actions.xhtml" />
+                  <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
                 </h:panelGroup>
               </c:if>
               <h:panelGroup>
@@ -190,7 +190,7 @@
             <h:panelGrid columns="#{isEditMode and showActions?2:1}">
               <c:if test="#{showActions}">
                 <h:panelGroup styleClass="listWidgetActionsTable">
-                  <ui:include src="/widgets/list_widget_template_actions.xhtml" />
+                  <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
                 </h:panelGroup>
               </c:if>
               <h:panelGroup>
