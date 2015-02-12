@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -373,6 +374,11 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     @Override
     public boolean isIndexingInProgress() {
         // impl of scheduling is left to the ESService
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public ListenableFuture<Boolean> prepareWaitForIndexing() {
         throw new UnsupportedOperationException("Not implemented");
     }
 

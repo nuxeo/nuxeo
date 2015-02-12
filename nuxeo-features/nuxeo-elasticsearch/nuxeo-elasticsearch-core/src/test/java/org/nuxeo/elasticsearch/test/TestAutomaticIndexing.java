@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo
+ *     Thierry Delprat
+ *     Benoit Delbosc
  */
 
 package org.nuxeo.elasticsearch.test;
@@ -61,10 +62,7 @@ import com.google.inject.Inject;
 
 /**
  * Test "on the fly" indexing via the listener system
- *
- * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
-
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.tag" })
@@ -90,36 +88,26 @@ public class TestAutomaticIndexing {
     @Inject
     protected TagService tagService;
 
-    private int commandProcessed;
+    @Inject
+    protected WorkManager workManager;
 
     private boolean syncMode = false;
 
     private Priority consoleThresold;
 
-    public void startCountingCommandProcessed() {
-        Assert.assertEquals(0, esa.getPendingWorkerCount());
-        Assert.assertEquals(0, esa.getPendingCommandCount());
-        commandProcessed = esa.getTotalCommandProcessed();
-    }
+    private int commandProcessed;
 
+    // Number of processed command since the startTransaction
     public void assertNumberOfCommandProcessed(int processed) throws Exception {
         Assert.assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
     }
 
     /**
-     * Wait for sync and async job and refresh the index
+     * Wait for async worker completion then wait for indexing completion
      */
-    public void waitForIndexing() throws Exception {
-        Thread.sleep(100);
-        for (int i = 0; (i < 100) && esa.isIndexingInProgress(); i++) {
-            Thread.sleep(100);
-        }
-        if (esa.isIndexingInProgress()) {
-            String msg = String.format("Indexing in progress, giveup, pending: %s, running %s",
-                    esa.getPendingWorkerCount(), esa.getRunningWorkerCount());
-            System.out.println(msg);
-            Assert.fail(msg);
-        }
+    public void waitForCompletion() throws Exception {
+        workManager.awaitCompletion(20, TimeUnit.SECONDS);
+        esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
         esa.refresh();
     }
 
@@ -135,13 +123,33 @@ public class TestAutomaticIndexing {
         restoreConsoleLog();
     }
 
-    public void startTransaction() {
+    protected void startTransaction() {
         if (syncMode) {
             ElasticSearchInlineListener.useSyncIndexing.set(true);
         }
         if (!TransactionHelper.isTransactionActive()) {
             TransactionHelper.startTransaction();
         }
+        Assert.assertEquals(0, esa.getPendingWorkerCount());
+        Assert.assertEquals(0, esa.getPendingCommandCount());
+        commandProcessed = esa.getTotalCommandProcessed();
+    }
+
+    protected void hideWarningFromConsoleLog() {
+        Logger rootLogger = Logger.getRootLogger();
+        ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender("CONSOLE");
+        consoleThresold = consoleAppender.getThreshold();
+        consoleAppender.setThreshold(Level.ERROR);
+    }
+
+    protected void restoreConsoleLog() {
+        if (consoleThresold == null) {
+            return;
+        }
+        Logger rootLogger = Logger.getRootLogger();
+        ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender("CONSOLE");
+        consoleAppender.setThreshold(consoleThresold);
+        consoleThresold = null;
     }
 
     @Before
@@ -164,9 +172,8 @@ public class TestAutomaticIndexing {
             doc.setPropertyValue("dc:description", "Description TestMe" + i);
             doc = session.saveDocument(doc);
         }
-        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
+        waitForCompletion();
         assertNumberOfCommandProcessed(10);
 
         startTransaction();
@@ -186,11 +193,10 @@ public class TestAutomaticIndexing {
             doc = session.createDocument(doc);
         }
         // Save session to prevent NXP-14494
-        startCountingCommandProcessed();
         session.save();
         TransactionHelper.setTransactionRollbackOnly();
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
+        waitForCompletion();
         assertNumberOfCommandProcessed(0);
 
         startTransaction();
@@ -207,9 +213,8 @@ public class TestAutomaticIndexing {
         doc.setPropertyValue("dc:title", "TestMe");
         doc = session.createDocument(doc);
 
-        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
+        waitForCompletion();
         assertNumberOfCommandProcessed(1);
 
         startTransaction();
@@ -219,9 +224,8 @@ public class TestAutomaticIndexing {
 
         // now delete the document
         session.removeDocument(doc.getRef());
-        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
+        waitForCompletion();
         assertNumberOfCommandProcessed(1);
 
         startTransaction();
@@ -241,9 +245,8 @@ public class TestAutomaticIndexing {
             doc = session.createDocument(doc);
 
         }
-        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
+        waitForCompletion();
         assertNumberOfCommandProcessed(10);
 
         startTransaction();
@@ -253,7 +256,6 @@ public class TestAutomaticIndexing {
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
 
         int i = 0;
-        startCountingCommandProcessed();
         for (SearchHit hit : searchResponse.getHits()) {
             i++;
             if (i > 8) {
@@ -265,7 +267,7 @@ public class TestAutomaticIndexing {
         }
 
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
+        waitForCompletion();
         assertNumberOfCommandProcessed(8);
 
         startTransaction();
@@ -292,8 +294,7 @@ public class TestAutomaticIndexing {
         TransactionHelper.commitOrRollbackTransaction();
         // we need to wait for the async fulltext indexing
         WorkManager wm = Framework.getLocalService(WorkManager.class);
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-        waitForIndexing();
+        waitForCompletion();
 
         startTransaction();
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
@@ -305,17 +306,16 @@ public class TestAutomaticIndexing {
 
     @Test
     public void shouldIndexOnPublishing() throws Exception {
+        startTransaction();
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
-
         // publish
         DocumentModel proxy = session.publishDocument(doc, folder);
 
-        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
+        waitForCompletion();
         assertNumberOfCommandProcessed(4);
 
         startTransaction();
@@ -325,14 +325,12 @@ public class TestAutomaticIndexing {
         Assert.assertEquals(4, searchResponse.getHits().getTotalHits());
 
         // unpublish
-        startCountingCommandProcessed();
         session.removeDocument(proxy.getRef());
         DocumentModelList docs = ess.query(new NxQueryBuilder(session) // .fetchFromElasticsearch()
         .nxql("SELECT * FROM Document"));
-
         Assert.assertEquals(4, docs.totalSize());
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
+        waitForCompletion();
         assertNumberOfCommandProcessed(1);
 
         startTransaction();
@@ -351,22 +349,18 @@ public class TestAutomaticIndexing {
         doc = session.createDocument(doc);
 
         trashService.trashDocuments(Arrays.asList(doc));
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
 
-        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
+        waitForCompletion();
         assertNumberOfCommandProcessed(2);
 
         startTransaction();
-
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'deleted'"));
         Assert.assertEquals(1, ret.totalSize());
         trashService.undeleteDocuments(Arrays.asList(doc));
 
-        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
+        waitForCompletion();
         assertNumberOfCommandProcessed(1);
 
         startTransaction();
@@ -379,9 +373,8 @@ public class TestAutomaticIndexing {
 
         trashService.purgeDocuments(session, Collections.singletonList(doc.getRef()));
 
-        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
+        waitForCompletion();
         assertNumberOfCommandProcessed(1);
 
         startTransaction();
@@ -393,24 +386,23 @@ public class TestAutomaticIndexing {
     @Test
     public void shouldIndexOnCopy() throws Exception {
         startTransaction();
-        startCountingCommandProcessed();
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         TransactionHelper.commitOrRollbackTransaction();
-        startTransaction();
-        waitForIndexing();
+        waitForCompletion();
         assertNumberOfCommandProcessed(2);
 
+        startTransaction();
         DocumentRef src = doc.getRef();
         DocumentRef dst = new PathRef("/");
         session.copy(src, dst, "file2");
         // turn the sync flag after the action
         ElasticSearchInlineListener.useSyncIndexing.set(true);
         TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
         startTransaction();
-        waitForIndexing();
 
         SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
@@ -421,44 +413,39 @@ public class TestAutomaticIndexing {
     public void shouldIndexTag() throws Exception {
         // ElasticSearchInlineListener.useSyncIndexing.set(true);
         startTransaction();
-        startCountingCommandProcessed();
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         tagService.tag(session, doc.getId(), "mytag", "Administrator");
         TransactionHelper.commitOrRollbackTransaction();
-        startTransaction();
-        waitForIndexing();
+        waitForCompletion();
         ElasticSearchInlineListener.useSyncIndexing.set(true);
-        // doc, tagging relation and tag
-        assertNumberOfCommandProcessed(3);
+        assertNumberOfCommandProcessed(3); // doc, tagging relation and tag
+
+        startTransaction();
         SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).setQuery(
                 QueryBuilders.termQuery("ecm:tag", "mytag")).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
-        startCountingCommandProcessed();
         tagService.tag(session, doc.getId(), "mytagbis", "Administrator");
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
-        startTransaction();
-        waitForIndexing();
+        waitForCompletion();
+        assertNumberOfCommandProcessed(3); // doc, tagging and new tag
 
-        // doc, tagging and new tag
-        assertNumberOfCommandProcessed(3);
+        startTransaction();
         searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).setQuery(
                 QueryBuilders.termQuery("ecm:tag", "mytagbis")).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
-        startCountingCommandProcessed();
         tagService.untag(session, doc.getId(), "mytag", "Administrator");
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
-        startTransaction();
+        waitForCompletion();
+        assertNumberOfCommandProcessed(2); // doc, tagging
 
-        // doc, tagging
-        assertNumberOfCommandProcessed(2);
+        startTransaction();
         searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).setQuery(
                 QueryBuilders.termQuery("ecm:tag", "mytagbis")).execute().actionGet();
@@ -472,17 +459,16 @@ public class TestAutomaticIndexing {
     @Test
     public void shouldHandleCreateDelete() throws Exception {
         startTransaction();
-        startCountingCommandProcessed();
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel doc = session.createDocumentModel("/folder", "note", "Note");
         doc = session.createDocument(doc);
         TransactionHelper.commitOrRollbackTransaction();
         // we don't wait for async
-        startTransaction();
+        TransactionHelper.startTransaction();
         session.removeDocument(folder.getRef());
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
+        waitForCompletion();
         startTransaction();
     }
 
@@ -494,12 +480,11 @@ public class TestAutomaticIndexing {
         DocumentModel doc = session.createDocument(tmpDoc); // Send an ES_INSERT cmd
         session.saveDocument(doc); // Send an ES_UPDATE merged with ES_INSERT
 
-        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
-        startTransaction();
+        waitForCompletion();
         assertNumberOfCommandProcessed(1);
 
+        startTransaction();
         // here we manipulate the transient doc with a null docid
         Assert.assertNull(tmpDoc.getId());
         tmpDoc.setPropertyValue("dc:title", "NewTitle");
@@ -507,14 +492,12 @@ public class TestAutomaticIndexing {
         session.saveDocument(tmpDoc);
         restoreConsoleLog();
 
-        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
-        startTransaction();
+        waitForCompletion();
         assertNumberOfCommandProcessed(1);
 
+        startTransaction();
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document Where dc:title='NewTitle'"));
-
         Assert.assertEquals(1, docs.totalSize());
     }
 
@@ -531,12 +514,11 @@ public class TestAutomaticIndexing {
         session.saveDocument(tmpDoc);
         restoreConsoleLog();
 
-        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
-        startTransaction();
+        waitForCompletion();
         assertNumberOfCommandProcessed(1);
 
+        startTransaction();
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document Where dc:title='NewTitle'"));
         Assert.assertEquals(1, docs.totalSize());
     }
@@ -549,28 +531,12 @@ public class TestAutomaticIndexing {
         hideWarningFromConsoleLog();
         folder = session.saveDocument(folder); // generate a WARN and an UPDATE command
         restoreConsoleLog();
-        startCountingCommandProcessed();
+
         TransactionHelper.commitOrRollbackTransaction();
-        waitForIndexing();
-        startTransaction();
+        waitForCompletion();
         assertNumberOfCommandProcessed(1);
-    }
 
-    private void hideWarningFromConsoleLog() {
-        Logger rootLogger = Logger.getRootLogger();
-        ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender("CONSOLE");
-        consoleThresold = consoleAppender.getThreshold();
-        consoleAppender.setThreshold(Level.ERROR);
-    }
-
-    private void restoreConsoleLog() {
-        if (consoleThresold == null) {
-            return;
-        }
-        Logger rootLogger = Logger.getRootLogger();
-        ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender("CONSOLE");
-        consoleAppender.setThreshold(consoleThresold);
-        consoleThresold = null;
+        startTransaction();
     }
 
 }
