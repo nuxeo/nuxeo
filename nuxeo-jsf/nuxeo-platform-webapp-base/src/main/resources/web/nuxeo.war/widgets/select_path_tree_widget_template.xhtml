@@ -74,7 +74,7 @@
           <label>
             <h:outputText value="#{nxd:titleOrId(treeWidgetActions.getDocumentFromPath(model.rowData))}" />
           </label>
-          <a4j:commandLink immediate="true"
+          <h:commandLink immediate="true"
             actionListener="#{editableListBean.performAction}"
             id="#{widget.id}_delete" render="#{widget.id}_listRegion"
             bypassUpdates="true">
@@ -82,8 +82,8 @@
             <f:param name="for" value="#{widget.id}_list" />
             <f:param name="index" value="#{model.rowIndex}" />
             <f:param name="type" value="remove" />
-            <f:ajax event="click" execute="@form" render="#{widget.id}_listRegion" />
-          </a4j:commandLink>
+            <f:ajax execute="@form" render="#{widget.id}_listRegion" />
+          </h:commandLink>
         </span>
       </nxu:inputList>
       <h:message styleClass="errorMessage" for="#{widget.id}_list"
