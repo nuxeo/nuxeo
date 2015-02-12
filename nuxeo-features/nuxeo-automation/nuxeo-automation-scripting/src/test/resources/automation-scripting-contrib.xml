@@ -115,11 +115,29 @@
 
             print("title:"+blob.filename);
 
-            var document = Repository.GetDocument(null, {
-                "value" : "/newDoc"
+            return newDoc;
+        }
+      ]]></script>
+    </scriptedOperation>
+
+    <scriptedOperation id="Scripting.TestComplexProperties">
+      <inputType>Blob</inputType>
+      <outputType>Document</outputType>
+      <param name="document" type="string"/>
+
+      <script><![CDATA[
+        function run(ctx, input, params) {
+
+            var root = Repository.GetDocument(null, {
+                "value" : "/"
+            });
+            var newDoc = Document.Create(root, {
+                "type" : params.type,
+                "name" : params.name,
+                "properties" : params.properties
             });
 
-            return document;
+            return newDoc;
         }
       ]]></script>
     </scriptedOperation>
