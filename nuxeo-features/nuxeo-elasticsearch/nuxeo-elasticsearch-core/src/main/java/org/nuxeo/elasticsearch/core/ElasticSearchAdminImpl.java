@@ -33,14 +33,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.admin.indices.status.IndicesStatusRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
@@ -56,11 +54,15 @@ import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
 import org.nuxeo.runtime.api.Framework;
 
+import com.google.common.util.concurrent.ListenableFuture;
+
 /**
  * @since 6.0
  */
 public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     private static final Log log = LogFactory.getLog(ElasticSearchAdminImpl.class);
+
+    private static final String TIMEOUT_WAIT_FOR_CLUSTER = "30s";
 
     final AtomicInteger totalCommandProcessed = new AtomicInteger(0);
 
@@ -187,17 +189,27 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         return ret;
     }
 
-    private void checkClusterHealth() {
+    private void checkClusterHealth(String... indexNames) {
         if (client == null) {
             throw new IllegalStateException("No es client available");
         }
+        String errorMessage = null;
         try {
-            client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
-            client.admin().indices().status(new IndicesStatusRequest()).get();
-        } catch (InterruptedException | ExecutionException | NoNodeAvailableException e) {
-            String message = "Failed to connect to elasticsearch, check addressList and clusterName: " + e.getMessage();
-            log.error(message, e);
-            throw new RuntimeException(message, e);
+            log.debug("Waiting for cluster yellow health status");
+            ClusterHealthResponse ret = client.admin().cluster().prepareHealth(indexNames).setTimeout(
+                    TIMEOUT_WAIT_FOR_CLUSTER).setWaitForYellowStatus().get();
+            if (ret.isTimedOut()) {
+                errorMessage = "ES Cluster health status not Yellow after " + TIMEOUT_WAIT_FOR_CLUSTER + ": " + ret;
+            } else {
+                log.info("ES Cluster ready: " + ret.toString());
+            }
+        } catch (NoNodeAvailableException e) {
+            errorMessage = "Failed to connect to elasticsearch, check addressList and clusterName: " + e.getMessage();
+        } finally {
+            if (errorMessage != null) {
+                log.error(errorMessage);
+                throw new RuntimeException(errorMessage);
+            }
         }
     }
 
@@ -345,7 +357,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
         }
         // make sure the index is ready before returning
-        checkClusterHealth();
+        checkClusterHealth(conf.getName());
     }
 
     @Override
