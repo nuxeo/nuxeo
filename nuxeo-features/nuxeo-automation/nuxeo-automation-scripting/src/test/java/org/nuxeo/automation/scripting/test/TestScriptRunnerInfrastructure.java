@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
@@ -67,8 +68,11 @@ import com.google.inject.Inject;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.automation.scripting" })
-@LocalDeploy({ "org.nuxeo.ecm.automation.scripting.tests:automation-scripting-contrib.xml" })
+@LocalDeploy({ "org.nuxeo.ecm.automation.scripting.tests:automation-scripting-contrib.xml",
+        "org.nuxeo.ecm.automation.scripting.tests:core-types-contrib.xml" })
 public class TestScriptRunnerInfrastructure {
+
+    protected static String[] attachments = { "att1", "att2", "att3" };
 
     @Inject
     CoreSession session;
@@ -204,8 +208,7 @@ public class TestScriptRunnerInfrastructure {
     @Test
     public void testOperationWithBlob() throws IOException, OperationException {
         // upload file blob
-        File fieldAsJsonFile = FileUtils.getResourceFileFromContext
-                ("creationFields.json");
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
         Blob fb = Blobs.createBlob(fieldAsJsonFile);
         fb.setMimeType("image/jpeg");
 
@@ -213,8 +216,48 @@ public class TestScriptRunnerInfrastructure {
         ctx.setInput(fb);
         Map<String, Object> params = new HashMap<>();
         params.put("document", "/newDoc");
-        DocumentModel result = (DocumentModel) automationService.run(ctx,"Scripting.TestBlob", params);
-        assertEquals("creationFields.json", ((Blob)result.getPropertyValue("file:content")).getFilename());
+        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestBlob", params);
+        assertEquals("creationFields.json", ((Blob) result.getPropertyValue("file:content")).getFilename());
         assertEquals("title:creationFields.json\n", outContent.toString());
+    }
+
+    @Test
+    public void testComplexProperties() throws IOException, OperationException {
+        // Fill the document properties
+        Map<String, Object> creationProps = new HashMap<>();
+        creationProps.put("ds:tableName", "MyTable");
+        creationProps.put("ds:attachments", attachments);
+
+        // send the fields representation as json
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
+        assertNotNull(fieldAsJsonFile);
+        String fieldsDataAsJSon = FileUtils.readFile(fieldAsJsonFile);
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
+        creationProps.put("ds:fields", fieldsDataAsJSon);
+        creationProps.put("dc:title", "testDoc");
+
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = new HashMap<>();
+        params.put("properties", toString(creationProps));
+        params.put("type", "DataSet");
+        params.put("name", "testDoc");
+        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestComplexProperties", params);
+        assertEquals("whatever", ((Map) ((List) result.getPropertyValue("ds:fields")).get(0)).get("sqlTypeHint"));
+    }
+
+    public String toString(Map<String, Object> creationProps) {
+        StringBuilder buf = new StringBuilder();
+        for (Map.Entry<String, Object> entry : creationProps.entrySet()) {
+            Object v = entry.getValue();
+            if (v != null) {
+                if (v.getClass() == String.class) {
+                    buf.append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
+                }
+            } else {
+                buf.append(entry.getKey()).append("=").append("\n");
+            }
+        }
+        return buf.toString();
     }
 }
