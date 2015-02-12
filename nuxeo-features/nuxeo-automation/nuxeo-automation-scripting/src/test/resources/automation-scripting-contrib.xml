@@ -115,11 +115,7 @@
 
             print("title:"+blob.filename);
 
-            var document = Repository.GetDocument(null, {
-                "value" : "/newDoc"
-            });
-
-            return document;
+            return newDoc;
         }
       ]]></script>
     </scriptedOperation>
