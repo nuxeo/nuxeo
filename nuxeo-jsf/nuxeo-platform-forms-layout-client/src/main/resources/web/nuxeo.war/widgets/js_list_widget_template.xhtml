@@ -1,15 +1,14 @@
-<f:subview xmlns="http://www.w3.org/1999/xhtml"
+<c:if test="true"
+  xmlns="http://www.w3.org/1999/xhtml"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxp="http://nuxeo.org/nxweb/pdf"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-  id="#{widget.id}">
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 <c:if test="#{nxl:isLikePlainMode(widget.mode)}">
   <nxu:set var="numberOfSubWidgets"
     value="#{fn:length(widget.subWidgets)}" cache="true">
@@ -48,11 +47,9 @@
     value="#{nxu:test(empty widgetProperty_listTemplateItem, nxd:propertyDefaultValue(propValueForTemplate), widgetProperty_listTemplateItem)}" />
   <c:set var="showActions"
     value="#{isEditMode and (not widgetProperty_hideDeleteButton or widgetProperty_orderable)}" />
-  <c:set var="listClientId" value="#{widget.id}_input" />
-  <a4j:region id="#{widget.id}_region">
-    <a4j:outputPanel id="#{widget.id}_panel"
-      styleClass="widgetPanel listWidgetPanel #{widgetProperty_styleClass}"
-      layout="block">
+
+  <div class="widgetPanel listWidgetPanel #{widgetProperty_styleClass}">
+    <nxu:set var="listClientId" value="#{nxu:componentAbsoluteId(component, widget.id).substring(1)}">
 
       <c:choose>
 
@@ -77,7 +74,8 @@
             </thead>
             <tbody>
               <nxu:jsInputList value="#{fieldOrValue}"
-                id="#{widget.id}_input" model="model"
+                id="#{widget.id}"
+                model="model"
                 template="#{templateValue}"
                 required="#{widgetProperty_required}"
                 diff="#{widgetProperty_diff}"
@@ -122,7 +120,8 @@
           <table class="widgetTable listWidgetTable #{widgetProperty_styleClass}">
             <tbody>
               <nxu:jsInputList value="#{fieldOrValue}"
-                id="#{widget.id}_input" model="model"
+                id="#{widget.id}"
+                model="model"
                 template="#{templateValue}"
                 required="#{widgetProperty_required}"
                 diff="#{widgetProperty_diff}"
@@ -167,7 +166,8 @@
 
         <c:when test="#{widgetProperty_display == 'block_top'}">
           <nxu:jsInputList value="#{fieldOrValue}"
-            id="#{widget.id}_input" model="model"
+            id="#{widget.id}"
+            model="model"
             template="#{templateValue}"
             required="#{widgetProperty_required}"
             diff="#{widgetProperty_diff}"
@@ -221,7 +221,7 @@
 
         <c:otherwise>
           <nxu:jsInputList value="#{fieldOrValue}"
-            id="#{widget.id}_input"
+            id="#{widget.id}"
             model="model"
             template="#{templateValue}"
             required="#{widgetProperty_required}"
@@ -274,12 +274,11 @@
 
       </c:choose>
 
-      <h:message styleClass="errorMessage" for="#{widget.id}_input"
+      <h:message styleClass="errorMessage" for="#{widget.id}"
         id="#{widget.id}_message" />
 
-    </a4j:outputPanel>
-
-  </a4j:region>
+    </nxu:set>
+  </div>
 
 </c:if>
-</f:subview>
+</c:if>
