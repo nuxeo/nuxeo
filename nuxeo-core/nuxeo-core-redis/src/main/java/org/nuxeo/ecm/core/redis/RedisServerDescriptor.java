@@ -17,6 +17,8 @@
 package org.nuxeo.ecm.core.redis;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -34,6 +36,8 @@ import redis.clients.jedis.exceptions.JedisException;
  */
 @XObject("server")
 public class RedisServerDescriptor extends RedisPoolDescriptor {
+
+    private static final Log log = LogFactory.getLog(RedisServerDescriptor.class);
 
     @XNode("hosts")
     public RedisHostDescriptor[] hosts = new RedisHostDescriptor[0];
@@ -67,6 +71,9 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
 
     protected boolean canConnect(String name, int port) {
         try (Jedis jedis = new Jedis(name, port)) {
+            if (StringUtils.isNotBlank(password)) {
+                jedis.auth(password);
+            }
             return canPing(jedis);
         }
     }
@@ -76,6 +83,7 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
             String pong = jedis.ping();
             return "PONG".equals(pong);
         } catch (JedisException cause) {
+            log.debug("Exception during ping", cause);
             return false;
         }
     }
