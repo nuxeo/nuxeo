@@ -19,13 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.component.list;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -149,32 +142,6 @@ public class EditableListBean {
         }
     }
 
-    /**
-     * Returns a new template, unreferenced from the given one
-     */
-    private static Object getUnreferencedTemplate(Object template) {
-        if (!(template instanceof Serializable)) {
-            return template;
-        }
-        try {
-            // serialize
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(out);
-            oos.writeObject(template);
-            oos.close();
-            // deserialize to make sure it is not the same instance
-            byte[] pickled = out.toByteArray();
-            InputStream in = new ByteArrayInputStream(pickled);
-            ObjectInputStream ois = new ObjectInputStream(in);
-            Object newTemplate = ois.readObject();
-            return newTemplate;
-        } catch (IOException e) {
-            return template;
-        } catch (ClassNotFoundException e) {
-            return template;
-        }
-    }
-
     protected static void performAction(UIComponent binding, Map<String, String> requestMap) {
         UIEditableList editableComp = getEditableListComponent(binding, requestMap);
         if (editableComp == null) {
@@ -197,7 +164,7 @@ public class EditableListBean {
                 model.addValue(template);
             } else {
                 for (int i = 0; i < number; i++) {
-                    model.addValue(getUnreferencedTemplate(template));
+                    model.addTemplateValue();
                 }
             }
             break;
@@ -212,7 +179,7 @@ public class EditableListBean {
                 model.insertValue(index, template);
             } else {
                 for (int i = 0; i < number; i++) {
-                    model.insertValue(index, getUnreferencedTemplate(template));
+                    model.insertTemplateValue(index);
                 }
             }
             break;

@@ -19,6 +19,12 @@
 
 package org.nuxeo.ecm.platform.ui.web.model.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,7 +52,7 @@ import org.nuxeo.ecm.platform.ui.web.util.DeepCopy;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class EditableModelImpl extends DataModel implements EditableModel, Serializable {
 
     private static final long serialVersionUID = 2550850486035521538L;
@@ -69,7 +75,9 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
 
     protected ListDiff listDiff;
 
-    public EditableModelImpl(Object value) {
+    protected Object template;
+
+    public EditableModelImpl(Object value, Object template) {
         if (value != null) {
             if (!(value instanceof List) && !(value instanceof Object[])) {
                 log.error("Cannot build editable model from " + value + ", list or array needed");
@@ -80,6 +88,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         listDiff = new ListDiff();
         keyMap = new HashMap<Integer, Integer>();
         initializeData(value);
+        this.template = template;
     }
 
     protected void initializeData(Object originalData) {
@@ -92,9 +101,37 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
                 data.add(DeepCopy.deepCopy(item));
             }
         } else if (originalData instanceof List) {
-            data = (List) DeepCopy.deepCopy(originalData);
+            data = new ArrayList<Object>();
+            data.addAll((List) DeepCopy.deepCopy(originalData));
         }
         setWrappedData(data);
+    }
+
+    @Override
+    public Object getUnreferencedTemplate() {
+        if (template == null) {
+            return null;
+        }
+        if (template instanceof Serializable) {
+            try {
+                Serializable serializableTemplate = (Serializable) template;
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(out);
+                oos.writeObject(serializableTemplate);
+                oos.close();
+                // deserialize to make sure it is not the same instance
+                byte[] pickled = out.toByteArray();
+                InputStream in = new ByteArrayInputStream(pickled);
+                ObjectInputStream ois = new ObjectInputStream(in);
+                Object newTemplate = ois.readObject();
+                return newTemplate;
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            log.warn("Template is not serializable, cannot clone " + "to add unreferenced value into model.");
+            return template;
+        }
     }
 
     @Override
@@ -325,6 +362,11 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
     }
 
     @Override
+    public void addTemplateValue() {
+        addValue(getUnreferencedTemplate());
+    }
+
+    @Override
     public boolean addValue(Object value) {
         int position = data.size();
         boolean res = data.add(value);
@@ -332,6 +374,11 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         int newRowKey = getNewRowKey();
         keyMap.put(position, newRowKey);
         return res;
+    }
+
+    @Override
+    public void insertTemplateValue(int index) {
+        insertValue(index, getUnreferencedTemplate());
     }
 
     @Override

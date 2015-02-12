@@ -19,12 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.component.list;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -501,41 +496,18 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
      * @param value this is the value returned from {@link #getValue()}
      */
     protected EditableModel createEditableModel(EditableModel current, Object value) {
-        EditableModel model = new EditableModelImpl(value);
+        EditableModel model = new EditableModelImpl(value, getTemplate());
         Integer defaultNumber = getNumber();
         int missing = 0;
         if (defaultNumber != null) {
             missing = defaultNumber - model.size();
         }
         if (defaultNumber != null && missing > 0) {
-            try {
-                Object template = getTemplate();
-                if (template instanceof Serializable) {
-                    Serializable serializableTemplate = (Serializable) template;
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    ObjectOutputStream oos = new ObjectOutputStream(out);
-                    oos.writeObject(serializableTemplate);
-                    oos.close();
-                    for (int i = 0; i < missing; i++) {
-                        // deserialize to make sure it is not the same instance
-                        byte[] pickled = out.toByteArray();
-                        InputStream in = new ByteArrayInputStream(pickled);
-                        ObjectInputStream ois = new ObjectInputStream(in);
-                        Object newTemplate = ois.readObject();
-                        model.addValue(newTemplate);
-                    }
-                } else {
-                    log.warn("Template is not serializable, cannot clone " + "to add unreferenced value into model.");
-                    model.addValue(template);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
+            for (int i = 0; i < missing; i++) {
+                model.addTemplateValue();
             }
         }
         model.setRowIndex(-1);
-        assert model.getRowIndex() == -1 : "RowIndex did not reset to -1";
         return model;
     }
 
@@ -1182,8 +1154,8 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
                 // remove empty values if needed
                 Boolean removeEmpty = getRemoveEmpty();
                 Object data = model.getWrappedData();
-                Object template = getTemplate();
                 if (removeEmpty && data instanceof List) {
+                    Object template = getTemplate();
                     List dataList = (List) data;
                     for (int i = dataList.size() - 1; i > -1; i--) {
                         Object item = dataList.get(i);
