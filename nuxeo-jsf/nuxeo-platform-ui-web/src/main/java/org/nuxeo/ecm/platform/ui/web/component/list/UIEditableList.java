@@ -1163,6 +1163,8 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
                 }
             }
 
+            // FIXME NXP-16515: component is not validated yes so this code will never be called, move this in code
+            // overriding behaviour in #updateModel
             if (isValid() && isLocalValueSet()) {
                 Boolean setDiff = getDiff();
                 if (setDiff) {
