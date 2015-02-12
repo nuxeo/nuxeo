@@ -33,6 +33,7 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
@@ -205,6 +206,7 @@ public class TestScriptRunnerInfrastructure {
         assertEquals("odd", result.getPropertyValue("dc:nature"));
     }
 
+    @Ignore("NXP-16471")
     @Test
     public void testOperationWithBlob() throws IOException, OperationException {
         // upload file blob
@@ -221,6 +223,7 @@ public class TestScriptRunnerInfrastructure {
         assertEquals("title:creationFields.json\n", outContent.toString());
     }
 
+    @Ignore("NXP-16471")
     @Test
     public void testComplexProperties() throws IOException, OperationException {
         // Fill the document properties
