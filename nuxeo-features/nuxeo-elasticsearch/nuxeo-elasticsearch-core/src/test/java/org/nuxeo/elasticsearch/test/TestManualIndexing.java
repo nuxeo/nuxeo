@@ -107,6 +107,7 @@ public class TestManualIndexing {
 
     @Test
     public void checkIndexing() throws Exception {
+        startTransaction();
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
         doc.setPropertyValue("dc:title", "TestMe");
         // disable automatic indexing to control manually the indexing command
