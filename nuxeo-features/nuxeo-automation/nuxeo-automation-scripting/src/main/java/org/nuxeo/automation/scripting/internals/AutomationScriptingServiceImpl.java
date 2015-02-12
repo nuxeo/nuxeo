@@ -71,7 +71,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
                 }
             }
             for (String opId : flatOps) {
-                generateFunction(sb, opId);
+                generateFlatFunction(sb, opId);
             }
             jsWrapper = sb.toString();
         }
@@ -144,6 +144,12 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
 
     protected void generateFunction(StringBuffer sb, String opId) {
         sb.append("\n" + opId + " = function(input,params) {");
+        sb.append("\nreturn automation.executeOperation('" + opId + "', input , params);");
+        sb.append("\n};");
+    }
+
+    protected void generateFlatFunction(StringBuffer sb, String opId) {
+        sb.append("\nvar " + opId + " = function(input,params) {");
         sb.append("\nreturn automation.executeOperation('" + opId + "', input , params);");
         sb.append("\n};");
     }
