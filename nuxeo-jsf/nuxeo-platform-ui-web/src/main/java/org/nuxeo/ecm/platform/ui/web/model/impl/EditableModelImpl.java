@@ -383,6 +383,12 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
 
     @Override
     public void insertValue(int index, Object value) {
+        if (index > data.size()) {
+            // make sure enough rows are made available
+            for (int i = data.size(); i < index; i++) {
+                data.add(i, getUnreferencedTemplate());
+            }
+        }
         data.add(index, value);
         listDiff.insert(index, value);
         // update key map to reflect new structure
