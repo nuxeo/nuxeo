@@ -38,6 +38,7 @@ import org.nuxeo.automation.scripting.internals.operation
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -187,5 +188,11 @@ public class TestScriptRunnerInfrastructure {
     }
 
     @Test
+    public void testOperationCtx() throws OperationException {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = new HashMap<>();
+        ctx.put("test", "odd");
+        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestOperationCtx", params);
+        assertEquals("odd", result.getPropertyValue("dc:nature"));
     }
 }

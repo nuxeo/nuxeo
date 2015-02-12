@@ -51,6 +51,37 @@
        </script>
     </scriptedOperation>
 
+    <scriptedOperation id="Scripting.TestOperationCtx">
+       <inputType>Document</inputType>
+       <outputType>Document</outputType>
+
+       <script><![CDATA[
+        function run(ctx, input, params) {
+
+            var root = Repository.GetDocument(null, {
+                "value" : "/"
+            });
+
+            var newDoc = Document.Create(root, {
+                "type" : "File",
+                "name" : "newDoc",
+                "properties" : {
+                    "dc:title" : "New Title",
+                    "dc:source" : "JavaScript",
+                    "dc:subjects" : [ "from", "javascript" ]
+                }
+            });
+            newDoc = Document.Update(newDoc, {
+                "properties" : {
+                    "dc:nature" : ctx.test
+                }
+            });
+
+            return newDoc;
+        }
+      ]]></script>
+    </scriptedOperation>
+
   </extension>
 
   <extension point="chains"
