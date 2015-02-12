@@ -82,6 +82,48 @@
       ]]></script>
     </scriptedOperation>
 
+    <scriptedOperation id="Scripting.TestBlob">
+      <inputType>Blob</inputType>
+      <outputType>Document</outputType>
+      <param name="document" type="string"/>
+
+      <script><![CDATA[
+        function run(ctx, input, params) {
+
+            var root = Repository.GetDocument(null, {
+                "value" : "/"
+            });
+
+            var newDoc = Document.Create(root, {
+                "type" : "File",
+                "name" : "newDoc",
+                "properties" : {
+                    "dc:title" : "New Title",
+                    "dc:source" : "JavaScript",
+                    "dc:subjects" : [ "from", "javascript" ]
+                }
+            });
+
+            var blob = Blob.AttachOnDocument(input, {
+                "document" : params.document
+            });
+
+            Log(null, {
+                "message" : "LogOperation is working so much - Blob title:"+blob.filename,
+                "level" : "info"
+            });
+
+            print("title:"+blob.filename);
+
+            var document = Repository.GetDocument(null, {
+                "value" : "/newDoc"
+            });
+
+            return document;
+        }
+      ]]></script>
+    </scriptedOperation>
+
   </extension>
 
   <extension point="chains"

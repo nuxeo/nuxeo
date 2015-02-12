@@ -21,6 +21,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
@@ -35,11 +37,14 @@ import org.junit.runner.RunWith;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.automation.scripting.internals.operation
         .ScriptingOperationTypeImpl;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -194,5 +199,22 @@ public class TestScriptRunnerInfrastructure {
         ctx.put("test", "odd");
         DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestOperationCtx", params);
         assertEquals("odd", result.getPropertyValue("dc:nature"));
+    }
+
+    @Test
+    public void testOperationWithBlob() throws IOException, OperationException {
+        // upload file blob
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext
+                ("creationFields.json");
+        Blob fb = Blobs.createBlob(fieldAsJsonFile);
+        fb.setMimeType("image/jpeg");
+
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(fb);
+        Map<String, Object> params = new HashMap<>();
+        params.put("document", "/newDoc");
+        DocumentModel result = (DocumentModel) automationService.run(ctx,"Scripting.TestBlob", params);
+        assertEquals("creationFields.json", ((Blob)result.getPropertyValue("file:content")).getFilename());
+        assertEquals("title:creationFields.json\n", outContent.toString());
     }
 }
