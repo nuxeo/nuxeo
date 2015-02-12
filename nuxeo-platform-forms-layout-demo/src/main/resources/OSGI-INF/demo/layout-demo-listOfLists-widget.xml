@@ -24,6 +24,7 @@
         </fields>
         <properties widgetMode="edit">
           <property name="diff">true</property>
+          <property name="orderable">true</property>
         </properties>
         <properties widgetMode="any">
           <property name="display">block_left</property>
@@ -78,6 +79,7 @@
             </properties>
             <properties widgetMode="any">
               <property name="hideSubLabels">true</property>
+              <property name="orderable">true</property>
             </properties>
             <subWidgets>
               <widget name="stringListSubItem" type="text">
@@ -104,6 +106,7 @@
             </properties>
             <properties widgetMode="any">
               <property name="hideSubLabels">true</property>
+              <property name="orderable">true</property>
             </properties>
             <subWidgets>
               <widget name="stringListSubItem2" type="text">
