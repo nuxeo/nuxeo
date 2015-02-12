@@ -49,6 +49,11 @@ public interface EditableModel {
      */
     void setWrappedData(Object data);
 
+    /**
+     * @since 7.2
+     */
+    Object getUnreferencedTemplate();
+
     // row data methods
 
     /**
@@ -129,11 +134,21 @@ public interface EditableModel {
     boolean addValue(Object value);
 
     /**
+     * @since 7.2
+     */
+    void addTemplateValue();
+
+    /**
      * Inserts value at given index on the model.
      *
      * @throws IllegalArgumentException if model does not handle this index.
      */
     void insertValue(int index, Object value);
+
+    /**
+     * @since 7.2
+     */
+    void insertTemplateValue(int index);
 
     /**
      * Modifies value at given index on the model.
