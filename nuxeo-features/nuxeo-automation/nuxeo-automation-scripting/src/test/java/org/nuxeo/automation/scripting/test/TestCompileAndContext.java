@@ -231,4 +231,20 @@ public class TestCompileAndContext {
 
     }
 
+    @Test
+    public void testIsolationScriptCtx() throws Exception {
+        org.junit.Assert.assertNotNull(scriptingService);
+
+        InputStream stream = this.getClass().getResourceAsStream("/scriptCtxIsolation.js");
+        org.junit.Assert.assertNotNull(stream);
+        scriptingService.run(stream, session);
+        assertEquals("[object Object]\n", outContent.toString());
+
+        stream = this.getClass().getResourceAsStream("/scriptCtxIsolation.js");
+        org.junit.Assert.assertNotNull(stream);
+        scriptingService.run(stream, session);
+        // Failing returning "[object Object]\n" + "toto\n"
+        assertEquals("[object Object]\n" + "[object Object]\n", outContent.toString());
+    }
+
 }

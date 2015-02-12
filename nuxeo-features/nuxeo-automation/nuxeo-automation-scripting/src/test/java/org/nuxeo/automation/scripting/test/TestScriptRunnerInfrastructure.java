@@ -187,19 +187,5 @@ public class TestScriptRunnerInfrastructure {
     }
 
     @Test
-    public void testIsolationScriptCtx() throws Exception {
-        AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
-        assertNotNull(scriptingService);
-
-        InputStream stream = this.getClass().getResourceAsStream("/scriptCtxIsolation.js");
-        assertNotNull(stream);
-        scriptingService.run(stream, session);
-        assertEquals("[object Object]\n", outContent.toString());
-
-        stream = this.getClass().getResourceAsStream("/scriptCtxIsolation.js");
-        assertNotNull(stream);
-        scriptingService.run(stream, session);
-        // Failing returning "[object Object]\n" + "toto\n"
-        assertEquals("[object Object]\n" + "[object Object]\n", outContent.toString());
     }
 }
