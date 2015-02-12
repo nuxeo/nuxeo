@@ -1,117 +1,103 @@
-About the Nuxeo Platform Project
-==========================
+# About the Nuxeo Platform
 
-What is Nuxeo Platform?
------------------
+The [Nuxeo Platform](http://www.nuxeo.com/products/content-management-platform/) is an open source customizable and extensible content management platform for building business applications. It provides the foundation for developing document management, digital asset management and case management application. You can easily add features using ready-to-use addons or by extending the platform using its extension point system.
 
-Nuxeo Platform is an open source platform for Enterprise Content Management.
+The Nuxeo Platform is developed and supported by Nuxeo, with contributions from the community.
 
-See: <http://www.nuxeo.com/en/products/ep> for a list of features and
-benefits.
+# Sub-Modules Organization
 
-See: <http://doc.nuxeo.com/display/MAIN/Getting+started+with+Nuxeo+--+a+beginner's+page>
-for a short introduction to Nuxeo EP.
+The project is splitted in several sub-modules (listed in dependency order):
 
-See: <http://en.wikipedia.org/wiki/Enterprise_content_management> for a
-general definition of Enterprise Content Management.
+* **nuxeo-common**:
+Common utilities
+* **nuxeo-runtime**:
+Container and runtime basic services
+* **nuxeo-core**:
+Document/content management core services
+* **nuxeo-services**:
+Basic services such as file manager, directories, document types
+* **nuxeo-theme**:
+Services related to the theme and theme rendering
+* **nuxeo-jsf**:
+JSF related services
+* **nuxeo-webengine**:
+Services and framework related to WebEngine, the Nuxeo lighweight rendering engine
+* **nuxeo-features**:
+Advanced high-level services, such as audit, imaging, publisher, thumbnails, search
+* **nuxeo-dm**:
+The default Nuxeo Platform application, mostly configuration and UI elements
+* **nuxeo-distribution**:
+This module builds, packages and tests the Nuxeo products.
 
+# Building
 
-How to compile the Nuxeo EP sources
------------------------------------
+## Requirements
 
-### Short story
+Running the Nuxeo Platform requires Java 8.
+Depending on the features you want to use, you may need some third-party software, such as Libre Office and pdftohtml for document preview or ImageMagick for pictures. The list of third-party software is available in our Admin documentation: [Installing and Setting Up Related Software](http://doc.nuxeo.com/x/zgJc).
 
-Several sub-repositories need to be present to build Nuxeo:
+Building the Nuxeo Platform requires the following tools:
 
-  - nuxeo-common
-  - nuxeo-runtime
-  - nuxeo-core
-  - nuxeo-services
-  - nuxeo-theme
-  - nuxeo-jsf
-  - nuxeo-webengine
-  - nuxeo-features
-  - nuxeo-dm
-  - addons/*
-  - nuxeo-distribution
+* JDK 8 (Oracle's JDK or OpenJDK recommended)
+* Apache Maven 3.1.1+ (3.2+ recommended)
+* Apache Ant 1.7.1+
+* Git (obviously)
+* NodeJS 0.10.32, npm, yo, grunt-cli, gulp, bower
 
-#### Clone the sources
+# QA
 
-For read-only access, run `git clone git://github.com/nuxeo/nuxeo.git`
+Each module includes unit and integration tests. Functional tests are available in nuxeo-distribution and for each addon Marketplace module.
 
-For read+write access, run `git clone git@github.com:nuxeo/nuxeo.git`
+We also provide some tooling for tests:
 
-Update to master branch: `git checkout master`
+* [https://github.com/nuxeo/tools-nuxeo-ftest](https://github.com/nuxeo/tools-nuxeo-ftest)
+* [https://github.com/nuxeo/ant-assembly-maven-plugin](https://github.com/nuxeo/ant-assembly-maven-plugin)
+* [https://github.com/nuxeo/integration-scripts/](https://github.com/nuxeo/integration-scripts/)
 
-Finally run `python clone.py [wanted branch/tag]`
+# Deploying
 
-See [How to download the Nuxeo Platform source code ](http://doc.nuxeo.com/x/DIBH)
-for more information if needed.
+1. Get the source code:
+```
+git clone git@github.com:nuxeo/nuxeo.git
+cd nuxeo
+python clone.py master -a
+```
+2. Build using Maven:
+```
+mvn clean install -Paddons,distrib
+```
 
-#### Launch the build
+See our [Core Developer Guide](http://doc.nuxeo.com/x/B4BH) for instructions and guidelines.
 
-    mvn install -DskipTests=true -Paddons,distrib
+# Resources
 
-You will get your tomcat-based build in the `nuxeo-distribution/nuxeo-distribution-tomcat/target` directory.
+## Documentation
 
-#### Run the tests
+The documentation for the Nuxeo Platform is available in our [Documentation Center](http://doc.nuxeo.com):
 
-(see http://doc.nuxeo.com/display/CORG)
+* Developer documentation: [http://doc.nuxeo.com/x/PIAO](http://doc.nuxeo.com/x/PIAO)
+* Admin documentation: [http://doc.nuxeo.com/x/G4AO](http://doc.nuxeo.com/x/G4AO)
+* User documentation: [http://doc.nuxeo.com/x/6ICo](http://doc.nuxeo.com/x/6ICo)
+* Core Developer Guide: [http://doc.nuxeo.com/x/B4BH](http://doc.nuxeo.com/x/B4BH)
 
-### Packaging Nuxeo EP from sources
+## QA results
 
-Various pre-configured packages (various application servers and multiple
-backends) are available for download from: <http://www.nuxeo.com/downloads>
+Follow the status of the Nuxeo Platform continuous integration build on our QA platform: [https://qa.nuxeo.org/jenkins](https://qa.nuxeo.org/jenkins)
 
-In order to locally build Nuxeo EP, see `nuxeo-distribution/README.txt`.
+## Reporting issues
 
-### Long(er) story
+You can follow the developments in the Nuxeo Platform project of our JIRA bug tracker: [https://jira.nuxeo.com/browse/NXP/](https://jira.nuxeo.com/browse/NXP/).
 
-If the information above are not enough, please read from the Nuxeo Book the
-"Detailed Development Software Installation Instructions" annex:
-<http://doc.nuxeo.org/current/books/nuxeo-book/html/dev-environment-installation.html>
+You can report issues on [answers.nuxeo.com](http://answers.nuxeo.com).
 
+# Licensing
 
-Where to get help and get involved
-----------------------------------
+Most of the source code in the Nuxeo Platform is copyright Nuxeo SA and
+contributors, and licensed under the GNU Lesser General Public License v2.1.
 
-First, look at the documentation, on <http://doc.nuxeo.com>.
+See [/licenses](/licenses) and the documentation page [Licenses](http://doc.nuxeo.com/x/gIK7) for details.
 
-The Nuxeo Community Forum (<http://forum.nuxeo.com/>) is the place where
-thousands of Nuxeo users gathers to exchange questions and answers,
-information and tips. We have also a few mailing lists that mirror some
-of the forums: <http://lists.nuxeo.com/>
+# About Nuxeo
 
-If you've found a bug and want to suggest an improvement, you can use our
-Jira issue tracker: <http://jira.nuxeo.org/>.
-
-Last, if you need professional support for your critical application, we have
-a subscription program: <http://www.nuxeo.com/en/subscription> that also
-packages additional services.
-
-
-How to contribute
------------------
-
-See this page for practical information:
-[NXDOC/Contributing+to+Nuxeo](http://doc.nuxeo.com/x/VIZH)
-
-This presentation will give you more insight about "the Nuxeo way":
-<http://www.slideshare.net/nuxeo/nuxeo-world-session-becoming-a-contributor-how-to-get-started>
-
-
-About Nuxeo
------------
-
-Nuxeo provides a modular, extensible Java-based
-[open source software platform for enterprise content management](http://www.nuxeo.com/en/products/ep),
-and packaged applications for [document management](http://www.nuxeo.com/en/products/document-management),
-[digital asset management](http://www.nuxeo.com/en/products/dam) and
-[case management](http://www.nuxeo.com/en/products/case-management).
-
-Designed by developers for developers, the Nuxeo platform offers a modern
-architecture, a powerful plug-in model and extensive packaging
-capabilities for building content applications.
-
-More information on: <http://www.nuxeo.com/>
+Nuxeo dramatically improves how content-based applications are built, managed and deployed, making customers more agile, innovative and successful. Nuxeo provides a next generation, enterprise ready platform for building traditional and cutting-edge content oriented applications. Combining a powerful application development environment with SaaS-based tools and a modular architecture, the Nuxeo Platform and Products provide clear business value to some of the most recognizable brands including Verizon, Electronic Arts, Netflix, Sharp, FICO, the U.S. Navy, and Boeing. Nuxeo is headquartered in New York and Paris. More information is available at [www.nuxeo.com](http://www.nuxeo.com).
 
