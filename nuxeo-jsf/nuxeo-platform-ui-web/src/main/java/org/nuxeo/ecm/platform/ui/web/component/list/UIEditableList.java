@@ -1008,18 +1008,15 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
 
         flushCachedModel();
 
+        // process this component decode before so that it can help detecting new/deleted rows before applying children
+        // decodes
+        decode(context);
+
         pushComponentToEL(context, this);
         processFacetsAndChildren(context, PhaseId.APPLY_REQUEST_VALUES);
         popComponentFromEL(context);
 
-        decode(context);
-
         if (isImmediate()) {
-            pushComponentToEL(context, this);
-            // process updates right away so that list can perform its global validation
-            processFacetsAndChildren(context, PhaseId.PROCESS_VALIDATIONS);
-            processFacetsAndChildren(context, PhaseId.UPDATE_MODEL_VALUES);
-            popComponentFromEL(context);
             executeValidate(context);
         }
     }
@@ -1033,12 +1030,6 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         initializeState(true);
 
         if (!isImmediate()) {
-            pushComponentToEL(context, this);
-            processFacetsAndChildren(context, PhaseId.PROCESS_VALIDATIONS);
-            // process updates right away so that list can perform its global validation
-            processFacetsAndChildren(context, PhaseId.UPDATE_MODEL_VALUES);
-            popComponentFromEL(context);
-
             executeValidate(context);
         }
     }
@@ -1131,6 +1122,12 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
     @SuppressWarnings("rawtypes")
     private void executeValidate(FacesContext context) {
         try {
+            pushComponentToEL(context, this);
+            processFacetsAndChildren(context, PhaseId.PROCESS_VALIDATIONS);
+            // process updates right away so that list can perform its global validation
+            processFacetsAndChildren(context, PhaseId.UPDATE_MODEL_VALUES);
+            popComponentFromEL(context);
+
             EditableModel model = getEditableModel();
             if (model.isDirty()) {
                 // remove empty values if needed
@@ -1163,6 +1160,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
             }
             setSubmittedValue(submitted);
             validate(context);
+
         } catch (RuntimeException e) {
             context.renderResponse();
             throw e;
