@@ -101,19 +101,8 @@ public class ComponentRenderUtils {
     }
 
     public static String getAbsoluteId(UIComponent component) {
-        StringBuffer idBuf = new StringBuffer();
-        idBuf.append(component.getId());
-        UIComponent parent = component;
-        char sep = UINamingContainer.getSeparatorChar(FacesContext.getCurrentInstance());
-
-        while ((parent = parent.getParent()) != null) {
-            if (parent instanceof NamingContainer) {
-                idBuf.insert(0, sep);
-                idBuf.insert(0, parent.getId());
-            }
-        }
-        idBuf.insert(0, sep);
-        return idBuf.toString();
+        FacesContext faces = FacesContext.getCurrentInstance();
+        return UINamingContainer.getSeparatorChar(faces) + component.getClientId(FacesContext.getCurrentInstance());
     }
 
 }
