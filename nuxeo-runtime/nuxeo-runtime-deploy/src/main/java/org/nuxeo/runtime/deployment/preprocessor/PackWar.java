@@ -119,7 +119,7 @@ public class PackWar {
             + "\n" //
             + "Also note that you should start Tomcat with more memory than its default, for instance:\n" //
             + "\n" //
-            + "  JAVA_OPTS=\"-Xms512m -Xmx1024m -XX:MaxPermSize=512m -Dnuxeo.log.dir=logs\" bin/catalina.sh start\n" //
+            + "  JAVA_OPTS=\"-Xms512m -Xmx1024m -Dnuxeo.log.dir=logs\" bin/catalina.sh start\n" //
             + "\n" //
             + "";
 

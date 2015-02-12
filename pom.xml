@@ -919,6 +919,11 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.automation</groupId>
+        <artifactId>nuxeo-automation-scripting</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.automation</groupId>
         <artifactId>nuxeo-automation-test</artifactId>
         <version>${nuxeo.features.version}</version>
         <scope>test</scope>
@@ -4335,8 +4340,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
       <plugin>
@@ -4621,7 +4626,7 @@
                 <goal>compile</goal>
               </goals>
               <configuration>
-                <extraJvmArgs>-Xmx512M -Xms128M -XX:MaxPermSize=384m -Djava.io.tmpdir=${project.build.directory}</extraJvmArgs>
+                <extraJvmArgs>-Xmx512M -Xms128M -Djava.io.tmpdir=${project.build.directory}</extraJvmArgs>
                 <warSourceDirectory>src/main/resources/web/nuxeo.war</warSourceDirectory>
                 <webappDirectory>${project.build.outputDirectory}/gwt-war</webappDirectory>
                 <treeLogger>true</treeLogger>
@@ -4858,7 +4863,7 @@
                 <version>[3.1.1,)</version>
               </requireMavenVersion>
               <requireJavaVersion>
-                <version>[1.7,)</version>
+                <version>[1.8,)</version>
               </requireJavaVersion>
               <bannedDependencies>
                 <excludes>
@@ -5151,8 +5156,8 @@
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
               <compilerId>jdt</compilerId>
-              <source>1.7</source>
-              <target>1.7</target>
+              <source>1.8</source>
+              <target>1.8</target>
             </configuration>
             <dependencies>
               <dependency>

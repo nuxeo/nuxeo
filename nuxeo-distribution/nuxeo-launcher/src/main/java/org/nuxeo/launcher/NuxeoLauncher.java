@@ -228,7 +228,7 @@ public abstract class NuxeoLauncher {
 
     private static final String JAVA_OPTS_PROPERTY = "launcher.java.opts";
 
-    private static final String JAVA_OPTS_DEFAULT = "-Xms512m -Xmx1024m -XX:MaxPermSize=512m";
+    private static final String JAVA_OPTS_DEFAULT = "-Xms512m -Xmx1024m";
 
     private static final String OVERRIDE_JAVA_TMPDIR_PARAM = "launcher.override.java.tmpdir";
 
