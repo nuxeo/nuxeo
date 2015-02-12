@@ -76,8 +76,7 @@
         ajaxChildActivationEncodeBehavior="none"
         ajaxNodeSelectionEncodeBehavior="none"
         id="#{widget.id}_treeId"
-        adviseNodeOpened="#{reducedTreeActions.adviseNodeOpened}"
-        changeExpandListener="#{reducedTreeActions.changeExpandListener}"
+        toggleListener="#{reducedTreeActions.toggleListener}"
         iconLeaf="#{nxd:iconPath(node.document)}"
         iconExpanded="#{nxd:iconPath(node.document)}"
         iconCollapsed="#{nxd:iconPath(node.document)}"
@@ -95,14 +94,15 @@
             id="#{widget.id}_treeNodeId"
             highlightedClass="treeNodeHighlightedClass"
             selectedClass="treeNodeSelectedClass">
-            <a4j:commandLink immediate="true"
+            <h:commandLink immediate="true"
               id="#{widget.id}_linkId"
               actionListener="#{treeWidgetActions.setUIInputValue}"
-              styleClass="treeLink" render="#{widget.id}_inputId">
+              styleClass="treeLink" onclick="jQuery.fancybox.close();">
               <f:param name="selectionInputId" value="#{widget.id}_input" />
               <f:param name="selectedPath" value="#{node.path}" />
               <h:outputText value="#{nxd:titleOrId(node.document)}" />
-            </a4j:commandLink>
+              <f:ajax execute="@this" render="#{widget.id}_inputId" />
+            </h:commandLink>
           </rich:treeNode>
         </rich:treeModelRecursiveAdaptor>
       </rich:tree>
