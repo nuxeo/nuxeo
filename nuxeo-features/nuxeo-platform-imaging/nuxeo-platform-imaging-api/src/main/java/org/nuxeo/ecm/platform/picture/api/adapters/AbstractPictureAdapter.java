@@ -314,6 +314,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         }
 
         PictureConversion pictureConversion = new PictureConversion(title, description, tag, maxsize);
+        pictureConversion.setChainId("Image.Blob.Resize");
 
         PictureView view = getImagingService().computeViewFor(fileContent, pictureConversion, getImageInfo(), true);
 
