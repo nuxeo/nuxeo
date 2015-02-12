@@ -315,7 +315,7 @@
         <control name="handleLabels">true</control>
       </controls>
       <widgetModes>
-        <mode value="any">#{not empty  currentDocumentAsBlobHolder.blob ? 'view' : 'hidden'}</mode>
+        <mode value="any">#{not empty currentDocumentAsBlobHolder.blob ? 'view' : 'hidden'}</mode>
       </widgetModes>
     </widget>
 
@@ -328,6 +328,9 @@
         <property name="useAjaxForm">true</property>
         <property name="ignoreTemplateProperty">true</property>
       </properties>
+      <widgetModes>
+        <mode value="any">#{not empty currentDocumentAsBlobHolder.blob ? 'view' : 'hidden'}</mode>
+      </widgetModes>
     </widget>
 
   </extension>
