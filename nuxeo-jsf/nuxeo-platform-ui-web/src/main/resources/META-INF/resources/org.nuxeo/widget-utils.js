@@ -46,16 +46,22 @@ nuxeo.utils = (function(m) {
     jQuery(document.getElementById(eltId)).select2(params);
   };
 
-  m.addFromListTemplate = function(templateElement) {
+  m.addFromListTemplate = function(parentId, templateElement) {
     var tel = jQuery(templateElement),
         count = templateElement.siblings('.listItem').length;
 
     // unescape our template's html content
-    var text = jQuery('<textarea/>').html(tel.html()).val();
+    var text = jQuery('<textarea/>').html(tel.html()).val().trim();
+    // replace the hidden input name, removing the index marker to get a list param
+    var re = new RegExp(parentId + ":TEMPLATE_INDEX_MARKER:rowIndex", "g");
+    text = text.replace(re, parentId + ':rowIndex');
     // replace our marker with the row index
-    text = text.trim().replace(/TEMPLATE_INDEX_MARKER/g, count);
+    re = new RegExp(parentId + ":TEMPLATE_INDEX_MARKER", "g");
+    text = text.replace(re, parentId + ':' + count);
     // parse the html (including scripts)
     var el = jQuery.parseHTML(text, document, true);
+    // make sure hidden input value is also replaced
+    jQuery(el).find("input[value='TEMPLATE_INDEX_MARKER']").val(count);
     // place in the DOM
     tel.before(el);
     return false;

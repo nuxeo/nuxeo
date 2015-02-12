@@ -85,7 +85,7 @@
                 <tr class="#{model.rowIndex % 2 == 0 ? 'dataRowEven': 'dataRowOdd'} listItem">
                   <td style="display:none;">
                     <h:inputHidden>
-                      <f:passThroughAttribute name="name" value="#{nxu:componentAbsoluteId(component, listClientId).substring(1)}:rowIndex[]"/>
+                      <f:passThroughAttribute name="name" value="#{listClientId}:#{isListTemplate ? 'TEMPLATE_INDEX_MARKER:': ''}rowIndex[]" />
                       <f:attribute name="value" value="#{isListTemplate ? 'TEMPLATE_INDEX_MARKER' : model.rowIndex}"/>
                     </h:inputHidden>
                   </td>
@@ -106,7 +106,7 @@
                 <tr>
                   <td>
                     <a class="button smallButton listWidgetActionAdd" href="#nogo"
-                       onclick="return nuxeo.utils.addFromListTemplate(jQuery(this).closest('tr').prev())">
+                       onclick="return nuxeo.utils.addFromListTemplate('#{listClientId}', jQuery(this).closest('tr').prev())">
                       <h:outputText value="#{messages['command.add']}" />
                     </a>
                   </td>
@@ -130,7 +130,7 @@
                 <tr>
                   <td style="display:none;">
                     <h:inputHidden>
-                      <f:passThroughAttribute name="name" value="#{nxu:componentAbsoluteId(component, listClientId).substring(1)}:rowIndex[]"/>
+                      <f:passThroughAttribute name="name" value="#{listClientId}:#{isListTemplate ? 'TEMPLATE_INDEX_MARKER:': ''}rowIndex[]" />
                       <f:attribute name="value" value="#{isListTemplate ? 'TEMPLATE_INDEX_MARKER' : model.rowIndex}"/>
                     </h:inputHidden>
                   </td>
@@ -156,7 +156,7 @@
               </nxu:jsInputList>
               <ui:fragment rendered="#{isListTemplate and isEditMode and not widgetProperty_hideAddButton}">
                 <a class="button smallButton listWidgetActionAdd" href="#nogo"
-                   onclick="return nuxeo.utils.addFromListTemplate(jQuery(this).prev())">
+                   onclick="return nuxeo.utils.addFromListTemplate('#{listClientId}', jQuery(this).prev())">
                   <h:outputText value="#{messages['command.add']}" />
                 </a>
               </ui:fragment>
@@ -175,7 +175,7 @@
             <nxu:validateDocumentConstraint handleSubProperties="false" />
             <h:panelGrid columns="#{isEditMode and showActions?2:1}">
               <h:inputHidden>
-                <f:passThroughAttribute name="name" value="#{nxu:componentAbsoluteId(component, listClientId).substring(1)}:rowIndex[]"/>
+                <f:passThroughAttribute name="name" value="#{listClientId}:#{isListTemplate ? 'TEMPLATE_INDEX_MARKER:': ''}rowIndex[]" />
                 <f:attribute name="value" value="#{isListTemplate ? 'TEMPLATE_INDEX_MARKER' : model.rowIndex}"/>
               </h:inputHidden>
               <c:if test="#{showActions}">
@@ -213,7 +213,7 @@
 
           <ui:fragment rendered="#{isEditMode and not widgetProperty_hideAddButton}">
             <a class="button smallButton listWidgetActionAdd" href="#nogo"
-               onclick="return nuxeo.utils.addFromListTemplate(jQuery(this).prev());">
+               onclick="return nuxeo.utils.addFromListTemplate('#{listClientId}', jQuery(this).prev());">
               <h:outputText value="#{messages['command.add']}" />
             </a>
           </ui:fragment>
@@ -236,7 +236,7 @@
               </c:if>
               <h:panelGroup>
                 <h:inputHidden>
-                  <f:passThroughAttribute name="name" value="#{nxu:componentAbsoluteId(component, listClientId).substring(1)}:rowIndex[]"/>
+                  <f:passThroughAttribute name="name" value="#{listClientId}:#{isListTemplate ? 'TEMPLATE_INDEX_MARKER:': ''}rowIndex[]" />
                   <f:attribute name="value" value="#{isListTemplate ? 'TEMPLATE_INDEX_MARKER' : model.rowIndex}"/>
                 </h:inputHidden>
                 <table>
@@ -266,7 +266,7 @@
 
           <ui:fragment rendered="#{isEditMode and not widgetProperty_hideAddButton}">
             <a class="button smallButton listWidgetActionAdd" href="#nogo"
-               onclick="return nuxeo.utils.addFromListTemplate(jQuery(this).prev());">
+               onclick="return nuxeo.utils.addFromListTemplate('#{listClientId}', jQuery(this).prev());">
               <h:outputText value="#{messages['command.add']}" />
             </a>
           </ui:fragment>
