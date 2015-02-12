@@ -106,6 +106,8 @@ public class ScriptingOperationTypeImpl implements OperationType {
     @SuppressWarnings("unchecked")
     @Override
     public Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException {
+        // As org.nuxeo.ecm.automation.core.impl.OperationTypeImpl.inject() is not called in this OperationTypeImpl,
+        // we have to inject into arguments all context variables to play the fallback on chains variables.
         if (ctx.getVars().containsKey(Constants.VAR_RUNTIME_CHAIN)) {
             args.putAll((Map<String, Object>) ctx.getVars().get(Constants.VAR_RUNTIME_CHAIN));
         }
