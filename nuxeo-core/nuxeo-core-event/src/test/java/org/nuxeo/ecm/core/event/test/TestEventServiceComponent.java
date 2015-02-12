@@ -43,6 +43,7 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        Framework.getProperties().setProperty(PostCommitEventExecutor.TIMEOUT_MS_PROP, "300"); // 0.3s
         deployBundle("org.nuxeo.ecm.core.event");
         // 2 quartz threads launched by the event contribs above
         Thread.sleep(100);
