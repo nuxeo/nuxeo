@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.rendition.codec">
+
+  <require>org.nuxeo.ecm.platform.url.service.DocumentViewCodecService
+  </require>
+
+  <extension
+    target="org.nuxeo.ecm.platform.url.service.DocumentViewCodecService"
+    point="codecs">
+
+    <documentation>Declare codec for nxrendition urls</documentation>
+
+    <documentViewCodec name="rendition" enabled="true"
+      prefix="nxrendition" class="org.nuxeo.ecm.platform.rendition.url.DocumentRenditionCodec" />
+  </extension>
+
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.rest.URLService"
+    point="urlpatterns">
+    <documentation>
+      Url pattern JSF bindings to access renditions
+    </documentation>
+
+    <urlPattern name="rendition" enabled="true">
+      <defaultURLPolicy>false</defaultURLPolicy>
+      <needBaseURL>true</needBaseURL>
+      <needRedirectFilter>false</needRedirectFilter>
+      <needFilterPreprocessing>true</needFilterPreprocessing>
+      <codecName>rendition</codecName>
+      <actionBinding>#{renditionRestHelper.render}</actionBinding>
+      <documentViewBinding>#{restHelper.documentView}</documentViewBinding>
+      <newDocumentViewBinding>#{restHelper.newDocumentView}
+      </newDocumentViewBinding>
+    </urlPattern>
+
+  </extension>
+
+    <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="startURL">
+
+    <startURLPattern>
+      <patterns>
+        <pattern>nxrendition/</pattern>
+      </patterns>
+    </startURLPattern>
+
+  </extension>
+
+</component>
