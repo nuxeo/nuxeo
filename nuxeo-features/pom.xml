@@ -48,6 +48,7 @@
     <module>nuxeo-platform-ui-select2</module>
     <module>nuxeo-thumbnail</module>
     <module>rest-api</module>
+    <module>nuxeo-platform-rendition</module>
   </modules>
 
   <dependencies>
