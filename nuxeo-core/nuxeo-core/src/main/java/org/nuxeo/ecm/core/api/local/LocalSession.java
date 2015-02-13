@@ -25,9 +25,7 @@ import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -116,16 +114,7 @@ public class LocalSession extends AbstractSession implements Synchronization {
      */
     protected SessionInfo createSession() {
         RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
-        Repository repository = repositoryService.getRepository(repositoryName);
-        if (repository == null) {
-            throw new LocalException("No such repository: " + repositoryName);
-        }
-        Session session;
-        try {
-            session = repository.getSession(sessionId);
-        } catch (DocumentException e) {
-            throw new LocalException("Failed to load repository " + repositoryName + ": " + e.getMessage(), e);
-        }
+        Session session = repositoryService.getSession(repositoryName, sessionId);
         TransactionHelper.registerSynchronization(this);
         SessionInfo si = new SessionInfo(session);
         sessionHolder.set(si);

@@ -20,12 +20,16 @@ import javax.transaction.Transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.local.LocalException;
 import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
@@ -159,17 +163,28 @@ public class RepositoryService extends DefaultComponent {
      */
     public Repository getRepository(String repositoryName) {
         synchronized (repositories) {
-            Repository repository = repositories.get(repositoryName);
-            if (repository == null) {
-                RepositoryFactory factory = getFactory(repositoryName);
-                if (factory == null) {
-                    return null;
-                }
-                repository = (Repository) factory.call();
-                repositories.put(repositoryName, repository);
-            }
-            return repository;
+            return doGetRepository(repositoryName);
         }
+    }
+
+    /**
+     * Calls to that method should be synchronized on repositories
+     *
+     * @since 7.2
+     * @see #getRepository(String)
+     * @see #getSession(String, String)
+     */
+    protected Repository doGetRepository(String repositoryName) {
+        Repository repository = repositories.get(repositoryName);
+        if (repository == null) {
+            RepositoryFactory factory = getFactory(repositoryName);
+            if (factory == null) {
+                return null;
+            }
+            repository = (Repository) factory.call();
+            repositories.put(repositoryName, repository);
+        }
+        return repository;
     }
 
     protected RepositoryFactory getFactory(String repositoryName) {
@@ -192,6 +207,27 @@ public class RepositoryService extends DefaultComponent {
     public List<String> getRepositoryNames() {
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         return repositoryManager.getRepositoryNames();
+    }
+
+    /**
+     * Creates a new session with the given session id from the given repository.
+     * <p/>
+     * Locks repositories before entering the pool. That allows concurrency with shutdown.
+     *
+     * @since 7.2
+     */
+    public Session getSession(String repositoryName, String sessionId) {
+        synchronized (repositories) {
+            Repository repository = doGetRepository(repositoryName);
+            if (repository == null) {
+                throw new LocalException("No such repository: " + repositoryName);
+            }
+            try {
+                return repository.getSession(sessionId);
+            } catch (DocumentException e) {
+                throw new LocalException("Failed to load repository " + repositoryName + ": " + e.getMessage(), e);
+            }
+        }
     }
 
 }
