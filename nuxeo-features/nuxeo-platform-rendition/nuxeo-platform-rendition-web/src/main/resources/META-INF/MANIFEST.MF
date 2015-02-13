@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Platform Rendition Web
+Bundle-SymbolicName: org.nuxeo.ecm.platform.rendition.web;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/url-codec-contrib.xml,
+ OSGI-INF/layouts-summary-contrib.xml
+
