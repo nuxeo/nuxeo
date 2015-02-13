@@ -166,8 +166,11 @@
     <jxls.version>1.0</jxls.version>
     <xdocreport.version>1.0.0</xdocreport.version>
     <itext.version>2.1.7</itext.version>
-    <jclouds.version>1.5.3</jclouds.version>
-    <google.client.version>1.12.0-beta</google.client.version>
+    <jclouds.version>1.8.1</jclouds.version>
+    <guava.version>18.0</guava.version>
+    <google.http.client.version>1.19.0</google.http.client.version>
+    <google.oauth.client.version>1.19.0</google.oauth.client.version>
+    <google.api.client.version>1.19.1</google.api.client.version>
     <selenium.version>2.39.0</selenium.version>
     <cxf.version>2.6.8</cxf.version>
     <pdfbox.version>1.8.6</pdfbox.version>
@@ -3015,7 +3018,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>13.0.1</version>
+        <version>${guava.version}</version>
       </dependency>
       <dependency>
         <groupId>com.allen-sauer.gwt.log</groupId>
@@ -3495,7 +3498,7 @@
       <dependency>
         <groupId>com.google.http-client</groupId>
         <artifactId>google-http-client</artifactId>
-        <version>${google.client.version}</version>
+        <version>${google.http.client.version}</version>
         <exclusions>
           <exclusion>
             <groupId>com.google.guava</groupId>
@@ -3510,12 +3513,12 @@
       <dependency>
         <groupId>com.google.http-client</groupId>
         <artifactId>google-http-client-jackson</artifactId>
-        <version>${google.client.version}</version>
+        <version>${google.http.client.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.oauth-client</groupId>
         <artifactId>google-oauth-client</artifactId>
-        <version>${google.client.version}</version>
+        <version>${google.oauth.client.version}</version>
         <exclusions>
           <exclusion>
             <groupId>com.google.guava</groupId>
@@ -3526,7 +3529,13 @@
       <dependency>
         <groupId>com.google.api-client</groupId>
         <artifactId>google-api-client</artifactId>
-        <version>${google.client.version}</version>
+        <version>${google.api.client.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava-jdk5</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.dts</groupId>
@@ -4028,7 +4037,7 @@
         <version>${aws.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.jclouds</groupId>
+        <groupId>org.apache.jclouds</groupId>
         <artifactId>jclouds-allblobstore</artifactId>
         <version>${jclouds.version}</version>
       </dependency>
@@ -4908,6 +4917,12 @@
                   <exclude>cglib:cglib</exclude> <!-- use cglib:cglib-nodep instead to avoid pulling old asm -->
                 </excludes>
                 <message>cglib:cglib must not be used, use cglib:cglib-nodep instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>com.google.guava:guava-jdk5</exclude> <!-- use regular com.google.guava:guava instead -->
+                </excludes>
+                <message>com.google.guava:guava-jdk5 must not be used, use com.google.guava:guava instead</message>
               </bannedDependencies>
             </rules>
             <skip>false</skip>
