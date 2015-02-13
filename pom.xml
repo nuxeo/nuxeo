@@ -36,7 +36,6 @@
     <nuxeo.audio.version>5.8.0-HF31-SNAPSHOT</nuxeo.audio.version>
     <nuxeo.video.version>5.8.0-HF31-SNAPSHOT</nuxeo.video.version>
     <nuxeo.categorization.version>5.8.0-HF31-SNAPSHOT</nuxeo.categorization.version>
-    <nuxeo.rendition.version>5.8.0-HF31-SNAPSHOT</nuxeo.rendition.version>
     <nuxeo.replication.version>5.8.0-HF31-SNAPSHOT</nuxeo.replication.version>
     <nuxeo.activity.version>5.8.0-HF31-SNAPSHOT</nuxeo.activity.version>
     <nuxeo.sc.version>5.8.0-HF31-SNAPSHOT</nuxeo.sc.version>
@@ -95,7 +94,6 @@
     <module>nuxeo-opensocial</module>
     <module>nuxeo-user-center</module>
     <module>nuxeo-platform-shibboleth-groups-web</module>
-    <module>nuxeo-platform-rendition</module>
     <module>nuxeo-apidoc-server</module>
     <module>nuxeo-birt</module>
     <module>nuxeo-activity</module>
@@ -583,28 +581,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-categorization-subjects</artifactId>
         <version>${nuxeo.categorization.version}</version>
-      </dependency>
-
-      <!-- Rendition -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-rendition-api</artifactId>
-        <version>${nuxeo.rendition.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-rendition-web</artifactId>
-        <version>${nuxeo.rendition.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-rendition-core</artifactId>
-        <version>${nuxeo.rendition.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-rendition-publisher</artifactId>
-        <version>${nuxeo.rendition.version}</version>
       </dependency>
 
       <!-- Documentation server -->
