@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -55,7 +55,7 @@ public class LocalSession extends AbstractSession implements Synchronization {
     /**
      * Thread-local session allocated.
      */
-    private final ThreadLocal<SessionInfo> sessionHolder = new ThreadLocal<SessionInfo>();
+    private final ThreadLocal<SessionInfo> sessionHolder = new ThreadLocal<>();
 
     /**
      * All sessions allocated in all threads, in order to detect close leaks.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -46,7 +46,7 @@ public class RepositoryService extends DefaultComponent {
     public static final String XP_REPOSITORY = "repository";
 
     // @GuardedBy("itself")
-    private final Map<String, Repository> repositories = new HashMap<String, Repository>();
+    private final Map<String, Repository> repositories = new HashMap<>();
 
 
     public void shutdown() {
