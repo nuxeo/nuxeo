@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Platform Rendition Publisher
+Bundle-SymbolicName: org.nuxeo.ecm.platform.rendition.publisher;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/rendition-publisher-contrib.xml,
+ OSGI-INF/rendition-publisher-relations-listener-contrib.xml
