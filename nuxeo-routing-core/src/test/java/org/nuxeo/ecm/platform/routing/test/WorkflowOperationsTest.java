@@ -46,6 +46,7 @@ import org.nuxeo.ecm.platform.routing.core.api.operation.SetWorkflowVar;
 import org.nuxeo.ecm.platform.routing.core.api.operation.StartWorkflowOperation;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
+import org.nuxeo.ecm.webengine.test.WebEngineFeatureCore;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -53,7 +54,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 5.7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features(WorkflowFeature.class)
+@Features({ WorkflowFeature.class, WebEngineFeatureCore.class })
 public class WorkflowOperationsTest extends AbstractGraphRouteTest {
 
     @Inject

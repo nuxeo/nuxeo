@@ -121,7 +121,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             if (!forceResume && node.getState() != State.SUSPENDED) {
                 throw new DocumentRouteException("Cannot resume on non-suspended node: " + node);
             }
-            node.setAllVariables(varData);
+            node.setAllVariables(varData, false);
             if (StringUtils.isNotEmpty(status)) {
                 node.setButton(status);
             }

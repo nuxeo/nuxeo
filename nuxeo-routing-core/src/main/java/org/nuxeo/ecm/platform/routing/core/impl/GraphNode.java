@@ -772,6 +772,16 @@ public interface GraphNode {
     void setAllVariables(Map<String, Object> map);
 
     /**
+     * Sets the graph and node variables.
+     *
+     * @param map the map of variables
+     * @param allowGlobalVariablesAssignement if set to false, throw a DocumentRouteException when trying to set global
+     *            variables when not supposed to
+     * @since 7.2
+     */
+    void setAllVariables(Map<String, Object> map, final boolean allowGlobalVariablesAssignement);
+
+    /**
      * Gets the task buttons
      */
     List<Button> getTaskButtons();

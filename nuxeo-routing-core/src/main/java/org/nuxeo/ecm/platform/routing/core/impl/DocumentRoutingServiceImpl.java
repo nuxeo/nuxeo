@@ -86,7 +86,6 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 

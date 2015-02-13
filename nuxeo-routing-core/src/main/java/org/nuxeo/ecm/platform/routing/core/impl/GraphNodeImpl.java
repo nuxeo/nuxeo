@@ -45,9 +45,16 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
+import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
+import org.nuxeo.ecm.core.api.validation.DocumentValidationReport;
+import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -305,21 +312,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
     @Override
     public void setVariables(Map<String, Serializable> map) {
-        if (map.containsKey(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON)
-                && (Boolean) map.get(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON)) {
-            Map<String, String> vars = new HashMap<String, String>();
-            map.remove(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON);
-            for (String key : map.keySet()) {
-                if (map.get(key) != null && !(map.get(key) instanceof String)) {
-                    throw new ClientRuntimeException(
-                            "Trying to decode JSON variables: The parameter 'map' should contain only Strings as it contains the marker '_MAP_VAR_FORMAT_JSON' ");
-                }
-                vars.put(key, (String) map.get(key));
-            }
-            GraphVariablesUtil.setJSONVariables(document, PROP_VARIABLES_FACET, vars);
-        } else {
-            GraphVariablesUtil.setVariables(document, PROP_VARIABLES_FACET, map);
-        }
+        GraphVariablesUtil.setVariables(document, PROP_VARIABLES_FACET, map);
     }
 
     @Override
@@ -330,6 +323,12 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     @SuppressWarnings("unchecked")
     @Override
     public void setAllVariables(Map<String, Object> map) {
+        setAllVariables(map, true);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void setAllVariables(Map<String, Object> map, final boolean allowGlobalVariablesAssignement) {
         if (map == null) {
             return;
         }
@@ -342,10 +341,10 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         // get variables from node and graph
         Map<String, Serializable> graphVariables = mapToJSON ? graph.getJsonVariables() : graph.getVariables();
         Map<String, Serializable> nodeVariables = mapToJSON ? getJsonVariables() : getVariables();
+        Map<String, Serializable> changedGraphVariables = new HashMap<String, Serializable>();
+        Map<String, Serializable> changedNodeVariables = new HashMap<String, Serializable>();
 
         // set variables back into node and graph
-        boolean changedNodeVariables = false;
-        boolean changedGraphVariables = false;
         if (map.get(Constants.VAR_WORKFLOW_NODE) != null) {
             for (Entry<String, Serializable> es : ((Map<String, Serializable>) map.get(Constants.VAR_WORKFLOW_NODE)).entrySet()) {
                 String key = es.getKey();
@@ -353,32 +352,58 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
                 if (nodeVariables.containsKey(key)) {
                     Serializable oldValue = nodeVariables.get(key);
                     if (!equality(value, oldValue)) {
-                        changedNodeVariables = true;
-                        nodeVariables.put(key, value);
+                        changedNodeVariables.put(key, value);
                     }
                 }
             }
         }
+        final String transientSchemaName =  DocumentRoutingConstants.GLOBAL_VAR_SCHEMA_PREFIX + getId();
+        final SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         if (map.get(Constants.VAR_WORKFLOW) != null) {
+            final Schema transientSchema = schemaManager.getSchema(transientSchemaName);
             for (Entry<String, Serializable> es : ((Map<String, Serializable>) map.get(Constants.VAR_WORKFLOW)).entrySet()) {
                 String key = es.getKey();
                 Serializable value = es.getValue();
                 if (graphVariables.containsKey(key)) {
+                    if (!allowGlobalVariablesAssignement && transientSchema != null && !transientSchema.hasField(key)) {
+                        throw new DocumentRouteException(String.format(
+                                "You don't have the permission to set the workflow variable %s", key));
+                    }
                     Serializable oldValue = graphVariables.get(key);
                     if (!equality(value, oldValue)) {
-                        changedGraphVariables = true;
-                        graphVariables.put(key, value);
+                        changedGraphVariables.put(key, value);
                     }
                 }
             }
         }
-        if (changedNodeVariables) {
-            nodeVariables.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, mapToJSON);
-            setVariables(nodeVariables);
+
+        if (true) {
+            // Validation
+            final DocumentModel transientDocumentModel = new DocumentModelImpl(getDocument().getType());
+            transientDocumentModel.copyContent(document);
+            final String transientFacetName = "facet-" + transientSchemaName;
+            CompositeType transientFacet = schemaManager.getFacet(transientFacetName);
+            if (transientFacet != null) {
+                changedGraphVariables.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, mapToJSON);
+                transientDocumentModel.addFacet("facet-" + transientSchemaName);
+                GraphVariablesUtil.setVariables(transientDocumentModel, "facet-" + transientSchemaName, changedGraphVariables, false);
+            }
+            changedNodeVariables.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, mapToJSON);
+            GraphVariablesUtil.setVariables(transientDocumentModel, PROP_VARIABLES_FACET, changedNodeVariables, false);
+            DocumentValidationService documentValidationService = Framework.getService(DocumentValidationService.class);
+            DocumentValidationReport report = documentValidationService.validate(transientDocumentModel);
+            if (report.hasError()) {
+                throw new DocumentValidationException(report);
+            }
         }
-        if (changedGraphVariables) {
-            graphVariables.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, mapToJSON);
-            graph.setVariables(graphVariables);
+
+        if (!changedNodeVariables.isEmpty()) {
+            changedNodeVariables.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, mapToJSON);
+            setVariables(changedNodeVariables);
+        }
+        if (!changedGraphVariables.isEmpty()) {
+            changedGraphVariables.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, mapToJSON);
+            graph.setVariables(changedGraphVariables);
         }
     }
 
