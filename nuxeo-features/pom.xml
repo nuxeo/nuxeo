@@ -50,6 +50,7 @@
     <module>rest-api</module>
     <module>nuxeo-search-ui</module>
     <module>nuxeo-elasticsearch</module>
+    <module>nuxeo-platform-rendition</module>
   </modules>
 
   <dependencies>
