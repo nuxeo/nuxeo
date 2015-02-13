@@ -131,7 +131,7 @@ public class UIJavascriptList extends UIEditableList {
 
             String html = Functions.htmlEscape(cacheingWriter.toString());
             ResponseWriter writer = context.getResponseWriter();
-            writer.write("<script type='text/x-html-template'>");
+            writer.write("<script type=\"text/x-html-template\">");
             writer.write(html);
             writer.write("</script>");
 
