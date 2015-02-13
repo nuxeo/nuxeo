@@ -51,7 +51,7 @@ nuxeo.utils = (function(m) {
         count = templateElement.siblings('.listItem').length;
 
     // unescape our template's html content
-    var text = jQuery('<textarea/>').html(tel.html()).val().trim();
+    var text = jQuery('<div/>').html(tel.html()).text().trim();
     // replace the hidden input name, removing the index marker to get a list param
     var re = new RegExp(parentId + ":TEMPLATE_INDEX_MARKER:rowIndex", "g");
     text = text.replace(re, parentId + ':rowIndex');
