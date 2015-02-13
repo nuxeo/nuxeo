@@ -98,6 +98,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.types.core");
         deployBundle("org.nuxeo.ecm.platform.mimetype.api");
         deployBundle("org.nuxeo.ecm.platform.mimetype.core");
+        deployBundle("org.nuxeo.ecm.automation.core");
         deployBundle("org.nuxeo.ecm.platform.picture.core");
         deployBundle("org.nuxeo.ecm.platform.picture.api");
         deployBundle("org.nuxeo.ecm.platform.picture.convert");

@@ -69,6 +69,7 @@ public class TestVideoService extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
         deployBundle("org.nuxeo.ecm.platform.types.api");
         deployBundle("org.nuxeo.ecm.platform.types.core");
+        deployBundle("org.nuxeo.ecm.automation.core");
         deployBundle("org.nuxeo.ecm.platform.picture.core");
         deployBundle("org.nuxeo.ecm.platform.picture.api");
         deployBundle("org.nuxeo.ecm.platform.picture.convert");
