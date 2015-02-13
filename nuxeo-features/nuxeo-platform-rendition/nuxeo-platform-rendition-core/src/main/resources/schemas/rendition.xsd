@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/rendition/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/rendition/">
+
+  <xs:element name="sourceId" type="xs:string"/> <!-- Version document -->
+  <xs:element name="sourceVersionableId" type="xs:string"/> <!-- Live document -->
+  <xs:element name="renditionName" type="xs:string"/> <!-- Rendition name -->
+
+</xs:schema>
