@@ -34,8 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Local Session: implementation of {@link CoreSession} beyond
- * {@link AbstractSession}, dealing with low-level stuff.
+ * Local Session: implementation of {@link CoreSession} beyond {@link AbstractSession}, dealing with low-level stuff.
  */
 public class LocalSession extends AbstractSession implements Synchronization {
 
@@ -72,8 +71,7 @@ public class LocalSession extends AbstractSession implements Synchronization {
     }
 
     @Override
-    public void connect(String repositoryName, NuxeoPrincipal principal)
-            throws ClientException {
+    public void connect(String repositoryName, NuxeoPrincipal principal) throws ClientException {
         if (sessionId != null) {
             throw new LocalException("CoreSession already connected");
         }
@@ -87,10 +85,8 @@ public class LocalSession extends AbstractSession implements Synchronization {
         createSession(); // create first session for current thread
     }
 
-    protected static String newSessionId(String repositoryName,
-            NuxeoPrincipal principal) {
-        return repositoryName + '/' + principal.getName() + '#'
-                + SID_COUNTER.incrementAndGet();
+    protected static String newSessionId(String repositoryName, NuxeoPrincipal principal) {
+        return repositoryName + '/' + principal.getName() + '#' + SID_COUNTER.incrementAndGet();
     }
 
     @Override
@@ -105,8 +101,7 @@ public class LocalSession extends AbstractSession implements Synchronization {
             // close old one, previously completed
             closeInThisThread();
             if (!TransactionHelper.isTransactionActive()) {
-                throw new LocalException(
-                        "No transaction active, cannot reconnect: " + sessionId);
+                throw new LocalException("No transaction active, cannot reconnect: " + sessionId);
             }
             if (log.isDebugEnabled()) {
                 log.debug("Reconnecting CoreSession: " + sessionId);
@@ -121,25 +116,13 @@ public class LocalSession extends AbstractSession implements Synchronization {
      */
     protected SessionInfo createSession() {
         RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
-        Repository repository = repositoryService.getRepository(repositoryName);
-        if (repository == null) {
-            throw new LocalException("No such repository: "
-                    + repositoryName);
-        }
-        Session session;
-        try {
-            session = repository.getSession(sessionId);
-        } catch (DocumentException e) {
-            throw new LocalException("Failed to load repository "
-                    + repositoryName + ": " + e.getMessage(), e);
-        }
+        Session session = repositoryService.getSession(repositoryName, sessionId);
         TransactionHelper.registerSynchronization(this);
         SessionInfo si = new SessionInfo(session);
         sessionHolder.set(si);
         allSessions.add(si);
         if (log.isDebugEnabled()) {
-            log.debug("Adding thread " + Thread.currentThread().getName()
-                    + " for CoreSession: " + sessionId);
+            log.debug("Adding thread " + Thread.currentThread().getName() + " for CoreSession: " + sessionId);
         }
         return si;
     }
@@ -173,8 +156,7 @@ public class LocalSession extends AbstractSession implements Synchronization {
             return;
         }
         if (log.isDebugEnabled()) {
-            log.debug("Removing thread " + Thread.currentThread().getName()
-                    + " for CoreSession: " + sessionId);
+            log.debug("Removing thread " + Thread.currentThread().getName() + " for CoreSession: " + sessionId);
         }
         try {
             si.session.close();
