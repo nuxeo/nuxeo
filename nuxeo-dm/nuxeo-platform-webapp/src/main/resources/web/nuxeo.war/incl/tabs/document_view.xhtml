@@ -21,25 +21,21 @@
       </c:if>
 
       <h:form id="document_view" enctype="multipart/form-data">
-        <a4j:region id="documentViewRegion">
-          <a4j:outputPanel id="documentViewPanel" layout="block">
-            <nxl:documentLayout documentMode="summary" mode="view"
-              value="#{currentDocument}"
-              includeAnyMode="false" />
-          </a4j:outputPanel>
-        </a4j:region>
+        <a4j:outputPanel id="documentViewPanel" layout="block">
+          <nxl:documentLayout documentMode="summary" mode="view"
+            value="#{currentDocument}"
+            includeAnyMode="false" />
+        </a4j:outputPanel>
       </h:form>
 
     </c:if>
 
     <c:if test="#{empty summaryLayouts}">
-      <a4j:region id="documentViewRegion">
-        <a4j:outputPanel id="documentViewPanel" layout="block">
-          <nxl:documentLayout documentMode="grid_summary" mode="view"
-            value="#{currentDocument}" defaultLayout="grid_summary_layout"
-            includeAnyMode="false" />
-        </a4j:outputPanel>
-      </a4j:region>
+      <a4j:outputPanel id="documentViewPanel" layout="block">
+        <nxl:documentLayout documentMode="grid_summary" mode="view"
+          value="#{currentDocument}" defaultLayout="grid_summary_layout"
+          includeAnyMode="false" />
+      </a4j:outputPanel>
     </c:if>
 
   </nxu:set>
