@@ -1,0 +1,40 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+  <ui:composition template="/incl/tabs/document_publish_template.xhtml">
+
+    <ui:define name="document_publish_before_tree">
+      <nxu:set var="renditionDefinitions"
+          value="#{renditionService.getAvailableRenditionDefinitions(currentDocument)}">
+      <c:if test="#{not renditionDefinitions.isEmpty()}">
+        <h:panelGrid styleClass="dataInput"
+                     columnClasses="labelColumn, fieldColumn" columns="2">
+          <h:panelGroup>
+            <h:outputText value="#{messages['label.publish.rendition']}" />
+          </h:panelGroup>
+          <h:panelGroup>
+            <h:selectOneMenu value="#{publishActions.publicationParameters['renditionName']}">
+              <f:selectItem itemValue="" itemLabel="#{messages['label.none']}"/>
+              <c:forEach var="renditionDefinition" items="#{renditionDefinitions}">
+                <f:selectItem itemValue="#{renditionDefinition.name}" itemLabel="#{messages[renditionDefinition.label]}"/>
+              </c:forEach>
+              <a4j:support event="onchange"
+                 ignoreDupResponses="true"/>
+            </h:selectOneMenu>
+          </h:panelGroup>
+        </h:panelGrid>
+      </c:if>
+      </nxu:set>
+    </ui:define>
+
+    <ui:define name="document_publish_after_tree">
+    </ui:define>
+
+  </ui:composition>
+
+</div>
