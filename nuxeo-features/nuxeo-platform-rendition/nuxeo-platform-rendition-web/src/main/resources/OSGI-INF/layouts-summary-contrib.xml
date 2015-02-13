@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.rendition.summary">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.summary</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <documentation>
+      Contribute a Summary widget to display available rendition on the currentDocument
+    </documentation>
+
+    <widgetType name="summary_current_document_renditions">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Available renditions</title>
+        <description>
+          <p>
+            This widgets displays the available renditions on the current Document.
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/renditions_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="summary_current_document_renditions"
+      type="summary_current_document_renditions" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <documentation>
+      Contribute the "Renditions" widget to the summary
+    </documentation>
+
+    <action id="summary_current_document_renditions" type="widget" order="900">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_renditions</property>
+      </properties>
+    </action>
+
+  </extension>
+
+</component>
