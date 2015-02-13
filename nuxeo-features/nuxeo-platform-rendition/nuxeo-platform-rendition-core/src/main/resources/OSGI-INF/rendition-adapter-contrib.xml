@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.rendition.adapters">
+  <documentation>
+    Adapters contribution for Renderable documents.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService" point="adapters">
+    <adapter class="org.nuxeo.ecm.platform.rendition.Renderable"
+      factory="org.nuxeo.ecm.platform.rendition.adapter.RenderableAdapterFactory" />
+  </extension>
+
+</component>
