@@ -2691,6 +2691,12 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>ojdbc7</artifactId>
+        <version>12.1.0.1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
         <groupId>org.jmock</groupId>
         <artifactId>jmock</artifactId>
         <version>2.5.1</version>
@@ -5747,6 +5753,15 @@
         <dependency>
           <groupId>com.oracle</groupId>
           <artifactId>ojdbc6</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>oracle12c</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.oracle</groupId>
+          <artifactId>ojdbc7</artifactId>
         </dependency>
       </dependencies>
     </profile>
