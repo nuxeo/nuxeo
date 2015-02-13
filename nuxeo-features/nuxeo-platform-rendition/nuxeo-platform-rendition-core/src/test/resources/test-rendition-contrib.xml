@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.rendition.testContrib">
+
+  <require>org.nuxeo.ecm.platform.rendition.contrib</require>
+
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+    <operation class="org.nuxeo.ecm.platform.rendition.service.DummyDocToTxt" />
+  </extension>
+ 
+  <extension point="chains"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <chain id="Dummy">
+      <operation id="Document.Pop" />
+      <operation id="DummyDoc.ToTxt" />
+    </chain>
+  </extension>
+ 
+  <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService" point="renditionDefinitions">
+    <renditionDefinition name="renditionDefinitionWithCustomOperationChain" enable="true">
+      <label>label.rendition.pdf</label>
+      <operationChain>Dummy</operationChain>
+      <allowEmptyBlob>true</allowEmptyBlob>
+    </renditionDefinition>
+
+    <renditionDefinition name="renditionDefinitionWithUnknownOperationChain" enable="true">
+      <label>label.rendition.pdf</label>
+      <operationChain>Whatever</operationChain>
+    </renditionDefinition>
+
+  </extension>
+
+</component>
