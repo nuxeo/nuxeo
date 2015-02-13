@@ -1,0 +1,30 @@
+<div class="relation_block"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+<c:if test="#{!empty currentDocumentRenditions}">
+
+  <h3 class="summaryTitle">
+    <h:outputText value="#{messages['label.summary.renditions.title']}" />
+  </h3>
+
+  <h:outputText value="#{messages['label.summary.renditions.header']}" />
+
+  <nxu:dataTable value="#{currentDocumentRenditions}"
+    var="rendition" styleClass="dataOutput">
+    <nxu:column styleClass="iconColumn">
+      <nxu:graphicImage value="#{rendition.icon}" />
+    </nxu:column>
+    <nxu:column>
+      <nxd:restDocumentLink document="#{currentDocument}" view="#{rendition.name}" pattern="rendition">
+        <h:outputText value="#{messages[rendition.label]}" />
+      </nxd:restDocumentLink>
+    </nxu:column>
+  </nxu:dataTable>
+
+</c:if>
+</div>
