@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.rendition.service.RenditionService">
+
+  <documentation>
+    The Rendition Service handles the registered rendition definitions and
+    the rendering of a document based on a rendition definition.
+    It provides an extension point to register rendition definitions.
+
+    @author Thomas Roger (troger@nuxeo.com)
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.rendition.service.RenditionServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.rendition.service.RenditionService" />
+  </service>
+
+  <extension-point name="renditionDefinitions">
+    <documentation>
+      Extension point to register rendition definitions.
+      For instance, here is one defining a PDF rendition.
+      <code>
+        <renditionDefinition name="pdf" enable="true">
+          <label>label.rendition.pdf</label>
+          <operationChain>blobToPDF</operationChain>
+        </renditionDefinition>
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.rendition.service.RenditionDefinition" />
+  </extension-point>
+
+</component>
