@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.rendition.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService"
+    point="renditionDefinitions">
+    <renditionDefinition name="pdf" enable="true">
+      <label>label.rendition.pdf</label>
+      <icon>/icons/pdf.png</icon>
+      <contentType>application/pdf</contentType>
+      <operationChain>blobToPDF</operationChain>
+    </renditionDefinition>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="chains">
+    <chain id="blobToPDF">
+      <operation id="Blob.Pop" />
+      <operation id="Blob.ToPDF" />
+    </chain>
+  </extension>
+
+</component>
