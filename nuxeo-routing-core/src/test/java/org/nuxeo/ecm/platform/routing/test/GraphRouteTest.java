@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -62,8 +64,6 @@ import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import com.google.inject.Inject;
 
 public class GraphRouteTest extends AbstractGraphRouteTest {
 
