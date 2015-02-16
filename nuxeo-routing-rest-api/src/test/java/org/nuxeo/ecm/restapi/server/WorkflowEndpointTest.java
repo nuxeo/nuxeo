@@ -89,7 +89,20 @@ public class WorkflowEndpointTest extends BaseTest {
         String jsonBody = "{" + "\"id\": \"" + taskId + "\"," + "\"comment\": \"a comment\","
                 + "\"entity-type\": \"task\"," + "\"variables\": {" + "\"end_date\": \""
                 + DateParser.formatW3CDateTime(calendar.getTime()) + "\","
-                + "\"participants\": \"[\\\"user:Administrator\\\"]\"" + "}" + "}";
+                + "\"participants\": \"[\\\"user:Administrator\\\"]\","
+                + "\"assignees\": \"[\\\"user:Administrator\\\"]\""
+                + "}" + "}";
+        return jsonBody;
+    }
+
+    protected String getBodyWithSecurityViolationForStartReviewTaskCompletion(String taskId) throws IOException {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.YEAR, 1);
+        String jsonBody = "{" + "\"id\": \"" + taskId + "\"," + "\"comment\": \"a comment\","
+                + "\"entity-type\": \"task\"," + "\"variables\": {" + "\"end_date\": \""
+                + DateParser.formatW3CDateTime(calendar.getTime()) + "\","
+                + "\"participants\": \"[\\\"user:Administrator\\\"]\"," + "\"review_result\": \"blabablaa\"" + "}"
+                + "}";
         return jsonBody;
     }
 
@@ -330,6 +343,39 @@ public class WorkflowEndpointTest extends BaseTest {
 
     }
 
+    /**
+     * Start ParallelDocumentReview workflow and try to set a global variable that you are not supposed to.
+     */
+    @Test
+    public void testSecurityCheckOnGlobalVariable() throws JsonProcessingException, IOException {
+
+        // Start SerialDocumentReview on Note 0
+        DocumentModel note = RestServerInit.getNote(0, session);
+        ClientResponse response = getResponse(
+                RequestType.POST,
+                "/workflow",
+                getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
+                        Arrays.asList(new String[] { note.getId() })));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        final String createdWorflowInstanceId = node.get("id").getTextValue();
+
+        // Complete first task
+        String taskId = getCurrentTask(createdWorflowInstanceId);
+        String out = getBodyWithSecurityViolationForStartReviewTaskCompletion(taskId);
+        response = getResponse(RequestType.PUT, "/task/" + taskId + "/start_review", out.toString());
+        // Missing required variables
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        final String responseEntityType = node.get("entity-type").getTextValue();
+        final String responseMessage = node.get("message").getTextValue();
+        assertEquals("exception", responseEntityType);
+        assertEquals("org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException:"
+                + " You don't have the permission to set the workflow variable review_result", responseMessage);
+
+    }
+
     @Test
     public void testFilterByWorkflowModelName() throws IOException {
         // Initiate SerialDocumentReview workflow
@@ -384,7 +430,7 @@ public class WorkflowEndpointTest extends BaseTest {
                 getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
-        final String workflowModelName2= node.get("workflowModelName").getTextValue();
+        final String workflowModelName2 = node.get("workflowModelName").getTextValue();
 
         assertEquals(workflowModelName1, workflowModelName2);
 
