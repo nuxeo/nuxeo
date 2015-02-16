@@ -361,12 +361,20 @@ table.palettePreviewColors td div {
 .listItem .deleteBtn {
   background-image: url('${basePath}/icons/delete.png'); }
 
-.listItem:nth-of-type(1) .moveUpBtn {
-  pointer-events: none;
-  cursor: default;
-  background-image: url('${basePath}/icons/inactive_go_up.png'); }
+/* The following rules are expanded to prevent cascading into other list items.
+  This works for action buttons at a fixed maximum depth (currently 4). */
+.listItem:nth-of-type(1) > :not(.listItem) > .moveUpBtn,
+.listItem:nth-of-type(1) > :not(.listItem) > :not(.listItem) > .moveUpBtn,
+.listItem:nth-of-type(1) > :not(.listItem) > :not(.listItem) > :not(.listItem) > .moveUpBtn,
+.listItem:nth-of-type(1) > :not(.listItem) > :not(.listItem) > :not(.listItem) > :not(.listItem) > .moveUpBtn {
+    pointer-events: none;
+    cursor: default;
+    background-image: url('${basePath}/icons/inactive_go_up.png'); }
 
-.listItem:nth-last-of-type(1) .moveDownBtn {
-  pointer-events: none;
-  cursor: default;
-  background-image: url('${basePath}/icons/inactive_go_down.png'); }
+.listItem:nth-last-of-type(1) > :not(.listItem) > .moveDownBtn,
+.listItem:nth-last-of-type(1) > :not(.listItem) > :not(.listItem) > .moveDownBtn,
+.listItem:nth-last-of-type(1) > :not(.listItem) > :not(.listItem) > :not(.listItem) > .moveDownBtn,
+.listItem:nth-last-of-type(1) > :not(.listItem) > :not(.listItem) > :not(.listItem) > :not(.listItem) > .moveDownBtn {
+    pointer-events: none;
+    cursor: default;
+    background-image: url('${basePath}/icons/inactive_go_down.png'); }
