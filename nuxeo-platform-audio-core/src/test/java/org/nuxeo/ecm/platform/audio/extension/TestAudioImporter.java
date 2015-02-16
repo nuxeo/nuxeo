@@ -23,6 +23,8 @@ import static org.junit.Assert.assertNull;
 
 import java.io.File;
 
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,8 +43,6 @@ import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 
 /*
  * Tests that the AudioImporter class works by importing a sample audio file
