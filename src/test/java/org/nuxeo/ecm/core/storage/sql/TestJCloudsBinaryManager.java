@@ -193,7 +193,7 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
         Set<String> digests = new HashSet<String>();
         ListContainerOptions options = ListContainerOptions.NONE;
         for (;;) {
-            PageSet<? extends StorageMetadata> metadatas = binaryManager.blobStore.list(binaryManager.storeName, options);
+            PageSet<? extends StorageMetadata> metadatas = binaryManager.blobStore.list(binaryManager.container, options);
             for (StorageMetadata metadata : metadatas) {
                 String digest = metadata.getName();
                 if (!JCloudsBinaryManager.isMD5(digest)) {

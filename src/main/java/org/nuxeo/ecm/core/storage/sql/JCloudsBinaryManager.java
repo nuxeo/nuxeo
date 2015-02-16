@@ -86,7 +86,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
 
     private static final Pattern MD5_RE = Pattern.compile("[0-9a-f]{32}");
 
-    protected String storeName;
+    protected String container;
 
     protected String storeProvider;
 
@@ -101,8 +101,8 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
         if (isBlank(storeProvider)) {
             throw new RuntimeException("Missing conf: " + BLOBSTORE_PROVIDER_KEY);
         }
-        storeName = Framework.getProperty(BLOBSTORE_MAP_NAME_KEY);
-        if (isBlank(storeName)) {
+        container = Framework.getProperty(BLOBSTORE_MAP_NAME_KEY);
+        if (isBlank(container)) {
             throw new RuntimeException("Missing conf: " + BLOBSTORE_MAP_NAME_KEY);
         }
 
@@ -156,14 +156,14 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
         blobStore = context.getBlobStore();
         boolean created = false;
         if (storeLocation == null) {
-            created = blobStore.createContainerInLocation(null, storeName);
+            created = blobStore.createContainerInLocation(null, container);
         } else {
             Location location = new LocationBuilder().scope(LocationScope.REGION).id(storeLocation).description(
                     storeLocation).build();
-            created = blobStore.createContainerInLocation(location, storeName);
+            created = blobStore.createContainerInLocation(location, container);
         }
         if (created) {
-            log.debug("Created container " + storeName);
+            log.debug("Created container " + container);
         }
 
         // Create file cache
@@ -176,7 +176,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
     }
 
     protected void removeBinary(String digest) {
-        blobStore.removeBlob(storeName, digest);
+        blobStore.removeBlob(container, digest);
     }
 
     public static boolean isMD5(String digest) {
@@ -189,7 +189,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
         public void storeFile(String digest, File file) throws IOException {
             Blob currentObject;
             try {
-                currentObject = blobStore.getBlob(storeName, digest);
+                currentObject = blobStore.getBlob(container, digest);
             } catch (Exception e) {
                 throw new IOException("Unable to check existence of binary", e);
             }
@@ -199,7 +199,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
                 Blob remoteBlob = blobStore.blobBuilder(digest).payload(byteSource).contentLength(byteSource.size()).contentMD5(
                         byteSource.hash(Hashing.md5())).build();
                 try {
-                    blobStore.putBlob(storeName, remoteBlob);
+                    blobStore.putBlob(container, remoteBlob);
                 } catch (Exception e) {
                     throw new IOException("Unable to store binary", e);
                 }
@@ -207,11 +207,11 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
                 // TODO only check presence and size/md5
                 Blob checkBlob;
                 try {
-                    checkBlob = blobStore.getBlob(storeName, digest);
+                    checkBlob = blobStore.getBlob(container, digest);
                 } catch (Exception e) {
                     try {
                         // Remote blob can't be validated - remove it
-                        blobStore.removeBlob(storeName, digest);
+                        blobStore.removeBlob(container, digest);
                     } catch (Exception e2) {
                         log.error("Possible data corruption : binary " + digest
                                 + " validation failed but it could not be removed.");
@@ -223,7 +223,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
                     if (checkBlob != null) {
                         // Remote blob is incomplete - remove it
                         try {
-                            blobStore.removeBlob(storeName, digest);
+                            blobStore.removeBlob(container, digest);
                         } catch (Exception e2) {
                             log.error("Possible data corruption : binary " + digest
                                     + " validation failed but it could not be removed.");
@@ -238,7 +238,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
         public boolean fetchFile(String digest, File tmp) {
             Blob remoteBlob;
             try {
-                remoteBlob = blobStore.getBlob(storeName, digest);
+                remoteBlob = blobStore.getBlob(container, digest);
             } catch (Exception e) {
                 log.error("Could not cache binary from remote storage: " + digest, e);
                 return false;
@@ -267,7 +267,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
         public Long fetchLength(String digest) {
             Blob remoteBlob;
             try {
-                remoteBlob = blobStore.getBlob(storeName, digest);
+                remoteBlob = blobStore.getBlob(container, digest);
             } catch (Exception e) {
                 log.error("Unable to fetch binary information from remote storage");
                 return null;
@@ -300,7 +300,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
 
         @Override
         public String getId() {
-            return "jclouds/" + binaryManager.storeProvider + ":" + binaryManager.storeName;
+            return "jclouds/" + binaryManager.storeProvider + ":" + binaryManager.container;
         }
 
         @Override
@@ -338,7 +338,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
             Set<String> unmarked = new HashSet<>();
             ListContainerOptions options = ListContainerOptions.NONE;
             for (;;) {
-                PageSet<? extends StorageMetadata> metadatas = binaryManager.blobStore.list(binaryManager.storeName, options);
+                PageSet<? extends StorageMetadata> metadatas = binaryManager.blobStore.list(binaryManager.container, options);
                 for (StorageMetadata metadata : metadatas) {
                     String digest = metadata.getName();
                     if (!isMD5(digest)) {
