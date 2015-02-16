@@ -279,6 +279,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-actions-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <!-- needed for audit-core test -->
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-test</artifactId>

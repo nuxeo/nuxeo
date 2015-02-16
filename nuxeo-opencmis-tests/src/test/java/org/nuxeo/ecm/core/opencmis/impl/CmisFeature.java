@@ -47,6 +47,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
         "org.nuxeo.ecm.platform.types.api", //
         "org.nuxeo.ecm.platform.types.core", //
         // Rendition Service
+        "org.nuxeo.ecm.actions",
         "org.nuxeo.ecm.platform.rendition.api", //
         "org.nuxeo.ecm.platform.rendition.core", //
         "org.nuxeo.ecm.automation.core", //
