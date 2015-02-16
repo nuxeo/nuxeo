@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.chemistry.opencmis.client.api.CmisObject;
@@ -126,7 +127,6 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.inject.Inject;
 
 /**
  * Test the high-level session using a local connection.

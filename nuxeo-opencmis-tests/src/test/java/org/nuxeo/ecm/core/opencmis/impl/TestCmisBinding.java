@@ -75,6 +75,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
+import javax.inject.Inject;
+
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
@@ -151,8 +153,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
-
-import com.google.inject.Inject;
 
 /**
  * Tests that hit directly the server APIs.
