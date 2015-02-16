@@ -26,6 +26,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import javax.inject.Inject;
+
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
@@ -61,8 +63,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.w3c.dom.Element;
-
-import com.google.inject.Inject;
 
 /**
  * Jackrabbit includes a WebDAV client library. Let's use it to test our server.
