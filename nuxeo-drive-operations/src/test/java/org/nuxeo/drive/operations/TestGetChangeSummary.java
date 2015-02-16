@@ -24,6 +24,8 @@ import java.security.Principal;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,8 +48,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import com.google.inject.Inject;
 
 /**
  * Tests the {@link NuxeoDriveGetChangeSummary} operation.

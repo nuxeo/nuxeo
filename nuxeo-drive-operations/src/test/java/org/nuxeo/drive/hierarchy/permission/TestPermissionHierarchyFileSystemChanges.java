@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import org.junit.After;
@@ -72,8 +73,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import com.google.inject.Inject;
 
 /**
  * Tests the file system changes in the case of the user workspace and permission based hierarchy.
@@ -256,7 +255,7 @@ public class TestPermissionHierarchyFileSystemChanges {
      * <pre>
      * Server side hierarchy for the test
      * ==================================
-     * 
+     *
      * /user1 (user workspace)
      *   |-- user1Folder1       (registered as a synchronization root with Everything permission for user2)
      *   |-- user1Folder2       (registered as a synchronization root with ReadWrite permission only for user2)
