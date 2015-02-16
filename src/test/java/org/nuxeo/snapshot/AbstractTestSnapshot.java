@@ -1,6 +1,7 @@
 package org.nuxeo.snapshot;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.runtime.api.Framework;
