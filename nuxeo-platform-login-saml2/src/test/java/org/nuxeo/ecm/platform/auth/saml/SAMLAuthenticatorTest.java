@@ -25,7 +25,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Matchers.startsWith;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.inject.Inject;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -57,9 +56,11 @@ import org.opensaml.xml.util.Base64;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import javax.inject.Inject;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;

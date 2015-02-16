@@ -19,6 +19,8 @@ package org.nuxeo.ecm.tokenauth;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import javax.inject.Inject;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -30,8 +32,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
-
-import com.google.inject.Inject;
 
 /**
  * Tests the {@link TokenAuthenticationServlet} in the case of an anonymous user.

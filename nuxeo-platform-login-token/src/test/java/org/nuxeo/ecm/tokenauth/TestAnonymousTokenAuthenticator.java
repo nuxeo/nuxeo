@@ -20,6 +20,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import javax.inject.Inject;
+
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,8 +43,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
-
-import com.google.inject.Inject;
 
 /**
  * Tests the {@link TokenAuthenticator} in the case of an anonymous user.
