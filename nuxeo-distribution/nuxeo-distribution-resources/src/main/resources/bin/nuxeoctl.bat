@@ -183,7 +183,7 @@ goto END
 :HAS_JAVA
 echo Using JAVA = %JAVA%
 REM ***** Check Java version
-set REQUIRED_JAVA_VERSION=1.7
+set REQUIRED_JAVA_VERSION=1.8
 for /f "tokens=3" %%g in ('java -version 2^>^&1 ^| findstr /i "version"') do (
     set JAVA_VERSION=%%g
 )
