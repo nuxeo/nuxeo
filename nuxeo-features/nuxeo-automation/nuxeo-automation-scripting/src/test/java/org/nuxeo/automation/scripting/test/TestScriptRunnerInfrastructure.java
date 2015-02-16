@@ -80,14 +80,18 @@ public class TestScriptRunnerInfrastructure {
 
     ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
+    private PrintStream outStream;
+
     @Before
     public void setUpStreams() {
+        outStream = System.out;
         System.setOut(new PrintStream(outContent));
     }
 
     @After
-    public void cleanUpStreams() {
-        System.setOut(null);
+    public void cleanUpStreams() throws IOException {
+        outContent.close();
+        System.setOut(outStream);
     }
 
     @Test

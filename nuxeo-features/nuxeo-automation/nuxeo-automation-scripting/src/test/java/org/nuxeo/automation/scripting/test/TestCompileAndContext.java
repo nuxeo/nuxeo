@@ -20,6 +20,7 @@ import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
@@ -74,14 +75,18 @@ public class TestCompileAndContext {
 
     ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
+    private PrintStream outStream;
+
     @Before
     public void setUpStreams() {
+        outStream = System.out;
         System.setOut(new PrintStream(outContent));
     }
 
     @After
-    public void cleanUpStreams() {
-        System.setOut(null);
+    public void cleanUpStreams() throws IOException {
+        outContent.close();
+        System.setOut(outStream);
     }
 
     @Test
