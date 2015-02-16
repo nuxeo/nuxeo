@@ -91,11 +91,16 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     };
 
     protected ScriptEngine getEngine() {
-        if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE,
-                AutomationScriptingConstants.DEFAULT_PRECOMPILE_STATUS))) {
-            return new NashornScriptEngineFactory().getScriptEngine(AutomationScriptingConstants.NASHORN_OPTIONS);
-        } else {
-            return new NashornScriptEngineFactory().getScriptEngine();
+        try {
+            if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE,
+                    AutomationScriptingConstants.DEFAULT_PRECOMPILE_STATUS))) {
+                return new NashornScriptEngineFactory().getScriptEngine(AutomationScriptingConstants.NASHORN_OPTIONS);
+            } else {
+                return new NashornScriptEngineFactory().getScriptEngine();
+            }
+        } catch (Exception e) {
+            throw new AutomationScriptingException(
+                    "Cannot create Nashorn Engine. Make sure you're running Nuxeo with jdk8u25 at least.", e);
         }
     }
 
