@@ -6,6 +6,7 @@
     <scriptedOperation id="Scripting.HelloWorld">
        <inputType>string</inputType>
        <outputType>string</outputType>
+       <category>Scripting</category>
        <param name="lang" type="string"/>
 
        <script>
@@ -22,6 +23,7 @@
     <scriptedOperation id="Scripting.AddFacetInSubTree">
        <inputType>Document</inputType>
        <outputType>Documents</outputType>
+       <category>Scripting</category>
        <param name="facet" type="string"/>
        <param name="type" type="string"/>
 
@@ -54,7 +56,7 @@
     <scriptedOperation id="Scripting.TestOperationCtx">
        <inputType>Document</inputType>
        <outputType>Document</outputType>
-
+       <category>Scripting</category>
        <script><![CDATA[
         function run(ctx, input, params) {
 
@@ -85,6 +87,7 @@
     <scriptedOperation id="Scripting.TestBlob">
       <inputType>Blob</inputType>
       <outputType>Document</outputType>
+      <category>Scripting</category>
       <param name="document" type="string"/>
 
       <script><![CDATA[
@@ -123,6 +126,7 @@
     <scriptedOperation id="Scripting.TestComplexProperties">
       <inputType>Blob</inputType>
       <outputType>Document</outputType>
+      <category>Scripting</category>
       <param name="document" type="string"/>
 
       <script><![CDATA[
