@@ -22,6 +22,8 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.custommonkey.xmlunit.DetailedDiff;
@@ -46,8 +48,6 @@ import org.nuxeo.ecm.diff.model.impl.SimplePropertyDiff;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 
 /**
  * Tests the {@link DocumentDiffService} on hand-made pieces of XML similar to document XML exports.
