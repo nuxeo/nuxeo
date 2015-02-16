@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.picture.renditions">
+
+  <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService"
+    point="renditionDefinitionProviders">
+
+    <renditionDefinitionProvider name="pictureRenditionDefinitionProvider"
+      class="org.nuxeo.ecm.platform.picture.rendition.PictureRenditionDefinitionProvider">
+      <filters>
+        <filter-id>hasPictureFacet</filter-id>
+      </filters>
+    </renditionDefinitionProvider>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="hasPictureFacet">
+      <rule grant="true">
+        <facet>Picture</facet>
+      </rule>
+    </filter>
+
+    <filter id="allowPDFRendition" append="true">
+      <rule grant="false">
+        <facet>Picture</facet>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

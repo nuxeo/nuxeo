@@ -49,12 +49,6 @@
       </rule>
     </filter>
 
-    <filter id="hasPictureFacet">
-      <rule grant="true">
-        <facet>Picture</facet>
-      </rule>
-    </filter>
-
     <filter id="create" append="true">
       <rule grant="true">
         <permission>AddChildren</permission>

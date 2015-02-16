@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.picture.renditions.override">
+
+  <extension target="org.nuxeo.ecm.platform.picture.ImagingComponent"
+    point="pictureConversions">
+
+    <pictureConversion id="Thumbnail" rendition="false" />
+    <pictureConversion id="Small" renditionVisible="true" />
+    <pictureConversion id="Medium" rendition="false" />
+
+  </extension>
+
+</component>

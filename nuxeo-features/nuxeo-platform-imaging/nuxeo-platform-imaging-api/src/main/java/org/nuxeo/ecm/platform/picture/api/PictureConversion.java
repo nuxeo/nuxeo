@@ -62,6 +62,12 @@ public class PictureConversion implements Comparable<PictureConversion> {
     @XNodeList(value = "filters/filter-id", type = ArrayList.class, componentType = String.class)
     protected List<String> filterIds;
 
+    @XNode("@rendition")
+    protected Boolean rendition;
+
+    @XNode("@renditionVisible")
+    protected Boolean renditionVisible;
+
     public PictureConversion() {
         super();
     }
@@ -159,6 +165,30 @@ public class PictureConversion implements Comparable<PictureConversion> {
         this.filterIds = filterIds;
     }
 
+    public boolean isRenditionVisible() {
+        return renditionVisible == null || renditionVisible;
+    }
+
+    public boolean isRenditionVisibleSet() {
+        return renditionVisible != null;
+    }
+
+    public boolean isRendition() {
+        return rendition == null || rendition;
+    }
+
+    public boolean isRenditionSet() {
+        return rendition != null;
+    }
+
+    public void setRendition(Boolean rendition) {
+        this.rendition = rendition;
+    }
+
+    public void setRenditionVisible(Boolean renditionVisible) {
+        this.renditionVisible = renditionVisible;
+    }
+
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
@@ -189,6 +219,8 @@ public class PictureConversion implements Comparable<PictureConversion> {
             clone.filterIds = new ArrayList<>();
             clone.filterIds.addAll(filterIds);
         }
+        clone.rendition = rendition;
+        clone.renditionVisible = renditionVisible;
         return clone;
     }
 

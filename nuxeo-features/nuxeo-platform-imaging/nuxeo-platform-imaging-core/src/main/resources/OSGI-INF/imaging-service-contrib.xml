@@ -21,19 +21,19 @@
 
     <pictureConversion id="Thumbnail" description="Thumbnail size"
       maxSize="100" order="0" chainId="Image.Blob.Resize"
-      default="true" />
+      default="true" rendition="true" renditionVisible="false" />
 
     <pictureConversion id="Small" description="Small size"
       maxSize="280" order="100" chainId="Image.Blob.Resize"
-      default="true" />
+      default="true" rendition="true" renditionVisible="false" />
 
     <pictureConversion id="Medium" description="Medium size"
       maxSize="550" order="200" chainId="Image.Blob.Resize"
-      default="true" />
+      default="true" rendition="true" renditionVisible="false" />
 
     <pictureConversion id="OriginalJpeg" description="Original jpeg image"
       order="400" chainId="Image.Blob.Resize"
-      default="true" />
+      default="true" rendition="true" renditionVisible="false" />
 
   </extension>
 </component>

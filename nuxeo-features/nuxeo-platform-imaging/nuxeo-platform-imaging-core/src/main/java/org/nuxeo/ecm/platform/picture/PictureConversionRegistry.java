@@ -133,5 +133,13 @@ public class PictureConversionRegistry extends ContributionFragmentRegistry<Pict
         newFilterIds.addAll(dest.getFilterIds());
         newFilterIds.addAll(source.getFilterIds());
         dest.setFilterIds(newFilterIds);
+
+        if (source.isRenditionSet()) {
+            dest.setRendition(source.isRendition());
+        }
+
+        if (source.isRenditionVisibleSet()) {
+            dest.setRenditionVisible(source.isRenditionVisible());
+        }
     }
 }
