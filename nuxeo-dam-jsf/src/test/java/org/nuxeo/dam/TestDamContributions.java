@@ -17,7 +17,6 @@
 
 package org.nuxeo.dam;
 
-import com.google.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -32,6 +31,8 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
