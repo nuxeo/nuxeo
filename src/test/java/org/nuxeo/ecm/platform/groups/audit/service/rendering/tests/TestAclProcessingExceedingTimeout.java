@@ -23,6 +23,8 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -56,8 +58,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import com.google.inject.Inject;
 
 /**
  * This test asserts that an audit exceeding its dedicated transaction time will be able to cleanly exit and indicate an

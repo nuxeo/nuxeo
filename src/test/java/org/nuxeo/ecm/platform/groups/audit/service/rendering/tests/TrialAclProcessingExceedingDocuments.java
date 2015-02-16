@@ -21,6 +21,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import javax.inject.Inject;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -45,8 +47,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import com.google.inject.Inject;
 
 /**
  * Test excel export of groups
