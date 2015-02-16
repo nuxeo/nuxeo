@@ -17,8 +17,6 @@
  */
 package org.nuxeo.ecm.platform.signature.core.operations;
 
-import com.google.inject.Inject;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +43,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 import static org.junit.Assert.assertNotNull;
 
