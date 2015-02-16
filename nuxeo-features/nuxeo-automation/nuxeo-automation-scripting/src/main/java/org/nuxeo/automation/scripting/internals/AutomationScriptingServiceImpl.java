@@ -83,7 +83,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         return getJSWrapper(false);
     }
 
-    protected final ThreadLocal<ScriptEngine> engines = new ThreadLocal<ScriptEngine>(){
+    protected final ThreadLocal<ScriptEngine> engines = new ThreadLocal<ScriptEngine>() {
         @Override
         protected ScriptEngine initialValue() {
             return getEngine();
@@ -113,14 +113,13 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         ScriptEngine engine = engines.get();
         engine.setContext(new SimpleScriptContext());
         engine.eval(getJSWrapper());
-        engine.put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY,
-                new AutomationMapper(session));
+        engine.put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY, new AutomationMapper(session));
         engine.eval(script);
     }
 
     @Override
-    public <T> T getInterface(Class<T> scriptingOperationInterface, String
-            script, CoreSession session) throws ScriptException {
+    public <T> T getInterface(Class<T> scriptingOperationInterface, String script, CoreSession session)
+            throws ScriptException {
         run(script, session);
         Invocable inv = (Invocable) engines.get();
         return inv.getInterface(scriptingOperationInterface);

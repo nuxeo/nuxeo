@@ -29,8 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.Assert;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -145,7 +143,7 @@ public class TestScriptRunnerInfrastructure {
 
         session.save();
         DocumentModelList res = session.query("select * from File where  " + "ecm:mixinType = 'HiddenInNavigation'");
-        Assert.assertEquals(0, res.size());
+        assertEquals(0, res.size());
 
         OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = new HashMap<>();

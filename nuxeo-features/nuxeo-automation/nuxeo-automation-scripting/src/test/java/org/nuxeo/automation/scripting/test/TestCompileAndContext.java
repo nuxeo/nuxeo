@@ -35,7 +35,6 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
-import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
@@ -204,7 +203,7 @@ public class TestCompileAndContext {
             String p2 = (String) map.get("p2");
             List<Object> p3 = (List<Object>) map.get("p3");
 
-            Assert.assertEquals(3, p3.size());
+            assertEquals(3, p3.size());
             Map<String, Object> nested = (Map<String, Object>) p3.get(2);
 
             System.out.println(p1);
