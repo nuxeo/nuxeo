@@ -65,7 +65,7 @@ public class OperationTypeImpl implements OperationType {
      *
      * @since 7.1
      */
-    protected final String[] aliases;
+    protected String[] aliases;
 
     /**
      * The operation type
@@ -123,6 +123,9 @@ public class OperationTypeImpl implements OperationType {
         injectableFields = new ArrayList<Field>();
         initMethods();
         initFields();
+    }
+
+    public OperationTypeImpl() {
     }
 
     static class Match implements Comparable<Match> {

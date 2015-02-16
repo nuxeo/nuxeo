@@ -29,9 +29,9 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
+import org.nuxeo.ecm.automation.core.impl.OperationTypeImpl;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,7 +42,7 @@ import org.nuxeo.ecm.core.api.DocumentRefList;
 /**
  * @since 7.2
  */
-public class ScriptingOperationTypeImpl implements OperationType {
+public class ScriptingOperationTypeImpl extends OperationTypeImpl {
 
     protected final AutomationService service;
 
@@ -62,7 +62,7 @@ public class ScriptingOperationTypeImpl implements OperationType {
     }
 
     @Override
-    public OperationDocumentation getDocumentation() throws OperationException {
+    public OperationDocumentation getDocumentation() {
         OperationDocumentation doc = new OperationDocumentation(getId());
         doc.label = getId();
         doc.category = desc.getCategory();
