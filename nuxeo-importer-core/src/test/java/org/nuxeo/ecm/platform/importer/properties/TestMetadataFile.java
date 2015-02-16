@@ -28,8 +28,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.runner.RunWith;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -40,8 +43,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>

@@ -18,7 +18,6 @@
 
 package org.nuxeo.ecm.platform.importer.xml.parser.test;
 
-import com.google.inject.Inject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +39,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
+
+import javax.inject.Inject;
 
 /**
  * Verify Service mapping with multi-value metadata

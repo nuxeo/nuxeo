@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.importer.xml.parser.test;
 import java.io.File;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,8 +35,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterServiceImpl;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 
 /**
  * Test low level importer (outside of service and extension point system)
