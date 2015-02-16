@@ -24,6 +24,8 @@ import static org.nuxeo.ecm.multi.tenant.Constants.TENANTS_DIRECTORY;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_CONFIG_FACET;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ID_PROPERTY;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -41,8 +43,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>

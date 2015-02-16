@@ -18,6 +18,7 @@ package org.nuxeo.ecm.multi.tenant;
 
 import static org.junit.Assert.*;
 
+import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Test;
@@ -34,8 +35,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import com.google.inject.Inject;
 
 /**
  * @since 5.8
