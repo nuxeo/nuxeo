@@ -50,7 +50,7 @@
     <rnode:transitions/>
     <rnode:nodeId><![CDATA[Task5c1]]></rnode:nodeId>
     <rnode:hasMultipleTasks/>
-    <rnode:outputChain/>
+    <rnode:outputChain><![CDATA[]]></rnode:outputChain>
     <rnode:merge/>
     <rnode:subRouteVariables/>
     <rnode:taskAssignees/>
@@ -66,7 +66,7 @@
     <rnode:endDate/>
     <rnode:allowTaskReassignment/>
     <rnode:taskDueDate/>
-    <rnode:inputChain/>
+    <rnode:inputChain><![CDATA[]]></rnode:inputChain>
     <rnode:taskDescription/>
     <rnode:hasTask><![CDATA[false]]></rnode:hasTask>
     <rnode:taskDirective/>
