@@ -28,7 +28,6 @@ import java.io.OutputStream;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -36,14 +35,15 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jclouds.ContextBuilder;
-import org.jclouds.blobstore.BlobMap;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
 import org.jclouds.blobstore.domain.Blob;
+import org.jclouds.blobstore.domain.PageSet;
+import org.jclouds.blobstore.domain.StorageMetadata;
+import org.jclouds.blobstore.options.ListContainerOptions;
 import org.jclouds.domain.Location;
 import org.jclouds.domain.LocationBuilder;
 import org.jclouds.domain.LocationScope;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
@@ -51,6 +51,10 @@ import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.storage.binary.CachingBinaryManager;
 import org.nuxeo.ecm.core.storage.binary.FileStorage;
 import org.nuxeo.runtime.api.Framework;
+
+import com.google.common.hash.Hashing;
+import com.google.common.io.ByteSource;
+import com.google.common.io.Files;
 
 /**
  * A Binary Manager that stores binaries in cloud blob stores using jclouds.
@@ -86,7 +90,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
 
     protected String storeProvider;
 
-    protected BlobMap storeMap;
+    protected BlobStore blobStore;
 
     @Override
     public void initialize(BinaryManagerDescriptor binaryManagerDescriptor) throws IOException {
@@ -149,20 +153,18 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
                 BlobStoreContext.class);
 
         // Try to create container if it doesn't exist
-        BlobStore store = context.getBlobStore();
+        blobStore = context.getBlobStore();
         boolean created = false;
         if (storeLocation == null) {
-            created = store.createContainerInLocation(null, storeName);
+            created = blobStore.createContainerInLocation(null, storeName);
         } else {
             Location location = new LocationBuilder().scope(LocationScope.REGION).id(storeLocation).description(
                     storeLocation).build();
-            created = store.createContainerInLocation(location, storeName);
+            created = blobStore.createContainerInLocation(location, storeName);
         }
         if (created) {
             log.debug("Created container " + storeName);
         }
-
-        storeMap = context.createBlobMap(storeName);
 
         // Create file cache
         initializeCache(cacheSizeStr, new JCloudsFileStorage());
@@ -174,7 +176,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
     }
 
     protected void removeBinary(String digest) {
-        storeMap.remove(digest);
+        blobStore.removeBlob(storeName, digest);
     }
 
     public static boolean isMD5(String digest) {
@@ -187,26 +189,29 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
         public void storeFile(String digest, File file) throws IOException {
             Blob currentObject;
             try {
-                currentObject = storeMap.get(digest);
+                currentObject = blobStore.getBlob(storeName, digest);
             } catch (Exception e) {
                 throw new IOException("Unable to check existence of binary", e);
             }
             if (currentObject == null) {
                 // no data, store the blob
-                Blob remoteBlob = storeMap.blobBuilder().name(digest).payload(file).calculateMD5().build();
+                ByteSource byteSource = Files.asByteSource(file);
+                Blob remoteBlob = blobStore.blobBuilder(digest).payload(byteSource).contentLength(byteSource.size()).contentMD5(
+                        byteSource.hash(Hashing.md5())).build();
                 try {
-                    storeMap.put(digest, remoteBlob);
+                    blobStore.putBlob(storeName, remoteBlob);
                 } catch (Exception e) {
                     throw new IOException("Unable to store binary", e);
                 }
                 // validate storage
+                // TODO only check presence and size/md5
                 Blob checkBlob;
                 try {
-                    checkBlob = storeMap.get(digest);
+                    checkBlob = blobStore.getBlob(storeName, digest);
                 } catch (Exception e) {
                     try {
                         // Remote blob can't be validated - remove it
-                        storeMap.remove(digest);
+                        blobStore.removeBlob(storeName, digest);
                     } catch (Exception e2) {
                         log.error("Possible data corruption : binary " + digest
                                 + " validation failed but it could not be removed.");
@@ -218,7 +223,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
                     if (checkBlob != null) {
                         // Remote blob is incomplete - remove it
                         try {
-                            storeMap.remove(digest);
+                            blobStore.removeBlob(storeName, digest);
                         } catch (Exception e2) {
                             log.error("Possible data corruption : binary " + digest
                                     + " validation failed but it could not be removed.");
@@ -233,7 +238,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
         public boolean fetchFile(String digest, File tmp) {
             Blob remoteBlob;
             try {
-                remoteBlob = storeMap.get(digest);
+                remoteBlob = blobStore.getBlob(storeName, digest);
             } catch (Exception e) {
                 log.error("Could not cache binary from remote storage: " + digest, e);
                 return false;
@@ -262,7 +267,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
         public Long fetchLength(String digest) {
             Blob remoteBlob;
             try {
-                remoteBlob = storeMap.get(digest);
+                remoteBlob = blobStore.getBlob(storeName, digest);
             } catch (Exception e) {
                 log.error("Unable to fetch binary information from remote storage");
                 return null;
@@ -330,29 +335,33 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
                 throw new RuntimeException("Not started");
             }
 
-            Set<Map.Entry<String, Blob>> blobList = binaryManager.storeMap.entrySet();
             Set<String> unmarked = new HashSet<>();
-            for (Map.Entry<String, Blob> blobEntry : blobList) {
-                String digest = blobEntry.getKey();
-                if (!isMD5(digest)) {
-                    // ignore files that cannot be MD5 digests for safety
-                    continue;
+            ListContainerOptions options = ListContainerOptions.NONE;
+            for (;;) {
+                PageSet<? extends StorageMetadata> metadatas = binaryManager.blobStore.list(binaryManager.storeName, options);
+                for (StorageMetadata metadata : metadatas) {
+                    String digest = metadata.getName();
+                    if (!isMD5(digest)) {
+                        // ignore files that cannot be MD5 digests for safety
+                        continue;
+                    }
+                    // TODO size in metadata available only in upcoming JClouds 1.9.0 (JCLOUDS-654)
+                    if (marked.contains(digest)) {
+                        status.numBinaries++;
+                        // status.sizeBinaries += size;
+                    } else {
+                        status.numBinariesGC++;
+                        // status.sizeBinariesGC += size;
+                        // record file to delete
+                        unmarked.add(digest);
+                        marked.remove(digest); // optimize memory
+                    }
                 }
-                Blob blob = blobEntry.getValue();
-                // Too costly to do for all binaries
-                // long length =
-                // blob.getMetadata().getContentMetadata().getContentLength();
-                if (marked.contains(digest)) {
-                    status.numBinaries++;
-                    // status.sizeBinaries += length;
-                } else {
-                    long length = blob.getMetadata().getContentMetadata().getContentLength();
-                    status.numBinariesGC++;
-                    status.sizeBinariesGC += length;
-                    // record file to delete
-                    unmarked.add(digest);
-                    marked.remove(digest); // optimize memory
+                String marker = metadatas.getNextMarker();
+                if (marker == null) {
+                    break;
                 }
+                options = ListContainerOptions.Builder.afterMarker(marker);
             }
             marked = null; // help GC
 

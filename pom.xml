@@ -35,7 +35,11 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jclouds</groupId>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jclouds</groupId>
       <artifactId>jclouds-allblobstore</artifactId>
     </dependency>
     <dependency>

@@ -28,6 +28,9 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.jclouds.blobstore.domain.PageSet;
+import org.jclouds.blobstore.domain.StorageMetadata;
+import org.jclouds.blobstore.options.ListContainerOptions;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.storage.binary.Binary;
@@ -149,7 +152,8 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
         // binaries size not computed
         // assertEquals(bytes.length + 4, status.sizeBinaries);
         assertEquals(1, status.numBinariesGC);
-        assertEquals(3, status.sizeBinariesGC);
+        // TODO size in metadata available only in upcoming JClouds 1.9.0 (JCLOUDS-654)
+        // assertEquals(3, status.sizeBinariesGC);
         assertEquals(new HashSet<String>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
 
         // real GC
@@ -163,7 +167,8 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
         // binaries size not computed
         // assertEquals(bytes.length + 4, status.sizeBinaries);
         assertEquals(1, status.numBinariesGC);
-        assertEquals(3, status.sizeBinariesGC);
+        // TODO size in metadata available only in upcoming JClouds 1.9.0 (JCLOUDS-654)
+        // assertEquals(3, status.sizeBinariesGC);
         assertEquals(new HashSet<String>(Arrays.asList(CONTENT_MD5, CONTENT3_MD5)), listObjects());
 
         // another GC after not marking content3
@@ -176,7 +181,8 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
         // binaries size not computed
         // assertEquals(bytes.length, status.sizeBinaries);
         assertEquals(1, status.numBinariesGC);
-        assertEquals(4, status.sizeBinariesGC);
+        // TODO size in metadata available only in upcoming JClouds 1.9.0 (JCLOUDS-654)
+        // assertEquals(4, status.sizeBinariesGC);
         assertEquals(Collections.singleton(CONTENT_MD5), listObjects());
     }
 
@@ -184,13 +190,22 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
      * Lists all objects that look like MD5 digests.
      */
     protected Set<String> listObjects() {
-        Set<String> keyList = binaryManager.storeMap.keySet();
         Set<String> digests = new HashSet<String>();
-        for (String digest : keyList) {
-            if (!JCloudsBinaryManager.isMD5(digest)) {
-                continue;
+        ListContainerOptions options = ListContainerOptions.NONE;
+        for (;;) {
+            PageSet<? extends StorageMetadata> metadatas = binaryManager.blobStore.list(binaryManager.storeName, options);
+            for (StorageMetadata metadata : metadatas) {
+                String digest = metadata.getName();
+                if (!JCloudsBinaryManager.isMD5(digest)) {
+                    continue;
+                }
+                digests.add(digest);
             }
-            digests.add(digest);
+            String marker = metadatas.getNextMarker();
+            if (marker == null) {
+                break;
+            }
+            options = ListContainerOptions.Builder.afterMarker(marker);
         }
         return digests;
     }
