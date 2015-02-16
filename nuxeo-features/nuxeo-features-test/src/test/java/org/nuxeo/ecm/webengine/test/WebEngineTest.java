@@ -19,6 +19,8 @@ package org.nuxeo.ecm.webengine.test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import javax.inject.Inject;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,8 +30,6 @@ import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.web.Browser;
 import org.nuxeo.runtime.test.runner.web.BrowserFamily;
 import org.nuxeo.runtime.test.runner.web.HomePage;
-
-import com.google.inject.Inject;
 
 // should fix in webengine web-types to add a dynamic mode
 @Ignore("This is working only if admin module is loaded from a jar -> otherwise webengine types are missing from META-INF")

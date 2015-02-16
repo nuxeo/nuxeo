@@ -3,6 +3,8 @@ package org.nuxeo.ecm.automation.core.test.directory;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -21,8 +23,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)

@@ -19,6 +19,8 @@ package org.nuxeo.ecm.core.api.validation;
 
 import java.util.Arrays;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.Path;
@@ -32,8 +34,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 
 // Look at the @Test(expected=...) to understand the tests
 // for those tests, both saveDocument, createDocument and importDocument validation context are enable by default

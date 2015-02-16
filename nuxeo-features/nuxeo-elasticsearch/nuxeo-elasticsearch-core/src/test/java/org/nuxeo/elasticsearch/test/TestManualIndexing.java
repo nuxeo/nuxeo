@@ -20,6 +20,8 @@ package org.nuxeo.elasticsearch.test;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -41,8 +43,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import com.google.inject.Inject;
 
 /**
  * Test servcie declaration as well as basic indexing API

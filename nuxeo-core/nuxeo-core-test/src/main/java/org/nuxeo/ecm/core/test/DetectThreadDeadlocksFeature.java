@@ -25,6 +25,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.inject.Inject;
+
 import org.apache.commons.logging.LogFactory;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
@@ -32,8 +34,6 @@ import org.junit.runner.notification.RunNotifier;
 import org.nuxeo.runtime.management.jvm.ThreadDeadlocksDetector;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
-
-import com.google.inject.Inject;
 
 public class DetectThreadDeadlocksFeature extends SimpleFeature {
 

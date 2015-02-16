@@ -22,6 +22,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -31,8 +33,6 @@ import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.collections.core.automation.GetCollectionsOperation;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-
-import com.google.inject.Inject;
 
 /**
  * Class testing the operation "Collection.GetCollections".

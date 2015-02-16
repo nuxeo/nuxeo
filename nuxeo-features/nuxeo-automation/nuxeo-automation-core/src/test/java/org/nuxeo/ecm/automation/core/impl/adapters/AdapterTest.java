@@ -17,7 +17,8 @@
  */
 package org.nuxeo.ecm.automation.core.impl.adapters;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

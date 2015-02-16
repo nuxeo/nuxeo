@@ -13,7 +13,10 @@ package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertNotNull;
 
+import javax.inject.Inject;
+
 import junit.framework.Assert;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,8 +33,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**

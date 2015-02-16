@@ -20,6 +20,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +37,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.common.collect.Sets;
-import com.google.inject.Inject;
 
 /**
  * @since 5.9.3

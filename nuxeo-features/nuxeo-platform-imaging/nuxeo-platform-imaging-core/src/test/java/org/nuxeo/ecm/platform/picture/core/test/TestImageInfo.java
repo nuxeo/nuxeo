@@ -21,6 +21,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.net.URL;
 
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,8 +42,6 @@ import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 
 /**
  * @author btatar

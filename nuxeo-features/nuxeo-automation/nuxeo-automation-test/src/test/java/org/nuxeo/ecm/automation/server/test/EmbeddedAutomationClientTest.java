@@ -70,7 +70,6 @@ import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.core.operations.services.AuditLog;
 import org.nuxeo.ecm.automation.core.operations.services.AuditPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
-
 import org.nuxeo.ecm.automation.core.operations.traces.JsonStackToggleDisplayOperation;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
 import org.nuxeo.ecm.automation.server.AutomationServerComponent;
@@ -96,8 +95,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import com.google.inject.Inject;
-
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
 /**

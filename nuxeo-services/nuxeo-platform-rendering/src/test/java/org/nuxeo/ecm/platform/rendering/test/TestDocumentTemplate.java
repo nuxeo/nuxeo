@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+import javax.inject.Inject;
+
 /*
  * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
@@ -39,8 +42,6 @@ import org.nuxeo.ecm.platform.rendering.wiki.extensions.FreemarkerMacro;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.PatternFilter;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>

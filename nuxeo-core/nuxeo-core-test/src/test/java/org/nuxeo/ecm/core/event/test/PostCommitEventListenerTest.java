@@ -18,6 +18,8 @@ package org.nuxeo.ecm.core.event.test;
 
 import static org.junit.Assert.assertEquals;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -33,8 +35,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
-
-import com.google.inject.Inject;
 
 /**
  * PostCommitEventListenerTest test ScriptingPostCommitEventListener

@@ -22,6 +22,8 @@ import static org.nuxeo.ecm.localconf.SimpleConfiguration.SIMPLE_CONFIGURATION_F
 import java.util.Collections;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -34,8 +36,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.localconf.SimpleConfiguration;
-
-import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>

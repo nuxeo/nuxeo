@@ -17,7 +17,6 @@
  */
 package org.nuxeo.ecm.platform.tag;
 
-import com.google.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -36,6 +35,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 import static org.junit.Assert.assertEquals;
 

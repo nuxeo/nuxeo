@@ -31,8 +31,6 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Assert;
 import org.junit.runners.model.FrameworkMethod;
 
-import com.google.inject.Inject;
-
 /**
  * Test feature to capture from a log4j appender to check that some log4j calls have been correctly called.</br> On a
  * test class or a test method using this feature, a custom {@link LogCaptureFeature.Filter} class is to be provided

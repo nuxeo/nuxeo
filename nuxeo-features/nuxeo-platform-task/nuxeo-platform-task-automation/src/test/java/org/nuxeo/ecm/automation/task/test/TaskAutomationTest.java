@@ -28,6 +28,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TimeZone;
 
+import javax.inject.Inject;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -56,8 +58,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import com.google.inject.Inject;
 
 /**
  * @author Anahide Tchertchian "org.nuxeo.ecm.platform.task.testing" })

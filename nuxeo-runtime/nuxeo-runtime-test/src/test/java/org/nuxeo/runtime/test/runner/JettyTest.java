@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
  * $Id$
@@ -21,11 +21,11 @@ package org.nuxeo.runtime.test.runner;
 
 import static org.junit.Assert.assertNotNull;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
-
-import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(JettyFeature.class)

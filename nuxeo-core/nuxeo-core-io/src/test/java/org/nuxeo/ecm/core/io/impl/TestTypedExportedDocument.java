@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 
+import javax.inject.Inject;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.transform.Transformer;
@@ -49,8 +50,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-
-import com.google.inject.Inject;
 
 /**
  * Tests TypedExportedDocument.

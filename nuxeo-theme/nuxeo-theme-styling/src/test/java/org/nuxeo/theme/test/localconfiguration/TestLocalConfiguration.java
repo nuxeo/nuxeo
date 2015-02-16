@@ -16,8 +16,11 @@
 
 package org.nuxeo.theme.test.localconfiguration;
 
+import javax.inject.Inject;
+
 import org.junit.runner.RunWith;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -34,8 +37,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.theme.localconfiguration.LocalThemeConfig;
 import org.nuxeo.theme.localconfiguration.LocalThemeConfigConstants;
-
-import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>

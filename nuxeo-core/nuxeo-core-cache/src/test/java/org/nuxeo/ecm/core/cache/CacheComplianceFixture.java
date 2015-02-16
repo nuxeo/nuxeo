@@ -22,17 +22,15 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.junit.Assert;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CacheFeature.class })

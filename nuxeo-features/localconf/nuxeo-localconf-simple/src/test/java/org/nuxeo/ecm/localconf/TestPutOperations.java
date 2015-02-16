@@ -24,6 +24,8 @@ import static org.nuxeo.ecm.localconf.SimpleConfiguration.SIMPLE_CONFIGURATION_F
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -42,8 +44,6 @@ import org.nuxeo.ecm.localconf.SimpleConfiguration;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>

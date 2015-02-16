@@ -18,6 +18,8 @@ package org.nuxeo.ecm.automation.io.json.test;
 
 import java.io.ByteArrayOutputStream;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -30,8 +32,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.skyscreamer.jsonassert.JSONAssert;
-
-import com.google.inject.Inject;
 
 /**
  * @since 5.9.4

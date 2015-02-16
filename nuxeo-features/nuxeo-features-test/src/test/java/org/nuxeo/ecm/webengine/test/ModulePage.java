@@ -16,9 +16,9 @@
  */
 package org.nuxeo.ecm.webengine.test;
 
-import org.nuxeo.runtime.test.runner.web.WebPage;
+import javax.inject.Inject;
 
-import com.google.inject.Inject;
+import org.nuxeo.runtime.test.runner.web.WebPage;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

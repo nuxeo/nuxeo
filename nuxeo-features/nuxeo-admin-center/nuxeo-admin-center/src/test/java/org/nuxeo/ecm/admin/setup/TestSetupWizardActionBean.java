@@ -28,6 +28,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Level;
@@ -44,8 +46,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
-
-import com.google.inject.Inject;
 
 /**
  * @author jcarsique

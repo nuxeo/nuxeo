@@ -19,6 +19,8 @@ package org.nuxeo.connect.update.live.commands;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 import org.junit.runner.RunWith;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateService;
@@ -26,8 +28,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
-
-import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)

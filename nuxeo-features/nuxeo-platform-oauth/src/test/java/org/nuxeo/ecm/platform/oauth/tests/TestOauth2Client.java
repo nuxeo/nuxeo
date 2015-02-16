@@ -8,6 +8,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileInputStream;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -18,8 +20,6 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.impl.ComponentDescriptorReader;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>

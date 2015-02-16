@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.codehaus.jackson.JsonParseException;
@@ -47,8 +48,6 @@ import org.nuxeo.ecm.webengine.jaxrs.session.SessionRef;
 import org.nuxeo.ecm.webengine.jaxrs.session.impl.PerRequestCoreProvider;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 
 /**
  * @since 5.7.3

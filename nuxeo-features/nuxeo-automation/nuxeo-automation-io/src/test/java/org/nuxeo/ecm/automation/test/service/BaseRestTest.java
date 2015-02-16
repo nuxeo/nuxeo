@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.automation.test.service;
 
-import com.google.inject.Inject;
-
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
@@ -32,6 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
+import javax.inject.Inject;
 import javax.ws.rs.core.HttpHeaders;
 
 import java.io.ByteArrayOutputStream;

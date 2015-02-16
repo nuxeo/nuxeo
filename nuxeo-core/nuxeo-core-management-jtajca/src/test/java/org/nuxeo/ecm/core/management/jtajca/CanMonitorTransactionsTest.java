@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.TransactionManager;
 
@@ -27,8 +28,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature.NoLogCaptureFilterException;
 import org.slf4j.MDC;
-
-import com.google.inject.Inject;
 
 /*
  * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.

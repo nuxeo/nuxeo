@@ -22,6 +22,8 @@ import static org.nuxeo.ecm.platform.filemanager.RepositoryInit.PATH_FOLDER;
 import static org.nuxeo.ecm.platform.filemanager.RepositoryInit.PATH_WORKSPACE;
 import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_DEFAULT_TYPE;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -35,8 +37,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:ei@nuxeo.com">Eugen Ionica</a>

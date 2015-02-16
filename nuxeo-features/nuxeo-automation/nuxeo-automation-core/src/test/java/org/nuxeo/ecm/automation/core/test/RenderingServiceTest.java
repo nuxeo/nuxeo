@@ -13,9 +13,12 @@ package org.nuxeo.ecm.automation.core.test;
 
 import java.net.URL;
 
+import javax.inject.Inject;
+
 import org.junit.runner.RunWith;
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.automation.AutomationService;
@@ -37,8 +40,6 @@ import org.nuxeo.runtime.services.resource.ResourceService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

@@ -1,5 +1,7 @@
 package org.nuxeo.ecm.directory.sql;
 
+import javax.inject.Inject;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Assert;
@@ -21,8 +23,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature.NoLogCaptureFilterException;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ LogCaptureFeature.class, TransactionalFeature.class, CoreFeature.class })
