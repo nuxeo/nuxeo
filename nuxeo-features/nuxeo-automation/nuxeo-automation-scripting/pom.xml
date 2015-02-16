@@ -8,7 +8,7 @@
     <version>7.2-SNAPSHOT</version>
   </parent>
   <artifactId>nuxeo-automation-scripting</artifactId>
-  <name>nuxeo-automation-scripting</name>
+  <name>Nuxeo Automation Scripting</name>
   <description>Nuxeo Automation Scripting</description>
   <dependencies>
     <dependency>
