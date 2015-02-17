@@ -78,7 +78,9 @@ public class IndexingMonitor {
         }
         lock.lock();
         try {
-            indexingDone.await();
+            while (totalWorkerCounter.get() != 0) {
+                indexingDone.await();
+            }
         } catch (InterruptedException e) {
             //
         } finally {

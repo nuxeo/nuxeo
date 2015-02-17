@@ -112,7 +112,7 @@ public class TestService {
         ListenableFuture<Boolean> futureRet = esa.prepareWaitForIndexing();
         try {
             exception.expect(TimeoutException.class);
-            futureRet.get(1, TimeUnit.MILLISECONDS);
+            futureRet.get(0, TimeUnit.MILLISECONDS);
         } finally {
             Assert.assertTrue(futureRet.get());
             Assert.assertFalse(esa.isIndexingInProgress());
