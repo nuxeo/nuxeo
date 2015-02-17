@@ -125,7 +125,7 @@ function run() {
           if ((typeof(v.length) !== 'undefined') && (v.length === 0)) {
             continue;
           }
-          namedParameters[k] = JSON.stringify(v);
+          namedParameters[k] = (typeof v == "string") ? v : JSON.stringify(v);
         }
         sheet.namedParameters = namedParameters;
       }
