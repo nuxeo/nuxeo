@@ -14,7 +14,7 @@
 
   <target name="vcs-tests-setup" depends="_initdb">
     <nx:profile name="default">
-      <touch file="${vcsprops}" />
+      <echo file="${vcsprops}" append="false" />
     </nx:profile>
     <nx:profile name="pgsql">
       <echo file="${vcsprops}" append="false">
