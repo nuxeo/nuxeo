@@ -334,7 +334,8 @@ div.detail {
   border: 2px dashed #ff5b2b;
   background-color: #ffefb6 }
 
-.nxlDevContainer {
+.nxlDevRegion .nxlDevContainer,
+div.nxlDevRegion .nxlDevContainer.displayN {
   display: none }
 
 #nxlMainDevContainer {
@@ -342,8 +343,9 @@ div.detail {
   bottom: 0;
   width: 100%;
   background-color: #fff;
-  border: 1px solid #bbb;
+  border-top: 1px solid #bbb;
   color: #000;
+  font-size: .8em;
   font-weight: normal;
   padding: 1em;
   text-transform: initial;
