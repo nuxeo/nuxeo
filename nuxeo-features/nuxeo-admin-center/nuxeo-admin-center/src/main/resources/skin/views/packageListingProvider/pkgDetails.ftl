@@ -18,8 +18,8 @@
          <tr>
             <td class="packageLabel">${Context.getMessage('label.pkgDetails.titles.description')}</td>
             <td class="packageField" style="white-space:pre-line"> ${pkg.description} </td>
-           </tr>
-          <tr>
+         </tr>
+         <tr>
             <td class="packageLabel">${Context.getMessage('label.pkgDetails.titles.home')}</td>
             <td class="packageField">
             <#if pkg.homePage?? || pkg.homePage=="" >
@@ -27,24 +27,23 @@
             <#else>
                <A href="${pkg.homePage}" target="pkgHomePage">${Context.getMessage('label.pkgDetails.links.home')}</A>
             </#if>
-             </td>
+            </td>
          </tr>
-          <tr>
+         <#if !pkg.isLocal()>
+         <tr>
            <td class="packageLabel">
-           <#if pkg.isLocal()==false>
-           ${pkg.commentsNumber}
-           </#if> ${Context.getMessage('label.pkgDetails.titles.comments')}</td>
+            ${pkg.commentsNumber}&nbsp;${Context.getMessage('label.pkgDetails.titles.comments')}
+           </td>
            <td class="packageField">
-           <#if pkg.commentsNumber==0 && !pkg.isLocal() >
-           &nbsp;
-           <#else>
-           <span class="commentArea" id="commentArea-${pkg.id}">
-           <A href="javascript:fetchComments('${pkg.id}')">${Context.getMessage('label.pkgDetails.links.comments')}</A>
-           </span>
-           </#if>
+             <#if pkg.commentsNumber==0 >
+               &nbsp;
+             <#else>
+             <span class="commentArea" id="commentArea-${pkg.id}">
+               <a href="javascript:fetchComments('${pkg.id}')">${Context.getMessage('label.pkgDetails.links.comments')}</a>
+             </span>
+             </#if>
            </td>
           </tr>
-          <#if pkg.isLocal()==false>
           <tr>
             <td class="packageLabel">${Context.getMessage('label.pkgDetails.titles.downloadcount')}</td>
              <td class="packageField"> ${pkg.downloadsCount} </td>
