@@ -63,10 +63,11 @@ import org.nuxeo.template.processors.HtmlBodyExtractor;
 @RepositoryConfig(init = RenditionPublicationRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.mimetype.api", "org.nuxeo.ecm.platform.mimetype.core",
         "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.rendition.api",
-        "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.platform.rendition.publisher",
-        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.versioning.api", "org.nuxeo.ecm.platform.versioning",
-        "org.nuxeo.ecm.relations", "org.nuxeo.ecm.relations.jena", "org.nuxeo.ecm.platform.publisher.core.contrib",
+        "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.actions",
+        "org.nuxeo.ecm.platform.rendition.api", "org.nuxeo.ecm.platform.rendition.core",
+        "org.nuxeo.ecm.platform.rendition.publisher", "org.nuxeo.ecm.automation.core",
+        "org.nuxeo.ecm.platform.versioning.api", "org.nuxeo.ecm.platform.versioning", "org.nuxeo.ecm.relations",
+        "org.nuxeo.ecm.relations.jena", "org.nuxeo.ecm.platform.publisher.core.contrib",
         "org.nuxeo.ecm.platform.publisher.core", "org.nuxeo.ecm.platform.publisher.task",
         TaskUTConstants.CORE_BUNDLE_NAME, TaskUTConstants.TESTING_BUNDLE_NAME,
         "org.nuxeo.ecm.platform.rendition.publisher", "org.nuxeo.template.manager" })
