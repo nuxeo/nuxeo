@@ -52,7 +52,6 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
-import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -65,6 +64,9 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
+import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.QName;
@@ -83,6 +85,7 @@ import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.codec.DocumentIdCodec;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.RenderingContextWebUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -703,17 +706,16 @@ public class Select2ActionsBean implements Serializable {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedOutputStream out = new BufferedOutputStream(baos);
         JsonGenerator jg = JsonHelper.createJsonGenerator(out);
-        String[] schemas = Select2Common.getSchemas(schemaNames);
         jg.writeStartArray();
+
+        DocumentModelJsonWriter writer = getDocumentModelWriter(schemaNames);
 
         for (String ref : storedRefs) {
             DocumentModel doc = resolveReference(repo, ref, operationName, idProperty);
             if (doc == null) {
                 processDocumentNotFound(ref, jg);
             } else {
-                Map<String, String> contextParameters = getContextParameter(doc);
-                HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-                JsonDocumentWriter.writeDocument(jg, doc, schemas, contextParameters, request);
+                writer.write(doc, jg);
             }
         }
 
@@ -896,11 +898,7 @@ public class Select2ActionsBean implements Serializable {
         if (doc == null) {
             processDocumentNotFound(storedReference, jg);
         } else {
-            String[] schemas = Select2Common.getSchemas(schemaNames);
-
-            Map<String, String> contextParameters = getContextParameter(doc);
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            JsonDocumentWriter.writeDocument(jg, doc, schemas, contextParameters, request);
+            getDocumentModelWriter(schemaNames).write(doc, jg);
         }
         jg.flush();
         return new String(baos.toByteArray(), "UTF-8");
@@ -948,6 +946,14 @@ public class Select2ActionsBean implements Serializable {
             return "";
         }
         return obj.optString(Select2Common.LABEL);
+    }
+
+    protected DocumentModelJsonWriter getDocumentModelWriter(final String schemaNames) {
+        MarshallerRegistry registry = Framework.getService(MarshallerRegistry.class);
+        String[] schemas = Select2Common.getSchemas(schemaNames);
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        RenderingContext ctx = RenderingContextWebUtils.getBuilder(request).properties(schemas).enrichDoc("documentURL").get();
+        return registry.getInstance(ctx, DocumentModelJsonWriter.class);
     }
 
 }
