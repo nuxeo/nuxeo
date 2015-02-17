@@ -35,6 +35,7 @@ import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
 import org.nuxeo.automation.scripting.api.AutomationScriptingException;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
@@ -46,7 +47,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
 
     protected String jsWrapper = null;
 
-    protected String getJSWrapper(boolean refresh) {
+    protected String getJSWrapper(boolean refresh) throws OperationException {
         if (jsWrapper == null || refresh) {
             StringBuffer sb = new StringBuffer();
             AutomationService as = Framework.getService(AutomationService.class);
@@ -54,6 +55,9 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
             List<String> flatOps = new ArrayList<>();
             List<String> ids = new ArrayList<>();
             for (OperationType op : as.getOperations()) {
+                if (op.getDocumentation().isChain()) {
+                    continue;
+                }
                 ids.add(op.getId());
                 if (op.getAliases() != null) {
                     Collections.addAll(ids, op.getAliases());
@@ -79,7 +83,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     }
 
     @Override
-    public String getJSWrapper() {
+    public String getJSWrapper() throws OperationException {
         return getJSWrapper(false);
     }
 
@@ -105,7 +109,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     }
 
     @Override
-    public void run(InputStream in, CoreSession session) throws ScriptException {
+    public void run(InputStream in, CoreSession session) throws ScriptException, OperationException {
         try {
             run(IOUtils.toString(in, "UTF-8"), session);
         } catch (IOException e) {
@@ -114,7 +118,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     }
 
     @Override
-    public void run(String script, CoreSession session) throws ScriptException {
+    public void run(String script, CoreSession session) throws ScriptException, OperationException {
         ScriptEngine engine = engines.get();
         engine.setContext(new SimpleScriptContext());
         engine.eval(getJSWrapper());
@@ -124,7 +128,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
 
     @Override
     public <T> T getInterface(Class<T> scriptingOperationInterface, String script, CoreSession session)
-            throws ScriptException {
+            throws ScriptException, OperationException {
         run(script, session);
         Invocable inv = (Invocable) engines.get();
         return inv.getInterface(scriptingOperationInterface);

@@ -20,6 +20,7 @@ import java.io.InputStream;
 
 import javax.script.ScriptException;
 
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
@@ -30,7 +31,7 @@ public interface AutomationScriptingService {
     /**
      * @return The default JS binding wrapper injected into Nashorn.
      */
-    String getJSWrapper();
+    String getJSWrapper() throws OperationException;
 
     /**
      * Run Automation Scripting with given 'JavaScript' InputStream and CoreSession.
@@ -38,7 +39,7 @@ public interface AutomationScriptingService {
      * @param session
      * @throws ScriptException
      */
-    void run(InputStream in, CoreSession session) throws ScriptException;
+    void run(InputStream in, CoreSession session) throws ScriptException, OperationException;
 
     /**
      * Run Automation Scripting for a given 'JavaScript' script and CoreSession.
@@ -46,7 +47,7 @@ public interface AutomationScriptingService {
      * @param session
      * @throws ScriptException
      */
-    void run(String script, CoreSession session) throws ScriptException;
+    void run(String script, CoreSession session) throws ScriptException, OperationException;
 
     /**
      * @param scriptingOperationInterface
@@ -57,5 +58,5 @@ public interface AutomationScriptingService {
      * @throws ScriptException
      */
     <T> T getInterface(Class<T> scriptingOperationInterface, String script,
-            CoreSession session) throws ScriptException;
+            CoreSession session) throws ScriptException, OperationException;
 }

@@ -47,6 +47,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.automation.scripting.internals.MarshalingHelper;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -133,7 +134,7 @@ public class TestCompileAndContext {
 
     @Ignore("for performance testing purpose")
     @Test
-    public void testPerf() throws ScriptException {
+    public void testPerf() throws ScriptException, OperationException {
         long start = System.currentTimeMillis();
         for(int i=0;i<500;i++) {
             scriptingService.run(scriptingService.getJSWrapper(), session);
