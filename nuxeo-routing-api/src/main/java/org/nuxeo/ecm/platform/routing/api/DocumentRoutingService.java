@@ -596,10 +596,14 @@ public interface DocumentRoutingService {
     List<DocumentRoute> getDocumentRelatedWorkflows(final DocumentModel document, final CoreSession session);
 
     /**
-     * @return
      * @since 7.2
      */
     List<DocumentRoute> getRunningWorkflowInstancesLaunchedByCurrentUser(final CoreSession session);
+
+    /**
+     * @since 7.2
+     */
+    List<DocumentRoute> getRunningWorkflowInstancesLaunchedByCurrentUser(CoreSession session, String worflowModelName);
 
     /**
      * Returns true id the document route is a model, false if it is just an instance i.e. a running workflow.

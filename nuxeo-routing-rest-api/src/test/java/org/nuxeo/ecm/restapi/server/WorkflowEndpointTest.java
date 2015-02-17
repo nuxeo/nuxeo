@@ -440,6 +440,35 @@ public class WorkflowEndpointTest extends BaseTest {
         response = getResponse(RequestType.GET, "/task", null, queryParams, null, null);
         node = mapper.readTree(response.getEntityInputStream());
         assertEquals(2, node.get("entries").size());
+
+    }
+
+    @Test
+    public void testMultipleWorkflowInstanceCreation2() throws IOException {
+        // Initiate a SerialDocumentReview workflow
+        ClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+
+        // Initiate a ParallelDocumentReview workflow
+        response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("ParallelDocumentReview", null));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+
+        // Check GET /workflow?workflowMnodelName=SerialDocumentReview
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.put("workflowModelName", Arrays.asList(new String[] { "SerialDocumentReview" }));
+        response = getResponse(RequestType.GET, "/workflow", null, queryParams, null, null);
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(1, node.get("entries").size());
+
+        // Check GET /workflow?workflowMnodelName=ParallelDocumentReview
+        queryParams.put("workflowModelName", Arrays.asList(new String[] { "ParallelDocumentReview" }));
+        response = getResponse(RequestType.GET, "/workflow", null, queryParams, null, null);
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(1, node.get("entries").size());
     }
 
 }

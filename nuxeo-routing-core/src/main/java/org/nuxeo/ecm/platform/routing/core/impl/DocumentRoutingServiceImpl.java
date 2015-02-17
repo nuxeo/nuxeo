@@ -1263,13 +1263,32 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
      */
     @Override
     public List<DocumentRoute> getRunningWorkflowInstancesLaunchedByCurrentUser(CoreSession session) {
+        return getRunningWorkflowInstancesLaunchedByCurrentUser(session, null);
+    }
+
+    /**
+     * @since 7.2
+     */
+    @Override
+    public List<DocumentRoute> getRunningWorkflowInstancesLaunchedByCurrentUser(CoreSession session, String worflowModelName) {
         final String query = String.format("SELECT * FROM %s WHERE docri:initiator = '%s' AND ecm:currentLifeCycleState = '%s'",
                 DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE, session.getPrincipal().getName(),
                 DocumentRouteElement.ElementLifeCycleState.running);
         DocumentModelList documentModelList = session.query(query.toString());
         List<DocumentRoute> result = new ArrayList<DocumentRoute>();
         for (DocumentModel documentModel : documentModelList) {
-            result.add(documentModel.getAdapter(GraphRoute.class));
+            final GraphRoute graphRoute = documentModel.getAdapter(GraphRoute.class);
+            if (StringUtils.isNotBlank(worflowModelName)) {
+                final String modelId = graphRoute.getModelId();
+                if (StringUtils.isNotBlank(modelId)) {
+                    DocumentRoute model = session.getDocument(new IdRef(modelId)).getAdapter(DocumentRoute.class);
+                    if (worflowModelName.equals(model.getName())) {
+                        result.add(graphRoute);
+                    }
+                }
+            } else {
+                result.add(graphRoute);
+            }
         }
         return result;
     }
