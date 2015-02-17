@@ -21,7 +21,7 @@
       Extension point to register rendition definitions.
       For instance, here is one defining a PDF rendition.
       <code>
-        <renditionDefinition name="pdf" enable="true">
+        <renditionDefinition name="pdf" enabled="true">
           <label>label.rendition.pdf</label>
           <operationChain>blobToPDF</operationChain>
         </renditionDefinition>

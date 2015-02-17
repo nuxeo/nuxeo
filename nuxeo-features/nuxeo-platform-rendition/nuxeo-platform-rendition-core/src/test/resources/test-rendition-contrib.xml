@@ -8,7 +8,7 @@
     point="operations">
     <operation class="org.nuxeo.ecm.platform.rendition.service.DummyDocToTxt" />
   </extension>
- 
+
   <extension point="chains"
     target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
     <chain id="Dummy">
@@ -16,15 +16,15 @@
       <operation id="DummyDoc.ToTxt" />
     </chain>
   </extension>
- 
+
   <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService" point="renditionDefinitions">
-    <renditionDefinition name="renditionDefinitionWithCustomOperationChain" enable="true">
+    <renditionDefinition name="renditionDefinitionWithCustomOperationChain" enabled="true">
       <label>label.rendition.pdf</label>
       <operationChain>Dummy</operationChain>
       <allowEmptyBlob>true</allowEmptyBlob>
     </renditionDefinition>
 
-    <renditionDefinition name="renditionDefinitionWithUnknownOperationChain" enable="true">
+    <renditionDefinition name="renditionDefinitionWithUnknownOperationChain" enabled="true">
       <label>label.rendition.pdf</label>
       <operationChain>Whatever</operationChain>
     </renditionDefinition>
