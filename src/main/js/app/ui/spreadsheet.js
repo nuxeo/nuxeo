@@ -115,6 +115,8 @@ class Spreadsheet {
     return this.query.run()
         .then((result) => {
           Array.prototype.push.apply(this._data, result.entries);
+          // prevent adding new rows
+          this.ht.updateSettings({maxRows: this._data.length});
           this.ht.render();
           if (result.isNextPageAvailable) {
             this.query.page++;
