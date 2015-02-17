@@ -365,12 +365,12 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
                 String key = es.getKey();
                 Serializable value = es.getValue();
                 if (graphVariables.containsKey(key)) {
-                    if (!allowGlobalVariablesAssignement && transientSchema != null && !transientSchema.hasField(key)) {
-                        throw new DocumentRouteException(String.format(
-                                "You don't have the permission to set the workflow variable %s", key));
-                    }
                     Serializable oldValue = graphVariables.get(key);
                     if (!equality(value, oldValue)) {
+                        if (!allowGlobalVariablesAssignement && transientSchema != null && !transientSchema.hasField(key)) {
+                            throw new DocumentRouteException(String.format(
+                                    "You don't have the permission to set the workflow variable %s", key));
+                        }
                         changedGraphVariables.put(key, value);
                     }
                 }
