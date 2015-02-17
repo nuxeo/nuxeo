@@ -98,7 +98,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
             } else {
                 return new NashornScriptEngineFactory().getScriptEngine();
             }
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             throw new AutomationScriptingException(
                     "Cannot create Nashorn Engine. Make sure you're running Nuxeo with jdk8u25 at least.", e);
         }
