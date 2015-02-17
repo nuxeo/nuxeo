@@ -54,11 +54,11 @@
           <label mode="any">Action Categories</label>
         </labels>
         <fields>
-          <field>categories</field>
+          <field>categoryList</field>
         </fields>
         <widgetModes>
           <mode value="any">
-            #{nxu:test(empty layoutValue.categories, 'hidden',
+            #{nxu:test(empty layoutValue.categoryList, 'hidden',
             mode)}
           </mode>
         </widgetModes>

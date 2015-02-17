@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.actions;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -201,6 +202,18 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
 
     public String[] getCategories() {
         return categories;
+    }
+
+    /**
+     * Returns the categories as a list.
+     *
+     * @since 7.2
+     */
+    public List<String> getCategoryList() {
+        if (categories == null) {
+            return null;
+        }
+        return Arrays.asList(categories);
     }
 
     public String getId() {
