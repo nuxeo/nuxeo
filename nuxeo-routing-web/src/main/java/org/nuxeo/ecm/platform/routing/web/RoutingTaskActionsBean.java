@@ -697,6 +697,6 @@ public class RoutingTaskActionsBean implements Serializable {
             return false;
         }
         GraphNode node = workflow.getNode(currentTask.getType());
-        return node.allowTaskReassignment();
+        return node.allowTaskReassignment() && !currentTask.getDelegatedActors().contains(documentManager.getPrincipal().getName());
     }
 }
