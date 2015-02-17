@@ -235,8 +235,9 @@
                 results : results
               });
               requestInProgress = false;
-            }, function() {
-              requestInProgress = false;
+            }, function(xhr, status, e) {
+                alert("Error while querying data from server: " + status);
+                requestInProgress = false;
             });
           } else {
             window.clearTimeout(nextQueryId);
