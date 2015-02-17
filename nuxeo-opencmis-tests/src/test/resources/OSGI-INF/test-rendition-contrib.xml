@@ -4,7 +4,7 @@
   <require>org.nuxeo.ecm.platform.rendition.contrib</require>
 
   <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService" point="renditionDefinitions">
-    <renditionDefinition name="renditionDefinitionWithUndefinedOperationChain" enable="true">
+    <renditionDefinition name="renditionDefinitionWithUndefinedOperationChain" enabled="true">
       <label>label.rendition.pdf</label>
       <operationChain>undefinedOperationChain</operationChain>
     </renditionDefinition>
