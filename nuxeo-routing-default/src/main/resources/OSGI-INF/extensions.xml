@@ -27,7 +27,10 @@
       <operation id="Auth.LoginAs">
         <param type="string" name="name">expr:workflowInitiator</param>
       </operation>
-      <operation id="Document.Lock"/>
+      <operation id="Context.RunOperation">
+        <param type="string" name="id">expr:Document.isLocked()?"voidChain":"Document.Lock"</param>
+        <param type="boolean" name="isolate">false</param>
+      </operation>
     </chain>
     <chain id="NRD-AC-PR-UnlockDocument">
       <operation id="Context.FetchDocument"/>
