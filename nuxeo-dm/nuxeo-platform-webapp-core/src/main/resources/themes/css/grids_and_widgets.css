@@ -475,6 +475,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   margin: .1em .2em -0.2em 0 }
 
 .infoViewActions .horizontalAction {
+  display: inline-block;
   padding-right: 1em }
 
 .infoViewDocContainer iframe {
