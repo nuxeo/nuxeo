@@ -135,6 +135,9 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     }
 
     protected void parseAutomationIDSForScripting(Map<String, List<String>> opMap, List<String> flatOps, String id) {
+        if (id.split("\\.").length > 2) {
+            return;
+        }
         int idx = id.indexOf(".");
         if (idx > 0) {
             String obName = id.substring(0, idx);
