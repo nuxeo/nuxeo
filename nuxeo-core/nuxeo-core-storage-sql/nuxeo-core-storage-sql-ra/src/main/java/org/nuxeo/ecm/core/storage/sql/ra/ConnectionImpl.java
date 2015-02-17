@@ -381,6 +381,7 @@ public class ConnectionImpl implements Session {
                         "Closing a query results for you, check stack trace for allocating point", context);
             }
         }
+        queryResults.clear();
     }
 
     @Override
