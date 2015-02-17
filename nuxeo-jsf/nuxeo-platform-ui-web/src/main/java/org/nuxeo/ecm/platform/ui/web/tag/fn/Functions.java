@@ -178,17 +178,10 @@ public final class Functions {
             return null;
         }
         StringBuffer result = new StringBuffer();
-        int i = 0;
-        for (Object object : collection) {
-            result.append(object);
-            if (++i == collection.length - 1) {
-                separator = finalSeparator;
-            }
-            if (i != collection.length) {
-                result.append(separator);
-            }
+        result.append(StringUtils.join(collection, separator));
+        if (collection != null && collection.length > 0 && !StringUtils.isBlank(finalSeparator)) {
+            result.append(finalSeparator);
         }
-
         return result.toString();
     }
 
