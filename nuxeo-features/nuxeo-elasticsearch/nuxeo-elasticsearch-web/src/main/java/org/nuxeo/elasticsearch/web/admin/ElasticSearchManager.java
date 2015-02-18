@@ -28,6 +28,8 @@ import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
 import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsResponse;
+import org.elasticsearch.action.count.CountResponse;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -63,6 +65,8 @@ public class ElasticSearchManager {
 
     private static final String JSON_DELETE_CMD = "{\"id\":\"IndexingCommand-reindex\",\"type\":\"ES_DELETE\",\"docId\":\"%s\",\"repo\":\"%s\",\"recurse\":true,\"sync\":true}";
 
+    private static final String ES_CLUSTER_INFO_PROPERTY = "elasticsearch.adminCenter.displayClusterInfo";
+
     @In(create = true)
     protected ElasticSearchAdmin esa;
 
@@ -97,7 +101,8 @@ public class ElasticSearchManager {
     }
 
     public String getNodesHealth() {
-        ClusterHealthResponse health = esa.getClient().admin().cluster().prepareHealth().execute().actionGet();
+        String[] indices = getIndexNames();
+        ClusterHealthResponse health = esa.getClient().admin().cluster().prepareHealth(indices).get();
         return health.toString();
     }
 
@@ -160,6 +165,10 @@ public class ElasticSearchManager {
         return esa.isIndexingInProgress();
     }
 
+    public Boolean displayClusterInfo() {
+        return Boolean.parseBoolean(Framework.getProperty(ES_CLUSTER_INFO_PROPERTY, "false"));
+    }
+
     public String getPendingWorkerCount() {
         return Integer.valueOf(esa.getPendingWorkerCount()).toString();
     }
@@ -173,13 +182,18 @@ public class ElasticSearchManager {
     }
 
     public String getNumberOfDocuments() {
-        NodesStatsResponse stats = esa.getClient().admin().cluster().prepareNodesStats().execute().actionGet();
-        return Long.valueOf(stats.getNodes()[0].getIndices().getDocs().getCount()).toString();
+        String[] indices = getIndexNames();
+        CountResponse ret = esa.getClient().prepareCount(indices).setQuery(QueryBuilders.matchAllQuery()).get();
+        return Long.valueOf(ret.getCount()).toString();
     }
 
-    public String getNumberOfDeletedDocuments() {
-        NodesStatsResponse stats = esa.getClient().admin().cluster().prepareNodesStats().execute().actionGet();
-        return Long.valueOf(stats.getNodes()[0].getIndices().getDocs().getDeleted()).toString();
+    private String[] getIndexNames() {
+        String indices[]  = new String[esa.getRepositoryNames().size()];
+        int i=0;
+        for (String repo : esa.getRepositoryNames()) {
+            indices[i++] = esa.getIndexNameForRepository(repo);
+        }
+        return indices;
     }
 
     public String getIndexingRates() {

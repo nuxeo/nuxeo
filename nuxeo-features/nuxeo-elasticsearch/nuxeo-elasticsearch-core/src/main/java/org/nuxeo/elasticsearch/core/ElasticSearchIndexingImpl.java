@@ -47,11 +47,9 @@ import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
-import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
-import org.nuxeo.elasticsearch.work.ScrollingIndexingWorker;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
@@ -223,7 +221,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
         if (log.isDebugEnabled()) {
             log.debug(String.format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                    esa.getRepositoryIndex(cmd.getRepositoryName()), DOC_TYPE, cmd.getTargetDocumentId(),
+                    esa.getIndexNameForRepository(cmd.getRepositoryName()), DOC_TYPE, cmd.getTargetDocumentId(),
                     request.request().toString()));
         }
         request.execute().actionGet();
@@ -238,7 +236,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     void processDeleteCommandNonRecursive(IndexingCommand cmd) {
-        String indexName = esa.getRepositoryIndex(cmd.getRepositoryName());
+        String indexName = esa.getIndexNameForRepository(cmd.getRepositoryName());
         DeleteRequestBuilder request = esa.getClient().prepareDelete(indexName, DOC_TYPE, cmd.getTargetDocumentId());
         if (log.isDebugEnabled()) {
             log.debug(String.format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s'", indexName,
@@ -248,7 +246,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     void processDeleteCommandRecursive(IndexingCommand cmd) {
-        String indexName = esa.getRepositoryIndex(cmd.getRepositoryName());
+        String indexName = esa.getIndexNameForRepository(cmd.getRepositoryName());
         // we don't want to rely on target document because the document can be
         // already removed
         String docPath = getPathOfDocFromEs(cmd.getRepositoryName(), cmd.getTargetDocumentId());
@@ -280,7 +278,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
      * Return the ecm:path of an ES document or null if not found.
      */
     String getPathOfDocFromEs(String repository, String docId) {
-        String indexName = esa.getRepositoryIndex(repository);
+        String indexName = esa.getIndexNameForRepository(repository);
         GetRequestBuilder getRequest = esa.getClient().prepareGet(indexName, DOC_TYPE, docId).setFields(PATH_FIELD);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Get path of doc: curl -XGET 'http://localhost:9200/%s/%s/%s?fields=%s'",
@@ -310,7 +308,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             XContentBuilder builder = jsonBuilder();
             JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
             jsonESDocumentWriter.writeESDocument(jsonGen, doc, cmd.getSchemas(), null);
-            return esa.getClient().prepareIndex(esa.getRepositoryIndex(cmd.getRepositoryName()), DOC_TYPE,
+            return esa.getClient().prepareIndex(esa.getIndexNameForRepository(cmd.getRepositoryName()), DOC_TYPE,
                     cmd.getTargetDocumentId()).setSource(builder);
         } catch (IOException e) {
             throw new ClientException("Unable to create index request for Document " + cmd.getTargetDocumentId(), e);

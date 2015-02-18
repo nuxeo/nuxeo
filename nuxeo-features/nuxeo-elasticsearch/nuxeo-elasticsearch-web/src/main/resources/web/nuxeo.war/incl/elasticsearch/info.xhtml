@@ -27,14 +27,14 @@ Indexing worker pending: <h:outputText value="#{esAdmin.pendingWorkerCount}"/>
 Number of command processed since Nuxeo instance startup: <h:outputText value="#{esAdmin.totalCommandProcessed}"/>
   </pre>
 
-  <h3>Indexing rates</h3>
+  <h4>Indexing rates</h4>
   <div class="detail">Exponentially-weighted moving average rate of indexing last 1, 5 and 15 minutes in docs/s (similar to Unix load).</div>
   <pre class="bubbleBox">
     <h:outputText
       value="#{esAdmin.indexingRates}"/>
   </pre>
 
-  <h3>Bulk indexing rates</h3>
+  <h4>Bulk indexing rates</h4>
   <div class="detail">Exponentially-weighted moving average rate of bulk indexing last 1, 5 and 15 minutes in bulk commands/s. A bulk command
   contains a list of documents to index, the default size used when re-indexing is 50 documents per bulk command.</div>
   <pre class="bubbleBox">
@@ -43,9 +43,9 @@ Number of command processed since Nuxeo instance startup: <h:outputText value="#
   </pre>
 
   <h3>Elasticsearch documents</h3>
-  <div class="detail">Number of documents in the Elasticsearch index. Elasticsearch will clean up deleted documents in the background as you continue to index more data.</div>
+  <div class="detail">Number of documents in all the Elasticsearch index associated with repositories.</div>
   <pre class="bubbleBox">
-<h:outputText value="#{esAdmin.numberOfDocuments}"/> (deleted: <h:outputText value="#{esAdmin.numberOfDeletedDocuments}"/>)
+    <h:outputText value="#{esAdmin.numberOfDocuments}"/>
   </pre>
 
   <h3> Elasticsearch Health</h3>
@@ -53,26 +53,28 @@ Number of command processed since Nuxeo instance startup: <h:outputText value="#
     <h:outputText value="#{esAdmin.nodesHealth}"/>
   </pre>
 
-  <h3> Elasticsearch Stats </h3>
+  <c:choose>
+    <c:when test="#{esAdmin.displayClusterInfo()}">
+      <h3> Elasticsearch Stats </h3>
 
-  <div>
-    <a id="ESStatsOpen" href="#" class="button tinyButton">Expand all</a>
-    <a id="ESStatsClose" href="#" class="button tinyButton" style="display:none">Unexpand all</a>
-  </div>
+      <div>
+        <a id="ESStatsOpen" href="#" class="button tinyButton">Expand all</a>
+        <a id="ESStatsClose" href="#" class="button tinyButton" style="display:none">Unexpand all</a>
+      </div>
 
-  <div id="ESStats"></div>
+      <div id="ESStats"></div>
 
-  <h3> Elasticsearch Cluster Config</h3>
+      <h3> Elasticsearch Cluster Config</h3>
 
-  <div>
-    <a id="ESConfigOpen" href="#" class="button tinyButton">Expand all</a>
-    <a id="ESConfigClose" href="#" class="button tinyButton" style="display:none">Unexpand all</a>
-  </div>
+      <div>
+        <a id="ESConfigOpen" href="#" class="button tinyButton">Expand all</a>
+        <a id="ESConfigClose" href="#" class="button tinyButton" style="display:none">Unexpand all</a>
+      </div>
 
-  <div id="ESConfig"></div>
+      <div id="ESConfig"></div>
 
-  <a4j:outputPanel ajaxRendered="true">
-    <script>
+      <a4j:outputPanel ajaxRendered="true">
+        <script>
 function initExpandAll(divId) {
   jQuery('#' + divId + 'Open').click(function() {
     jQuery(this).css('display', 'none');
@@ -103,5 +105,7 @@ jQuery(document).ready(function(){
   initExpandAll('ESConfig');
 })
     </script>
-  </a4j:outputPanel>
+      </a4j:outputPanel>
+    </c:when>
+  </c:choose>
 </div>
