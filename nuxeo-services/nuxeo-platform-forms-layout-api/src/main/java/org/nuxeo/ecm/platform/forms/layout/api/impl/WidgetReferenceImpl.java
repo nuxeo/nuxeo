@@ -59,4 +59,19 @@ public class WidgetReferenceImpl implements WidgetReference {
         return new WidgetReferenceImpl(category, name);
     }
 
+    /**
+     * @since 7.2
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof WidgetReferenceImpl)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        WidgetReferenceImpl w = (WidgetReferenceImpl) obj;
+        return new EqualsBuilder().append(name, w.name).append(category, w.category).isEquals();
+    }
+
 }

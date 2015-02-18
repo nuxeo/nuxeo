@@ -58,9 +58,28 @@ public class TestLayoutStoreService extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
+    /**
+     * Non-regression test for NXP-13695.
+     */
+    @Test
+    public void testLayoutUnregister() throws Exception {
+        LayoutDefinition l = service.getLayoutDefinition("testCategory", "testLayout");
+        assertNotNull(l);
+        assertEquals(4, l.getRows().length);
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.core.tests", "layouts-core-test-override-contrib.xml");
+        // check override
+        l = service.getLayoutDefinition("testCategory", "testLayout");
+        assertNotNull(l);
+        assertEquals(0, l.getRows().length);
+        undeployContrib("org.nuxeo.ecm.platform.forms.layout.core.tests", "layouts-core-test-override-contrib.xml");
+        // check back to original def
+        l = service.getLayoutDefinition("testCategory", "testLayout");
+        assertNotNull(l);
+        assertEquals(4, l.getRows().length);
+    }
+
     @Test
     public void testWidgetType() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.core.tests", "layouts-core-test-contrib.xml");
         WidgetType wType = service.getWidgetType("testCategory", "test");
         assertEquals("test", wType.getName());
         assertEquals(2, wType.getProperties().size());

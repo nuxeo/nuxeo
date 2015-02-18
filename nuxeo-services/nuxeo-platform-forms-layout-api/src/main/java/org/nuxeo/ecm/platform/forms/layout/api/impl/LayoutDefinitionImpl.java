@@ -339,4 +339,22 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         return clone;
     }
 
+    /**
+     * @since 7.2
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof LayoutDefinitionImpl)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        LayoutDefinitionImpl ld = (LayoutDefinitionImpl) obj;
+        return new EqualsBuilder().append(name, ld.name).append(type, ld.type).append(typeCategory, ld.typeCategory).append(
+                properties, ld.properties).append(templates, ld.templates).append(rows, ld.rows).append(widgets,
+                ld.widgets).append(renderingInfos, ld.renderingInfos).append(aliases, ld.aliases).append(dynamic,
+                ld.dynamic).isEquals();
+    }
+
 }

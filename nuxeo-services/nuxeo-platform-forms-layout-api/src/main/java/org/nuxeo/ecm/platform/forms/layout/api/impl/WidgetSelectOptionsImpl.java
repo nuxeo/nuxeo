@@ -157,4 +157,20 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
         return clone;
     }
 
+    /**
+     * @since 7.2
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof WidgetSelectOptionsImpl)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        WidgetSelectOptionsImpl w = (WidgetSelectOptionsImpl) obj;
+        return new EqualsBuilder().append(value, w.value).append(var, w.var).append(itemLabel, w.itemLabel).append(
+                labels, w.labels).append(itemValue, w.itemValue).append(itemDisabled, w.itemDisabled).append(
+                itemRendered, w.itemRendered).append(ordering, w.ordering).isEquals();
+    }
 }

@@ -77,4 +77,20 @@ public class LayoutTypeDefinitionImpl implements LayoutTypeDefinition {
         this.aliases = aliases;
     }
 
+    /**
+     * @since 7.2
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof LayoutTypeDefinitionImpl)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        LayoutTypeDefinitionImpl lt = (LayoutTypeDefinitionImpl) obj;
+        return new EqualsBuilder().append(name, lt.name).append(aliases, lt.aliases).append(templates, lt.templates).append(
+                configuration, lt.configuration).isEquals();
+    }
+
 }

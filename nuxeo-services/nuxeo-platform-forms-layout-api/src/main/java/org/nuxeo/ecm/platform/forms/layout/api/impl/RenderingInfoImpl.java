@@ -55,4 +55,19 @@ public class RenderingInfoImpl implements RenderingInfo {
         return new RenderingInfoImpl(level, message, translated);
     }
 
+    /**
+     * @since 7.2
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof RenderingInfoImpl)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        RenderingInfoImpl ri = (RenderingInfoImpl) obj;
+        return new EqualsBuilder().append(level, ri.level).append(message, ri.message).append(translated, ri.translated).isEquals();
+    }
+
 }

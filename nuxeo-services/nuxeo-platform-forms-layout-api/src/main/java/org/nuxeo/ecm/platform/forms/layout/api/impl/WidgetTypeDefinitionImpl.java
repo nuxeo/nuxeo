@@ -80,4 +80,20 @@ public class WidgetTypeDefinitionImpl implements WidgetTypeDefinition {
         this.aliases = aliases;
     }
 
+    /**
+     * @since 7.2
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof WidgetTypeDefinitionImpl)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        WidgetTypeDefinitionImpl w = (WidgetTypeDefinitionImpl) obj;
+        return new EqualsBuilder().append(name, w.name).append(aliases, w.aliases).append(handlerClassName,
+                w.handlerClassName).append(properties, w.properties).append(configuration, w.configuration).isEquals();
+    }
+
 }

@@ -72,6 +72,16 @@ public class LayoutTypeDefinitionRegistry extends SimpleContributionRegistry<Lay
         }
     }
 
+    /**
+     * Overridden to use equals method when removing elements.
+     *
+     * @since 7.2
+     */
+    @Override
+    public synchronized void removeContribution(LayoutTypeDefinition contrib) {
+        removeContribution(contrib, true);
+    }
+
     @Override
     // overridden to handle aliases
     public synchronized void removeContribution(LayoutTypeDefinition contrib, boolean useEqualsMethod) {
