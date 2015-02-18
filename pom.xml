@@ -4040,6 +4040,13 @@
         <groupId>org.apache.jclouds</groupId>
         <artifactId>jclouds-allblobstore</artifactId>
         <version>${jclouds.version}</version>
+        <exclusions>
+          <!-- use com.sun.jersey:jersey-core instead -->
+          <exclusion>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
