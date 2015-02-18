@@ -153,7 +153,7 @@ public class SQLDirectory extends AbstractDirectory {
     protected void initConnection() {
         Connection sqlConnection = getConnection();
         try {
-            dialect = Dialect.createDialect(sqlConnection, null, null);
+            dialect = Dialect.createDialect(sqlConnection, null);
 
             if (config.initDependencies != null) {
                 // initialize dependent directories first
