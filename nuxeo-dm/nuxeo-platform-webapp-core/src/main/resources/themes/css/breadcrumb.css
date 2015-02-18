@@ -47,7 +47,7 @@ author: lkemen@nuxeo.com
   background-color: transparent;
   background-position: right center;
   background-size: 13px 13px;
-  border: medium none;
+  border: 1px solid transparent;
   box-shadow: none;
   margin: 0;
   padding: 0 1.5em 0 0 !important }
@@ -55,11 +55,6 @@ author: lkemen@nuxeo.com
 .breadcrumbs .actionSubList {
   left: -1em;
   top: 2em }
-
-.breadcrumbs .actionList ~ .actionList .dropdown {
-  height: 13px;
-  padding: 0 !important;
-  width: 13px; }
 
 .breadcrumbs .dropDownMenu.dropdown:hover {
   border: 1px solid "button (__FLAVOR__ border)" }
