@@ -52,9 +52,12 @@
                   <nxu:graphicImage value="/icons/delete.png" />
                 </h:commandLink>
               </span>
-                <nxd:restDocumentLink document="#{copiedDocument}">
+                <nxd:restDocumentLink document="#{copiedDocument}" pattern="id"
+                                      rendered="#{clipboardActions.exists(copiedDocument.ref)}">
                   <h:outputText value="#{nxd:titleOrId(copiedDocument)}" />
                 </nxd:restDocumentLink>
+                <h:outputText value="#{nxd:titleOrId(copiedDocument)}"
+                              rendered="#{!clipboardActions.exists(copiedDocument.ref)}" />
             </span>
           </nxu:dataList>
 

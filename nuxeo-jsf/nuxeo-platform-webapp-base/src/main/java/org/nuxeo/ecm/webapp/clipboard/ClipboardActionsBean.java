@@ -238,8 +238,22 @@ public class ClipboardActionsBean extends InputController implements ClipboardAc
         log.debug("Copy processed...");
     }
 
+    public boolean exists(DocumentRef ref) {
+        return ref != null && documentManager.exists(ref);
+    }
+
     public String removeWorkListItem(DocumentRef ref) throws ClientException {
-        DocumentModel doc = documentManager.getDocument(ref);
+        DocumentModel doc = null;
+        if (exists(ref)) {
+            doc = documentManager.getDocument(ref);
+        } else { // document was permanently deleted so let's use the one in the work list
+            List<DocumentModel> workingListDocs = documentsListsManager.getWorkingList(getCurrentSelectedListName());
+            for (DocumentModel wDoc : workingListDocs) {
+                if (wDoc.getRef().equals(ref)) {
+                    doc = wDoc;
+                }
+            }
+        }
         documentsListsManager.removeFromWorkingList(getCurrentSelectedListName(), doc);
         return null;
     }
@@ -660,6 +674,10 @@ public class ClipboardActionsBean extends InputController implements ClipboardAc
             // filter on allowed content types
             // see if at least one doc can be removed and pasted
             for (DocumentModel docModel : documentsListsManager.getWorkingList(listName)) {
+                // skip deleted documents
+                if (!exists(docModel.getRef())) {
+                    continue;
+                }
                 DocumentRef sourceFolderRef = docModel.getParentRef();
                 String sourceType = docModel.getType();
                 boolean canRemoveDoc = documentManager.hasPermission(sourceFolderRef, SecurityConstants.REMOVE_CHILDREN);
