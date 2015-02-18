@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.runtime.api.Framework;
 
@@ -80,6 +81,9 @@ public class SQLDocumentProxy implements SQLDocument {
      * Checks if the given property should be resolved on the proxy or the target.
      */
     protected boolean isPropertyForProxy(String xpath) throws DocumentException {
+        if (Model.MAIN_MINOR_VERSION_PROP.equals(xpath) || Model.MAIN_MAJOR_VERSION_PROP.equals(xpath)) {
+            return false;
+        }
         return isSchemaForProxy(getSchema(xpath));
     }
 
@@ -295,12 +299,12 @@ public class SQLDocumentProxy implements SQLDocument {
 
     @Override
     public Document checkIn(String label, String checkinComment) throws DocumentException {
-        throw new UnsupportedOperationException();
+        return target.checkIn(label, checkinComment);
     }
 
     @Override
     public void checkOut() throws DocumentException {
-        throw new UnsupportedOperationException();
+        target.checkOut();
     }
 
     @Override

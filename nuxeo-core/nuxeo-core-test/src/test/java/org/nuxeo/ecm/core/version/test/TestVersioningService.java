@@ -21,6 +21,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.common.collections.ScopeType;
@@ -295,4 +296,72 @@ public class TestVersioningService extends SQLRepositoryTestCase {
         assertLatestVersion(null, doc);
     }
 
+    @Test
+    public void testVersioningOnLiveProxy() throws Exception {
+        DocumentModel folder = session.createDocumentModel("/", "folder",
+                "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel section = session.createDocumentModel("/", "section",
+                "Folder");
+        section = session.createDocument(section);
+        DocumentModel doc = session.createDocumentModel("/", "testfile1",
+                "File");
+        doc = session.createDocument(doc);
+        doc.setPropertyValue("dc:title", "A");
+        doc = session.saveDocument(doc);
+        DocumentRef docRef = doc.getRef();
+        assertTrue(doc.isCheckedOut());
+        assertVersion("0.0", doc);
+        assertVersionLabel("0.0", doc);
+        assertLatestVersion(null, doc);
+
+        // create a live proxy
+        DocumentModel proxy = session.createProxy(doc.getRef(), section.getRef());
+        assertTrue(proxy.isCheckedOut());
+        assertVersion("0.0", proxy);
+        assertVersionLabel("0.0", proxy);
+        assertLatestVersion(null, proxy);
+
+        // save live proxy with no option, use default
+        proxy.setPropertyValue("dc:title", "B");
+        proxy = session.saveDocument(proxy);
+        assertTrue(proxy.isCheckedOut());
+        assertVersion("0.0", proxy);
+        assertVersionLabel("0.0", proxy);
+        assertLatestVersion(null, proxy);
+
+        // change live proxy and save with minor increment
+        proxy.setPropertyValue("dc:title", "C");
+        proxy.putContextData(VersioningService.VERSIONING_OPTION,
+                VersioningOption.MINOR);
+        proxy = session.saveDocument(proxy);
+        assertFalse(proxy.isCheckedOut());
+        assertVersion("0.1", proxy);
+        assertVersionLabel("0.1", proxy);
+        assertLatestVersion("0.1", proxy);
+
+        // check the source document is also changed
+        doc = session.getDocument(docRef);
+        assertFalse(doc.isCheckedOut());
+        assertVersion("0.1", doc);
+        assertVersionLabel("0.1", doc);
+        assertLatestVersion("0.1", doc);
+        DocumentModel v01 = session.getLastDocumentVersion(docRef);
+        assertEquals(v01.getId(), session.getBaseVersion(docRef).reference());
+
+        // change with no increment, the proxy is checked out
+        proxy.setPropertyValue("dc:title", "C");
+        proxy = session.saveDocument(proxy);
+        assertTrue(proxy.isCheckedOut());
+        assertVersion("0.1", proxy);
+        assertVersionLabel("0.1+", proxy);
+
+        // check source doc
+        doc = session.getDocument(docRef);
+        assertEquals("C", doc.getPropertyValue("dc:title"));
+        assertTrue(doc.isCheckedOut());
+        assertVersion("0.1", doc);
+        assertVersionLabel("0.1+", doc);
+
+    }
 }
