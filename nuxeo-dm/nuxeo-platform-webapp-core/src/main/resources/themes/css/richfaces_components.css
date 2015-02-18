@@ -14,9 +14,13 @@ button, keygen, isindex, legend, a {
   font-family: "default (__FLAVOR__ font)" }
 
 /* =Tree */
+.menu {
+  position: relative }
 
-.menu .floatR {
-  margin-bottom: -2em }
+.menu .tree.action {
+  margin-bottom: -2em;
+  position: absolute;
+  right: 0 }
 
 .menu dl,
 .menu dd {
