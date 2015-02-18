@@ -61,6 +61,15 @@ public interface ElasticSearchAdmin {
     List<String> getRepositoryNames();
 
     /**
+     * Get the index name associated with the repository name.
+
+     * throws NoSuchElementException if there is no Elasticsearch index associated with the requested repository.
+     *
+     * @since 7.2
+     */
+    String getIndexNameForRepository(String repositoryName);
+
+    /**
      * Returns true if there are indexing activities scheduled or running.
      *
      * @since 5.9.5

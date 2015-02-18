@@ -247,16 +247,14 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         if (log.isDebugEnabled()) {
             log.debug("Refreshing index associated with repo: " + repositoryName);
         }
-        getClient().admin().indices().prepareRefresh(getRepositoryIndex(repositoryName)).execute().actionGet();
+        getClient().admin().indices().prepareRefresh(getIndexNameForRepository(repositoryName)).execute().actionGet();
         if (log.isDebugEnabled()) {
             log.debug("Refreshing index done");
         }
     }
 
-    /**
-     * Get the elastic search index for a repository
-     */
-    String getRepositoryIndex(String repositoryName) {
+    @Override
+    public String getIndexNameForRepository(String repositoryName) {
         String ret = indexNames.get(repositoryName);
         if (ret == null) {
             throw new NoSuchElementException("No index defined for repository: " + repositoryName);
@@ -267,7 +265,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     @Override
     public void flushRepositoryIndex(String repositoryName) {
         log.info("Flushing index associated with repo: " + repositoryName);
-        getClient().admin().indices().prepareFlush(getRepositoryIndex(repositoryName)).execute().actionGet();
+        getClient().admin().indices().prepareFlush(getIndexNameForRepository(repositoryName)).execute().actionGet();
         if (log.isDebugEnabled()) {
             log.debug("Flushing index done");
         }
@@ -405,7 +403,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         String[] ret = new String[searchRepositories.size()];
         int i = 0;
         for (String repo : searchRepositories) {
-            ret[i++] = getRepositoryIndex(repo);
+            ret[i++] = getIndexNameForRepository(repo);
         }
         return ret;
     }

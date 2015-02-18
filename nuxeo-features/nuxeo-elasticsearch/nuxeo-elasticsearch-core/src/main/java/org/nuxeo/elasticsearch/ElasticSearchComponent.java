@@ -245,6 +245,11 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     @Override
+    public String getIndexNameForRepository(String repositoryName) {
+        return esa.getIndexNameForRepository(repositoryName);
+    }
+
+    @Override
     public int getPendingCommandCount() {
         return scheduledCommands.size();
     }
