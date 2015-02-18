@@ -43,6 +43,36 @@ author: lkemen@nuxeo.com
 .breadcrumbs a img:hover {
   border-color: "neutral.lighter (__FLAVOR__ border)" }
 
+.breadcrumbs .dropDownMenu.dropdown {
+  background-color: transparent;
+  background-position: right center;
+  background-size: 13px 13px;
+  border: medium none;
+  box-shadow: none;
+  margin: 0;
+  padding: 0 1.5em 0 0 !important }
+
+.breadcrumbs .actionSubList {
+  left: -1em;
+  top: 2em }
+
+.breadcrumbs .actionList ~ .actionList .dropdown {
+  height: 13px;
+  padding: 0 !important;
+  width: 13px; }
+
+.breadcrumbs .dropDownMenu.dropdown:hover {
+  border: 1px solid "button (__FLAVOR__ border)" }
+
+.breadcrumbs .dropDownMenu.dropdown > img {
+  margin-bottom: -0.4em }
+
+.breadcrumbs .actionSubList a {
+  color: "default (__FLAVOR__ color)" }
+
+.breadcrumbs .actionSubList a:hover {
+  color: "link (__FLAVOR__ color)" }
+
 .printButton {
   float: right }
 
