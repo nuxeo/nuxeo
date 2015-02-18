@@ -16,13 +16,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
-import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 
 /**
  * Interface for a {@link Repository} for Document-Based Storage.
@@ -32,11 +32,11 @@ import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 public interface DBSRepository extends Repository {
 
     /**
-     * Gets the binary manager.
+     * Gets the blob manager.
      *
-     * @return the binary manager.
+     * @return the blob manager.
      */
-    BinaryManager getBinaryManager();
+    BlobManager getBlobManager();
 
     /**
      * Checks if fulltext indexing is disabled.

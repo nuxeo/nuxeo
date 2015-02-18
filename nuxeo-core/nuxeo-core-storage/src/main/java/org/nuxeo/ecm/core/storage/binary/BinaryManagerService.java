@@ -19,6 +19,8 @@ package org.nuxeo.ecm.core.storage.binary;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -35,11 +37,15 @@ public class BinaryManagerService extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) {
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        blobManager.registerBlobProvider(null, new BinaryBlobProvider(this));
         registry.clear();
     }
 
     @Override
     public void deactivate(ComponentContext context) {
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        blobManager.unregisterBlobProvider(null);
         registry.clear();
     }
 

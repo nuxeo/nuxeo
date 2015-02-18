@@ -28,7 +28,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.model.Delta;
-import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 
@@ -211,9 +210,6 @@ public class JDBCLogger {
         }
         if (value instanceof java.sql.Date) {
             return "DATE '" + value.toString() + "'";
-        }
-        if (value instanceof Binary) {
-            return "'" + ((Binary) value).getDigest() + "'";
         }
         if (value instanceof Object[]) {
             Object[] v = (Object[]) value;

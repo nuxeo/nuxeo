@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
-import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 
 @RunWith(JMock.class)
@@ -41,8 +40,6 @@ public class TestDialectQuerySyntax {
 
     public DatabaseMetaData metadata;
 
-    public BinaryManager binaryManager;
-
     public RepositoryDescriptor repositoryDescriptor;
 
     public Dialect dialect;
@@ -50,7 +47,6 @@ public class TestDialectQuerySyntax {
     @Before
     public void setUp() throws SQLException {
         metadata = getMockDatabaseMetaData();
-        // binaryManager = null;
         repositoryDescriptor = new RepositoryDescriptor();
     }
 
@@ -197,7 +193,7 @@ public class TestDialectQuerySyntax {
 
     @Test
     public void testH2() throws Exception {
-        dialect = new DialectH2(metadata, binaryManager, repositoryDescriptor);
+        dialect = new DialectH2(metadata, repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "");
         assertDialectFT("foo", "foo");
         assertDialectFT("foo", "foo :");
@@ -262,7 +258,7 @@ public class TestDialectQuerySyntax {
 
     @Test
     public void testPostgreSQL() throws Exception {
-        dialect = new DialectPostgreSQL(metadata, binaryManager, repositoryDescriptor);
+        dialect = new DialectPostgreSQL(metadata, repositoryDescriptor);
         assertDialectFT("", "-foo");
         assertDialectFT("foo", "foo");
         assertDialectFT("foo", "foo :");
@@ -295,7 +291,7 @@ public class TestDialectQuerySyntax {
 
     @Test
     public void testMySQL() throws Exception {
-        dialect = new DialectMySQL(metadata, binaryManager, repositoryDescriptor);
+        dialect = new DialectMySQL(metadata, repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
         assertDialectFT("foo", "foo");
         assertDialectFT("foo", "foo :");
@@ -320,7 +316,7 @@ public class TestDialectQuerySyntax {
 
     @Test
     public void testOracle() throws Exception {
-        dialect = new DialectOracle(metadata, binaryManager, repositoryDescriptor);
+        dialect = new DialectOracle(metadata, repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
         assertDialectFT("{foo}", "foo");
         assertDialectFT("{foo}", "foo :");
@@ -350,7 +346,7 @@ public class TestDialectQuerySyntax {
 
     @Test
     public void testSQLServer() throws Exception {
-        dialect = new DialectSQLServer(metadata, binaryManager, repositoryDescriptor);
+        dialect = new DialectSQLServer(metadata, repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
         assertDialectFT("\"foo\"", "foo");
         assertDialectFT("\"foo\"", "foo :");

@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -60,6 +61,8 @@ import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.Repository;
@@ -79,8 +82,6 @@ import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.binary.Binary;
-import org.nuxeo.ecm.core.storage.binary.BinaryBlob;
 import org.nuxeo.ecm.core.storage.lock.LockException;
 import org.nuxeo.ecm.core.storage.sql.ACLRow;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -143,6 +144,8 @@ public class SQLSession implements Session {
 
     private final org.nuxeo.ecm.core.storage.sql.Session session;
 
+    private final BlobManager blobManager;
+
     private Document root;
 
     private final String sessionId;
@@ -153,6 +156,7 @@ public class SQLSession implements Session {
             throws DocumentException {
         this.session = session;
         this.repository = repository;
+        blobManager = Framework.getService(BlobManager.class);
         Node rootNode;
         try {
             rootNode = session.getRootNode();
@@ -895,13 +899,14 @@ public class SQLSession implements Session {
      *
      * @since 5.9.4
      */
-    protected void readComplexProperty(ComplexProperty complexProperty, Node node) throws PropertyException {
+    protected void readComplexProperty(ComplexProperty complexProperty, Node node, SQLDocument doc)
+            throws PropertyException {
         if (complexProperty instanceof BlobProperty) {
             try {
-                Blob blob = readBlob(node);
+                Blob blob = readBlob(node, doc);
                 complexProperty.init((Serializable) blob);
                 return;
-            } catch (StorageException e) {
+            } catch (StorageException | IOException e) {
                 throw new PropertyException("Property: " + complexProperty.getName(), e);
             }
         }
@@ -935,7 +940,7 @@ public class SQLSession implements Session {
                         for (Node childNode : childNodes) {
                             ComplexProperty p = (ComplexProperty) complexProperty.getRoot().createProperty(property,
                                     listField, 0);
-                            readComplexProperty(p, childNode);
+                            readComplexProperty(p, childNode, doc);
                             value.add(p.getValue());
                         }
                         property.init(value);
@@ -943,7 +948,7 @@ public class SQLSession implements Session {
                 } else {
                     // complex property
                     Node childNode = getChildProperty(node, name, type.getName());
-                    readComplexProperty((ComplexProperty) property, childNode);
+                    readComplexProperty((ComplexProperty) property, childNode, doc);
                     ((ComplexProperty) property).removePhantomFlag();
                 }
             } catch (StorageException e) {
@@ -957,24 +962,24 @@ public class SQLSession implements Session {
      *
      * @since 5.9.4
      */
-    public Map<String, Serializable> readPrefetch(Node node, ComplexType complexType, Set<String> xpaths)
-            throws PropertyException {
+    public Map<String, Serializable> readPrefetch(Node node, ComplexType complexType, Set<String> xpaths,
+            SQLDocument doc) throws PropertyException {
         Map<String, Serializable> prefetch = new HashMap<String, Serializable>();
-        readPrefetch(node, complexType, xpaths, null, null, prefetch);
+        readPrefetch(node, complexType, xpaths, null, null, prefetch, doc);
         return prefetch;
     }
 
     protected void readPrefetch(Node node, ComplexType complexType, Set<String> xpaths, String xpathGeneric,
-            String xpath, Map<String, Serializable> prefetch) throws PropertyException {
+            String xpath, Map<String, Serializable> prefetch, SQLDocument doc) throws PropertyException {
         if (TypeConstants.isContentType(complexType)) {
             if (!xpaths.contains(xpathGeneric)) {
                 return;
             }
             try {
-                Blob blob = readBlob(node);
+                Blob blob = readBlob(node, doc);
                 prefetch.put(xpath, (Serializable) blob);
                 return;
-            } catch (StorageException e) {
+            } catch (StorageException | IOException e) {
                 throw new PropertyException("Property: " + xpath, e);
             }
         }
@@ -1013,13 +1018,13 @@ public class SQLSession implements Session {
                         int n = 0;
                         for (Node childNode : childNodes) {
                             readPrefetch(childNode, (ComplexType) listField.getType(), xpaths, xpg, xp + "/" + n++,
-                                    prefetch);
+                                    prefetch, doc);
                         }
                     }
                 } else {
                     // complex property
                     Node childNode = getChildProperty(node, name, type.getName());
-                    readPrefetch(childNode, (ComplexType) type, xpaths, xpg, xp, prefetch);
+                    readPrefetch(childNode, (ComplexType) type, xpaths, xpg, xp, prefetch, doc);
                 }
             } catch (StorageException e) {
                 throw new PropertyException("Property: " + name, e);
@@ -1116,63 +1121,38 @@ public class SQLSession implements Session {
         }
     }
 
-    protected Blob readBlob(Node node) throws StorageException {
-        Binary binary = (Binary) node.getSimpleProperty(BLOB_DATA).getValue();
-        if (binary == null) {
-            return null;
-        }
-        String name = node.getSimpleProperty(BLOB_NAME).getString();
-        String mimeType = node.getSimpleProperty(BLOB_MIME_TYPE).getString();
-        String encoding = node.getSimpleProperty(BLOB_ENCODING).getString();
-        String digest = node.getSimpleProperty(BLOB_DIGEST).getString();
-        Long length = node.getSimpleProperty(BLOB_LENGTH).getLong();
-        return new BinaryBlob(binary, name, mimeType, encoding, digest, length.longValue());
+    protected Blob readBlob(Node node, SQLDocument doc) throws StorageException, IOException {
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.filename = node.getSimpleProperty(BLOB_NAME).getString();
+        blobInfo.mimeType = node.getSimpleProperty(BLOB_MIME_TYPE).getString();
+        blobInfo.encoding = node.getSimpleProperty(BLOB_ENCODING).getString();
+        blobInfo.digest = node.getSimpleProperty(BLOB_DIGEST).getString();
+        blobInfo.length = node.getSimpleProperty(BLOB_LENGTH).getLong();
+        blobInfo.key = node.getSimpleProperty(BLOB_DATA).getString();
+        return blobManager.getBlob(getRepositoryName(), blobInfo, doc);
     }
 
     protected void writeBlobProperty(BlobProperty blobProperty, Node node, SQLDocument doc) throws StorageException,
             PropertyException {
         Serializable value = blobProperty.getValueForWrite();
-        Binary binary;
-        String name;
-        String mimeType;
-        String encoding;
-        String digest;
-        Long length;
+        BlobInfo blobInfo;
         if (value == null) {
-            binary = null;
-            name = null;
-            mimeType = null;
-            encoding = null;
-            digest = null;
-            length = null;
-        } else {
-            if (!(value instanceof Blob)) {
-                throw new PropertyException("Setting a non-Blob value: " + value);
-            }
-            Blob blob = (Blob) value;
+            blobInfo = new BlobInfo();
+        } else if (value instanceof Blob) {
             try {
-                binary = getBinary(blob);
-            } catch (DocumentException e) {
-                throw new PropertyException("Cannot get binary", e);
+                blobInfo = blobManager.getBlobInfo(getRepositoryName(), (Blob) value, doc);
+            } catch (IOException e) {
+                throw new PropertyException("Cannot get blob info for: " + value, e);
             }
-            name = blob.getFilename();
-            mimeType = blob.getMimeType();
-            if (mimeType == null) {
-                mimeType = APPLICATION_OCTET_STREAM;
-            }
-            encoding = blob.getEncoding();
-            digest = blob.getDigest();
-            // use binary length now that we know it,
-            // the blob may not have known it (streaming blobs)
-            length = Long.valueOf(binary.getLength());
+        } else {
+            throw new PropertyException("Cannot write a non-Blob value: " + value);
         }
-
-        node.getSimpleProperty(BLOB_DATA).setValue(binary);
-        node.getSimpleProperty(BLOB_NAME).setValue(name);
-        node.getSimpleProperty(BLOB_MIME_TYPE).setValue(mimeType);
-        node.getSimpleProperty(BLOB_ENCODING).setValue(encoding);
-        node.getSimpleProperty(BLOB_DIGEST).setValue(digest);
-        node.getSimpleProperty(BLOB_LENGTH).setValue(length);
+        node.getSimpleProperty(BLOB_DATA).setValue(blobInfo.key);
+        node.getSimpleProperty(BLOB_NAME).setValue(blobInfo.filename);
+        node.getSimpleProperty(BLOB_MIME_TYPE).setValue(blobInfo.mimeType);
+        node.getSimpleProperty(BLOB_ENCODING).setValue(blobInfo.encoding);
+        node.getSimpleProperty(BLOB_DIGEST).setValue(blobInfo.digest);
+        node.getSimpleProperty(BLOB_LENGTH).setValue(blobInfo.length);
     }
 
     protected static boolean isVersionWritableProperty(String name) {
@@ -1214,19 +1194,6 @@ public class SQLSession implements Session {
         }
         // ignore attempt to write identical value
         return true;
-    }
-
-    /**
-     * @param blob
-     * @return
-     * @throws DocumentException
-     */
-    public Binary getBinary(Blob blob) throws DocumentException {
-        try {
-            return session.getBinary(blob);
-        } catch (StorageException e) {
-            throw new DocumentException(e);
-        }
     }
 
     @Override

@@ -18,11 +18,12 @@ import java.io.Serializable;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 
 /**
  * A {@link Blob} wrapping a {@link Binary} value.
  */
-public class BinaryBlob extends AbstractBlob implements Serializable {
+public class BinaryBlob extends AbstractBlob implements ManagedBlob, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -67,6 +68,11 @@ public class BinaryBlob extends AbstractBlob implements Serializable {
         } else {
             return digest;
         }
+    }
+
+    @Override
+    public String getKey() {
+        return binary.getDigest();
     }
 
     @Override

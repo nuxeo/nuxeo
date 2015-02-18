@@ -151,8 +151,7 @@ public class JDBCBackend implements RepositoryBackend {
                     xaconnection = xadatasource.getXAConnection();
                     connection = xaconnection.getConnection();
                 }
-                dialect = Dialect.createDialect(connection, repository.getBinaryManager(),
-                        repository.getRepositoryDescriptor());
+                dialect = Dialect.createDialect(connection, repository.getRepositoryDescriptor());
             } finally {
                 if (connection != null) {
                     connection.close();

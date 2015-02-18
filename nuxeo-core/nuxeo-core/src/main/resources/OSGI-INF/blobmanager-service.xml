@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.blob.BlobManager" version="1.0.0">
+
+  <documentation>
+    Blob Manager, delegating to Blob Providers for external blob references.
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.blob.BlobManagerComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.blob.BlobManager" />
+  </service>
+
+</component>

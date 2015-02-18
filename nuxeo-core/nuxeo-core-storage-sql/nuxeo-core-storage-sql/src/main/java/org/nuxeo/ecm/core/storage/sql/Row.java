@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.api.model.Delta;
-import org.nuxeo.ecm.core.storage.binary.Binary;
 
 /**
  * The data of a single row in a table (keys/values form a map), or of multiple rows with the same id (values is an
@@ -291,10 +290,6 @@ public final class Row extends RowId implements Serializable, Cloneable {
                     cal.get(Calendar.SECOND), //
                     cal.get(Calendar.MILLISECOND), //
                     sign, offset / 60, offset % 60));
-        } else if (value instanceof Binary) {
-            buf.append("Binary(");
-            buf.append(((Binary) value).getDigest());
-            buf.append(')');
         } else if (value.getClass().isArray()) {
             Serializable[] v = (Serializable[]) value;
             buf.append('[');

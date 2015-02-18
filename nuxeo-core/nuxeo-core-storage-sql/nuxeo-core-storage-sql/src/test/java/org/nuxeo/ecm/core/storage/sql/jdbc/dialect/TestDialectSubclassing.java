@@ -12,6 +12,8 @@
 
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
+import static org.junit.Assert.assertEquals;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -19,11 +21,7 @@ import java.sql.SQLException;
 import org.jmock.Expectations;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -34,8 +32,6 @@ public class TestDialectSubclassing extends NXRuntimeTestCase {
 
     protected Connection connection;
 
-    protected BinaryManager binaryManager;
-
     protected RepositoryDescriptor repositoryDescriptor;
 
     @Before
@@ -43,7 +39,6 @@ public class TestDialectSubclassing extends NXRuntimeTestCase {
         super.setUp();
         metadata = getDatabaseMetaData();
         connection = getConnection();
-        binaryManager = null;
         repositoryDescriptor = new RepositoryDescriptor();
     }
 
@@ -72,23 +67,23 @@ public class TestDialectSubclassing extends NXRuntimeTestCase {
     }
 
     protected static class DialectDummy extends DialectH2 {
-        public DialectDummy(DatabaseMetaData metadata, BinaryManager binaryManager,
-                RepositoryDescriptor repositoryDescriptor) throws StorageException {
-            super(metadata, binaryManager, repositoryDescriptor);
+        public DialectDummy(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor)
+                throws StorageException {
+            super(metadata, repositoryDescriptor);
         }
     }
 
     @Test
     public void testDialectSubclassing() throws Exception {
         Framework.getProperties().put(Dialect.DIALECT_CLASS, DialectDummy.class.getName());
-        Dialect dialect = Dialect.createDialect(connection, binaryManager, repositoryDescriptor);
+        Dialect dialect = Dialect.createDialect(connection, repositoryDescriptor);
         assertEquals(DialectDummy.class, dialect.getClass());
     }
 
     @Test
     public void testDialectSubclassingSpecific() throws Exception {
         Framework.getProperties().put(Dialect.DIALECT_CLASS + ".Dummy", DialectDummy.class.getName());
-        Dialect dialect = Dialect.createDialect(connection, binaryManager, repositoryDescriptor);
+        Dialect dialect = Dialect.createDialect(connection, repositoryDescriptor);
         assertEquals(DialectDummy.class, dialect.getClass());
     }
 

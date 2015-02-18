@@ -12,7 +12,6 @@
 
 package org.nuxeo.ecm.core.storage.sql.ra;
 
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
@@ -27,14 +26,12 @@ import javax.resource.cci.LocalTransaction;
 import javax.resource.cci.ResultSetInfo;
 
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
@@ -165,11 +162,6 @@ public class ConnectionImpl implements Session {
     @Override
     public String getRepositoryName() throws StorageException {
         return getSession().getRepositoryName();
-    }
-
-    @Override
-    public Binary getBinary(Blob blob) throws StorageException {
-        return getSession().getBinary(blob);
     }
 
     @Override

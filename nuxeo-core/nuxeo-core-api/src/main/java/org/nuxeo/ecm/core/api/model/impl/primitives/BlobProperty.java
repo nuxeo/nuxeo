@@ -13,18 +13,11 @@
 package org.nuxeo.ecm.core.api.model.impl.primitives;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyAccessException;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
@@ -39,8 +32,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
  */
 public class BlobProperty extends MapProperty {
 
-    private static final Log log = LogFactory.getLog(BlobProperty.class);
-
     private static final long serialVersionUID = 1L;
 
     private static final String NAME = "name";
@@ -52,8 +43,6 @@ public class BlobProperty extends MapProperty {
     private static final String DIGEST = "digest";
 
     private static final String LENGTH = "length";
-
-    private static final String DATA = "data";
 
     protected Serializable value;
 
@@ -128,7 +117,6 @@ public class BlobProperty extends MapProperty {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void init(Serializable value) throws PropertyException {
         if (value == null) {
@@ -136,9 +124,7 @@ public class BlobProperty extends MapProperty {
             // considered PHANTOMS
             return;
         }
-        if (value instanceof Map) {
-            internalSetValue((Serializable) create((Map<String, Object>) value));
-        } else {
+        if (value instanceof Blob) {
             internalSetValue(value);
         }
         removePhantomFlag();
@@ -152,35 +138,6 @@ public class BlobProperty extends MapProperty {
     @Override
     protected Property internalGetChild(Field field) {
         return new ScalarMemberProperty(this, field, isPhantom() ? IS_PHANTOM : 0);
-    }
-
-    protected Object create(Map<String, Object> value) {
-        Object data = value.get(DATA);
-        Blob blob;
-        if (data == null) {
-            blob = Blobs.createBlob("");
-        } else if (data instanceof String) {
-            blob = Blobs.createBlob((String) data);
-        } else if (data instanceof byte[]) {
-            blob = Blobs.createBlob((byte[]) data);
-        } else if (data instanceof InputStream) {
-            try {
-                blob = Blobs.createBlob((InputStream) data);
-            } catch (IOException e) {
-                throw new NuxeoException("Cannot persist blob: " + getPath(), e);
-            }
-        } else {
-            log.warn("Unknown class for blob, saving an empty one: " + data.getClass());
-            blob = Blobs.createBlob("");
-        }
-        try {
-            Map<String, Object> v = new HashMap<String, Object>(value);
-            v.remove(DATA);
-            setMap(blob, v);
-        } catch (PropertyException e) {
-            throw new RuntimeException(e);
-        }
-        return blob;
     }
 
     protected void setMap(Object object, Map<String, Object> value) throws PropertyException {

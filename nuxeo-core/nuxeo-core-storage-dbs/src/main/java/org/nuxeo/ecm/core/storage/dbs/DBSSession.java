@@ -98,6 +98,7 @@ import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
@@ -119,7 +120,6 @@ import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.QueryOptimizer;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.StateHelper;
-import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator.OrderByComparator;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -184,8 +184,8 @@ public class DBSSession implements Session {
         return false;
     }
 
-    protected BinaryManager getBinaryManager() {
-        return repository.getBinaryManager();
+    protected BlobManager getBlobManager() {
+        return repository.getBlobManager();
     }
 
     protected String getRootId() {

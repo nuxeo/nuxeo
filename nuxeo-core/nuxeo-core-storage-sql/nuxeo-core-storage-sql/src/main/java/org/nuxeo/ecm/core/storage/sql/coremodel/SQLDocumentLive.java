@@ -154,12 +154,12 @@ public class SQLDocumentLive implements SQLDocument {
      */
     @Override
     public void readDocumentPart(DocumentPart dp) throws PropertyException {
-        session.readComplexProperty((ComplexProperty) dp, getNode());
+        session.readComplexProperty((ComplexProperty) dp, getNode(), this);
     }
 
     @Override
     public Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths) throws PropertyException {
-        return session.readPrefetch(getNode(), complexType, xpaths);
+        return session.readPrefetch(getNode(), complexType, xpaths, this);
     }
 
     /**

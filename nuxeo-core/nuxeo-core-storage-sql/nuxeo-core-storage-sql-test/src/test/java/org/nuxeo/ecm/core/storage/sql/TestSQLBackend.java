@@ -56,6 +56,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.common.utils.XidImpl;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -68,6 +69,7 @@ import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerService;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.ecm.core.storage.sql.jdbc.ClusterNodeHandler;
@@ -464,12 +466,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
 
-        Binary bin = session.getBinary(Blobs.createBlob("abc"));
-        assertEquals(3, bin.getLength());
-        assertEquals("900150983cd24fb0d6963f7d28e17f72", bin.getDigest());
-        assertEquals("abc", readAllBytes(bin.getStream()));
-        assertEquals("abc", readAllBytes(bin.getStream())); // readable twice
-        nodea.setSimpleProperty("tst:bin", bin);
+        String data = "900150983cd24fb0d6963f7d28e17f72";
+
+        nodea.setSimpleProperty("tst:bin", data);
         session.save();
         session.close();
 
@@ -480,14 +479,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         SimpleProperty binProp = nodea.getSimpleProperty("tst:bin");
         assertNotNull(binProp);
         Serializable value = binProp.getValue();
-        assertTrue(value instanceof Binary);
-        bin = (Binary) value;
-        try (InputStream in = bin.getStream()) {
-            assertEquals(3, bin.getLength());
-            assertEquals("900150983cd24fb0d6963f7d28e17f72", bin.getDigest());
-            assertEquals("abc", readAllBytes(bin.getStream()));
-            assertEquals("abc", readAllBytes(bin.getStream())); // readable twice
-        }
+        assertTrue(value instanceof String);
+        assertEquals(data, (String) value);
     }
 
     // assumes one read will read everything
@@ -572,8 +565,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     protected void addBinary(Session session, String binstr, String name) throws Exception {
-        Binary bin = session.getBinary(Blobs.createBlob(binstr));
-        session.addChildNode(session.getRootNode(), name, null, "TestDoc", false).setSimpleProperty("tst:bin", bin);
+        Blob blob = Blobs.createBlob(binstr);
+        BinaryManagerService binaryManagerService = Framework.getService(BinaryManagerService.class);
+        Binary binary = binaryManagerService.getBinaryManager(session.getRepositoryName()).getBinary(blob);
+        String data = binary.getDigest();
+        session.addChildNode(session.getRootNode(), name, null, "TestDoc", false).setSimpleProperty("tst:bin", data);
     }
 
     protected BinaryManagerStatus runBinariesGC(int moreWork, Session session, boolean delete) throws Exception {

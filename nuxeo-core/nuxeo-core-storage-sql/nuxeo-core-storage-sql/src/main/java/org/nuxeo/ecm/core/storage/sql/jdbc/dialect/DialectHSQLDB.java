@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
@@ -37,9 +36,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
  */
 public class DialectHSQLDB extends Dialect {
 
-    public DialectHSQLDB(DatabaseMetaData metadata, BinaryManager binaryManager,
-            RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(metadata, binaryManager, repositoryDescriptor);
+    public DialectHSQLDB(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) throws StorageException {
+        super(metadata, repositoryDescriptor);
     }
 
     @Override
@@ -67,7 +65,7 @@ public class DialectHSQLDB extends Dialect {
         case TIMESTAMP:
             return jdbcInfo("TIMESTAMP", Types.TIMESTAMP);
         case BLOBID:
-            return jdbcInfo("VARCHAR(40)", Types.VARCHAR);
+            return jdbcInfo("VARCHAR(250)", Types.VARCHAR);
             // -----
         case NODEID:
         case NODEIDFK:

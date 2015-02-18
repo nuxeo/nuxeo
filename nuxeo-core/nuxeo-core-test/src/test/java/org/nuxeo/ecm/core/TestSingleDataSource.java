@@ -95,7 +95,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
     }
 
     protected String getValidationQuery(Connection connection) throws StorageException {
-        return Dialect.createDialect(connection, null, null).getValidationQuery();
+        return Dialect.createDialect(connection, null).getValidationQuery();
     }
 
     protected static void assertEqualsInt(int expected, ResultSet rs) throws SQLException {

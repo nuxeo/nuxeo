@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
+import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
@@ -69,9 +70,6 @@ import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.State;
-import org.nuxeo.ecm.core.storage.binary.Binary;
-import org.nuxeo.ecm.core.storage.binary.BinaryManager;
-import org.nuxeo.ecm.core.storage.binary.BinaryBlob;
 import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
 import org.nuxeo.runtime.api.Framework;
@@ -774,7 +772,7 @@ public class DBSDocument implements Document {
         } else if (type instanceof DateType) {
             klass = Calendar.class;
         } else if (type instanceof BinaryType) {
-            klass = Binary.class;
+            klass = String.class;
         } else if (type instanceof IntegerType) {
             throw new RuntimeException("Unimplemented primitive type: " + type.getClass().getName());
         } else if (type instanceof SimpleTypeImpl) {
@@ -789,79 +787,41 @@ public class DBSDocument implements Document {
         return copy;
     }
 
-    protected Blob readBlob(State state) {
-        Serializable data = state.get(KEY_BLOB_DATA);
-        if (data == null) {
-            return null;
+    protected Blob readBlob(State state) throws PropertyException {
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.filename = (String) state.get(KEY_BLOB_NAME);
+        blobInfo.mimeType = (String) state.get(KEY_BLOB_MIME_TYPE);
+        blobInfo.encoding = (String) state.get(KEY_BLOB_ENCODING);
+        blobInfo.digest = (String) state.get(KEY_BLOB_DIGEST);
+        blobInfo.length = (Long) state.get(KEY_BLOB_LENGTH);
+        blobInfo.key = (String) state.get(KEY_BLOB_DATA);
+        try {
+            return session.getBlobManager().getBlob(getRepositoryName(), blobInfo, this);
+        } catch (IOException e) {
+            throw new PropertyException("Cannot read property", e);
         }
-        Binary binary = session.getBinaryManager().getBinary((String) data);
-        if (binary == null) {
-            return null;
-        }
-        String name = (String) state.get(KEY_BLOB_NAME);
-        String mimeType = (String) state.get(KEY_BLOB_MIME_TYPE);
-        String encoding = (String) state.get(KEY_BLOB_ENCODING);
-        String digest = (String) state.get(KEY_BLOB_DIGEST);
-        Long length = (Long) state.get(KEY_BLOB_LENGTH);
-        return new BinaryBlob(binary, name, mimeType, encoding, digest, length.longValue());
     }
 
     protected void writeBlobProperty(BlobProperty blobProperty, State state) throws PropertyException {
         Serializable value = blobProperty.getValueForWrite();
-        String data;
-        String name;
-        String mimeType;
-        String encoding;
-        String digest;
-        Long length;
+        BlobInfo blobInfo;
         if (value == null) {
-            data = null;
-            name = null;
-            mimeType = null;
-            encoding = null;
-            digest = null;
-            length = null;
-        } else {
-            if (!(value instanceof Blob)) {
-                throw new PropertyException("Setting a non-Blob value: " + value);
-            }
-            Blob blob = (Blob) value;
-            Binary binary;
+            blobInfo = new BlobInfo();
+        } else if (value instanceof Blob) {
             try {
-                binary = getBinary(blob);
-            } catch (DocumentException e) {
-                throw new PropertyException("Cannot get binary", e);
+                blobInfo = session.getBlobManager().getBlobInfo(getRepositoryName(), (Blob) value, this);
+            } catch (IOException e) {
+                throw new PropertyException("Cannot get blob info for: " + value, e);
             }
-            data = binary.getDigest();
-            name = blob.getFilename();
-            mimeType = blob.getMimeType();
-            if (mimeType == null) {
-                mimeType = APPLICATION_OCTET_STREAM;
-            }
-            encoding = blob.getEncoding();
-            digest = blob.getDigest();
-            // use binary length now that we know it,
-            // the blob may not have known it (streaming blobs)
-            length = Long.valueOf(binary.getLength());
+        } else {
+            throw new PropertyException("Cannot write a non-Blob value: " + value);
         }
-
-        state.put(KEY_BLOB_DATA, data);
-        state.put(KEY_BLOB_NAME, name);
-        state.put(KEY_BLOB_MIME_TYPE, mimeType);
-        state.put(KEY_BLOB_ENCODING, encoding);
-        state.put(KEY_BLOB_DIGEST, digest);
-        state.put(KEY_BLOB_LENGTH, length);
-    }
-
-    // BinaryManager not closed
-    @SuppressWarnings("resource")
-    protected Binary getBinary(Blob blob) throws DocumentException {
-        BinaryManager binaryManager = session.getBinaryManager();
-        try {
-            return binaryManager.getBinary(blob);
-        } catch (IOException e) {
-            throw new DocumentException(e);
-        }
+        state.put(KEY_BLOB_DATA, blobInfo.key);
+        state.put(KEY_BLOB_NAME, blobInfo.filename);
+        state.put(KEY_BLOB_MIME_TYPE, blobInfo.mimeType);
+        state.put(KEY_BLOB_ENCODING, blobInfo.encoding);
+        state.put(KEY_BLOB_DIGEST, blobInfo.digest);
+        state.put(KEY_BLOB_LENGTH, blobInfo.length);
     }
 
     @Override

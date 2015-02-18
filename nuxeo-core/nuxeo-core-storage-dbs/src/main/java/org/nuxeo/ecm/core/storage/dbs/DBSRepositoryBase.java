@@ -16,7 +16,6 @@ import static java.lang.Boolean.FALSE;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
@@ -38,6 +37,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
@@ -69,9 +69,12 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     protected final BinaryManager binaryManager;
 
+    protected final BlobManager blobManager;
+
     public DBSRepositoryBase(String repositoryName, boolean fulltextDisabled) {
         this.repositoryName = repositoryName;
         this.fulltextDisabled = fulltextDisabled;
+        blobManager = Framework.getService(BlobManager.class);
         binaryManager = newBinaryManager();
     }
 
@@ -117,8 +120,8 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     }
 
     @Override
-    public BinaryManager getBinaryManager() {
-        return binaryManager;
+    public BlobManager getBlobManager() {
+        return blobManager;
     }
 
     @Override
@@ -126,6 +129,8 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         return fulltextDisabled;
     }
 
+    // creates a binary manager and registers it manually, to avoid a contribution
+    // TODO do this from XML
     public BinaryManager newBinaryManager() {
         BinaryManager binaryManager = new DefaultBinaryManager();
         BinaryManagerDescriptor binaryManagerDescriptor = new BinaryManagerDescriptor();

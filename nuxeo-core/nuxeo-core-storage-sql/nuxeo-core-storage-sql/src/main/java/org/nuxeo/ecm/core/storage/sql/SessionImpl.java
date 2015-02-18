@@ -54,9 +54,7 @@ import org.nuxeo.ecm.core.storage.FulltextUpdaterWork;
 import org.nuxeo.ecm.core.storage.FulltextUpdaterWork.IndexAndText;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.PersistenceContext.PathAndId;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLFulltextExtractorWork;
@@ -303,18 +301,6 @@ public class SessionImpl implements Session, XAResource {
     public Node getRootNode() {
         checkLive();
         return rootNode;
-    }
-
-    // don't close BinaryManager
-    @SuppressWarnings("resource")
-    @Override
-    public Binary getBinary(Blob blob) throws StorageException {
-        BinaryManager binaryManager = repository.getBinaryManager();
-        try {
-            return binaryManager.getBinary(blob);
-        } catch (IOException e) {
-            throw new StorageException(e);
-        }
     }
 
     @Override

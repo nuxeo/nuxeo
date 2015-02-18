@@ -25,7 +25,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
-import org.nuxeo.ecm.core.storage.binary.Binary;
 
 /**
  * Helpers for deep copy and deep diff of {@link State} objects.
@@ -45,7 +44,6 @@ public class StateHelper {
                 || value instanceof Long //
                 || value instanceof Double //
                 || value instanceof Calendar //
-                || value instanceof Binary //
                 || value instanceof Delta;
     }
 

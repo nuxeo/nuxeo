@@ -29,7 +29,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -44,10 +43,9 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
-import org.nuxeo.ecm.core.storage.binary.BinaryManager;
+import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
@@ -100,9 +98,9 @@ public class DialectPostgreSQL extends Dialect {
 
     protected String idSequenceName;
 
-    public DialectPostgreSQL(DatabaseMetaData metadata, BinaryManager binaryManager,
-            RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(metadata, binaryManager, repositoryDescriptor);
+    public DialectPostgreSQL(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor)
+            throws StorageException {
+        super(metadata, repositoryDescriptor);
         fulltextAnalyzer = repositoryDescriptor == null ? null
                 : repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
                         : repositoryDescriptor.fulltextAnalyzer;
@@ -211,9 +209,9 @@ public class DialectPostgreSQL extends Dialect {
         case ARRAY_TIMESTAMP:
             return jdbcInfo("timestamp[]", Types.ARRAY, "timestamp", Types.TIMESTAMP);
         case BLOBID:
-            return jdbcInfo("varchar(40)", Types.VARCHAR);
+            return jdbcInfo("varchar(250)", Types.VARCHAR);
         case ARRAY_BLOBID:
-            return jdbcInfo("varchar(40)[]", Types.ARRAY, "varchar", Types.VARCHAR);
+            return jdbcInfo("varchar(250)[]", Types.ARRAY, "varchar", Types.VARCHAR);
             // -----
         case NODEID:
         case NODEIDFK:

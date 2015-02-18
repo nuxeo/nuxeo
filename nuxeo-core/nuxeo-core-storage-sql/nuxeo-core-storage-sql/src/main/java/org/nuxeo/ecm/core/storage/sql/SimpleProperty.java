@@ -47,6 +47,7 @@ public class SimpleProperty extends BaseProperty {
     public String getString() throws StorageException {
         switch (type) {
         case STRING:
+        case BINARY:
             return (String) fragment.get(key);
         default:
             throw new RuntimeException("Not a String property: " + type);

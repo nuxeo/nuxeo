@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.ecm.core.storage.binary.Binary;
 
 /**
  * @author Florent Guillaume
@@ -40,14 +39,14 @@ public enum PropertyType {
     LONG(Long.class), //
     DOUBLE(Double.class), //
     DATETIME(Calendar.class), //
-    BINARY(Binary.class), //
+    BINARY(String.class), //
     ACL(ACLRow.class), //
     ARRAY_STRING(STRING, new String[0]), //
     ARRAY_BOOLEAN(BOOLEAN, new Boolean[0]), //
     ARRAY_LONG(LONG, new Long[0]), //
     ARRAY_DOUBLE(DOUBLE, new Double[0]), //
     ARRAY_DATETIME(DATETIME, new Calendar[0]), //
-    ARRAY_BINARY(BINARY, new Binary[0]), //
+    ARRAY_BINARY(BINARY, new String[0]), //
     COLL_ACL(ACL, new ACLRow[0]);
 
     private final Class<?> klass;
@@ -133,10 +132,10 @@ public enum PropertyType {
             }
             throw new IllegalArgumentException("value is not a Calendar: " + value);
         case BINARY:
-            if (value instanceof Binary) {
-                return (Binary) value;
+            if (value instanceof String) {
+                return (String) value;
             }
-            throw new IllegalArgumentException("value is not a Binary: " + value);
+            throw new IllegalArgumentException("value is not a binary String: " + value);
         case ACL:
             if (value instanceof ACLRow) {
                 return (ACLRow) value;

@@ -12,7 +12,6 @@
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import java.io.Serializable;
-import java.net.SocketException;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,10 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
@@ -38,17 +34,15 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
  */
 public class DialectDB2 extends Dialect {
 
-    private static final Log log = LogFactory.getLog(DialectDB2.class);
-
     protected final String fulltextParameters;
 
     private static final String DEFAULT_USERS_SEPARATOR = "|";
 
     protected String usersSeparator;
 
-    public DialectDB2(DatabaseMetaData metadata, BinaryManager binaryManager, RepositoryDescriptor repositoryDescriptor)
+    public DialectDB2(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor)
             throws StorageException {
-        super(metadata, binaryManager, repositoryDescriptor);
+        super(metadata, repositoryDescriptor);
         fulltextParameters = repositoryDescriptor == null ? null : repositoryDescriptor.fulltextAnalyzer == null ? ""
                 : repositoryDescriptor.fulltextAnalyzer;
         usersSeparator = repositoryDescriptor == null ? null
@@ -85,7 +79,7 @@ public class DialectDB2 extends Dialect {
         case TIMESTAMP:
             return jdbcInfo("TIMESTAMP", Types.TIMESTAMP);
         case BLOBID:
-            return jdbcInfo("VARCHAR(40)", Types.VARCHAR);
+            return jdbcInfo("VARCHAR(250)", Types.VARCHAR);
             // -----
         case NODEID:
         case NODEIDFK:

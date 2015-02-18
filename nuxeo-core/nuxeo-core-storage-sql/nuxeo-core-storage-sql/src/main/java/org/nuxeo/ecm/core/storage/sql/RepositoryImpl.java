@@ -223,10 +223,6 @@ public class RepositoryImpl implements Repository {
         return repositoryDescriptor;
     }
 
-    public BinaryManager getBinaryManager() {
-        return binaryManager;
-    }
-
     public LockManager getLockManager() {
         return lockManager;
     }

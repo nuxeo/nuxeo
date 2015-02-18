@@ -39,8 +39,6 @@ import java.util.regex.Pattern;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.binary.Binary;
-import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
@@ -151,8 +149,6 @@ public abstract class Dialect {
                 Integer.valueOf(length)), jdbcBaseType);
     }
 
-    protected final BinaryManager binaryManager;
-
     protected final boolean storesUpperCaseIdentifiers;
 
     protected boolean fulltextDisabled;
@@ -178,8 +174,8 @@ public abstract class Dialect {
      *
      * @throws StorageException if a SQL connection problem occurs
      */
-    public static Dialect createDialect(Connection connection, BinaryManager binaryManager,
-            RepositoryDescriptor repositoryDescriptor) throws StorageException {
+    public static Dialect createDialect(Connection connection, RepositoryDescriptor repositoryDescriptor)
+            throws StorageException {
         DatabaseMetaData metadata;
         String databaseName;
         try {
@@ -217,13 +213,13 @@ public abstract class Dialect {
         }
         Constructor<? extends Dialect> ctor;
         try {
-            ctor = dialectClass.getConstructor(DatabaseMetaData.class, BinaryManager.class, RepositoryDescriptor.class);
+            ctor = dialectClass.getConstructor(DatabaseMetaData.class, RepositoryDescriptor.class);
         } catch (ReflectiveOperationException e) {
             throw new StorageException("Bad constructor signature for: " + dialectClassName, e);
         }
         Dialect dialect;
         try {
-            dialect = ctor.newInstance(metadata, binaryManager, repositoryDescriptor);
+            dialect = ctor.newInstance(metadata, repositoryDescriptor);
         } catch (InvocationTargetException e) {
             Throwable t = e.getTargetException();
             if (t instanceof StorageException) {
@@ -237,14 +233,13 @@ public abstract class Dialect {
         return dialect;
     }
 
-    public Dialect(DatabaseMetaData metadata, BinaryManager binaryManager, RepositoryDescriptor repositoryDescriptor)
+    public Dialect(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor)
             throws StorageException {
         try {
             storesUpperCaseIdentifiers = metadata.storesUpperCaseIdentifiers();
         } catch (SQLException e) {
             throw new StorageException("An error has occured.", e);
         }
-        this.binaryManager = binaryManager;
         if (repositoryDescriptor == null) {
             fulltextDisabled = true;
             aclOptimizationsEnabled = false;
@@ -260,10 +255,6 @@ public abstract class Dialect {
             softDeleteEnabled = repositoryDescriptor.getSoftDeleteEnabled();
             proxiesEnabled = repositoryDescriptor.getProxiesEnabled();
         }
-    }
-
-    public BinaryManager getBinaryManager() {
-        return binaryManager;
     }
 
     /**
@@ -340,9 +331,7 @@ public abstract class Dialect {
             throws SQLException {
         String v;
         ColumnType type = column.getType();
-        if (type == ColumnType.BLOBID) {
-            v = ((Binary) value).getDigest();
-        } else if (type == ColumnType.SYSNAMEARRAY) {
+        if (type == ColumnType.SYSNAMEARRAY) {
             // implementation when arrays aren't supported
             String[] strings = (String[]) value;
             if (strings == null) {
@@ -412,9 +401,7 @@ public abstract class Dialect {
             return null;
         }
         ColumnType type = column.getType();
-        if (type == ColumnType.BLOBID) {
-            return getBinaryManager().getBinary(string);
-        } else if (type == ColumnType.SYSNAMEARRAY) {
+        if (type == ColumnType.SYSNAMEARRAY) {
             // implementation when arrays aren't supported
             // an initial separator is expected
             if (string.startsWith(ARRAY_SEP)) {
