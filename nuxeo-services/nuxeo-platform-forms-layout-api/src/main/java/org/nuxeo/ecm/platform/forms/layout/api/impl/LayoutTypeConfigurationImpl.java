@@ -212,4 +212,25 @@ public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
         return null;
     }
 
+    /**
+     * @since 7.2
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof LayoutTypeConfigurationImpl)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        LayoutTypeConfigurationImpl lc = (LayoutTypeConfigurationImpl) obj;
+        return new EqualsBuilder().append(sinceVersion, lc.sinceVersion).append(deprecatedVersion, lc.deprecatedVersion).append(
+                title, lc.title).append(description, lc.description).append(demoId, lc.demoId).append(
+                demoPreviewEnabled, lc.demoPreviewEnabled).append(supportedModes, lc.supportedModes).append(
+                handlingLabels, lc.handlingLabels).append(supportedControls, lc.supportedControls).append(
+                containingForm, lc.containingForm).append(categories, lc.categories).append(propertyLayouts,
+                lc.propertyLayouts).append(defaultPropertyValues, lc.defaultPropertyValues).append(fieldLayouts,
+                lc.fieldLayouts).isEquals();
+    }
+
 }

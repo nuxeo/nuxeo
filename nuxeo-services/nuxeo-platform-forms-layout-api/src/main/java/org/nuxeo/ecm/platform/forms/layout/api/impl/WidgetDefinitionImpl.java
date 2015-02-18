@@ -588,4 +588,25 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return clone;
     }
 
+    /**
+     * @since 7.2
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof WidgetDefinitionImpl)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        WidgetDefinitionImpl w = (WidgetDefinitionImpl) obj;
+        return new EqualsBuilder().append(name, w.name).append(type, w.type).append(typeCategory, w.typeCategory).append(
+                labels, w.labels).append(helpLabels, w.helpLabels).append(translated, w.translated).append(
+                handlingLabels, w.handlingLabels).append(modes, w.modes).append(fieldDefinitions, w.fieldDefinitions).append(
+                properties, w.properties).append(widgetModeProperties, w.widgetModeProperties).append(controls,
+                w.controls).append(subWidgets, w.subWidgets).append(subWidgetReferences, w.subWidgetReferences).append(
+                selectOptions, w.selectOptions).append(renderingInfos, w.renderingInfos).append(aliases, w.aliases).append(
+                dynamic, w.dynamic).append(global, w.global).isEquals();
+    }
+
 }

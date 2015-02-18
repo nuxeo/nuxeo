@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.forms.layout.LayoutStore.testContrib.override">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="layouts">
+
+    <!-- remove all rows just to test override -->
+    <layout name="testLayout">
+      <categories>
+        <category>testCategory</category>
+      </categories>
+    </layout>
+
+  </extension>
+
+</component>

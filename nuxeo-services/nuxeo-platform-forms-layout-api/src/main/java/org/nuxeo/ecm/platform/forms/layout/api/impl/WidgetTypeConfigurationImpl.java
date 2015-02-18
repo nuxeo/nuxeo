@@ -474,4 +474,28 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
         this.supportedControls = supportedControls;
     }
 
+    /**
+     * @since 7.2
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof WidgetTypeConfigurationImpl)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        WidgetTypeConfigurationImpl wc = (WidgetTypeConfigurationImpl) obj;
+        return new EqualsBuilder().append(sinceVersion, wc.sinceVersion).append(deprecatedVersion, wc.deprecatedVersion).append(
+                title, wc.title).append(description, wc.description).append(demoId, wc.demoId).append(
+                demoPreviewEnabled, wc.demoPreviewEnabled).append(properties, wc.properties).append(supportedModes,
+                wc.supportedModes).append(acceptingSubWidgets, wc.acceptingSubWidgets).append(handlingLabels,
+                wc.handlingLabels).append(supportedControls, wc.supportedControls).append(list, wc.list).append(
+                complex, wc.complex).append(containingForm, wc.containingForm).append(supportedFieldTypes,
+                wc.supportedFieldTypes).append(defaultFieldTypes, wc.defaultFieldTypes).append(defaultFieldDefinitions,
+                wc.defaultFieldDefinitions).append(categories, wc.categories).append(propertyLayouts,
+                wc.propertyLayouts).append(defaultPropertyValues, wc.defaultPropertyValues).append(
+                defaultControlValues, wc.defaultControlValues).append(fieldLayouts, wc.fieldLayouts).isEquals();
+    }
+
 }

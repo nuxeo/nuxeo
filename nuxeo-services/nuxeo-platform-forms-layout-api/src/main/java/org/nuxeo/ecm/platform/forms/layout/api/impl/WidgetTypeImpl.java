@@ -73,4 +73,20 @@ public class WidgetTypeImpl implements WidgetType {
         this.aliases = aliases;
     }
 
+    /**
+     * @since 7.2
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof WidgetTypeImpl)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        WidgetTypeImpl w = (WidgetTypeImpl) obj;
+        return new EqualsBuilder().append(name, w.name).append(aliases, w.aliases).append(typeClass, w.typeClass).append(
+                properties, w.properties).isEquals();
+    }
+
 }

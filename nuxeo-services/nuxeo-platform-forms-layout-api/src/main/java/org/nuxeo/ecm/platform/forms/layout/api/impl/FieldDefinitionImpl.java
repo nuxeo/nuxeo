@@ -60,4 +60,19 @@ public class FieldDefinitionImpl implements FieldDefinition {
         return new FieldDefinitionImpl(schema, field);
     }
 
+    /**
+     * @since 7.2
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof FieldDefinitionImpl)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        FieldDefinitionImpl fd = (FieldDefinitionImpl) obj;
+        return new EqualsBuilder().append(schema, fd.schema).append(field, fd.field).isEquals();
+    }
+
 }

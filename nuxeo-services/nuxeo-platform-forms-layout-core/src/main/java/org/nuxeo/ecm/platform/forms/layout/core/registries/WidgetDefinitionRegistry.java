@@ -63,6 +63,16 @@ public class WidgetDefinitionRegistry extends
         }
     }
 
+    /**
+     * Overridden to use equals method when removing elements.
+     *
+     * @since 7.2
+     */
+    @Override
+    public synchronized void removeContribution(WidgetDefinition contrib) {
+        removeContribution(contrib, true);
+    }
+
     @Override
     // overridden to handle aliases
     public synchronized void removeContribution(WidgetDefinition contrib,

@@ -187,4 +187,20 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
         return clone;
     }
 
+    /**
+     * @since 7.2
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof LayoutRowDefinitionImpl)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        LayoutRowDefinitionImpl ld = (LayoutRowDefinitionImpl) obj;
+        return new EqualsBuilder().append(name, ld.name).append(properties, ld.properties).append(widgets, ld.widgets).append(
+                alwaysSelected, ld.alwaysSelected).append(selectedByDefault, ld.selectedByDefault).isEquals();
+    }
+
 }
