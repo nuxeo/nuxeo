@@ -16,12 +16,15 @@
  */
 package org.nuxeo.ecm.webapp.navigation;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
-import static org.jboss.seam.ScopeType.STATELESS;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
@@ -29,19 +32,24 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.navigation.Pages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.pathelements.ArchivedVersionsPathElement;
 import org.nuxeo.ecm.platform.ui.web.pathelements.DocumentPathElement;
 import org.nuxeo.ecm.platform.ui.web.pathelements.PathElement;
 import org.nuxeo.ecm.platform.ui.web.pathelements.TextPathElement;
 import org.nuxeo.ecm.platform.ui.web.pathelements.VersionDocumentPathElement;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * The new approach: keep all selected documents into a list. Add new document to the list each time a new document is
@@ -59,9 +67,11 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
 @Name("breadcrumbActions")
-@Scope(STATELESS)
+@Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
 public class BreadcrumbActionsBean implements BreadcrumbActions {
+
+    public static final String BREADCRUMB_USER_DOMAINS_PROVIDER = "breadcrumb_user_domains";
 
     @In(create = true)
     protected NavigationContext navigationContext;
@@ -71,6 +81,8 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
 
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
+
+    protected List<DocumentModel> userDomains = null;
 
     /** View id description prefix for message label (followed by "="). */
     protected static final String BREADCRUMB_PREFIX = "breadcrumb";
@@ -90,7 +102,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
     }
 
     protected String getPathEllipsis() {
-        return "....";
+        return "…";
     }
 
     protected String getViewDomainsOutcome() {
@@ -230,4 +242,31 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
         return pathElements;
     }
 
+    @SuppressWarnings("unchecked")
+    public List<DocumentModel> getUserDomains() {
+        if (userDomains == null) {
+            PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
+            Map<String, Serializable> properties = new HashMap<>();
+            properties.put("coreSession", (Serializable) documentManager);
+            userDomains = ((PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                    BREADCRUMB_USER_DOMAINS_PROVIDER, null, null, null, properties)).getCurrentPage();
+        }
+        return userDomains;
+    }
+
+    public boolean isUserDomain(DocumentModel doc) {
+        List<DocumentModel> userDomains = getUserDomains();
+        for (DocumentModel userDomain : userDomains) {
+            if (doc.getRef().equals(userDomain.getRef())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Observer({ EventNames.LOCATION_SELECTION_CHANGED, EventNames.DOCUMENT_CHILDREN_CHANGED,
+            EventNames.DOCUMENT_CHANGED })
+    public void resetUserDomains() {
+        userDomains = null;
+    }
 }

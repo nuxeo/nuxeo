@@ -109,7 +109,7 @@ public class MultiNavTreeManager implements Serializable {
         String[] partOfPath = thePath.split("/");
         String finalPath = "";
         for (String aPart : partOfPath) {
-            finalPath = finalPath + " > " + messages.get(aPart);
+            finalPath = finalPath + " / " + messages.get(aPart);
         }
         return finalPath;
     }

@@ -13,24 +13,63 @@
   <div class="breadcrumbs">
     <h:form id="breadcrumbForm">
 
-      <h:commandLink id="goToParentButton" action="#{breadcrumbActions.navigateToParent}"
-        rendered="#{facesContext.viewRoot.viewId != '/view_servers.xhtml'}">
-        <nxu:graphicImage value="/icons/UpFolder_icon.gif"
-          style="vertical-align:middle"/>
-      </h:commandLink>
+      <nxu:set var="coreRepositories" value="#{availableCoreRepositories}">
+        <ul class="actionList jsBreadcrumbActionList">
+          <li class="dropDownMenu button dropdown">
+            <h:graphicImage value="/icons/UpFolder_icon.gif" alt="server" />
+            <ul class="actionSubList">
+              <nxu:repeat var="coreRepository" items="#{coreRepositories}">
+                <li>
+                  <h:commandLink action="#{serverActions.selectRepository(coreRepository.name)}">
+                    <h:outputText value="#{coreRepository.label} (#{coreRepository.name})" />
+                  </h:commandLink>
+                </li>
+              </nxu:repeat>
+            </ul>
+          </li>
+        </ul>
+      </nxu:set>
 
       <c:if test="#{!empty backendPath}">
 
-        <c:forEach var="pathElement" items="#{backendPath}">
-          <f:verbatim>&amp;gt;&amp;nbsp;</f:verbatim>
+        <nxu:set var="userDomains" value="#{breadcrumbActions.userDomains}">
+          <c:forEach var="pathElement" items="#{backendPath}" varStatus="status">
+            <c:choose>
+              <c:when test="#{status.first}">
+                <ul class="actionList jsBreadcrumbActionList">
+                  <li class="dropDownMenu button dropdown">
+                    <h:outputText value="#{nxd:titleOrId(navigationContext.currentDomain)}" />
+                    <ul class="actionSubList">
+                      <nxu:repeat var="userDomain" items="#{userDomains}">
+                        <li>
+                          <nxd:restDocumentLink document="#{userDomain}">
+                            <h:outputText value="#{nxd:titleOrId(userDomain)}" />
+                          </nxd:restDocumentLink>
+                        </li>
+                      </nxu:repeat>
+                    </ul>
+                  </li>
+                </ul>
 
-          <nxd:restDocumentLink document="#{pathElement.documentModel}"
-            rendered="#{pathElement.link}">
-            <h:outputText value="#{nxd:titleOrId(pathElement.documentModel)}" />
-          </nxd:restDocumentLink>
-          <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link} "/>
+                <c:if test="#{!pathElement.link or !breadcrumbActions.isUserDomain(pathElement.documentModel)}">
+                  <nxd:restDocumentLink document="#{pathElement.documentModel}"
+                    rendered="#{pathElement.link}">
+                    <h:outputText value="#{nxd:titleOrId(pathElement.documentModel)}" />
+                  </nxd:restDocumentLink>
+                  <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link}" />
+                </c:if>
+              </c:when>
+              <c:otherwise>
+                <nxd:restDocumentLink document="#{pathElement.documentModel}"
+                  rendered="#{pathElement.link}">
+                  <h:outputText value="#{nxd:titleOrId(pathElement.documentModel)}" />
+                </nxd:restDocumentLink>
+                <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link} "/>
+              </c:otherwise>
+            </c:choose>
 
-        </c:forEach>
+          </c:forEach>
+        </nxu:set>
 
       </c:if>
       <c:if test="#{empty backendPath}">
@@ -41,5 +80,11 @@
   </div>
 
   <div style="clear:both"></div>
+
+  <script type="text/javascript">
+    jQuery(document).ready(function() {
+      jQuery("ul.jsBreadcrumbActionList").dropdown();
+    });
+  </script>
 
 </div>

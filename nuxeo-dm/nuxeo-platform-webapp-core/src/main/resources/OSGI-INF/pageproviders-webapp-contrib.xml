@@ -36,5 +36,15 @@
       <pageSize>10</pageSize>
     </genericPageProvider>
 
+    <coreQueryPageProvider name="breadcrumb_user_domains">
+      <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
+      <pattern>
+        SELECT * FROM Domain WHERE ecm:mixinType != 'HiddenInNavigation'
+        AND ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>0</pageSize>
+    </coreQueryPageProvider>
+
   </extension>
 </component>
