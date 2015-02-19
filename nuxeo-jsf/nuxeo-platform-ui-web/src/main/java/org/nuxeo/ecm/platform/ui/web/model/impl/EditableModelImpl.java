@@ -325,7 +325,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
     @Override
     public Integer getRowKey() {
         if (index < 0) {
-            return null;
+            return index;
         }
         return keyMap.get(index);
     }
