@@ -69,6 +69,7 @@ public class ElasticSearchManager {
             .getLog(ElasticSearchManager.class);
 
     private static final String DEFAULT_NXQL_QUERY = "SELECT * FROM Document";
+
     private static final String JSON_DELETE_CMD = "{\"id\":\"IndexingCommand-reindex\",\"type\":\"DELETE\",\"docId\":\"%s\",\"repo\":\"%s\",\"recurse\":true,\"sync\":true}";
 
     private static final String ES_CLUSTER_INFO_PROPERTY = "elasticsearch.adminCenter.displayClusterInfo";
@@ -175,13 +176,13 @@ public class ElasticSearchManager {
                 } else {
                     cvStatuses.add(new ContentViewStatus(cvName,
                             gppd.getName(), gppd.getPageProviderClass()
-                                    .getName()));
+                            .getName()));
                 }
             } else if (def instanceof CoreQueryPageProviderDescriptor) {
                 cvStatuses.add(new ContentViewStatus(cvName, def.getName(),
                         "core"));
             }
-    
+        }
         Collections.sort(cvStatuses);
     }
 
@@ -201,6 +202,9 @@ public class ElasticSearchManager {
     }
 
     public Boolean displayClusterInfo() {
+        if (esa.isEmbedded()) {
+            return true;
+        }
         return Boolean.parseBoolean(Framework.getProperty(ES_CLUSTER_INFO_PROPERTY, "false"));
     }
 
@@ -208,7 +212,7 @@ public class ElasticSearchManager {
         return Integer.valueOf(esa.getPendingWorkerCount()).toString();
     }
 
-    public String getRunningCommands() {
+    public String getRunningWorkerCount() {
         return Integer.valueOf(esa.getRunningWorkerCount()).toString();
     }
 

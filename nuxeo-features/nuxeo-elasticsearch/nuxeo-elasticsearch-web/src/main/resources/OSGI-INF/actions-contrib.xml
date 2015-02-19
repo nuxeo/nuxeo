@@ -27,12 +27,6 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="ESQuery" link="/incl/elasticsearch/query.xhtml" label="tab.elastic.query"
-      type="admin_rest_document_link" order="50">
-      <category>ElasticSearch_sub_tab</category>
-      <filter-id>only_for_manager</filter-id>
-    </action>
-
   </extension>
 
 </component>

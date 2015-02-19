@@ -86,6 +86,8 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     private String[] excludeSourceFields;
 
+    private boolean embedded = true;
+
     /**
      * Init the admin service, remote configuration if not null will take precedence over local embedded configuration.
      */
@@ -104,9 +106,11 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         }
         if (remoteConfig != null) {
             client = connectToRemote(remoteConfig);
+            embedded = false;
         } else {
             localNode = createEmbeddedNode(localConfig);
             client = connectToEmbedded();
+            embedded = true;
         }
         checkClusterHealth();
         log.info("ES Connected");
@@ -391,6 +395,11 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     @Override
     public int getTotalCommandProcessed() {
         return totalCommandProcessed.get();
+    }
+
+    @Override
+    public boolean isEmbedded() {
+        return embedded;
     }
 
     @Override
