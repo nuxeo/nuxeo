@@ -37,33 +37,37 @@
 
         <div id="clipboardCopy">
   
-          <c:forEach var="copiedDocument"
-            items="#{clipboardActions.currentSelectedList}">
-            <span id="docClipboardRef:#{copiedDocument.ref}"
-              class="cell nxDraggable">
-              <nxu:graphicImage
-                value="#{nxd:iconPath(copiedDocument)}"
-                styleClass="icon smallIcon" />
-            </span>
-            <span>
-              <span class="clipboardRemoveItem">
-                <h:commandLink
-                  actionListener="#{clipboardActions.removeWorkListItem(copiedDocument.ref)}">
-                  <nxu:graphicImage value="/icons/delete.png" />
-                </h:commandLink>
-              </span>
-              <c:choose>
-                <c:when test="#{clipboardActions.exists(copiedDocument.ref)}">
-                  <nxd:restDocumentLink document="#{copiedDocument}" pattern="id">
-                    <h:outputText value="#{nxd:titleOrId(copiedDocument)}" />
-                  </nxd:restDocumentLink>
-                </c:when>
-                <c:otherwise>
-                  <h:outputText value="#{nxd:titleOrId(copiedDocument)}" />
-                </c:otherwise>
-              </c:choose>
-            </span>
-          </c:forEach>
+          <ul>
+            <c:forEach var="copiedDocument"
+              items="#{clipboardActions.currentSelectedList}">
+              <li>
+                <div class="positionR">
+                  <span id="docClipboardRef:#{copiedDocument.ref}"
+                    class="cell nxDraggable">
+                    <nxu:graphicImage
+                      value="#{nxd:iconPath(copiedDocument)}"
+                      styleClass="icon smallIcon" />
+                  </span>
+                  <c:choose>
+                    <c:when test="#{clipboardActions.exists(copiedDocument.ref)}">
+                      <nxd:restDocumentLink document="#{copiedDocument}" pattern="id">
+                        <h:outputText value="#{nxd:titleOrId(copiedDocument)}" />
+                      </nxd:restDocumentLink>
+                    </c:when>
+                    <c:otherwise>
+                      <h:outputText value="#{nxd:titleOrId(copiedDocument)}" />
+                    </c:otherwise>
+                  </c:choose>
+                  <span class="clipboardRemoveItem">
+                    <h:commandLink
+                      actionListener="#{clipboardActions.removeWorkListItem(copiedDocument.ref)}">
+                      <nxu:graphicImage value="/icons/delete.png" />
+                    </h:commandLink>
+                  </span>
+                </div>
+              </li>
+            </c:forEach>
+          </ul>
 
           <c:if test="#{clipboardActions.workListEmpty}">
             <div class="emptyResult">

@@ -113,7 +113,6 @@ author: lkemen@nuxeo.com
   color: "link.hover (__FLAVOR__ color)" }
 
 .clipboardRemoveItem {
-  bottom: 2px;
   float: right;
   position: absolute;
   right: 0 }
