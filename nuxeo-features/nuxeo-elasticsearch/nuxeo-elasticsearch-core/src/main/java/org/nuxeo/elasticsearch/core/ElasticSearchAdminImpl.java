@@ -264,11 +264,9 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     @Override
     public void flushRepositoryIndex(String repositoryName) {
-        log.info("Flushing index associated with repo: " + repositoryName);
+        log.warn("Flushing index associated with repo: " + repositoryName);
         getClient().admin().indices().prepareFlush(getIndexNameForRepository(repositoryName)).execute().actionGet();
-        if (log.isDebugEnabled()) {
-            log.debug("Flushing index done");
-        }
+        log.info("Flushing index done");
     }
 
     @Override
@@ -282,6 +280,20 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     public void flush() {
         for (String repositoryName : indexNames.keySet()) {
             flushRepositoryIndex(repositoryName);
+        }
+    }
+
+    @Override
+    public void optimizeRepositoryIndex(String repositoryName) {
+        log.warn("Optimize index associated with repo: " + repositoryName);
+        getClient().admin().indices().prepareOptimize(getIndexNameForRepository(repositoryName)).get();
+        log.info("Optimize index done");
+    }
+
+    @Override
+    public void optimize() {
+        for (String repositoryName : indexNames.keySet()) {
+            optimizeRepositoryIndex(repositoryName);
         }
     }
 

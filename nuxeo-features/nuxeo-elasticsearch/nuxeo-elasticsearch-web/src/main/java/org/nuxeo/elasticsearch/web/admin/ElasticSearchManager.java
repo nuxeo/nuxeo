@@ -139,6 +139,10 @@ public class ElasticSearchManager {
         esa.flush();
     }
 
+    public void optimize() {
+        esa.optimize();
+    }
+
     protected void introspectPageProviders() {
 
         ppStatuses = new ArrayList<>();

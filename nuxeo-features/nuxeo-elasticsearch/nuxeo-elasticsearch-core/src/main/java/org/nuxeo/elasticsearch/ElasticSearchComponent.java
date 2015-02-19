@@ -317,6 +317,16 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         esa.flushRepositoryIndex(repositoryName);
     }
 
+    @Override
+    public void optimize() {
+        esa.optimize();
+    }
+
+    @Override
+    public void optimizeRepositoryIndex(String repositoryName) {
+        esa.optimizeRepositoryIndex(repositoryName);
+    }
+
     // ES Indexing =============================================================
 
     @Override
