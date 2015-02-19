@@ -120,21 +120,12 @@ public class InputFileInfo implements Serializable {
         this.choice = choice;
     }
 
-    public InputFileChoice getConvertedChoice() throws ConverterException {
-        InputFileChoice convertedChoice = null;
-        if (choice instanceof InputFileChoice) {
-            convertedChoice = (InputFileChoice) choice;
-        } else if (choice instanceof String) {
-            String stringChoice = (String) choice;
-            try {
-                convertedChoice = InputFileChoice.valueOf(stringChoice);
-            } catch (IllegalArgumentException err) {
-                throw new ConverterException("error.inputFile.invalidChoice");
-            }
-        } else if (choice != null) {
+    public String getConvertedChoice() throws ConverterException {
+        if (choice == null || choice instanceof String) {
+            return (String) choice;
+        } else {
             throw new ConverterException("error.inputFile.invalidChoice");
         }
-        return convertedChoice;
     }
 
     public Object getFilename() {

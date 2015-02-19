@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.component.file.JSFBlobUploaderService" version="1.0.0">
+
+  <documentation>
+    Registry for JSF File Uploaders.
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.ui.web.component.file.JSFBlobUploaderService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.ui.web.component.file.JSFBlobUploaderService" />
+  </service>
+
+  <extension-point name="uploader">
+    <object class="org.nuxeo.ecm.platform.ui.web.component.file.JSFBlobUploaderDescriptor" />
+  </extension-point>
+
+  <!-- register the default one -->
+  <extension target="org.nuxeo.ecm.platform.ui.web.component.file.JSFBlobUploaderService" point="uploader">
+    <uploader id="HTML" order="10" class="org.nuxeo.ecm.platform.ui.web.component.file.HTMLBlobUploader" />
+  </extension>
+
+</component>

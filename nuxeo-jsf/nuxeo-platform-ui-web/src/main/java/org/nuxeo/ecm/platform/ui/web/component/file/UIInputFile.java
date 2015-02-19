@@ -12,12 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Contributors:
+ *     Anahide Tchertchian
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.ui.web.component.file;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,24 +34,19 @@ import javax.faces.component.EditableValueHolder;
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
-import javax.faces.component.html.HtmlInputFile;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.convert.ConverterException;
 import javax.faces.event.ValueChangeEvent;
-import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
-import javax.servlet.http.Part;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.ui.web.application.NuxeoResponseStateManagerImpl;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
-import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.util.MessageFactory;
@@ -58,8 +56,6 @@ import com.sun.faces.util.MessageFactory;
  * <p>
  * Attribute value is the file to be uploaded. Its submitted value as well as filename are handled by sub components.
  * Rendering and validation of subcomponents are handled here.
- *
- * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class UIInputFile extends UIInput implements NamingContainer {
 
@@ -78,6 +74,8 @@ public class UIInputFile extends UIInput implements NamingContainer {
     protected static final String EDIT_FILENAME_FACET_NAME = "edit_filename";
 
     protected static final Log log = LogFactory.getLog(UIInputFile.class);
+
+    protected final JSFBlobUploaderService uploaderService;
 
     // value for filename, will disappear when it's part of the blob
     protected String filename;
@@ -99,8 +97,10 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 app.createComponent(UIOutputFile.COMPONENT_TYPE));
         ComponentUtils.initiateSubComponent(this, EDIT_FILENAME_FACET_NAME,
                 app.createComponent(HtmlInputText.COMPONENT_TYPE));
-        ComponentUtils.initiateSubComponent(this, UPLOAD_FACET_NAME,
-                app.createComponent(faces, HtmlInputFile.COMPONENT_TYPE, NXFileRenderer.RENDERER_TYPE));
+        uploaderService = Framework.getService(JSFBlobUploaderService.class);
+        for (JSFBlobUploader uploader : uploaderService.getJSFBlobUploaders()) {
+            uploader.hookSubComponent(this);
+        }
     }
 
     // component will render itself
@@ -127,8 +127,8 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 blob = (Blob) originalValue;
                 mimeType = blob.getMimeType();
             }
-            List<InputFileChoice> choices = getAvailableChoices(blob, false);
-            InputFileChoice choice = choices.get(0);
+            List<String> choices = getAvailableChoices(blob, false);
+            String choice = choices.get(0);
             return new InputFileInfo(choice, blob, getFilename(), mimeType);
         }
     }
@@ -272,7 +272,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
         InputFileInfo previous = getFileInfoValue();
 
         // validate choice
-        InputFileChoice choice;
+        String choice;
         try {
             choice = submitted.getConvertedChoice();
         } catch (ConverterException ce) {
@@ -286,9 +286,9 @@ public class UIInputFile extends UIInput implements NamingContainer {
             return;
         }
         submitted.setChoice(choice);
-        InputFileChoice previousChoice = previous.getConvertedChoice();
-        boolean temp = InputFileChoice.tempKeep == previousChoice || InputFileChoice.upload == previousChoice;
-        List<InputFileChoice> choices = getAvailableChoices(previous.getBlob(), temp);
+        String previousChoice = previous.getConvertedChoice();
+        boolean temp = InputFileChoice.isUploadOrKeepTemp(previousChoice);
+        List<String> choices = getAvailableChoices(previous.getBlob(), temp);
         if (!choices.contains(choice)) {
             ComponentUtils.addErrorMessage(context, this, "error.inputFile.invalidChoice");
             setValid(false);
@@ -296,8 +296,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
         }
 
         // validate choice in respect to other submitted values
-        switch (choice) {
-        case tempKeep:
+        if (InputFileChoice.KEEP_TEMP.equals(choice)) {
             // re-submit stored values
             if (isLocalValueSet()) {
                 submitted.setBlob(previous.getConvertedBlob());
@@ -306,36 +305,28 @@ public class UIInputFile extends UIInput implements NamingContainer {
             if (getEditFilename()) {
                 validateFilename(context, submitted);
             }
-            break;
-        case keep:
+        } else if (InputFileChoice.KEEP.equals(choice)) {
             // re-submit stored values
             submitted.setBlob(previous.getConvertedBlob());
             submitted.setFilename(previous.getConvertedFilename());
             if (getEditFilename()) {
                 validateFilename(context, submitted);
             }
-            break;
-        case upload:
+        } else if (InputFileChoice.isUpload(choice)) {
             try {
-                validateBlob(context, submitted);
+                uploaderService.getJSFBlobUploader(choice).validateUpload(this, context, submitted);
                 if (isValid()) {
-                    submitted.setChoice(InputFileChoice.tempKeep);
+                    submitted.setChoice(InputFileChoice.KEEP_TEMP);
                 }
             } catch (ValidatorException e) {
                 // set file to null: blob is null but file is not required
                 submitted.setBlob(null);
                 submitted.setFilename(null);
-                submitted.setChoice(InputFileChoice.none);
+                submitted.setChoice(InputFileChoice.NONE);
             }
-            break;
-        case delete:
+        } else if (InputFileChoice.DELETE.equals(choice) || InputFileChoice.NONE.equals(choice)) {
             submitted.setBlob(null);
             submitted.setFilename(null);
-            break;
-        case none:
-            submitted.setBlob(null);
-            submitted.setFilename(null);
-            break;
         }
 
         // will need this to call declared validators
@@ -370,36 +361,6 @@ public class UIInputFile extends UIInput implements NamingContainer {
         }
     }
 
-    /**
-     * Validates submitted blob.
-     * <p>
-     * Throws ValidatorException as a flag when blob is null and file is not required to set choice back to "no file"
-     * (see NXP-1732).
-     *
-     * @throws ValidatorException
-     */
-    public void validateBlob(FacesContext context, InputFileInfo submitted) throws ValidatorException {
-        // validate blob
-        UIComponent uploadFacet = getFacet(UPLOAD_FACET_NAME);
-        if (uploadFacet instanceof HtmlInputFile) {
-            HtmlInputFile uploadComp = (HtmlInputFile) uploadFacet;
-            Object submittedFile = uploadComp.getSubmittedValue();
-            if (submittedFile instanceof Blob) {
-                Blob sblob = (Blob) submittedFile;
-                if (sblob.getLength() == 0) {
-                    String message = context.getPartialViewContext().isAjaxRequest() ? InputFileInfo.INVALID_WITH_AJAX_MESSAGE
-                            : InputFileInfo.INVALID_FILE_MESSAGE;
-                    ComponentUtils.addErrorMessage(context, this, message);
-                    setValid(false);
-                    return;
-                }
-                submitted.setBlob(sblob);
-                submitted.setFilename(sblob.getFilename());
-                submitted.setMimeType(sblob.getMimeType());
-            }
-        }
-    }
-
     public void updateFilename(FacesContext context, String newFilename) {
         // set filename by hand after validation
         ValueExpression ve = getValueExpression("filename");
@@ -418,107 +379,83 @@ public class UIInputFile extends UIInput implements NamingContainer {
             return;
         }
         ValueExpression ve = getValueExpression("value");
-        if (ve != null) {
-            try {
-                InputFileInfo local = getFileInfoLocalValue();
-                InputFileChoice choice = local.getConvertedChoice();
-                // set file name
-                if ((InputFileChoice.keep == choice && getEditFilename()) || InputFileChoice.upload == choice
-                        || InputFileChoice.delete == choice || InputFileChoice.tempKeep == choice) {
+        if (ve == null) {
+            return;
+        }
+        try {
+            InputFileInfo local = getFileInfoLocalValue();
+            String choice = local.getConvertedChoice();
+            // set blob and filename
+            if (InputFileChoice.DELETE.equals(choice)) {
+                // set filename first to avoid error in case it maps the blob filename
+                ValueExpression vef = getValueExpression("filename");
+                if (vef != null) {
+                    vef.setValue(context.getELContext(), local.getConvertedFilename());
                 }
-                // set blob and filename
-                if (InputFileChoice.upload == choice || InputFileChoice.delete == choice
-                        || InputFileChoice.tempKeep == choice) {
-                    if (InputFileChoice.delete == choice) {
-                        // set filename first to avoid error in case it maps
-                        // the blob filename
-                        ValueExpression vef = getValueExpression("filename");
-                        if (vef != null) {
-                            vef.setValue(context.getELContext(), local.getConvertedFilename());
-                        }
-                        ve.setValue(context.getELContext(), local.getConvertedBlob());
-                        setValue(null);
-                        setLocalValueSet(false);
-                    } else {
-                        // set blob first to avoid error in case the filename
-                        // maps the blob filename
-                        ve.setValue(context.getELContext(), local.getConvertedBlob());
-                        setValue(null);
-                        setLocalValueSet(false);
-                        ValueExpression vef = getValueExpression("filename");
-                        if (vef != null) {
-                            vef.setValue(context.getELContext(), local.getConvertedFilename());
-                        }
-                    }
-                } else if (InputFileChoice.keep == choice) {
-                    // reset local value
-                    setValue(null);
-                    setLocalValueSet(false);
-                    if (getEditFilename()) {
-                        // set filename
-                        ValueExpression vef = getValueExpression("filename");
-                        if (vef != null) {
-                            vef.setValue(context.getELContext(), local.getConvertedFilename());
-                        }
+                ve.setValue(context.getELContext(), local.getConvertedBlob());
+                setValue(null);
+                setLocalValueSet(false);
+            } else if (InputFileChoice.isUploadOrKeepTemp(choice)) {
+                // set blob first to avoid error in case the filename maps the blob filename
+                ve.setValue(context.getELContext(), local.getConvertedBlob());
+                setValue(null);
+                setLocalValueSet(false);
+                ValueExpression vef = getValueExpression("filename");
+                if (vef != null) {
+                    vef.setValue(context.getELContext(), local.getConvertedFilename());
+                }
+            } else if (InputFileChoice.KEEP.equals(choice)) {
+                // reset local value
+                setValue(null);
+                setLocalValueSet(false);
+                if (getEditFilename()) {
+                    // set filename
+                    ValueExpression vef = getValueExpression("filename");
+                    if (vef != null) {
+                        vef.setValue(context.getELContext(), local.getConvertedFilename());
                     }
                 }
-                return;
-            } catch (ELException e) {
-                String messageStr = e.getMessage();
-                Throwable result = e.getCause();
-                while (null != result && result.getClass().isAssignableFrom(ELException.class)) {
-                    messageStr = result.getMessage();
-                    result = result.getCause();
-                }
-                FacesMessage message;
-                if (null == messageStr) {
-                    message = MessageFactory.getMessage(context, UPDATE_MESSAGE_ID,
-                            MessageFactory.getLabel(context, this));
-                } else {
-                    message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageStr, messageStr);
-                }
-                context.addMessage(getClientId(context), message);
-                setValid(false);
-            } catch (IllegalArgumentException e) {
-                FacesMessage message = MessageFactory.getMessage(context, UPDATE_MESSAGE_ID,
-                        MessageFactory.getLabel(context, this));
-                context.addMessage(getClientId(context), message);
-                setValid(false);
-            } catch (ConverterException e) {
-                FacesMessage message = MessageFactory.getMessage(context, UPDATE_MESSAGE_ID,
-                        MessageFactory.getLabel(context, this));
-                context.addMessage(getClientId(context), message);
-                setValid(false);
             }
+            return;
+        } catch (ELException e) {
+            String messageStr = e.getMessage();
+            Throwable result = e.getCause();
+            while (result != null && result instanceof ELException) {
+                messageStr = result.getMessage();
+                result = result.getCause();
+            }
+            FacesMessage message;
+            if (messageStr == null) {
+                message = MessageFactory.getMessage(context, UPDATE_MESSAGE_ID, MessageFactory.getLabel(context, this));
+            } else {
+                message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageStr, messageStr);
+            }
+            context.addMessage(getClientId(context), message);
+            setValid(false);
+        } catch (IllegalArgumentException | ConverterException e) {
+            FacesMessage message = MessageFactory.getMessage(context, UPDATE_MESSAGE_ID,
+                    MessageFactory.getLabel(context, this));
+            context.addMessage(getClientId(context), message);
+            setValid(false);
         }
     }
 
     // rendering methods
 
-    protected List<InputFileChoice> getAvailableChoices(Object value, boolean temp) {
-        List<InputFileChoice> choices = new ArrayList<InputFileChoice>();
+    protected List<String> getAvailableChoices(Object value, boolean temp) {
+        List<String> choices = new ArrayList<String>(3);
         boolean hasFile = value != null;
         boolean isRequired = isRequired();
-        if (!hasFile && isRequired) {
-            choices.add(InputFileChoice.upload);
-        } else if (!hasFile && !isRequired) {
-            choices.add(InputFileChoice.none);
-            choices.add(InputFileChoice.upload);
-        } else if (hasFile && isRequired) {
-            if (temp) {
-                choices.add(InputFileChoice.tempKeep);
-            } else {
-                choices.add(InputFileChoice.keep);
-            }
-            choices.add(InputFileChoice.upload);
-        } else if (hasFile && !isRequired) {
-            if (temp) {
-                choices.add(InputFileChoice.tempKeep);
-            } else {
-                choices.add(InputFileChoice.keep);
-            }
-            choices.add(InputFileChoice.upload);
-            choices.add(InputFileChoice.delete);
+        if (hasFile) {
+            choices.add(temp ? InputFileChoice.KEEP_TEMP : InputFileChoice.KEEP);
+        } else if (!isRequired) {
+            choices.add(InputFileChoice.NONE);
+        }
+        for (JSFBlobUploader uploader : uploaderService.getJSFBlobUploaders()) {
+            choices.add(uploader.getChoice());
+        }
+        if (hasFile && !isRequired) {
+            choices.add(InputFileChoice.DELETE);
         }
         return choices;
     }
@@ -527,8 +464,8 @@ public class UIInputFile extends UIInput implements NamingContainer {
         Blob blob = null;
         InputFileInfo submittedFileInfo = getFileInfoSubmittedValue();
         if (submittedFileInfo != null) {
-            InputFileChoice choice = submittedFileInfo.getConvertedChoice();
-            if (InputFileChoice.keep == choice || InputFileChoice.tempKeep == choice) {
+            String choice = submittedFileInfo.getConvertedChoice();
+            if (InputFileChoice.isKeepOrKeepTemp(choice)) {
                 // rebuild other info from current value
                 InputFileInfo fileInfo = getFileInfoValue();
                 blob = fileInfo.getConvertedBlob();
@@ -546,8 +483,8 @@ public class UIInputFile extends UIInput implements NamingContainer {
         String filename = null;
         InputFileInfo submittedFileInfo = getFileInfoSubmittedValue();
         if (submittedFileInfo != null) {
-            InputFileChoice choice = submittedFileInfo.getConvertedChoice();
-            if (InputFileChoice.keep == choice || InputFileChoice.tempKeep == choice) {
+            String choice = submittedFileInfo.getConvertedChoice();
+            if (InputFileChoice.isKeepOrKeepTemp(choice)) {
                 // rebuild it in case it's supposed to be kept
                 InputFileInfo fileInfo = getFileInfoValue();
                 filename = fileInfo.getConvertedFilename();
@@ -566,6 +503,8 @@ public class UIInputFile extends UIInput implements NamingContainer {
 
         notifyPreviousErrors(context);
 
+        // not ours to close
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
         Blob blob = null;
         try {
@@ -583,17 +522,17 @@ public class UIInputFile extends UIInput implements NamingContainer {
         if (fileInfo == null) {
             fileInfo = getFileInfoValue();
         }
-        InputFileChoice currentChoice = fileInfo.getConvertedChoice();
-        boolean temp = InputFileChoice.tempKeep == currentChoice;
-        List<InputFileChoice> choices = getAvailableChoices(blob, temp);
+        String currentChoice = fileInfo.getConvertedChoice();
+        boolean temp = InputFileChoice.KEEP_TEMP.equals(currentChoice);
+        List<String> choices = getAvailableChoices(blob, temp);
 
         String radioClientId = getClientId(context) + NamingContainer.SEPARATOR_CHAR + CHOICE_FACET_NAME;
         writer.startElement("table", this);
         writer.writeAttribute("class", "dataInput", null);
         writer.startElement("tbody", this);
         writer.writeAttribute("class", getAttributes().get("styleClass"), null);
-        for (InputFileChoice radioChoice : choices) {
-            String id = radioClientId + radioChoice.name();
+        for (String radioChoice : choices) {
+            String id = radioClientId + radioChoice;
             writer.startElement("tr", this);
             writer.startElement("td", this);
             writer.writeAttribute("class", "radioColumn", null);
@@ -601,8 +540,8 @@ public class UIInputFile extends UIInput implements NamingContainer {
             props.put("type", "radio");
             props.put("name", radioClientId);
             props.put("id", id);
-            props.put("value", radioChoice.name());
-            if (radioChoice == currentChoice) {
+            props.put("value", radioChoice);
+            if (radioChoice.equals(currentChoice)) {
                 props.put("checked", "checked");
             }
             String onchange = getOnchange();
@@ -634,7 +573,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
             }
             writer.write(String.format(html, id, label));
             writer.write(ComponentUtils.WHITE_SPACE_CHARACTER);
-            if (InputFileChoice.keep == radioChoice || InputFileChoice.tempKeep == radioChoice) {
+            if (InputFileChoice.isKeepOrKeepTemp(radioChoice)) {
                 UIComponent downloadFacet = getFacet(DOWNLOAD_FACET_NAME);
                 if (downloadFacet != null) {
                     // redefined in template
@@ -669,63 +608,9 @@ public class UIInputFile extends UIInput implements NamingContainer {
                         ComponentUtils.encodeComponent(context, filenameComp);
                     }
                 }
-            } else if (InputFileChoice.upload == radioChoice) {
-                // encode validators info
-                long sizeMax = 0L;
-                String sizeConstraint = null;
-                List<String> authorizedExtensions = new ArrayList<String>();
-                List<String> unauthorizedExtensions = new ArrayList<String>();
-                boolean hidden = false;
-                for (Validator val : getValidators()) {
-                    if (val instanceof InputFileSizeValidator) {
-                        InputFileSizeValidator sizeVal = (InputFileSizeValidator) val;
-                        long currentSizeMax = sizeVal.getMaxSizeBytes();
-                        if (currentSizeMax > sizeMax) {
-                            sizeMax = currentSizeMax;
-                            sizeConstraint = sizeVal.getMaxSize();
-                        }
-                    } else if (val instanceof InputFileMimetypeValidator) {
-                        InputFileMimetypeValidator extVal = (InputFileMimetypeValidator) val;
-                        hidden = extVal.isHidden();
-                        if (extVal.isAuthorized()) {
-                            authorizedExtensions.addAll(Arrays.asList(extVal.getExtensions()));
-                        } else {
-                            unauthorizedExtensions.addAll(Arrays.asList(extVal.getExtensions()));
-                        }
-                    }
-                }
-                List<String> constraints = new ArrayList<String>();
-
-                if (sizeConstraint != null) {
-                    constraints.add(ComponentUtils.translate(context, "label.inputFile.maxSize", sizeConstraint));
-                }
-
-                if (!hidden && (!authorizedExtensions.isEmpty() || !unauthorizedExtensions.isEmpty())) {
-                    if (!authorizedExtensions.isEmpty()) {
-                        constraints.add(ComponentUtils.translate(context, "label.inputFile.authorizedExtensions",
-                                StringUtils.join(authorizedExtensions.toArray(), ", ")));
-                    }
-                    if (!unauthorizedExtensions.isEmpty()) {
-                        constraints.add(ComponentUtils.translate(context, "label.inputFile.unauthorizedExtensions",
-                                StringUtils.join(unauthorizedExtensions.toArray(), ", ")));
-                    }
-
-                }
-                if (constraints.size() > 0) {
-                    writer.write("(");
-                    writer.write(StringUtils.join(constraints.toArray(), ", "));
-                    writer.write(")");
-                    writer.write(ComponentUtils.WHITE_SPACE_CHARACTER);
-                }
-                // encode upload component
-                UIComponent uploadFacet = getFacet(UPLOAD_FACET_NAME);
-                if (uploadFacet instanceof HtmlInputFile) {
-                    HtmlInputFile uploadComp = (HtmlInputFile) uploadFacet;
-                    String onClick = "document.getElementById('%s').checked='checked'";
-                    uploadComp.setOnclick(String.format(onClick, id));
-                    // TODO: add size limit info
-                    ComponentUtils.encodeComponent(context, uploadComp);
-                }
+            } else if (InputFileChoice.isUpload(radioChoice)) {
+                String onClick = String.format("document.getElementById('%s').checked='checked'", id);
+                uploaderService.getJSFBlobUploader(radioChoice).encodeBeginUpload(this, context, onClick);
             }
             writer.endElement("td");
             writer.endElement("tr");
@@ -742,7 +627,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
         final Object hasError = context.getAttributes().get(NuxeoResponseStateManagerImpl.MULTIPART_SIZE_ERROR_FLAG);
         final String componentId = (String) context.getAttributes().get(
                 NuxeoResponseStateManagerImpl.MULTIPART_SIZE_ERROR_COMPONENT_ID);
-        if (hasError != null && (boolean) hasError) {
+        if (Boolean.TRUE.equals(hasError)) {
             if (StringUtils.isBlank(componentId)) {
                 ComponentUtils.addErrorMessage(context, this, "error.inputFile.maxRequestSize",
                         new Object[] { Framework.getProperty("nuxeo.jsf.maxRequestSize") });

@@ -71,8 +71,8 @@ public class InputFileSizeValidator implements Validator, StateHolder {
         if (value != null) {
             if (value instanceof InputFileInfo) {
                 InputFileInfo info = (InputFileInfo) value;
-                InputFileChoice choice = info.getConvertedChoice();
-                if (InputFileChoice.tempKeep != choice && InputFileChoice.upload != choice) {
+                String choice = info.getConvertedChoice();
+                if (!(InputFileChoice.isUploadOrKeepTemp(choice))) {
                     return;
                 }
                 Blob blob = info.getConvertedBlob();
