@@ -62,6 +62,7 @@
                     <h:commandLink
                       actionListener="#{clipboardActions.removeWorkListItem(copiedDocument.ref)}">
                       <nxu:graphicImage value="/icons/delete.png" />
+                      <f:ajax execute="@this" render="ClipboardListView" />
                     </h:commandLink>
                   </span>
                 </div>
