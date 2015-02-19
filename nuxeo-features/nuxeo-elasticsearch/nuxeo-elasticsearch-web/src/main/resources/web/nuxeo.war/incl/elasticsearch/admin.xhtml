@@ -62,6 +62,17 @@
       <h:commandButton action="#{esAdmin.flush}" value="Flush"/>
     </div>
 
+    <h4>Optimize all Elasticsearch indexes</h4>
+
+    <div class="detail">The optimize process basically optimizes the index for faster search operations (and relates to
+      the number of segments a Lucene index holds within each shard). The optimize operation allows to reduce the number
+      of segments by merging them. Ask for a full optimization to a single segment. Note that this can potentially be a
+      very heavy operation.
+    </div>
+    <div class="bubbleBox">
+      <h:commandButton action="#{esAdmin.optimize}" value="Optimize"/>
+    </div>
+
   </h:form>
 
 </div>

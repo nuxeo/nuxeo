@@ -117,6 +117,20 @@ public interface ElasticSearchAdmin {
     void flushRepositoryIndex(String repositoryName);
 
     /**
+     * Elasticsearch run {@link ElasticSearchAdmin#optimizeRepositoryIndex} on all document indexes,
+     * @since 7.2
+     */
+    void optimize();
+
+    /**
+     * Elasticsearch optimize operation allows to reduce the number of segments to one, Note that this can potentially
+     * be a very heavy operation.
+     *
+     * @since 7.2
+     */
+    void optimizeRepositoryIndex(String repositoryName);
+
+    /**
      * Returns the number of command scheduled for indexing.
      *
      * @since 7.1

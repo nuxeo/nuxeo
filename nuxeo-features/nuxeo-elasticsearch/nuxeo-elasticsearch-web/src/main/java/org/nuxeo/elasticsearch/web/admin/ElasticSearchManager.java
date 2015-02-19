@@ -181,9 +181,12 @@ public class ElasticSearchManager {
                 cvStatuses.add(new ContentViewStatus(cvName, def.getName(),
                         "core"));
             }
-        }
-
+    
         Collections.sort(cvStatuses);
+    }
+
+    public void optimize() throws Exception {
+        esa.optimize();
     }
 
     public List<ContentViewStatus> getContentViewStatus() throws Exception {
