@@ -242,7 +242,11 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     protected String getChainExceptionToRun(OperationContext ctx, String operationTypeId, OperationException oe)
             throws OperationException {
         // Inject exception name into the context
+        //since 6.0-HF05 should use exceptionName and exceptionObject on the context instead of Exception
         ctx.put("Exception", oe.getClass().getSimpleName());
+        ctx.put("exceptionName", oe.getClass().getSimpleName());
+        ctx.put("exceptionObject", oe);
+        
         ChainException chainException = getChainException(operationTypeId);
         CatchChainException catchChainException = new CatchChainException();
         for (CatchChainException catchChainExceptionItem : chainException.getCatchChainExceptions()) {
