@@ -34,6 +34,7 @@ import javax.inject.Inject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.automation.scripting.internals.operation
@@ -100,6 +101,7 @@ public class TestScriptRunnerInfrastructure {
         assertNotNull(scriptingService);
     }
 
+    @Ignore("NXP-16561")
     @Test
     public void shouldExecuteSimpleScript() throws Exception {
         AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
