@@ -270,6 +270,11 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     @Override
+    public boolean isEmbedded() {
+        return esa.isEmbedded();
+    }
+
+    @Override
     public boolean isIndexingInProgress() {
         return indexingMonitor.getTotalWorkerCount() > 0;
     }

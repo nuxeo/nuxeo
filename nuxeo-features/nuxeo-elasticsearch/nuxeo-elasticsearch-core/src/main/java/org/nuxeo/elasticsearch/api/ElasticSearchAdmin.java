@@ -158,4 +158,10 @@ public interface ElasticSearchAdmin {
      */
     int getTotalCommandProcessed();
 
+    /**
+     * Returns true if the Elasticsearch is embedded with Nuxeo, sharing the same JVM.
+     *
+     * @since 7.2
+     */
+    boolean isEmbedded();
 }

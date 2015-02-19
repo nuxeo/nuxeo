@@ -170,6 +170,9 @@ public class ElasticSearchManager {
     }
 
     public Boolean displayClusterInfo() {
+        if (esa.isEmbedded()) {
+            return true;
+        }
         return Boolean.parseBoolean(Framework.getProperty(ES_CLUSTER_INFO_PROPERTY, "false"));
     }
 
