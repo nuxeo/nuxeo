@@ -37,8 +37,8 @@
 
         <div id="clipboardCopy">
   
-          <nxu:dataList var="copiedDocument"
-            value="#{clipboardActions.currentSelectedList}">
+          <c:forEach var="copiedDocument"
+            items="#{clipboardActions.currentSelectedList}">
             <span id="docClipboardRef:#{copiedDocument.ref}"
               class="cell nxDraggable">
               <nxu:graphicImage
@@ -52,14 +52,18 @@
                   <nxu:graphicImage value="/icons/delete.png" />
                 </h:commandLink>
               </span>
-                <nxd:restDocumentLink document="#{copiedDocument}" pattern="id"
-                                      rendered="#{clipboardActions.exists(copiedDocument.ref)}">
+              <c:choose>
+                <c:when test="#{clipboardActions.exists(copiedDocument.ref)}">
+                  <nxd:restDocumentLink document="#{copiedDocument}" pattern="id">
+                    <h:outputText value="#{nxd:titleOrId(copiedDocument)}" />
+                  </nxd:restDocumentLink>
+                </c:when>
+                <c:otherwise>
                   <h:outputText value="#{nxd:titleOrId(copiedDocument)}" />
-                </nxd:restDocumentLink>
-                <h:outputText value="#{nxd:titleOrId(copiedDocument)}"
-                              rendered="#{!clipboardActions.exists(copiedDocument.ref)}" />
+                </c:otherwise>
+              </c:choose>
             </span>
-          </nxu:dataList>
+          </c:forEach>
 
           <c:if test="#{clipboardActions.workListEmpty}">
             <div class="emptyResult">
