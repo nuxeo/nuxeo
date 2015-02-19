@@ -70,3 +70,5 @@ elasticsearch.reindex.bucketWriteSize=50
 elasticsearch.indexing.maxThreads=4
 # Time to keep the completed indexing worker states @since 6.0-HF02
 elasticsearch.indexing.clearCompletedAfterSeconds=90
+# Display Elasticsearch cluster and nodes information in the admin center @since 6.0-HF06, always true for embedded mode 
+elasticsearch.adminCenter.displayClusterInfo=false
