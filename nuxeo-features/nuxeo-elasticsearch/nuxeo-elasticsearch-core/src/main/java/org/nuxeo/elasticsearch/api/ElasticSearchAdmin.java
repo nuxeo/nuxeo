@@ -61,6 +61,15 @@ public interface ElasticSearchAdmin {
     List<String> getRepositoryNames();
 
     /**
+     * Get the index name associated with the repository name.
+
+     * throws NoSuchElementException if there is no Elasticsearch index associated with the requested repository.
+     *
+     * @since 7.2
+     */
+    String getIndexNameForRepository(String repositoryName);
+
+    /**
      * Returns true if there are indexing activities scheduled or running.
      *
      * @since 5.9.5
@@ -108,6 +117,20 @@ public interface ElasticSearchAdmin {
     void flushRepositoryIndex(String repositoryName);
 
     /**
+     * Elasticsearch run {@link ElasticSearchAdmin#optimizeRepositoryIndex} on all document indexes,
+     * @since 7.2
+     */
+    void optimize();
+
+    /**
+     * Elasticsearch optimize operation allows to reduce the number of segments to one, Note that this can potentially
+     * be a very heavy operation.
+     *
+     * @since 7.2
+     */
+    void optimizeRepositoryIndex(String repositoryName);
+
+    /**
      * Returns the number of command scheduled for indexing.
      *
      * @since 7.1
@@ -135,4 +158,10 @@ public interface ElasticSearchAdmin {
      */
     int getTotalCommandProcessed();
 
+    /**
+     * Returns true if the Elasticsearch is embedded with Nuxeo, sharing the same JVM.
+     *
+     * @since 7.2
+     */
+    boolean isEmbedded();
 }

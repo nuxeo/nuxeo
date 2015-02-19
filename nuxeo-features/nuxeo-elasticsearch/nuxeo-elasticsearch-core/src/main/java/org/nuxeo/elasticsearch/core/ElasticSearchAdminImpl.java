@@ -86,6 +86,8 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     private String[] excludeSourceFields;
 
+    private boolean embedded = true;
+
     /**
      * Init the admin service, remote configuration if not null will take precedence over local embedded configuration.
      */
@@ -104,9 +106,11 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         }
         if (remoteConfig != null) {
             client = connectToRemote(remoteConfig);
+            embedded = false;
         } else {
             localNode = createEmbeddedNode(localConfig);
             client = connectToEmbedded();
+            embedded = true;
         }
         checkClusterHealth();
         log.info("ES Connected");
@@ -247,16 +251,14 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         if (log.isDebugEnabled()) {
             log.debug("Refreshing index associated with repo: " + repositoryName);
         }
-        getClient().admin().indices().prepareRefresh(getRepositoryIndex(repositoryName)).execute().actionGet();
+        getClient().admin().indices().prepareRefresh(getIndexNameForRepository(repositoryName)).execute().actionGet();
         if (log.isDebugEnabled()) {
             log.debug("Refreshing index done");
         }
     }
 
-    /**
-     * Get the elastic search index for a repository
-     */
-    String getRepositoryIndex(String repositoryName) {
+    @Override
+    public String getIndexNameForRepository(String repositoryName) {
         String ret = indexNames.get(repositoryName);
         if (ret == null) {
             throw new NoSuchElementException("No index defined for repository: " + repositoryName);
@@ -266,11 +268,9 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     @Override
     public void flushRepositoryIndex(String repositoryName) {
-        log.info("Flushing index associated with repo: " + repositoryName);
-        getClient().admin().indices().prepareFlush(getRepositoryIndex(repositoryName)).execute().actionGet();
-        if (log.isDebugEnabled()) {
-            log.debug("Flushing index done");
-        }
+        log.warn("Flushing index associated with repo: " + repositoryName);
+        getClient().admin().indices().prepareFlush(getIndexNameForRepository(repositoryName)).execute().actionGet();
+        log.info("Flushing index done");
     }
 
     @Override
@@ -284,6 +284,20 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     public void flush() {
         for (String repositoryName : indexNames.keySet()) {
             flushRepositoryIndex(repositoryName);
+        }
+    }
+
+    @Override
+    public void optimizeRepositoryIndex(String repositoryName) {
+        log.warn("Optimize index associated with repo: " + repositoryName);
+        getClient().admin().indices().prepareOptimize(getIndexNameForRepository(repositoryName)).get();
+        log.info("Optimize index done");
+    }
+
+    @Override
+    public void optimize() {
+        for (String repositoryName : indexNames.keySet()) {
+            optimizeRepositoryIndex(repositoryName);
         }
     }
 
@@ -384,6 +398,11 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     }
 
     @Override
+    public boolean isEmbedded() {
+        return embedded;
+    }
+
+    @Override
     public boolean isIndexingInProgress() {
         // impl of scheduling is left to the ESService
         throw new UnsupportedOperationException("Not implemented");
@@ -405,7 +424,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         String[] ret = new String[searchRepositories.size()];
         int i = 0;
         for (String repo : searchRepositories) {
-            ret[i++] = getRepositoryIndex(repo);
+            ret[i++] = getIndexNameForRepository(repo);
         }
         return ret;
     }

@@ -245,6 +245,11 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     @Override
+    public String getIndexNameForRepository(String repositoryName) {
+        return esa.getIndexNameForRepository(repositoryName);
+    }
+
+    @Override
     public int getPendingCommandCount() {
         return scheduledCommands.size();
     }
@@ -262,6 +267,11 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     @Override
     public int getTotalCommandProcessed() {
         return esa.getTotalCommandProcessed();
+    }
+
+    @Override
+    public boolean isEmbedded() {
+        return esa.isEmbedded();
     }
 
     @Override
@@ -310,6 +320,16 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     @Override
     public void flushRepositoryIndex(String repositoryName) {
         esa.flushRepositoryIndex(repositoryName);
+    }
+
+    @Override
+    public void optimize() {
+        esa.optimize();
+    }
+
+    @Override
+    public void optimizeRepositoryIndex(String repositoryName) {
+        esa.optimizeRepositoryIndex(repositoryName);
     }
 
     // ES Indexing =============================================================
