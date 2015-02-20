@@ -47,9 +47,9 @@
     value="#{nxu:test(empty widgetProperty_listTemplateItem, nxd:propertyDefaultValue(propValueForTemplate), widgetProperty_listTemplateItem)}" />
   <c:set var="showActions"
     value="#{isEditMode and (not widgetProperty_hideDeleteButton or widgetProperty_orderable)}" />
+  <nxu:set var="listClientId" value="#{nxu:componentAbsoluteId(component, widget.id).substring(1)}">
 
-  <div class="widgetPanel listWidgetPanel #{widgetProperty_styleClass}">
-    <nxu:set var="listClientId" value="#{nxu:componentAbsoluteId(component, widget.id).substring(1)}">
+  <div id="#{listClientId}_panel" class="widgetPanel listWidgetPanel #{widgetProperty_styleClass}">
 
       <c:choose>
 
@@ -90,7 +90,7 @@
                     </h:inputHidden>
                   </td>
                   <c:if test="#{showActions}">
-                    <td class="listWidgetActions">
+                    <td class="listWidgetActions" id="#{widget.id}_actions">
                       <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
                     </td>
                   </c:if>
@@ -105,7 +105,7 @@
               <ui:fragment rendered="#{isEditMode and not widgetProperty_hideAddButton}">
                 <tr>
                   <td>
-                    <a class="button smallButton listWidgetActionAdd" href="#nogo"
+                    <a id="#{listClientId}_add" class="button smallButton listWidgetActionAdd" href="#nogo"
                        onclick="return nuxeo.utils.addFromListTemplate('#{listClientId}', jQuery(this).closest('tr').prev())">
                       <h:outputText value="#{messages['command.add']}" />
                     </a>
@@ -135,7 +135,7 @@
                     </h:inputHidden>
                   </td>
                   <c:if test="#{showActions}">
-                    <td class="listWidgetActions">
+                    <td class="listWidgetActions" id="#{widget.id}_actions">
                       <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
                     </td>
                   </c:if>
@@ -155,7 +155,7 @@
                 </tr>
               </nxu:jsInputList>
               <ui:fragment rendered="#{isListTemplate and isEditMode and not widgetProperty_hideAddButton}">
-                <a class="button smallButton listWidgetActionAdd" href="#nogo"
+                <a id="#{listClientId}_add" class="button smallButton listWidgetActionAdd" href="#nogo"
                    onclick="return nuxeo.utils.addFromListTemplate('#{listClientId}', jQuery(this).prev())">
                   <h:outputText value="#{messages['command.add']}" />
                 </a>
@@ -179,7 +179,7 @@
                 <f:attribute name="value" value="#{isListTemplate ? 'TEMPLATE_INDEX_MARKER' : model.rowIndex}"/>
               </h:inputHidden>
               <c:if test="#{showActions}">
-                <h:panelGroup styleClass="listWidgetActionsTable">
+                <h:panelGroup styleClass="listWidgetActionsTable" id="#{widget.id}_actions">
                   <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
                 </h:panelGroup>
               </c:if>
@@ -212,7 +212,7 @@
           </nxu:jsInputList>
 
           <ui:fragment rendered="#{isEditMode and not widgetProperty_hideAddButton}">
-            <a class="button smallButton listWidgetActionAdd" href="#nogo"
+            <a id="#{listClientId}_add" class="button smallButton listWidgetActionAdd" href="#nogo"
                onclick="return nuxeo.utils.addFromListTemplate('#{listClientId}', jQuery(this).prev());">
               <h:outputText value="#{messages['command.add']}" />
             </a>
@@ -230,7 +230,7 @@
             <nxu:validateDocumentConstraint handleSubProperties="false" />
             <h:panelGrid columns="#{isEditMode and showActions?2:1}" styleClass="listItem">
               <c:if test="#{showActions}">
-                <h:panelGroup styleClass="listWidgetActionsTable">
+                <h:panelGroup styleClass="listWidgetActionsTable" id="#{widget.id}_actions">
                   <ui:include src="/widgets/js_list_widget_template_actions.xhtml" />
                 </h:panelGroup>
               </c:if>
@@ -265,7 +265,7 @@
           </nxu:jsInputList>
 
           <ui:fragment rendered="#{isEditMode and not widgetProperty_hideAddButton}">
-            <a class="button smallButton listWidgetActionAdd" href="#nogo"
+            <a id="#{listClientId}_add" class="button smallButton listWidgetActionAdd" href="#nogo"
                onclick="return nuxeo.utils.addFromListTemplate('#{listClientId}', jQuery(this).prev());">
               <h:outputText value="#{messages['command.add']}" />
             </a>
@@ -277,8 +277,8 @@
       <h:message styleClass="errorMessage" for="#{widget.id}"
         id="#{widget.id}_message" />
 
-    </nxu:set>
   </div>
+  </nxu:set>
 
 </c:if>
 </c:if>
