@@ -29,7 +29,7 @@
             <i class="icon-folder"></i>${doc.title}
             </span>
           <#else>
-          <a class="item" title="${filename}" href="${basePath}/easyshare/${docShare.id}/${doc.id}/${filename}">
+          <a class="item" title="${filename}" target="_blank" href="${basePath}/easyshare/${docShare.id}/${doc.id}/${filename}">
             <span class="document">
             <i class="icon-file"></i>${doc.title}<#if filename != doc.title> - ${filename}</#if>
           </span>
