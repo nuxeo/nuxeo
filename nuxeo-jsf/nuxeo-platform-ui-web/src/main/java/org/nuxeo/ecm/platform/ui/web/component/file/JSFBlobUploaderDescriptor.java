@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.ui.web.component.file;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -24,6 +26,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
  */
 @XObject("uploader")
 public class JSFBlobUploaderDescriptor implements Comparable<JSFBlobUploaderDescriptor> {
+
+    private static final Log log = LogFactory.getLog(JSFBlobUploaderDescriptor.class);
 
     @XNode("@id")
     public String id;
@@ -57,6 +61,10 @@ public class JSFBlobUploaderDescriptor implements Comparable<JSFBlobUploaderDesc
             return instance;
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Cannot instantiate class: " + klass, e);
+        } catch (IllegalStateException e) {
+            log.error("Cannot instantiate " + klass.getName() + ", " + e.getMessage());
+            log.debug(e, e);
+            return null;
         }
     }
 
