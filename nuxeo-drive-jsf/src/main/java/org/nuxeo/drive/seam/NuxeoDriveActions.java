@@ -169,7 +169,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
      * browser, or on the OS).
      * 
      * @return Drive edit URL in the form "{@link #NXDRIVE_PROTOCOL}:// {@link #PROTOCOL_COMMAND_EDIT}
-     *         /protocol/server[:port]/webappName/repo/repoName/nxdocid/docId/ filename/fileName"
+     *         /protocol/server[:port]/webappName/user/userName/repo/repoName/nxdocid/docId/filename/fileName"
      * @throws ClientException
      */
     public String getDriveEditURL() throws ClientException {
@@ -192,7 +192,9 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         sb.append(NXDRIVE_PROTOCOL).append("://");
         sb.append(PROTOCOL_COMMAND_EDIT).append("/");
         sb.append(baseURL.replaceFirst("://", "/"));
-        sb.append("repo/");
+        sb.append("user/");
+        sb.append(documentManager.getPrincipal().getName());
+        sb.append("/repo/");
         sb.append(documentManager.getRepositoryName());
         sb.append("/nxdocid/");
         sb.append(currentDocument.getId());
