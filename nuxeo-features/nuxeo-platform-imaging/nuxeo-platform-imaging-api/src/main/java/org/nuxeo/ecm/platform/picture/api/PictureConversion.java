@@ -62,9 +62,15 @@ public class PictureConversion implements Comparable<PictureConversion> {
     @XNodeList(value = "filters/filter-id", type = ArrayList.class, componentType = String.class)
     protected List<String> filterIds;
 
+    /**
+     * @since 7.2
+     */
     @XNode("@rendition")
     protected Boolean rendition;
 
+    /**
+     * @since 7.2
+     */
     @XNode("@renditionVisible")
     protected Boolean renditionVisible;
 
