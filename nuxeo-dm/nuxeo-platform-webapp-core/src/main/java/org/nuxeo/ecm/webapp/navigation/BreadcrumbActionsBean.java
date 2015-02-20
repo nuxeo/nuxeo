@@ -192,8 +192,20 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
         if (viewIdLabel != null && viewIdLabel.startsWith(BREADCRUMB_PREFIX)) {
             return makeBackendPathFromLabel(viewIdLabel.substring(BREADCRUMB_PREFIX.length() + 1));
         } else {
+            List<PathElement> currentPathList = navigationContext.getCurrentPathList();
+            if (!currentPathList.isEmpty()) {
+                // remove the last path element, we don't want it in the breadcrumb
+                currentPathList.remove(currentPathList.size() - 1);
+            }
             return shrinkPathIfNeeded(navigationContext.getCurrentPathList());
         }
+    }
+
+    @Factory(value = "isNavigationBreadcrumb", scope = EVENT)
+    public boolean isNavigationBreadcrumb() {
+        String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
+        String viewIdLabel = Pages.instance().getPage(viewId).getDescription();
+        return !((viewIdLabel != null) && viewIdLabel.startsWith(BREADCRUMB_PREFIX));
     }
 
     protected List<PathElement> shrinkPathIfNeeded(List<PathElement> paths) {

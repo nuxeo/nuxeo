@@ -24,6 +24,7 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
@@ -109,7 +110,9 @@ public class MultiNavTreeManager implements Serializable {
         String[] partOfPath = thePath.split("/");
         String finalPath = "";
         for (String aPart : partOfPath) {
-            finalPath = finalPath + " / " + messages.get(aPart);
+            if (!StringUtils.isBlank(aPart)) {
+                finalPath = finalPath + " > " + messages.get(aPart);
+            }
         }
         return finalPath;
     }

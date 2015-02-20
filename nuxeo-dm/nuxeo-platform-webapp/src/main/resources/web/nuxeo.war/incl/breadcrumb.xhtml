@@ -21,7 +21,7 @@
               <nxu:repeat var="coreRepository" items="#{coreRepositories}">
                 <li>
                   <h:commandLink action="#{serverActions.selectRepository(coreRepository.name)}">
-                    <h:outputText value="#{coreRepository.label} (#{coreRepository.name})" />
+                    <h:outputText value="#{messages[coreRepository.label]}" />
                   </h:commandLink>
                 </li>
               </nxu:repeat>
@@ -30,44 +30,34 @@
         </ul>
       </nxu:set>
 
+      <c:if test="#{isNavigationBreadcrumb and not empty navigationContext.currentDomain}">
+        <ul class="actionList jsBreadcrumbActionList">
+          <li class="dropDownMenu button dropdown">
+            <h:outputText value="#{nxd:titleOrId(navigationContext.currentDomain)}" />
+            <ul class="actionSubList">
+              <nxu:repeat var="userDomain" items="#{userDomains}">
+                <li>
+                  <nxd:restDocumentLink document="#{userDomain}">
+                    <h:outputText value="#{nxd:titleOrId(userDomain)}" />
+                  </nxd:restDocumentLink>
+                </li>
+              </nxu:repeat>
+            </ul>
+          </li>
+        </ul>
+      </c:if>
+
       <c:if test="#{!empty backendPath}">
 
         <nxu:set var="userDomains" value="#{breadcrumbActions.userDomains}">
           <c:forEach var="pathElement" items="#{backendPath}" varStatus="status">
-            <c:choose>
-              <c:when test="#{status.first}">
-                <ul class="actionList jsBreadcrumbActionList">
-                  <li class="dropDownMenu button dropdown">
-                    <h:outputText value="#{nxd:titleOrId(navigationContext.currentDomain)}" />
-                    <ul class="actionSubList">
-                      <nxu:repeat var="userDomain" items="#{userDomains}">
-                        <li>
-                          <nxd:restDocumentLink document="#{userDomain}">
-                            <h:outputText value="#{nxd:titleOrId(userDomain)}" />
-                          </nxd:restDocumentLink>
-                        </li>
-                      </nxu:repeat>
-                    </ul>
-                  </li>
-                </ul>
-
-                <c:if test="#{!pathElement.link or !breadcrumbActions.isUserDomain(pathElement.documentModel)}">
-                  <nxd:restDocumentLink document="#{pathElement.documentModel}"
-                    rendered="#{pathElement.link}">
-                    <h:outputText value="#{nxd:titleOrId(pathElement.documentModel)}" />
-                  </nxd:restDocumentLink>
-                  <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link}" />
-                </c:if>
-              </c:when>
-              <c:otherwise>
-                <nxd:restDocumentLink document="#{pathElement.documentModel}"
-                  rendered="#{pathElement.link}">
-                  <h:outputText value="#{nxd:titleOrId(pathElement.documentModel)}" />
-                </nxd:restDocumentLink>
-                <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link} "/>
-              </c:otherwise>
-            </c:choose>
-
+            <c:if test="#{(status.first and (!pathElement.link or !breadcrumbActions.isUserDomain(pathElement.documentModel))) or !status.first}">
+              <nxd:restDocumentLink document="#{pathElement.documentModel}"
+                rendered="#{pathElement.link}">
+                <h:outputText value="#{nxd:titleOrId(pathElement.documentModel)}" />
+              </nxd:restDocumentLink>
+              <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link}" />
+            </c:if>
           </c:forEach>
         </nxu:set>
 
