@@ -260,12 +260,16 @@ public class TestRenditionService {
         return blob;
     }
 
-    @Test(expected = RenditionException.class)
-    public void shouldNotRenderAProxyDocument() throws ClientException {
+    @Test
+    public void testRenderAProxyDocument() throws ClientException {
         DocumentModel file = createBlobFile();
 
-        DocumentModel proxy = session.createProxy(file.getRef(), new PathRef("/"));
-        renditionService.storeRendition(proxy, PDF_RENDITION_DEFINITION);
+        DocumentModel proxy = session.createProxy(file.getRef(), new PathRef(
+                "/"));
+        DocumentRef renditionRef = renditionService.storeRendition(proxy, PDF_RENDITION_DEFINITION);
+        DocumentModel rendition = session.getDocument(renditionRef);
+        assertTrue(rendition.isVersion());
+        assertEquals(null, rendition.getParentRef()); // placeless
     }
 
     @Test
