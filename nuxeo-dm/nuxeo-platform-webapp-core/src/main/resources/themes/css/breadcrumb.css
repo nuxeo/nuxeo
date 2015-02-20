@@ -23,18 +23,20 @@ author: lkemen@nuxeo.com
 .breadcrumbs a,
 .breadcrumbs a:link,
 .breadcrumbs a:visited {
-  color: "gray.dark (__FLAVOR__ color)" }
+  background-color: rgba(255,255,255,0);
+  color: "gray.dark (__FLAVOR__ color)";
+  display: inline-block;
+  font-weight: normal;
+  height: 24px;
+  line-height: 24px;
+  margin: 0 8px 0 0;
+  padding: 0 .2em;
+  position: relative;
+  transition: none }
 
 .breadcrumbs a:hover,
 .breadcrumbs a:active {
-  color: "link (__FLAVOR__ color)";
-  font-weight: normal }
-
-.breadcrumbs a:last-of-type,
-.breadcrumbs a:last-of-type:hover,
-.breadcrumbs a:last-of-type:active {
-  color: "gray.light (__FLAVOR__ color)";
-  cursor: default }
+  color: "link (__FLAVOR__ color)"; }
 
 .breadcrumbs a img {
   border: 1px solid transparent;
@@ -43,24 +45,85 @@ author: lkemen@nuxeo.com
 .breadcrumbs a img:hover {
   border-color: "neutral.lighter (__FLAVOR__ border)" }
 
-.breadcrumbs .dropDownMenu.dropdown {
-  background-color: transparent;
-  background-position: right center;
-  background-size: 13px 13px;
-  border: 1px solid transparent;
-  box-shadow: none;
-  margin: 0;
-  padding: 0 1.5em 0 0 !important }
+.breadcrumbs a {
+  border-radius: .2em 0 0 .2em;
+  padding-left: .7em }
 
-.breadcrumbs .actionSubList {
-  left: -1em;
-  top: 2em }
+.breadcrumbs .actionList {
+  display: block;
+  float: left }
+
+.breadcrumbs .dropDownMenu.dropdown {
+  background-color: rgba(255,255,255,0);
+  background-position: 94% center;
+  background-image: none;
+  background-size: 13px 13px;
+  border: medium none;
+  box-shadow: none;
+  color: "gray.dark (__FLAVOR__ color)";
+  height: 24px;
+  line-height: 24px;
+  margin: 0 .15em 0 0;
+  padding: 0 1.7em 0 .6em !important; }
+
+.breadcrumbs .dropdown:after {
+  background: url(/nuxeo/icons/dropdown.png) no-repeat scroll right center;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: .2 }
+
+.breadcrumbs a:hover,
+.breadcrumbs a:active,
+.breadcrumbs .dropDownMenu.dropdown:hover {
+  background-color: rgba(255,255,255,1);}
 
 .breadcrumbs .dropDownMenu.dropdown:hover {
-  border: 1px solid "button (__FLAVOR__ border)" }
+  border: none }
+
+.breadcrumbs .dropdown:hover:after {
+  opacity: 1 }
+
+.breadcrumbs a:hover:after,
+.breadcrumbs a:hover:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  border: 0 solid rgba(255,255,255,1);
+  border-width: 12px 4px;
+  width: 0;
+  height: 0; }
+
+.breadcrumbs a:hover:before{
+  left:-6px;
+  border-left-color:transparent }
+
+.breadcrumbs a:hover:after{
+  left: 100%;
+  border-color: transparent;
+  border-left-color: rgba(255,255,255,1) }
+
+.breadcrumbs a:first-of-type{
+  padding-left:.5em;
+  border-radius: .2em 0 0 .2em }
+
+.breadcrumbs a:first-of-type:before {
+  border: medium none }
 
 .breadcrumbs .dropDownMenu.dropdown > img {
-  margin-bottom: -0.4em }
+  margin: 0 -0.4em -0.5em 0 }
+
+.breadcrumbs .actionSubList {
+  left: 0;
+  top: 2.5em }
+
+.breadcrumbs .actionSubList a:before,
+.breadcrumbs .actionSubList a:after {
+  position: relative;
+  border: none }
 
 .breadcrumbs .actionSubList a {
   color: "default (__FLAVOR__ color)" }
