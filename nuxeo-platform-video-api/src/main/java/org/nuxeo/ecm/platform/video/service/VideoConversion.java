@@ -41,9 +41,15 @@ public class VideoConversion implements Cloneable {
     @XNode("@enabled")
     private boolean enabled = true;
 
+    /**
+     * @since 7.2
+     */
     @XNode("@rendition")
     private Boolean rendition;
 
+    /**
+     * @since 7.2
+     */
     @XNode("@renditionVisible")
     private Boolean renditionVisible;
 
