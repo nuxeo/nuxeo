@@ -66,6 +66,9 @@ author: lkemen@nuxeo.com
   margin: 0 .15em 0 0;
   padding: 0 1.7em 0 .6em !important; }
 
+#breadcrumbForm {
+  line-height: 24px }
+
 .breadcrumbs .dropdown:after {
   background: url(/nuxeo/icons/dropdown.png) no-repeat scroll right center;
   content: "";
