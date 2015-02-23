@@ -389,7 +389,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         if (index > data.size()) {
             // make sure enough rows are made available
             for (int i = data.size(); i < index; i++) {
-                data.add(i, getUnreferencedTemplate());
+                addTemplateValue();
             }
         }
         data.add(index, value);
