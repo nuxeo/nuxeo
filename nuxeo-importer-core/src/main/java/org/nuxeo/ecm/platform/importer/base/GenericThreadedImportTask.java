@@ -248,8 +248,8 @@ public class GenericThreadedImportTask implements Runnable {
 
     protected GenericThreadedImportTask createNewTask(DocumentModel parent, SourceNode node, ImporterLogger log,
             Integer batchSize) {
-        GenericThreadedImportTask newTask = new GenericThreadedImportTask(null, node, parent, skipContainerCreation,
-                log, batchSize, factory, threadPolicy);
+        GenericThreadedImportTask newTask = new GenericThreadedImportTask(repositoryName, node, parent,
+                skipContainerCreation, log, batchSize, factory, threadPolicy, null);
         newTask.addListeners(listeners);
         newTask.addImportingDocumentFilters(importingDocumentFilters);
         return newTask;
