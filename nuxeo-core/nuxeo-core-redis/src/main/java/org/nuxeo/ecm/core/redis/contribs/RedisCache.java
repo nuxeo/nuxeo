@@ -137,4 +137,14 @@ public class RedisCache extends AbstractCache {
         });
     }
 
+    @Override
+    public boolean hasEntry(final String key) throws IOException {
+        return (Boolean) executor.execute(new RedisCallable<Serializable>() {
+            @Override
+            public Serializable call(Jedis jedis) throws IOException {
+                return jedis.exists(bytes(formatKey(key)));
+            }
+        });
+    }
+
 }

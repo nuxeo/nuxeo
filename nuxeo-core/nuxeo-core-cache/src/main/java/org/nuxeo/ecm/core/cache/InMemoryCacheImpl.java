@@ -17,6 +17,7 @@
  */
 package org.nuxeo.ecm.core.cache;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
@@ -95,6 +96,11 @@ public class InMemoryCacheImpl extends AbstractCache {
                     "Can't put a null key nor a null value in the cache '%s'!",
                     name));
         }
+    }
+
+    @Override
+    public boolean hasEntry(String key) throws IOException {
+        return cache.asMap().containsKey(key);
     }
 
 }
