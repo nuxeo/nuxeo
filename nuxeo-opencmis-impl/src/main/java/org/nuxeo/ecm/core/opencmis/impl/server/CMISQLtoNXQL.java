@@ -816,6 +816,8 @@ public class CMISQLtoNXQL {
 
         protected IterableQueryResult it;
 
+        protected Iterator<Map<String, Serializable>> iter;
+
         protected Map<String, String> realColumns;
 
         protected Map<String, ColumnReference> virtualColumns;
@@ -825,6 +827,7 @@ public class CMISQLtoNXQL {
         public NXQLtoCMISIterableQueryResult(IterableQueryResult it, Map<String, String> realColumns,
                 Map<String, ColumnReference> virtualColumns, NuxeoCmisService service) {
             this.it = it;
+            iter = it.iterator();
             this.realColumns = realColumns;
             this.virtualColumns = virtualColumns;
             this.service = service;
@@ -862,7 +865,7 @@ public class CMISQLtoNXQL {
 
         @Override
         public boolean hasNext() {
-            return it.iterator().hasNext();
+            return iter.hasNext();
         }
 
         @Override
@@ -873,7 +876,7 @@ public class CMISQLtoNXQL {
         @Override
         public Map<String, Serializable> next() {
             // map of NXQL to value
-            Map<String, Serializable> nxqlMap = it.iterator().next();
+            Map<String, Serializable> nxqlMap = iter.next();
 
             // find the CMIS keys and values
             Map<String, Serializable> cmisMap = new HashMap<>();
