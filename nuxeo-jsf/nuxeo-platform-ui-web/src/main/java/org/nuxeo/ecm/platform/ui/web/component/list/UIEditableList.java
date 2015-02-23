@@ -1101,6 +1101,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
                     if (phaseId == PhaseId.UPDATE_MODEL_VALUES) {
                         // detect changes during process update phase and fill
                         // the EditableModel list diff.
+                        // XXX maybe handle new values with js list too
                         if (isRowModified()) {
                             recordValueModified(i, getRowData());
                         }
