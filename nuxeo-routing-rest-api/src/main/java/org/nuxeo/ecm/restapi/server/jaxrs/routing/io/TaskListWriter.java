@@ -21,7 +21,6 @@ package org.nuxeo.ecm.restapi.server.jaxrs.routing.io;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -60,15 +59,6 @@ public class TaskListWriter extends EntityListWriter<Task> {
     @Override
     protected String getEntityType() {
         return "tasks";
-    }
-
-    @Override
-    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
-        if (!List.class.isAssignableFrom(arg0) && !(arg1 instanceof ParameterizedType)) {
-            return false;
-        }
-        Class<?> o = (Class<?>) ((ParameterizedType) arg1).getActualTypeArguments()[0];
-        return Task.class.isAssignableFrom(o);
     }
 
     @Override

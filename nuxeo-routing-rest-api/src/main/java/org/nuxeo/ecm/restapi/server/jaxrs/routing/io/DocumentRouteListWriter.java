@@ -21,7 +21,6 @@ package org.nuxeo.ecm.restapi.server.jaxrs.routing.io;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -71,17 +70,8 @@ public class DocumentRouteListWriter extends EntityListWriter<DocumentRoute> {
     }
 
     @Override
-    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
-        if (!List.class.isAssignableFrom(arg0) && !(arg1 instanceof ParameterizedType)) {
-            return false;
-        }
-        Class<?> o = (Class<?>) ((ParameterizedType) arg1).getActualTypeArguments()[0];
-        return DocumentRoute.class.isAssignableFrom(o);
-    }
-
-    @Override
     protected void writeItem(JsonGenerator jg, DocumentRoute item) throws ClientException, IOException {
-     // do nothing, everything is done in #writeTo
+        // do nothing, everything is done in #writeTo
     }
 
     @Override
