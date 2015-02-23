@@ -29,8 +29,20 @@ import java.util.List;
  */
 public class JSListWidgetElement extends AbstractWidgetElement {
 
+    public static enum Display {
+        BLOCK_LEFT, BLOCK_TOP, TABLE, INLINE
+    }
+
+    /** The display attribute controls the rendering of subwidgets. */
+    private final Display display;
+
     public JSListWidgetElement(WebDriver driver, String id) {
+        this(driver, id, Display.BLOCK_LEFT);
+    }
+
+    public JSListWidgetElement(WebDriver driver, String id, Display display) {
         super(driver, id);
+        this.display = display;
     }
 
     protected String getListSubElementSuffix(String subId, int index) {
@@ -75,8 +87,10 @@ public class JSListWidgetElement extends AbstractWidgetElement {
     }
 
     protected WebElement getRowActions(int i) {
-        String wid = getWidgetId();
-        return getSubElement(getListSubElementSuffix(wid + "_actions", i));
+        if (display == Display.TABLE || display == Display.INLINE) {
+            return driver.findElement(By.cssSelector(getRowCssSelector(i) + " > .listWidgetActions"));
+        }
+        return getSubElement(getListSubElementSuffix(getWidgetId() + "_actions", i));
     }
 
     public String getSubWidgetMessageValue(String id, int idx) {
@@ -100,6 +114,14 @@ public class JSListWidgetElement extends AbstractWidgetElement {
     }
 
     private String getRowsCssSelector() {
-        return getElementCssSelector() + " > .listItem";
+        String path = getElementCssSelector();
+        if (display == Display.TABLE || display == Display.INLINE) {
+            path += " > table > tbody";
+        }
+        return path + " > .listItem";
+    }
+
+    private String getRowCssSelector(int i) {
+        return getRowsCssSelector() + ":nth-of-type(" + (i + 1) + ")";
     }
 }
