@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
@@ -169,6 +168,6 @@ public class ITArchivedVersionsTest extends AbstractTest {
         assertEquals(0, versionLabels.size());
 
         // Go back to doc and return it
-        return archivedVersionsPage.goToDocumentByBreadcrumb("Test file: modif 1");
+        return archivedVersionsPage.getSummaryTab().asPage(DocumentBasePage.class);
     }
 }
