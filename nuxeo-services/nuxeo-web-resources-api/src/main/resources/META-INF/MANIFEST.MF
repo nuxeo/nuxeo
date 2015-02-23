@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Web Resources API
+Bundle-SymbolicName: org.nuxeo.web.resources.api;singleton:=true
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: api

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.theme.styling.tests.themeContrib.override">
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
+
+    <resource name="my.css">
+      <path>css/my.css</path>
+    </resource>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resourceBundles">
+
+    <resourceBundle name="myapp">
+      <resources append="true">
+        <resource>my.css</resource>
+      </resources>
+    </resourceBundle>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="processors">
+
+    <processor name="myProc" enabled="false" />
+
+  </extension>
+
+</component>

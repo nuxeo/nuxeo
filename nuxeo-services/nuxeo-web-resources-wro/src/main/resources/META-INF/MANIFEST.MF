@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Web Resources Wro
+Bundle-SymbolicName: org.nuxeo.web.resources.wro;singleton:=true
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/webresources-contrib.xml

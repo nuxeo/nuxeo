@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <require>org.nuxeo.runtime.nuxeo-runtime-deploy</require>
+
+  <extension target="web#LISTENER">
+
+    <listener>
+      <listener-class>
+        org.nuxeo.ecm.web.resources.wro.servlet.NuxeoWroServletContextListener
+      </listener-class>
+    </listener>
+
+  </extension>
+
+  <extension target="web#FILTER">
+
+    <filter>
+      <filter-name>WroContextFilter</filter-name>
+      <filter-class>ro.isdc.wro.http.WroContextFilter</filter-class>
+    </filter>
+    <filter-mapping>
+      <filter-name>WroContextFilter</filter-name>
+      <url-pattern>/wapi/v1/resource/bundle/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+      <filter-name>WroFilter</filter-name>
+      <filter-class>ro.isdc.wro.http.WroFilter</filter-class>
+    </filter>
+    <filter-mapping>
+      <filter-name>WroFilter</filter-name>
+      <url-pattern>/wapi/v1/resource/bundle/*</url-pattern>
+    </filter-mapping>
+
+  </extension>
+
+</fragment>

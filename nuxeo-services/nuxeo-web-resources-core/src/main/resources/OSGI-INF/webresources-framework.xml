@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.WebResources">
+
+  <service>
+    <provide interface="org.nuxeo.ecm.web.resources.api.service.WebResourceManager" />
+  </service>
+  <implementation class="org.nuxeo.ecm.web.resources.core.service.WebResourceManagerImpl" />
+
+  <extension-point name="resources">
+    <object class="org.nuxeo.ecm.web.resources.core.ResourceDescriptor" />
+  </extension-point>
+
+  <extension-point name="resourceBundles">
+    <object class="org.nuxeo.ecm.web.resources.core.ResourceBundleDescriptor" />
+  </extension-point>
+
+  <extension-point name="processors">
+    <object class="org.nuxeo.ecm.web.resources.core.ProcessorDescriptor" />
+  </extension-point>
+
+</component>

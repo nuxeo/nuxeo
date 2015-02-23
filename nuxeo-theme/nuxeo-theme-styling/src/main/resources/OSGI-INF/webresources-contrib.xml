@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.theme.styling.webresources.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="processors">
+
+    <processor name="flavor" type="wroPre">
+      <class>org.nuxeo.theme.styling.wro.FlavorResourceProcessor</class>
+    </processor>
+
+  </extension>
+
+</component>

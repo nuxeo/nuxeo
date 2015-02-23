@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Web Resources Core
+Bundle-SymbolicName: org.nuxeo.web.resources.core;singleton:=true
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: core
+Nuxeo-Component: OSGI-INF/webresources-framework.xml

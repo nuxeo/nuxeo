@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.theme.styling.tests.themeContrib">
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
+
+    <resource name="jquery.js">
+      <path>scripts/jquery.js</path>
+    </resource>
+
+    <resource name="effects" type="js">
+      <path>scripts/effects.js</path>
+    </resource>
+
+    <resource name="foldable-box.js">
+      <path>scripts/foldable-box.js</path>
+      <require>effects</require>
+    </resource>
+
+    <resource name="foldable-box.css">
+      <path>css/foldable-box.css</path>
+    </resource>
+
+    <resource name="cycle1.js">
+      <path>scripts/cycle1.js</path>
+      <require>cycle2.js</require>
+    </resource>
+
+    <resource name="cycle2.js">
+      <path>scripts/cycle2.js</path>
+      <require>cycle3.js</require>
+    </resource>
+
+    <resource name="cycle3.js">
+      <path>scripts/cycle3.js</path>
+    </resource>
+
+    <resource name="all.css">
+      <path>css/*</path>
+    </resource>
+
+    <resource name="all.js">
+      <path>scripts/*</path>
+    </resource>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resourceBundles">
+
+    <resourceBundle name="myapp">
+      <resources>
+        <resource>jquery.js</resource>
+        <resource>foldable-box.js</resource>
+        <resource>foldable-box.css</resource>
+      </resources>
+    </resourceBundle>
+
+    <resourceBundle name="cycles">
+      <resources>
+        <resource>cycle1.js</resource>
+      </resources>
+    </resourceBundle>
+
+    <resourceBundle name="all">
+      <resources>
+        <resource>all.css</resource>
+        <resource>all.js</resource>
+      </resources>
+    </resourceBundle>
+
+  </extension>
+
+</component>

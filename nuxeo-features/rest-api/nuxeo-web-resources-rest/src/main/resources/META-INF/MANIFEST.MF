@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Web Resources REST
+Bundle-SymbolicName: org.nuxeo.web.resources.rest;singleton:=true
+Bundle-Localization: plugin
+Fragment-Host: org.nuxeo.ecm.platform.restapi.server
+Bundle-Vendor: Nuxeo

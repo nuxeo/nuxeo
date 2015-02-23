@@ -1,0 +1,10 @@
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  max-width: 100% }
+
+table th {
+  color: "black (__FLAVOR__ color)";
+  font-weight: bold;
+  text-align: left;
+  vertical-align: bottom }

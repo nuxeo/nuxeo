@@ -263,46 +263,12 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
 
     protected void registerFlavorToThemeService(Flavor flavor, RuntimeContext extensionContext) {
         String flavorName = flavor.getName();
-        List<FlavorPresets> presets = computePresets(flavor, new ArrayList<String>());
-        Map<String, Map<String, String>> presetsByCat = new HashMap<String, Map<String, String>>();
-        if (presets != null) {
-            for (FlavorPresets myPreset : presets) {
-                String content = myPreset.getContent();
-                if (content == null) {
-                    log.error(String.format("Null content for preset with " + "source '%s' in flavor '%s'",
-                            myPreset.getSrc(), flavorName));
-                } else {
-                    String cat = myPreset.getCategory();
-                    Map<String, String> allEntries;
-                    if (presetsByCat.containsKey(cat)) {
-                        allEntries = presetsByCat.get(cat);
-                    } else {
-                        allEntries = new HashMap<String, String>();
-                    }
-                    try {
-                        Map<String, String> newEntries = PaletteParser.parse(content.getBytes(), myPreset.getSrc());
-                        if (newEntries != null) {
-                            allEntries.putAll(newEntries);
-                        }
-                        if (allEntries.isEmpty()) {
-                            presetsByCat.remove(cat);
-                        } else {
-                            presetsByCat.put(cat, allEntries);
-                        }
-                    } catch (PaletteIdentifyException | PaletteParseException e) {
-                        log.error(String.format("Could not parse palette for "
-                                + "preset with source '%s' in flavor '%s'", myPreset.getSrc(), flavorName), e);
-                    }
-                }
-            }
-        }
-
+        Map<String, Map<String, String>> presetsByCat = getPresetsByCat(flavor);
         // unregister potential existing presets
         unregisterFlavorToThemeService(flavor);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Register flavor '%s' to the theme service", flavorName));
         }
-
         // register all presets to the standard theme service registries
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         for (String cat : presetsByCat.keySet()) {
@@ -698,6 +664,62 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             return flavors;
         }
         return null;
+    }
+
+    protected Map<String, Map<String, String>> getPresetsByCat(Flavor flavor) {
+        String flavorName = flavor.getName();
+        List<FlavorPresets> presets = computePresets(flavor, new ArrayList<String>());
+        Map<String, Map<String, String>> presetsByCat = new HashMap<String, Map<String, String>>();
+        if (presets != null) {
+            for (FlavorPresets myPreset : presets) {
+                String content = myPreset.getContent();
+                if (content == null) {
+                    log.error(String.format("Null content for preset with " + "source '%s' in flavor '%s'",
+                            myPreset.getSrc(), flavorName));
+                } else {
+                    String cat = myPreset.getCategory();
+                    Map<String, String> allEntries;
+                    if (presetsByCat.containsKey(cat)) {
+                        allEntries = presetsByCat.get(cat);
+                    } else {
+                        allEntries = new HashMap<String, String>();
+                    }
+                    try {
+                        Map<String, String> newEntries = PaletteParser.parse(content.getBytes(), myPreset.getSrc());
+                        if (newEntries != null) {
+                            allEntries.putAll(newEntries);
+                        }
+                        if (allEntries.isEmpty()) {
+                            presetsByCat.remove(cat);
+                        } else {
+                            presetsByCat.put(cat, allEntries);
+                        }
+                    } catch (PaletteIdentifyException | PaletteParseException e) {
+                        log.error(String.format("Could not parse palette for "
+                                + "preset with source '%s' in flavor '%s'", myPreset.getSrc(), flavorName), e);
+                    }
+                }
+            }
+        }
+        return presetsByCat;
+    }
+
+    @Override
+    public Map<String, String> getPresetVariables(String flavorName) {
+        Map<String, String> res = new HashMap<String, String>();
+        Flavor flavor = getFlavor(flavorName);
+        if (flavor == null) {
+            return res;
+        }
+        Map<String, Map<String, String>> presetsByCat = getPresetsByCat(flavor);
+        for (String cat : presetsByCat.keySet()) {
+            Map<String, String> entries = presetsByCat.get(cat);
+            for (Map.Entry<String, String> entry : entries.entrySet()) {
+                res.put(String.format("%s (%s %s)", entry.getKey(), ThemeStylingService.FLAVOR_MARKER, cat),
+                        entry.getValue());
+            }
+        }
+        return res;
     }
 
     @Override

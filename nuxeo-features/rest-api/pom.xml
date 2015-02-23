@@ -17,6 +17,7 @@
     <module>nuxeo-rest-api-server</module>
     <module>nuxeo-rest-api-io</module>
     <module>nuxeo-rest-api-test</module>
+    <module>nuxeo-web-resources-rest</module>
   </modules>
 
 </project>

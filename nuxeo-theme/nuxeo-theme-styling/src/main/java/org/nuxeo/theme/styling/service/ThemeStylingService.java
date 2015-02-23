@@ -18,6 +18,7 @@ package org.nuxeo.theme.styling.service;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
@@ -69,6 +70,15 @@ public interface ThemeStylingService {
      * @param flavorName
      */
     Flavor getFlavor(String flavorName);
+
+    /**
+     * Returns the map of variable replacements for given flavor.
+     * <p>
+     * Returns an empty map if flavor is not resolved.
+     *
+     * @since 7.3
+     */
+    Map<String, String> getPresetVariables(String flavorName);
 
     /**
      * Returns the logo configured for given flavor name, and fallbacks on the extends flavor logo if not set.
