@@ -93,7 +93,7 @@ public class ListStandardWidgetPage extends Page {
     }
 
     public JSListWidgetElement getComplexListEditWidget() {
-        return new JSListWidgetElement(AbstractTest.driver, COMPLEX_LIST_WIDGET_EDIT_ID);
+        return new JSListWidgetElement(AbstractTest.driver, COMPLEX_LIST_WIDGET_EDIT_ID, JSListWidgetElement.Display.TABLE);
     }
 
     public JSListWidgetElement submitComplexListWidget() {
