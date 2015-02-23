@@ -1,0 +1,24 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <h3><h:outputText value="#{messages['label.additional.formats']}" /></h3>
+
+  <div class="content">
+
+    <nxu:dataTable value="#{currentDocumentVisibleRenditions}"
+      var="rendition" styleClass="dataOutput">
+      <nxu:column styleClass="iconColumn">
+        <nxu:graphicImage value="#{rendition.icon}" />
+      </nxu:column>
+      <nxu:column>
+        <nxd:restDocumentLink document="#{currentDocument}" view="#{rendition.name}" pattern="rendition">
+          <h:outputText value="#{messages[rendition.label]}" />
+        </nxd:restDocumentLink>
+      </nxu:column>
+    </nxu:dataTable>
+
+  </div>
+
+</div>

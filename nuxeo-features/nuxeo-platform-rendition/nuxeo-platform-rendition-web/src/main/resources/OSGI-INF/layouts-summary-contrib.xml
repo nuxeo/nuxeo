@@ -59,7 +59,8 @@
       Contribute the "Renditions" widget to the summary
     </documentation>
 
-    <action id="summary_current_document_renditions" type="widget" order="900">
+    <!-- Disabled since NXP-16509, the renditions are displayed through the Additional Formats action -->
+    <action enabled="false" id="summary_current_document_renditions" type="widget" order="900">
       <category>SUMMARY_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">summary_current_document_renditions</property>
