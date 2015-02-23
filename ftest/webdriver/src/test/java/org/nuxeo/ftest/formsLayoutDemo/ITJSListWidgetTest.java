@@ -17,13 +17,13 @@
 
 package org.nuxeo.ftest.formsLayoutDemo;
 
+import static org.hamcrest.text.IsEmptyString.isEmptyString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.forms.JSListWidgetElement;
@@ -32,8 +32,6 @@ import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.forms.WidgetElement;
 import org.nuxeo.functionaltests.formsLayoutDemo.page.standardWidgets.ListStandardWidgetPage;
 import org.openqa.selenium.support.ui.Select;
-
-import static org.hamcrest.text.IsEmptyString.isEmptyString;
 
 /**
  * List Widget Tests.
@@ -156,7 +154,8 @@ public class ITJSListWidgetTest extends AbstractTest {
         listWidget = page.submitComplexListWidget();
 
         assertNotEquals(VALUE_REQUIRED, listWidget.getMessageValue());
-        assertEquals("'lala' is not a number. Example: 99", listWidget.getSubWidgetMessageValue("nxw_intComplexItem", 0));
+        assertEquals("'lala' is not a number. Example: 99",
+                listWidget.getSubWidgetMessageValue("nxw_intComplexItem", 0));
 
         listWidget.getSubWidget("nxw_intComplexItem", 0).setInputValue("3");
         listWidget = page.submitComplexListWidget();
@@ -201,38 +200,34 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertNotNull(listWidget);
         listWidget.addNewElement();
 
-        Select2WidgetElement select2WidgetElement = listWidget.getSubWidget("nxw_suggest_select2",
-            0, Select2WidgetElement.class, true);
+        Select2WidgetElement select2WidgetElement = listWidget.getSubWidget("nxw_suggest_select2", 0,
+                Select2WidgetElement.class, true);
         // TODO fix getSubWidget, I have to reload the select2 somehow
         select2WidgetElement = new Select2WidgetElement(driver, S2_PREFIX + select2WidgetElement.getId());
         select2WidgetElement.selectValue(S2_SELECTION_1, true);
-        RichEditorElement richEditorElement = listWidget.getSubWidget("nxw_htmlTextItem", 0,
-            RichEditorElement.class, true);
+        RichEditorElement richEditorElement = listWidget.getSubWidget("nxw_htmlTextItem", 0, RichEditorElement.class,
+                true);
         richEditorElement.insertContent(DUMMY_HTML_TEXT_CONTENT_1);
 
         listWidget.addNewElement();
-        select2WidgetElement = listWidget.getSubWidget("nxw_suggest_select2", 1,
-            Select2WidgetElement.class, true);
+        select2WidgetElement = listWidget.getSubWidget("nxw_suggest_select2", 1, Select2WidgetElement.class, true);
         // TODO fix getSubWidget, I have to reload the select2 somehow
         select2WidgetElement = new Select2WidgetElement(driver, S2_PREFIX + select2WidgetElement.getId());
         select2WidgetElement.selectValue(S2_SELECTION_2, true);
 
-        richEditorElement = listWidget.getSubWidget("nxw_htmlTextItem", 1,
-            RichEditorElement.class, true);
+        richEditorElement = listWidget.getSubWidget("nxw_htmlTextItem", 1, RichEditorElement.class, true);
         richEditorElement.insertContent(DUMMY_HTML_TEXT_CONTENT_2);
 
         page.submitS2HtmlTextComplexListWidget();
 
         // View mode
         listWidget = page.getS2HtmlTextComplexListViewWidget();
-        select2WidgetElement = listWidget.getSubWidget("nxw_suggest_1_select2", 0,
-            Select2WidgetElement.class, true);
+        select2WidgetElement = listWidget.getSubWidget("nxw_suggest_1_select2", 0, Select2WidgetElement.class, true);
         select2WidgetElement = new Select2WidgetElement(driver, S2_PREFIX + select2WidgetElement.getId());
         assertEquals("Europe/" + S2_SELECTION_1, select2WidgetElement.getSelectedValue().getText());
         WidgetElement we = listWidget.getSubWidget("nxw_htmlTextItem_1", 0, true);
         assertEquals(DUMMY_HTML_TEXT_CONTENT_1, we.getValue(false));
-        select2WidgetElement = listWidget.getSubWidget("nxw_suggest_1_select2", 1,
-            Select2WidgetElement.class, true);
+        select2WidgetElement = listWidget.getSubWidget("nxw_suggest_1_select2", 1, Select2WidgetElement.class, true);
         select2WidgetElement = new Select2WidgetElement(driver, S2_PREFIX + select2WidgetElement.getId());
         assertEquals("Europe/" + S2_SELECTION_2, select2WidgetElement.getSelectedValue().getText());
         we = listWidget.getSubWidget("nxw_htmlTextItem_1", 1, true);
@@ -264,16 +259,16 @@ public class ITJSListWidgetTest extends AbstractTest {
 
         assertThat(listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 0), isEmptyString());
 
-        JSListWidgetElement stringListItem = listWidget.getSubWidget("nxw_stringListItem", 0, JSListWidgetElement.class,
-            false);
+        JSListWidgetElement stringListItem = listWidget.getSubWidget("nxw_stringListItem", 0,
+                JSListWidgetElement.class, false);
         stringListItem.addNewElement();
         stringListItem.getSubWidget("nxw_stringListSubItem", 0).setInputValue("test sublist");
         stringListItem.addNewElement();
         stringListItem.getSubWidget("nxw_stringListSubItem", 1).setInputValue("test sublist 2");
 
         // non regression tests for NXP-16406
-        JSListWidgetElement stringListItem2 = listWidget.getSubWidget("nxw_stringListItem2", 0, JSListWidgetElement.class,
-            false);
+        JSListWidgetElement stringListItem2 = listWidget.getSubWidget("nxw_stringListItem2", 0,
+                JSListWidgetElement.class, false);
         stringListItem2.addNewElement();
         stringListItem2.getSubWidget("nxw_stringListSubItem2", 0).setInputValue("test sublist bis");
         stringListItem2.addNewElement();
