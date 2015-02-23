@@ -58,8 +58,17 @@ public class UIJavascriptList extends UIEditableList {
 
     protected static final String IS_LIST_TEMPLATE_VAR = "isListTemplate";
 
-    // decoded row indexes
-    protected transient int[] rowIndexes;
+    protected enum PropertyKeys {
+        rowIndexes;
+    }
+
+    public void setRowIndexes(int[] rowIndexes) {
+        getStateHelper().put(PropertyKeys.rowIndexes, rowIndexes);
+    }
+
+    public int[] getRowIndexes() {
+        return (int[]) getStateHelper().eval(PropertyKeys.rowIndexes);
+    }
 
     @Override
     public String getFamily() {
@@ -135,9 +144,9 @@ public class UIJavascriptList extends UIEditableList {
             writer.write(html);
             writer.write("</script>");
 
+        } finally {
             setRowIndex(oldIndex);
 
-        } finally {
             // restore
             if (hasVar) {
                 requestMap.put(IS_LIST_TEMPLATE_VAR, oldIsTemplateBoolean);
@@ -158,7 +167,7 @@ public class UIJavascriptList extends UIEditableList {
         String[] v = requestMap.get(clientId);
         if (v == null) {
             // no info => no elements to decode
-            rowIndexes = null;
+            setRowIndexes(null);
             return;
         }
 
@@ -167,7 +176,7 @@ public class UIJavascriptList extends UIEditableList {
             for (int i = 0; i < indexes.length; i++) {
                 indexes[i] = Integer.valueOf(v[i]);
             }
-            rowIndexes = indexes;
+            setRowIndexes(indexes);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(String.format("Invalid value '%s' for row indexes at '%s'",
                     StringUtils.join(v, ","), clientId));
@@ -176,20 +185,20 @@ public class UIJavascriptList extends UIEditableList {
 
     protected void processFacetsAndChildren(final FacesContext context, final PhaseId phaseId) {
         List<UIComponent> stamps = getChildren();
+        EditableModel model = getEditableModel();
         int oldIndex = getRowIndex();
-
+        int[] rowIndexes = getRowIndexes();
         Object requestMapValue = saveRequestMapModelValue();
+
         try {
 
-            if (phaseId == PhaseId.APPLY_REQUEST_VALUES && rowIndexes != null && rowIndexes.length != 0) {
-                Object template = getTemplate();
-                EditableModel model = getEditableModel();
+            if (phaseId == PhaseId.APPLY_REQUEST_VALUES && rowIndexes != null) {
                 for (int i = 0; i < rowIndexes.length; i++) {
                     int idx = rowIndexes[i];
                     setRowIndex(idx);
                     if (!isRowAvailable()) {
                         // new value => insert it, initialized with template
-                        model.insertValue(idx, template);
+                        model.insertValue(idx, getEditableModel().getUnreferencedTemplate());
                     }
                 }
             }
@@ -225,7 +234,6 @@ public class UIJavascriptList extends UIEditableList {
 
                 // rows to delete
                 List<Integer> toDelete = new ArrayList<>();
-                EditableModel model = getEditableModel();
 
                 // move rows
                 for (int i = 0; i < getRowCount(); i++) {
