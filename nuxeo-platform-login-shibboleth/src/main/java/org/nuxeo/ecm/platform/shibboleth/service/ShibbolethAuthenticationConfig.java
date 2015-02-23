@@ -48,6 +48,9 @@ public class ShibbolethAuthenticationConfig {
     @XNode("idpHeader")
     protected String idpHeader = "shib-identity-provider";
 
+    @XNode("@headerEncoding")
+    protected String headerEncoding = "UTF-8";
+
     @XNodeMap(value = "fieldMapping", key = "@header", type = HashMap.class, componentType = String.class)
     protected Map<String, String> fieldMapping = new HashMap<String, String>();
 
@@ -83,4 +86,5 @@ public class ShibbolethAuthenticationConfig {
         return idpHeader;
     }
 
+    public String getHeaderEncoding() { return headerEncoding; }
 }

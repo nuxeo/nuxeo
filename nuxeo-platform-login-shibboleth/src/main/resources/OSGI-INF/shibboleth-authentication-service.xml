@@ -29,7 +29,7 @@
         <extension
           target="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService"
           point="config">
-          <config>
+          <config headerEncoding="utf-8">
             <uidHeaders>
               <uidHeader idpUrl="https://specific.idp">differentUid</uidHeader>
               <default>uid</default>

@@ -17,11 +17,16 @@
 
 package org.nuxeo.ecm.platform.shibboleth.service;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -51,7 +56,7 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implem
             return null;
         }
 
-        Map<String, String> urlParameters = new HashMap<String, String>();
+        Map<String, String> urlParameters = new HashMap<String, String>(1);
         urlParameters.put(config.getLoginRedirectURLParameter(), redirectURL);
         return URIUtils.addParametersToURIQuery(config.getLoginURL(), urlParameters);
     }
@@ -62,12 +67,12 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implem
             return null;
         }
 
-        Map<String, String> urlParameters = new HashMap<String, String>();
+        Map<String, String> urlParameters = new HashMap<String, String>(1);
         urlParameters.put(config.getLogoutRedirectURLParameter(), redirectURL);
         return URIUtils.addParametersToURIQuery(config.getLogoutURL(), urlParameters);
     }
 
-    protected String getRedirectUrl(HttpServletRequest request) {
+    protected static String getRedirectUrl(HttpServletRequest request) {
         String redirectURL = VirtualHostHelper.getBaseURL(request);
         if (request.getAttribute(NXAuthConstants.REQUESTED_URL) != null) {
             redirectURL += request.getAttribute(NXAuthConstants.REQUESTED_URL);
@@ -75,7 +80,7 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implem
             redirectURL = request.getRequestURL().toString();
             String queryString = request.getQueryString();
             if (queryString != null) {
-                redirectURL += "?" + queryString;
+                redirectURL += '?' + queryString;
             }
         }
         return redirectURL;
@@ -98,14 +103,14 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implem
         if (uidHeader == null) {
             uidHeader = config.getDefaultUidHeader();
         }
-        return httpRequest.getHeader(uidHeader);
+        return readHeader(httpRequest, uidHeader);
     }
 
     @Override
     public Map<String, Object> getUserMetadata(String userIdField, HttpServletRequest httpRequest) {
-        Map<String, Object> fieldMap = new HashMap<String, Object>();
+        Map<String, Object> fieldMap = new HashMap<String, Object>(config.fieldMapping.size());
         for (String key : config.getFieldMapping().keySet()) {
-            fieldMap.put(config.getFieldMapping().get(key), httpRequest.getHeader(key));
+            fieldMap.put(config.getFieldMapping().get(key), readHeader(httpRequest, key));
         }
         // Force userIdField to shibb userId value in case of the IdP do
         // not use the same mapping as the default's one.
@@ -113,4 +118,15 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implem
         return fieldMap;
     }
 
+    protected String readHeader(HttpServletRequest request, String key) {
+        String value = request.getHeader(key);
+        if (isNotEmpty(value) && isNotEmpty(config.getHeaderEncoding())) {
+            try {
+                value = new String(value.getBytes("ISO-8859-1"), config.getHeaderEncoding());
+            } catch (UnsupportedEncodingException ignored) {
+                // Nothing
+            }
+        }
+        return value;
+    }
 }

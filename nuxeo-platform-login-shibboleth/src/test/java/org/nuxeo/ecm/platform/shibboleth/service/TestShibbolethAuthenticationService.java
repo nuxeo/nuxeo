@@ -92,7 +92,7 @@ public class TestShibbolethAuthenticationService {
     @Test
     public void testUserMetada() {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setHeader("uid", "test");
+        request.setHeader("uid", "FrÃ©dÃ©ric");
         request.setHeader("uid1", "value1");
         request.setHeader("uid2", "value2");
 
@@ -105,6 +105,6 @@ public class TestShibbolethAuthenticationService {
         assertEquals("value2", service.getUserMetadata(idField, request).get(idField));
 
         request.setHeader("shib-identity-provider", "anotherUrl");
-        assertEquals("test", service.getUserMetadata(idField, request).get(idField));
+        assertEquals("Frédéric", service.getUserMetadata(idField, request).get(idField));
     }
 }
