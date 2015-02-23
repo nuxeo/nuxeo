@@ -56,6 +56,7 @@ public class ITJSListWidgetTest extends AbstractTest {
 
     @Before
     public void setUp() {
+        driver.get(NUXEO_URL + "/layoutDemo");
         page = get(NUXEO_URL + "/layoutDemo/listWidget", ListStandardWidgetPage.class);
         page.goToOverviewTab();
     }
@@ -123,7 +124,6 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertEquals(1, listWidget.getRows().size());
     }
 
-    @Ignore
     @Test
     public void testComplexListWidget() {
         JSListWidgetElement listWidget = page.getComplexListEditWidget();
@@ -134,8 +134,7 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertEquals(VALUE_REQUIRED, listWidget.getMessageValue());
 
         listWidget.addNewElement();
-        // TODO - fix row count for complex list
-        // assertEquals(1, listWidget.getRows().size());
+        assertEquals(1, listWidget.getRows().size());
         assertNotNull(listWidget.getSubWidget("nxw_stringComplexItem", 0));
         assertNotNull(listWidget.getSubWidget("nxw_text", 0));
         listWidget.getSubWidget("nxw_stringComplexItem", 0).setInputValue("test");
@@ -177,23 +176,21 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertEquals("field 3", listWidget.getSubWidget("nxw_text_2", 1).getOutputValue());
         assertEquals("field 4", listWidget.getSubWidget("nxw_text_3", 1).getOutputValue());
 
-        // "delete" element is not retrieved correctly here
-        listWidget.removeElement(1);
-        listWidget = page.submitListWidget();
+        page.getComplexListEditWidget().removeElement(1);
+        listWidget = page.submitComplexListWidget();
 
         assertNotEquals(VALUE_REQUIRED, listWidget.getMessageValue());
 
         // View mode
         listWidget = page.getComplexListViewWidget();
         assertEquals("test", listWidget.getSubWidget("nxw_stringComplexItem_1", 0).getOutputValue());
-        assertEquals("9/7/2010", listWidget.getSubWidget("nxw_dateComplexItemInputDate_1", 0).getOutputValue());
+        assertEquals("9/7/2010", listWidget.getSubWidget("nxw_dateComplexItem_1", 0).getOutputValue());
         assertEquals("3", listWidget.getSubWidget("nxw_intComplexItem_1", 0).getOutputValue());
         assertEquals("No", listWidget.getSubWidget("nxw_booleanComplexItem_1", 0).getOutputValue());
         assertEquals("field 1", listWidget.getSubWidget("nxw_text_2", 0).getOutputValue());
         assertEquals("field 2", listWidget.getSubWidget("nxw_text_3", 0).getOutputValue());
     }
 
-    @Ignore
     @Test
     public void testComplexList2Widget() {
         // Test select2 + html text (tiny_mce) in complex list widget
@@ -211,14 +208,18 @@ public class ITJSListWidgetTest extends AbstractTest {
         richEditorElement.insertContent(DUMMY_HTML_TEXT_CONTENT_1);
 
         listWidget.addNewElement();
+        assertEquals(2, listWidget.getRows().size());
+
+        /* TODO fix select2 initialization
         select2WidgetElement = listWidget.getSubWidget("nxw_suggest_select2", 1, Select2WidgetElement.class, true);
-        // TODO fix getSubWidget, I have to reload the select2 somehow
         select2WidgetElement = new Select2WidgetElement(driver, S2_PREFIX + select2WidgetElement.getId());
         select2WidgetElement.selectValue(S2_SELECTION_2, true);
 
         richEditorElement = listWidget.getSubWidget("nxw_htmlTextItem", 1, RichEditorElement.class, true);
         richEditorElement.insertContent(DUMMY_HTML_TEXT_CONTENT_2);
+        */
 
+        listWidget.removeElement(1);
         page.submitS2HtmlTextComplexListWidget();
 
         // View mode
@@ -228,11 +229,14 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertEquals("Europe/" + S2_SELECTION_1, select2WidgetElement.getSelectedValue().getText());
         WidgetElement we = listWidget.getSubWidget("nxw_htmlTextItem_1", 0, true);
         assertEquals(DUMMY_HTML_TEXT_CONTENT_1, we.getValue(false));
+
+        /* TODO enable after fixing select2 initialization
         select2WidgetElement = listWidget.getSubWidget("nxw_suggest_1_select2", 1, Select2WidgetElement.class, true);
         select2WidgetElement = new Select2WidgetElement(driver, S2_PREFIX + select2WidgetElement.getId());
         assertEquals("Europe/" + S2_SELECTION_2, select2WidgetElement.getSelectedValue().getText());
         we = listWidget.getSubWidget("nxw_htmlTextItem_1", 1, true);
         assertEquals(DUMMY_HTML_TEXT_CONTENT_2, we.getValue(false));
+        */
 
     }
 
