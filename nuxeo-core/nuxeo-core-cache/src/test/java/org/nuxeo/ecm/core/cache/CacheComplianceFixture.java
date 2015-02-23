@@ -43,12 +43,14 @@ public class CacheComplianceFixture {
     @Test
     public void getValue() throws IOException {
         String cachedVal = (String) defaultCache.get(CacheFeature.KEY);
+        Assert.assertTrue(defaultCache.hasEntry(CacheFeature.KEY));
         Assert.assertEquals(CacheFeature.VAL, cachedVal);
     }
 
     @Test
     public void keyNotExist() throws IOException {
         Assert.assertNull(defaultCache.get("key-not-exist"));
+        Assert.assertFalse(defaultCache.hasEntry("key-not-exist"));
     }
 
     @Test

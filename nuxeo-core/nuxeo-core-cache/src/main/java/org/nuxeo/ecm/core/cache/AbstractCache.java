@@ -17,6 +17,8 @@
  */
 package org.nuxeo.ecm.core.cache;
 
+import java.io.IOException;
+
 /**
  * Abstract class to be extended to provide new cache implementation
  *
@@ -36,6 +38,12 @@ public abstract class AbstractCache implements Cache {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean hasEntry(String key) throws IOException {
+        // dummy implementation to avoid breaking compatibility
+        return get(key)!=null;
     }
 
 }

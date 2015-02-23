@@ -69,4 +69,16 @@ public interface Cache {
      */
     public void put(String key, Serializable value) throws IOException;
 
+    /**
+     * Check if a given key is present inside the cache.
+     * Compared to the get() method, this method must not update internal
+     * cache state and change TTL
+     *
+     * @param key the string key
+     * @return true if a corresponding entry exists, false otherwise
+     * @throws IOException
+     * @since 7.2
+     */
+    public boolean hasEntry(String key) throws IOException;
+
 }
