@@ -164,7 +164,7 @@ public class ITJSListWidgetTest extends AbstractTest {
         // View mode
         listWidget = page.getComplexListViewWidget();
         assertEquals("test", listWidget.getSubWidget("nxw_stringComplexItem_1", 0).getOutputValue());
-        assertEquals("9/7/2010", listWidget.getSubWidget("nxw_dateComplexItemInputDate_1", 0).getOutputValue());
+        assertEquals("9/7/2010", listWidget.getSubWidget("nxw_dateComplexItem_1", 0).getOutputValue());
         assertEquals("3", listWidget.getSubWidget("nxw_intComplexItem_1", 0).getOutputValue());
         assertEquals("No", listWidget.getSubWidget("nxw_booleanComplexItem_1", 0).getOutputValue());
         assertEquals("field 1", listWidget.getSubWidget("nxw_text_2", 0).getOutputValue());
@@ -177,6 +177,7 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertEquals("field 3", listWidget.getSubWidget("nxw_text_2", 1).getOutputValue());
         assertEquals("field 4", listWidget.getSubWidget("nxw_text_3", 1).getOutputValue());
 
+        // "delete" element is not retrieved correctly here
         listWidget.removeElement(1);
         listWidget = page.submitListWidget();
 
@@ -323,9 +324,7 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertNotNull(listWidget.getSubWidget("nxw_stringItem", 1));
     }
 
-
-    //non regression tests for NXP-6933
-    @Ignore
+    // non regression tests for NXP-6933
     @Test
     public void testNonRegression_NXP_6933() {
         JSListWidgetElement listWidget = page.getListArrayEditWidget();
@@ -348,7 +347,7 @@ public class ITJSListWidgetTest extends AbstractTest {
         page.submitListArrayWidget();
 
         assertEquals("BBB", page.getListArrayViewWidget().getSubWidget("nxw_listItem_1", 0).getOutputValue());
-        assertEquals("BBB", page.getListArrayEditWidget().getSubWidget("nxw_listItem", 0).getOutputValue());
+        assertEquals("BBB", page.getListArrayEditWidget().getSubWidget("nxw_listItem", 0).getInputValue());
     }
 
 }
