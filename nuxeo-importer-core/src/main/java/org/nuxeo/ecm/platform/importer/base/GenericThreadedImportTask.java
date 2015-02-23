@@ -41,6 +41,7 @@ import org.nuxeo.ecm.platform.importer.listener.ImporterListener;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.ecm.platform.importer.threading.ImporterThreadingPolicy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  *
@@ -75,9 +76,8 @@ public class GenericThreadedImportTask implements Runnable {
 
     protected String taskId = null;
 
-    protected TxHelper txHelper = new TxHelper();
-
     public static final int TX_TIMEOUT = 600;
+
     protected int transactionTimeout = TX_TIMEOUT;
 
     protected ImporterThreadingPolicy threadPolicy;
@@ -157,8 +157,9 @@ public class GenericThreadedImportTask implements Runnable {
             fslog("Comiting Core Session after " + uploadedFiles + " files",
                     true);
             session.save();
-            txHelper.commitOrRollbackTransaction();
-            txHelper.beginNewTransaction(transactionTimeout);
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction(transactionTimeout);
+
             split.stop();
         }
     }
@@ -363,7 +364,7 @@ public class GenericThreadedImportTask implements Runnable {
     }
 
     public synchronized void run() {
-        txHelper.beginNewTransaction(transactionTimeout);
+        TransactionHelper.startTransaction(transactionTimeout);
         synchronized (this) {
             if (isRunning) {
                 throw new IllegalStateException("Task already running");
@@ -386,7 +387,7 @@ public class GenericThreadedImportTask implements Runnable {
             recursiveCreateDocumentFromNode(rootDoc, rootSource);
             session.save();
             GenericMultiThreadedImporter.addCreatedDoc(taskId, uploadedFiles);
-            txHelper.commitOrRollbackTransaction();
+            TransactionHelper.commitOrRollbackTransaction();
         } catch (Exception e) {
             try {
                 notifyImportError();
