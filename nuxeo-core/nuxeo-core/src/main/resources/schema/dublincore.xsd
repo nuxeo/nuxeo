@@ -1,10 +1,7 @@
 <?xml version="1.0"?>
 
-<xs:schema
-  targetNamespace="http://www.nuxeo.org/ecm/schemas/dublincore/"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/dublincore/"
-  >
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/dublincore/" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/dublincore/" xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/">
 
   <xs:simpleType name="subjectList">
     <xs:list itemType="xs:string" />
@@ -28,7 +25,11 @@
   <xs:element name="expired" type="xs:date"/>
   <xs:element name="format" type="xs:string"/>
   <xs:element name="language" type="xs:string"/>
-  <xs:element name="creator" type="xs:string"/>
+  <xs:element name="creator">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="userManagerResolver" ref:type="user" />
+    </xs:simpleType>
+  </xs:element>
   <xs:element name="contributors" type="nxs:contributorList"/>
   <xs:element name="lastContributor" type="xs:string"/>
 
