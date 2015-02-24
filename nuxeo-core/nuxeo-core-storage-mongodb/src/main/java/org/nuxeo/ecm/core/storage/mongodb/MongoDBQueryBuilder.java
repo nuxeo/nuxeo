@@ -85,16 +85,14 @@ public class MongoDBQueryBuilder {
         Operator op = expr.operator;
         Operand lvalue = expr.lvalue;
         Operand rvalue = expr.rvalue;
-        String name = lvalue instanceof Reference ? ((Reference) lvalue).name
-                : null;
+        String name = lvalue instanceof Reference ? ((Reference) lvalue).name : null;
         if (op == Operator.STARTSWITH) {
             return walkStartsWith(lvalue, rvalue);
         } else if (NXQL.ECM_PATH.equals(name)) {
             return walkEcmPath(op, rvalue);
         } else if (NXQL.ECM_ANCESTORID.equals(name)) {
             return walkAncestorId(op, rvalue);
-        } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT)
-                && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
+        } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT) && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
             return walkEcmFulltext(name, op, rvalue);
         } else if (op == Operator.SUM) {
             throw new UnsupportedOperationException("SUM");
@@ -153,12 +151,10 @@ public class MongoDBQueryBuilder {
 
     protected DBObject walkEcmPath(Operator op, Operand rvalue) {
         if (op != Operator.EQ && op != Operator.NOTEQ) {
-            throw new RuntimeException(NXQL.ECM_PATH
-                    + " requires = or <> operator");
+            throw new RuntimeException(NXQL.ECM_PATH + " requires = or <> operator");
         }
         if (!(rvalue instanceof StringLiteral)) {
-            throw new RuntimeException(NXQL.ECM_PATH
-                    + " requires literal path as right argument");
+            throw new RuntimeException(NXQL.ECM_PATH + " requires literal path as right argument");
         }
         String path = ((StringLiteral) rvalue).value;
         if (path.length() > 1 && path.endsWith("/")) {
@@ -174,37 +170,31 @@ public class MongoDBQueryBuilder {
         if (op == Operator.EQ) {
             return new BasicDBObject(field, id);
         } else {
-            return new BasicDBObject(field, new BasicDBObject(
-                    QueryOperators.NE, id));
+            return new BasicDBObject(field, new BasicDBObject(QueryOperators.NE, id));
         }
     }
 
     protected DBObject walkAncestorId(Operator op, Operand rvalue) {
         if (op != Operator.EQ && op != Operator.NOTEQ) {
-            throw new RuntimeException(NXQL.ECM_ANCESTORID
-                    + " requires = or <> operator");
+            throw new RuntimeException(NXQL.ECM_ANCESTORID + " requires = or <> operator");
         }
         if (!(rvalue instanceof StringLiteral)) {
-            throw new RuntimeException(NXQL.ECM_ANCESTORID
-                    + " requires literal id as right argument");
+            throw new RuntimeException(NXQL.ECM_ANCESTORID + " requires literal id as right argument");
         }
         String ancestorId = ((StringLiteral) rvalue).value;
         if (op == Operator.EQ) {
             return new BasicDBObject(DBSDocument.KEY_ANCESTOR_IDS, ancestorId);
         } else {
-            return new BasicDBObject(DBSDocument.KEY_ANCESTOR_IDS,
-                    new BasicDBObject(QueryOperators.NE, ancestorId));
+            return new BasicDBObject(DBSDocument.KEY_ANCESTOR_IDS, new BasicDBObject(QueryOperators.NE, ancestorId));
         }
     }
 
     protected DBObject walkEcmFulltext(String name, Operator op, Operand rvalue) {
         if (op != Operator.EQ && op != Operator.LIKE) {
-            throw new RuntimeException(NXQL.ECM_FULLTEXT
-                    + " requires = or LIKE operator");
+            throw new RuntimeException(NXQL.ECM_FULLTEXT + " requires = or LIKE operator");
         }
         if (!(rvalue instanceof StringLiteral)) {
-            throw new RuntimeException(NXQL.ECM_FULLTEXT
-                    + " requires literal string as right argument");
+            throw new RuntimeException(NXQL.ECM_FULLTEXT + " requires literal string as right argument");
         }
         String fulltextQuery = ((StringLiteral) rvalue).value;
         if (name.equals(NXQL.ECM_FULLTEXT)) {
@@ -223,8 +213,7 @@ public class MongoDBQueryBuilder {
             // secondary index match with explicit field
             // do a regexp on the field
             if (name.charAt(NXQL.ECM_FULLTEXT.length()) != '.') {
-                throw new RuntimeException(name + " has incorrect syntax"
-                        + " for a secondary fulltext index");
+                throw new RuntimeException(name + " has incorrect syntax" + " for a secondary fulltext index");
             }
             String prop = name.substring(NXQL.ECM_FULLTEXT.length() + 1);
             String ft = fulltextQuery.replace(" ", "%");
@@ -246,22 +235,18 @@ public class MongoDBQueryBuilder {
     /**
      * Transforms the NXQL fulltext syntax into MongoDB syntax.
      * <p>
-     * The MongoDB fulltext query syntax is badly documented, but is actually
-     * the following:
+     * The MongoDB fulltext query syntax is badly documented, but is actually the following:
      * <ul>
      * <li>a term is a word,
-     * <li>a phrase is a set of spaced-separated words enclosed in double
-     * quotes,
+     * <li>a phrase is a set of spaced-separated words enclosed in double quotes,
      * <li>negation is done by prepending a -,
-     * <li>the query is a space-separated set of terms, negated terms, phrases,
-     * or negated phrases.
+     * <li>the query is a space-separated set of terms, negated terms, phrases, or negated phrases.
      * <li>all the words of non-negated phrases are also added to the terms.
      * </ul>
      * <p>
      * The matching algorithm is (excluding stemming and stop words):
      * <ul>
-     * <li>filter out documents with the negative terms, the negative phrases,
-     * or missing the phrases,
+     * <li>filter out documents with the negative terms, the negative phrases, or missing the phrases,
      * <li>then if any term is present in the document then it's a match.
      * </ul>
      */
@@ -271,8 +256,7 @@ public class MongoDBQueryBuilder {
         return StringUtils.join(buf, ' ');
     }
 
-    protected static void translateFulltext(FulltextQuery ft, List<String> buf,
-            boolean and) {
+    protected static void translateFulltext(FulltextQuery ft, List<String> buf, boolean and) {
         if (ft.op == Op.OR) {
             for (FulltextQuery term : ft.terms) {
                 // don't quote words for OR
@@ -321,8 +305,7 @@ public class MongoDBQueryBuilder {
         Object value = ob.get(key);
         if (!key.startsWith("$")) {
             // k = v -> k != v
-            return new BasicDBObject(key, new BasicDBObject(QueryOperators.NE,
-                    value));
+            return new BasicDBObject(key, new BasicDBObject(QueryOperators.NE, value));
         }
         if (QueryOperators.NE.equals(key)) {
             // NOT k != v -> k = v
@@ -336,8 +319,7 @@ public class MongoDBQueryBuilder {
             // boolean algebra
             // NOT (v1 AND v2) -> NOT v1 OR NOT v2
             // NOT (v1 OR v2) -> NOT v1 AND NOT v2
-            String op = QueryOperators.AND.equals(key) ? QueryOperators.OR
-                    : QueryOperators.AND;
+            String op = QueryOperators.AND.equals(key) ? QueryOperators.OR : QueryOperators.AND;
             List<Object> list = (List<Object>) value;
             for (int i = 0; i < list.size(); i++) {
                 list.set(i, pushDownNot(list.get(i)));
@@ -347,12 +329,10 @@ public class MongoDBQueryBuilder {
         if (QueryOperators.IN.equals(key) || QueryOperators.NIN.equals(key)) {
             // boolean algebra
             // IN <-> NIN
-            String op = QueryOperators.IN.equals(key) ? QueryOperators.NIN
-                    : QueryOperators.IN;
+            String op = QueryOperators.IN.equals(key) ? QueryOperators.NIN : QueryOperators.IN;
             return new BasicDBObject(op, value);
         }
-        if (QueryOperators.LT.equals(key) || QueryOperators.GT.equals(key)
-                || QueryOperators.LTE.equals(key)
+        if (QueryOperators.LT.equals(key) || QueryOperators.GT.equals(key) || QueryOperators.LTE.equals(key)
                 || QueryOperators.GTE.equals(key)) {
             return new BasicDBObject(QueryOperators.NOT, ob);
         }
@@ -366,8 +346,7 @@ public class MongoDBQueryBuilder {
 
     public DBObject walkIsNotNull(Operand value) {
         String field = walkReference(value).field;
-        return new BasicDBObject(field, new BasicDBObject(QueryOperators.NE,
-                null));
+        return new BasicDBObject(field, new BasicDBObject(QueryOperators.NE, null));
     }
 
     public DBObject walkMultiExpression(MultiExpression expr) {
@@ -423,58 +402,48 @@ public class MongoDBQueryBuilder {
         Object right = walkOperand(rvalue);
         right = checkBoolean(fieldInfo, right);
         // TODO check list fields
-        return new BasicDBObject(fieldInfo.field, new BasicDBObject(
-                QueryOperators.NE, right));
+        return new BasicDBObject(fieldInfo.field, new BasicDBObject(QueryOperators.NE, right));
     }
 
     public DBObject walkLt(Operand lvalue, Operand rvalue) {
         String field = walkReference(lvalue).field;
         Object right = walkOperand(rvalue);
-        return new BasicDBObject(field, new BasicDBObject(QueryOperators.LT,
-                right));
+        return new BasicDBObject(field, new BasicDBObject(QueryOperators.LT, right));
     }
 
     public DBObject walkGt(Operand lvalue, Operand rvalue) {
         String field = walkReference(lvalue).field;
         Object right = walkOperand(rvalue);
-        return new BasicDBObject(field, new BasicDBObject(QueryOperators.GT,
-                right));
+        return new BasicDBObject(field, new BasicDBObject(QueryOperators.GT, right));
     }
 
     public DBObject walkLtEq(Operand lvalue, Operand rvalue) {
         String field = walkReference(lvalue).field;
         Object right = walkOperand(rvalue);
-        return new BasicDBObject(field, new BasicDBObject(QueryOperators.LTE,
-                right));
+        return new BasicDBObject(field, new BasicDBObject(QueryOperators.LTE, right));
     }
 
     public DBObject walkGtEq(Operand lvalue, Operand rvalue) {
         String field = walkReference(lvalue).field;
         Object right = walkOperand(rvalue);
-        return new BasicDBObject(field, new BasicDBObject(QueryOperators.GTE,
-                right));
+        return new BasicDBObject(field, new BasicDBObject(QueryOperators.GTE, right));
     }
 
     public DBObject walkIn(Operand lvalue, Operand rvalue, boolean positive) {
         String field = walkReference(lvalue).field;
         Object right = walkOperand(rvalue);
         if (!(right instanceof List)) {
-            throw new RuntimeException(
-                    "Invalid IN, right hand side must be a list: " + rvalue);
+            throw new RuntimeException("Invalid IN, right hand side must be a list: " + rvalue);
         }
         // TODO check list fields
         List<Object> list = (List<Object>) right;
-        return new BasicDBObject(field, new BasicDBObject(
-                positive ? QueryOperators.IN : QueryOperators.NIN, list));
+        return new BasicDBObject(field, new BasicDBObject(positive ? QueryOperators.IN : QueryOperators.NIN, list));
     }
 
-    public DBObject walkLike(Operand lvalue, Operand rvalue, boolean positive,
-            boolean caseInsensitive) {
+    public DBObject walkLike(Operand lvalue, Operand rvalue, boolean positive, boolean caseInsensitive) {
         String field = walkReference(lvalue).field;
         if (!(rvalue instanceof StringLiteral)) {
-            throw new RuntimeException(
-                    "Invalid LIKE/ILIKE, right hand side must be a string: "
-                            + rvalue);
+            throw new RuntimeException("Invalid LIKE/ILIKE, right hand side must be a string: " + rvalue);
         }
         // TODO check list fields
         String like = walkStringLiteral((StringLiteral) rvalue);
@@ -568,15 +537,11 @@ public class MongoDBQueryBuilder {
 
     public DBObject walkStartsWith(Operand lvalue, Operand rvalue) {
         if (!(lvalue instanceof Reference)) {
-            throw new RuntimeException(
-                    "Invalid STARTSWITH query, left hand side must be a property: "
-                            + lvalue);
+            throw new RuntimeException("Invalid STARTSWITH query, left hand side must be a property: " + lvalue);
         }
         String name = ((Reference) lvalue).name;
         if (!(rvalue instanceof StringLiteral)) {
-            throw new RuntimeException(
-                    "Invalid STARTSWITH query, right hand side must be a literal path: "
-                            + rvalue);
+            throw new RuntimeException("Invalid STARTSWITH query, right hand side must be a literal path: " + rvalue);
         }
         String path = ((StringLiteral) rvalue).value;
         if (path.length() > 1 && path.endsWith("/")) {
@@ -613,9 +578,7 @@ public class MongoDBQueryBuilder {
 
     protected FieldInfo walkReference(Operand value) {
         if (!(value instanceof Reference)) {
-            throw new RuntimeException(
-                    "Invalid query, left hand side must be a property: "
-                            + value);
+            throw new RuntimeException("Invalid query, left hand side must be a property: " + value);
         }
         return walkReference((Reference) value);
     }
@@ -626,13 +589,11 @@ public class MongoDBQueryBuilder {
         protected boolean isBoolean;
 
         /**
-         * Boolean system properties only use TRUE or NULL, not FALSE, so
-         * queries must be updated accordingly.
+         * Boolean system properties only use TRUE or NULL, not FALSE, so queries must be updated accordingly.
          */
         protected boolean isTrueOrNullBoolean;
 
-        protected FieldInfo(String field, boolean isBoolean,
-                boolean isTrueOrNullBoolean) {
+        protected FieldInfo(String field, boolean isBoolean, boolean isTrueOrNullBoolean) {
             this.field = field;
             this.isBoolean = isBoolean;
             this.isTrueOrNullBoolean = isTrueOrNullBoolean;

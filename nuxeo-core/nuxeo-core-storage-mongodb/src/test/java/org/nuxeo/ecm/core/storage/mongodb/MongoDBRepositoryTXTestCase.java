@@ -21,8 +21,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * <p>
  * The tests are run with a session that is open in a transaction.
  */
-public abstract class MongoDBRepositoryTXTestCase extends
-        MongoDBRepositoryTestCase {
+public abstract class MongoDBRepositoryTXTestCase extends MongoDBRepositoryTestCase {
 
     @Override
     protected void initRepository() throws Exception {
@@ -33,8 +32,7 @@ public abstract class MongoDBRepositoryTXTestCase extends
     @Override
     protected void setUpTx() throws Exception {
         super.setUpTx();
-        Environment.getDefault().setHostApplicationName(
-                Environment.NXSERVER_HOST);
+        Environment.getDefault().setHostApplicationName(Environment.NXSERVER_HOST);
         fireFrameworkStarted();
         TransactionHelper.startTransaction();
     }

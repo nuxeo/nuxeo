@@ -69,10 +69,8 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
     protected void initRepository() throws Exception {
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        deployContrib("org.nuxeo.ecm.core.storage.mongodb.tests",
-                "OSGI-INF/test-repo-types-query.xml");
-        deployContrib("org.nuxeo.ecm.core.storage.mongodb.tests",
-                "OSGI-INF/test-repo-types-2.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.mongodb.tests", "OSGI-INF/test-repo-types-query.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.mongodb.tests", "OSGI-INF/test-repo-types-2.xml");
         super.initRepository();
     }
 
@@ -87,8 +85,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
 
     // ---------------------------------------
 
-    protected Calendar getCalendar(int year, int month, int day, int hours,
-            int minutes, int seconds) {
+    protected Calendar getCalendar(int year, int month, int day, int hours, int minutes, int seconds) {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, year);
         cal.set(Calendar.MONTH, month - 1); // 0-based
@@ -115,19 +112,16 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
      * </pre>
      */
     protected void createDocs() throws Exception {
-        DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1",
-                "Folder");
+        DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1", "Folder");
         folder1.setPropertyValue("dc:title", "testfolder1_Title");
         folder1 = session.createDocument(folder1);
 
-        DocumentModel file1 = new DocumentModelImpl("/testfolder1",
-                "testfile1", "File");
+        DocumentModel file1 = new DocumentModelImpl("/testfolder1", "testfile1", "File");
         file1.setPropertyValue("dc:title", "testfile1_Title");
         file1.setPropertyValue("dc:description", "testfile1_description");
         String content = "Some caf\u00e9 in a restaurant.\nDrink!.\n";
         String filename = "testfile.txt";
-        ByteArrayBlob blob1 = new ByteArrayBlob(content.getBytes("UTF-8"),
-                "text/plain", "UTF-8", filename, null);
+        ByteArrayBlob blob1 = new ByteArrayBlob(content.getBytes("UTF-8"), "text/plain", "UTF-8", filename, null);
         file1.setPropertyValue("content", blob1);
         file1.setPropertyValue("filename", filename);
         Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0);
@@ -137,37 +131,29 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         file1.setPropertyValue("uid", "uid123");
         file1 = session.createDocument(file1);
 
-        DocumentModel file2 = new DocumentModelImpl("/testfolder1",
-                "testfile2", "File");
+        DocumentModel file2 = new DocumentModelImpl("/testfolder1", "testfile2", "File");
         file2.setPropertyValue("dc:title", "testfile2_Title");
         file2.setPropertyValue("dc:description", "testfile2_DESCRIPTION2");
         Calendar cal2 = getCalendar(2007, 4, 1, 12, 0, 0);
         file2.setPropertyValue("dc:created", cal2);
-        file2.setPropertyValue("dc:contributors",
-                new String[] { "bob", "pete" });
+        file2.setPropertyValue("dc:contributors", new String[] { "bob", "pete" });
         file2.setPropertyValue("dc:coverage", "foo/bar");
         file2 = session.createDocument(file2);
 
-        DocumentModel file3 = new DocumentModelImpl("/testfolder1",
-                "testfile3", "Note");
+        DocumentModel file3 = new DocumentModelImpl("/testfolder1", "testfile3", "Note");
         file3.setPropertyValue("dc:title", "testfile3_Title");
-        file3.setPropertyValue("dc:description",
-                "testfile3_desc1 testfile3_desc2,  testfile3_desc3");
-        file3.setPropertyValue("dc:contributors",
-                new String[] { "bob", "john" });
+        file3.setPropertyValue("dc:description", "testfile3_desc1 testfile3_desc2,  testfile3_desc3");
+        file3.setPropertyValue("dc:contributors", new String[] { "bob", "john" });
         file3 = session.createDocument(file3);
 
-        DocumentModel folder2 = new DocumentModelImpl("/", "testfolder2",
-                "Folder");
+        DocumentModel folder2 = new DocumentModelImpl("/", "testfolder2", "Folder");
         folder2 = session.createDocument(folder2);
 
-        DocumentModel folder3 = new DocumentModelImpl("/testfolder2",
-                "testfolder3", "Folder");
+        DocumentModel folder3 = new DocumentModelImpl("/testfolder2", "testfolder3", "Folder");
         folder3 = session.createDocument(folder3);
 
         // create file 4
-        DocumentModel file4 = new DocumentModelImpl("/testfolder2/testfolder3",
-                "testfile4", "File");
+        DocumentModel file4 = new DocumentModelImpl("/testfolder2/testfolder3", "testfile4", "File");
         // title without space or _ for Oracle fulltext searchability
         // (testFulltextProxy)
         file4.setPropertyValue("dc:title", "testfile4Title");
@@ -185,13 +171,11 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
      * proxy (UUID_14)
      */
     protected DocumentModel publishDoc() throws Exception {
-        DocumentModel doc = session.getDocument(new PathRef(
-                "/testfolder2/testfolder3/testfile4"));
+        DocumentModel doc = session.getDocument(new PathRef("/testfolder2/testfolder3/testfile4"));
         DocumentModel sec = session.getDocument(new PathRef("/testfolder1"));
         DocumentModel proxy = session.publishDocument(doc, sec);
         session.save();
-        DocumentModelList proxies = session.getProxies(doc.getRef(),
-                sec.getRef());
+        DocumentModelList proxies = session.getProxies(doc.getRef(), sec.getRef());
         assertEquals(1, proxies.size());
         return proxy;
     }
@@ -317,8 +301,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         }
 
         try {
-            session.query("SELECT * FROM File", "NOSUCHQUERYTYPE", null, 0, 0,
-                    false);
+            session.query("SELECT * FROM File", "NOSUCHQUERYTYPE", null, 0, 0, false);
             fail("Unknown query type should be rejected");
         } catch (ClientException e) {
             String m = e.getMessage();
@@ -390,8 +373,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String fname1 = "file1";
-        DocumentModel childFile1 = new DocumentModelImpl(
-                root.getPathAsString(), fname1, "File");
+        DocumentModel childFile1 = new DocumentModelImpl(root.getPathAsString(), fname1, "File");
 
         DocumentModel[] childDocs = new DocumentModel[1];
         childDocs[0] = childFile1;
@@ -446,22 +428,19 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         sql = "SELECT * FROM Document WHERE dc:title LIKE 'testfile%' ORDER BY dc:description";
         dml = session.query(sql);
         assertEquals(4, dml.size());
-        assertEquals("testfile1_description",
-                dml.get(0).getPropertyValue("dc:description"));
+        assertEquals("testfile1_description", dml.get(0).getPropertyValue("dc:description"));
 
         // without proxies as well
         sql = "SELECT * FROM Document WHERE dc:title LIKE 'testfile%' AND ecm:isProxy = 0 ORDER BY dc:description";
         dml = session.query(sql);
         assertEquals(4, dml.size());
-        assertEquals("testfile1_description",
-                dml.get(0).getPropertyValue("dc:description"));
+        assertEquals("testfile1_description", dml.get(0).getPropertyValue("dc:description"));
 
         // desc
         sql = "SELECT * FROM Document WHERE dc:title LIKE 'testfile%' ORDER BY dc:description DESC";
         dml = session.query(sql);
         assertEquals(4, dml.size());
-        assertEquals("testfile4_DESCRIPTION4",
-                dml.get(0).getPropertyValue("dc:description"));
+        assertEquals("testfile4_DESCRIPTION4", dml.get(0).getPropertyValue("dc:description"));
     }
 
     @Test
@@ -471,8 +450,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         createDocs();
 
         // avoid null dc:coverage, null sort first/last is db-dependent
-        sql = "SELECT * FROM File "
-                + " WHERE dc:title in ('testfile1_Title', 'testfile2_Title')"
+        sql = "SELECT * FROM File " + " WHERE dc:title in ('testfile1_Title', 'testfile2_Title')"
                 + " ORDER BY dc:title, dc:coverage";
         dml = session.query(sql);
         assertEquals(2, dml.size());
@@ -480,8 +458,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         assertEquals("testfile2", dml.get(1).getName());
 
         // swap columns
-        sql = "SELECT * FROM File "
-                + " WHERE dc:title in ('testfile1_Title', 'testfile2_Title')"
+        sql = "SELECT * FROM File " + " WHERE dc:title in ('testfile1_Title', 'testfile2_Title')"
                 + " ORDER BY dc:coverage, dc:title";
         dml = session.query(sql);
         assertEquals(2, dml.size());
@@ -495,16 +472,14 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         DocumentModelList dml;
         createDocs();
 
-        sql = "SELECT * FROM File "
-                + " WHERE dc:title in ('testfile1_Title', 'testfile2_Title')"
+        sql = "SELECT * FROM File " + " WHERE dc:title in ('testfile1_Title', 'testfile2_Title')"
                 + " ORDER BY dc:title, dc:title";
         dml = session.query(sql);
         assertEquals(2, dml.size());
         assertEquals("testfile1", dml.get(0).getName());
         assertEquals("testfile2", dml.get(1).getName());
 
-        sql = "SELECT * FROM File "
-                + " WHERE dc:title in ('testfile1_Title', 'testfile2_Title')"
+        sql = "SELECT * FROM File " + " WHERE dc:title in ('testfile1_Title', 'testfile2_Title')"
                 + " ORDER BY dc:title DESC, dc:title";
         dml = session.query(sql);
         assertEquals(2, dml.size());
@@ -527,14 +502,12 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         assertEquals("/testfolder1/testfile3", dml.get(3).getPathAsString());
         assertEquals("/testfolder2", dml.get(4).getPathAsString());
         assertEquals("/testfolder2/testfolder3", dml.get(5).getPathAsString());
-        assertEquals("/testfolder2/testfolder3/testfile4",
-                dml.get(6).getPathAsString());
+        assertEquals("/testfolder2/testfolder3/testfile4", dml.get(6).getPathAsString());
 
         sql = "SELECT * FROM Document ORDER BY ecm:path DESC";
         dml = session.query(sql);
         assertEquals(7, dml.size());
-        assertEquals("/testfolder2/testfolder3/testfile4",
-                dml.get(0).getPathAsString());
+        assertEquals("/testfolder2/testfolder3/testfile4", dml.get(0).getPathAsString());
         assertEquals("/testfolder1", dml.get(6).getPathAsString());
 
         // then with batching
@@ -550,23 +523,17 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
     public void testOrderByPos() throws Exception {
         DocumentModelList dml;
 
-        DocumentModel ofolder = new DocumentModelImpl("/", "ofolder",
-                "OrderedFolder");
+        DocumentModel ofolder = new DocumentModelImpl("/", "ofolder", "OrderedFolder");
         ofolder = session.createDocument(ofolder);
-        DocumentModel file1 = new DocumentModelImpl("/ofolder", "testfile1",
-                "File");
+        DocumentModel file1 = new DocumentModelImpl("/ofolder", "testfile1", "File");
         file1 = session.createDocument(file1);
-        DocumentModel file2 = new DocumentModelImpl("/ofolder", "testfile2",
-                "File");
+        DocumentModel file2 = new DocumentModelImpl("/ofolder", "testfile2", "File");
         file2 = session.createDocument(file2);
-        DocumentModel file3 = new DocumentModelImpl("/ofolder", "testfile3",
-                "File");
+        DocumentModel file3 = new DocumentModelImpl("/ofolder", "testfile3", "File");
         file3 = session.createDocument(file3);
         session.save();
 
-        String sql = String.format(
-                "SELECT * FROM Document WHERE ecm:parentId = '%s' ORDER BY ecm:pos",
-                ofolder.getId());
+        String sql = String.format("SELECT * FROM Document WHERE ecm:parentId = '%s' ORDER BY ecm:pos", ofolder.getId());
         String sqldesc = sql + " DESC";
 
         dml = session.query(sql);
@@ -753,10 +720,8 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         dml = session.query(sql, null, 5, 0, true);
         assertEquals(5, dml.size());
         assertEquals(7, dml.totalSize());
-        Framework.getProperties().setProperty(
-                AbstractSession.LIMIT_RESULTS_PROPERTY, "true");
-        Framework.getProperties().setProperty(
-                AbstractSession.MAX_RESULTS_PROPERTY, "5");
+        Framework.getProperties().setProperty(AbstractSession.LIMIT_RESULTS_PROPERTY, "true");
+        Framework.getProperties().setProperty(AbstractSession.MAX_RESULTS_PROPERTY, "5");
         // need to open a new session to refresh properties
         closeSession(session);
         session = openSessionAs("Administrator");
@@ -840,8 +805,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         createDocs();
 
         // move folder2 into folder1
-        session.move(new PathRef("/testfolder2/"),
-                new PathRef("/testfolder1/"), null);
+        session.move(new PathRef("/testfolder2/"), new PathRef("/testfolder1/"), null);
         session.save();
 
         sql = "SELECT * FROM document WHERE ecm:path STARTSWITH '/testfolder1/'";
@@ -863,24 +827,20 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         createDocs();
 
         String query = "SELECT * FROM Document WHERE ecm:ancestorId = '%s'";
-        dml = session.query(String.format(query,
-                session.getRootDocument().getId()));
+        dml = session.query(String.format(query, session.getRootDocument().getId()));
         assertEquals(7, dml.size());
 
         dml = session.query(String.format(query, "nosuchid"));
         assertEquals(0, dml.size());
 
-        dml = session.query(String.format(query,
-                session.getDocument(new PathRef("/testfolder1")).getId()));
+        dml = session.query(String.format(query, session.getDocument(new PathRef("/testfolder1")).getId()));
         assertEquals(3, dml.size());
 
-        dml = session.query(String.format(query,
-                session.getDocument(new PathRef("/testfolder2")).getId()));
+        dml = session.query(String.format(query, session.getDocument(new PathRef("/testfolder2")).getId()));
         assertEquals(2, dml.size());
 
         // negative query
-        dml = session.query(String.format(
-                "SELECT * FROM Document WHERE ecm:ancestorId <> '%s'",
+        dml = session.query(String.format("SELECT * FROM Document WHERE ecm:ancestorId <> '%s'",
                 session.getDocument(new PathRef("/testfolder1")).getId()));
         assertEquals(4, dml.size());
 
@@ -937,8 +897,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         dml = session.query(sql);
         assertEquals(1, dml.size());
 
-        DocumentModel file1 = session.getDocument(new PathRef(
-                "/testfolder1/testfile1"));
+        DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
 
         // edit file1
         file1.setPropertyValue("dc:description", "testfile1_description");
@@ -1106,9 +1065,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
             fail("Should fail due to invalid cast");
         } catch (ClientException e) {
             String m = e.getMessage();
-            assertTrue(
-                    m,
-                    m.contains("DATE() cast must be used with DATE literal, not TIMESTAMP"));
+            assertTrue(m, m.contains("DATE() cast must be used with DATE literal, not TIMESTAMP"));
         }
 
         try {
@@ -1117,9 +1074,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
             fail("Should fail due to invalid cast");
         } catch (ClientException e) {
             String m = e.getMessage();
-            assertTrue(
-                    m,
-                    m.contains("DATE() cast must be used with DATE literal, not TIMESTAMP"));
+            assertTrue(m, m.contains("DATE() cast must be used with DATE literal, not TIMESTAMP"));
         }
 
     }
@@ -1138,8 +1093,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         dml = session.query(sql);
         assertEquals(0, dml.size());
 
-        DocumentModel doc = new DocumentModelImpl("/testfolder1", "mydoc",
-                "MyDocType");
+        DocumentModel doc = new DocumentModelImpl("/testfolder1", "mydoc", "MyDocType");
         doc.setPropertyValue("my:boolean", Boolean.TRUE);
         doc = session.createDocument(doc);
         session.save();
@@ -1209,8 +1163,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         closeSession();
         session = openSessionAs("bob");
 
-        IterableQueryResult res = session.queryAndFetch(
-                "SELECT * FROM Document", "NXQL");
+        IterableQueryResult res = session.queryAndFetch("SELECT * FROM Document", "NXQL");
         assertEquals(3, res.size());
         res.close();
     }
@@ -1268,8 +1221,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         acl.add(new ACE("bob", "Browse", true));
         acp.addACL(acl);
         root.setACP(acp, true);
-        DocumentModel folder1 = session.getDocument(new PathRef(
-                "/testfolder2/testfolder3"));
+        DocumentModel folder1 = session.getDocument(new PathRef("/testfolder2/testfolder3"));
         acp = new ACPImpl();
         acl = new ACLImpl();
         acl.add(new ACE("bob", "Browse", false));
@@ -1393,8 +1345,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         createDocs();
         DocumentModel proxy = publishDoc();
 
-        DocumentModel doc = session.getDocument(new PathRef(
-                "/testfolder2/testfolder3/testfile4"));
+        DocumentModel doc = session.getDocument(new PathRef("/testfolder2/testfolder3/testfile4"));
         String docId = doc.getId();
         String proxyId = proxy.getId();
         String versionId = proxy.getSourceId();
@@ -1459,14 +1410,12 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         createDocs();
         DocumentModelList whole = session.query("SELECT * FROM Document ORDER BY dc:modified, ecm:uuid");
         assertTrue(whole.size() >= 2);
-        DocumentModelList firstPage = session.query(
-                "SELECT * from Document ORDER BY dc:modified, ecm:uuid", null,
-                1, 0, false);
+        DocumentModelList firstPage = session.query("SELECT * from Document ORDER BY dc:modified, ecm:uuid", null, 1,
+                0, false);
         assertEquals(1, firstPage.size());
         assertEquals(whole.get(0).getId(), firstPage.get(0).getId());
-        DocumentModelList secondPage = session.query(
-                "SELECT * from Document ORDER BY dc:modified, ecm:uuid", null,
-                1, 1, false);
+        DocumentModelList secondPage = session.query("SELECT * from Document ORDER BY dc:modified, ecm:uuid", null, 1,
+                1, false);
         assertEquals(1, secondPage.size());
         assertEquals(whole.get(1).getId(), secondPage.get(0).getId());
     }
@@ -1478,8 +1427,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         // Folder
         session.query("SELECT * FROM Document WHERE ecm:primaryType = 'Folder'");
         // empty
-        session.query("SELECT * FROM Document WHERE ecm:primaryType = 'Folder'"
-                + " AND ecm:primaryType = 'File'");
+        session.query("SELECT * FROM Document WHERE ecm:primaryType = 'Folder'" + " AND ecm:primaryType = 'File'");
         // empty
         session.query("SELECT * FROM Folder WHERE ecm:primaryType = 'Note'");
         // Folder
@@ -1502,8 +1450,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
     @Test
     public void testQueryMixinTypeNotPerDocument() throws Exception {
         createDocs();
-        DocumentModel file1 = session.getDocument(new PathRef(
-                "/testfolder1/testfile1"));
+        DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
         file1.addFacet("NotPerDocFacet");
         file1.addFacet("NotPerDocFacet2");
         file1 = session.saveDocument(file1);
@@ -1527,37 +1474,29 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
 
         createDocs();
         DocumentModel proxy = publishDoc();
-        DocumentModel version = session.getDocument(new IdRef(
-                proxy.getSourceId()));
+        DocumentModel version = session.getDocument(new IdRef(proxy.getSourceId()));
 
         DocumentModelList dml;
         DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
-        DocumentModel file1 = session.getDocument(new PathRef(
-                "/testfolder1/testfile1"));
-        DocumentModel file2 = session.getDocument(new PathRef(
-                "/testfolder1/testfile2"));
-        DocumentModel file3 = session.getDocument(new PathRef(
-                "/testfolder1/testfile3"));
-        DocumentModel file4 = session.getDocument(new PathRef(
-                "/testfolder2/testfolder3/testfile4"));
+        DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
+        DocumentModel file2 = session.getDocument(new PathRef("/testfolder1/testfile2"));
+        DocumentModel file3 = session.getDocument(new PathRef("/testfolder1/testfile3"));
+        DocumentModel file4 = session.getDocument(new PathRef("/testfolder2/testfolder3/testfile4"));
         file1.setLock();
         session.save();
 
         /*
          * ecm:uuid
          */
-        dml = session.query(String.format(
-                "SELECT * FROM Document WHERE ecm:uuid = '%s'", file1.getId()));
+        dml = session.query(String.format("SELECT * FROM Document WHERE ecm:uuid = '%s'", file1.getId()));
         assertIdSet(dml, file1.getId());
-        dml = session.query(String.format(
-                "SELECT * FROM Document WHERE ecm:uuid = '%s'", proxy.getId()));
+        dml = session.query(String.format("SELECT * FROM Document WHERE ecm:uuid = '%s'", proxy.getId()));
         // XXX assertIdSet(dml, proxy.getId());
 
         /*
          * ecm:name
          */
-        dml = session.query(String.format(
-                "SELECT * FROM Document WHERE ecm:name = '%s'", file1.getName()));
+        dml = session.query(String.format("SELECT * FROM Document WHERE ecm:name = '%s'", file1.getName()));
         assertIdSet(dml, file1.getId());
         // Disabled, version and proxies names don't need to be identical
         // dml = session.query(String.format(
@@ -1567,9 +1506,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         /*
          * ecm:parentId
          */
-        dml = session.query(String.format(
-                "SELECT * FROM Document WHERE ecm:parentId = '%s'",
-                folder1.getId()));
+        dml = session.query(String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'", folder1.getId()));
         // XXX assertIdSet(dml, file1.getId(), file2.getId(), file3.getId(),
         // proxy.getId());
 
@@ -1659,18 +1596,13 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
     @Test
     public void testQuerySpecialFieldsVersioning() throws Exception {
         createDocs();
-        DocumentModel doc = session.getDocument(new PathRef(
-                "/testfolder2/testfolder3/testfile4"));
+        DocumentModel doc = session.getDocument(new PathRef("/testfolder2/testfolder3/testfile4"));
         DocumentModel proxy = publishDoc(); // testfile4 to testfolder1
-        DocumentModel version = session.getDocument(new IdRef(
-                proxy.getSourceId()));
-        DocumentModel file1 = session.getDocument(new PathRef(
-                "/testfolder1/testfile1"));
-        DocumentRef v1 = session.checkIn(file1.getRef(),
-                VersioningOption.MAJOR, "comment1");
+        DocumentModel version = session.getDocument(new IdRef(proxy.getSourceId()));
+        DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
+        DocumentRef v1 = session.checkIn(file1.getRef(), VersioningOption.MAJOR, "comment1");
         session.checkOut(file1.getRef());
-        DocumentRef v2 = session.checkIn(file1.getRef(),
-                VersioningOption.MAJOR, "comment2");
+        DocumentRef v2 = session.checkIn(file1.getRef(), VersioningOption.MAJOR, "comment2");
         session.save();
 
         DocumentModelList dml;
@@ -1740,33 +1672,29 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
          * ecm:versionCreated
          */
         dml = session.query("SELECT * FROM Document WHERE ecm:versionCreated IS NOT NULL");
-        assertIdSet(dml, version.getId(), v1.toString(), v2.toString(),
-                proxy.getId());
+        assertIdSet(dml, version.getId(), v1.toString(), v2.toString(), proxy.getId());
         dml = session.query("SELECT * FROM Document WHERE ecm:versionCreated IS NOT NULL and ecm:isProxy = 0");
         assertIdSet(dml, version.getId(), v1.toString(), v2.toString());
 
         /*
          * ecm:versionVersionableId
          */
-        dml = session.query("SELECT * FROM Document WHERE ecm:versionVersionableId = '"
-                + doc.getId() + "'");
+        dml = session.query("SELECT * FROM Document WHERE ecm:versionVersionableId = '" + doc.getId() + "'");
         assertIdSet(dml, version.getId(), proxy.getId());
-        dml = session.query("SELECT * FROM Document WHERE ecm:versionVersionableId = '"
-                + doc.getId() + "' AND ecm:isProxy = 0");
+        dml = session.query("SELECT * FROM Document WHERE ecm:versionVersionableId = '" + doc.getId()
+                + "' AND ecm:isProxy = 0");
         assertIdSet(dml, version.getId());
 
         /*
          * ecm:proxyTargetId
          */
-        dml = session.query("SELECT * FROM Document WHERE ecm:proxyTargetId = '"
-                + version.getId() + "'");
+        dml = session.query("SELECT * FROM Document WHERE ecm:proxyTargetId = '" + version.getId() + "'");
         assertIdSet(dml, proxy.getId());
 
         /*
          * ecm:proxyVersionableId
          */
-        dml = session.query("SELECT * FROM Document WHERE ecm:proxyVersionableId = '"
-                + doc.getId() + "'");
+        dml = session.query("SELECT * FROM Document WHERE ecm:proxyVersionableId = '" + doc.getId() + "'");
         assertIdSet(dml, proxy.getId());
     }
 
@@ -1780,8 +1708,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         assertEquals(7, dml.size());
 
         // create a doc with no lifecycle associated
-        DocumentModel doc = new DocumentModelImpl("/testfolder1", "mydoc",
-                "MyDocType");
+        DocumentModel doc = new DocumentModelImpl("/testfolder1", "mydoc", "MyDocType");
         doc = session.createDocument(doc);
         session.save();
         assertEquals("undefined", doc.getCurrentLifeCycleState());
@@ -1796,8 +1723,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         String query;
         DocumentModelList dml;
 
-        DocumentModel file1 = session.getDocument(new PathRef(
-                "/testfolder1/testfile1"));
+        DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
         file1.setProperty("dublincore", "title", "hello world 1");
 
         session.saveDocument(file1);
@@ -1820,8 +1746,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
     public void testQueryIterable() throws Exception {
         createDocs();
 
-        IterableQueryResult res = session.queryAndFetch("SELECT * FROM File",
-                "NXQL");
+        IterableQueryResult res = session.queryAndFetch("SELECT * FROM File", "NXQL");
         List<Map<String, Serializable>> l = new LinkedList<Map<String, Serializable>>();
         for (Map<String, Serializable> x : res) {
             l.add(x);
@@ -1867,8 +1792,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         res.close();
 
         // size when query returns nothing
-        res = session.queryAndFetch(
-                "SELECT * FROM File WHERE dc:title = 'zzz'", "NXQL");
+        res = session.queryAndFetch("SELECT * FROM File WHERE dc:title = 'zzz'", "NXQL");
         it = res.iterator();
         assertFalse(it.hasNext());
         assertEquals(0, res.size());
@@ -1886,8 +1810,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         res.close();
 
         // NoFile2SecurityPolicy
-        deployContrib("org.nuxeo.ecm.core.storage.mongodb.tests",
-                "OSGI-INF/security-policy2-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.mongodb.tests", "OSGI-INF/security-policy2-contrib.xml");
 
         res = session.queryAndFetch("SELECT * FROM Document", "NXQL");
         assertEquals(4, res.size());
@@ -2033,8 +1956,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
 
     protected Date setupDocTest() throws Exception {
         Date currentDate = new Date();
-        DocumentModel testDocument = new DocumentModelImpl("/", "testfolder1",
-                "Folder");
+        DocumentModel testDocument = new DocumentModelImpl("/", "testfolder1", "Folder");
         testDocument.setPropertyValue("dc:title", "test");
         testDocument.setPropertyValue("dc:modified", currentDate);
         testDocument = session.createDocument(testDocument);
@@ -2056,9 +1978,8 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
     @Test
     public void testEqualsTimeWithMilliseconds() throws Exception {
         Date currentDate = setupDocTest();
-        String testQuery = String.format(
-                "SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified = %s"
-                        + " AND ecm:isProxy = 0", formatTimestamp(currentDate));
+        String testQuery = String.format("SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified = %s"
+                + " AND ecm:isProxy = 0", formatTimestamp(currentDate));
         DocumentModelList docs = session.query(testQuery);
         assertEquals(1, docs.size());
     }
@@ -2068,9 +1989,8 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         Date currentDate = setupDocTest();
         // add a second to be sure that the document is found
         currentDate = addSecond(currentDate);
-        String testQuery = String.format(
-                "SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified < %s"
-                        + " AND ecm:isProxy = 0", formatTimestamp(currentDate));
+        String testQuery = String.format("SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified < %s"
+                + " AND ecm:isProxy = 0", formatTimestamp(currentDate));
         DocumentModelList docs = session.query(testQuery);
         assertEquals(1, docs.size());
     }
@@ -2085,8 +2005,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         dml = session.query("SELECT * FROM File WHERE dc:title IS NULL");
         assertEquals(0, dml.size());
 
-        DocumentModel file1 = session.getDocument(new PathRef(
-                "/testfolder1/testfile1"));
+        DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
         file1.setPropertyValue("dc:title", null);
         session.saveDocument(file1);
         session.save();
@@ -2130,27 +2049,22 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
     // file1: tag1, tag2
     // file2: tag1
     protected void createTags() throws Exception {
-        DocumentModel file1 = session.getDocument(new PathRef(
-                "/testfolder1/testfile1"));
-        DocumentModel file2 = session.getDocument(new PathRef(
-                "/testfolder1/testfile2"));
+        DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
+        DocumentModel file2 = session.getDocument(new PathRef("/testfolder1/testfile2"));
 
         String label1 = "tag1";
-        DocumentModel tag1 = session.createDocumentModel(null, label1,
-                TAG_DOCUMENT_TYPE);
+        DocumentModel tag1 = session.createDocumentModel(null, label1, TAG_DOCUMENT_TYPE);
         // tag.setPropertyValue("dc:created", date);
         tag1.setPropertyValue(TAG_LABEL_FIELD, label1);
         tag1 = session.createDocument(tag1);
 
         String label2 = "tag2";
-        DocumentModel tag2 = session.createDocumentModel(null, label2,
-                TAG_DOCUMENT_TYPE);
+        DocumentModel tag2 = session.createDocumentModel(null, label2, TAG_DOCUMENT_TYPE);
         // tag.setPropertyValue("dc:created", date);
         tag2.setPropertyValue(TAG_LABEL_FIELD, label2);
         tag2 = session.createDocument(tag2);
 
-        DocumentModel tagging1to1 = session.createDocumentModel(null, label1,
-                TAGGING_DOCUMENT_TYPE);
+        DocumentModel tagging1to1 = session.createDocumentModel(null, label1, TAGGING_DOCUMENT_TYPE);
         // tagging.setPropertyValue("dc:created", date);
         // if (username != null) {
         // tagging.setPropertyValue("dc:creator", username);
@@ -2159,21 +2073,18 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         tagging1to1.setPropertyValue(TAGGING_TARGET_FIELD, tag1.getId());
         tagging1to1 = session.createDocument(tagging1to1);
 
-        DocumentModel tagging1to2 = session.createDocumentModel(null, label2,
-                TAGGING_DOCUMENT_TYPE);
+        DocumentModel tagging1to2 = session.createDocumentModel(null, label2, TAGGING_DOCUMENT_TYPE);
         tagging1to2.setPropertyValue(TAGGING_SOURCE_FIELD, file1.getId());
         tagging1to2.setPropertyValue(TAGGING_TARGET_FIELD, tag2.getId());
         tagging1to2 = session.createDocument(tagging1to2);
 
-        DocumentModel tagging2to1 = session.createDocumentModel(null, label1,
-                TAGGING_DOCUMENT_TYPE);
+        DocumentModel tagging2to1 = session.createDocumentModel(null, label1, TAGGING_DOCUMENT_TYPE);
         tagging2to1.setPropertyValue(TAGGING_SOURCE_FIELD, file2.getId());
         tagging2to1.setPropertyValue(TAGGING_TARGET_FIELD, tag1.getId());
         tagging2to1 = session.createDocument(tagging2to1);
 
         // create a relation that isn't a Tagging
-        DocumentModel rel = session.createDocumentModel(null, label1,
-                "Relation");
+        DocumentModel rel = session.createDocumentModel(null, label1, "Relation");
         rel.setPropertyValue(TAGGING_SOURCE_FIELD, file1.getId());
         rel.setPropertyValue(TAGGING_TARGET_FIELD, tag1.getId());
         rel = session.createDocument(rel);
@@ -2211,8 +2122,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
 
         createDocs();
         createTags();
-        DocumentModel file1 = session.getDocument(new PathRef(
-                "/testfolder1/testfile1"));
+        DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
 
         nxql = nxql("SELECT * FROM File WHERE ecm:tag = 'tag0'");
         assertEquals(0, session.query(nxql).size());
@@ -2316,8 +2226,8 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         res.close();
     }
 
-    protected static void assertIterableQueryResult(IterableQueryResult actual,
-            int size, String prop, String... expected) {
+    protected static void assertIterableQueryResult(IterableQueryResult actual, int size, String prop,
+            String... expected) {
         assertEquals(size, actual.size());
         Collection<String> set = new HashSet<String>();
         for (Map<String, Serializable> map : actual) {

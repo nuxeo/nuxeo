@@ -36,8 +36,7 @@ public class MongoDBRepositoryService extends DefaultComponent {
 
     protected RepositoryDescriptorRegistry registry = new RepositoryDescriptorRegistry();
 
-    protected static class RepositoryDescriptorRegistry extends
-            SimpleContributionRegistry<MongoDBRepositoryDescriptor> {
+    protected static class RepositoryDescriptorRegistry extends SimpleContributionRegistry<MongoDBRepositoryDescriptor> {
 
         @Override
         public String getContributionId(MongoDBRepositoryDescriptor contrib) {
@@ -45,14 +44,12 @@ public class MongoDBRepositoryService extends DefaultComponent {
         }
 
         @Override
-        public MongoDBRepositoryDescriptor clone(
-                MongoDBRepositoryDescriptor orig) {
+        public MongoDBRepositoryDescriptor clone(MongoDBRepositoryDescriptor orig) {
             return new MongoDBRepositoryDescriptor(orig);
         }
 
         @Override
-        public void merge(MongoDBRepositoryDescriptor src,
-                MongoDBRepositoryDescriptor dst) {
+        public void merge(MongoDBRepositoryDescriptor src, MongoDBRepositoryDescriptor dst) {
             dst.merge(src);
         }
 
@@ -81,8 +78,7 @@ public class MongoDBRepositoryService extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contrib, String xpoint,
-            ComponentInstance contributor) {
+    public void registerContribution(Object contrib, String xpoint, ComponentInstance contributor) {
         if (XP_REPOSITORY.equals(xpoint)) {
             addContribution((MongoDBRepositoryDescriptor) contrib);
         } else {
@@ -91,8 +87,7 @@ public class MongoDBRepositoryService extends DefaultComponent {
     }
 
     @Override
-    public void unregisterContribution(Object contrib, String xpoint,
-            ComponentInstance contributor) {
+    public void unregisterContribution(Object contrib, String xpoint, ComponentInstance contributor) {
         if (XP_REPOSITORY.equals(xpoint)) {
             removeContribution((MongoDBRepositoryDescriptor) contrib);
         } else {
@@ -125,8 +120,8 @@ public class MongoDBRepositoryService extends DefaultComponent {
         // and pass it to high-level registry
         RepositoryFactory repositoryFactory = new MongoDBRepositoryFactory();
         repositoryFactory.init(repositoryName);
-        Repository repository = new Repository(repositoryName,
-                descriptor.label, descriptor.isDefault(), repositoryFactory);
+        Repository repository = new Repository(repositoryName, descriptor.label, descriptor.isDefault(),
+                repositoryFactory);
         repositoryManager.addRepository(repository);
     }
 
