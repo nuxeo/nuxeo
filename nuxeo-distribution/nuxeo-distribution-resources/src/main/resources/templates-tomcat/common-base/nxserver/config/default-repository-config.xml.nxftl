@@ -102,6 +102,7 @@
       point="repository">
     <repository name="default" label="MongoDB Repository">
       <server>${nuxeo.mongodb.server}</server>
+      <dbname>${nuxeo.mongodb.dbname}</dbname>
     </repository>
   </extension>
 </#if>

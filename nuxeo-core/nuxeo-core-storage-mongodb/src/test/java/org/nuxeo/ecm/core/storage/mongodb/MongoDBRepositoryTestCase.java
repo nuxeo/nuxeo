@@ -93,6 +93,7 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
         descriptor = new MongoDBRepositoryDescriptor();
         descriptor.name = repositoryName;
         descriptor.server = "localhost:27017";
+        descriptor.dbname = null; // default "nuxeo"
         MongoDBRepositoryService repositoryService = Framework.getLocalService(MongoDBRepositoryService.class);
         repositoryService.addContribution(descriptor);
 

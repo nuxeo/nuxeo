@@ -53,12 +53,16 @@ public class MongoDBRepositoryDescriptor {
     @XNode("server")
     public String server;
 
+    @XNode("dbname")
+    public String dbname;
+
     /** Copy constructor. */
     public MongoDBRepositoryDescriptor(MongoDBRepositoryDescriptor other) {
         name = other.name;
         label = other.label;
         isDefault = other.isDefault;
         server = other.server;
+        dbname = other.dbname;
         fulltextDisabled = other.fulltextDisabled;
     }
 
@@ -74,6 +78,9 @@ public class MongoDBRepositoryDescriptor {
         }
         if (other.server != null) {
             server = other.server;
+        }
+        if (other.dbname != null) {
+            dbname = other.dbname;
         }
         if (other.fulltextDisabled != null) {
             fulltextDisabled = other.fulltextDisabled;

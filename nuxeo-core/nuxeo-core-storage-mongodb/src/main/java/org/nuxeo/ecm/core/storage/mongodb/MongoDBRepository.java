@@ -82,7 +82,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     private static final Long MINUS_ONE = Long.valueOf(-1);
 
-    public static final String DB_NAME = "nuxeo";
+    public static final String DB_DEFAULT = "nuxeo";
 
     public static final String MONGODB_ID = "_id";
 
@@ -152,21 +152,22 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
     }
 
-    protected static DBCollection getCollection(MongoClient mongoClient, String name) {
-        // TODO configure db name
-        // TODO authentication
-        DB db = mongoClient.getDB(DB_NAME);
-        return db.getCollection(name);
+    protected static DBCollection getCollection(MongoClient mongoClient, String dbname, String collection) {
+        if (StringUtils.isBlank(dbname)) {
+            dbname = DB_DEFAULT;
+        }
+        DB db = mongoClient.getDB(dbname);
+        return db.getCollection(collection);
     }
 
     // used also by unit tests
     public static DBCollection getCollection(MongoDBRepositoryDescriptor descriptor, MongoClient mongoClient) {
-        return getCollection(mongoClient, descriptor.name);
+        return getCollection(mongoClient, descriptor.dbname, descriptor.name);
     }
 
     // used also by unit tests
     public static DBCollection getCountersCollection(MongoDBRepositoryDescriptor descriptor, MongoClient mongoClient) {
-        return getCollection(mongoClient, descriptor.name + ".counters");
+        return getCollection(mongoClient, descriptor.dbname, descriptor.name + ".counters");
     }
 
     protected Object valueToBson(Object value) {

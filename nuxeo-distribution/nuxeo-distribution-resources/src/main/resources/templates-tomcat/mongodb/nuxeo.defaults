@@ -2,3 +2,4 @@
 mongodb.target=.
 
 nuxeo.mongodb.server=localhost:27017
+nuxeo.mongodb.dbname=nuxeo
