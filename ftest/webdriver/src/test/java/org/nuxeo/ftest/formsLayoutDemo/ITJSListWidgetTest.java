@@ -210,14 +210,12 @@ public class ITJSListWidgetTest extends AbstractTest {
         listWidget.addNewElement();
         assertEquals(2, listWidget.getRows().size());
 
-        /* TODO fix select2 initialization
         select2WidgetElement = listWidget.getSubWidget("nxw_suggest_select2", 1, Select2WidgetElement.class, true);
         select2WidgetElement = new Select2WidgetElement(driver, S2_PREFIX + select2WidgetElement.getId());
         select2WidgetElement.selectValue(S2_SELECTION_2, true);
 
         richEditorElement = listWidget.getSubWidget("nxw_htmlTextItem", 1, RichEditorElement.class, true);
         richEditorElement.insertContent(DUMMY_HTML_TEXT_CONTENT_2);
-        */
 
         listWidget.removeElement(1);
         page.submitS2HtmlTextComplexListWidget();
