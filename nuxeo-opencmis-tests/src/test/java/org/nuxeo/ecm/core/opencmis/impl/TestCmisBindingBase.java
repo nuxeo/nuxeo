@@ -86,12 +86,26 @@ public abstract class TestCmisBindingBase {
     protected void assumeSupportsJoins() {
         assumeTrue("joins not supported", supportsJoins());
     }
+
     protected boolean supportsJoins() {
+        return false;
+    }
+
+    protected boolean useElasticsearch() {
         return false;
     }
 
     protected boolean returnsRootInFolderQueries() {
         return supportsJoins();
+    }
+
+    /**
+     * Whether negative matches for list values also match empty lists.
+     * <p>
+     * Will return true if "ANY listprop NOT IN ('foo')" returns documents where listprop is empty.
+     */
+    protected boolean emptyListNegativeMatch() {
+        return false;
     }
 
     protected boolean supportsNXQLQueryTransformers() {
@@ -123,6 +137,7 @@ public abstract class TestCmisBindingBase {
     protected void initBinding(String repositoryId, String username) {
         NuxeoRepository repository = Framework.getService(NuxeoRepositories.class).getRepository(repositoryId);
         repository.setSupportsJoins(supportsJoins());
+        repository.setUseElasticsearch(useElasticsearch());
 
         NuxeoCmisServiceFactoryManager manager = Framework.getService(NuxeoCmisServiceFactoryManager.class);
         NuxeoCmisServiceFactory serviceFactory = manager.getNuxeoCmisServiceFactory();

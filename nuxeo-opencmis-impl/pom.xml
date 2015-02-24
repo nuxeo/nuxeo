@@ -79,6 +79,10 @@
       <artifactId>nuxeo-webengine-core</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.elasticsearch</groupId>
+      <artifactId>nuxeo-elasticsearch-core</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.antlr</groupId>
@@ -124,6 +128,11 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.elasticsearch</groupId>
+      <artifactId>elasticsearch</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

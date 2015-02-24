@@ -74,6 +74,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -148,11 +149,15 @@ import org.nuxeo.ecm.core.opencmis.tests.Helper;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.openqa.selenium.remote.UselessFileDetector;
 
 /**
  * Tests that hit directly the server APIs.
@@ -179,6 +184,9 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
     @Inject
     protected CoreSession coreSession;
+
+    @Inject
+    protected WorkManager workManager;
 
     @Before
     public void setUp() throws Exception {
@@ -668,6 +676,10 @@ public class TestCmisBinding extends TestCmisBindingBase {
         String id = objService.createDocument(repositoryId, properties, rootFolderId, null, VersioningState.CHECKEDOUT,
                 null, null, null, null);
         assertNotNull(id);
+        if (TransactionHelper.isTransactionActive()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
         return id;
     }
 
@@ -1200,6 +1212,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         String statement;
         ObjectList res;
 
+        waitForIndexing();
+
         statement = "SELECT cmis:objectId, cmis:name" //
                 + " FROM File"; // no WHERE clause
         res = query(statement);
@@ -1272,6 +1286,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         String statement;
         ObjectList res;
 
+        waitForIndexing();
+
         statement = "SELECT cmis:objectId FROM File";
         res = query(statement);
         assertEquals(3, res.getNumItems().intValue());
@@ -1284,12 +1300,28 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals(2, res.getNumItems().intValue());
     }
 
+    /**
+     * Wait for async worker completion then wait for indexing completion
+     */
+    public void waitForIndexing() throws Exception {
+        if (!useElasticsearch()) {
+            return;
+        }
+        TransactionHelper.commitOrRollbackTransaction();
+        workManager.awaitCompletion(20, TimeUnit.SECONDS);
+        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+        esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
+        esa.refresh();
+        TransactionHelper.startTransaction();
+    }
+
     @Test
     public void testQueryWhereProperties() throws Exception {
         String statement;
         ObjectList res;
 
         createDocumentMyDocType();
+        waitForIndexing();
 
         // STAR
         statement = "SELECT * FROM MyDocType";
@@ -1319,6 +1351,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
     @Test
     public void testQueryWhereSystemProperties() throws Exception {
+        waitForIndexing();
 
         // ----- Object -----
 
@@ -1393,6 +1426,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
     @Test
     public void testQueryReturnedProperties() throws Exception {
+        waitForIndexing();
         checkReturnedValue("dc:title", "testfile1_Title");
         checkReturnedValue("dc:modified", NOT_NULL);
         checkReturnedValue("dc:lastContributor", "john");
@@ -1403,6 +1437,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
     @Test
     public void testQueryReturnedSystemProperties() throws Exception {
+        waitForIndexing();
 
         // ----- Object -----
 
@@ -1432,7 +1467,11 @@ public class TestCmisBinding extends TestCmisBindingBase {
         checkReturnedValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE);
         checkReturnedValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE);
         checkReturnedValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE);
-        checkReturnedValue(PropertyIds.VERSION_LABEL, null);
+        if (useElasticsearch()) {
+            checkReturnedValue(PropertyIds.VERSION_LABEL, "0.0");
+        } else {
+            checkReturnedValue(PropertyIds.VERSION_LABEL, null);
+        }
         checkReturnedValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL);
         checkReturnedValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE);
         checkReturnedValue(PropertyIds.IS_PRIVATE_WORKING_COPY, Boolean.TRUE);
@@ -1454,6 +1493,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
     @Test
     public void testQueryReturnedStar() throws Exception {
+        waitForIndexing();
+
         String statement = "SELECT * FROM File WHERE cmis:name = 'testfile1_Title'";
         ObjectList res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
@@ -1474,6 +1515,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         String statement;
         ObjectList res;
 
+        waitForIndexing();
+
         statement = "SELECT cmis:name FROM File";
         res = query(statement);
         int initiallyQueryableFilesCount = res.getNumItems().intValue();
@@ -1487,6 +1530,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         coreSession.followTransition(new PathRef("/testfolder1/testfile1"), "delete");
         coreSession.save();
         nextTransaction();
+        waitForIndexing();
 
         // by default 'deleted' files are filtered out
         statement = "SELECT cmis:name FROM File";
@@ -1520,6 +1564,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         ObjectList res;
         List<ObjectData> objects;
 
+        waitForIndexing();
+
         statement = "SELECT nuxeo:pathSegment FROM File ORDER BY nuxeo:pathSegment";
         res = query(statement);
         objects = res.getObjects();
@@ -1548,6 +1594,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         coreSession.createDocument(odoc2);
         coreSession.save();
         nextTransaction();
+        waitForIndexing();
 
         statement = "SELECT nuxeo:pos FROM File WHERE nuxeo:pos >= 0 ORDER BY nuxeo:pos";
         res = query(statement);
@@ -1562,6 +1609,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         String statement;
         ObjectList res;
 
+        waitForIndexing();
+
         // count all documents (for reference)
         statement = "SELECT cmis:name FROM File";
         res = query(statement);
@@ -1573,6 +1622,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         Holder<String> idHolder = new Holder<String>(id);
         verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "this is the comment", null, null, null,
                 null);
+
+        waitForIndexing();
 
         // by default CMISQL queries will return both live documents and
         // archived versions
@@ -1618,6 +1669,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         ObjectList res;
         ObjectData first;
 
+        waitForIndexing();
+
         // check that there is only one version of the document with title
         // 'testfile1_Title' (for reference)
         statement = "SELECT * FROM File WHERE cmis:name = 'testfile1_Title'";
@@ -1630,6 +1683,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         Holder<String> idHolder = new Holder<String>(id);
         verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "this is the comment", null, null, null,
                 null);
+
+        waitForIndexing();
 
         // by default CMISQL queries will return both live documents and
         // archived versions
@@ -1657,6 +1712,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         // we can check out the last version, edit it and try again:
         verService.checkOut(repositoryId, idHolder, null, null);
+        waitForIndexing();
+
         ob = getObjectByPath("/testfolder1/testfile1");
         assertEquals("testfile1_Title", getString(ob, "dc:title"));
 
@@ -1664,6 +1721,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         idHolder = new Holder<String>(ob.getId());
         objService.updateProperties(repositoryId, idHolder, null, props, null);
         assertEquals(ob.getId(), idHolder.getValue());
+
+        waitForIndexing();
 
         ob = getObject(ob.getId());
         assertEquals("new description", getString(ob, "dc:description"));
@@ -1694,6 +1753,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         String statement;
         ObjectList res;
 
+        waitForIndexing();
+
         // ... = ANY ...
         statement = "SELECT cmis:name FROM File WHERE 'pete' = ANY dc:contributors";
         res = query(statement);
@@ -1717,19 +1778,21 @@ public class TestCmisBinding extends TestCmisBindingBase {
         // ANY ... NOT IN ...
         statement = "SELECT cmis:name FROM File WHERE ANY dc:contributors NOT IN ('pete')";
         res = query(statement);
-        assertEquals(1, res.getNumItems().intValue());
+        assertEquals(emptyListNegativeMatch() ? 2 : 1, res.getNumItems().intValue());
         statement = "SELECT cmis:name FROM File WHERE ANY dc:contributors NOT IN ('john')";
         res = query(statement);
-        assertEquals(1, res.getNumItems().intValue());
+        assertEquals(emptyListNegativeMatch() ? 3 : 1, res.getNumItems().intValue());
         statement = "SELECT cmis:name FROM File WHERE ANY dc:contributors NOT IN ('pete', 'bob')";
         res = query(statement);
-        assertEquals(0, res.getNumItems().intValue());
+        assertEquals(emptyListNegativeMatch()? 2 : 0, res.getNumItems().intValue());
     }
 
     @Test
     public void testQueryIsNullMuti() throws Exception {
         String statement;
         ObjectList res;
+
+        waitForIndexing();
 
         statement = "SELECT cmis:objectId FROM cmis:document" + " WHERE dc:subjects IS NULL";
         res = query(statement);
@@ -1743,6 +1806,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
     @Test
     public void testQueryIsNotNullMuti() throws Exception {
+        waitForIndexing();
+
         String statement = "SELECT cmis:objectId FROM cmis:document" + " WHERE dc:subjects IS NOT NULL";
         ObjectList res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
@@ -1764,6 +1829,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         coreSession.saveDocument(doc2);
         coreSession.save();
         nextTransaction();
+        waitForIndexing();
 
         // ... = ANY ...
         statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE 'Versionable' = ANY nuxeo:secondaryObjectTypeIds";
@@ -1834,6 +1900,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         coreSession.saveDocument(doc2);
         coreSession.save();
         nextTransaction();
+        waitForIndexing();
 
         // ... = ANY ...
         // with several qualifiers (therefore a JOIN)
@@ -1849,6 +1916,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         String statement;
         ObjectList res;
         ObjectData data;
+
+        waitForIndexing();
 
         statement = "SELECT cmis:objectId, cmis:name" //
                 + " FROM File" //
@@ -1867,6 +1936,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
     @Test
     public void testQueryInFolder() throws Exception {
+        waitForIndexing();
+
         ObjectData f1 = getObjectByPath("/testfolder1");
         String statementPattern = "SELECT cmis:name FROM File" //
                 + " WHERE IN_FOLDER('%s')" //
@@ -1887,6 +1958,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
     public void testQueryInTree() throws Exception {
         ObjectList res;
         String statement;
+
+        waitForIndexing();
 
         ObjectData f2 = getObjectByPath("/testfolder2");
         String statementPattern = "SELECT cmis:name FROM File" //
@@ -1909,6 +1982,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         String statement;
         String statementPattern; // qual is type
         ObjectData f2 = getObjectByPath("/testfolder2");
+
+        waitForIndexing();
 
         statementPattern = "SELECT cmis:name FROM File" // no alias
                 + " WHERE IN_TREE(File, '%s')"; // qual is type
@@ -1959,6 +2034,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
     public void testQueryQualifiers() throws Exception {
         ObjectList res;
         String statement;
+
+        waitForIndexing();
 
         statement = "SELECT cmis:name FROM File"; // default
         res = query(statement);
@@ -2020,6 +2097,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         sleepForFulltext();
 
+        waitForIndexing();
+
         ObjectList res;
         String statement;
 
@@ -2051,7 +2130,9 @@ public class TestCmisBinding extends TestCmisBindingBase {
             statement = "SELECT cmis:name FROM File" //
                     + " WHERE CONTAINS('nx:borked:title1')";
             res = query(statement);
-            fail();
+            if (!useElasticsearch()) { // ES turns this into the regular fulltext query
+                fail();
+            }
         } catch (CmisRuntimeException e) {
             assertTrue(e.getMessage().contains("No such fulltext index: borked"));
         }
@@ -2070,6 +2151,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         objService.updateProperties(repositoryId, objectIdHolder, null, properties, null);
 
         sleepForFulltext();
+
+        waitForIndexing();
 
         ObjectList res;
         String statement;
@@ -2093,6 +2176,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
     @Test
     public void testQueryScore() throws Exception {
         sleepForFulltext();
+
+        waitForIndexing();
 
         ObjectList res;
         String statement;
@@ -2141,6 +2226,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         String folder3id = getObjectByPath("/testfolder2/testfolder3").getId();
         String folder4id = getObjectByPath("/testfolder2/testfolder4").getId();
 
+        waitForIndexing();
+
         statement = "SELECT A.cmis:objectId, A.dc:title, B.cmis:objectId, B.dc:title" //
                 + " FROM cmis:folder A" //
                 + " JOIN cmis:folder B ON A.cmis:objectId = B.cmis:parentId" //
@@ -2166,6 +2253,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
     public void testQueryJoinWithSubQueryMulti() throws Exception {
         assumeSupportsJoins();
 
+        waitForIndexing();
+
         String statement = "SELECT A.cmis:objectId, B.cmis:objectId" //
                 + " FROM cmis:document A" //
                 + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
@@ -2177,6 +2266,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
     @Test
     public void testQueryJoinWithSubQueryMultiIsNull() throws Exception {
         assumeSupportsJoins();
+
+        waitForIndexing();
 
         String statement = "SELECT A.cmis:objectId, B.cmis:objectId" //
                 + " FROM cmis:document A" //
@@ -2195,6 +2286,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         String statement;
         ObjectList res;
+
+        waitForIndexing();
 
         // INNER JOIN
         statement = "SELECT A.cmis:objectId, A.dc:title, B.cmis:objectId, B.dc:title" //
@@ -2235,6 +2328,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
     public void testQueryJoinWithFacets() throws Exception {
         assumeSupportsJoins();
 
+        waitForIndexing();
+
         String statement = "SELECT A.cmis:objectId" //
                 + " FROM cmis:folder A" //
                 + " JOIN cmis:folder B ON A.cmis:objectId = B.cmis:parentId" //
@@ -2246,6 +2341,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
     @Test
     public void testQueryJoinReturnVirtualColumns() throws Exception {
         assumeSupportsJoins();
+
+        waitForIndexing();
 
         String statement = "SELECT A.cmis:objectId, A.nuxeo:contentStreamDigest, B.cmis:path" //
                 + " FROM cmis:document A" //
@@ -2263,6 +2360,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
     public void testQueryJoinWithMultipleTypes() throws Exception {
         assumeSupportsJoins();
 
+        waitForIndexing();
+
         String statement = "SELECT A.cmis:objectId, A.cmis:name, B.filename, C.note" //
                 + " FROM cmis:document A" //
                 + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
@@ -2277,6 +2376,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
     @Test
     public void testQueryJoinWithMultipleTypes2() throws Exception {
         assumeSupportsJoins();
+
+        waitForIndexing();
 
         String statement = "SELECT A.cmis:objectId, B.cmis:objectId, C.cmis:objectId" //
                 + " FROM cmis:document A" //
@@ -2300,6 +2401,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         coreSession.saveDocument(doc);
         coreSession.save();
         nextTransaction();
+        waitForIndexing();
 
         String statement = "SELECT *" //
                 + " FROM cmis:document D" //
@@ -2349,6 +2451,9 @@ public class TestCmisBinding extends TestCmisBindingBase {
             objService.createDocument(repositoryId, createBaseDocumentProperties(name, "cmis:document"), rootFolderId,
                     null, VersioningState.CHECKEDOUT, null, null, null, null);
         }
+
+        waitForIndexing();
+
         ObjectList res;
         List<ObjectData> objects;
         String statement = "SELECT cmis:name FROM cmis:document"
@@ -2371,6 +2476,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
     @Test
     public void testQueryPWC() throws Exception {
+        waitForIndexing();
+
         ObjectList list = navService.getCheckedOutDocs(repositoryId, null, null, null, null, null, null, null, null,
                 null);
         assertEquals(4, list.getNumItems().intValue());
@@ -2380,10 +2487,14 @@ public class TestCmisBinding extends TestCmisBindingBase {
         Holder<String> idHolder = new Holder<String>(id);
         verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "comment", null, null, null, null);
 
+        waitForIndexing();
+
         list = navService.getCheckedOutDocs(repositoryId, null, null, null, null, null, null, null, null, null);
         assertEquals(3, list.getNumItems().intValue());
 
         verService.checkOut(repositoryId, idHolder, null, null);
+
+        waitForIndexing();
 
         // re-checkout (ecm:isCheckedIn now false instead of null earlier)
         list = navService.getCheckedOutDocs(repositoryId, null, null, null, null, null, null, null, null, null);
@@ -2411,6 +2522,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         verService.checkOut(repositoryId, idHolder, null, null);
         verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "comment", null, null, null, null);
 
+        waitForIndexing();
+
         ObjectList res;
         String statement = "SELECT cmis:objectId FROM cmis:document" + " WHERE cmis:name = 'testfile1_Title'";
 
@@ -2429,6 +2542,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
     public void testQueryAllVersionsFolders() throws Exception {
         ObjectList res;
         Boolean searchAllVersions;
+
+        waitForIndexing();
 
         String statement = "SELECT cmis:objectId FROM cmis:folder" + " WHERE cmis:name = 'testfolder2_Title'";
 
@@ -2452,6 +2567,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();
 
+        waitForIndexing();
+
         // checked out
 
         checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE, ob);
@@ -2472,6 +2589,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         Holder<String> idHolder = new Holder<String>(id);
         verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "comment", null, null, null, null);
+
+        waitForIndexing();
 
         String vid = idHolder.getValue();
         ObjectData ver = getObject(vid);
@@ -2514,6 +2633,9 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         Holder<Boolean> cchold = new Holder<Boolean>();
         verService.checkOut(repositoryId, idHolder, null, cchold);
+
+        waitForIndexing();
+
         String coid = idHolder.getValue();
         ObjectData co = getObject(coid);
 
@@ -2536,6 +2658,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         idHolder.setValue(coid);
         verService.checkIn(repositoryId, idHolder, Boolean.FALSE, null, null, "comment2", null, null, null, null);
+
+        waitForIndexing();
 
         String v2id = idHolder.getValue();
         ObjectData ver2 = getObject(v2id);
@@ -2915,6 +3039,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         Properties properties = factory.createPropertiesData(props);
         String relid = objService.createRelationship(repositoryId, properties, null, null, null, null);
 
+        waitForIndexing();
+
         // must be superuser...
         // ObjectData rel = getObject(relid);
         // assertEquals("rel", getValue(rel, PropertyIds.NAME));
@@ -2989,6 +3115,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         coreSession.saveDocument(doc);
         coreSession.save();
         nextTransaction();
+        waitForIndexing();
 
         ObjectList res = query("SELECT cmis:objectId FROM File");
         assertEquals(3, res.getNumItems().intValue());
@@ -3018,17 +3145,19 @@ public class TestCmisBinding extends TestCmisBindingBase {
             assertEquals(3, res.getNumItems().intValue());
         }
 
-        // deploy a security policy with a transformer
-        String contrib = supportsNXQLQueryTransformers() ? "OSGI-INF/security-policy-contrib3.xml"
-                : "OSGI-INF/security-policy-contrib2.xml";
-        harness.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", contrib);
-        try {
-        res = query("SELECT cmis:objectId FROM File");
-        assertEquals(2, res.getNumItems().intValue());
-        res = query("SELECT cmis:objectId FROM File WHERE dc:title <> 'something'");
-        assertEquals(2, res.getNumItems().intValue());
-        } finally {
-            harness.undeployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", contrib);
+        if (!useElasticsearch()) {
+            // deploy a security policy with a transformer
+            String contrib = supportsNXQLQueryTransformers() ? "OSGI-INF/security-policy-contrib3.xml"
+                    : "OSGI-INF/security-policy-contrib2.xml";
+            harness.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", contrib);
+            try {
+                res = query("SELECT cmis:objectId FROM File");
+                assertEquals(2, res.getNumItems().intValue());
+                res = query("SELECT cmis:objectId FROM File WHERE dc:title <> 'something'");
+                assertEquals(2, res.getNumItems().intValue());
+            } finally {
+                harness.undeployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", contrib);
+            }
         }
     }
 
