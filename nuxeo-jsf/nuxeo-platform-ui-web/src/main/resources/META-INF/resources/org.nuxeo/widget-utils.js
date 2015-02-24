@@ -19,6 +19,24 @@ var nuxeo = nuxeo || {};
 
 nuxeo.utils = (function(m) {
 
+  var eventListeners = [];
+
+  m.addOnEvent = function addOnEvent(callback) {
+    if (typeof callback === 'function') {
+        eventListeners[eventListeners.length] = callback;
+    } else {
+        throw new Error("nuxeo.utils.addOnEvent: Added a callback that was not a function");
+    }
+  }
+
+  m.executeEventListeners = function() {
+    for (var i in eventListeners) {
+      if (eventListeners.hasOwnProperty(i)) {
+        eventListeners[i].call(null);
+      }
+    }
+  }
+
   m.moreLessTableRows = function(eltId, displayAll, displayLimit) {
     var itemTable = jQuery("[id$='" + eltId + "']");
     var items = jQuery("[id$='" + eltId + "'] tr");
@@ -64,6 +82,7 @@ nuxeo.utils = (function(m) {
     jQuery(el).find("input[value='TEMPLATE_INDEX_MARKER']").val(count);
     // place in the DOM
     tel.before(el);
+    nuxeo.utils.executeEventListeners();
     return false;
   };
 
