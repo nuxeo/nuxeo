@@ -114,7 +114,7 @@ public class RestESDocumentsTest extends BaseTest {
         // The first node is the an index action it looks like
         // {"index":{"_index":"nuxeo","_type":"doc","_id":"c0941844-7729-431f-9d07-57c6a6580716"}}
         String content = IOUtils.toString(response.getEntityInputStream());
-        assertEquals(6714, content.length());
+        assertEquals(7019, content.length());
     }
 
     @Test
@@ -133,7 +133,7 @@ public class RestESDocumentsTest extends BaseTest {
         // The first node is the an index action it looks like
         // {"index":{"_index":"nuxeo","_type":"doc","_id":"c0941844-7729-431f-9d07-57c6a6580716"}}
         String content = IOUtils.toString(response.getEntityInputStream());
-        assertEquals(6739, content.length());
+        assertEquals(7044, content.length());
     }
 
     @Test
@@ -151,7 +151,7 @@ public class RestESDocumentsTest extends BaseTest {
         // The first node is the an index action it looks like
         // {"index":{"_index":"nuxeo","_type":"doc","_id":"c0941844-7729-431f-9d07-57c6a6580716"}}
         String content = IOUtils.toString(response.getEntityInputStream());
-        assertEquals(2685, content.length());
+        assertEquals(2807, content.length());
     }
 
     @Test

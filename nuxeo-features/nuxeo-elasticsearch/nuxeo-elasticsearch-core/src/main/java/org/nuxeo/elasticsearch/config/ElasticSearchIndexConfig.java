@@ -78,29 +78,70 @@ public class ElasticSearchIndexConfig {
     @XNode("mapping")
     protected String mapping;
 
-    final public static String DEFAULT_MAPPING = "{\n" + "   \"_all\" : {\n" + "      \"analyzer\" : \"fulltext\"\n"
-            + "   },\n" + "   \"properties\" : {\n" + "      \"dc:title\" : {\n"
-            + "         \"type\" : \"multi_field\",\n" + "         \"fields\" : {\n" + "           \"dc:title\" : {\n"
-            + "             \"index\" : \"not_analyzed\",\n" + "             \"type\" : \"string\"\n"
-            + "           },\n" + "           \"fulltext\" : {\n" + "             \"boost\": 2,\n"
-            + "             \"type\": \"string\",\n" + "             \"analyzer\" : \"fulltext\"\n" + "          }\n"
-            + "        }\n" + "      },\n" + "      \"dc:description\" : {\n"
-            + "         \"type\" : \"multi_field\",\n" + "         \"fields\" : {\n"
-            + "           \"dc:description\" : {\n" + "             \"index\" : \"no\",\n"
-            + "             \"type\" : \"string\"\n" + "           },\n" + "           \"fulltext\" : {\n"
-            + "             \"boost\": 1.5,\n" + "             \"type\": \"string\",\n"
-            + "             \"analyzer\" : \"fulltext\"\n" + "          }\n" + "        }\n" + "      },\n"
-            + "      \"ecm:binarytext*\" : {\n" + "         \"type\" : \"string\",\n"
-            + "         \"analyzer\" : \"fulltext\"\n" + "      },\n" + "      \"ecm:path\" : {\n"
-            + "         \"type\" : \"multi_field\",\n" + "         \"fields\" : {\n" + "            \"children\" : {\n"
-            + "               \"search_analyzer\" : \"keyword\",\n"
-            + "               \"index_analyzer\" : \"path_analyzer\",\n" + "               \"type\" : \"string\"\n"
-            + "            },\n" + "            \"ecm:path\" : {\n" + "               \"index\" : \"not_analyzed\",\n"
-            + "               \"type\" : \"string\"\n" + "            }\n" + "         }\n" + "      },\n"
-            + "      \"dc:created\": {\n" + "         \"format\": \"dateOptionalTime\",\n"
-            + "        \"type\": \"date\"\n" + "      },\n" + "      \"dc:modified\": {\n"
-            + "         \"format\": \"dateOptionalTime\",\n" + "        \"type\": \"date\"\n" + "      },\n"
-            + "      \"ecm:pos*\" : {\n" + "         \"type\" : \"integer\"\n" + "      }\n" + "   }\n" + "}";
+    final public static String DEFAULT_MAPPING = "{\n" //
+            + "   \"_all\" : {\n" //
+            + "      \"analyzer\" : \"fulltext\"\n" //
+            + "   },\n" //
+            + "   \"properties\" : {\n" //
+            + "      \"dc:title\" : {\n" //
+            + "         \"type\" : \"multi_field\",\n" //
+            + "         \"fields\" : {\n" //
+            + "           \"dc:title\" : {\n" //
+            + "             \"index\" : \"not_analyzed\",\n" //
+            + "             \"type\" : \"string\"\n" //
+            + "           },\n" //
+            + "           \"fulltext\" : {\n" //
+            + "             \"boost\": 2,\n" //
+            + "             \"type\": \"string\",\n" //
+            + "             \"analyzer\" : \"fulltext\"\n" //
+            + "          }\n" //
+            + "        }\n" //
+            + "      },\n" //
+            + "      \"dc:description\" : {\n" //
+            + "         \"type\" : \"multi_field\",\n" //
+            + "         \"fields\" : {\n" //
+            + "           \"dc:description\" : {\n" //
+            + "             \"index\" : \"not_analyzed\",\n" //
+            + "             \"type\" : \"string\"\n" //
+            + "           },\n" //
+            + "           \"fulltext\" : {\n" //
+            + "             \"boost\": 1.5,\n" //
+            + "             \"type\": \"string\",\n" //
+            + "             \"analyzer\" : \"fulltext\"\n" //
+            + "          }\n" //
+            + "        }\n" //
+            + "      },\n" //
+            + "      \"ecm:binarytext*\" : {\n" //
+            + "         \"type\" : \"string\",\n" //
+            + "         \"analyzer\" : \"fulltext\"\n" //
+            + "      },\n" //
+            + "      \"ecm:path\" : {\n" //
+            + "         \"type\" : \"multi_field\",\n" //
+            + "         \"fields\" : {\n" //
+            + "            \"children\" : {\n" //
+            + "               \"search_analyzer\" : \"keyword\",\n" //
+            + "               \"index_analyzer\" : \"path_analyzer\",\n" //
+            + "               \"type\" : \"string\"\n" //
+            + "            },\n" //
+            + "            \"ecm:path\" : {\n" //
+            + "               \"index\" : \"not_analyzed\",\n" //
+            + "               \"type\" : \"string\"\n" //
+            + "            }\n" //
+            + "         }\n" //
+            + "      },\n" //
+            + "      \"dc:created\": {\n" //
+            + "         \"format\": \"dateOptionalTime\",\n" //
+            + "        \"type\": \"date\"\n" //
+            + "      },\n" //
+            + "      \"dc:modified\": {\n" //
+            + "         \"format\": \"dateOptionalTime\",\n" //
+            + "        \"type\": \"date\"\n" //
+            + "      },\n" //
+            + "      \"ecm:pos*\" : {\n" //
+            + "         \"type\" : \"integer\"\n" //
+            + "      }\n" //
+            + "   }\n" //
+            + "}";
 
     @XNodeList(value = "fetchFromSource/exclude", type = String[].class, componentType = String.class)
     protected String[] excludes;

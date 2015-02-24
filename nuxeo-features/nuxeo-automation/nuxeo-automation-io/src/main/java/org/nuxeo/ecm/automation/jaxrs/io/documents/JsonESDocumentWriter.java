@@ -77,6 +77,8 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
         jg.writeBooleanField("ecm:isCheckedIn", !doc.isCheckedOut());
         jg.writeBooleanField("ecm:isProxy", doc.isProxy());
         jg.writeBooleanField("ecm:isVersion", doc.isVersion());
+        jg.writeBooleanField("ecm:isLatestVersion", doc.isLatestVersion());
+        jg.writeBooleanField("ecm:isLatestMajorVersion", doc.isLatestMajorVersion());
         jg.writeArrayFieldStart("ecm:mixinType");
         for (String facet : doc.getFacets()) {
             jg.writeString(facet);

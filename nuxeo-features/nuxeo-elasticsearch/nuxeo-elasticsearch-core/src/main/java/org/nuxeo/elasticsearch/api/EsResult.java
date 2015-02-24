@@ -19,6 +19,7 @@ package org.nuxeo.elasticsearch.api;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 
 /**
@@ -27,18 +28,40 @@ import org.nuxeo.ecm.platform.query.api.Aggregate;
 public class EsResult {
     private final DocumentModelList documents;
 
+    private final IterableQueryResult rows;
+
     private final List<Aggregate> aggregates;
 
     public EsResult(DocumentModelList documents, List<Aggregate> aggregates) {
         this.documents = documents;
+        this.rows = null;
         this.aggregates = aggregates;
     }
 
+    public EsResult(IterableQueryResult rows, List<Aggregate> aggregates) {
+        this.documents = null;
+        this.rows = rows;
+        this.aggregates = aggregates;
+    }
+
+    /**
+     * Get the list of Nuxeo documents, this is populated when using a SELECT * clause, or when submitting esQuery.
+     */
     public DocumentModelList getDocuments() {
         return documents;
+    }
+
+    /**
+     * Iterator to use when selecting fields: SELECT ecm:uuid ...
+     *
+     * @since 7.2
+     */
+    public IterableQueryResult getRows() {
+        return rows;
     }
 
     public List<Aggregate> getAggregates() {
         return aggregates;
     }
+
 }
