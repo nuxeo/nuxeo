@@ -23,8 +23,10 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -54,6 +56,8 @@ import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
 import org.nuxeo.runtime.api.Framework;
 
@@ -213,7 +217,7 @@ final public class NxqlQueryConverter {
                 queryString = queryString.substring(SIMPLE_QUERY_PREFIX.length());
                 defaultOperator = SimpleQueryStringBuilder.Operator.OR;
             } else {
-                // TODO translate according to standard NXQL fulltext syntax
+                queryString = translateFulltextQuery(queryString);
                 defaultOperator = SimpleQueryStringBuilder.Operator.AND;
             }
             query = QueryBuilders.simpleQueryString(queryString).field(field).defaultOperator(defaultOperator).analyzer(
@@ -290,10 +294,46 @@ final public class NxqlQueryConverter {
 
             @Override
             public void visitOrderByExpr(OrderByExpr node) {
-                sortInfos.add(new SortInfo(node.reference.name, !node.isDescending));
+                String name = node.reference.name;
+                if (NXQL.ECM_FULLTEXT_SCORE.equals(name)) {
+                    name = "_score";
+                }
+                sortInfos.add(new SortInfo(name, !node.isDescending));
             }
         });
         return sortInfos;
+    }
+
+    public static Map<String, Type> getSelectClauseFields(String nxql) {
+        final Map<String, Type> fieldsAndTypes = new LinkedHashMap<>();
+        SQLQuery nxqlQuery = getSqlQuery(nxql);
+        nxqlQuery.accept(new DefaultQueryVisitor() {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void visitSelectClause(SelectClause selectClause) {
+                SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+                for (int i = 0; i < selectClause.getSelectList().size(); i++) {
+                    Operand op = selectClause.get(i);
+                    if (!(op instanceof Reference)) {
+                        // ignore it
+                        continue;
+                    }
+                    String name = ((Reference) op).name;
+                    Field field = schemaManager.getField(name);
+                    fieldsAndTypes.put(name, field == null ? null : field.getType());
+                }
+            }
+        });
+        return fieldsAndTypes;
+    }
+
+    /**
+     * Translates from Nuxeo syntax to Elasticsearch simple_query_string syntax.
+     */
+    public static String translateFulltextQuery(String query) {
+        return query.replace(" OR ", " | ").replace(" or ", " | ");
     }
 
     /**

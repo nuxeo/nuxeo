@@ -41,9 +41,11 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.Bucket;
+import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.aggregate.AggregateEsBase;
 import org.nuxeo.elasticsearch.fetcher.EsFetcher;
 import org.nuxeo.elasticsearch.fetcher.Fetcher;
@@ -80,6 +82,12 @@ public class NxQueryBuilder {
     private boolean fetchFromElasticsearch = false;
 
     private boolean searchOnAllRepo = false;
+
+    private String[] selectFields = { ElasticSearchConstants.ID_FIELD };
+
+    private Map<String, Type> selectFieldsAndTypes;
+
+    private boolean returnsDocuments = true;
 
     public NxQueryBuilder(CoreSession coreSession) {
         session = coreSession;
@@ -206,10 +214,23 @@ public class NxQueryBuilder {
                     List<SortInfo> builtInSortInfos = NxqlQueryConverter.getSortInfo(nxql);
                     sortInfos.addAll(builtInSortInfos);
                 }
+                if (nxqlHasSelectClause(nxql)) {
+                    selectFieldsAndTypes = NxqlQueryConverter.getSelectClauseFields(nxql);
+                    selectFields = selectFieldsAndTypes.keySet().toArray(new String[0]);
+                    returnsDocuments = false;
+                }
                 esQueryBuilder = addSecurityFilter(esQueryBuilder);
             }
         }
         return esQueryBuilder;
+    }
+
+    protected boolean nxqlHasSelectClause(String nxql) {
+        String lowerNxql = nxql.toLowerCase();
+        if (lowerNxql.startsWith("select") && !lowerNxql.startsWith("select * from")) {
+            return true;
+        }
+        return false;
     }
 
     public SortBuilder[] getSortBuilders() {
@@ -293,6 +314,11 @@ public class NxQueryBuilder {
         if (aggFilter != null) {
             request.setPostFilter(aggFilter);
         }
+        // Fields selection
+        if (!isFetchFromElasticsearch()) {
+            request.addFields(getSelectFields());
+        }
+
     }
 
     protected QueryBuilder addSecurityFilter(QueryBuilder query) {
@@ -350,5 +376,26 @@ public class NxQueryBuilder {
             return new EsFetcher(session, response, repoNames);
         }
         return new VcsFetcher(session, response, repoNames);
+    }
+
+    /**
+     * @since 7.2
+     */
+    public String[] getSelectFields() {
+        return selectFields;
+    }
+
+    /**
+     * @since 7.2
+     */
+    public Map<String, Type> getSelectFieldsAndTypes() {
+        return selectFieldsAndTypes;
+    }
+
+    /**
+     * @since 7.2
+     */
+    public boolean returnsDocuments() {
+        return returnsDocuments;
     }
 }

@@ -129,8 +129,9 @@ public class TestAggregates {
                 + "  \"from\" : 0,\n" //
                 + "  \"size\" : 10,\n" //
                 + "  \"query\" : {\n" //
-                + "    \"match_all\" : { }\n" //
+                + "    \"match_all\" : { }\n"
                 + "  },\n" //
+                + "  \"fields\" : \"_id\",\n" //
                 + "  \"aggregations\" : {\n" //
                 + "    \"source_filter\" : {\n" //
                 + "      \"filter\" : {\n" //
@@ -173,6 +174,7 @@ public class TestAggregates {
                 + "  \"query\" : {\n" //
                 + "    \"match_all\" : { }\n" //
                 + "  },\n" //
+                + "  \"fields\" : \"_id\",\n" //
                 + "  \"aggregations\" : {\n" //
                 + "    \"fulltext_filter\" : {\n" //
                 + "      \"filter\" : {\n" //
@@ -212,6 +214,7 @@ public class TestAggregates {
                 + "  \"query\" : {\n" //
                 + "    \"match_all\" : { }\n" //
                 + "  },\n" //
+                + "  \"fields\" : \"_id\",\n" //
                 + "  \"aggregations\" : {\n" //
                 + "    \"source_filter\" : {\n" //
                 + "      \"filter\" : {\n" //
@@ -255,6 +258,7 @@ public class TestAggregates {
                 + "  \"query\" : {\n" //
                 + "    \"match_all\" : { }\n" //
                 + "  },\n" //
+                + "  \"fields\" : \"_id\",\n" //
                 + "  \"aggregations\" : {\n" //
                 + "    \"source_filter\" : {\n" //
                 + "      \"filter\" : {\n" //
@@ -302,17 +306,39 @@ public class TestAggregates {
         SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
         qb.updateRequest(request);
 
-        assertEqualsEvenUnderWindows("{\n" + "  \"from\" : 0,\n" + "  \"size\" : 10,\n" + "  \"query\" : {\n"
-                + "    \"match_all\" : { }\n" + "  },\n" + "  \"aggregations\" : {\n" + "    \"created_filter\" : {\n"
-                + "      \"filter\" : {\n" + "        \"match_all\" : { }\n" + "      },\n"
-                + "      \"aggregations\" : {\n" + "        \"created\" : {\n" + "          \"date_range\" : {\n"
-                + "            \"field\" : \"dc:created\",\n" + "            \"ranges\" : [ {\n"
-                + "              \"key\" : \"10monthAgo\",\n" + "              \"to\" : \"now-10M/M\"\n"
-                + "            }, {\n" + "              \"key\" : \"1monthAgo\",\n"
-                + "              \"from\" : \"now-10M/M\",\n" + "              \"to\" : \"now-1M/M\"\n"
-                + "            }, {\n" + "              \"key\" : \"thisMonth\",\n"
-                + "              \"from\" : \"now-1M/M\"\n" + "            } ]\n" + "          }\n" + "        }\n"
-                + "      }\n" + "    }\n" + "  }\n" + "}", //
+        assertEqualsEvenUnderWindows("{\n" //
+                + "  \"from\" : 0,\n" //
+                + "  \"size\" : 10,\n" //
+                + "  \"query\" : {\n" //
+                + "    \"match_all\" : { }\n" //
+                + "  },\n" //
+                + "  \"fields\" : \"_id\",\n" //
+                + "  \"aggregations\" : {\n" //
+                + "    \"created_filter\" : {\n" //
+                + "      \"filter\" : {\n" //
+                + "        \"match_all\" : { }\n" //
+                + "      },\n" //
+                + "      \"aggregations\" : {\n" //
+                + "        \"created\" : {\n" //
+                + "          \"date_range\" : {\n" //
+                + "            \"field\" : \"dc:created\",\n" //
+                + "            \"ranges\" : [ {\n" //
+                + "              \"key\" : \"10monthAgo\",\n" //
+                + "              \"to\" : \"now-10M/M\"\n" //
+                + "            }, {\n" //
+                + "              \"key\" : \"1monthAgo\",\n" //
+                + "              \"from\" : \"now-10M/M\",\n" //
+                + "              \"to\" : \"now-1M/M\"\n" //
+                + "            }, {\n" //
+                + "              \"key\" : \"thisMonth\",\n" //
+                + "              \"from\" : \"now-1M/M\"\n" //
+                + "            } ]\n" //
+                + "          }\n" //
+                + "        }\n" //
+                + "      }\n" //
+                + "    }\n" //
+                + "  }\n" //
+                + "}", //
                 request.toString());
     }
 
@@ -336,6 +362,7 @@ public class TestAggregates {
                 + "  \"query\" : {\n" //
                 + "    \"match_all\" : { }\n" //
                 + "  },\n" //
+                + "  \"fields\" : \"_id\",\n" //
                 + "  \"aggregations\" : {\n" //
                 + "    \"size_filter\" : {\n" //
                 + "      \"filter\" : {\n" //
@@ -380,6 +407,7 @@ public class TestAggregates {
                 + "  \"query\" : {\n" //
                 + "    \"match_all\" : { }\n" //
                 + "  },\n" //
+                + "  \"fields\" : \"_id\",\n"
                 + "  \"aggregations\" : {\n" //
                 + "    \"created_filter\" : {\n" //
                 + "      \"filter\" : {\n" //
@@ -443,6 +471,7 @@ public class TestAggregates {
                 + "      } ]\n" //
                 + "    }\n" //
                 + "  },\n" //
+                + "  \"fields\" : \"_id\",\n" //
                 + "  \"aggregations\" : {\n" //
                 + "    \"source_filter\" : {\n" //
                 + "      \"filter\" : {\n" //
@@ -501,6 +530,7 @@ public class TestAggregates {
                 + "  \"query\" : {\n" //
                 + "    \"match_all\" : { }\n" //
                 + "  },\n" //
+                + "  \"fields\" : \"_id\",\n" //
                 + "  \"aggregations\" : {\n" //
                 + "    \"source_filter\" : {\n" //
                 + "      \"filter\" : {\n" //
