@@ -99,6 +99,10 @@
       <artifactId>nuxeo-platform-rendition-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.elasticsearch</groupId>
+      <artifactId>nuxeo-elasticsearch-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-opencmis-impl</artifactId>
     </dependency>
@@ -157,6 +161,11 @@
     <dependency>
       <groupId>javax.resource</groupId>
       <artifactId>connector-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.elasticsearch</groupId>
+      <artifactId>elasticsearch</artifactId>
       <scope>provided</scope>
     </dependency>
     <!-- overridden test scopes -->

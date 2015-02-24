@@ -57,6 +57,9 @@ import org.apache.commons.logging.LogFactory;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
@@ -109,6 +112,8 @@ public class CMISQLtoNXQL {
 
     protected Map<String, PropertyDefinition<?>> typeInfo;
 
+    protected CoreSession coreSession;
+
     // ----- filled during walks of the clauses -----
 
     protected QueryObject query;
@@ -133,6 +138,7 @@ public class CMISQLtoNXQL {
         this.typeInfo = typeInfo;
         boolean searchLatestVersion = !searchAllVersions;
         TypeManagerImpl typeManager = service.repository.getTypeManager();
+        coreSession = service.coreSession;
 
         query = new QueryObject(typeManager);
         CmisQueryWalker walker = null;
@@ -733,9 +739,21 @@ public class CMISQLtoNXQL {
         @Override
         public Boolean walkInTree(Tree opNode, Tree qualNode, Tree paramNode) {
             String id = (String) super.walkString(paramNode);
-            buf.append(NXQL.ECM_ANCESTORID);
-            buf.append(" = ");
-            buf.append(NXQL.escapeString(id));
+            // don't use ecm:ancestorId because the Elasticsearch converter doesn't understand it
+            // buf.append(NXQL.ECM_ANCESTORID);
+            // buf.append(" = ");
+            // buf.append(NXQL.escapeString(id));
+            String path;
+            DocumentRef docRef = new IdRef(id);
+            if (coreSession.exists(docRef)) {
+                path = coreSession.getDocument(docRef).getPathAsString();
+            } else {
+                // TODO better removal
+                path = "/__NOSUCHPATH__";
+            }
+            buf.append(NXQL.ECM_PATH);
+            buf.append(" STARTSWITH ");
+            buf.append(NXQL.escapeString(path));
             return null;
         }
 

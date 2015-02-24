@@ -111,6 +111,8 @@ public class NuxeoRepository {
 
     public static final String SUPPORTS_JOINS_PROP = "org.nuxeo.cmis.joins";
 
+    public static final String ELASTICSEARCH_PROP = "org.nuxeo.cmis.elasticsearch";
+
     private static final String NUXEO_CONTEXT_PATH_PROP = "org.nuxeo.ecm.contextPath";
 
     private static final String NUXEO_CONTEXT_PATH_DEFAULT = "/nuxeo";
@@ -127,6 +129,8 @@ public class NuxeoRepository {
 
     protected boolean supportsJoins;
 
+    protected boolean useElasticsearch;
+
     protected TypeManagerImpl typeManager;
 
     public NuxeoRepository(String repositoryId, String rootFolderId) {
@@ -134,6 +138,9 @@ public class NuxeoRepository {
         this.rootFolderId = rootFolderId;
         if (Framework.isBooleanPropertyTrue(SUPPORTS_JOINS_PROP)) {
             setSupportsJoins(true);
+        }
+        if (Framework.isBooleanPropertyTrue(ELASTICSEARCH_PROP)) {
+            setUseElasticsearch(true);
         }
     }
 
@@ -143,6 +150,14 @@ public class NuxeoRepository {
 
     public boolean supportsJoins() {
         return supportsJoins;
+    }
+
+    public void setUseElasticsearch(boolean useElasticsearch) {
+        this.useElasticsearch = useElasticsearch;
+    }
+
+    public boolean useElasticsearch() {
+        return useElasticsearch;
     }
 
     public String getId() {

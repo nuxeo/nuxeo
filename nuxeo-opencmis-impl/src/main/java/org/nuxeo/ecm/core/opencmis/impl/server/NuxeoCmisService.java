@@ -151,6 +151,8 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
+import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -1600,9 +1602,16 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             } catch (QueryParseException e) {
                 throw new CmisRuntimeException(e.toString(), e);
             }
+
             IterableQueryResult it;
             try {
-                it = coreSession.queryAndFetch(nxql, NXQL.NXQL);
+                if (repository.useElasticsearch()) {
+                    ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
+                    NxQueryBuilder qb = new NxQueryBuilder(coreSession).nxql(nxql).limit(-1);
+                    it = ess.queryAndAggregate(qb).getRows();
+                } else {
+                    it = coreSession.queryAndFetch(nxql, NXQL.NXQL);
+                }
             } catch (ClientException e) {
                 throw new CmisRuntimeException("Invalid query: CMISQL: " + query + ": " + e.toString(), e);
             }
