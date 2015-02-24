@@ -212,10 +212,10 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     }
 
     @Test
-    public void testValidateUserFailedWithoutPrefix() {
+    public void testValidateUserSucceedWithoutPrefix() {
         UserManagerResolver umr = new UserManagerResolver();
         umr.configure(new HashMap<String, String>());
-        assertFalse(umr.validate("Administrator"));
+        assertTrue(umr.validate("Administrator"));
     }
 
     @Test
@@ -251,10 +251,10 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     }
 
     @Test
-    public void testValidateGroupFailedWithoutPrefix() {
+    public void testValidateGroupSucceedWithoutPrefix() {
         UserManagerResolver umr = new UserManagerResolver();
         umr.configure(new HashMap<String, String>());
-        assertFalse(umr.validate("members"));
+        assertTrue(umr.validate("members"));
     }
 
     @Test
@@ -294,10 +294,10 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     }
 
     @Test
-    public void testFetchUserFailedWithoutPrefix() {
+    public void testFetchUserSucceedWithoutPrefix() {
         UserManagerResolver umr = new UserManagerResolver();
         umr.configure(new HashMap<String, String>());
-        assertNull(umr.fetch("Administrator"));
+        assertNotNull(umr.fetch("Administrator"));
     }
 
     @Test
@@ -337,10 +337,10 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     }
 
     @Test
-    public void testFetchGroupFailedWithoutPrefix() {
+    public void testFetchGroupSucceedWithoutPrefix() {
         UserManagerResolver umr = new UserManagerResolver();
         umr.configure(new HashMap<String, String>());
-        assertNull(umr.fetch("members"));
+        assertNotNull(umr.fetch("members"));
     }
 
     @Test
@@ -359,7 +359,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
         NuxeoPrincipal principal = umr.fetch(NuxeoPrincipal.class, "user:Administrator");
         assertNotNull(principal);
         assertEquals("Administrator", principal.getName());
-        assertNull(umr.fetch(NuxeoPrincipal.class, "Administrator"));
+        assertNotNull(umr.fetch(NuxeoPrincipal.class, "Administrator"));
         assertNull(umr.fetch(NuxeoPrincipal.class, "user:toto"));
         assertNull(umr.fetch(NuxeoPrincipal.class, "group:members"));
     }
@@ -371,7 +371,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
         NuxeoGroup group = umr.fetch(NuxeoGroup.class, "group:members");
         assertNotNull(group);
         assertEquals("members", group.getName());
-        assertNull(umr.fetch(NuxeoGroup.class, "members"));
+        assertNotNull(umr.fetch(NuxeoGroup.class, "members"));
         assertNull(umr.fetch(NuxeoGroup.class, "group:toto"));
         assertNull(umr.fetch(NuxeoGroup.class, "user:Administrator"));
     }
@@ -510,9 +510,9 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     }
 
     @Test
-    public void testUserWrongPrefixReturnNull() {
+    public void testUserNoPrefixWorks() {
         doc.setPropertyValue(USER_XPATH, "Administrator");
-        assertNull(doc.getProperty(USER_XPATH).getObjectResolver().fetch());
+        assertNotNull(doc.getProperty(USER_XPATH).getObjectResolver().fetch());
     }
 
     @Test
@@ -545,9 +545,9 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     }
 
     @Test
-    public void testGroupWrongPrefixReturnNull() {
+    public void testGroupNoPrefixWorks() {
         doc.setPropertyValue(GROUP_XPATH, "members");
-        assertNull(doc.getProperty(GROUP_XPATH).getObjectResolver().fetch());
+        assertNotNull(doc.getProperty(GROUP_XPATH).getObjectResolver().fetch());
     }
 
     @Test

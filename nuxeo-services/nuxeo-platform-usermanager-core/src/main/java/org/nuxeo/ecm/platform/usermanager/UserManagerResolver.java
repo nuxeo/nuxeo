@@ -27,13 +27,19 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
  * This {@link ObjectResolver} allows to manage integrity for fields containing group or user references.
  * <p>
- * References must have a prefix. NuxeoPrincipal.PREFIX for users, NuxeoGroup.PREFIX for groups.
+ * References should have a prefix. NuxeoPrincipal.PREFIX for users, NuxeoGroup.PREFIX for groups.
+ * </p>
+ * <p>
+ * If only user or group are configured, the prefix is not needed but still supported. If noth user and group are
+ * configured, reference without prefix are resolved as user first.
  * </p>
  * <p>
  * To use it, put the following code in your schema XSD :
@@ -142,18 +148,42 @@ public class UserManagerResolver implements ObjectResolver {
     public Object fetch(Object value) throws IllegalStateException {
         checkConfig();
         if (value != null && value instanceof String) {
-            if (includingUsers) {
-                String name = (String) value;
-                if (name.startsWith(NuxeoPrincipal.PREFIX)) {
-                    String username = name.substring(NuxeoPrincipal.PREFIX.length());
-                    return getUserManager().getPrincipal(username);
+            String name = (String) value;
+            boolean userPrefix = name.startsWith(NuxeoPrincipal.PREFIX);
+            boolean groupPrefix = name.startsWith(NuxeoGroup.PREFIX);
+            if (includingUsers && !includingGroups) {
+                if (userPrefix) {
+                    name = name.substring(NuxeoPrincipal.PREFIX.length());
                 }
-            }
-            if (includingGroups) {
-                String name = (String) value;
-                if (name.startsWith(NuxeoGroup.PREFIX)) {
-                    String groupname = name.substring(NuxeoGroup.PREFIX.length());
-                    return getUserManager().getGroup(groupname);
+                if (LoginComponent.SYSTEM_USERNAME.equals(name)) {
+                    return new SystemPrincipal(name);
+                }
+                return getUserManager().getPrincipal(name);
+            } else if (!includingUsers && includingGroups) {
+                if (groupPrefix) {
+                    name = name.substring(NuxeoGroup.PREFIX.length());
+                }
+                return getUserManager().getGroup(name);
+            } else {
+                if (userPrefix) {
+                    name = name.substring(NuxeoPrincipal.PREFIX.length());
+                    if (LoginComponent.SYSTEM_USERNAME.equals(name)) {
+                        return new SystemPrincipal(name);
+                    }
+                    return getUserManager().getPrincipal(name);
+                } else if (groupPrefix) {
+                    name = name.substring(NuxeoGroup.PREFIX.length());
+                    return getUserManager().getGroup(name);
+                } else {
+                    if (LoginComponent.SYSTEM_USERNAME.equals(name)) {
+                        return new SystemPrincipal(name);
+                    }
+                    NuxeoPrincipal principal = getUserManager().getPrincipal(name);
+                    if (principal != null) {
+                        return principal;
+                    } else {
+                        return getUserManager().getGroup(name);
+                    }
                 }
             }
         }
