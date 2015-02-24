@@ -283,6 +283,10 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
 
     @SuppressWarnings("unchecked")
     private static Object getElementData(ExportedDocument xdoc, Element element, Type type) {
+        // empty xml tag must be null value (not empty string)
+        if (!element.hasContent()) {
+            return null;
+        }
         if (type.isSimpleType()) {
             return type.decode(element.getText());
         } else if (type.isListType()) {
