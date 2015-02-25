@@ -84,21 +84,37 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
         ResponseWriter writer = context.getResponseWriter();
 
         String inputId = facet.getClientId(context);
-        String infoId = parent.getClientId(context) + NamingContainer.SEPARATOR_CHAR + "GoogleDriverPickerInfo";
+        String prefix = parent.getClientId(context) + NamingContainer.SEPARATOR_CHAR;
+        String pickId = prefix + "GoogleDrivePickMsg";
+        String authId = prefix + "GoogleDriveAuthMsg";
+        String infoId = prefix + "GoogleDriveInfo";
 
         writer.startElement("button", parent);
         writer.writeAttribute("type", "button", null);
         writer.writeAttribute("class", "button GoogleDrivePickerButton", null);
-        String onButtonClick = onClick + ";"
-                + String.format("nuxeo.utils.pickFromGoogleDrive('%s','%s','%s')", clientId, inputId, infoId);
+        String onButtonClick = onClick
+                + ";"
+                + String.format("new nuxeo.utils.GoogleDrivePicker('%s','%s','%s','%s','%s')", clientId, pickId,
+                        authId, inputId, infoId);
         writer.writeAttribute("onclick", onButtonClick, null);
-        writer.write("Google Drive");
-        writer.endElement("button");
-        writer.write(ComponentUtils.WHITE_SPACE_CHARACTER);
 
         writer.startElement("span", parent);
+        writer.writeAttribute("id", pickId, null);
+        writer.write("Google Drive"); // TODO i18n
+        writer.endElement("span");
+
+        writer.startElement("span", parent);
+        writer.writeAttribute("id", authId, null);
+        writer.writeAttribute("style", "display:none", null); // hidden
+        writer.write("Click to Authenticate"); // TODO i18n
+        writer.endElement("span");
+
+        writer.endElement("button");
+
+        writer.write(ComponentUtils.WHITE_SPACE_CHARACTER);
+        writer.startElement("span", parent);
         writer.writeAttribute("id", infoId, null);
-        writer.write("no file selected"); // XXX i18n
+        writer.write("no file selected"); // TODO i18n
         writer.endElement("span");
 
         writer.startElement("script", parent);
