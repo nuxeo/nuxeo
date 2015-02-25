@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.transientstore.TransientStorageComponent.testContrib">
+
+  <extension
+    target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent"
+    point="store">
+
+    <store name="testStore" cluster="false">
+    </store>
+
+    <store name="microStore" cluster="false">
+      <!--  a store that can not store anything  -->
+      <targetMaxSizeMB>0</targetMaxSizeMB>
+    <absoluteMaxSizeMB>0</absoluteMaxSizeMB>
+    </store>
+
+    <store name="miniStore" cluster="false">
+      <!--  a store that deletes entries as soon as they are no longer needed  -->
+      <targetMaxSizeMB>0</targetMaxSizeMB>
+      <absoluteMaxSizeMB>1</absoluteMaxSizeMB>
+    </store>
+
+  </extension>
+
+</component>
+
+
+

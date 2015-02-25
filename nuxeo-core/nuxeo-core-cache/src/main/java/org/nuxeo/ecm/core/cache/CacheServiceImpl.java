@@ -81,8 +81,12 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
             CacheDescriptor descriptor = (CacheDescriptor) contrib;
-            cacheRegistry.addContribution(descriptor);
+            registerCache(descriptor);
         }
+    }
+
+    public void registerCache(CacheDescriptor descriptor) {
+        cacheRegistry.addContribution(descriptor);
     }
 
     @Override
@@ -92,6 +96,10 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
             CacheDescriptor descriptor = (CacheDescriptor) contrib;
             cacheRegistry.removeContribution(descriptor);
         }
+    }
+
+    public void unregisterCache(CacheDescriptor descriptor) {
+        cacheRegistry.removeContribution(descriptor);
     }
 
 }

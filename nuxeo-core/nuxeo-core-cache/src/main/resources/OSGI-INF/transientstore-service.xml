@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.transientstore.TransientStorageComponent">
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.transientstore.api.TransientStoreService" />
+  </service>
+
+  <implementation class="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" />
+
+  <extension-point name="store">
+
+    <documentation>
+    </documentation>
+    <object class="org.nuxeo.ecm.core.transientstore.api.TransientStoreConfig"/>
+
+  </extension-point>
+
+  <extension
+    target="org.nuxeo.ecm.core.scheduler.SchedulerService"
+    point="schedule">
+    <schedule id="transientStoreGC">
+      <username>Administrator</username>
+      <eventId>transientStoreGCStart</eventId>
+      <eventCategory>default</eventCategory>
+      <!-- cleanup every 15 minutes -->
+      <cronExpression>0 0/15 * * * ?</cronExpression>
+    </schedule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="transientStoreGCTrigger" async="false" postCommit="false"
+      class="org.nuxeo.ecm.core.transientstore.TransientStorageGCTrigger">
+      <event>transientStoreGCStart</event>
+    </listener>
+  </extension>
+
+</component>
+
