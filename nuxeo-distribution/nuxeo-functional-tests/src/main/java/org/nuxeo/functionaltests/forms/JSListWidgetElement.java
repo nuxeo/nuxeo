@@ -16,11 +16,12 @@
  */
 package org.nuxeo.functionaltests.forms;
 
+import java.util.List;
+
+import org.nuxeo.functionaltests.JSListRequestManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-
-import java.util.List;
 
 /**
  * Represents a list widget, with helper method to retrieve/check its subwidgets.
@@ -51,12 +52,18 @@ public class JSListWidgetElement extends AbstractWidgetElement {
 
     public void addNewElement() {
         WebElement addElement = getElement(id + "_add");
+        JSListRequestManager rm = new JSListRequestManager(driver);
+        rm.begin();
         addElement.click();
+        rm.end();
     }
 
     public void removeElement(int index) {
         WebElement delElement = getRowActions(index).findElement(By.className("deleteBtn"));
+        JSListRequestManager rm = new JSListRequestManager(driver);
+        rm.begin();
         delElement.click();
+        rm.end();
     }
 
     public void waitForSubWidget(String id, int index) {

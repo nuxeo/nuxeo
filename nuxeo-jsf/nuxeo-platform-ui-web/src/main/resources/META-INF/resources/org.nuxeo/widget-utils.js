@@ -29,12 +29,18 @@ nuxeo.utils = (function(m) {
     }
   }
 
-  m.executeEventListeners = function() {
+  function executeEventListeners(data) {
     for (var i in eventListeners) {
       if (eventListeners.hasOwnProperty(i)) {
-        eventListeners[i].call(null);
+        eventListeners[i].call(null, data);
       }
     }
+  }
+
+  function execute(func, flag) {
+    executeEventListeners({"status": "begin", "flag": flag});
+    func();
+    executeEventListeners({"status": "success", "flag": flag});
   }
 
   m.moreLessTableRows = function(eltId, displayAll, displayLimit) {
@@ -65,39 +71,40 @@ nuxeo.utils = (function(m) {
   };
 
   m.addFromListTemplate = function(parentId, templateElement) {
-    var tel = jQuery(templateElement),
-        count = templateElement.siblings('.listItem').length;
+    execute(function() {
+      var tel = jQuery(templateElement),
+          count = templateElement.siblings('.listItem').length;
 
-    // unescape our template's html content
-    var text = jQuery('<div/>').html(tel.html()).text().trim();
-    // replace the hidden input name, removing the index marker to get a list param
-    var re = new RegExp(parentId + ":TEMPLATE_INDEX_MARKER:rowIndex", "g");
-    text = text.replace(re, parentId + ':rowIndex');
-    // replace our marker with the row index
-    re = new RegExp(parentId + ":TEMPLATE_INDEX_MARKER", "g");
-    text = text.replace(re, parentId + ':' + count);
-    // parse the html (including scripts)
-    var el = jQuery.parseHTML(text, document, true);
-    // make sure hidden input value is also replaced
-    jQuery(el).find("input[value='TEMPLATE_INDEX_MARKER']").val(count);
-    // place in the DOM
-    tel.before(el);
-    nuxeo.utils.executeEventListeners();
+      // unescape our template's html content
+      var text = jQuery('<div/>').html(tel.html()).text().trim();
+      // replace the hidden input name, removing the index marker to get a list param
+      var re = new RegExp(parentId + ":TEMPLATE_INDEX_MARKER:rowIndex", "g");
+      text = text.replace(re, parentId + ':rowIndex');
+      // replace our marker with the row index
+      re = new RegExp(parentId + ":TEMPLATE_INDEX_MARKER", "g");
+      text = text.replace(re, parentId + ':' + count);
+      // parse the html (including scripts)
+      var el = jQuery.parseHTML(text, document, true);
+      // make sure hidden input value is also replaced
+      jQuery(el).find("input[value='TEMPLATE_INDEX_MARKER']").val(count);
+      // place in the DOM
+      tel.before(el);
+    }, "js-list-add");
     return false;
   };
 
   m.deleteFromList = function(rowElement) {
-    rowElement.remove();
+    execute(function(){rowElement.remove();}, "js-list-delete");
     return false;
   };
 
   m.moveUpList = function(rowElement) {
-    rowElement.insertBefore(rowElement.prev());
+    execute(function(){rowElement.insertBefore(rowElement.prev());}, "js-list-move-up");
     return false;
   };
 
   m.moveDownList = function(rowElement) {
-    rowElement.insertAfter(rowElement.next());
+    execute(function(){rowElement.insertAfter(rowElement.next());}, "js-list-move-down");
     return false;
   };
 

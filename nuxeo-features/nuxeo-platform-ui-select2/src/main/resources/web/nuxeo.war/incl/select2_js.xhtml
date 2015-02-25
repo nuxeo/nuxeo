@@ -35,8 +35,10 @@
           initSelect2Widgets();
         }
       });
-      nuxeo.utils.addOnEvent(function() {
-        initSelect2Widgets();
+      nuxeo.utils.addOnEvent(function(data) {
+        if (data.status == "success") {
+          initSelect2Widgets();
+        }
       });
     </script>
 
