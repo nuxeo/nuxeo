@@ -107,10 +107,6 @@
             <fields>
               <field></field>
             </fields>
-            <controls mode="any">
-              <!-- enable ajax submit on change/click/select on demo application -->
-              <control name="supportInsideInputWidgetEffects">true</control>
-            </controls>
           </widget>
         </subWidgets>
       </widget>
