@@ -155,6 +155,9 @@ public class TestVersioningService extends SQLRepositoryTestCase {
         assertLatestVersion("1.1", doc);
         assertEquals(v11ref.reference(), session.getBaseVersion(docRef).reference());
 
+        // wait before doing a restore
+        waitForAsyncCompletion();
+
         // restore 0.1
         doc = session.restoreToVersion(docRef, v01.getRef());
         assertFalse(doc.isCheckedOut());
@@ -262,6 +265,9 @@ public class TestVersioningService extends SQLRepositoryTestCase {
         assertTrue(doc.isCheckedOut());
         assertVersion("3.1", doc);
         assertLatestVersion("3.0", doc);
+
+        // wait before doing a restore
+        waitForAsyncCompletion();
 
         // restore 1.1 -> 3.2 (snapshots 3.1)
         doc = session.restoreToVersion(docRef, v11.getRef());
