@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.task.TaskService;
@@ -58,8 +59,16 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * @since 7.2
+     */
+    public static final String TASKS_CACHE_RESET = "tasksCacheReset";
+
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
+
+    @In(create = true)
+    protected ContentViewActions contentViewActions;
 
     @In(create = true)
     protected transient TaskService taskService;
@@ -184,6 +193,16 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
     public void resetCache() {
         tasks = null;
         items = null;
+        Events.instance().raiseEvent(TASKS_CACHE_RESET);
+    }
+
+    /**
+     * @since 7.2
+     */
+    @Observer({ TASKS_CACHE_RESET })
+    public void resetTasksCache() {
+        contentViewActions.refreshOnSeamEvent(TASKS_CACHE_RESET);
+        contentViewActions.resetPageProviderOnSeamEvent(TASKS_CACHE_RESET);
     }
 
 }
