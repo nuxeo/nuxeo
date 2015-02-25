@@ -104,13 +104,15 @@ public class OAuth2TokenStore implements CredentialStore {
     @Override
     public boolean load(String userName, Credential credential) {
         try {
-
             NuxeoOAuth2Token token = getToken(serviceName, userName);
-
-            credential.setAccessToken(token.getAccessToken());
-            credential.setRefreshToken(token.getRefreshToken());
-            credential.setExpirationTimeMilliseconds(token.getExpirationTimeMilliseconds());
-            return true;
+            if (token != null) {
+                credential.setAccessToken(token.getAccessToken());
+                credential.setRefreshToken(token.getRefreshToken());
+                credential.setExpirationTimeMilliseconds(token.getExpirationTimeMilliseconds());
+                return true;
+            } else {
+                return false;
+            }
         } catch (ClientException e) {
             log.error("Error during token loading", e);
             return false;
