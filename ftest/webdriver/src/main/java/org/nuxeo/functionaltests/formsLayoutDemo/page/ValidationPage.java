@@ -98,7 +98,7 @@ public class ValidationPage {
         slist.addNewElement();
         JSListWidgetElement list = l.getWidget("nxw_users", JSListWidgetElement.class);
         list.addNewElement();
-        list.getSubWidget("nxw_ln", 0, false).setInputValue("AA");
+        list.getSubWidget("nxw_ln", 0).setInputValue("AA");
     }
 
     public void fillLayoutValid() {
@@ -110,11 +110,11 @@ public class ValidationPage {
         l.getWidget("nxw_manager:nxw_lastname").setInputValue("Aa");
         JSListWidgetElement slist = l.getWidget("nxw_roles", JSListWidgetElement.class);
         slist.addNewElement();
-        slist.getSubWidget("nxw_role", 0, true).setInputValue("AA");
+        slist.getSubWidget("nxw_role", 0).setInputValue("AA");
         JSListWidgetElement list = l.getWidget("nxw_users", JSListWidgetElement.class);
         list.addNewElement();
-        list.getSubWidget("nxw_fn", 0, true).setInputValue("AA");
-        list.getSubWidget("nxw_ln", 0, true).setInputValue("Aa");
+        list.getSubWidget("nxw_fn", 0).setInputValue("AA");
+        list.getSubWidget("nxw_ln", 0).setInputValue("Aa");
     }
 
     public void checkLayoutEmpty() {
@@ -142,13 +142,12 @@ public class ValidationPage {
         JSListWidgetElement slist = l.getWidget("nxw_roles", JSListWidgetElement.class);
         assertEquals("", slist.getMessageValue());
         assertEquals("This value must match the format \"[a-zA-Z0-9]+\".",
-                slist.getSubWidget("nxw_role", 0, false).getMessageValue());
+                slist.getSubWidget("nxw_role", 0).getMessageValue());
         JSListWidgetElement list = l.getWidget("nxw_users", JSListWidgetElement.class);
         assertEquals("", slist.getMessageValue());
-        assertEquals("This value must match the format \".*\\S.*\".",
-                list.getSubWidget("nxw_fn", 0, false).getMessageValue());
+        assertEquals("This value must match the format \".*\\S.*\".", list.getSubWidget("nxw_fn", 0).getMessageValue());
         assertEquals("This value must match the format \"[A-Z][a-z '-]+\".",
-                list.getSubWidget("nxw_ln", 0, false).getMessageValue());
+                list.getSubWidget("nxw_ln", 0).getMessageValue());
     }
 
     public void checkLayoutValid() {
@@ -159,11 +158,11 @@ public class ValidationPage {
         assertEquals("", l.getWidget("nxw_manager:nxw_lastname").getMessageValue());
         JSListWidgetElement slist = l.getWidget("nxw_roles", JSListWidgetElement.class);
         assertEquals("", slist.getMessageValue());
-        assertEquals("", slist.getSubWidget("nxw_role", 0, false).getMessageValue());
+        assertEquals("", slist.getSubWidget("nxw_role", 0).getMessageValue());
         JSListWidgetElement list = l.getWidget("nxw_users", JSListWidgetElement.class);
         assertEquals("", list.getMessageValue());
-        assertEquals("", list.getSubWidget("nxw_fn", 0, false).getMessageValue());
-        assertEquals("", list.getSubWidget("nxw_ln", 0, false).getMessageValue());
+        assertEquals("", list.getSubWidget("nxw_fn", 0).getMessageValue());
+        assertEquals("", list.getSubWidget("nxw_ln", 0).getMessageValue());
     }
 
 }
