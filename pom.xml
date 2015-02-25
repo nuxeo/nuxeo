@@ -155,7 +155,7 @@
     <guice.version>3.0</guice.version>
     <jersey.version>1.18.3</jersey.version>
     <jetty.mortbay.version>6.1.26</jetty.mortbay.version>
-    <shindig.version>1.1-BETA5-incubating-nx1</shindig.version>
+    <shindig.version>1.1-BETA5-incubating-nx2</shindig.version>
     <apache.axiom.version>1.2.5</apache.axiom.version>
     <chemistry.opencmis.version>0.12.0</chemistry.opencmis.version>
     <chemistry.opencmis.version.nx>0.12.0-NX2</chemistry.opencmis.version.nx>
