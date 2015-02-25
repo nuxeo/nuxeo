@@ -22,11 +22,13 @@
         <pageSize>10</pageSize>
       </coreQueryPageProvider>
       <showFilterForm>false</showFilterForm>
+      <showRefreshCommand>false</showRefreshCommand>
       <showPageSizeSelector>false</showPageSizeSelector>
       <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>documentCreated</event>
         <event>workflowTaskCompleted</event>
+        <event>tasksCacheReset</event>
       </refresh>
       <cacheSize>10</cacheSize>
       <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}

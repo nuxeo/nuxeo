@@ -194,6 +194,7 @@
         <property name="ajaxSupport">true</property>
         <property name="addForm">true</property>
         <property name="useAjaxForm">true</property>
+        <property name="styleClass">button</property>
         <property name="ajaxReRender">
           currentRoutePanelLeft
         </property>
