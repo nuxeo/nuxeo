@@ -21,6 +21,7 @@ package org.nuxeo.functionaltests.formsLayoutDemo.page.standardWidgets;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.forms.JSListWidgetElement;
+import org.nuxeo.functionaltests.forms.JSListWidgetElement.Display;
 import org.nuxeo.functionaltests.formsLayoutDemo.page.Page;
 import org.openqa.selenium.By;
 
@@ -93,7 +94,8 @@ public class ListStandardWidgetPage extends Page {
     }
 
     public JSListWidgetElement getComplexListEditWidget() {
-        return new JSListWidgetElement(AbstractTest.driver, COMPLEX_LIST_WIDGET_EDIT_ID, JSListWidgetElement.Display.TABLE);
+        return new JSListWidgetElement(AbstractTest.driver, COMPLEX_LIST_WIDGET_EDIT_ID,
+                JSListWidgetElement.Display.TABLE);
     }
 
     public JSListWidgetElement submitComplexListWidget() {
@@ -103,7 +105,7 @@ public class ListStandardWidgetPage extends Page {
 
     // Complex List 2
     public JSListWidgetElement getS2HtmlTextComplexListViewWidget() {
-        return new JSListWidgetElement(AbstractTest.driver, S2_HTML_TEXT_COMPLEX_LIST_WIDGET_VIEW_ID);
+        return new JSListWidgetElement(AbstractTest.driver, S2_HTML_TEXT_COMPLEX_LIST_WIDGET_VIEW_ID, Display.TABLE);
     }
 
     public JSListWidgetElement getS2HtmlTextComplexListEditWidget() {
