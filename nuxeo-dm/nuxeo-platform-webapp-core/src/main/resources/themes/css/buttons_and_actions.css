@@ -97,6 +97,9 @@ input.tinyButton {
   font-size: .85em;
   padding: 0 .3em }
 
+.button .smallIcon {
+  vertical-align: text-bottom }
+
 .dropdown,
 .dropdown:hover {
   background: url("${basePath}/icons/dropdown.png") no-repeat scroll right center;
