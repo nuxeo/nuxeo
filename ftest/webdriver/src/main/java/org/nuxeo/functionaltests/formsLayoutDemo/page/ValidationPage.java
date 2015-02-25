@@ -21,8 +21,8 @@ import static org.junit.Assert.assertEquals;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.forms.JSListWidgetElement;
 import org.nuxeo.functionaltests.forms.LayoutElement;
-import org.nuxeo.functionaltests.forms.ListWidgetElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -94,9 +94,9 @@ public class ValidationPage {
         l.getWidget("nxw_manager:nxw_firstname").setInputValue("");
         submitWhileTyping();
         l.getWidget("nxw_manager:nxw_lastname").setInputValue("AA");
-        ListWidgetElement slist = l.getWidget("nxw_roles", ListWidgetElement.class);
+        JSListWidgetElement slist = l.getWidget("nxw_roles", JSListWidgetElement.class);
         slist.addNewElement();
-        ListWidgetElement list = l.getWidget("nxw_users", ListWidgetElement.class);
+        JSListWidgetElement list = l.getWidget("nxw_users", JSListWidgetElement.class);
         list.addNewElement();
         list.getSubWidget("nxw_ln", 0, false).setInputValue("AA");
     }
@@ -108,13 +108,13 @@ public class ValidationPage {
         l.getWidget("nxw_manager:nxw_firstname").setInputValue("AA");
         submitWhileTyping();
         l.getWidget("nxw_manager:nxw_lastname").setInputValue("Aa");
-        ListWidgetElement slist = l.getWidget("nxw_roles", ListWidgetElement.class);
+        JSListWidgetElement slist = l.getWidget("nxw_roles", JSListWidgetElement.class);
         slist.addNewElement();
-        slist.getSubWidget("nxw_role", 0, false).setInputValue("AA");
-        ListWidgetElement list = l.getWidget("nxw_users", ListWidgetElement.class);
+        slist.getSubWidget("nxw_role", 0, true).setInputValue("AA");
+        JSListWidgetElement list = l.getWidget("nxw_users", JSListWidgetElement.class);
         list.addNewElement();
-        list.getSubWidget("nxw_fn", 0, false).setInputValue("AA");
-        list.getSubWidget("nxw_ln", 0, false).setInputValue("Aa");
+        list.getSubWidget("nxw_fn", 0, true).setInputValue("AA");
+        list.getSubWidget("nxw_ln", 0, true).setInputValue("Aa");
     }
 
     public void checkLayoutEmpty() {
@@ -125,9 +125,9 @@ public class ValidationPage {
                 l.getWidget("nxw_manager:nxw_firstname").getMessageValue());
         assertEquals("This value must match the format \"[A-Z][a-z '-]+\".",
                 l.getWidget("nxw_manager:nxw_lastname").getMessageValue());
-        ListWidgetElement slist = l.getWidget("nxw_roles", ListWidgetElement.class);
+        JSListWidgetElement slist = l.getWidget("nxw_roles", JSListWidgetElement.class);
         assertEquals("", slist.getMessageValue());
-        ListWidgetElement list = l.getWidget("nxw_users", ListWidgetElement.class);
+        JSListWidgetElement list = l.getWidget("nxw_users", JSListWidgetElement.class);
         assertEquals("", list.getMessageValue());
     }
 
@@ -139,11 +139,11 @@ public class ValidationPage {
                 l.getWidget("nxw_manager:nxw_firstname").getMessageValue());
         assertEquals("This value must match the format \"[A-Z][a-z '-]+\".",
                 l.getWidget("nxw_manager:nxw_lastname").getMessageValue());
-        ListWidgetElement slist = l.getWidget("nxw_roles", ListWidgetElement.class);
+        JSListWidgetElement slist = l.getWidget("nxw_roles", JSListWidgetElement.class);
         assertEquals("", slist.getMessageValue());
         assertEquals("This value must match the format \"[a-zA-Z0-9]+\".",
                 slist.getSubWidget("nxw_role", 0, false).getMessageValue());
-        ListWidgetElement list = l.getWidget("nxw_users", ListWidgetElement.class);
+        JSListWidgetElement list = l.getWidget("nxw_users", JSListWidgetElement.class);
         assertEquals("", slist.getMessageValue());
         assertEquals("This value must match the format \".*\\S.*\".",
                 list.getSubWidget("nxw_fn", 0, false).getMessageValue());
@@ -157,10 +157,10 @@ public class ValidationPage {
         assertEquals("", l.getWidget("nxw_groupCode").getMessageValue());
         assertEquals("", l.getWidget("nxw_manager:nxw_firstname").getMessageValue());
         assertEquals("", l.getWidget("nxw_manager:nxw_lastname").getMessageValue());
-        ListWidgetElement slist = l.getWidget("nxw_roles", ListWidgetElement.class);
+        JSListWidgetElement slist = l.getWidget("nxw_roles", JSListWidgetElement.class);
         assertEquals("", slist.getMessageValue());
         assertEquals("", slist.getSubWidget("nxw_role", 0, false).getMessageValue());
-        ListWidgetElement list = l.getWidget("nxw_users", ListWidgetElement.class);
+        JSListWidgetElement list = l.getWidget("nxw_users", JSListWidgetElement.class);
         assertEquals("", list.getMessageValue());
         assertEquals("", list.getSubWidget("nxw_fn", 0, false).getMessageValue());
         assertEquals("", list.getSubWidget("nxw_ln", 0, false).getMessageValue());
