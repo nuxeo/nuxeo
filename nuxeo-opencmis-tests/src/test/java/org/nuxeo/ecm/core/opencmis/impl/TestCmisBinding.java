@@ -154,7 +154,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-import org.openqa.selenium.remote.UselessFileDetector;
 
 import com.google.inject.Inject;
 
