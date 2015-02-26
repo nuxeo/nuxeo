@@ -1200,7 +1200,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
      */
     @Override
     public List<Task> getTasks(final DocumentModel document, String actorId, String workflowInstanceId,
-            String worflowModelName, CoreSession session) {
+            final String worflowModelName, CoreSession session) {
         StringBuilder query = new StringBuilder(String.format(
                 "SELECT * FROM Document WHERE ecm:mixinType = '%s' AND ecm:currentLifeCycleState = '%s'",
                 TaskConstants.TASK_FACET_NAME, TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE));
@@ -1214,26 +1214,38 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             query.append(String.format(" AND nt:targetDocumentId = '%s'", document.getId()));
         }
         DocumentModelList documentModelList = session.query(query.toString());
-        List<Task> result = new ArrayList<Task>();
+        final List<Task> result = new ArrayList<Task>();
         for (DocumentModel documentModel : documentModelList) {
             final Task task = documentModel.getAdapter(Task.class);
             if (StringUtils.isNotBlank(worflowModelName)) {
-                final String processId = task.getProcessId();
-                final DocumentRoute routeInstance = session.getDocument(new IdRef(processId)).getAdapter(
-                        DocumentRoute.class);
-                final String modelId = routeInstance.getModelId();
-                if (StringUtils.isNotBlank(modelId)) {
-                    DocumentRoute model = session.getDocument(new IdRef(modelId)).getAdapter(DocumentRoute.class);
-                    if (worflowModelName.equals(model.getName())) {
-                        result.add(task);
+                // User does not necessary have READ on the workflow instance
+                new UnrestrictedSessionRunner(session) {
+
+                    @Override
+                    public void run() throws ClientException {
+                        final String processId = task.getProcessId();
+                        final DocumentRoute routeInstance = session.getDocument(new IdRef(processId)).getAdapter(
+                                DocumentRoute.class);
+                        if (routeInstance != null) {
+                            final String modelId = routeInstance.getModelId();
+                            final String routeInstanceName = routeInstance.getName();
+                            if (StringUtils.isNotBlank(modelId)) {
+                                DocumentRoute model = session.getDocument(new IdRef(modelId)).getAdapter(
+                                        DocumentRoute.class);
+                                if (worflowModelName.equals(model.getName())) {
+                                    result.add(task);
+                                }
+                            } else {
+                                if (routeInstanceName.startsWith(worflowModelName)) {
+                                    // For compatibility < 7.2 only
+                                    result.add(task);
+                                }
+                            }
+                        }
+
                     }
-                } else {
-                    final String routeInstanceName = routeInstance.getName();
-                    if (routeInstanceName.startsWith(worflowModelName)) {
-                    // For compatibility < 7.2 only
-                    result.add(task);
-                    }
-                }
+
+                }.runUnrestricted();
             } else {
                 result.add(task);
             }
