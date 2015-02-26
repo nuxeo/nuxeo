@@ -17,7 +17,11 @@
   <xs:element name="subjects" type="nxs:subjectList"/>
   <xs:element name="rights" type="xs:string"/>
   <xs:element name="source" type="xs:string"/>
-  <xs:element name="coverage" type="xs:string"/>
+  <xs:element name="coverage">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="l10ncoverage" />
+    </xs:simpleType>
+  </xs:element>
   <xs:element name="created" type="xs:date"/>
   <xs:element name="modified" type="xs:date"/>
   <xs:element name="issued" type="xs:date"/>
