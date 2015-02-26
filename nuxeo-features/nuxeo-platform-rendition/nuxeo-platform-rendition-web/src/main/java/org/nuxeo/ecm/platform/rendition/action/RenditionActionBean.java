@@ -71,9 +71,13 @@ public class RenditionActionBean implements Serializable {
      * @since 7.2
      */
     @Factory(value = "currentDocumentVisibleRenditions", scope = ScopeType.EVENT)
-    public List<Rendition> getVisibleRenditions() throws Exception {
+    public List<Rendition> getVisibleRenditions() {
         DocumentModel doc = navigationContext.getCurrentDocument();
         RenditionService rs = Framework.getLocalService(RenditionService.class);
         return rs.getAvailableRenditions(doc, true);
+    }
+
+    public boolean hasVisibleRenditions() {
+        return !getVisibleRenditions().isEmpty();
     }
 }

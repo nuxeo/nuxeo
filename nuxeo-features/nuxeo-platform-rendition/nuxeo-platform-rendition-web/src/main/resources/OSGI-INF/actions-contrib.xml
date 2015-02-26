@@ -15,7 +15,19 @@
         <property name="scrolling">auto</property>
         <property name="ajaxSupport">true</property>
       </properties>
+      <filter-id>hasVisibleRenditions</filter-id>
     </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="hasVisibleRenditions">
+      <rule grant="true">
+        <condition>#{renditionAction.hasVisibleRenditions()}</condition>
+      </rule>
+    </filter>
 
   </extension>
 
