@@ -57,6 +57,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
@@ -169,7 +170,8 @@ public class NuxeoDriveActions extends InputController implements Serializable {
      * browser, or on the OS).
      * 
      * @return Drive edit URL in the form "{@link #NXDRIVE_PROTOCOL}:// {@link #PROTOCOL_COMMAND_EDIT}
-     *         /protocol/server[:port]/webappName/user/userName/repo/repoName/nxdocid/docId/filename/fileName"
+     *         /protocol/server[:port]/webappName/user/userName/repo/repoName/nxdocid/docId/filename/fileName/
+     *         downloadUrl/downloadUrl"
      * @throws ClientException
      */
     public String getDriveEditURL() throws ClientException {
@@ -201,6 +203,9 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         sb.append("/filename/");
         String escapedFilename = fileName.replaceAll("(/|\\\\|\\*|<|>|\\?|\"|:|\\|)", "-");
         sb.append(URIUtils.quoteURIPathComponent(escapedFilename, true));
+        sb.append("/downloadUrl/");
+        String bigFileUrl = DocumentModelFunctions.bigFileUrl(currentDocument, "blobholder:0", "");
+        sb.append(bigFileUrl.substring(bigFileUrl.indexOf("nxbigfile/")));
         return sb.toString();
     }
 
