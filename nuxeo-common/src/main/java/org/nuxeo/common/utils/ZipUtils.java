@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -316,12 +316,13 @@ public final class ZipUtils {
     public static void unzip(String prefix, ZipInputStream in, File dir)
             throws IOException {
         dir.mkdirs();
-        ZipEntry entry = in.getNextEntry();
-        while (entry != null) {
-            if (!entry.getName().startsWith(prefix)) {
-                entry = in.getNextEntry();
+        ZipEntry entry;
+        while ((entry  = in.getNextEntry()) != null) {
+            String entryName = entry.getName();
+            if (!entryName.startsWith(prefix) || entryName.contains("..")) {
                 continue;
             }
+
             File file = new File(dir,
                     entry.getName().substring(prefix.length()));
             if (entry.isDirectory()) {
@@ -330,15 +331,17 @@ public final class ZipUtils {
                 file.getParentFile().mkdirs();
                 FileUtils.copyToFile(in, file);
             }
-            entry = in.getNextEntry();
         }
     }
 
     public static void unzip(ZipInputStream in, File dir) throws IOException {
         dir.mkdirs();
-        ZipEntry entry = in.getNextEntry();
-        while (entry != null) {
-            // System.out.println("Extracting "+entry.getName());
+        ZipEntry entry;
+        while ((entry = in.getNextEntry()) != null) {
+            if (entry.getName().contains("..")) {
+                continue;
+            }
+
             File file = new File(dir, entry.getName());
             if (entry.isDirectory()) {
                 file.mkdirs();
@@ -346,7 +349,6 @@ public final class ZipUtils {
                 file.getParentFile().mkdirs();
                 FileUtils.copyToFile(in, file);
             }
-            entry = in.getNextEntry();
         }
     }
 
@@ -402,9 +404,13 @@ public final class ZipUtils {
             unzip(in, dir);
             return;
         }
-        ZipEntry entry = in.getNextEntry();
-        while (entry != null) {
+        ZipEntry entry;
+        while ((entry = in.getNextEntry()) != null) {
             String entryName = entry.getName();
+            if (entryName.contains("..")) {
+                continue;
+            }
+
             if (filter.accept(new Path(entryName))) {
                 // System.out.println("Extracting "+entryName);
                 File file = new File(dir, entryName);
@@ -415,7 +421,6 @@ public final class ZipUtils {
                     FileUtils.copyToFile(in, file);
                 }
             }
-            entry = in.getNextEntry();
         }
     }
 
@@ -440,12 +445,16 @@ public final class ZipUtils {
             return;
         }
         dir.mkdirs();
-        ZipEntry entry = in.getNextEntry();
-        while (entry != null) {
+
+        ZipEntry entry;
+        while ((entry = in.getNextEntry()) != null) {
             String entryName = entry.getName();
+            if (entryName.contains("..")) {
+                continue;
+            }
+
             if (filter.accept(new Path(entryName))) {
                 if (!entry.getName().startsWith(prefix)) {
-                    entry = in.getNextEntry();
                     continue;
                 }
                 File file = new File(dir,
@@ -457,7 +466,6 @@ public final class ZipUtils {
                     FileUtils.copyToFile(in, file);
                 }
             }
-            entry = in.getNextEntry();
         }
     }
 
