@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Benoit Delbosc
+ *     Nelson Silva
  */
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
@@ -37,6 +38,10 @@ public class UsersGroupsBasePage extends AdminCenterBasePage {
     @Required
     @FindBy(xpath = "//a[@id=\"nxw_UsersManager_form:nxw_UsersManager\"]")
     public WebElement usersTabLink;
+
+    @Required
+    @FindBy(xpath = "//a[@id=\"nxw_GroupsManager_form:nxw_GroupsManager\"]")
+    public WebElement groupsTabLink;
 
     protected void clickOnLinkIfNotSelected(WebElement tabLink) {
         assertNotNull(tabLink);
@@ -67,4 +72,19 @@ public class UsersGroupsBasePage extends AdminCenterBasePage {
         return getUsersTab(false);
     }
 
+    /**
+     * View the Groups tab.
+     */
+    public GroupsTabSubPage getGroupsTab(boolean force) {
+        if (force) {
+            groupsTabLink.click();
+        } else {
+            clickOnLinkIfNotSelected(groupsTabLink);
+        }
+        return asPage(GroupsTabSubPage.class);
+    }
+
+    public GroupsTabSubPage getGroupsTab() {
+        return getGroupsTab(false);
+    }
 }
