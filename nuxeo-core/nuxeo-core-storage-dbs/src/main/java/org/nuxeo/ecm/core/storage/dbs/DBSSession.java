@@ -420,7 +420,7 @@ public class DBSSession implements Session {
     }
 
     protected boolean hasChild(String parentId, String name) {
-        return transaction.hasChild(parentId, name);
+        return transaction.hasChild(parentId, normalize(name));
     }
 
     public Document createChild(String id, String parentId, String name, Long pos, String typeName)

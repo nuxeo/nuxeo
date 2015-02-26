@@ -3903,6 +3903,24 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     @Test
+    public void testNormalizedName() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+
+        String originalName = "e\u0301cran";
+        assertEquals(6, originalName.length());
+
+        String normalizedName = "\u00e9cran";
+        assertEquals(5, normalizedName.length());
+
+        // Add a document with a non normalized name
+        Node doc = session.addChildNode(root, originalName, null, "TestDoc", false);
+        assertFalse(originalName.equals(doc.getName()));
+
+        assertTrue(session.hasChildNode(root, normalizedName, false));
+    }
+
+    @Test
     public void testPathCached() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
