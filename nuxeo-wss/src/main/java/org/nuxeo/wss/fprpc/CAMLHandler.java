@@ -100,7 +100,7 @@ public class CAMLHandler extends DefaultHandler {
         reader.setContentHandler(handler);
         reader.setFeature("http://xml.org/sax/features/namespaces", false);
         reader.setFeature("http://xml.org/sax/features/validation", false);
-        reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
+        reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         return reader;
     }
 
