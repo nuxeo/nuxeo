@@ -35,7 +35,11 @@
     </xs:simpleType>
   </xs:element>
   <xs:element name="contributors" type="nxs:contributorList"/>
-  <xs:element name="lastContributor" type="xs:string"/>
+  <xs:element name="lastContributor">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="userManagerResolver" ref:type="user" />
+    </xs:simpleType>
+  </xs:element>
 
   <!-- Corresponds to the dublincore type element,
   but renamed to avoid conflicts -->
