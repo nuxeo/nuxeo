@@ -120,14 +120,14 @@ public class WorkflowObject extends DefaultObject {
 
     protected void checkCancelGuards(DocumentRoute route) {
         NuxeoPrincipal currentUser = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
-        if (!(currentUser.isAdministrator() || currentUser.isMemberOf("powerusers"))) {
-            throw new WebSecurityException("Not allowed to cancel workflow");
+        if (currentUser.isAdministrator() || currentUser.isMemberOf("powerusers")) {
+            return;
         }
-
         try {
-            if (!currentUser.getName().equals(route.getInitiator())) {
-                throw new WebSecurityException("You don't have the permission to cancel this workflow");
+            if (currentUser.getName().equals(route.getInitiator())) {
+                return;
             }
+            throw new WebSecurityException("You don't have the permission to cancel this workflow");
         } catch (ClientException e) {
             throw WebException.wrap(e);
         }
