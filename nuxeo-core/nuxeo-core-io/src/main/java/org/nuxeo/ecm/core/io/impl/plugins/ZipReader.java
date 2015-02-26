@@ -81,7 +81,11 @@ public class ZipReader extends AbstractDocumentReader {
     }
 
     private static void extract(ZipInputStream in, ZipEntry entry, File root)
-            throws IOException {
+        throws IOException {
+        if (entry.getName().contains("..")) {
+            return;
+        }
+
         if (!entry.isDirectory()) { // create the directtory
             File file = new File(root, entry.getName());
             if (!file.getParentFile().mkdirs()) { // make sure all parent
