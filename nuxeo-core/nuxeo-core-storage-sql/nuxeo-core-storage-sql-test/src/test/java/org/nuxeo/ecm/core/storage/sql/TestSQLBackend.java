@@ -3911,10 +3911,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
 
-        String originalName = "écran";
+        String originalName = "e\u0301cran";
         assertEquals(6, originalName.length());
 
-        String normalizedName = "écran";
+        String normalizedName = "\u00e9cran";
         assertEquals(5, normalizedName.length());
 
         // Add a document with a non normalized name
