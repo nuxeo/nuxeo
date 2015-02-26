@@ -86,17 +86,16 @@ public class JsonEncodeDecodeUtils {
             Entry<String, JsonNode> variable = it.next();
             String key = variable.getKey();
             JsonNode value = variable.getValue();
-            /*
-             * Serializable originalValue = node.getVariables().get(key); Serializable readValue = null; if
-             * (originalValue instanceof List) { readValue = jsnode.traverse().readValueAs(ArrayList.class); } else if
-             * (value.isTextual()) { readValue = jsnode.getTextValue(); } else if (jsnode.isNumber()) { readValue =
-             * jsnode.getNumberValue(); } else if (originalValue instanceof Boolean) { readValue =
-             * jsnode.getBooleanValue(); } else { readValue = (Serializable) codecService.read(jsnode.traverse(),
-             * Thread.currentThread().getContextClassLoader(), SessionFactory.getSession(request)); } variables.put(key,
-             * readValue);
-             */
+            if (value.isNumber()) {
+                // We are working with String will will be corretly decoded by
+                // org.nuxeo.ecm.platform.routing.core.impl.GraphVariablesUtil.setJSONVariables(DocumentModel, String,
+                // Map<String, String>, boolean)
+                // But we'll definitely need to convert submitted json variable to proper typed objects
+                variables.put(key, value.getNumberValue().toString());
+            } else {
+                variables.put(key, value.getTextValue());
+            }
 
-            variables.put(key, value.getTextValue());
         }
         return variables;
     }
