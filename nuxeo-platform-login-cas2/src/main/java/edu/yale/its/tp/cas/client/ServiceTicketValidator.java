@@ -209,6 +209,7 @@ public class ServiceTicketValidator {
         if (response != null) {
             XMLReader r = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
             r.setFeature("http://xml.org/sax/features/namespaces", false);
+            r.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             r.setContentHandler(newHandler());
             r.parse(new InputSource(new StringReader(response)));
         }
