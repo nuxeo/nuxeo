@@ -35,13 +35,13 @@
           <li class="dropDownMenu button dropdown">
             <h:outputText value="#{nxd:titleOrId(navigationContext.currentDomain)}" />
             <ul class="actionSubList">
-              <nxu:repeat var="userDomain" items="#{userDomains}">
+              <c:forEach var="userDomain" items="#{breadcrumbActions.userDomains}">
                 <li>
                   <nxd:restDocumentLink document="#{userDomain}">
                     <h:outputText value="#{nxd:titleOrId(userDomain)}" />
                   </nxd:restDocumentLink>
                 </li>
-              </nxu:repeat>
+              </c:forEach>
             </ul>
           </li>
         </ul>
@@ -49,17 +49,15 @@
 
       <c:if test="#{!empty backendPath}">
 
-        <nxu:set var="userDomains" value="#{breadcrumbActions.userDomains}">
-          <c:forEach var="pathElement" items="#{backendPath}" varStatus="status">
-            <c:if test="#{(status.first and (!pathElement.link or !breadcrumbActions.isUserDomain(pathElement.documentModel))) or !status.first}">
-              <nxd:restDocumentLink document="#{pathElement.documentModel}"
-                rendered="#{pathElement.link}">
-                <h:outputText value="#{nxd:titleOrId(pathElement.documentModel)}" />
-              </nxd:restDocumentLink>
-              <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link}" />
-            </c:if>
-          </c:forEach>
-        </nxu:set>
+        <c:forEach var="pathElement" items="#{backendPath}" varStatus="status">
+          <c:if test="#{(status.first and (!pathElement.link or !breadcrumbActions.isUserDomain(pathElement.documentModel))) or !status.first}">
+            <nxd:restDocumentLink document="#{pathElement.documentModel}"
+              rendered="#{pathElement.link}">
+              <h:outputText value="#{nxd:titleOrId(pathElement.documentModel)}" />
+            </nxd:restDocumentLink>
+            <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link}" />
+          </c:if>
+        </c:forEach>
 
       </c:if>
       <c:if test="#{empty backendPath}">
