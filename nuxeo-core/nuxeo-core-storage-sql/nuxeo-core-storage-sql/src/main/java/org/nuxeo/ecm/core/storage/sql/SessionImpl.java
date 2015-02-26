@@ -1027,8 +1027,7 @@ public class SessionImpl implements Session, XAResource {
             throws StorageException {
         checkLive();
         // TODO could optimize further by not fetching the fragment at all
-        SimpleFragment fragment = context.getChildHierByName(parent.getId(),
-                name, complexProp);
+        SimpleFragment fragment = context.getChildHierByName(parent.getId(), normalize(name), complexProp);
         return fragment != null;
     }
 
