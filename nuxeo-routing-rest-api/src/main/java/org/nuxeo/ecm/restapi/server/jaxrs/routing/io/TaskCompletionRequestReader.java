@@ -43,11 +43,8 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
-import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
-import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.io.util.JsonEncodeDecodeUtils;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.TaskCompletionRequest;
@@ -139,15 +136,12 @@ public class TaskCompletionRequestReader implements MessageBodyReader<TaskComple
 
         TaskCompletionRequest result = new TaskCompletionRequest();
         Task originalTask = session.getDocument(new IdRef(id)).getAdapter(Task.class);
-        GraphNode node = null;
-        GraphRoute workflowInstance = null;
         final String nodeId = originalTask.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
         String workflowInstanceId = originalTask.getProcessId();
-        DocumentModel workflowInstanceDoc = session.getDocument(new IdRef(workflowInstanceId));
-        workflowInstance = workflowInstanceDoc.getAdapter(GraphRoute.class);
-        node = workflowInstance.getNode(nodeId);
+        NodeAccessRunner nodeAccessRunner = new NodeAccessRunner(session, workflowInstanceId, nodeId);
+        nodeAccessRunner.runUnrestricted();
         if (variableNode != null) {
-            variables = JsonEncodeDecodeUtils.decodeVariables(variableNode, node.getVariables(), session);
+            variables = JsonEncodeDecodeUtils.decodeVariables(variableNode, nodeAccessRunner.node.getVariables(), session);
         }
         result.setVariables(variables);
         result.setComment(comment);

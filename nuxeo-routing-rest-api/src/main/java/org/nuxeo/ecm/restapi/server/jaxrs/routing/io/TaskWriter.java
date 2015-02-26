@@ -37,10 +37,8 @@ import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
@@ -87,10 +85,10 @@ public class TaskWriter extends EntityWriter<Task> {
             session = SessionFactory.getSession(request);
         }
         if (session != null && StringUtils.isNotBlank(workflowInstanceId)) {
-            NodeAccesRunner nodeAccesRunner = new NodeAccesRunner(session, workflowInstanceId, nodeId);
-            nodeAccesRunner.runUnrestricted();
-            workflowInstance = nodeAccesRunner.workflowInstance;
-            node = nodeAccesRunner.node;
+            NodeAccessRunner nodeAccessRunner = new NodeAccessRunner(session, workflowInstanceId, nodeId);
+            nodeAccessRunner.runUnrestricted();
+            workflowInstance = nodeAccessRunner.workflowInstance;
+            node = nodeAccessRunner.node;
         }
 
         jg.writeStringField("id", item.getDocument().getId());
@@ -213,31 +211,5 @@ public class TaskWriter extends EntityWriter<Task> {
         } else {
             jg.writeObjectField(e.getKey(), e.getValue());
         }
-    }
-
-
-    protected static class NodeAccesRunner extends UnrestrictedSessionRunner {
-
-        GraphNode node;
-
-        GraphRoute workflowInstance;
-
-        String workflowInstanceId;
-
-        String nodeId;
-
-        protected NodeAccesRunner(CoreSession session, String workflowInstanceId, String nodeId) {
-            super(session);
-            this.workflowInstanceId = workflowInstanceId;
-            this.nodeId = nodeId;
-        }
-
-        @Override
-        public void run() throws ClientException {
-            DocumentModel workflowInstanceDoc = session.getDocument(new IdRef(workflowInstanceId));
-            workflowInstance = workflowInstanceDoc.getAdapter(GraphRoute.class);
-            node = workflowInstance.getNode(nodeId);
-        }
-
     }
 }
