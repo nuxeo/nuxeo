@@ -54,6 +54,7 @@ public class OOo2TextConverter implements Converter {
             XMLReader reader = parser.getXMLReader();
             reader.setFeature("http://xml.org/sax/features/validation", false);
             reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 
             ZipInputStream zis = new ZipInputStream(blobHolder.getBlob().getStream());
             ZipEntry zipEntry = zis.getNextEntry();
