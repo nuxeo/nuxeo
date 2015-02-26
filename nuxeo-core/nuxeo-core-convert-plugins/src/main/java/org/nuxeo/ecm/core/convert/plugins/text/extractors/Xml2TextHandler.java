@@ -56,6 +56,7 @@ public class Xml2TextHandler extends DefaultHandler {
         XMLReader reader = parser.getXMLReader();
         reader.setFeature("http://xml.org/sax/features/validation", false);
         reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
     }
 
     public SAXParser getParser() {

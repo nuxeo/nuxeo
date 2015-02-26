@@ -52,6 +52,7 @@ public abstract class XmlZip2TextConverter implements Converter {
             XMLReader reader = parser.getXMLReader();
             reader.setFeature("http://xml.org/sax/features/validation", false);
             reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 
             StringBuilder sb = new StringBuilder();
             UnclosableZipInputStream zis = new UnclosableZipInputStream(blobHolder.getBlob().getStream());
