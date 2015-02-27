@@ -138,6 +138,7 @@
     <!-- Convenient property; prefer use of the right property (runtime/core/...) -->
     <nuxeo.platform.version>5.5.0-HF20-SNAPSHOT</nuxeo.platform.version>
     <seam.version>2.1.0.SP1</seam.version>
+    <seam.remoting.version>2.1.0.SP1-NX1</seam.remoting.version>
   </properties>
 
   <dependencyManagement>
@@ -1822,7 +1823,7 @@
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-remoting</artifactId>
-        <version>${seam.version}</version>
+        <version>${seam.remoting.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
