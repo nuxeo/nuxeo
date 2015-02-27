@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.blob;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -98,26 +99,34 @@ public class BlobObject extends DefaultObject {
                     }
                 }
             }
-
-            String digest = blob.getDigest();
-            EntityTag etag = digest == null ? null : new EntityTag(digest);
-            if (etag != null) {
-                Response.ResponseBuilder builder = request.evaluatePreconditions(etag);
-                if (builder != null) {
-                    return builder.build();
-                }
-            }
-            String contentDisposition = ServletHelper.getRFC2231ContentDisposition(ctx.getRequest(), fileName);
-            // cached resource did change or no ETag -> serve updated content
-            Response.ResponseBuilder builder = Response.ok(blob).header("Content-Disposition", contentDisposition).type(
-                    blob.getMimeType());
-            if (etag != null) {
-                builder.tag(etag);
-            }
-            return builder.build();
+            return buildResponseFromBlob(request, ctx.getRequest(), blob, fileName);
         } catch (ClientException e) {
             throw WebException.wrap("Failed to get the attached file", e);
         }
+    }
+
+    public static Response buildResponseFromBlob(Request request, HttpServletRequest httpServletRequest, Blob blob,
+            String filename) {
+        if (filename == null) {
+            filename = blob.getFilename();
+        }
+
+        String digest = blob.getDigest();
+        EntityTag etag = digest == null ? null : new EntityTag(digest);
+        if (etag != null) {
+            Response.ResponseBuilder builder = request.evaluatePreconditions(etag);
+            if (builder != null) {
+                return builder.build();
+            }
+        }
+        String contentDisposition = ServletHelper.getRFC2231ContentDisposition(httpServletRequest, filename);
+        // cached resource did change or no ETag -> serve updated content
+        Response.ResponseBuilder builder = Response.ok(blob).header("Content-Disposition", contentDisposition).type(
+                blob.getMimeType());
+        if (etag != null) {
+            builder.tag(etag);
+        }
+        return builder.build();
     }
 
     /**
