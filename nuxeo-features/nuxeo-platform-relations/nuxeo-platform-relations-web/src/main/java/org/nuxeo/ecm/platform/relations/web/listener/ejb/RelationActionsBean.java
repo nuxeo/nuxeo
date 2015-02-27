@@ -26,12 +26,12 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.faces.event.ActionEvent;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -358,7 +358,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean implemen
         }
         try {
             documentRelationManager.addRelation(documentManager, getCurrentDocument(), object, predicateUri, false,
-                    includeStatementsInEvents, comment.trim());
+                    includeStatementsInEvents, StringUtils.trim(comment));
             facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get("label.relation.created"));
             resetCreateFormValues();
