@@ -119,6 +119,7 @@
     <jboss.ejb.version>3.0-RC8</jboss.ejb.version>
     <javax.ejb.version>3.0-RC8</javax.ejb.version>
     <seam.version>2.1.0.SP1</seam.version>
+    <seam.remoting.version>2.1.0.SP1-NX1</seam.remoting.version>
   </properties>
 
   <dependencyManagement>
@@ -672,7 +673,7 @@
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-remoting</artifactId>
-        <version>${seam.version}</version>
+        <version>${seam.remoting.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
