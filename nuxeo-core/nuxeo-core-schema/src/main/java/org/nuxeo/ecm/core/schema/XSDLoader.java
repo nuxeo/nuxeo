@@ -391,7 +391,7 @@ public class XSDLoader {
         }
         if (type.isSimpleType()) {
             if (type instanceof XSListSimpleType) {
-                ecmType = loadListType(schema, (XSListSimpleType) type);
+                ecmType = loadListType(schema, (XSListSimpleType) type, fieldName);
             } else {
                 ecmType = loadSimpleType(schema, type, fieldName);
             }
@@ -627,24 +627,18 @@ public class XSDLoader {
         log.warn(msg.toString());
     }
 
-    protected ListType loadListType(Schema schema, XSListSimpleType type) {
+    protected ListType loadListType(Schema schema, XSListSimpleType type, String fieldName) throws TypeBindingException {
         String name = type.getName();
         if (name == null) {
-            // probably a local type -> ignore it
-            return null;
+            // probably a local type
+            name = fieldName + ANONYMOUS_TYPE_SUFFIX;
         }
         XSType xsItemType = type.getItemType();
         Type itemType;
         if (xsItemType.getTargetNamespace().equals(NS_XSD)) {
             itemType = XSDTypes.getType(xsItemType.getName());
         } else {
-            // itemType = loadType(schema, type);
-            // TODO: type must be already defined - use a dependency manager or
-            // something to
-            // support types that are not yet defined
-            // FIXME: this seems to be preventing constraints definitions on sub sub lists, see
-            // TestSchemaLoaderRestriction#testListOfListRestriction
-            itemType = getType(xsItemType.getName());
+            itemType = loadSimpleType(schema, xsItemType != null ? xsItemType : type.getSimpleBaseType(), null);
         }
         if (itemType == null) {
             log.error("list item type was not defined -> you should define first the item type");

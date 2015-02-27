@@ -166,6 +166,9 @@ public class DocumentHelper {
      * @return
      */
     public static Object readStringList(String value, SimpleType type) {
+        if (!type.isPrimitive()) {
+            return readStringList(value, type.getPrimitiveType());
+        }
         String[] ar = readStringList(value);
         if (ar == null) {
             return null;

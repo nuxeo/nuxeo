@@ -27,11 +27,12 @@ import java.util.GregorianCalendar;
 import java.util.Set;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.constraints.DateIntervalConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.EnumConstraint;
@@ -194,14 +195,22 @@ public class TestSchemaLoaderRestriction extends NXRuntimeTestCase {
         assertEquals(expected, attr.isNillable());
     }
 
-    @Ignore("NXP-16400: Fix constraints registration on sub sub list item property")
+    @Test
+    public void testSimpleListWithConstraints() {
+        Field subList = schema.getField("simpleListWithConstraints");
+        assertNotNull(subList);
+        Type type = ((ListType) subList.getType()).getFieldType();
+        Set<Constraint> constraints = type.getConstraints();
+        assertEquals(2, constraints.size());
+    }
+
     @Test
     public void testListOfListRestriction() {
-        SchemaManager mgr = Framework.getService(SchemaManager.class);
-        Field subList = mgr.getField("testrestriction:listOfLists/*/stringListItem/*");
-        assertNotNull(subList);
-        Set<Constraint> constraints = subList.getConstraints();
-        assertEquals(1, constraints.size());
+        ListType listType = (ListType) schema.getField("listOfLists").getType();
+        ComplexType itemType = (ComplexType) listType.getFieldType();
+        ListType subListType = (ListType) itemType.getField("stringListItem").getType();
+        Set<Constraint> constraints = subListType.getFieldType().getConstraints();
+        assertEquals(2, constraints.size());
     }
 
 }

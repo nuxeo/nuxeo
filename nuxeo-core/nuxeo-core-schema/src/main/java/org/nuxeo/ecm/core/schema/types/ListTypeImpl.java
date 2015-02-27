@@ -50,7 +50,9 @@ public class ListTypeImpl extends AbstractType implements ListType {
             fieldName = "item";
         }
         this.type = type;
-        field = new FieldImpl(QName.valueOf(fieldName), this, type, defaultValue, flags, constraints);
+        // if the list is an array, there's no field constraint (notnull)
+        Collection<Constraint> computedConstraints = isArray ? type.getConstraints() : constraints;
+        field = new FieldImpl(QName.valueOf(fieldName), this, type, defaultValue, flags, computedConstraints);
         this.minOccurs = minOccurs;
         this.maxOccurs = maxOccurs;
         this.defaultValue = defaultValue;

@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -209,9 +210,16 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
      */
     private List<ConstraintViolation> validateSimpleTypeField(Schema schema, List<PathNode> path, Field field,
             Object value) {
-        assert field.getType().isSimpleType() || field.getType().isListType(); // list type to manage ArrayProperty
+        Type type = field.getType();
+        assert type.isSimpleType() || type.isListType(); // list type to manage ArrayProperty
         List<ConstraintViolation> violations = new ArrayList<ConstraintViolation>();
-        for (Constraint constraint : field.getConstraints()) {
+        Set<Constraint> constraints = null;
+        if (type.isListType()) { // ArrayProperty
+            constraints = ((ListType) type).getFieldType().getConstraints();
+        } else {
+            constraints = field.getConstraints();
+        }
+        for (Constraint constraint : constraints) {
             if (!constraint.validate(value)) {
                 ConstraintViolation violation = new ConstraintViolation(schema, path, constraint, value);
                 violations.add(violation);

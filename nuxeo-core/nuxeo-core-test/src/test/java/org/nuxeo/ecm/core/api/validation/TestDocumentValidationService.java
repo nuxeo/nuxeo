@@ -381,6 +381,36 @@ public class TestDocumentValidationService {
         assertTrue(violations.asList().get(0).getConstraint() instanceof PatternConstraint);
     }
 
+    @Test
+    public void testValidateSimpleListField() {
+        DocumentValidationReport violations;
+        violations = validator.validate("vs:simpleList", new String[] {});
+        assertFalse(violations.hasError());
+        violations = validator.validate("vs:simpleList", new String[] { "", "123" });
+        assertFalse(violations.hasError());
+        violations = validator.validate("vs:simpleList", new String[] { "", "123", "ABC" });
+        assertTrue(violations.hasError());
+        assertEquals(1, violations.numberOfErrors());
+        assertTrue(violations.asList().get(0).getConstraint() instanceof PatternConstraint);
+    }
+
+    @Test
+    public void testValidateArrayPropertyWithConstraint() {
+        DocumentValidationReport violations;
+        doc.setPropertyValue("vs:groupCode", 123);
+        doc.setPropertyValue("vs:simpleList", new String[] {});
+        violations = validator.validate(doc);
+        assertFalse(violations.hasError());
+        doc.setPropertyValue("vs:simpleList", new String[] { "", "123" });
+        violations = validator.validate(doc);
+        assertFalse(violations.hasError());
+        doc.setPropertyValue("vs:simpleList", new String[] { "", "123", "ABC" });
+        violations = validator.validate(doc);
+        assertTrue(violations.hasError());
+        assertEquals(1, violations.numberOfErrors());
+        assertTrue(violations.asList().get(0).getConstraint() instanceof PatternConstraint);
+    }
+
     // //////////////////////////////////////
     // End of the tests : Usefull methods //
 

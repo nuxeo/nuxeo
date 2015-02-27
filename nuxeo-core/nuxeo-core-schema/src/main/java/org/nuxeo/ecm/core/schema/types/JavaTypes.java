@@ -57,6 +57,9 @@ public final class JavaTypes {
     }
 
     public static Class<?> getClass(Type type) {
+        if (type.isSimpleType() && !((SimpleType) type).isPrimitive()) {
+            return getClass(((SimpleType) type).getPrimitiveType());
+        }
         return types2Class.get(type);
     }
 

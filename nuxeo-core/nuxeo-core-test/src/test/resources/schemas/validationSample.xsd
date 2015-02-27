@@ -54,5 +54,17 @@
     </xs:attribute>
   </xs:complexType>
 
+  <xs:element name="simpleList">
+    <xs:simpleType>
+      <xs:list>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]*"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:list>
+    </xs:simpleType>
+  </xs:element>
+
 </xs:schema>
 
