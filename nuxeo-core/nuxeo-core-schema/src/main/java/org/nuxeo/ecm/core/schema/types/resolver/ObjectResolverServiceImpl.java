@@ -69,16 +69,15 @@ public class ObjectResolverServiceImpl extends DefaultComponent implements Objec
         try {
             resolver = resolverClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            log.error(
-                    String.format("Unable to instanciate %s - missing public constructor with no param",
-                            resolverClass.getCanonicalName()), e);
+            log.warn(String.format("Unable to instanciate %s - missing public constructor with no param",
+                    resolverClass.getCanonicalName()));
             return null;
         }
         try {
             resolver.configure(parameters != null ? parameters : new HashMap<String, String>());
         } catch (IllegalArgumentException e) {
-            log.error(String.format("Unable to configure %s with parameters %s", resolverClass.getCanonicalName(),
-                    parameters.toString()), e);
+            log.info(String.format("Unable to configure %s with parameters %s", resolverClass.getCanonicalName(),
+                    parameters.toString()));
             return null;
         }
         return resolver;
