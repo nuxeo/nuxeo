@@ -19,6 +19,7 @@
   </scm>
 
   <properties>
+    <nuxeo.su.version>7.1-SU01</nuxeo.su.version>
     <nuxeo.addons.version>7.1</nuxeo.addons.version>
     <nuxeo.opencmis.version>7.1</nuxeo.opencmis.version>
     <nuxeo.businessdays.version>7.1</nuxeo.businessdays.version>
@@ -181,7 +182,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-login-cas2</artifactId>
-        <version>${nuxeo.login.version}</version>
+        <version>${nuxeo.su.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -392,7 +393,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-wss</artifactId>
-        <version>${nuxeo.fsconnectors.version}</version>
+        <version>${nuxeo.su.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
