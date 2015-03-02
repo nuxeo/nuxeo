@@ -91,6 +91,8 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     public static final String SERVER_VERSION_PROP_KEY = "org.nuxeo.ecm.product.version";
 
+    public static final String NEW_DRIVE_EDIT_URL_PROP_KEY = "org.nuxeo.drive.new.edit.url";
+
     public static final String DESKTOP_PACKAGE_URL_LATEST_SEGMENT = "latest";
 
     public static final String DESKTOP_PACKAGE_PREFIX = "nuxeo-drive.";
@@ -170,8 +172,8 @@ public class NuxeoDriveActions extends InputController implements Serializable {
      * browser, or on the OS).
      * 
      * @return Drive edit URL in the form "{@link #NXDRIVE_PROTOCOL}:// {@link #PROTOCOL_COMMAND_EDIT}
-     *         /protocol/server[:port]/webappName/user/userName/repo/repoName/nxdocid/docId/filename/fileName/
-     *         downloadUrl/downloadUrl"
+     *         /protocol/server[:port]/webappName/[user/userName/]repo/repoName/nxdocid/docId/filename/fileName[/
+     *         downloadUrl/downloadUrl]"
      * @throws ClientException
      */
     public String getDriveEditURL() throws ClientException {
@@ -194,18 +196,23 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         sb.append(NXDRIVE_PROTOCOL).append("://");
         sb.append(PROTOCOL_COMMAND_EDIT).append("/");
         sb.append(baseURL.replaceFirst("://", "/"));
-        sb.append("user/");
-        sb.append(documentManager.getPrincipal().getName());
-        sb.append("/repo/");
+        if (Boolean.valueOf(Framework.getProperty(NEW_DRIVE_EDIT_URL_PROP_KEY))) {
+            sb.append("user/");
+            sb.append(documentManager.getPrincipal().getName());
+            sb.append("/");
+        }
+        sb.append("repo/");
         sb.append(documentManager.getRepositoryName());
         sb.append("/nxdocid/");
         sb.append(currentDocument.getId());
         sb.append("/filename/");
         String escapedFilename = fileName.replaceAll("(/|\\\\|\\*|<|>|\\?|\"|:|\\|)", "-");
         sb.append(URIUtils.quoteURIPathComponent(escapedFilename, true));
-        sb.append("/downloadUrl/");
-        String bigFileUrl = DocumentModelFunctions.bigFileUrl(currentDocument, "blobholder:0", "");
-        sb.append(bigFileUrl.substring(bigFileUrl.indexOf("nxbigfile/")));
+        if (Boolean.valueOf(Framework.getProperty(NEW_DRIVE_EDIT_URL_PROP_KEY))) {
+            sb.append("/downloadUrl/");
+            String bigFileUrl = DocumentModelFunctions.bigFileUrl(currentDocument, "blobholder:0", "");
+            sb.append(bigFileUrl.substring(bigFileUrl.indexOf("nxbigfile/")));
+        }
         return sb.toString();
     }
 
