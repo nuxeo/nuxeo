@@ -67,7 +67,7 @@ public class DocumentRoutingEngineServiceImpl extends DefaultComponent implement
             throw new ClientRuntimeException(e);
         }
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put(WORKFLOW_NAME_EVENT_PROPERTY_KEY, routeInstance.getName());
+        properties.put(WORKFLOW_NAME_EVENT_PROPERTY_KEY, routeInstance.getTitle());
         EventFirer.fireEvent(session, routeInstance.getAttachedDocuments(session), properties,
                 DocumentRoutingConstants.Events.workflowCanceled.name());
     }
