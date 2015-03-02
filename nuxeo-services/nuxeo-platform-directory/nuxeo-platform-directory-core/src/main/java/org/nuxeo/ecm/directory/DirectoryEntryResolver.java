@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
@@ -48,6 +49,23 @@ import org.nuxeo.runtime.api.Framework;
  *   </xs:simpleType>
  * </xs:element>
  * </pre>
+ * <p>
+ * For hierarchical directories, which entries reference other entries. You can manage a specific reference containing
+ * the full entry path. You have to specify the parent field and the separator used to encode the reference.
+ * </p>
+ *
+ * <pre>
+ * {@code
+ * <xs:element name="coverage">
+ *   <xs:simpleType>
+ *     <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="l10ncoverage" ref:parentField="parent" ref:separator="/" />
+ *   </xs:simpleType>
+ * </xs:element>
+ * </pre>
+ * <p>
+ * It's not necessary to define parentField and separator for directory using schema ending by xvocabulary. The feature
+ * is automatically enable.
+ * </p>
  *
  * @since 7.1
  */
@@ -66,6 +84,12 @@ public class DirectoryEntryResolver implements ObjectResolver {
     private Map<String, Serializable> parameters;
 
     private DirectoryService directoryService;
+
+    private boolean hierarchical = false;
+
+    private String parentField = null;
+
+    private String separator = null;
 
     public DirectoryService getDirectoryService() {
         if (directoryService == null) {
@@ -111,6 +135,18 @@ public class DirectoryEntryResolver implements ObjectResolver {
         }
         idField = directory.getIdField();
         schema = directory.getSchema();
+        if (schema.endsWith("xvocabulary")) {
+            hierarchical = true;
+            parentField = "parent";
+            separator = "/";
+        }
+        String parentFieldParam = StringUtils.trim(parameters.get("parentField"));
+        String separatorParam = StringUtils.trim(parameters.get("separator"));
+        if (!StringUtils.isBlank(parentFieldParam) && !StringUtils.isBlank(separatorParam)) {
+            hierarchical = true;
+            parentField = parentFieldParam;
+            separator = separatorParam;
+        }
         this.parameters = new HashMap<String, Serializable>();
         this.parameters.put(PARAM_DIRECTORY, directory.getName());
     }
@@ -130,16 +166,7 @@ public class DirectoryEntryResolver implements ObjectResolver {
     @Override
     public boolean validate(Object value) throws IllegalStateException {
         checkConfig();
-        if (value != null && value instanceof String) {
-            String id = (String) value;
-            Session session = directory.getSession();
-            try {
-                return session.hasEntry(id);
-            } finally {
-                session.close();
-            }
-        }
-        return false;
+        return fetch(value) != null;
     }
 
     @Override
@@ -147,6 +174,14 @@ public class DirectoryEntryResolver implements ObjectResolver {
         checkConfig();
         if (value != null && value instanceof String) {
             String id = (String) value;
+            if (hierarchical) {
+                String[] ids = StringUtils.split(id, separator);
+                if (ids.length > 0) {
+                    id = ids[ids.length - 1];
+                } else {
+                    return null;
+                }
+            }
             Session session = directory.getSession();
             try {
                 DocumentModel doc = session.getEntry(id);
@@ -190,7 +225,30 @@ public class DirectoryEntryResolver implements ObjectResolver {
                 if (!entry.hasSchema(schema)) {
                     return null;
                 }
-                return (Serializable) entry.getProperty(schema, idField);
+                String result = (String) entry.getProperty(schema, idField);
+                if (hierarchical) {
+                    String parent = (String) entry.getProperty(schema, parentField);
+                    DocumentModel parentModel;
+                    Session session = null;
+                    try {
+                        while (parent != null) {
+                            if (session == null) {
+                                session = directory.getSession();
+                            }
+                            parentModel = session.getEntry(parent);
+                            if (parentModel != null) {
+                                parent = (String) entry.getProperty(schema, idField);
+                                result = parent + separator + result;
+                                parent = (String) entry.getProperty(schema, parentField);
+                            }
+                        }
+                    } finally {
+                        if (session != null) {
+                            session.close();
+                        }
+                    }
+                }
+                return result;
             }
         }
         return null;
