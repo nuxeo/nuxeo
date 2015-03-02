@@ -36,7 +36,7 @@ public class SetWorkflowNodeVar {
     @Param(name = "name")
     protected String name;
 
-    @Param(name = "value")
+    @Param(name = "value", required = false)
     protected Object value;
 
     @SuppressWarnings("unchecked")
