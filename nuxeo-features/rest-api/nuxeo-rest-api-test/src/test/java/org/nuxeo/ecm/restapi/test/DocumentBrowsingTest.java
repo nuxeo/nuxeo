@@ -454,7 +454,7 @@ public class DocumentBrowsingTest extends BaseTest {
         // When i do a PUT request on the document with modified data
         JSONDocumentNode jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
         jsonDoc.setPropertyValue("dc:title", "New title");
-        jsonDoc.setPropertyArray("dc:contributors", "me", "you", "them", "everybody");
+        jsonDoc.setPropertyArray("dc:contributors", "system");
         response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson());
 
         // Then the document is updated
@@ -463,11 +463,9 @@ public class DocumentBrowsingTest extends BaseTest {
         assertEquals("New title", note.getTitle());
 
         List<String> contributors = Arrays.asList((String[]) note.getPropertyValue("dc:contributors"));
-        assertTrue(contributors.contains("me"));
-        assertTrue(contributors.contains("you"));
-        assertTrue(contributors.contains("them"));
-        assertTrue(contributors.contains("everybody"));
-        assertEquals(5, contributors.size());
+        assertTrue(contributors.contains("system"));
+        assertTrue(contributors.contains("Administrator"));
+        assertEquals(2, contributors.size());
     }
 
 }

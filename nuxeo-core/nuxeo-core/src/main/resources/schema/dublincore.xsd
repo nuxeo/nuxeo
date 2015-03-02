@@ -12,7 +12,11 @@
   </xs:simpleType>
 
   <xs:simpleType name="contributorList">
-    <xs:list itemType="xs:string" />
+    <xs:list>
+      <xs:simpleType>
+        <xs:restriction base="xs:string" ref:resolver="userManagerResolver" ref:type="user" />
+      </xs:simpleType>
+    </xs:list>
   </xs:simpleType>
 
 
