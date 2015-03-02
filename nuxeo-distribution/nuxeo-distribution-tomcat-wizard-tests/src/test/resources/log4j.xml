@@ -192,7 +192,7 @@
   <!--
     Show the evolution of the DataSource pool in the logs [inUse/Available/Max]
     <category name="org.jboss.resource.connectionmanager.JBossManagedConnectionPool">
-      <priority value="TRACE" />
+      <priority value="WARN" />
     </category>
   -->
 
@@ -206,7 +206,7 @@
   <!--
     Enable JBossWS message tracing
     <category name="org.jboss.ws.core.MessageTrace">
-      <priority value="TRACE" />
+      <priority value="WARN" />
     </category>
   -->
 
