@@ -4,7 +4,11 @@
   xmlns:nxs="http://www.nuxeo.org/ecm/schemas/dublincore/" xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/">
 
   <xs:simpleType name="subjectList">
-    <xs:list itemType="xs:string" />
+    <xs:list>
+      <xs:simpleType>
+        <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="l10nsubjects" />
+      </xs:simpleType>
+    </xs:list>
   </xs:simpleType>
 
   <xs:simpleType name="contributorList">
