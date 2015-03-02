@@ -18,7 +18,7 @@
       <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %t %X %m%n" />
     </layout>
   </appender>
-    
+
   <root>
     <priority value="TRACE" />
     <appender-ref ref="CONSOLE" />
