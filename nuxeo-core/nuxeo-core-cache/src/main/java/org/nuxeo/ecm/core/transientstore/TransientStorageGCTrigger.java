@@ -20,14 +20,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
-import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
-import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Simple  Listener used to GC Work for {@link TransientStore}s
+ * Simple Listener used to GC Work for {@link TransientStore}s
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 7.2
@@ -41,21 +39,7 @@ public class TransientStorageGCTrigger implements EventListener {
         if (event.getName().equals(EVENT)) {
 
             WorkManager wm = Framework.getService(WorkManager.class);
-            wm.schedule(new AbstractWork() {
-
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public String getTitle() {
-                    return "Transient Store GC";
-                }
-
-                @Override
-                public void work() {
-                    TransientStoreService tss = Framework.getService(TransientStoreService.class);
-                    tss.doGC();
-                }
-            }, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
+            wm.schedule(new TransiantStorageGCWork(), Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
         }
     }
 }

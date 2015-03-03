@@ -58,11 +58,6 @@ public class SimpleTransientStore extends AbstractTransientStore {
     }
 
     @Override
-    public int getStorageSizeMB() {
-        return (int) getStorageSize() / (1024 * 1024);
-    }
-
-    @Override
     public Class<? extends Cache> getCacheImplClass() {
         return InMemoryCacheImpl.class;
     }

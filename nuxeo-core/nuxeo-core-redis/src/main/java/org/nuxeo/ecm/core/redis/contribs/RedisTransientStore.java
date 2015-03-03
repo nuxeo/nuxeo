@@ -17,10 +17,20 @@
 
 package org.nuxeo.ecm.core.redis.contribs;
 
+import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.cache.Cache;
+import org.nuxeo.ecm.core.redis.RedisAdmin;
+import org.nuxeo.ecm.core.redis.RedisCallable;
+import org.nuxeo.ecm.core.redis.RedisExecutor;
 import org.nuxeo.ecm.core.transientstore.AbstractTransientStore;
 import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
+import org.nuxeo.runtime.api.Framework;
+
+import redis.clients.jedis.Jedis;
 
 /**
  * Redis implementation (i.e. Cluster Aware) implementation of the {@link TransientStore}
@@ -31,34 +41,84 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 
 public class RedisTransientStore extends AbstractTransientStore {
 
+    protected RedisExecutor redisExecutor;
+
+    protected String namespace;
+
+    protected RedisAdmin redisAdmin;
+
+    protected Log log = LogFactory.getLog(RedisTransientStore.class);
+
     public RedisTransientStore() {
+        redisExecutor = Framework.getService(RedisExecutor.class);
+        redisAdmin = Framework.getService(RedisAdmin.class);
+        namespace = redisAdmin.namespace("transientCache", getConfig().getName(), "size");
     }
 
     @Override
-    protected void incrementStorageSize(StorageEntry entry) {
-        // XXX
+    protected void incrementStorageSize(final StorageEntry entry) {
+        try {
+            redisExecutor.execute(new RedisCallable<Void>() {
+                @Override
+                public Void call(Jedis jedis) throws IOException {
+                    jedis.incrBy(namespace, entry.getSize());
+                    return null;
+                }
+            });
+        } catch (Exception e) {
+            log.error("Error while accesing Redis", e);
+        }
     }
 
     @Override
-    protected void decrementStorageSize(StorageEntry entry) {
-        // XXX
+    protected void decrementStorageSize(final StorageEntry entry) {
+        try {
+            redisExecutor.execute(new RedisCallable<Void>() {
+                @Override
+                public Void call(Jedis jedis) throws IOException {
+                    jedis.decrBy(namespace, entry.getSize());
+                    return null;
+                }
+            });
+        } catch (Exception e) {
+            log.error("Error while accesing Redis", e);
+        }
     }
 
     @Override
     protected long getStorageSize() {
-        return 0;
+        try {
+            return redisExecutor.execute(new RedisCallable<Long>() {
+                @Override
+                public Long call(Jedis jedis) throws IOException {
+                    String value = jedis.get(namespace);
+                    return Long.parseLong(value);
+                }
+            });
+        } catch (Exception e) {
+            log.error("Error while accesing Redis", e);
+            return 0;
+        }
     }
 
     @Override
-    protected void setStorageSize(long newSize) {
-        // XXX
+    protected void setStorageSize(final long newSize) {
+        try {
+            redisExecutor.execute(new RedisCallable<Void>() {
+                @Override
+                public Void call(Jedis jedis) throws IOException {
+                    jedis.set(namespace, ""+newSize);
+                    return null;
+                }
+            });
+        } catch (Exception e) {
+            log.error("Error while accesing Redis", e);
+        }
     }
 
     @Override
     public Class<? extends Cache> getCacheImplClass() {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
+        return RedisCache.class;
     }
 
 }

@@ -183,12 +183,12 @@ public abstract class AbstractTransientStore implements TransientStore {
 
     protected String getCachingDirName(String key) {
         String dirName = Base64.encodeBase64String(key.getBytes());
-        dirName =  dirName.replaceAll("/", "*");
+        dirName =  dirName.replaceAll("/", "_");
         return dirName;
     }
 
     protected String getKeyCachingDirName(String dir) {
-        String key = dir.replaceAll("*", "/");
+        String key = dir.replaceAll("_", "/");
         return new String (Base64.decodeBase64(key));
     }
 
