@@ -211,7 +211,12 @@ public class SimpleDocumentModel implements DocumentModel {
 
     @Override
     public void setProperties(String schemaName, Map<String, Object> data) throws ClientException {
-        getDataModelInternal(schemaName).setMap(data);
+        DataModel dm = getDataModelInternal(schemaName);
+        dm.setMap(data);
+        // force dirty for updated properties
+        for (String field : data.keySet()) {
+            dm.setDirty(field);
+        }
     }
 
     @Override
@@ -272,7 +277,10 @@ public class SimpleDocumentModel implements DocumentModel {
         // cut prefix
         String partPath = cxpath.substring(cxpath.indexOf(':') + 1);
         try {
-            return part.resolvePath(partPath);
+            Property property = part.resolvePath(partPath);
+		    // force dirty for updated properties
+            property.setForceDirty(true);
+            return property;
         } catch (PropertyNotFoundException e) {
             throw new PropertyNotFoundException(xpath, e.getDetail());
         }

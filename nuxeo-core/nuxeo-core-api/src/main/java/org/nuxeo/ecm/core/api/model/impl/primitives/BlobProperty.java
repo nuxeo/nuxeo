@@ -118,6 +118,12 @@ public class BlobProperty extends MapProperty {
     }
 
     @Override
+    protected boolean isSameValue(Serializable value1, Serializable value2) {
+        // for now, blob property are considered always as dirty when update - see NXP-16322
+        return false;
+    }
+
+    @Override
     public void init(Serializable value) throws PropertyException {
         if (value == null) {
             // IGNORE null values - properties will be

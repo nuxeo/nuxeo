@@ -231,6 +231,16 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     boolean isDirty();
 
     /**
+     * only for SimpleDocumentModel
+     */
+    boolean isForceDirty();
+
+    /**
+     * only for SimpleDocumentModel
+     */
+    void setForceDirty(boolean forceDirty);
+
+    /**
      * Get the dirty flags that are set on this property.
      *
      * @return the dirty flags mask

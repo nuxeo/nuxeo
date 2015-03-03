@@ -105,10 +105,11 @@ public abstract class AbstractRepositoryTestCase {
         assertNotNull(section3);
         DocumentModel doc = session.createDocument(model);
         assertNotNull(doc);
+        doc.setPropertyValue("dc:description", null); // dirty it
         session.saveDocument(doc);
         // create proxies
         session.publishDocument(doc, section1);
-        doc.setPropertyValue("dc:description", null); // dirty it
+        doc.setPropertyValue("dc:description", ""); // dirty it
         session.saveDocument(doc);
         session.publishDocument(doc, section2);
         doc.setPropertyValue("dc:description", null); // dirty it

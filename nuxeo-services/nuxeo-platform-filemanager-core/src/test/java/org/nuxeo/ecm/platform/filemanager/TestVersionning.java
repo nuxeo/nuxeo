@@ -85,6 +85,8 @@ public class TestVersionning {
         assertEquals("mytest.something", doc.getTitle());
         assertEquals("0.0", doc.getVersionLabel());
 
+        // the blob must be updated for the document to be dirty and for the version to be updated
+        blob = Blobs.createBlob("Something Else", "something", null, "mytest.something");
         doc = fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(), true, "mytest.something");
         waitForAsyncCompletion();
         assertEquals("0.1+", doc.getVersionLabel());
@@ -101,6 +103,8 @@ public class TestVersionning {
         assertEquals("Note", doc.getType());
         assertEquals("0.0", doc.getVersionLabel());
 
+        // the blob must be updated for the document to be dirty and for the version to be updated
+        blob = Blobs.createBlob("Something Diffirent", "text/plain", null, "mytxt.txt");
         doc = fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(), true, "mytxt.txt");
         waitForAsyncCompletion();
         assertEquals("0.1+", doc.getVersionLabel());

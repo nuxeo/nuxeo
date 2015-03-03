@@ -16,14 +16,16 @@
  */
 package org.nuxeo.ecm.core.version.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.Constants;
@@ -41,6 +43,7 @@ public class TestVersioningService extends SQLRepositoryTestCase {
 
     protected VersioningComponent service;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -48,6 +51,7 @@ public class TestVersioningService extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
@@ -356,7 +360,7 @@ public class TestVersioningService extends SQLRepositoryTestCase {
         assertEquals(v01.getId(), session.getBaseVersion(docRef).reference());
 
         // change with no increment, the proxy is checked out
-        proxy.setPropertyValue("dc:title", "C");
+        proxy.setPropertyValue("dc:title", "D");
         proxy = session.saveDocument(proxy);
         assertTrue(proxy.isCheckedOut());
         assertVersion("0.1", proxy);
@@ -364,7 +368,7 @@ public class TestVersioningService extends SQLRepositoryTestCase {
 
         // check source doc
         doc = session.getDocument(docRef);
-        assertEquals("C", doc.getPropertyValue("dc:title"));
+        assertEquals("D", doc.getPropertyValue("dc:title"));
         assertTrue(doc.isCheckedOut());
         assertVersion("0.1", doc);
         assertVersionLabel("0.1+", doc);

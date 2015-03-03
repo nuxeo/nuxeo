@@ -108,6 +108,8 @@ public class TestDocumentValidationService {
 
     @Test
     public void testDocumentDirtyWithViolation() {
+        doc.setPropertyValue(SIMPLE_FIELD, 10);
+        doc = session.saveDocument(doc);
         doc.setPropertyValue(SIMPLE_FIELD, null);
         checkNotNullOnGroupCode(validator.validate(doc, true));
     }

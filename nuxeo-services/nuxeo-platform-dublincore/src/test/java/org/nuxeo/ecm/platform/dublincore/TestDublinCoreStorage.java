@@ -12,12 +12,12 @@
  */
 package org.nuxeo.ecm.platform.dublincore;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -194,7 +194,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         session = openSessionAs("Fredo");
 
         childFile3 = session.getDocument(childFile2.getRef());
-        childFile3.setProperty("dublincore", "source", "testing");
+        childFile3.setProperty("dublincore", "source", "testing2"); // make a change
         childFile3 = session.saveDocument(childFile3);
 
         contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
@@ -215,6 +215,26 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         contributorsList = Arrays.asList(contributorsArray);
         assertTrue(contributorsList.contains("Administrator"));
         assertEquals("Administrator", childFile3.getProperty("dublincore", "lastContributor"));
+    }
+
+    @Test
+    public void testContributorsAndModifiedDoesntChangeIfTheresNoChanges() throws ClientException {
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file-008", "File");
+        childFile = session.createDocument(childFile);
+        DataModel dm = childFile.getDataModel("dublincore");
+        // backup the data to check
+        Calendar modified = (Calendar) dm.getData("modified");
+        String lastContributor = (String) dm.getData("lastContributor");
+        String[] contributors = (String[]) dm.getData("contributors");
+        // save the document with no changes
+        childFile = session.saveDocument(childFile);
+        // get the data to check
+        Calendar modified2 = (Calendar) dm.getData("modified");
+        String lastContributor2 = (String) dm.getData("lastContributor");
+        String[] contributors2 = (String[]) dm.getData("contributors");
+        assertEquals(modified, modified2);
+        assertEquals(lastContributor, lastContributor2);
+        assertArrayEquals(contributors, contributors2);
     }
 
     @Test

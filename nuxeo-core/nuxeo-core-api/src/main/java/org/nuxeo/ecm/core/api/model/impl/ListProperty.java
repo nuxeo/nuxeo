@@ -430,6 +430,10 @@ public class ListProperty extends AbstractProperty implements List<Property> {
             children.add(index, property);
             children.remove(i + 1);
         }
+        // new property must be dirty
+        for (int j = Math.min(index, i); j < children.size(); j++) {
+            ((AbstractProperty) children.get(j)).setIsModified();
+        }
         return true;
     }
 
@@ -566,6 +570,15 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     @Override
     public <T> T[] toArray(T[] a) {
         return children.toArray(a);
+    }
+
+    @Override
+    public void clearDirtyFlags() {
+        // even makes child properties not dirty
+        super.clearDirtyFlags();
+        for (Property child : children) {
+            child.clearDirtyFlags();
+        }
     }
 
 }

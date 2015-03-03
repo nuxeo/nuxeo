@@ -99,6 +99,8 @@ public class TestRepoStats {
 
         // Add a version
 
+        blobDoc.setPropertyValue("dc:title", "blobDoc2"); // make a change to make the doc dirty and also create a
+                                                          // snapshot
         blobDoc.getContextData().putScopedValue(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
         blobDoc = session.saveDocument(blobDoc);
 

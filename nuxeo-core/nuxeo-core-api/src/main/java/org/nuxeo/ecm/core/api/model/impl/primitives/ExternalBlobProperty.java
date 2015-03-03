@@ -174,6 +174,12 @@ public class ExternalBlobProperty extends MapProperty {
         }
     }
 
+    @Override
+    protected boolean isSameValue(Serializable value1, Serializable value2) {
+        // for now, blob property are considered always as dirty when update - see NXP-16322
+        return false;
+    }
+
     public static Blob getBlobFromMap(Map<String, Object> mapValue) {
         if (mapValue == null) {
             return null;

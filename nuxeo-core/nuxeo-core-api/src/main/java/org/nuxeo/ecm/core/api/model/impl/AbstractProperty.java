@@ -38,6 +38,11 @@ public abstract class AbstractProperty implements Property {
 
     public final Property parent;
 
+    /**
+     * for SimpleDocumentModel uses
+     */
+    public boolean forceDirty = false;
+
     protected int flags;
 
     protected AbstractProperty(Property parent) {
@@ -103,8 +108,12 @@ public abstract class AbstractProperty implements Property {
             list.remove(this);
         } else if (!isPhantom()) { // remove from map is easier -> mark the
             // field as removed and remove the value
+            // do not remove the field if the previous value was null, except if its a property from a SimpleDocumentModel (forceDirty mode)
+            Serializable previous = internalGetValue();
             init(null);
-            setIsRemoved();
+            if (previous != null || isForceDirty()) {
+                setIsRemoved();
+            }
         }
         return value;
     }
@@ -241,9 +250,9 @@ public abstract class AbstractProperty implements Property {
             // clear dirty + phatom flag if any
             flags |= IS_MODIFIED; // set the modified flag
             flags &= ~IS_PHANTOM; // remove phantom flag if any
-            if (parent != null) {
-                ((AbstractProperty) parent).setIsModified();
-            }
+        }
+        if (parent != null) {
+            ((AbstractProperty) parent).setIsModified();
         }
     }
 
@@ -293,11 +302,21 @@ public abstract class AbstractProperty implements Property {
         }
         // 1. normalize the value
         Serializable normalizedValue = normalize(value);
-        // 3. set the normalized value
-        internalSetValue(normalizedValue);
-        // internalSetValue((Serializable)value);
-        // 4. update flags
-        setIsModified();
+        // 2. backup the current
+        Serializable current = internalGetValue();
+        // if its a phantom, no need to check for changes, set it dirty
+        if (!isSameValue(normalizedValue, current) || isForceDirty()) {
+            // 3. set the normalized value and
+            internalSetValue(normalizedValue);
+            // 4. update flags
+            setIsModified();
+        } else {
+            removePhantomFlag();
+        }
+    }
+
+    protected boolean isSameValue(Serializable value1, Serializable value2) {
+        return ((value1 == null && value2 == null) || (value1 != null && value1.equals(value2)));
     }
 
     @Override
@@ -443,6 +462,16 @@ public abstract class AbstractProperty implements Property {
             return new PropertyObjectResolverImpl(this, resolver);
         }
         return null;
+    }
+
+    @Override
+    public boolean isForceDirty() {
+        return forceDirty;
+    }
+
+    @Override
+    public void setForceDirty(boolean forceDirty) {
+        this.forceDirty = forceDirty;
     }
 
 }

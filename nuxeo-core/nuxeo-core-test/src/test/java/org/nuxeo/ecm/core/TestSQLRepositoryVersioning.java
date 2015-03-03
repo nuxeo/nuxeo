@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.versioning.VersioningService;
 
 public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -60,6 +61,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         session.cancel();
@@ -872,8 +874,8 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals(doc.getVersionLabel(), "1.0");
         doc.getContextData().putScopedValue(ScopeType.DEFAULT, VersioningService.VERSIONING_OPTION,
                 VersioningOption.MAJOR);
-        // mark as dirty
-        doc.setPropertyValue("dc:title", doc.getPropertyValue("dc:title"));
+        // mark as dirty - must change the value
+        doc.setPropertyValue("dc:title", doc.getPropertyValue("dc:title") + " dirty");
         doc = session.saveDocument(doc);
         assertEquals(doc.getVersionLabel(), "3.0");
     }

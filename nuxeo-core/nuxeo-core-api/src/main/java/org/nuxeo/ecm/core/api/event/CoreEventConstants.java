@@ -73,6 +73,8 @@ public final class CoreEventConstants {
 
     public static final String DESTINATION_EXISTS = "destinationExists";
 
+    public static final String DOCUMENT_DIRTY = "documentIsDirty";
+
     public static final String SOURCE_REF = "sourceRef";
 
     /**

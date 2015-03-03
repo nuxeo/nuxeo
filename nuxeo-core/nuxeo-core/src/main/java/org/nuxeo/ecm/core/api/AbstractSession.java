@@ -1508,8 +1508,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
             Map<String, Serializable> options = getContextMapEventInfo(docModel);
 
+            boolean dirty = docModel.isDirty();
+
             // document validation
-            if (getValidationService().isActivated(DocumentValidationService.CTX_SAVEDOC, options)) {
+            if (dirty && getValidationService().isActivated(DocumentValidationService.CTX_SAVEDOC, options)) {
                 DocumentValidationReport report = getValidationService().validate(docModel, true);
                 if (report.hasError()) {
                     throw new DocumentValidationException(report);
@@ -1519,6 +1521,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             options.put(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL, readModel(doc));
             // regular event, last chance to modify docModel
             options.put(CoreEventConstants.DESTINATION_NAME, docModel.getName());
+            options.put(CoreEventConstants.DOCUMENT_DIRTY, dirty);
             notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel, options, null, null, true, true);
             String name = (String) options.get(CoreEventConstants.DESTINATION_NAME);
             // did the event change the name? not applicable to Root whose
@@ -1538,7 +1541,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             boolean snapshot = Boolean.TRUE.equals(docModel.getContextData(ScopeType.REQUEST,
                     VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY));
             docModel.putContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, null);
-            boolean dirty = docModel.isDirty();
             if (versioningOption == null && snapshot && dirty) {
                 String key = String.valueOf(docModel.getContextData(ScopeType.REQUEST,
                         VersioningDocument.KEY_FOR_INC_OPTION));

@@ -201,6 +201,10 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
         }
         if (value == null) {
             remove();
+            // completly clear this property
+            for (Property child : children.values()) {
+                child.remove();
+            }
             return; // TODO how to treat nulls?
         }
         if (!(value instanceof Map)) {
@@ -358,6 +362,17 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
     @Override
     public Collection<Property> values() {
         return children.values();
+    }
+
+    @Override
+    public void clearDirtyFlags() {
+        // even makes child properties not dirty
+        super.clearDirtyFlags();
+        for (Property child : children.values()) {
+            if (!child.isRemoved() && !child.isPhantom()) {
+                child.clearDirtyFlags();
+            }
+        }
     }
 
 }
