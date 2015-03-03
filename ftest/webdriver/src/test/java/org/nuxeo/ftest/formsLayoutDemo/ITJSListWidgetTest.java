@@ -347,4 +347,62 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertEquals("BBB", page.getListArrayEditWidget().getSubWidget("nxw_listItem", 0).getInputValue());
     }
 
+    /**
+     * Check that removed elements are not validated.
+     *
+     * @since 7.2
+     */
+    @Test
+    public void testRemovedElementValidation() {
+        JSListWidgetElement listWidget = page.getListOfListsEditWidget();
+        assertNotNull(listWidget);
+        // add 2 elements
+        listWidget.addNewElement();
+        listWidget.addNewElement();
+
+        // only fill the second element required widget
+        WidgetElement stringArrayItem = listWidget.getSubWidget("nxw_stringArrayItem", 1, WidgetElement.class, false);
+        new Select(stringArrayItem.getInputElement()).selectByValue("cartman");
+
+        // remove first element
+        listWidget.removeElement(0);
+
+        // submit => there should not be any validation error
+        listWidget = page.submitListOfListsWidget();
+
+        assertNotEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 0));
+    }
+
+
+    /**
+     * Check moved elements validation.
+     *
+     * @since 7.2
+     */
+    @Test
+    public void testMovedElementValidation() {
+        JSListWidgetElement listWidget = page.getListOfListsEditWidget();
+        assertNotNull(listWidget);
+        // add 3 elements
+        listWidget.addNewElement();
+        listWidget.addNewElement();
+        listWidget.addNewElement();
+
+        // only fill the second element required widget
+        WidgetElement stringArrayItem = listWidget.getSubWidget("nxw_stringArrayItem", 1, WidgetElement.class, false);
+        new Select(stringArrayItem.getInputElement()).selectByValue("cartman");
+
+        // move it to first place
+        listWidget.moveUpElement(1);
+
+        // remove now second element
+        listWidget.removeElement(0);
+
+        // submit => there should not be a validation error on second item
+        listWidget = page.submitListOfListsWidget();
+
+        assertNotEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 0));
+        assertEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 1));
+    }
+
 }
