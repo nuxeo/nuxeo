@@ -26,7 +26,7 @@ import org.openqa.selenium.WebElement;
 /**
  * Represents a list widget, with helper method to retrieve/check its subwidgets.
  *
- * @since 5.7
+ * @since 7.2
  */
 public class JSListWidgetElement extends AbstractWidgetElement {
 
@@ -63,6 +63,23 @@ public class JSListWidgetElement extends AbstractWidgetElement {
         JSListRequestManager rm = new JSListRequestManager(driver);
         rm.begin();
         delElement.click();
+        rm.end();
+    }
+
+    public void moveUpElement(int index) {
+        WebElement moveElement = getRowActions(index).findElement(By.className("moveUpBtn"));
+        JSListRequestManager rm = new JSListRequestManager(driver);
+        rm.begin();
+        moveElement.click();
+        rm.end();
+    }
+
+
+    public void moveDownElement(int index) {
+        WebElement moveElement = getRowActions(index).findElement(By.className("moveDownBtn"));
+        JSListRequestManager rm = new JSListRequestManager(driver);
+        rm.begin();
+        moveElement.click();
         rm.end();
     }
 
