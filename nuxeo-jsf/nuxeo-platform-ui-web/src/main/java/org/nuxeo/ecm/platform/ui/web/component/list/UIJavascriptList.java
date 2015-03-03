@@ -21,9 +21,11 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -203,8 +205,30 @@ public class UIJavascriptList extends UIEditableList {
                 }
             }
 
+            List<Integer> deletedIndexes = new ArrayList<Integer>();
+            if (phaseId == PhaseId.PROCESS_VALIDATIONS) {
+                // check deleted indexes, to avoid performing validation on them
+                // A map with the new index for each row key
+                Map<Integer, Integer> keyIndexMap = new HashMap<>();
+                if (rowIndexes != null) {
+                    for (int i = 0; i < rowIndexes.length; i++) {
+                        int idx = rowIndexes[i];
+                        keyIndexMap.put(idx, i);
+                    }
+                }
+                for (int i = 0; i < getRowCount(); i++) {
+                    // This row has been deleted
+                    if (!keyIndexMap.containsKey(i)) {
+                        deletedIndexes.add(i);
+                    }
+                }
+            }
+
             int end = getRowCount();
             for (int idx = 0; idx < end; idx++) {
+                if (deletedIndexes.contains(idx)) {
+                    continue;
+                }
                 setRowIndex(idx);
                 if (isRowAvailable()) {
                     for (UIComponent stamp : stamps) {
@@ -234,6 +258,8 @@ public class UIJavascriptList extends UIEditableList {
 
                 // rows to delete
                 List<Integer> toDelete = new ArrayList<>();
+                // client id
+                String cid = super.getClientId(context);
 
                 // move rows
                 for (int i = 0; i < getRowCount(); i++) {
@@ -247,6 +273,19 @@ public class UIJavascriptList extends UIEditableList {
                         int newIdx = keyIndexMap.get(i);
                         if (curIdx != newIdx) {
                             model.moveValue(curIdx, newIdx);
+                            // also move any messages in the context attached to the old index
+                            String prefix = cid + SEPARATOR_CHAR + curIdx + SEPARATOR_CHAR;
+                            String replacement = cid + SEPARATOR_CHAR + newIdx + SEPARATOR_CHAR;
+                            Iterator<String> it = context.getClientIdsWithMessages();
+                            while (it.hasNext()) {
+                                String id = it.next();
+                                if (id != null && id.startsWith(prefix)) {
+                                    Iterator<FacesMessage> mit = context.getMessages(id);
+                                    while (mit.hasNext()) {
+                                        context.addMessage(id.replaceFirst(prefix, replacement), mit.next());
+                                    }
+                                }
+                            }
                         }
                     }
                 }
