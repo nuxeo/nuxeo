@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -181,11 +182,14 @@ public abstract class AbstractTransientStore implements TransientStore {
     }
 
     protected String getCachingDirName(String key) {
-        return key;
+        String dirName = Base64.encodeBase64String(key.getBytes());
+        dirName =  dirName.replaceAll("/", "*");
+        return dirName;
     }
 
     protected String getKeyCachingDirName(String dir) {
-        return dir;
+        String key = dir.replaceAll("*", "/");
+        return new String (Base64.decodeBase64(key));
     }
 
     public File getCachingDirectory(String key) {

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -101,7 +102,7 @@ public abstract class AbstractStorageEntry implements StorageEntry {
             cachedBlobs = new ArrayList<Map<String,String>>();
             for (Blob blob : blobs) {
                 Map<String, String> cached = new HashMap<String, String>();
-                File cachedFile = new File (directory,blob.getFilename());
+                File cachedFile = new File (directory,UUID.randomUUID().toString());
                 blob.transferTo(cachedFile);
                 cachedFile.deleteOnExit();
                 cached.put("file", cachedFile.getAbsolutePath());
