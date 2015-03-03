@@ -2802,9 +2802,10 @@
         </properties>
       </configuration>
       <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.ListWidgetTypeHandler
       </handler-class>
       <property name="template">/widgets/js_list_widget_template.xhtml</property>
+      <property name="compatTemplate">/widgets/list_widget_template.xhtml</property>
     </widgetType>
 
     <widgetType name="complex">
