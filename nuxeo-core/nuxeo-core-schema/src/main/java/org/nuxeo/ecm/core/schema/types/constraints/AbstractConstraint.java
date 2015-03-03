@@ -103,7 +103,7 @@ public abstract class AbstractConstraint implements Constraint {
         try {
             return I18NUtils.getMessageString(MESSAGES_BUNDLE, key, params, locale);
         } catch (MissingResourceException e) {
-            log.warn("No bundle found", e);
+            log.trace("No bundle found", e);
             return null;
         }
     }

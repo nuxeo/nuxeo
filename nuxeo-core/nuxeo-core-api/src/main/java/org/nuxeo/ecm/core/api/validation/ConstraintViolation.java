@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.MissingResourceException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -132,8 +133,8 @@ public class ConstraintViolation implements Serializable {
         String message = null;
         try {
             message = I18NUtils.getMessageString(Constraint.MESSAGES_BUNDLE, key, params, computedLocale);
-        } catch (Exception e) {
-            log.warn("No bundle found", e);
+        } catch (MissingResourceException e) {
+            log.trace("No bundle found", e);
             message = null;
         }
         if (message != null && !message.trim().isEmpty() && !key.equals(message)) {

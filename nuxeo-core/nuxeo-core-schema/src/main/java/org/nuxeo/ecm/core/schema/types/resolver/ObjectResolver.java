@@ -22,8 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 
@@ -125,6 +128,8 @@ public interface ObjectResolver {
      */
     public static final class Helper {
 
+        private static final Log log = LogFactory.getLog(Helper.class);
+
         private Helper() {
         }
 
@@ -164,8 +169,13 @@ public interface ObjectResolver {
                 params[i] = additionnalParameters[i - 1];
             }
             Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
-            String message = I18NUtils.getMessageString(Constraint.MESSAGES_BUNDLE, keyConstraint, params,
-                    computedLocale);
+            String message;
+            try {
+                message = I18NUtils.getMessageString(Constraint.MESSAGES_BUNDLE, keyConstraint, params, computedLocale);
+            } catch (MissingResourceException e) {
+                log.trace("No bundle found", e);
+                return null;
+            }
             if (message != null && !message.trim().isEmpty() && !keyConstraint.equals(message)) {
                 // use a constraint specific message if there's one
                 return message;
