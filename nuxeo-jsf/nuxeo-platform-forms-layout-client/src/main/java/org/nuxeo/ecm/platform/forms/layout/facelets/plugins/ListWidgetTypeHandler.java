@@ -19,33 +19,28 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
-import javax.faces.view.facelets.TagAttribute;
-
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
-import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * List widget type, using a fixed template.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- * @deprecated widget type can be declared as using {@link TemplateWidgetTypeHandler²} class, setting property value in
- *             XML configuration.
  */
-@Deprecated
 public class ListWidgetTypeHandler extends TemplateWidgetTypeHandler {
 
     private static final long serialVersionUID = 6886289896957398368L;
 
-    public static final String TEMPLATE = "/widgets/list_widget_template.xhtml";
+    public static final String COMPAT_TEMPLATE_PROPERTY_NAME = "compatTemplate";
 
     @Override
     protected String getTemplateValue(Widget widget) {
-        return TEMPLATE;
-    }
-
-    @Override
-    protected TagAttribute getTemplateAttribute(FaceletHandlerHelper helper) {
-        return helper.createAttribute(TEMPLATE_PROPERTY_NAME, TEMPLATE);
+        boolean useCompat = Framework.isBooleanPropertyTrue("nuxeo.jsf.listWidget.compatEnabled");
+        if (useCompat) {
+            return lookupProperty(COMPAT_TEMPLATE_PROPERTY_NAME, widget);
+        } else {
+            return super.getTemplateValue(widget);
+        }
     }
 
 }

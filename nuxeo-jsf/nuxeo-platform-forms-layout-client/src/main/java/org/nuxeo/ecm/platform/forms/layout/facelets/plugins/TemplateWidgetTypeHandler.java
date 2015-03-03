@@ -193,17 +193,27 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
     }
 
     /**
-     * Returns the "template" property value, looking up on the widget type definition first, and on the widget
-     * definition if not found.
+     * Returns the "template" property value, looking up on the widget definition definition first, and on the widget
+     * type definition if not found.
      */
     protected String getTemplateValue(Widget widget) {
-        // lookup in the widget type configuration
-        String template = getProperty(TEMPLATE_PROPERTY_NAME);
-        if (template == null) {
-            // lookup in the widget configuration
-            template = (String) widget.getProperty(TEMPLATE_PROPERTY_NAME);
+        return lookupProperty(TEMPLATE_PROPERTY_NAME, widget);
+    }
+
+    /**
+     * Helper method to retrieve a property value, looking up on the widget definition first, and on the widget type
+     * definition if not found.
+     *
+     * @since 7.2
+     */
+    protected String lookupProperty(String name, Widget widget) {
+        // lookup in the widget configuration
+        String val = (String) widget.getProperty(name);
+        if (val == null) {
+            // lookup in the widget type configuration
+            val = getProperty(name);
         }
-        return template;
+        return val;
     }
 
     /**
