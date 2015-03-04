@@ -23,7 +23,8 @@
       <filter-id>folder</filter-id>
     </action>
 
-    <action id="exportView" link="export" order="80" label="label.exportview"
+    <!-- deprecated since 7.2. Exports are now exposed as renditions, see NXP-16585 -->
+    <action enabled="false" id="exportView" link="export" order="80" label="label.exportview"
       icon="/icons/export.png">
       <category>DOCUMENT_UPPER_ACTION</category>
     </action>
