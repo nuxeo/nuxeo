@@ -180,6 +180,8 @@ public interface DocumentRoutingConstants {
 
     String DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY = "documentElementEventContextKey";
 
+    String WORKFLOW_TASK_COMPLETION_ACTION_KEY = "workflowTaskCompletionAction";
+
     String INITIATOR_EVENT_CONTEXT_KEY = "initiator";
 
     String ROUTING_CATEGORY = "Routing";
