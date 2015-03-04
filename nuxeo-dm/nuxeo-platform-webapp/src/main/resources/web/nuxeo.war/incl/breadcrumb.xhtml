@@ -35,13 +35,13 @@
           <li class="dropDownMenu button dropdown">
             <h:outputText value="#{nxd:titleOrId(navigationContext.currentDomain)}" />
             <ul class="actionSubList">
-              <c:forEach var="userDomain" items="#{breadcrumbActions.userDomains}">
+              <nxu:repeat var="userDomain" items="#{breadcrumbActions.userDomains}">
                 <li>
                   <nxd:restDocumentLink document="#{userDomain}">
                     <h:outputText value="#{nxd:titleOrId(userDomain)}" />
                   </nxd:restDocumentLink>
                 </li>
-              </c:forEach>
+              </nxu:repeat>
             </ul>
           </li>
         </ul>
@@ -49,7 +49,7 @@
 
       <c:if test="#{!empty backendPath}">
 
-        <c:forEach var="pathElement" items="#{backendPath}" varStatus="status">
+        <nxu:repeat var="pathElement" items="#{backendPath}" varStatus="status">
           <c:if test="#{(status.first and (!pathElement.link or !breadcrumbActions.isUserDomain(pathElement.documentModel))) or !status.first}">
             <nxd:restDocumentLink document="#{pathElement.documentModel}"
               rendered="#{pathElement.link}">
@@ -57,7 +57,7 @@
             </nxd:restDocumentLink>
             <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link}" />
           </c:if>
-        </c:forEach>
+        </nxu:repeat>
 
       </c:if>
       <c:if test="#{empty backendPath}">
