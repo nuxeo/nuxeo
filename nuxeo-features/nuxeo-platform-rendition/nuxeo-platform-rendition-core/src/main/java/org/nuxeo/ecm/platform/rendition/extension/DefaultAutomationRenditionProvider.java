@@ -66,7 +66,7 @@ public class DefaultAutomationRenditionProvider implements RenditionProvider {
         }
 
         AutomationService as = Framework.getLocalService(AutomationService.class);
-        OperationContext oc = new OperationContext();
+        OperationContext oc = new OperationContext(doc.getCoreSession());
         oc.push(Constants.O_DOCUMENT, doc);
 
         try {

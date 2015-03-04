@@ -101,7 +101,7 @@ public class TestRenditionService {
     public void testDeclaredRenditionDefinitions() {
         List<RenditionDefinition> renditionDefinitions = renditionService.getDeclaredRenditionDefinitions();
         assertFalse(renditionDefinitions.isEmpty());
-        assertEquals(3, renditionDefinitions.size());
+        assertEquals(6, renditionDefinitions.size());
 
         RenditionServiceImpl renditionServiceImpl = (RenditionServiceImpl) renditionService;
         assertTrue(renditionServiceImpl.renditionDefinitions.containsKey(PDF_RENDITION_DEFINITION));
@@ -127,7 +127,7 @@ public class TestRenditionService {
         file = session.createDocument(file);
 
         List<RenditionDefinition> renditionDefinitions = renditionService.getAvailableRenditionDefinitions(file);
-        assertEquals(1, renditionDefinitions.size());
+        assertEquals(4, renditionDefinitions.size());
 
         // add a blob
         Blob blob = Blobs.createBlob("I am a Blob");
@@ -136,7 +136,7 @@ public class TestRenditionService {
 
         // rendition should be available now
         renditionDefinitions = renditionService.getAvailableRenditionDefinitions(file);
-        assertEquals(2, renditionDefinitions.size());
+        assertEquals(5, renditionDefinitions.size());
 
     }
 
@@ -378,17 +378,17 @@ public class TestRenditionService {
         DocumentModel doc = session.createDocumentModel("/", "note", "Note");
         doc = session.createDocument(doc);
         List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(2, availableRenditionDefinitions.size());
+        assertEquals(5, availableRenditionDefinitions.size());
 
         doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(2, availableRenditionDefinitions.size());
+        assertEquals(5, availableRenditionDefinitions.size());
 
         doc.setPropertyValue("dc:rights", "Unauthorized");
         session.saveDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(1, availableRenditionDefinitions.size());
+        assertEquals(4, availableRenditionDefinitions.size());
 
         runtimeHarness.undeployContrib(RENDITION_CORE, RENDITION_FILTERS_COMPONENT_LOCATION);
     }
@@ -400,17 +400,17 @@ public class TestRenditionService {
         DocumentModel doc = session.createDocumentModel("/", "note", "Note");
         doc = session.createDocument(doc);
         List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(3, availableRenditionDefinitions.size());
+        assertEquals(6, availableRenditionDefinitions.size());
 
         doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(3, availableRenditionDefinitions.size());
+        assertEquals(6, availableRenditionDefinitions.size());
 
         doc.setPropertyValue("dc:rights", "Unauthorized");
         session.saveDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(1, availableRenditionDefinitions.size());
+        assertEquals(4, availableRenditionDefinitions.size());
 
         runtimeHarness.undeployContrib(RENDITION_CORE, RENDITION_DEFINITION_PROVIDERS_COMPONENT_LOCATION);
     }

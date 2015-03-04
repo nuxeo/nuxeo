@@ -168,6 +168,6 @@ public class ITArchivedVersionsTest extends AbstractTest {
         assertEquals(0, versionLabels.size());
 
         // Go back to doc and return it
-        return archivedVersionsPage.getSummaryTab().asPage(DocumentBasePage.class);
+        return archivedVersionsPage.goToDocumentByBreadcrumb("Test file: modif 1");
     }
 }

@@ -46,7 +46,7 @@ public class ContextualActions extends AbstractPage {
     @FindBy(xpath = "//div[@id=\"nxw_documentActionsUpperButtons_panel\"]/div/ul/li")
     public WebElement moreButton;
 
-    @FindBy(xpath = "//img[@alt=\"Export options\"]")
+    @FindBy(xpath = "//img[@alt=\"Export\"]")
     public WebElement exportButton;
 
     @FindBy(xpath = "//img[@alt=\"Download\"]")

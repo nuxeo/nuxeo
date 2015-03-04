@@ -3,13 +3,43 @@
 
   <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService"
     point="renditionDefinitions">
-    <renditionDefinition name="pdf" enabled="true">
+    <renditionDefinition name="pdf">
       <label>label.rendition.pdf</label>
       <icon>/icons/pdf.png</icon>
       <contentType>application/pdf</contentType>
       <operationChain>blobToPDF</operationChain>
       <filters>
         <filter-id>allowPDFRendition</filter-id>
+      </filters>
+    </renditionDefinition>
+
+    <renditionDefinition name="xmlExport">
+      <label>label.exportview.xmlExport</label>
+      <icon>/icons/xml.png</icon>
+      <contentType>text/xml</contentType>
+      <allowEmptyBlob>true</allowEmptyBlob>
+      <operationChain>xmlExportRendition</operationChain>
+    </renditionDefinition>
+
+    <renditionDefinition name="zipExport">
+      <label>label.exportview.zipExport</label>
+      <icon>/icons/zip_export.png</icon>
+      <contentType>application/zip</contentType>
+      <allowEmptyBlob>true</allowEmptyBlob>
+      <operationChain>zipTreeExportRendition</operationChain>
+      <filters>
+        <filter-id>not_folder</filter-id>
+      </filters>
+    </renditionDefinition>
+
+    <renditionDefinition name="zipTreeExport">
+      <label>label.exportview.zipTreeExport</label>
+      <icon>/icons/zip_tree_export.png</icon>
+      <contentType>application/zip</contentType>
+      <allowEmptyBlob>true</allowEmptyBlob>
+      <operationChain>zipTreeExportRendition</operationChain>
+      <filters>
+        <filter-id>folder</filter-id>
       </filters>
     </renditionDefinition>
   </extension>
@@ -19,6 +49,18 @@
     <chain id="blobToPDF">
       <operation id="Context.PopBlob" />
       <operation id="Blob.ToPDF" />
+    </chain>
+
+    <chain id="xmlExportRendition">
+      <operation id="Context.PopDocument" />
+      <operation id="Document.Export" />
+    </chain>
+
+    <chain id="zipTreeExportRendition">
+      <operation id="Context.PopDocument" />
+      <operation id="Document.Export">
+        <param name="exportAsTree" type="boolean">true</param>
+      </operation>
     </chain>
   </extension>
 

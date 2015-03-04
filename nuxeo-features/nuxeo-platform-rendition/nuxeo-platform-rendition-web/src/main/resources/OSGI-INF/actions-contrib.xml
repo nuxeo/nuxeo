@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="additionalFormatsAction" order="80" label="label.additional.formats" type="fancybox"
+    <action id="documentExport" order="80" label="label.exportview" type="fancybox"
       icon="/icons/export.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <properties>

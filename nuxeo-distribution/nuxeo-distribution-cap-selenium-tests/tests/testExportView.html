@@ -64,27 +64,17 @@
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>//img[@alt='Export options']</td>
+	<td>//img[@alt='Export']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//img[@alt='Export options']</td>
+	<td>//img[@alt='Export']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Current object</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>link=PDF Export</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>//a[@href='${nuxeoBaseURL}nxpath/default/default-domain/workspaces/testWorkspace1/testFolder1@pdf']</td>
+	<td>waitForTextPresent</td>
+	<td>Export</td>
 	<td></td>
 </tr>
 <tr>
@@ -97,6 +87,8 @@
 	<td>link=ZIP Tree XML Export</td>
 	<td></td>
 </tr>
+<!-- Not ported yet, see NXP-16585 -->
+<!--
 <tr>
 	<td>verifyElementPresent</td>
 	<td>link=ZIP Binary Export</td>
@@ -117,6 +109,7 @@
 	<td>//a[@href='${nuxeoBaseURL}nxpath/default/default-domain/workspaces/testWorkspace1/testFolder1@xl?contentViewName=document_content&amp;currentPage=0&amp;pageSize=0']</td>
 	<td></td>
 </tr>
+-->
 <!-- test non folderish doc -->
 <tr>
 	<td>open</td>
@@ -125,27 +118,17 @@
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>//img[@alt='Export options']</td>
+	<td>//img[@alt='Export']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//img[@alt='Export options']</td>
+	<td>//img[@alt='Export']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Current object</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>link=PDF Export</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>//a[@href='${nuxeoBaseURL}nxpath/default/default-domain/workspaces/testWorkspace1/testFolder1/testNote1@pdf']</td>
+	<td>waitForTextPresent</td>
+	<td>Export</td>
 	<td></td>
 </tr>
 <tr>
@@ -158,6 +141,8 @@
 	<td>link=ZIP XML Export</td>
 	<td></td>
 </tr>
+<!-- Not ported yet, see NXP-16585 -->
+<!--
 <tr>
 	<td>verifyElementPresent</td>
 	<td>link=ZIP Binary Export</td>
@@ -168,6 +153,7 @@
 	<td>Content Views Export</td>
 	<td></td>
 </tr>
+-->
 <tr>
 	<td>open</td>
 	<td>logout</td>

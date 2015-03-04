@@ -5,7 +5,8 @@ Bundle-Name: Nuxeo Platform IO Core Fragment
 Bundle-SymbolicName: org.nuxeo.ecm.platform.io.core;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateful
-Nuxeo-Component: OSGI-INF/io-framework.xml
+Nuxeo-Component: OSGI-INF/io-framework.xml,
+ OSGI-INF/operations-contrib.xml
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.apache.commons.logging,
  org.nuxeo.common.utils,
