@@ -35,19 +35,19 @@ function closePopup() {
 
    <#if needWizard>
       ${Context.getMessage('label.startInstall.message.clickstart')}<br/><br/><br/>
-      <a href="${Root.path}/install/form/${pkg.id}/0?source=${source}" class="button installButton">${Context.getMessage('label.startInstall.buttons.start')}</a>
+      <a href="${Root.path}/install/form/${pkg.id}/0?source=${source?xml}" class="button installButton">${Context.getMessage('label.startInstall.buttons.start')}</a>
    </#if>
 
    <#if !needWizard>
       ${Context.getMessage('label.startInstall.message.clickstartnowizard')} <br/><br/><br/>
-      <a href="${Root.path}/install/run/${pkg.id}?source=${source}" class="button installButton">${Context.getMessage('label.startInstall.buttons.start')}</a>
+      <a href="${Root.path}/install/run/${pkg.id}?source=${source?xml}" class="button installButton">${Context.getMessage('label.startInstall.buttons.start')}</a>
    </#if>
 
    &nbsp;
    <#if source=="installer">
      <a href="javascript:closePopup()" class="button installButton">${Context.getMessage('label.startInstall.buttons.cancel')}</a>
    <#else>
-     <a href="${Root.path}/packages/${source}" class="button installButton">${Context.getMessage('label.startInstall.buttons.cancel')}</a>
+     <a href="${Root.path}/packages/${source?xml}" class="button installButton">${Context.getMessage('label.startInstall.buttons.cancel')}</a>
    </#if>
   </div>
 

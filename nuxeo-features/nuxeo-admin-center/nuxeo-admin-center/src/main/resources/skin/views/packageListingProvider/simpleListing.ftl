@@ -102,22 +102,22 @@
 
     <td>
          <#if This.canDownload(pkg)>
-           <a class="button download" href="${Root.path}/download/start/${pkg.id}?source=${source}&amp;filterOnPlatform=${filterOnPlatform}&amp;type=${type}&amp;onlyRemote=${onlyRemote}">${Context.getMessage('label.simpleListing.links.download')}</a>
+           <a class="button download" href="${Root.path}/download/start/${pkg.id}?source=${source?xml}&amp;filterOnPlatform=${filterOnPlatform}&amp;type=${type}&amp;onlyRemote=${onlyRemote}">${Context.getMessage('label.simpleListing.links.download')}</a>
          </#if>
          <#if This.registrationRequired(pkg)>${Context.getMessage('label.simpleListing.messages.registrationrequired')}</#if>
          <#if This.canCancel(pkg)>
-           <a class="button cancel" href="${Root.path}/download/cancel/${pkg.id}?source=${source}">${Context.getMessage('label.simpleListing.links.cancel')}</a>
+           <a class="button cancel" href="${Root.path}/download/cancel/${pkg.id}?source=${source?xml}">${Context.getMessage('label.simpleListing.links.cancel')}</a>
          </#if>
          <#if This.canInstall(pkg)>
-           <a class="button install" href="${Root.path}/install/start/${pkg.id}?source=${source}">${Context.getMessage('label.simpleListing.links.install')}</a>
+           <a class="button install" href="${Root.path}/install/start/${pkg.id}?source=${source?xml}">${Context.getMessage('label.simpleListing.links.install')}</a>
            <#if This.canRemove(pkg)>
-             <a class="button remove" href="${Root.path}/remove/start/${pkg.id}?source=${source}">${Context.getMessage('label.simpleListing.links.remove')}</a>
+             <a class="button remove" href="${Root.path}/remove/start/${pkg.id}?source=${source?xml}">${Context.getMessage('label.simpleListing.links.remove')}</a>
            </#if>
          </#if>
          <#if This.canUnInstall(pkg)>
-           <a class="button uninstall" href="${Root.path}/uninstall/start/${pkg.id}?source=${source}&amp;filterOnPlatform=${filterOnPlatform}">${Context.getMessage('label.simpleListing.links.uninstall')}</a>
+           <a class="button uninstall" href="${Root.path}/uninstall/start/${pkg.id}?source=${source?xml}&amp;filterOnPlatform=${filterOnPlatform?xml}">${Context.getMessage('label.simpleListing.links.uninstall')}</a>
            <#if This.canUpgrade(pkg)>
-             <a class="button upgrade" href="${Root.path}/install/start/${pkg.id}?source=${source}">${Context.getMessage('label.simpleListing.links.upgrade')}</a>
+             <a class="button upgrade" href="${Root.path}/install/start/${pkg.id}?source=${source?xml}">${Context.getMessage('label.simpleListing.links.upgrade')}</a>
            </#if>
          </#if>
          <#if This.needsRestart(pkg)>

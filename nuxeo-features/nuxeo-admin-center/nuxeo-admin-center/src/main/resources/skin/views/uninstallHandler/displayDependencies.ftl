@@ -74,9 +74,9 @@ $(document).ready(function() {
    </div>
 
    <br/>
-   <a href="${Root.path}/packages/${source}" class="button"> Cancel </a> &nbsp;
-   <a href="${Root.path}/uninstall/run/${pkg.id}/?source=${source}"class="button installButton" id="uninstallAutoButton"> Uninstallation of package ${pkg.id} and dependent packages </a>
-   <a href="${Root.path}/uninstall/start/${pkg.id}/?source=${source}"class="button installButton" id="uninstallManualButton"> Continue uninstallation of package ${pkg.id} </a>
+   <a href="${Root.path}/packages/${source?xml}" class="button"> Cancel </a> &nbsp;
+   <a href="${Root.path}/uninstall/run/${pkg.id}/?source=${source?xml}"class="button installButton" id="uninstallAutoButton"> Uninstallation of package ${pkg.id} and dependent packages </a>
+   <a href="${Root.path}/uninstall/start/${pkg.id}/?source=${source?xml}"class="button installButton" id="uninstallManualButton"> Continue uninstallation of package ${pkg.id} </a>
 
   </div>
 

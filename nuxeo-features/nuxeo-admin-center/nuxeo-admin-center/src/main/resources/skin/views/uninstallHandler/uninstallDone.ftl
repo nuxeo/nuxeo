@@ -21,7 +21,7 @@
 
     <br/>
 
-    <a href="${Root.path}/packages/${source}" class="button installButton"> Finish </a>
+    <a href="${Root.path}/packages/${source?xml}" class="button installButton"> Finish </a>
  </div>
 
 </@block>
