@@ -12,7 +12,8 @@
         <nxu:graphicImage value="#{rendition.icon}" />
       </nxu:column>
       <nxu:column>
-        <nxd:restDocumentLink document="#{currentDocument}" view="#{rendition.name}" pattern="rendition">
+        <nxd:restDocumentLink document="#{currentDocument}" view="#{rendition.name}" pattern="rendition"
+          target="_blank">
           <h:outputText value="#{messages[rendition.label]}" />
         </nxd:restDocumentLink>
       </nxu:column>
