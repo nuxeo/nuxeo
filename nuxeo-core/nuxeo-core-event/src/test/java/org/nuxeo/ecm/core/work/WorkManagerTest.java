@@ -290,6 +290,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertEquals(1, service.getQueueSize(QUEUE, COMPLETED));
     }
 
+    @Ignore("NXP-15680")
     @Test
     public void testWorkManagerDisableProcessing2() throws Exception {
         assumeTrue(persistent());
