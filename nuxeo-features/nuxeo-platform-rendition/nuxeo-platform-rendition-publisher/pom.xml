@@ -138,7 +138,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-relations-core</artifactId>
+      <artifactId>nuxeo-platform-relations-core-listener</artifactId>
       <scope>test</scope>
     </dependency>
 
