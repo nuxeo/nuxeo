@@ -156,13 +156,13 @@ public class TestRenditionPublication {
         templateBased.getSourceTemplate(TEMPLATE_NAME).setTargetRenditioName(null, true);
 
         List<RenditionDefinition> defs = renditionService.getAvailableRenditionDefinitions(templateBasedDoc);
-        // one blob => pdf rendition
-        assertEquals(1, defs.size());
+        // one blob => pdf rendition, + export renditions
+        assertEquals(4, defs.size());
 
         templateBased.getSourceTemplate(TEMPLATE_NAME).setTargetRenditioName("webView", true);
         defs = renditionService.getAvailableRenditionDefinitions(templateBasedDoc);
-        // blob, + delivery rendition binding => 2 rendition
-        assertEquals(2, defs.size());
+        // blob, + delivery rendition binding + export renditions => 5 rendition
+        assertEquals(5, defs.size());
 
     }
 
