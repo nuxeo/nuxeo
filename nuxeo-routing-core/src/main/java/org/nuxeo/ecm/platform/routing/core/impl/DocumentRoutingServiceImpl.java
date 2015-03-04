@@ -81,6 +81,7 @@ import org.nuxeo.ecm.platform.routing.core.registries.RouteTemplateResourceRegis
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.task.TaskService;
+import org.nuxeo.ecm.platform.task.core.service.TaskEventNotificationHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -905,8 +906,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             Map<String, Object> data, String status) throws ClientException {
         String comment = (String) data.get(GraphNode.NODE_VARIABLE_COMMENT);
         TaskService taskService = Framework.getLocalService(TaskService.class);
-        taskService.endTask(session, (NuxeoPrincipal) session.getPrincipal(),
-                task, comment, TaskEventNames.WORKFLOW_TASK_COMPLETED, false);
+        taskService.endTask(session, (NuxeoPrincipal) session.getPrincipal(), task, comment, null, false);
 
         Map<String, String> taskVariables = task.getVariables();
         String routeInstanceId = taskVariables.get(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
@@ -915,6 +915,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                     "Can not resume workflow, no related route");
         }
         completeTask(routeInstanceId, null, task.getId(), data, status, session);
+        final Map<String, Serializable> extraEventProperties = new HashMap<String, Serializable>();
+        extraEventProperties.put(DocumentRoutingConstants.WORKFLOW_TASK_COMPLETION_ACTION_KEY, status);
+        TaskEventNotificationHelper.notifyTaskEnded(session, (NuxeoPrincipal) session.getPrincipal(), task, comment,
+                TaskEventNames.WORKFLOW_TASK_COMPLETED, extraEventProperties);
     }
 
     @Override
