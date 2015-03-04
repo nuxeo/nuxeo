@@ -17,7 +17,7 @@
       </#list>
     </ul>
     <br />
-    <a href="${Root.path}/packages/${source}" class="button installButton">${Context.getMessage('label.canNotInstall.buttons.cancel')}</a>
+    <a href="${Root.path}/packages/${source?xml}" class="button installButton">${Context.getMessage('label.canNotInstall.buttons.cancel')}</a>
   </div>
 
 </@block>

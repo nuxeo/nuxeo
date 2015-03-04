@@ -22,7 +22,7 @@ function closePopup() {
     <#if source=="installer">
       <a href="javascript:closePopup()" class="button installButton">${Context.getMessage('label.installOnRestart.buttons.finish')}</a>
     <#else>
-      <a href="${Root.path}/packages/${source}" class="button installButton">${Context.getMessage('label.installOnRestart.buttons.finish')}</a>
+      <a href="${Root.path}/packages/${source?xml}" class="button installButton">${Context.getMessage('label.installOnRestart.buttons.finish')}</a>
     </#if>
   </div>
 </@block>

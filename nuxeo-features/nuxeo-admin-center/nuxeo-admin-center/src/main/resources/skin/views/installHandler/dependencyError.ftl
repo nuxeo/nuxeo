@@ -18,7 +18,7 @@
     </ul>
     <br/>
     <br/>
-    <a href="${Root.path}/packages/${source}" class="button installButton">${Context.getMessage('label.dependencyError.buttons.cancel')}</a>
+    <a href="${Root.path}/packages/${source?xml}" class="button installButton">${Context.getMessage('label.dependencyError.buttons.cancel')}</a>
   </div>
 
 </@block>

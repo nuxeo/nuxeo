@@ -5,7 +5,7 @@
 
 <@block name="body">
 <div class="infoMessage">
- ${Context.getMessage('label.pkgNotFound.message')} '${pkgId}'.
+ ${Context.getMessage('label.pkgNotFound.message')} '${pkgId?xml}'.
 </div>
 </@block>
 </@extends>

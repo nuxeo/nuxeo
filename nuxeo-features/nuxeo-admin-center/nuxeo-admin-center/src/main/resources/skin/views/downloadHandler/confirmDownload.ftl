@@ -25,7 +25,7 @@
     </table>
 
     <div class="alignCenter">
-      <a class="button" href="${Root.path}/download/start/${pkg.id}?source=${source}">${Context.getMessage('label.confirmDownload.links.confirm')}</a>
+      <a class="button" href="${Root.path}/download/start/${pkg.id}?source=${source?xml}">${Context.getMessage('label.confirmDownload.links.confirm')}</a>
     </div>
 
   </div>

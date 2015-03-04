@@ -18,7 +18,7 @@ function back() {
  stopRefresh=true;
  var url = document.location.href;
  var idx = url.indexOf("/download/");
- url = url.substring(0,idx) + "/packages/${source}"
+ url = url.substring(0,idx) + "/packages/${source?xml}"
  document.location.href=url;
 }
 
@@ -26,7 +26,7 @@ function install() {
  stopRefresh=true;
  var url = document.location.href;
  var idx = url.indexOf("/download/");
- url = url.substring(0,idx) + "/install/start/${pkg.id}/?source=${source}&depCheck=${depCheck}"
+ url = url.substring(0,idx) + "/install/start/${pkg.id}/?source=${source?xml}&depCheck=${depCheck?xml}"
  document.location.href=url;
 }
 
