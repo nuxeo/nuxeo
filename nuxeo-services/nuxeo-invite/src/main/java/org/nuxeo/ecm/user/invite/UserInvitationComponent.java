@@ -567,21 +567,21 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             // Build validationBaseUrl with nuxeo.url property as request is not
             // accessible.
             if (!additionnalInfo.containsKey("enterPasswordUrl")) {
-                String baseUrl = Framework.getProperty(NUXEO_URL_KEY);
-
-                baseUrl = isBlank(baseUrl) ? "/" : baseUrl;
-                if (!baseUrl.endsWith("/")) {
-                    baseUrl += "/";
-                }
-                String enterPasswordUrl = currentConfig.getEnterPasswordUrl();
-                if (enterPasswordUrl.startsWith("/")) {
-                    enterPasswordUrl = enterPasswordUrl.substring(1);
-                }
-                additionnalInfo.put("enterPasswordUrl", baseUrl.concat(enterPasswordUrl));
+                additionnalInfo.put("enterPasswordUrl", buildEnterPasswordUrl(currentConfig));
             }
             acceptRegistrationRequest(registrationUuid, additionnalInfo);
         }
         return registrationUuid;
+    }
+
+    protected String buildEnterPasswordUrl(UserRegistrationConfiguration configuration) {
+        String baseUrl = Framework.getProperty(NUXEO_URL_KEY);
+
+        baseUrl = isBlank(baseUrl) ? "/" : baseUrl;
+        if (!baseUrl.endsWith("/")) {
+            baseUrl += "/";
+        }
+        return baseUrl.concat(configuration.getEnterPasswordUrl());
     }
 
     @Override
@@ -762,6 +762,11 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     protected void reviveRegistrationRequest(CoreSession session, DocumentModel registrationDoc,
             Map<String, Serializable> additionalInfos) throws ClientException {
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
+        // Build validationBaseUrl with nuxeo.url property as request is not
+        // accessible.
+        if (!additionalInfos.containsKey("enterPasswordUrl")) {
+            additionalInfos.put("enterPasswordUrl", buildEnterPasswordUrl(configuration));
+        }
         sendEmail(additionalInfos, registrationDoc, configuration.getReviveEmailTemplate(),
                 configuration.getReviveEmailTitle());
     }

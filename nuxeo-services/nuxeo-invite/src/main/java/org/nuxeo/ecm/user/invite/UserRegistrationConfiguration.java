@@ -163,6 +163,9 @@ public class UserRegistrationConfiguration {
             log.info("Configuration " + name + " has empty validation url");
             return "";
         }
+        if (enterPasswordUrl.startsWith("/")) {
+            enterPasswordUrl = enterPasswordUrl.substring(1);
+        }
         return enterPasswordUrl;
     }
 
