@@ -17,12 +17,13 @@
 package org.nuxeo.transientstore.test;
 
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 
-@Features({ CoreFeature.class })
+@Features({ TransactionalFeature.class,CoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.core.cache" })
 public class TransientStoreFeature extends SimpleFeature {
 
