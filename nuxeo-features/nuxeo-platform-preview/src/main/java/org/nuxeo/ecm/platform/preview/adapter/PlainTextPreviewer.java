@@ -71,7 +71,7 @@ public class PlainTextPreviewer extends AbstractPreviewer implements
             throw new PreviewException("Cannot encode blob content to string", e);
         }
 
-        HtmlSanitizerService sanitizer = Framework.getService(HtmlSanitizerService.class);
+        HtmlSanitizerService sanitizer = Framework.getLocalService(HtmlSanitizerService.class);
         if (sanitizer == null && !Framework.isTestModeSet()) {
             throw new RuntimeException("Cannot find HtmlSanitizerService");
         }
