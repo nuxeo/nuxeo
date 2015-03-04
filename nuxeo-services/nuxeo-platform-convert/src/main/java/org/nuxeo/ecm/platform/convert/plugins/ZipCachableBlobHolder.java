@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
@@ -152,11 +153,12 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
 
     protected Blob createIndexBlob() {
         StringBuilder page = new StringBuilder("<html><body>");
-        page.append("<h1>").append(zipBlob.getFilename()).append("</h1>");
+        page.append("<h1>").append(StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(zipBlob.getFilename()))).append("</h1>");
         page.append("<ul>");
         for (Blob blob : blobs) {
-            page.append("<li><a href=\"").append(blob.getFilename()).append("\">");
-            page.append(blob.getFilename());
+            String fn = StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(blob.getFilename()));
+            page.append("<li><a href=\"").append(fn).append("\">");
+            page.append(fn);
             page.append("</a></li>");
         }
         page.append("</ul></body></html>");

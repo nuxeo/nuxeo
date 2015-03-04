@@ -28,7 +28,9 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerService;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
+import org.nuxeo.runtime.api.Framework;
 
 import com.ibm.icu.text.CharsetDetector;
 
@@ -66,11 +68,18 @@ public class PlainTextPreviewer extends AbstractPreviewer implements MimeTypePre
             throw new PreviewException("Cannot encode blob content to string", e);
         }
 
+        HtmlSanitizerService sanitizer = Framework.getService(HtmlSanitizerService.class);
+        if (sanitizer == null && !Framework.isTestModeSet()) {
+            throw new RuntimeException("Cannot find HtmlSanitizerService");
+        }
+
         htmlPage.append("<?xml version=\"1.0\" encoding=\"UTF-8\"/>");
         htmlPage.append("<html>");
         htmlPage.append("<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/></head>");
         htmlPage.append("<body>");
-        htmlPage.append(htmlContent(content));
+        if (sanitizer != null) {
+            htmlPage.append(htmlContent(sanitizer.sanitizeString(content, null)));
+        }
         htmlPage.append("</body></html>");
 
         Blob mainBlob = Blobs.createBlob(htmlPage.toString(), "text/html", "UTF-8", "index.html");
