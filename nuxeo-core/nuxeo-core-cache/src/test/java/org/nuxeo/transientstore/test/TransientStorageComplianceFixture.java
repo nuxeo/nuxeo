@@ -88,6 +88,10 @@ public class TransientStorageComplianceFixture {
 
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("testStore");
+
+        long size = ((AbstractTransientStore)ts).getStorageSize();
+        assertEquals(0, size);
+
         ts.put(createEntry("1"));
 
         // check FS
@@ -105,6 +109,9 @@ public class TransientStorageComplianceFixture {
         assertEquals("text/plain", se.getBlobs().get(0).getMimeType());
         assertEquals("FakeContent", IOUtils.toString(se.getBlobs().get(0).getStream()));
 
+        size = ((AbstractTransientStore)ts).getStorageSize();
+        assertEquals(11, size);
+
         // move to deletable entries
         // check that still here
         ts.canDelete("1");
@@ -115,6 +122,10 @@ public class TransientStorageComplianceFixture {
         ts.remove("1");
         se = ts.get("1");
         assertNull(se);
+
+        size = ((AbstractTransientStore)ts).getStorageSize();
+        assertEquals(0, size);
+
     }
 
     @Test(expected = MaximumTransientSpaceExceeded.class)

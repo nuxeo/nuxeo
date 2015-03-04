@@ -98,7 +98,7 @@ public abstract class AbstractTransientStore implements TransientStore {
 
     protected abstract void decrementStorageSize(StorageEntry entry);
 
-    protected abstract long getStorageSize();
+    public abstract long getStorageSize();
 
     protected abstract void setStorageSize(long newSize);
 

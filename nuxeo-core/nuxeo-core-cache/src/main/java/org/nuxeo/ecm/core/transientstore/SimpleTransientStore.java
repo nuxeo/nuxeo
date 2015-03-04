@@ -53,7 +53,7 @@ public class SimpleTransientStore extends AbstractTransientStore {
     }
 
     @Override
-    protected long getStorageSize() {
+    public long getStorageSize() {
         return (int) storageSize.get();
     }
 

@@ -86,7 +86,7 @@ public class RedisTransientStore extends AbstractTransientStore {
     }
 
     @Override
-    protected long getStorageSize() {
+    public long getStorageSize() {
         try {
             return redisExecutor.execute(new RedisCallable<Long>() {
                 @Override
