@@ -69,7 +69,9 @@ import org.nuxeo.runtime.api.Framework;
 @Name("breadcrumbActions")
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
-public class BreadcrumbActionsBean implements BreadcrumbActions {
+public class BreadcrumbActionsBean implements BreadcrumbActions, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String BREADCRUMB_USER_DOMAINS_PROVIDER = "breadcrumb_user_domains";
 
