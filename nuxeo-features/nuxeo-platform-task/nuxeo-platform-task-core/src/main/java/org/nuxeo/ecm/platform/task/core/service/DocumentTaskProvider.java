@@ -28,10 +28,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -214,65 +212,15 @@ public class DocumentTaskProvider implements TaskProvider {
             taskDocument.attach(coreSession.getSessionId());
         }
         coreSession.saveDocument(taskDocument);
-        // notify
-        Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
-        ArrayList<String> notificationRecipients = new ArrayList<String>();
-        notificationRecipients.add(task.getInitiator());
-        notificationRecipients.addAll(task.getActors());
-        eventProperties.put(NotificationConstants.RECIPIENTS_KEY, notificationRecipients);
-        // try to resolve document when notifying
-        DocumentModel document = null;
-
-        List<String> docIds = new ArrayList<String>();
-        docIds.addAll(task.getTargetDocumentsIds());
-        // handle compatibility with tasks created before 5.8
-        String docId = task.getTargetDocumentId();
-        if (!docIds.contains(docId)) {
-            docIds.add(docId);
-        }
-        // also handle compatibility with deprecated jbpm tasks
-        String docIdVar = task.getVariable(TaskService.VariableName.documentId.name());
-        if (!docIds.contains(docIdVar)) {
-            docIds.add(docIdVar);
-        }
-        String docRepo = task.getVariable(TaskService.VariableName.documentRepositoryName.name());
-        List<DocumentModel> documents = new ArrayList<DocumentModel>();
-        if (coreSession.getRepositoryName().equals(docRepo)) {
-            try {
-                for (String id : docIds) {
-                    document = coreSession.getDocument(new IdRef(id));
-                    documents.add(document);
-                }
-            } catch (ClientException e) {
-                log.error(String.format("Could not fetch document with id '%s:%s' for notification", docRepo, docId), e);
-            }
-        } else {
-            log.error(String.format("Could not resolve document for notification: "
-                    + "document is on repository '%s' and given session is on " + "repository '%s'", docRepo,
-                    coreSession.getRepositoryName()));
-        }
-        boolean taskEndedByDelegatedActor = task.getDelegatedActors() != null
-                && task.getDelegatedActors().contains(principal.getName());
-        for (DocumentModel doc : documents) {
-            TaskEventNotificationHelper.notifyEvent(coreSession, doc, principal, task, eventName, eventProperties,
-                    comment, null);
-            if (taskEndedByDelegatedActor) {
-                TaskEventNotificationHelper.notifyEvent(
-                        coreSession,
-                        doc,
-                        principal,
-                        task,
-                        eventName,
-                        eventProperties,
-                        String.format("Task ended by an delegated actor '%s' ", principal.getName())
-                                + (!StringUtils.isEmpty(comment) ? " with the following comment: " + comment : ""),
-                        null);
-            }
+        if (StringUtils.isNotBlank(eventName)) {
+            TaskEventNotificationHelper.notifyTaskEnded(coreSession, principal, task, comment, eventName, null);
         }
         String seamEventName = isValidated ? TaskEventNames.WORKFLOW_TASK_COMPLETED
                 : TaskEventNames.WORKFLOW_TASK_REJECTED;
         return seamEventName;
     }
+
+
 
     @Override
     public List<Task> getAllTaskInstances(String processId, String nodeId, CoreSession session) throws ClientException {
