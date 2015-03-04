@@ -9,7 +9,7 @@
     <h3>${Context.getMessage('label.removeError.message')} ${e.message}.</h3>
 
     <br/>
-    <a href="${Root.path}/packages/${source}" class="button installButton">${Context.getMessage('label.removeError.cancel')}</a>
+    <a href="${Root.path}/packages/${source?xml}" class="button installButton">${Context.getMessage('label.removeError.cancel')}</a>
   </div>
 
 </@block>

@@ -7,7 +7,7 @@ var subWin;
 var installBaseUrl="${Root.path}/install/start/";
 var uninstallBaseUrl="${Root.path}/uninstall/start/";
 var downloadBaseUrl="${Root.path}/download/start/";
-var autoMode = ${autoMode};
+var autoMode = ${autoMode?xml};
 var lastDownloadStatus;
 
 function display(url) {
@@ -78,7 +78,7 @@ function refreshDownloadProgress(downloadStatus) {
     }, 1000);
   } else {
     // refresh
-    window.location.href="${Root.path}/install/start/${pkg.id}/?source=${source}";
+    window.location.href="${Root.path}/install/start/${pkg.id}/?source=${source?xml}";
   }
 }
 
@@ -201,9 +201,9 @@ $(document).ready(function() {
 
    <br/>
    <a href="javascript:downloadAllPackages()" id="downloadAllButton" class="button installButton" style="display:none">${Context.getMessage('label.displayDependencies.links.downloadall')}</a>
-   <a href="${Root.path}/packages/${source}" class="button"> Cancel </a> &nbsp;
-   <a href="${Root.path}/install/bulkRun/${pkg.id}/?source=${source}" class="button installButton" id="installAutoButton">${Context.getMessage('label.displayDependencies.links.install.start')} ${pkg.id} ${Context.getMessage('label.displayDependencies.links.install.stop')}</a>
-   <a href="${Root.path}/install/start/${pkg.id}/?source=${source}" class="button installButton" id="installManualButton">${Context.getMessage('label.displayDependencies.links.continue')} ${pkg.id} </a>
+   <a href="${Root.path}/packages/${source?xml}" class="button"> Cancel </a> &nbsp;
+   <a href="${Root.path}/install/bulkRun/${pkg.id}/?source=${source?xml}" class="button installButton" id="installAutoButton">${Context.getMessage('label.displayDependencies.links.install.start')} ${pkg.id} ${Context.getMessage('label.displayDependencies.links.install.stop')}</a>
+   <a href="${Root.path}/install/start/${pkg.id}/?source=${source?xml}" class="button installButton" id="installManualButton">${Context.getMessage('label.displayDependencies.links.continue')} ${pkg.id} </a>
 
   </div>
 

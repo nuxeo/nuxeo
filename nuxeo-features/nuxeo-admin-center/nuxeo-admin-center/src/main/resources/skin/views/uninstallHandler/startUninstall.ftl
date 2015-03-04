@@ -29,8 +29,8 @@
 
     <br/>
     ${Context.getMessage('label.uninstall.start')} <br/><br/><br/>
-    <a href="${This.path}/run/${pkg.id}?source=${source}" class="button installButton"> ${Context.getMessage('label.startInstall.buttons.start')} </a>
-      &nbsp; <a href="${Root.path}/packages/${source}" class="button installButton"> ${Context.getMessage('label.startInstall.buttons.cancel')} </a>
+    <a href="${This.path}/run/${pkg.id}?source=${source?xml}" class="button installButton"> ${Context.getMessage('label.startInstall.buttons.start')} </a>
+      &nbsp; <a href="${Root.path}/packages/${source?xml}" class="button installButton"> ${Context.getMessage('label.startInstall.buttons.cancel')} </a>
   </div>
 
 </@block>

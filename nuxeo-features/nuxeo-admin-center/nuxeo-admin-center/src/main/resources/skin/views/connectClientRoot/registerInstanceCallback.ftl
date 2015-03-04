@@ -4,7 +4,7 @@
 </head>
 <body>
   <script type="text/javascript">
-    window.opener.registerInstanceCallback("${token}");
+    window.opener.registerInstanceCallback("${token?xml}");
     window.close();
   </script>
 </body>

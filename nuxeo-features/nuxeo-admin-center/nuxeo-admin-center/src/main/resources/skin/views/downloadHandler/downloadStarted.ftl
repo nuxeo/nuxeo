@@ -19,7 +19,7 @@ function back() {
  var url = document.location.href;
  var idx = url.indexOf("/download/");
  var idParam = url.indexOf("?");
- var returnUrl = url.substring(0,idx) + "/packages/${source}?filterOnPlatform=${filterOnPlatform}&amp;type=${type}&amp;onlyRemote=${onlyRemote}" + url.substring(idParam,url.length);
+ var returnUrl = url.substring(0,idx) + "/packages/${source?xml}?filterOnPlatform=${filterOnPlatform?xml}&amp;type=${type?xml}&amp;onlyRemote=${onlyRemote?xml}" + url.substring(idParam,url.length);
  document.location.href=returnUrl;
 }
 
@@ -27,7 +27,7 @@ function install() {
  stopRefresh=true;
  var url = document.location.href;
  var idx = url.indexOf("/download/");
- url = url.substring(0,idx) + "/install/start/${pkg.id}/?source=${source}&depCheck=${depCheck}"
+ url = url.substring(0,idx) + "/install/start/${pkg.id}/?source=${source?xml}&depCheck=${depCheck?xml}"
  document.location.href=url;
 }
 
