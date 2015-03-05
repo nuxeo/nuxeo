@@ -86,6 +86,14 @@ a.treeLink:hover,
 .rf-trn {
   background: transparent url("${basePath}/img/tree_line.png") repeat-y 0 0 }
 
+.menu a.treeLink {
+  /* Fix Chrome bug on word-break */
+  word-break: break-word }
+
+.rf-trn a.treeLink {
+  /* standard word-break rule */
+  word-break: keep-all }
+
 .rf-tr-nd-exp .rf-trn {
   background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
   white-space: nowrap;
