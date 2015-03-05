@@ -51,7 +51,11 @@
 
   <!-- Corresponds to the dublincore type element,
   but renamed to avoid conflicts -->
-  <xs:element name="nature" type="xs:string"/>
+  <xs:element name="nature" type="xs:string">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="nature" />
+    </xs:simpleType>
+  </xs:element>
   
   <!-- @Since 5.5 -->
   <xs:element name="publisher" type="xs:string"/>
