@@ -34,6 +34,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * @since 7.2
@@ -73,7 +74,14 @@ public class JsonEncodeDecodeUtils {
         }
         jg.writeStringField("length", Long.toString(blob.getLength()));
 
-        // TODO encode data url
+        // Write url as data URI
+        StringBuilder data = new StringBuilder("data:");
+        if (blob.getMimeType() != null) {
+            data.append(blob.getMimeType());
+        }
+        data.append(";base64,");
+        data.append(Base64.encodeBase64String(blob.getByteArray()));
+        jg.writeStringField("url", data.toString());
 
         jg.writeEndObject();
     }
