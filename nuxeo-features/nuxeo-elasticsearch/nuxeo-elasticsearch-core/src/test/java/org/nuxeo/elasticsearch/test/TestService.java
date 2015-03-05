@@ -102,7 +102,7 @@ public class TestService {
     }
 
     @Test
-    public void verifyprepareWaitForIndexing() throws Exception {
+    public void verifyPrepareWaitForIndexingTimeout() throws Exception {
         // when a worker is created it is pending
         Assert.assertFalse(esa.isIndexingInProgress());
         esi.runReindexingWorker("test", "select * from Document");
@@ -111,10 +111,13 @@ public class TestService {
         Assert.assertEquals(0, esa.getRunningWorkerCount());
         ListenableFuture<Boolean> futureRet = esa.prepareWaitForIndexing();
         try {
-            exception.expect(TimeoutException.class);
             futureRet.get(0, TimeUnit.MILLISECONDS);
-        } finally {
+            // sometime we don't timeout
+            Assert.assertTrue(futureRet.isDone());
+        } catch (TimeoutException e) {
+            Assert.assertFalse(futureRet.isDone());
             Assert.assertTrue(futureRet.get());
+        } finally {
             Assert.assertFalse(esa.isIndexingInProgress());
         }
     }
