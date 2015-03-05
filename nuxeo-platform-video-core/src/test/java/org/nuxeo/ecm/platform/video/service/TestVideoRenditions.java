@@ -92,7 +92,7 @@ public class TestVideoRenditions {
         doc = session.createDocument(doc);
 
         List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertTrue(availableRenditionDefinitions.isEmpty());
+        assertEquals(3, availableRenditionDefinitions.size());
 
         TranscodedVideo transcodedVideo = videoService.convert(video, "WebM 480p");
         assertNotNull(transcodedVideo);
@@ -101,22 +101,28 @@ public class TestVideoRenditions {
         doc.setPropertyValue(VideoConstants.TRANSCODED_VIDEOS_PROPERTY, (Serializable) transcodedVideos);
         doc = session.saveDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(1, availableRenditionDefinitions.size());
-        RenditionDefinition definition = availableRenditionDefinitions.get(0);
-        assertTrue(definition.isEnabled());
-        assertFalse(definition.isVisible());
-        assertEquals(transcodedVideo.getName(), definition.getName());
-        assertEquals(transcodedVideo.getName(), definition.getLabel());
+        assertEquals(4, availableRenditionDefinitions.size());
+        for (RenditionDefinition definition : availableRenditionDefinitions) {
+            if (definition.getName().equals(transcodedVideo.getName())) {
+                assertTrue(definition.isEnabled());
+                assertFalse(definition.isVisible());
+                assertEquals(transcodedVideo.getName(), definition.getName());
+                assertEquals(transcodedVideo.getName(), definition.getLabel());
+            }
+        }
 
         List<Rendition> availableRenditions = renditionService.getAvailableRenditions(doc, true);
-        assertTrue(availableRenditions.isEmpty());
+        assertEquals(3, availableRenditions.size());
         availableRenditions = renditionService.getAvailableRenditions(doc, false);
-        assertEquals(1, availableRenditions.size());
-        Rendition rendition = availableRenditions.get(0);
-        List<Blob> blobs = rendition.getBlobs();
-        assertEquals(1, blobs.size());
-        Blob blob = blobs.get(0);
-        assertEquals(transcodedVideo.getBlob(), blob);
+        assertEquals(4, availableRenditions.size());
+        for (Rendition rendition : availableRenditions) {
+            if (rendition.getName().equals("WebM 480p")) {
+                List<Blob> blobs = rendition.getBlobs();
+                assertEquals(1, blobs.size());
+                Blob blob = blobs.get(0);
+                assertEquals(transcodedVideo.getBlob(), blob);
+            }
+        }
     }
 
     protected static Video getTestVideo() throws IOException {
