@@ -80,8 +80,6 @@
                 required="#{widgetProperty_required}"
                 diff="#{widgetProperty_diff}"
                 rendered="#{isEditMode or not empty fieldOrValue}">
-                <nxu:validateDocumentConstraint handleSubProperties="false" />
-
                 <tr class="#{model.rowIndex % 2 == 0 ? 'dataRowEven': 'dataRowOdd'} listItem">
                   <td style="display:none;">
                     <h:inputHidden>
@@ -126,7 +124,6 @@
                 required="#{widgetProperty_required}"
                 diff="#{widgetProperty_diff}"
                 rendered="#{isEditMode or not empty fieldOrValue}">
-                <nxu:validateDocumentConstraint handleSubProperties="false" />
                 <tr>
                   <td style="display:none;">
                     <h:inputHidden>
@@ -172,7 +169,6 @@
             required="#{widgetProperty_required}"
             diff="#{widgetProperty_diff}"
             rendered="#{isEditMode or not empty fieldOrValue}">
-            <nxu:validateDocumentConstraint handleSubProperties="false" />
             <h:panelGrid columns="#{isEditMode and showActions?2:1}">
               <h:inputHidden>
                 <f:passThroughAttribute name="name" value="#{listClientId}:#{isListTemplate ? 'TEMPLATE_INDEX_MARKER:': ''}rowIndex[]" />
@@ -227,7 +223,6 @@
             required="#{widgetProperty_required}"
             diff="#{widgetProperty_diff}"
             rendered="#{isEditMode or not empty fieldOrValue}">
-            <nxu:validateDocumentConstraint handleSubProperties="false" />
             <h:panelGrid columns="#{isEditMode and showActions?2:1}" styleClass="listItem">
               <c:if test="#{showActions}">
                 <h:panelGroup styleClass="listWidgetActionsTable" id="#{widget.id}_actions">
