@@ -78,7 +78,7 @@
         ordering="#{empty widgetProperty_ordering?'label':widgetProperty_ordering}">
         <a4j:ajax event="change"
           render="#{widget.id}_child #{widget.id}_message"
-          immediate="true" />
+          execute="@this" />
       </nxdir:chainSelectListbox>
       <f:subview rendered="#{widgetProperty_on2rows}">
         <br />
@@ -91,7 +91,8 @@
       <a4j:commandButton value="#{messages['command.add']}"
         styleClass="button" immediate="true"
         actionListener="#{chainSelectActions.add}"
-        render="#{widget.id}_status" id="#{widget.id}_add" />
+        render="#{widget.id}_status #{widget.id}_message"
+        id="#{widget.id}_add" />
       <br />
       <nxdir:chainSelectStatus display="value"
         entryCssStyle="background-color: #DDEEFF"
@@ -100,17 +101,15 @@
         <f:facet name="removeButton">
           <a4j:commandButton
             actionListener="#{chainSelectActions.delete}"
-            immediate="true" render="#{widget.id}_status"
+            execute="@this" render="#{widget.id}_status"
             image="/icons/toggle_minus.png"
             id="#{widget.id}_delete" />
         </f:facet>
       </nxdir:chainSelectStatus>
     </nxdir:chainSelect>
   </a4j:region>
-  <a4j:outputPanel ajaxRendered="true">
-    <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
-      id="#{widget.id}_message" />
-  </a4j:outputPanel>
+  <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
+    id="#{widget.id}_message" />
 
 </c:if>
 </f:subview>
