@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
  * Retrives stored Rendition associated to a DocumentModel.
  * <p>
  * Can run Unrestricted or not.
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class RenditionFinder extends UnrestrictedSessionRunner {
@@ -52,7 +52,13 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
         query = query + RENDITION_NAME_PROPERTY + "='" + definitionName + "' AND ";
         String versionUUUID = source.getId();
         if (!source.isVersion() && !source.isCheckedOut()) {
-            versionUUUID = session.getLastDocumentVersion(source.getRef()).getId();
+            DocumentModel lastVersion = session.getLastDocumentVersion(source.getRef());
+            if (lastVersion != null) {
+                versionUUUID = lastVersion.getId();
+            } else {
+                // no version at all
+                return;
+            }
         }
         query = query + RENDITION_SOURCE_ID_PROPERTY + "='" + versionUUUID + "' ";
 
