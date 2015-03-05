@@ -20,6 +20,8 @@ package org.nuxeo.elasticsearch.test;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.inject.Inject;
+
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoRequest;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
 import org.elasticsearch.client.Client;
@@ -39,7 +41,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
@@ -101,7 +102,7 @@ public class TestService {
     }
 
     @Test
-    public void verifyprepareWaitForIndexing() throws Exception {
+    public void verifyPrepareWaitForIndexingTimeout() throws Exception {
         // when a worker is created it is pending
         Assert.assertFalse(esa.isIndexingInProgress());
         esi.runReindexingWorker("test", "select * from Document");
@@ -110,10 +111,13 @@ public class TestService {
         Assert.assertEquals(0, esa.getRunningWorkerCount());
         ListenableFuture<Boolean> futureRet = esa.prepareWaitForIndexing();
         try {
-            exception.expect(TimeoutException.class);
-            futureRet.get(1, TimeUnit.MILLISECONDS);
-        } finally {
+            futureRet.get(0, TimeUnit.MILLISECONDS);
+            // sometime we don't timeout
+            Assert.assertTrue(futureRet.isDone());
+        } catch (TimeoutException e) {
+            Assert.assertFalse(futureRet.isDone());
             Assert.assertTrue(futureRet.get());
+        } finally {
             Assert.assertFalse(esa.isIndexingInProgress());
         }
     }
