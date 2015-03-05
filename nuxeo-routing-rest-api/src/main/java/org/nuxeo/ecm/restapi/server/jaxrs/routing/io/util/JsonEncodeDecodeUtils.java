@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ObjectNode;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 
@@ -92,6 +93,13 @@ public class JsonEncodeDecodeUtils {
                 // Map<String, String>, boolean)
                 // But we'll definitely need to convert submitted json variable to proper typed objects
                 variables.put(key, value.getNumberValue().toString());
+            } else if (value.isObject()) {
+                if (value.has("upload-batch")) {
+                    // Decoding of the blob will be handled in ComplexTypeJSONDecoder.decode
+                    ObjectNode upload = (ObjectNode) value;
+                    upload.put("type", "blob");
+                    variables.put(key, upload.toString());
+                }
             } else {
                 variables.put(key, value.getTextValue());
             }
