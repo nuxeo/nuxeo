@@ -94,8 +94,6 @@ public class TestService {
     public void verifyPrepareWaitForIndexing() throws Exception {
         ListenableFuture<Boolean> futureRet = esa.prepareWaitForIndexing();
         Assert.assertFalse(futureRet.isCancelled());
-        Assert.assertFalse(futureRet.isDone());
-
         Assert.assertTrue(futureRet.get());
         Assert.assertTrue(futureRet.isDone());
         Assert.assertTrue(futureRet.get());
