@@ -1,6 +1,7 @@
 function AutomationWrapper(operationId, opts) {
   this.operationId = operationId;
   this.opts = opts;
+  this.headers = {};
 }
 
 AutomationWrapper.prototype.addParameter = function(name, value){
@@ -28,6 +29,11 @@ AutomationWrapper.prototype.setTimeout = function(timeout){
   return this;
 };
 
+AutomationWrapper.prototype.setHeaders = function(headers){
+  jQuery.extend(this.headers, headers);
+  return this;
+};
+
 AutomationWrapper.prototype.execute = function(successCB, failureCB, voidOp){
   var targetUrl = this.opts.url;
   if (targetUrl.indexOf("/", targetUrl.length - 1)==-1) {
@@ -41,6 +47,7 @@ AutomationWrapper.prototype.execute = function(successCB, failureCB, voidOp){
   var timeout = 5+ (this.opts.execTimeout/1000)|0;
   var documentSchemas = this.opts.documentSchemas;
   var repo = this.opts.repository;
+  var self = this;
   jQuery.ajax({
       type: 'POST',
       contentType : 'application/json+nxrequest',
@@ -53,6 +60,9 @@ AutomationWrapper.prototype.execute = function(successCB, failureCB, voidOp){
             }
           if (repo) {
               xhr.setRequestHeader('X-NXRepository', repo);
+          }
+          for (var key in self.headers) {
+            xhr.setRequestHeader(key, self.headers[key]);
           }
       },
       url: targetUrl,
