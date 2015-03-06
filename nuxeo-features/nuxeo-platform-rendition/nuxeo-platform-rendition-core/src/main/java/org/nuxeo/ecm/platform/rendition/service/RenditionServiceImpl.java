@@ -84,6 +84,10 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         super.deactivate(context);
     }
 
+    public RenditionDefinition getRenditionDefinition(String name) {
+        return renditionDefinitions.get(name);
+    }
+
     @Override
     @Deprecated
     public List<RenditionDefinition> getDeclaredRenditionDefinitions() {

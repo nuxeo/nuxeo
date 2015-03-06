@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.rendition.lazy.testContrib">
+
+  <require>org.nuxeo.ecm.platform.rendition.contrib</require>
+
+  <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService" point="renditionDefinitions">
+
+    <renditionDefinition name="iamlazy" enabled="true" class="org.nuxeo.ecm.platform.rendition.service.lazy.LazyRenditionProviderSample">
+    </renditionDefinition>
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent"
+    point="store">
+
+    <store name="LazyRenditionCache">
+    </store>
+   </extension>
+
+</component>
