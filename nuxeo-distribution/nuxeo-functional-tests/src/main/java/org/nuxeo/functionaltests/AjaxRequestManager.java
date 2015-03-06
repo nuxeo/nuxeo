@@ -48,7 +48,10 @@ public class AjaxRequestManager {
         count = 0;
     }
 
-    public void watchAjaxRequests() {
+    /**
+     * @since 7.2
+     */
+    public void begin() {
         StringBuilder sb = new StringBuilder();
         sb.append("if (window.ajaxListenerSet === undefined) {");
         sb.append("window.ajaxListenerSet = true;");
@@ -82,7 +85,14 @@ public class AjaxRequestManager {
         js.executeScript(sb.toString());
     }
 
-    public void waitForAjaxRequests() {
+    public void watchAjaxRequests() {
+        begin();
+    }
+
+    /**
+     * @since 7.2
+     */
+    public void end() {
         waitUntil((new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
@@ -90,6 +100,10 @@ public class AjaxRequestManager {
                 return res;
             }
         }));
+    }
+
+    public void waitForAjaxRequests() {
+        end();
     }
 
     /**
