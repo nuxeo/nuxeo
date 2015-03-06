@@ -22,6 +22,7 @@ import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.forms.JSListWidgetElement;
 import org.nuxeo.functionaltests.forms.JSListWidgetElement.Display;
+import org.nuxeo.functionaltests.forms.ListWidgetElement;
 import org.nuxeo.functionaltests.formsLayoutDemo.page.Page;
 import org.openqa.selenium.By;
 
@@ -61,72 +62,72 @@ public class ListStandardWidgetPage extends Page {
     private static final String LIST_OF_LISTS_WIDGET_SUBMIT_ID = "listOfListsWidgetLayout_edit_form:listOfListsWidgetLayout_edit_form_submitButton";
 
     // List Array
-    public JSListWidgetElement getListArrayViewWidget() {
-        return new JSListWidgetElement(AbstractTest.driver, LIST_ARRAY_WIDGET_VIEW_ID);
+    public ListWidgetElement getListArrayViewWidget() {
+        return new ListWidgetElement(AbstractTest.driver, LIST_ARRAY_WIDGET_VIEW_ID);
     }
 
-    public JSListWidgetElement getListArrayEditWidget() {
-        return new JSListWidgetElement(AbstractTest.driver, LIST_ARRAY_WIDGET_EDIT_ID);
+    public ListWidgetElement getListArrayEditWidget() {
+        return new ListWidgetElement(AbstractTest.driver, LIST_ARRAY_WIDGET_EDIT_ID);
     }
 
-    public JSListWidgetElement submitListArrayWidget() {
+    public ListWidgetElement submitListArrayWidget() {
         submit(LIST_ARRAY_WIDGET_SUBMIT_ID);
         return getListArrayEditWidget();
     }
 
     // Standard List
-    public JSListWidgetElement getListViewWidget() {
-        return new JSListWidgetElement(AbstractTest.driver, LIST_WIDGET_VIEW_ID);
+    public ListWidgetElement getListViewWidget() {
+        return new ListWidgetElement(AbstractTest.driver, LIST_WIDGET_VIEW_ID);
     }
 
-    public JSListWidgetElement getListEditWidget() {
-        return new JSListWidgetElement(AbstractTest.driver, LIST_WIDGET_EDIT_ID);
+    public ListWidgetElement getListEditWidget() {
+        return new ListWidgetElement(AbstractTest.driver, LIST_WIDGET_EDIT_ID);
     }
 
-    public JSListWidgetElement submitListWidget() {
+    public ListWidgetElement submitListWidget() {
         submit(LIST_WIDGET_SUBMIT_ID);
         return getListEditWidget();
     }
 
     // Complex List
-    public JSListWidgetElement getComplexListViewWidget() {
-        return new JSListWidgetElement(AbstractTest.driver, COMPLEX_LIST_WIDGET_VIEW_ID);
+    public ListWidgetElement getComplexListViewWidget() {
+        return new ListWidgetElement(AbstractTest.driver, COMPLEX_LIST_WIDGET_VIEW_ID);
     }
 
-    public JSListWidgetElement getComplexListEditWidget() {
-        return new JSListWidgetElement(AbstractTest.driver, COMPLEX_LIST_WIDGET_EDIT_ID,
+    public ListWidgetElement getComplexListEditWidget() {
+        return new ListWidgetElement(AbstractTest.driver, COMPLEX_LIST_WIDGET_EDIT_ID,
                 JSListWidgetElement.Display.TABLE);
     }
 
-    public JSListWidgetElement submitComplexListWidget() {
+    public ListWidgetElement submitComplexListWidget() {
         submit(COMPLEX_LIST_WIDGET_SUBMIT_ID);
         return getComplexListEditWidget();
     }
 
     // Complex List 2
-    public JSListWidgetElement getS2HtmlTextComplexListViewWidget() {
-        return new JSListWidgetElement(AbstractTest.driver, S2_HTML_TEXT_COMPLEX_LIST_WIDGET_VIEW_ID, Display.TABLE);
+    public ListWidgetElement getS2HtmlTextComplexListViewWidget() {
+        return new ListWidgetElement(AbstractTest.driver, S2_HTML_TEXT_COMPLEX_LIST_WIDGET_VIEW_ID, Display.TABLE);
     }
 
-    public JSListWidgetElement getS2HtmlTextComplexListEditWidget() {
-        return new JSListWidgetElement(AbstractTest.driver, S2_HTML_TEXT_COMPLEX_LIST_WIDGET_EDIT_ID);
+    public ListWidgetElement getS2HtmlTextComplexListEditWidget() {
+        return new ListWidgetElement(AbstractTest.driver, S2_HTML_TEXT_COMPLEX_LIST_WIDGET_EDIT_ID);
     }
 
-    public JSListWidgetElement submitS2HtmlTextComplexListWidget() {
+    public ListWidgetElement submitS2HtmlTextComplexListWidget() {
         submit(S2_HTML_TEXT_COMPLEX_LIST_WIDGET_SUBMIT_ID);
         return getS2HtmlTextComplexListEditWidget();
     }
 
     // List of lists
-    public JSListWidgetElement getListOfListsViewWidget() {
-        return new JSListWidgetElement(AbstractTest.driver, LIST_OF_LISTS_WIDGET_VIEW_ID);
+    public ListWidgetElement getListOfListsViewWidget() {
+        return new ListWidgetElement(AbstractTest.driver, LIST_OF_LISTS_WIDGET_VIEW_ID);
     }
 
-    public JSListWidgetElement getListOfListsEditWidget() {
-        return new JSListWidgetElement(AbstractTest.driver, LIST_OF_LISTS_WIDGET_EDIT_ID);
+    public ListWidgetElement getListOfListsEditWidget() {
+        return new ListWidgetElement(AbstractTest.driver, LIST_OF_LISTS_WIDGET_EDIT_ID);
     }
 
-    public JSListWidgetElement submitListOfListsWidget() {
+    public ListWidgetElement submitListOfListsWidget() {
         submit(LIST_OF_LISTS_WIDGET_SUBMIT_ID);
         return getListOfListsEditWidget();
     }
