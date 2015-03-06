@@ -21,12 +21,14 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.annotation.Experimental;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * @since 5.9.3
+ * @since 7.2
  */
+@Experimental(comment="https://jira.nuxeo.com/browse/NXP-12200")
 @XObject("importerConfig")
 public class ImporterConfig {
 
@@ -69,8 +71,7 @@ public class ImporterConfig {
         return updateExisting;
     }
 
-    public int getBatchSize()
-    {
+    public int getBatchSize() {
         return batchSize;
     }
 

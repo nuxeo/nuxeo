@@ -45,12 +45,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 public class TestUserProfileImporterNotOk extends AbstractUserProfileImporterTest {
 
     @Test
-    public void serviceRegistration() {
-        assertNotNull(userProfileService);
-    }
-
-    @Test
     public void userProfileImportsShouldFail() throws Exception {
+
+        assertNotNull(userProfileService);
 
         List<String> propertyNameList = Arrays.asList(new String[] {"userprofile:avatar","userprofile:birthdate",
                 "userprofile:phonenumber","userprofile:gender","userprofile:locale",

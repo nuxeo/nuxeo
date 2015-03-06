@@ -16,10 +16,7 @@
 package org.nuxeo.ecm.user.center.profile;
 
 import java.io.File;
-import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Before;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -106,7 +103,7 @@ public abstract class AbstractUserProfileImporterTest {
     }
 
     protected File getBlobsFolder() {
-        return new File(Framework.getProperty("nuxeo.userprofile.blobs.folder"));
+        return new File(Framework.getProperty(UserProfileImporter.BLOB_FOLDER_PROPERTY));
     }
 
 }

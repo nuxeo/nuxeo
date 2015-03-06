@@ -30,11 +30,18 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 5.9.3
@@ -48,18 +55,19 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 public class TestUserProfileImporterOk extends AbstractUserProfileImporterTest {
 
     @Test
-    public void serviceRegistration() {
-        assertNotNull(userProfileService);
-    }
-
-    @Test
     public void userProfileImportsShouldSucceed() throws Exception {
+
+        assertNotNull(userProfileService);
+
+        Framework.getService(EventService.class).waitForAsyncCompletion();
+
         checkDocs();
 
         harness.deployContrib("org.nuxeo.ecm.user.center.profile.test",
                 "OSGI-INF/user-profile-test-ok-no-update-contrib.xml");
 
-        UserProfileImporter importer = new UserProfileImporter();
+        UserProfileImporter importer = new
+                UserProfileImporter();
         importer.doImport(session);
 
         checkDocs();
@@ -70,7 +78,14 @@ public class TestUserProfileImporterOk extends AbstractUserProfileImporterTest {
         File blobsFolder = getBlobsFolder();
 
         DocumentModel doc = userProfileService.getUserProfileDocument("user1", session);
+
+        String uid = doc.getId();
+
+        DataModel userProfileData = doc.getDataModel("userprofile");
+        assertNotNull(userProfileData);
+
         Calendar birthDate = (Calendar) doc.getPropertyValue("userprofile:birthdate");
+        assertNotNull(birthDate);
         assertEquals("01/01/2001",
                 new SimpleDateFormat(ImporterConfig.DEFAULT_DATE_FORMAT).format(birthDate.getTime()));
         assertEquals("111-222-3333", doc.getPropertyValue("userprofile:phonenumber"));

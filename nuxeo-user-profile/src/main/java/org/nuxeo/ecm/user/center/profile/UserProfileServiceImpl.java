@@ -33,17 +33,16 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -73,8 +72,6 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
 
     protected final Cache<String, String> profileUidCache = CacheBuilder.newBuilder().concurrencyLevel(
             CACHE_CONCURRENCY_LEVEL).maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(CACHE_TIMEOUT, TimeUnit.MINUTES).build();
-
-    private UserWorkspaceService userWorkspaceService;
 
     @Override
     public DocumentModel getUserProfileDocument(CoreSession session) throws ClientException {
@@ -176,40 +173,19 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         if (config == null || config.getDataFileName() == null) {
             return;
         }
-        boolean started = false;
-        boolean ok = false;
-        try {
-            started = !TransactionHelper.isTransactionActive() && TransactionHelper.startTransaction();
-            RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-            Repository defaultRepository = repositoryManager.getDefaultRepository();
-            new UnrestrictedSessionRunner(defaultRepository.getName()) {
-                @Override
-                public void run() throws ClientException {
-                    new UserProfileImporter().doImport(session);
-                }
-            }.runUnrestricted();
-            ok = true;
-        } finally {
-            if (started) {
-                try {
-                    if (!ok) {
-                        TransactionHelper.setTransactionRollbackOnly();
-                    }
-                } finally {
-                    TransactionHelper.commitOrRollbackTransaction();
-                }
-            }
+        WorkManager wm = Framework.getService(WorkManager.class);
+        if (wm!=null) {
+            wm.schedule(new UserProfileImporterWork(), Scheduling.IF_NOT_RUNNING_OR_SCHEDULED, true);
         }
     }
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (CONFIG_EP.equals(extensionPoint)) {
             if (config != null) {
                 log.warn("Overriding existing user profile importer config");
@@ -220,8 +196,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (CONFIG_EP.equals(extensionPoint)) {
             if (config != null && config.equals(contribution)) {
                 config = null;

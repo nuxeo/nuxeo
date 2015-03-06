@@ -31,10 +31,10 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
- * @since 5.9.3
+ * @since 7.2
  */
-@Features({ TransactionalFeature.class, CoreFeature.class, PlatformFeature.class })
-@RepositoryConfig(cleanup = Granularity.METHOD)
+@Features({ TransactionalFeature.class,PlatformFeature.class })
+//@RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.userworkspace.api",
     "org.nuxeo.ecm.platform.userworkspace.types",
     "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.core",
@@ -67,7 +67,7 @@ public class UserProfileFeature extends SimpleFeature {
         File dst = File.createTempFile("nuxeoImportTest", ".dir");
         dst.delete();
         dst.mkdir();
-        Framework.getProperties().put("nuxeo.userprofile.blobs.folder",
+        Framework.getProperties().put(UserProfileImporter.BLOB_FOLDER_PROPERTY,
                 dst.getPath() + "/data");
         FileUtils.copyDirectoryToDirectory(src, dst);
         return dst.getPath();
