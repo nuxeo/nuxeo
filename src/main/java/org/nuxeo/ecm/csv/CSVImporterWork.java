@@ -57,6 +57,7 @@ import org.nuxeo.ecm.automation.core.operations.notification.MailTemplateHelper;
 import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
+import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -67,6 +68,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
@@ -199,7 +201,7 @@ public class CSVImporterWork extends AbstractWork {
         setStatus("Importing");
         initSession();
         try (Reader in = new BufferedReader(new FileReader(csvFile));
-                CSVParser parser = CSVFormat.DEFAULT.withHeader().parse(in)) {
+                CSVParser parser = CSVFormat.DEFAULT.withEscape(options.getEscapeCharacter()).withHeader().parse(in)) {
             doImport(parser);
         } catch (IOException e) {
             logError(0, "Error while doing the import: %s", LABEL_CSV_IMPORTER_ERROR_DURING_IMPORT, e.getMessage());
@@ -348,8 +350,10 @@ public class CSVImporterWork extends AbstractWork {
                                         LABEL_CSV_IMPORTER_NOT_EXISTING_FILE, stringValue);
                                 return null;
                             }
+                        } else {
+                            fieldValue = (Serializable) ComplexTypeJSONDecoder.decode(
+                                    (ComplexType) fieldType, stringValue);
                         }
-                        // other types not supported
                     } else {
                         if (fieldType.isListType()) {
                             Type listFieldType = ((ListType) fieldType).getFieldType();
@@ -362,7 +366,8 @@ public class CSVImporterWork extends AbstractWork {
                                 /*
                                  * Complex list.
                                  */
-                                fieldValue = (Serializable) Arrays.asList(stringValue.split(options.getListSeparatorRegex()));
+                                fieldValue = (Serializable) ComplexTypeJSONDecoder.decodeList(
+                                        (ListType) fieldType, stringValue);
                             }
                         } else {
                             /*
