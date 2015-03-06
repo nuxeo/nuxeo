@@ -315,23 +315,34 @@ public class UnifiedCachingRowMapper implements RowMapper {
 
     @Override
     public Invalidations receiveInvalidations() throws StorageException {
-        // invalidations from the underlying mapper (remote, cluster)
-        Invalidations invals = rowMapper.receiveInvalidations();
+        // local invalidations
+        Invalidations ret = cacheQueue.getInvalidations();
 
-        // add local accumulated invalidations to remote ones
-        Invalidations invalidations = cacheQueue.getInvalidations();
-        if (invals != null) {
-            invalidations.add(invals);
+        // invalidations from the underlying mapper (remote, cluster)
+        Invalidations remoteInvals = rowMapper.receiveInvalidations();
+
+        if (remoteInvals != null) {
+            ret.add(remoteInvals);
+            if (!ret.all) {
+                if (remoteInvals.modified != null) {
+                    for (RowId rowId : remoteInvals.modified) {
+                        cacheRemove(rowId);
+                    }
+                }
+                if (remoteInvals.deleted != null) {
+                    for (RowId rowId : remoteInvals.deleted) {
+                        cachePutAbsent(rowId);
+                    }
+                }
+            }
         }
 
         // invalidate our cache
-        if (invalidations.all) {
+        if (ret.all) {
             clearCache();
         }
 
-        // nothing to do on modified or delete, because there is only one cache
-
-        return invalidations.isEmpty() ? null : invalidations;
+        return ret.isEmpty() ? null : ret;
     }
 
     // propagate invalidations
