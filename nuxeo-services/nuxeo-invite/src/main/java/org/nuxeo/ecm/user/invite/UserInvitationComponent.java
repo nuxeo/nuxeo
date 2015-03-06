@@ -550,22 +550,25 @@ public class UserInvitationComponent extends DefaultComponent implements
             // Build validationBaseUrl with nuxeo.url property as request is not
             // accessible.
             if (!additionnalInfo.containsKey("enterPasswordUrl")) {
-                String baseUrl = Framework.getProperty(NUXEO_URL_KEY);
-
-                baseUrl = StringUtils.isBlank(baseUrl) ? "/" : baseUrl;
-                if (!baseUrl.endsWith("/")) {
-                    baseUrl += "/";
-                }
-                String enterPasswordUrl = getConfiguration(configurationName).getEnterPasswordUrl();
-                if (enterPasswordUrl.startsWith("/")) {
-                    enterPasswordUrl = enterPasswordUrl.substring(1);
-                }
-                additionnalInfo.put("enterPasswordUrl",
-                        baseUrl.concat(enterPasswordUrl));
+                additionnalInfo.put("enterPasswordUrl", buildEnterPasswordUrl(configurationName));
             }
             acceptRegistrationRequest(registrationUuid, additionnalInfo);
         }
         return registrationUuid;
+    }
+
+    protected String buildEnterPasswordUrl(String configurationName) {
+        String baseUrl = Framework.getProperty(NUXEO_URL_KEY);
+
+        baseUrl = StringUtils.isBlank(baseUrl) ? "/" : baseUrl;
+        if (!baseUrl.endsWith("/")) {
+            baseUrl += "/";
+        }
+        String enterPasswordUrl = getConfiguration(configurationName).getEnterPasswordUrl();
+        if (enterPasswordUrl.startsWith("/")) {
+            enterPasswordUrl = enterPasswordUrl.substring(1);
+        }
+        return baseUrl.concat(enterPasswordUrl);
     }
 
     public void acceptRegistrationRequest(String requestId,
@@ -770,15 +773,20 @@ public class UserInvitationComponent extends DefaultComponent implements
         if (!baseUrl.endsWith("/")) {
             baseUrl += "/";
         }
+        UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
 
         additionalInfos.put("validationBaseURL", baseUrl
                 + getConfiguration(registrationDoc).getValidationRelUrl());
+        // Build validationBaseUrl with nuxeo.url property as request is not
+        // accessible.
+        if (!additionalInfos.containsKey("enterPasswordUrl")) {
+            additionalInfos.put("enterPasswordUrl", buildEnterPasswordUrl(configuration.getName()));
+        }
         input.put("info", additionalInfos);
         input.put("userAlreadyExists",
                 checkUserFromRegistrationExistence(registrationDoc));
         input.put(REGISTRATION_DATA_DOC, registrationDoc);
 
-        UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
         try {
             rh.getRenderingEngine().render(
                     configuration.getReviveEmailTemplate(), input, writer);
