@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.redis.RedisAdmin;
 import org.nuxeo.ecm.core.redis.RedisCallable;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
 import org.nuxeo.ecm.core.transientstore.AbstractTransientStore;
-import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.runtime.api.Framework;
 
@@ -56,12 +55,12 @@ public class RedisTransientStore extends AbstractTransientStore {
     }
 
     @Override
-    protected void incrementStorageSize(final StorageEntry entry) {
+    protected void incrementStorageSize(final long size) {
         try {
             redisExecutor.execute(new RedisCallable<Void>() {
                 @Override
                 public Void call(Jedis jedis) throws IOException {
-                    jedis.incrBy(namespace, entry.getSize());
+                    jedis.incrBy(namespace, size);
                     return null;
                 }
             });
@@ -71,12 +70,12 @@ public class RedisTransientStore extends AbstractTransientStore {
     }
 
     @Override
-    protected void decrementStorageSize(final StorageEntry entry) {
+    protected void decrementStorageSize(final long size) {
         try {
             redisExecutor.execute(new RedisCallable<Void>() {
                 @Override
                 public Void call(Jedis jedis) throws IOException {
-                    jedis.decrBy(namespace, entry.getSize());
+                    jedis.decrBy(namespace, size);
                     return null;
                 }
             });

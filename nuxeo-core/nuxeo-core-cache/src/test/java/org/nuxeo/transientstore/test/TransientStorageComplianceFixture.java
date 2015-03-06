@@ -112,6 +112,21 @@ public class TransientStorageComplianceFixture {
         size = ((AbstractTransientStore)ts).getStorageSize();
         assertEquals(11, size);
 
+        // update the entry
+        Blob blob = new StringBlob("FakeContent2");
+        blob.setFilename("fake2.txt");
+        blob.setMimeType("text/plain");
+        se.addBlob(blob);
+        ts.put(se);
+
+        // check update
+        se = ts.get("1");
+        assertNotNull(se);
+        assertEquals("fake.txt", se.getBlobs().get(0).getFilename());
+        assertEquals("fake2.txt", se.getBlobs().get(1).getFilename());
+        size = ((AbstractTransientStore)ts).getStorageSize();
+        assertEquals(23, size);
+
         // move to deletable entries
         // check that still here
         ts.canDelete("1");
@@ -125,8 +140,8 @@ public class TransientStorageComplianceFixture {
 
         size = ((AbstractTransientStore)ts).getStorageSize();
         assertEquals(0, size);
-
     }
+
 
     @Test(expected = MaximumTransientSpaceExceeded.class)
     public void verifyMaxSizeException() throws Exception {
@@ -233,6 +248,45 @@ public class TransientStorageComplianceFixture {
 
         // cache dir is gone
         assertFalse(cacheDir.exists());
+    }
+
+
+    @Test
+    public void verifyDeleteAfterUseGC() throws Exception {
+
+        TransientStoreService tss = Framework.getService(TransientStoreService.class);
+        TransientStore ts = tss.getStore("testStore");
+        ts.put(createEntry("XXX"));
+
+        // check that entry is stored
+        StorageEntry se = ts.get("XXX");
+        assertNotNull(se);
+        assertNotNull(((AbstractTransientStore)ts).getL1Cache().get("XXX"));
+
+        // move to deletable entries
+        // check that still here
+        ts.canDelete("XXX");
+
+        assertNull(((AbstractTransientStore)ts).getL1Cache().get("XXX"));
+        assertNotNull(((AbstractTransientStore)ts).getL2Cache().get("XXX"));
+
+        // do GC
+        ts.doGC();
+
+        // check still here
+        se = ts.get("XXX");
+        assertNotNull(se);
+
+
+        // empty the L2 cache
+        ((AbstractTransientStore)ts).getL2Cache().invalidate("XXX");
+
+        // do GC
+        ts.doGC();
+
+        // check no longer there
+        se = ts.get("XXX");
+        assertNull(se);
     }
 
 }

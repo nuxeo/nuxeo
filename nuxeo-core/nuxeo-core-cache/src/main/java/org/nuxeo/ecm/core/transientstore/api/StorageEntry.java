@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
+import org.nuxeo.common.annotation.Experimental;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
@@ -31,6 +32,7 @@ import org.nuxeo.ecm.core.api.Blob;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 7.2
  */
+@Experimental(comment="https://jira.nuxeo.com/browse/NXP-16577")
 public interface StorageEntry extends Serializable {
 
     /**
@@ -99,15 +101,18 @@ public interface StorageEntry extends Serializable {
     void load(File directory) throws IOException;
 
     /**
-     *
-     * @param other
-     */
-    void update(StorageEntry other);
-
-    /**
      * Returns the size of the persisted Blobs
      *
      * @return
      */
     long getSize();
+
+
+    /**
+     * Returns the size last time the entry was stored
+     *
+     * @return
+     */
+    long getLastStorageSize();
+
 }

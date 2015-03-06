@@ -94,25 +94,37 @@ public abstract class AbstractTransientStore implements TransientStore {
         }
     }
 
-    protected abstract void incrementStorageSize(StorageEntry entry);
+    protected abstract void incrementStorageSize(long size);
 
-    protected abstract void decrementStorageSize(StorageEntry entry);
+    protected abstract void decrementStorageSize(long size);
+
+    protected void incrementStorageSize(StorageEntry entry) {
+        incrementStorageSize(entry.getSize());
+    }
+
+    protected void decrementStorageSize(StorageEntry entry) {
+        decrementStorageSize(entry.getSize());
+    }
 
     public abstract long getStorageSize();
 
     protected abstract void setStorageSize(long newSize);
 
-    protected Cache getL1Cache() {
+    public Cache getL1Cache() {
         return l1Cache;
     }
 
-    protected Cache getL2Cache() {
+    public Cache getL2Cache() {
         return l2Cache;
     }
 
     @Override
     public void put(StorageEntry entry) throws IOException {
         if (config.getAbsoluteMaxSizeMB() < 0 || getStorageSize() < config.getAbsoluteMaxSizeMB() * (1024 * 1024)) {
+            StorageEntry old = get(entry.getId());
+            if (old!=null) {
+                decrementStorageSize(old.getLastStorageSize());
+            }
             incrementStorageSize(entry);
             entry = persistEntry(entry);
             getL1Cache().put(entry.getId(), entry);
@@ -224,7 +236,6 @@ public abstract class AbstractTransientStore implements TransientStore {
                 for (Path entry : stream) {
                     String key = getKeyCachingDirName(entry.getFileName().toString());
                     try {
-                        // XXX should not get entry since it can mess the LRU
                         if (getL1Cache().hasEntry(key)) {
                             newSize+= getSize(entry);
                             continue;
@@ -237,7 +248,6 @@ public abstract class AbstractTransientStore implements TransientStore {
                     } catch (IOException e) {
                         log.error("Error while performing GC", e);
                     }
-
                 }
             }
         } catch (IOException e) {

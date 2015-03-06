@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.nuxeo.ecm.core.cache.Cache;
 import org.nuxeo.ecm.core.cache.InMemoryCacheImpl;
-import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 
 /**
@@ -38,13 +37,13 @@ public class SimpleTransientStore extends AbstractTransientStore {
     }
 
     @Override
-    protected void incrementStorageSize(StorageEntry entry) {
-        storageSize.addAndGet(entry.getSize());
+    protected void incrementStorageSize(long size) {
+        storageSize.addAndGet(size);
     }
 
     @Override
-    protected void decrementStorageSize(StorageEntry entry) {
-        storageSize.addAndGet(-entry.getSize());
+    protected void decrementStorageSize(long size) {
+        storageSize.addAndGet(-size);
     }
 
     @Override

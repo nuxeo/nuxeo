@@ -19,6 +19,8 @@ package org.nuxeo.ecm.core.transientstore.api;
 
 import java.io.IOException;
 
+import org.nuxeo.common.annotation.Experimental;
+
 /**
  *
  * Service Interface for managing a transient store.
@@ -26,6 +28,7 @@ import java.io.IOException;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 7.2
  */
+@Experimental(comment="https://jira.nuxeo.com/browse/NXP-16577")
 public interface TransientStore {
 
     /**

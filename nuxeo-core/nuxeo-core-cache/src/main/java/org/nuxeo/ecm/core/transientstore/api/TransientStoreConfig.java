@@ -48,6 +48,9 @@ public class TransientStoreConfig {
     @XNode("secondLevelTTL")
     protected int secondLevelTTL = 10;
 
+    @XNode("minimalRetention")
+    protected int minimalRetention = 10;
+
     @XNode("@class")
     protected Class<? extends TransientStore> implClass = SimpleTransientStore.class;
 

@@ -50,6 +50,8 @@ public abstract class AbstractStorageEntry implements StorageEntry {
 
     protected List<Map<String, String>> cachedBlobs;
 
+    protected long lastStorageSize;
+
     protected AbstractStorageEntry(String id) {
         this.id=id;
     }
@@ -98,6 +100,7 @@ public abstract class AbstractStorageEntry implements StorageEntry {
 
     @Override
     public void persist(File directory) throws IOException {
+        lastStorageSize = getSize();
         if (hasBlobs) {
             cachedBlobs = new ArrayList<Map<String,String>>();
             for (Blob blob : blobs) {
@@ -133,16 +136,22 @@ public abstract class AbstractStorageEntry implements StorageEntry {
     }
 
     @Override
-    public void update(StorageEntry other) {
-     // XXX not sure about the semantic
-    }
-
-    @Override
     public long getSize() {
         int size = 0;
-        for (Blob blob : blobs) {
-            size+= blob.getLength();
+        if (blobs!= null) {
+            for (Blob blob : blobs) {
+                size+= blob.getLength();
+            }
         }
         return size;
     }
+
+    public long getLastStorageSize() {
+        return lastStorageSize;
+    }
+
+    public void setLastStorageSize(long lastStorageSize) {
+        this.lastStorageSize = lastStorageSize;
+    }
+
 }
