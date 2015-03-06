@@ -29,9 +29,7 @@ import org.openqa.selenium.WebElement;
  * Represents a list widget, with helper method to retrieve/check its subwidgets.
  *
  * @since 5.7
- * @deprecated since 7.2: {@link JSListWidgetElement} should now be used, this class is kept for compatibility.
  */
-@Deprecated
 public class ListWidgetElement extends AbstractWidgetElement {
 
     /**
