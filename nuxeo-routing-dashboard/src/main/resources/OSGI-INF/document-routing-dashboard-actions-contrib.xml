@@ -12,7 +12,7 @@
       <extension target="org.nuxeo.ecm.platform.actions.ActionService"
         point="actions">
         <action id="workflow_dashboard" enabled="true" />
-        <action id="all_tasks" enabled="true" />
+        <action id="routing_tasks" enabled="true" />
       </extension>
     </code>
   </documentation>
@@ -26,8 +26,7 @@
     </action>
 
     <action id="routing_tasks" link="/incl/tabs/workflow_dashboard_tab.xhtml"
-      label="action.view.workflow.tasks" order="10" enabled="false"
-      type="rest_document_link">
+      label="action.view.workflow.tasks" order="10" enabled="false">
       <category>WORKFLOW_DASHBOARD</category>
     </action>
 
@@ -52,6 +51,92 @@
       order="10" label="command.back">
       <category>TASK_ADDITIONAL_ACTIONS</category>
     </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgettypes">
+
+    <widgetType name="workflow_rest_document_link">
+      <categories>
+        <category>jsfAction</category>
+      </categories>
+      <configuration>
+        <sinceVersion>7.2</sinceVersion>
+        <title>Document workflow Rest Link</title>
+        <description>
+          Widget displaying a restful document link for an action
+          (typically a tab link). Useful for workflow tabs migration to tabs
+          widget, to apply compatibility changes on existing actions.
+        </description>
+        <categories>
+          <category>action</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <defaultValues mode="any">
+            <property name="repositoryName">#{currentServerLocation.name}</property>
+            <property name="discardSurroundingForm">true</property>
+            <property name="disableMultiPartForm">true</property>
+            <property name="supportAjax">#{canUseAjaxTabs}</property>
+            <property name="view">view_workflow</property>
+          </defaultValues>
+          <layouts mode="view">
+            <layout name="rest_document_link_action_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="actionWidgetTypeConf">label</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">icon</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">ajaxSupport</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">onclick</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">target</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirm</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessage</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessageArgs</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">rest_document_link_view</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /incl/action/rest_document_link_action_template.xhtml
+      </property>
+      <property name="dev_template">
+        /widgets/actions/dev/action_widget_type_dev_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="typeCompatibility">
+
+    <typeCompatibility type="workflow_rest_document_link">
+      <category>WORKFLOW_DASHBOARD</category>
+    </typeCompatibility>
 
   </extension>
 
