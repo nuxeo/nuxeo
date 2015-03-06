@@ -35,7 +35,7 @@ public class ListWidgetTypeHandler extends TemplateWidgetTypeHandler {
 
     @Override
     protected String getTemplateValue(Widget widget) {
-        boolean useCompat = Framework.isBooleanPropertyTrue("nuxeo.jsf.listWidget.compatEnabled");
+        boolean useCompat = !Framework.isBooleanPropertyFalse("nuxeo.jsf.listWidget.compatEnabled");
         if (useCompat) {
             return lookupProperty(COMPAT_TEMPLATE_PROPERTY_NAME, widget);
         } else {
