@@ -276,7 +276,6 @@
       <category>VIEW_ACTION_LIST</category>
       <category>TAB_MANAGE_sub_tab</category>
       <category>TAB_CONTENT_HISTORY_sub_tab</category>
-      <category>WORKFLOW_DASHBOARD</category>
     </typeCompatibility>
 
     <typeCompatibility type="main_tab">
