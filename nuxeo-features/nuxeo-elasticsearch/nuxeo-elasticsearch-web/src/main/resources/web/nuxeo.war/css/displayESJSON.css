@@ -7,12 +7,10 @@ div.package {
 
 .esheader {
   cursor: pointer;
-  padding:2px;
-}
+  padding: .15em; }
 
 .esname {
-  color: black;
-}
+  color: black; }
 
 .arrow ~ .esname {
   font-size: 1.1em;
@@ -29,31 +27,25 @@ div.package {
 .array,
 .object {
   background-color: #fff;
-  border: thin solid #e7e7e7;
-}
+  border: thin solid #e7e7e7; }
 
 .esstring {
   color: #0000DD;
-  padding:2px;
-}
+  padding: .15em; }
 
 .number {
-  color: blue;
-}
+  color: #0c8abb; }
 
 .function {
-  color: green;
-}
+  color: #62ad00; }
 
 .open .children {
   display: block;
-  padding:2px;
-}
+  padding: .15em; }
 
 .closed .children {
   display: none;
-  padding:2px;
-}
+  padding: .15em; }
 
 .arrow {
   background-image: url("img/d.png");
@@ -61,23 +53,16 @@ div.package {
   background-color: transparent;
   height: 15px;
   width: 15px;
-  display: inline-block;
-}
+  display: inline-block; }
 
 .open .arrow {
-  background-position: -20px 0;
-}
+  background-position: -20px 0; }
 
 .closed .arrow {
-  background-position: 0 0;
-}
+  background-position: 0 0; }
 
 .type {
-  color: black;
-  font-size: 8pt;
-  float: right;
-}
+  float: right; }
 
 .hide {
-  display: none;
-}
+  display: none; }
