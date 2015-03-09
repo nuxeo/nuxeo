@@ -17,6 +17,7 @@
 
 package org.nuxeo.elasticsearch.test;
 
+import org.apache.derby.database.Database;
 import org.junit.After;
 import org.junit.runners.model.FrameworkMethod;
 import com.google.inject.Inject;
@@ -30,6 +31,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -59,8 +61,11 @@ public class RepositoryElasticSearchFeature extends SimpleFeature {
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
         super.initialize(runner);
-        // Uncomment to use Derby when h2 lucene lib is not aligned with ES
-        DatabaseHelper.setDatabaseForTests(DatabaseDerby.class.getCanonicalName());
+
+        if (System.getProperties().getProperty("nuxeo.test.vcs.db", "H2").equals("H2")) {
+            // H2 is not supported on 5.8 because of dependencies pb on lucene
+            DatabaseHelper.setDatabaseForTests(DatabaseDerby.class.getCanonicalName());
+        }
     }
 
     public CoreSession openSessionAsAdmin() throws ClientException {
