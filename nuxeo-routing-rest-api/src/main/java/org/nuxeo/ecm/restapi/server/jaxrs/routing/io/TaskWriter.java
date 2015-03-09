@@ -37,7 +37,6 @@ import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.actions.ActionContext;
@@ -94,15 +93,11 @@ public class TaskWriter extends EntityWriter<Task> {
         jg.writeStringField("id", item.getDocument().getId());
         jg.writeStringField("name", item.getName());
         jg.writeStringField("workflowInstanceId", workflowInstanceId);
-        if (workflowInstance != null) {
-            final String workflowModelId = workflowInstance.getModelId();
-            if (StringUtils.isNotBlank(workflowModelId)) {
-                GraphRoute model = null;
-                String workflowModelName = null;
-                model = session.getDocument(new IdRef(workflowModelId)).getAdapter(GraphRoute.class);
-                workflowModelName = model.getName();
-                jg.writeStringField("workflowModelName", workflowModelName);
-            }
+        String workflowInstanceName = workflowInstance.getName();
+        if (workflowInstance != null && StringUtils.isNotBlank(workflowInstance.getName())) {
+            int firstDot = workflowInstanceName.indexOf(".");
+            jg.writeStringField("workflowModelName", firstDot > 0 ? workflowInstanceName.substring(0, firstDot)
+                    : workflowInstanceName);
         }
         jg.writeStringField("state", item.getDocument().getCurrentLifeCycleState());
         jg.writeStringField("directive", item.getDirective());
