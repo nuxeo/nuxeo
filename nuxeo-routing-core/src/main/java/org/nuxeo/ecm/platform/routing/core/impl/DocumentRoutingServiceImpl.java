@@ -1218,43 +1218,36 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         if (document != null) {
             query.append(String.format(" AND nt:targetDocumentId = '%s'", document.getId()));
         }
-        DocumentModelList documentModelList = session.query(query.toString());
+        final DocumentModelList documentModelList = session.query(query.toString());
         final List<Task> result = new ArrayList<Task>();
-        for (DocumentModel documentModel : documentModelList) {
-            final Task task = documentModel.getAdapter(Task.class);
-            if (StringUtils.isNotBlank(worflowModelName)) {
-                // User does not necessary have READ on the workflow instance
-                new UnrestrictedSessionRunner(session) {
 
-                    @Override
-                    public void run() throws ClientException {
+        // User does not necessary have READ on the workflow instance
+        new UnrestrictedSessionRunner(session) {
+
+            @Override
+            public void run() throws ClientException {
+                for (DocumentModel documentModel : documentModelList) {
+                    final Task task = documentModel.getAdapter(Task.class);
+                    if (StringUtils.isNotBlank(worflowModelName)) {
+
                         final String processId = task.getProcessId();
                         final DocumentRoute routeInstance = session.getDocument(new IdRef(processId)).getAdapter(
                                 DocumentRoute.class);
                         if (routeInstance != null) {
-                            final String modelId = routeInstance.getModelId();
                             final String routeInstanceName = routeInstance.getName();
-                            if (StringUtils.isNotBlank(modelId)) {
-                                DocumentRoute model = session.getDocument(new IdRef(modelId)).getAdapter(
-                                        DocumentRoute.class);
-                                if (worflowModelName.equals(model.getName())) {
-                                    result.add(task);
-                                }
-                            } else {
-                                if (routeInstanceName.startsWith(worflowModelName)) {
-                                    // For compatibility < 7.2 only
-                                    result.add(task);
-                                }
+                            if (routeInstanceName != null
+                                    && (routeInstanceName.equals(worflowModelName) || routeInstanceName.matches("^("
+                                            + worflowModelName + ")\\.\\d+"))) {
+                                result.add(task);
                             }
                         }
-
+                    } else {
+                        result.add(task);
                     }
-
-                }.runUnrestricted();
-            } else {
-                result.add(task);
+                }
             }
-        }
+        }.runUnrestricted();
+
         return result;
     }
 
