@@ -56,7 +56,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 5.6
  */
-public class GraphRunner extends AbstractRunner implements ElementRunner {
+public class GraphRunner extends AbstractRunner implements ElementRunner, Serializable {
 
     private static final Log log = LogFactory.getLog(GraphRunner.class);
 

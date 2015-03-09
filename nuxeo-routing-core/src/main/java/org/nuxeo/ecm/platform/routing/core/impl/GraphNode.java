@@ -259,7 +259,7 @@ public interface GraphNode {
         }
     }
 
-    class Transition implements Comparable<Transition> {
+    class Transition implements Comparable<Transition>, Serializable {
 
         public GraphNode source;
 
@@ -466,7 +466,7 @@ public interface GraphNode {
     /**
      * @since 5.7.3
      */
-    class TaskInfo implements Comparable<TaskInfo> {
+    class TaskInfo implements Comparable<TaskInfo>, Serializable {
 
         protected String taskDocId;
 
