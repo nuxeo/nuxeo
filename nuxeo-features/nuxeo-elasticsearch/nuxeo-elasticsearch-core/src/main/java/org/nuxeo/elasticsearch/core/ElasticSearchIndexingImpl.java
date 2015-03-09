@@ -273,7 +273,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                     indexName, DOC_TYPE, docId, PATH_FIELD));
         }
         GetResponse ret = getRequest.execute().actionGet();
-        if (!ret.isExists()) {
+        if (!ret.isExists() || ret.getField(PATH_FIELD) == null) {
             // doc not found
             return null;
         }
