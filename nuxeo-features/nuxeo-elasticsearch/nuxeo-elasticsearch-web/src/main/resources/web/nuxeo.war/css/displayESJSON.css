@@ -1,10 +1,9 @@
-.package {
-  margin-left: 10px;
-  padding: 3px;
-  border-radius: 2px;
-  margin-top: 2px;
-  padding:2px;
-}
+div.package {
+  border-radius: .2em;
+  clear: both;
+  margin-left: .3em;
+  margin-top: .15em;
+  padding: .2em; }
 
 .esheader {
   cursor: pointer;
