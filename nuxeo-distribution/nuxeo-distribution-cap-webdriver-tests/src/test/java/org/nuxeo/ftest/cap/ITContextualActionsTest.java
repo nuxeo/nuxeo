@@ -15,11 +15,14 @@
  */
 package org.nuxeo.ftest.cap;
 
-import java.util.List;
+import static org.apache.commons.logging.LogFactory.getLog;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.logging.Log;
 import org.junit.Assert;
 import org.junit.Test;
-
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
@@ -27,13 +30,22 @@ import org.nuxeo.functionaltests.pages.NavigationSubPage;
 import org.nuxeo.functionaltests.pages.actions.ContextualActions;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
-
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
+
+import com.google.common.base.Function;
 
 /**
  * Tests the contextual menu actions
  */
 public class ITContextualActionsTest extends AbstractTest {
+
+    private static final Log log = getLog(ITContextualActionsTest.class);
 
     public final static String WORKSPACE_ROOT = "Workspaces";
 
@@ -108,7 +120,23 @@ public class ITContextualActionsTest extends AbstractTest {
         // Test More button & Export
         actions.clickOnButton(actions.moreButton);
         actions.clickOnButton(actions.exportButton);
+        waitForExportPopup();
 
         logout();
+    }
+
+    private void waitForExportPopup() {
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5, TimeUnit.SECONDS).pollingEvery(100,
+                TimeUnit.MILLISECONDS).ignoring(NoSuchElementException.class);
+        try {
+            wait.until(new Function<WebDriver, WebElement>() {
+                @Override
+                public WebElement apply(WebDriver driver) {
+                    return driver.findElement(By.linkText("XML Export"));
+                }
+            });
+        } catch (TimeoutException e) {
+            log.warn("Could not see Export popup.");
+        }
     }
 }
