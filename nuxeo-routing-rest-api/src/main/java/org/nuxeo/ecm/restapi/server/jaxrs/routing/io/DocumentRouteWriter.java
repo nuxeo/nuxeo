@@ -29,13 +29,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.io.util.JsonEncodeDecodeUtils;
@@ -69,13 +67,7 @@ public class DocumentRouteWriter extends EntityWriter<DocumentRoute> {
         jg.writeStringField("name", item.getName());
         jg.writeStringField("title", item.getTitle());
         jg.writeStringField("state", item.getDocument().getCurrentLifeCycleState());
-        if (StringUtils.isNotBlank(workflowModelId)) {
-            GraphRoute model = null;
-            String workflowModelName = null;
-            model = session.getDocument(new IdRef(workflowModelId)).getAdapter(GraphRoute.class);
-            workflowModelName = model.getName();
-            jg.writeStringField("workflowModelName", workflowModelName);
-        }
+        jg.writeStringField("workflowModelName", item.getModelName());
         jg.writeStringField("initiator", item.getInitiator());
 
         jg.writeArrayFieldStart("attachedDocumentIds");

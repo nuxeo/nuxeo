@@ -55,4 +55,9 @@ public interface DocumentRoute extends DocumentRouteStepsContainer {
      */
     String getModelId();
 
+    /**
+     * @since 7.2
+     */
+    String getModelName();
+
 }

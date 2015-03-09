@@ -93,11 +93,8 @@ public class TaskWriter extends EntityWriter<Task> {
         jg.writeStringField("id", item.getDocument().getId());
         jg.writeStringField("name", item.getName());
         jg.writeStringField("workflowInstanceId", workflowInstanceId);
-        String workflowInstanceName = workflowInstance.getName();
-        if (workflowInstance != null && StringUtils.isNotBlank(workflowInstance.getName())) {
-            int firstDot = workflowInstanceName.indexOf(".");
-            jg.writeStringField("workflowModelName", firstDot > 0 ? workflowInstanceName.substring(0, firstDot)
-                    : workflowInstanceName);
+        if (workflowInstance != null) {
+            jg.writeStringField("workflowModelName", workflowInstance.getModelName());
         }
         jg.writeStringField("state", item.getDocument().getCurrentLifeCycleState());
         jg.writeStringField("directive", item.getDirective());

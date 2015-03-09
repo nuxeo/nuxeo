@@ -72,4 +72,13 @@ public class DocumentRouteImpl extends DocumentRouteStepsContainerImpl implement
         return (String) document.getPropertyValue(DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCE_MODEL_ID);
     }
 
+    /**
+     * @since 7.2
+     */
+    @Override
+    public String getModelName() {
+        int firstDot = getName().indexOf(".");
+        return firstDot > 0 ? getName().substring(0, firstDot) : getName();
+    }
+
 }
