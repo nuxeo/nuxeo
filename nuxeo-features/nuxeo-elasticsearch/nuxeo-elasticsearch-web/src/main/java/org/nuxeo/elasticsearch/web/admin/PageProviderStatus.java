@@ -56,11 +56,11 @@ public class PageProviderStatus implements Comparable<PageProviderStatus> {
 
     public String getColor() {
         if (CORE_QUERY_TYPE.equals(type)) {
-            return "#0000FF";
+            return "#0c8abb";
         } else if (ELASTIC_TYPE.equals(type)) {
-            return "#22BB22";
+            return "#0aca00";
         } else {
-            return "#424242";
+            return "#444444";
         }
     }
 
