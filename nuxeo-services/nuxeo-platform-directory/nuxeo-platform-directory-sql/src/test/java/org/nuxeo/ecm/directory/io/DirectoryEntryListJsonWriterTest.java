@@ -66,9 +66,10 @@ public class DirectoryEntryListJsonWriterTest extends
         json.has("entity-type").isEquals("directoryEntries");
         json = json.has("entries").length(entries.size());
         String entryType = "directoryEntry";
-        json.childrenContains("entity-type", entryType, entryType, entryType, entryType, entryType);
-        json.childrenContains("directoryName", dirName, dirName, dirName, dirName, dirName);
-        json.childrenContains("properties.id", "123", "234", "345", "456", "567");
+        json.childrenContains("entity-type", entryType, entryType, entryType, entryType, entryType, entryType,
+                entryType);
+        json.childrenContains("directoryName", dirName, dirName, dirName, dirName, dirName, dirName, dirName);
+        json.childrenContains("properties.id", "123", "234", "345", "456", "567", "678", "789");
     }
 
 }
