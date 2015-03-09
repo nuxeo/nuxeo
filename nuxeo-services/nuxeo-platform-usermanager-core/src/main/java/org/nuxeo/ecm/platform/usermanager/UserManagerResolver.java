@@ -66,7 +66,7 @@ import org.nuxeo.runtime.api.login.LoginComponent;
  *
  * @since 7.1
  */
-public class UserManagerResolver implements ObjectResolver {
+public class UserManagerResolver implements ObjectResolver, Serializable {
 
     public static final String INPUT_PARAM_FILTER = "type";
 

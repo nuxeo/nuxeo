@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.directory;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,7 +39,7 @@ import com.codahale.metrics.SharedMetricRegistries;
  * <p>
  * Beware that this cache is not transaction aware (which is not a problem for LDAP directories anyway).
  */
-public class DirectoryCache {
+public class DirectoryCache implements Serializable {
 
     protected final String name;
 
@@ -50,15 +51,15 @@ public class DirectoryCache {
 
     protected String entryCacheWithoutReferencesName = null;
 
-    protected final MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+    protected transient final MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected final Counter hitsCounter;
+    protected transient final Counter hitsCounter;
 
-    protected final Counter invalidationsCounter;
+    protected transient final Counter invalidationsCounter;
 
-    protected final Counter maxCounter;
+    protected transient final Counter maxCounter;
 
-    protected final Counter sizeCounter;
+    protected transient final Counter sizeCounter;
 
     private final static Log log = LogFactory.getLog(DirectoryCache.class);
 

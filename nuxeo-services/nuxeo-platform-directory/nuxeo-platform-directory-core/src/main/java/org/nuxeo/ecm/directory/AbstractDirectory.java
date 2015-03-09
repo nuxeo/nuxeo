@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.directory;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,7 +37,7 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 
-public abstract class AbstractDirectory implements Directory {
+public abstract class AbstractDirectory implements Directory, Serializable {
 
     protected final Log log = LogFactory.getLog(AbstractDirectory.class);
 

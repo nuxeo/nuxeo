@@ -69,7 +69,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 7.1
  */
-public class DirectoryEntryResolver implements ObjectResolver {
+public class DirectoryEntryResolver implements ObjectResolver, Serializable {
 
     public static final String NAME = "directoryResolver";
 

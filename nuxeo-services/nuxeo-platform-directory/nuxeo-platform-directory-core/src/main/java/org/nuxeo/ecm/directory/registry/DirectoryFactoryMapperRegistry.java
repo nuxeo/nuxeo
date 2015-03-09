@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.directory.registry;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +29,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  *
  * @since 5.6
  */
-public class DirectoryFactoryMapperRegistry extends ContributionFragmentRegistry<DirectoryFactoryMapper> {
+public class DirectoryFactoryMapperRegistry extends ContributionFragmentRegistry<DirectoryFactoryMapper> implements Serializable {
 
     protected Map<String, List<String>> factoriesByDir = new HashMap<String, List<String>>();
 

@@ -20,6 +20,8 @@ package org.nuxeo.ecm.directory;
 
 import static org.nuxeo.ecm.directory.localconfiguration.DirectoryConfigurationConstants.DIRECTORY_CONFIGURATION_FACET;
 
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +41,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
-public class DirectoryServiceImpl extends DefaultComponent implements DirectoryService {
+public class DirectoryServiceImpl extends DefaultComponent implements DirectoryService, Serializable {
 
     protected static final String DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX = "_";
 

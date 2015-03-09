@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.directory.sql;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ import org.nuxeo.ecm.directory.PermissionDescriptor;
 import org.nuxeo.ecm.directory.Reference;
 
 @XObject(value = "directory")
-public class SQLDirectoryDescriptor {
+public class SQLDirectoryDescriptor implements Serializable {
 
     private static final Log log = LogFactory.getLog(SQLDirectoryDescriptor.class);
 

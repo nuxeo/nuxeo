@@ -17,6 +17,7 @@
  */
 package org.nuxeo.ecm.directory.sql;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
@@ -53,7 +54,7 @@ import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.datasource.DataSourceHelper;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-public class SQLDirectory extends AbstractDirectory {
+public class SQLDirectory extends AbstractDirectory implements Serializable {
 
     protected class TxSessionCleaner implements Synchronization {
         private final SQLSession session;

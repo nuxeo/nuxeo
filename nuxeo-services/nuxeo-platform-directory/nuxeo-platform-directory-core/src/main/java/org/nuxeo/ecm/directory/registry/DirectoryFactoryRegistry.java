@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.directory.registry;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  *
  * @since 5.6
  */
-public class DirectoryFactoryRegistry extends SimpleContributionRegistry<DirectoryFactory> {
+public class DirectoryFactoryRegistry extends SimpleContributionRegistry<DirectoryFactory> implements Serializable {
 
     @Override
     public String getContributionId(DirectoryFactory contrib) {
