@@ -19,6 +19,8 @@
 package org.nuxeo.ecm.restapi.server.jaxrs.routing.io;
 
 import java.io.IOException;
+import java.util.Map.Entry;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -52,7 +54,9 @@ public class GraphRouteWriter extends EntityWriter<JsonGraphRoute>  {
 
     @Override
     protected void writeEntityBody(JsonGenerator jg, JsonGraphRoute item) throws IOException, ClientException {
-        jg.writeRaw(item.toString());
+        for (Entry<String, Object> e : item.getGraphElements().entrySet()) {
+            jg.writeObjectField(e.getKey(), e.getValue());
+        }
     }
 
 }

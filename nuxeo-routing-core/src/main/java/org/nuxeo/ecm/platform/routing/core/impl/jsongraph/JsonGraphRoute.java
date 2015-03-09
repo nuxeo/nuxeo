@@ -29,8 +29,6 @@ import java.util.MissingResourceException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -47,20 +45,7 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
  */
 public class JsonGraphRoute extends UnrestrictedSessionRunner {
 
-    public static String getI18nLabel(String label, Locale locale) {
-        if (label == null) {
-            label = "";
-        }
-        try {
-            return I18NUtils.getMessageString("messages", label, null, locale);
-        } catch (MissingResourceException e) {
-            log.warn(e.getMessage());
-            return label;
-        }
-    }
-
-    public static String toJSON(GraphRoute route, Locale locale) throws JsonGenerationException, JsonMappingException,
-            IOException {
+    public static Map<String, Object> getGraphElementsAsMap(GraphRoute route, Locale locale) {
         Map<String, Object> graph = new HashMap<String, Object>();
         List<NodeView> nodeViews = new ArrayList<NodeView>();
         List<TransitionView> tranViews = new ArrayList<TransitionView>();
@@ -75,11 +60,19 @@ public class JsonGraphRoute extends UnrestrictedSessionRunner {
         }
         graph.put("nodes", nodeViews);
         graph.put("transitions", tranViews);
+        return graph;
+    }
 
-        ObjectMapper mapper = new ObjectMapper();
-        StringWriter writer = new StringWriter();
-        mapper.writeValue(writer, graph);
-        return writer.toString();
+    public static String getI18nLabel(String label, Locale locale) {
+        if (label == null) {
+            label = "";
+        }
+        try {
+            return I18NUtils.getMessageString("messages", label, null, locale);
+        } catch (MissingResourceException e) {
+            log.warn(e.getMessage());
+            return label;
+        }
     }
 
     private static Log log = LogFactory.getLog(JsonGraphRoute.class);
@@ -87,6 +80,8 @@ public class JsonGraphRoute extends UnrestrictedSessionRunner {
     protected String docId;
 
     protected GraphRoute graphRoute;
+
+    protected Map<String, Object> graphElements;
 
     protected String json;
 
@@ -104,8 +99,20 @@ public class JsonGraphRoute extends UnrestrictedSessionRunner {
         this.locale = locale;
     }
 
+    /**
+     * @since 7.2
+     */
+    public Map<String, Object> getGraphElements() {
+        if (graphElements == null) {
+            runUnrestricted();
+        }
+        return graphElements;
+    }
+
     public String getJSON() throws ClientException {
-        runUnrestricted();
+        if (json == null) {
+            runUnrestricted();
+        }
         return json;
     }
 
@@ -116,7 +123,11 @@ public class JsonGraphRoute extends UnrestrictedSessionRunner {
             graphRoute = doc.getAdapter(GraphRoute.class);
         }
         try {
-            json = toJSON(graphRoute, locale);
+            graphElements = getGraphElementsAsMap(graphRoute, locale);
+            ObjectMapper mapper = new ObjectMapper();
+            StringWriter writer = new StringWriter();
+            mapper.writeValue(writer, graphElements);
+            json = writer.toString();
         } catch (IOException e) {
             throw new ClientException(e);
         }
