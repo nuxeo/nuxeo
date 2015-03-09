@@ -91,7 +91,7 @@
       <a4j:outputPanel id="publishingInfoList" layout="block">
 
         <nxu:dataTable value="#{publishedDocuments}"
-          rendered="#{publishActions.currentPublicationTreeForPublishing != null and !empty publishedDocuments}"
+          rendered="#{publishActions.currentPublicationTreeForPublishing != null and !empty publishActions.publishedDocuments}"
           var="publishedDocument" preserveSort="true"
           preserveDataModel="false" rowClasses="dataRowEven,dataRowOdd"
           sortable="false" styleClass="dataList">
