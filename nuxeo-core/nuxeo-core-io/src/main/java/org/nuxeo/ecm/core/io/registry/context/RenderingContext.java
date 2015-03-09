@@ -131,7 +131,7 @@ public interface RenderingContext {
 
     /**
      * Get all properties to fetch for a given entity type. This will aggregate all values from parameters
-     * "fetch:entity" and "X-NXfetch:entity". This supports value separated by comma.
+     * "fetch.entity" and "X-NXfetch.entity". This supports value separated by comma.
      *
      * @param entity The type of the entity on which you want to fetch properties.
      * @return All properties to fetch.
@@ -140,8 +140,18 @@ public interface RenderingContext {
     public Set<String> getFetched(String entity);
 
     /**
+     * Get all properties to translate for a given entity type. This will aggregate all values from parameters
+     * "translate.entity" and "X-NXtranslate.entity". This supports value separated by comma.
+     *
+     * @param entity The type of the entity on which you want to fetch properties.
+     * @return All properties to fetch.
+     * @since 7.2
+     */
+    public Set<String> getTranslated(String entity);
+
+    /**
      * Get all enrichers to activate on the given entity type. This will aggregate all values from parameters
-     * "enrichers:entity", "X-NXenrichers:entity" and "X-NXContext-Category". This supports value separated by comma.
+     * "enrichers.entity", "X-NXenrichers.entity" and "X-NXContext-Category". This supports value separated by comma.
      *
      * @param entity The type of the entity on which you want to activate enrichers.
      * @return All enrichers to activate.
@@ -280,6 +290,11 @@ public interface RenderingContext {
         public static RenderingContextBuilder fetchInDoc(String... propertyName) {
             RenderingContextBuilder builder = new RenderingContextBuilder();
             return builder.fetchInDoc(propertyName);
+        }
+
+        public static RenderingContextBuilder translate(String entityType, String... propertyName) {
+            RenderingContextBuilder builder = new RenderingContextBuilder();
+            return builder.translate(entityType, propertyName);
         }
 
         public static RenderingContextBuilder enrich(String entityType, String... enricherName) {

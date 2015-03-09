@@ -89,6 +89,11 @@ public final class ThreadSafeRenderingContext implements RenderingContext {
     }
 
     @Override
+    public Set<String> getTranslated(String entity) {
+        return ctx.get().getTranslated(entity);
+    }
+
+    @Override
     public Set<String> getEnrichers(String entity) {
         return ctx.get().getEnrichers(entity);
     }

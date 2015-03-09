@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
  * Add custom key/value information as json attachment.
  * </p>
  * <p>
- * Enable if parameter enrichers:document=contextualParameters.
+ * Enable if parameter enrichers.document=contextualParameters.
  * </p>
  * <p>
  * Format is:

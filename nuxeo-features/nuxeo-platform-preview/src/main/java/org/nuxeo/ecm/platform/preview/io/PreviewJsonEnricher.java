@@ -34,7 +34,7 @@ import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
  * Add {@link DocumentModel}'s preview url as json attachment.
  * </p>
  * <p>
- * Enable if parameter enrichers:document=preview is present.
+ * Enable if parameter enrichers.document=preview is present.
  * </p>
  * <p>
  * Format is:

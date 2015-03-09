@@ -28,6 +28,8 @@ import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.codehaus.jackson.JsonGenerator;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
@@ -46,7 +48,6 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.runtime.api.Framework;
 
-import javax.inject.Inject;
 import com.thoughtworks.xstream.io.json.JsonWriter;
 
 /**
@@ -76,11 +77,11 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
  *   "isCheckedOut": true|false,
  *   "title": "DOCUMENT_TITLE",
  *   "lastModified": "DATE_UPDATE",  <-- if dublincore is present and if dc:modified is not null
- *   "versionLabel": "DOCUMENT_VERSION",  <-- only activated with parameter fetch:document=versionLabel or system property nuxeo.document.json.fetch.heavy=true
- *   "lockOwner": "LOCK_OWNER",  <-- only activated if locked and with parameter fetch:document=lock or system property nuxeo.document.json.fetch.heavy=true
- *   "lockCreated": "LOCK_DATE",  <-- only activated if locked and with parameter fetch:document=lock or system property nuxeo.document.json.fetch.heavy=true
+ *   "versionLabel": "DOCUMENT_VERSION",  <-- only activated with parameter fetch.document=versionLabel or system property nuxeo.document.json.fetch.heavy=true
+ *   "lockOwner": "LOCK_OWNER",  <-- only activated if locked and with parameter fetch.document=lock or system property nuxeo.document.json.fetch.heavy=true
+ *   "lockCreated": "LOCK_DATE",  <-- only activated if locked and with parameter fetch.document=lock or system property nuxeo.document.json.fetch.heavy=true
  *   "properties": {   <-- only present with parameter properties=schema1,schema2,... see {@link DocumentPropertyJsonWriter} for format
- *     "schemaPrefix:stringProperty": "stringPropertyValue",  <-- each property may be fetched if a resolver is associated with that property and if a parameter fetch:document=propXPath is present, in this case, an object will be marshalled as value
+ *     "schemaPrefix:stringProperty": "stringPropertyValue",  <-- each property may be fetched if a resolver is associated with that property and if a parameter fetch.document=propXPath is present, in this case, an object will be marshalled as value
  *     "schemaPrefix:booleanProperty": true|false,
  *     "schemaPrefix:integerProperty": 123,
  *     ...

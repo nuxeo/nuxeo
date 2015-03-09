@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
  * Add document breadcrumb (list of all parents document) as json attachment.
  * </p>
  * <p>
- * Enable if parameter enrichers:document=breadcrumb is present.
+ * Enable if parameter enrichers.document=breadcrumb is present.
  * </p>
  * <p>
  * Format is:

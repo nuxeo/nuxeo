@@ -54,7 +54,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.LongType;
  * Format is:
  *
  * <pre>
- * "stringPropertyValue"  <-- for string property, each property may be fetched if a resolver is associated with that property and if a parameter fetch:document=propXPath is present, in this case, an object will be marshalled as value
+ * "stringPropertyValue"  <-- for string property, each property may be fetched if a resolver is associated with that property and if a parameter fetch.document=propXPath is present, in this case, an object will be marshalled as value
  * or
  * true|false  <- for boolean property
  * or

@@ -41,7 +41,7 @@ import com.google.common.collect.Iterables;
  * Read, Write and Everything.
  * </p>
  * <p>
- * Enable if parameter enrichers:document=permissions is present.
+ * Enable if parameter enrichers.document=permissions is present.
  * </p>
  * <p>
  * Format is:

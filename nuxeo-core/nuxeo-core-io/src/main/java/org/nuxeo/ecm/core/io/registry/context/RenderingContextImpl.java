@@ -40,6 +40,7 @@ import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.EMBED_ENRICHER
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.EMBED_PROPERTIES;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.FETCH_PROPERTIES;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.HEADER_PREFIX;
+import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.TRANSLATE_PROPERTIES;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.WRAPPED_CONTEXT;
 
 import java.util.ArrayList;
@@ -137,6 +138,11 @@ public class RenderingContextImpl implements RenderingContext {
     @Override
     public Set<String> getFetched(String entity) {
         return getSplittedParameterValues(FETCH_PROPERTIES, entity);
+    }
+
+    @Override
+    public Set<String> getTranslated(String entity) {
+        return getSplittedParameterValues(TRANSLATE_PROPERTIES, entity);
     }
 
     @Override
@@ -346,6 +352,10 @@ public class RenderingContextImpl implements RenderingContext {
 
         public RenderingContextBuilder fetch(String entityType, String... propertyName) {
             return paramValues(FETCH_PROPERTIES + "." + entityType, (Object[]) propertyName);
+        }
+
+        public RenderingContextBuilder translate(String entityType, String... propertyName) {
+            return paramValues(TRANSLATE_PROPERTIES + "." + entityType, (Object[]) propertyName);
         }
 
         public RenderingContextBuilder fetchInDoc(String... propertyName) {

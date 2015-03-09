@@ -38,7 +38,7 @@ import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
  * Add {@link DocumentModel}'s thumbnail url as json attachment.
  * </p>
  * <p>
- * Enable if parameter enrichers:document=thumbnail is present.
+ * Enable if parameter enrichers.document=thumbnail is present.
  * </p>
  * <p>
  * Format is:

@@ -43,7 +43,7 @@ import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
  * Add {@link DocumentModel}'s document url as json attachment.
  * </p>
  * <p>
- * Enable if parameter enrichers:document=documentURL is present.
+ * Enable if parameter enrichers.document=documentURL is present.
  * </p>
  * <p>
  * Format is:

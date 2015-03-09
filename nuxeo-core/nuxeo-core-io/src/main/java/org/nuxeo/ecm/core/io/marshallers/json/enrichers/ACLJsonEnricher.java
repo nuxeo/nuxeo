@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
  * Add {@link DocumentModel}'s ACP as json attachment.
  * </p>
  * <p>
- * Enable if parameter enrichers:document=acls is present.
+ * Enable if parameter enrichers.document=acls is present.
  * </p>
  * <p>
  * Format is:

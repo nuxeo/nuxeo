@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
  * Add document children (list of document) as json attachment.
  * </p>
  * <p>
- * Enable if parameter enrichers:document=children is present.
+ * Enable if parameter enrichers.document=children is present.
  * </p>
  * <p>
  * Format is:

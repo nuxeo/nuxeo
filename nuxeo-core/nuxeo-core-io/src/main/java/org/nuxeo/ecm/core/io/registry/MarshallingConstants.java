@@ -57,6 +57,11 @@ public interface MarshallingConstants {
     String FETCH_PROPERTIES = "fetch";
 
     /**
+     * Parameter name to specify which properties should be translated.
+     */
+    String TRANSLATE_PROPERTIES = "translate";
+
+    /**
      * Parameter name to specify how deep the marshallers should call sub marshallers.
      */
     String MAX_DEPTH_PARAM = "depth";
