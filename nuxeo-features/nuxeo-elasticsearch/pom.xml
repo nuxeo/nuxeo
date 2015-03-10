@@ -18,6 +18,7 @@
     <module>nuxeo-elasticsearch-web</module>
     <module>nuxeo-elasticsearch-seqgen</module>
     <module>nuxeo-elasticsearch-audit</module>
+    <module>nuxeo-elasticsearch-http-read-only</module>
   </modules>
 
 </project>
