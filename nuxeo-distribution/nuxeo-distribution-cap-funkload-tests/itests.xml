@@ -12,6 +12,7 @@
     <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
   </unzip>
   <import file="${out.dir}/nuxeo-ftest.xml" />
+  <nx:exit if="osfamily-windows" message="NXP-16718: skip FunkLoad tests under Windows" />
 
   <!-- Funkload tests to run -->
   <property name="funkload-tests" value="
