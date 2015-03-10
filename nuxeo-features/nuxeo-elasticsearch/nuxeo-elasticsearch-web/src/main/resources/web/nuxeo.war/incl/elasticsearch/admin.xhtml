@@ -1,15 +1,24 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
   class="hostInfos">
 
   <h3>Indexing operations</h3>
 
-  <div class="detail">Indexing operations are done asynchronously.
-    When they are terminated the status "No indexing in progress"
-    is displayed in the Info tab.
-  </div>
+   <a4j:outputPanel id="statePolledPanel">
+    <c:choose>
+      <c:when test="#{esAdmin.isIndexingInProgress()}">
+        <div class="processMessage completeWarning">Indexing in progress</div>
+      </c:when>
+      <c:otherwise>
+        <div class="processMessage completeInfo">No indexing in progress</div>
+      </c:otherwise>
+    </c:choose>
+  </a4j:outputPanel>
+   <a4j:poll id="statePoll" interval="2000" enabled="true" timeout="60000" render="statePolledPanel" ajaxSingle="true"/> 
 
-  <h:form id="esAdmin">
+    <h:form id="esAdmin">
 
     <div class="detail">Choose a repository where the indexing operation will apply.</div>
     <div class="bubbleBox">
