@@ -23,7 +23,7 @@ author: lkemen@nuxeo.com
 .marketplace { background-color: #fbfbfb }
 .marketplace .marketplaceLogo {}
 
-.downloadConfirmation { border: 1px solid #dedede; margin: 5em auto 8em; padding: 1.5em 2.5em; width: 500px }
+.downloadConfirmation { background-color: #fff; border: 1px solid #dedede; margin: 5em auto 8em; padding: 1.5em 2.5em; width: 500px }
 .downloadConfirmation h1 { border-bottom: 1px solid #dedede; margin-bottom: 1.5em; padding: 0 0 1em }
 .downloadConfirmation table { margin: 1.2em 0 }
 
