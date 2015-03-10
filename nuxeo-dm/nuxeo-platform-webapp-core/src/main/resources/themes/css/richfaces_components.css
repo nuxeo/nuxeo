@@ -175,7 +175,8 @@ a.treeLink:hover,
   border: 1px solid #ddd;
   box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
   margin: .3em;
-  padding: 0.3em;}
+  padding: 0.3em;
+  position: relative;}
 
 .rf-fu-itm-lbl {
   font-size: 1em;
@@ -187,9 +188,13 @@ a.treeLink:hover,
   margin-top: 0;}
 
 .rf-fu-itm-rgh {
-  text-align: right;
+  right: .5em;
   vertical-align: top;
-  width: 14%;}
+  width: auto;
+  position: absolute; }
+
+.rf-fu-itm-lft {
+  width: 80% }
 
 #fancybox-content .rf-fu {
   margin-bottom: 1em;

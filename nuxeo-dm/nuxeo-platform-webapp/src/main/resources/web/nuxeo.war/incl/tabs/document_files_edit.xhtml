@@ -39,6 +39,10 @@
     columnClasses="fortyPercent,">
 
     <rich:fileUpload fileUploadListener="#{FileManageActions.processUpload}"
+      addLabel="#{messages['RICH_FILE_UPLOAD_ADD_LABEL']}"
+      clearLabel="#{messages['RICH_FILE_UPLOAD_CLEAR_LABEL']}"
+      clearAllLabel="#{messages['RICH_FILE_UPLOAD_CLEAR_ALL_LABEL']}"
+      doneLabel="#{messages['RICH_FILE_UPLOAD_DONE_LABEL']}"
       listHeight="150" maxFilesQuantity="5"
       id="upload"
       locale="#{localeSelector.localeString}"
