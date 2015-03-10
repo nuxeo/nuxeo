@@ -27,7 +27,7 @@
   <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
     <dc:creator><![CDATA[Administrator]]></dc:creator>
     <dc:source><![CDATA[]]></dc:source>
-    <dc:nature><![CDATA[]]></dc:nature>
+    <dc:nature />
     <dc:contributors>
       <item><![CDATA[Administrator]]></item>
       <item><![CDATA[system]]></item>
@@ -42,7 +42,7 @@
     <dc:issued/>
     <dc:modified><![CDATA[2013-10-28T16:09:25.00Z]]></dc:modified>
     <dc:language><![CDATA[]]></dc:language>
-    <dc:coverage><![CDATA[]]></dc:coverage>
+    <dc:coverage />
     <dc:expired/>
     <dc:lastContributor><![CDATA[Administrator]]></dc:lastContributor>
     <dc:title><![CDATA[Building the &  highest building of the world in three months]]></dc:title>

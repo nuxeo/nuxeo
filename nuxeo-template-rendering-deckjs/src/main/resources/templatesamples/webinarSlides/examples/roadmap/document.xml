@@ -29,7 +29,7 @@
     <dc:contributors>
       <item><![CDATA[Administrator]]></item>
     </dc:contributors>
-    <dc:nature><![CDATA[]]></dc:nature>
+    <dc:nature />
     <dc:created><![CDATA[2013-01-14T09:51:56.18Z]]></dc:created>
     <dc:description><![CDATA[An overview of the strategy for the Nuxeo Platform]]></dc:description>
     <dc:rights><![CDATA[Thierry Delprat]]></dc:rights>
@@ -40,7 +40,7 @@
     <dc:issued><![CDATA[1970-01-01T00:00:00.00Z]]></dc:issued>
     <dc:modified><![CDATA[2013-01-16T11:29:16.68Z]]></dc:modified>
     <dc:language><![CDATA[]]></dc:language>
-    <dc:coverage><![CDATA[]]></dc:coverage>
+    <dc:coverage />
     <dc:expired><![CDATA[2012-10-24T22:00:00.00Z]]></dc:expired>
     <dc:lastContributor><![CDATA[Administrator]]></dc:lastContributor>
     <dc:title><![CDATA[Nuxeo Platform Roadmap Q1 2013]]></dc:title>

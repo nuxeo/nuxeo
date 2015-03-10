@@ -27,7 +27,6 @@
     <dc:source><![CDATA[Nuxeo]]></dc:source>
     <dc:contributors>
       <item><![CDATA[Administrator]]></item>
-      <item><![CDATA[Tiry]]></item>
     </dc:contributors>
     <dc:nature><![CDATA[article]]></dc:nature>
     <dc:created><![CDATA[2012-05-22T16:26:38.76Z]]></dc:created>
@@ -45,7 +44,7 @@
     <dc:language><![CDATA[English]]></dc:language>
     <dc:coverage><![CDATA[europe/France]]></dc:coverage>
     <dc:expired><![CDATA[2014-05-29T22:00:00.00Z]]></dc:expired>
-    <dc:lastContributor><![CDATA[Tiry]]></dc:lastContributor>
+    <dc:lastContributor><![CDATA[Administrator]]></dc:lastContributor>
     <dc:title><![CDATA[Test Note for XL MetaData rendering]]></dc:title>
   </schema>
   <schema xmlns:files="http://www.nuxeo.org/ecm/schemas/files/" name="files">

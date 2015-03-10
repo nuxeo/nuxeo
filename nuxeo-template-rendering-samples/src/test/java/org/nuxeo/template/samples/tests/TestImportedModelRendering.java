@@ -162,7 +162,7 @@ public class TestImportedModelRendering {
         assertNotNull(textBH);
         String text = textBH.getBlob().getString();
 
-        assertTrue(text.contains("Contributors Administrator Tiry "));
+        assertTrue(text.contains("Contributors Administrator"));
         assertTrue(text.contains("Subjects technology/it human sciences/information"));
         assertTrue(text.contains("Format Html"));
     }
