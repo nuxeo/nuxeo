@@ -2,7 +2,6 @@
 
 var gulp = require('gulp'),
     path = require('path'),
-    browserSync = require('browser-sync'),
     del = require('del'),
     runSequence = require('run-sequence'),
     merge = require('merge-stream');
@@ -67,15 +66,20 @@ gulp.task('build', function() {
 });
 
 gulp.task('browser-sync', function () {
-  browserSync({
-    server: {
-      baseDir: ['app']
-    }
-  });
+  try {
+    require('browser-sync')({
+      server: {
+        baseDir: ['app']
+      }
+    });
+  } catch (e) {
+   console.log('Failed to load browser-sync. Please run `npm install browser-sync`.');
+   process.exit(-1);
+  }
 });
 
 gulp.task('watch', ['browser-sync'], function () {
-  gulp.watch(SOURCES, ['jshint', 'transpile', browserSync.reload]);
+  gulp.watch(SOURCES, ['jshint', 'transpile', require('browser-sync').reload]);
 });
 
 gulp.task('default', ['clean'], function () {
