@@ -38,6 +38,8 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
@@ -136,9 +138,13 @@ public class TaskWriter extends EntityWriter<Task> {
         }
         // add workflow variables
         if (workflowInstance != null) {
-            // TODO, do we really want to let all users see global variables?
+            final String transientSchemaName =  DocumentRoutingConstants.GLOBAL_VAR_SCHEMA_PREFIX + node.getId();
+            final SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+            final Schema transientSchema = schemaManager.getSchema(transientSchemaName);
             for (Entry<String, Serializable> e : workflowInstance.getVariables().entrySet()) {
-                JsonEncodeDecodeUtils.encodeVariableEntry(e, jg, request);
+                if (transientSchema == null || transientSchema.hasField(e.getKey())) {
+                    JsonEncodeDecodeUtils.encodeVariableEntry(e, jg, request);
+                }
             }
         }
         jg.writeEndObject();
