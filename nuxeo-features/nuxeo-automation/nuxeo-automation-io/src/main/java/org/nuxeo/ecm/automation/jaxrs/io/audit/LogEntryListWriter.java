@@ -29,10 +29,14 @@ import org.nuxeo.ecm.automation.jaxrs.io.EntityListWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntryList;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
 
 /**
  * @since 5.7.3 - LogEntries Writer for Audit
+ * @deprecated this marshaller was migrated to org.nuxeo.ecm.platform.audit.io.LogEntryListJsonWriter. To use it in
+ *             JAX-RS, register the {@link JsonCoreIODelegate} to forward the JAX-RS marshalling to nuxeo-core-io.
  */
+@Deprecated
 @Provider
 @Produces({ "application/json+nxentity", "application/json" })
 public class LogEntryListWriter extends EntityListWriter<LogEntry> {
