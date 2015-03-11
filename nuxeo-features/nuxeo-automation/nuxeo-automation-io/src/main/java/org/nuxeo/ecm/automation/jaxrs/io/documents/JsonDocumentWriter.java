@@ -51,10 +51,20 @@ import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
+import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
+import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * @deprecated this JAX-RS marshaller was migrated to {@link DocumentModelJsonWriter}. To use it in JAX-RS, use
+ *             {@link JsonCoreIODelegate} to forward JAX-RS marshalling to core io. To use it your code, please refer to
+ *             {@link MarshallerRegistry} service or use {@link MarshallerHelper}.
+ */
+@Deprecated
 @Provider
 @Produces({ "application/json+nxentity", "application/json" })
 public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
