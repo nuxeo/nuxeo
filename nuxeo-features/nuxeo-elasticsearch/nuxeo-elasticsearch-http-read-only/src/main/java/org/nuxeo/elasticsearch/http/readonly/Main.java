@@ -20,7 +20,6 @@
 package org.nuxeo.elasticsearch.http.readonly;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.security.Principal;
 
@@ -77,47 +76,59 @@ public class Main extends ModuleRoot {
     }
 
     @GET
-    @Path("{urlPath: [a-zA-Z0-9/]+_search}")
+    @Path("{indices}/{types}/_search")
     @Consumes("application/x-www-form-urlencoded")
-    public String doGetWithPayLoad(@PathParam("urlPath") String urlPath, @Context UriInfo uriInf,
-            MultivaluedMap<String, String> formParams) throws IOException {
-        String url = getElasticsearchUrl(uriInf);
-        log.warn("Open: " + url + " formParams: " + formParams);
-        CloseableHttpClient client = HttpClients.createDefault();
-        CloseableHttpResponse response;
-        HttpGetWithEntity e = new HttpGetWithEntity(url);
-        if (! formParams.isEmpty()) {
-            StringEntity myEntity = new StringEntity(formParams.keySet().iterator().next(), ContentType.create(
-                    "application/x-www-form-urlencoded", "UTF-8"));
-            e.setEntity(myEntity);
-        }
-        response = client.execute(e);
-        try {
-            HttpEntity entity = response.getEntity();
-            return entity != null ? EntityUtils.toString(entity) : null;
-        } finally {
-            response.close();
-        }
+    public String searchWithPayLoad(@PathParam("indices") String indices, @PathParam("types") String types,
+            @Context UriInfo uriInf, MultivaluedMap<String, String> formParams) throws IOException {
+        String url = getSearchUrl(indices, types, uriInf);
+        String payload = formParams.keySet().iterator().next();
+        log.warn("Search: " + url + " payload: " + payload);
+        return doGet(url, payload);
     }
 
     @GET
-    @Path("{urlPath: [a-zA-Z0-9/]+_search}")
-    public String doGet(@Context UriInfo uriInf) throws IOException {
-        String url = getElasticsearchUrl(uriInf);
-        log.warn("Open GET: " + url);
+    @Path("{indices}/{types}/_search")
+    public String search(@PathParam("indices") String indices, @PathParam("types") String types, @Context UriInfo uriInf)
+            throws IOException {
+        String url = getSearchUrl(indices, types, uriInf);
+        log.warn("Search: " + url);
+        return doGet(url);
+    }
+
+    @GET
+    @Path("{indices}/{types}/{documentId: [a-zA-Z0-9\\-]+}")
+    public String getDocument(@PathParam("indices") String indices, @PathParam("types") String types,
+            @PathParam("documentId") String documentId, @Context UriInfo uriInf) throws IOException {
+        String url = getDocumentUrl(indices, types, documentId, uriInf);
+        log.warn("Get: " + url);
+        return doGet(url);
+    }
+
+    protected String doGet(String url) throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();
-        CloseableHttpResponse response;
-        response = client.execute(new HttpGet(url));
-        try {
+        HttpGet httpget = new HttpGet(url);
+        try (CloseableHttpResponse response = client.execute(httpget)) {
             HttpEntity entity = response.getEntity();
             return entity != null ? EntityUtils.toString(entity) : null;
-        } finally {
-            response.close();
         }
     }
 
-    protected String getElasticsearchUrl(UriInfo uriInf) throws MalformedURLException {
-        String url = getElasticsearchBaseUrl() + uriInf.getPath().substring(3);
+    protected String doGet(String url, String payload) throws IOException {
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpGetWithEntity e = new HttpGetWithEntity(url);
+        StringEntity myEntity = new StringEntity(payload, ContentType.create("application/x-www-form-urlencoded",
+                "UTF-8"));
+        e.setEntity(myEntity);
+        try (CloseableHttpResponse response = client.execute(e)) {
+            HttpEntity entity = response.getEntity();
+            return entity != null ? EntityUtils.toString(entity) : null;
+        }
+    }
+
+    protected String getSearchUrl(String indices, String types, UriInfo uriInf) {
+        checkValidIndices(indices);
+        checkValidTypes(types);
+        String url = getElasticsearchBaseUrl() + "/" + indices + "/" + types + "/_search";
         String query = uriInf.getRequestUri().getRawQuery();
         if (query != null) {
             url += "?" + query;
@@ -125,7 +136,39 @@ public class Main extends ModuleRoot {
         return url;
     }
 
+    protected String getDocumentUrl(String indices, String types, String documentId, UriInfo uriInf) {
+        checkValidIndices(indices);
+        checkValidTypes(types);
+        checkValidDocumentId(documentId);
+        String url = getElasticsearchBaseUrl() + "/" + indices + "/" + types + "/" + documentId;
+        String query = uriInf.getRequestUri().getRawQuery();
+        if (query != null) {
+            url += "?" + query;
+        }
+        return url;
+    }
+
+    protected void checkValidDocumentId(String documentId) {
+        if (documentId == null) {
+            throw new IllegalArgumentException("Invalid document id");
+        }
+    }
+
+    protected void checkValidTypes(String types) {
+        if (types == null || !"doc".equals(types)) {
+            throw new IllegalArgumentException("Invalid type found");
+        }
+        // TODO check that indices are define in Nuxeo
+    }
+
+    protected void checkValidIndices(String indices) {
+        if (indices == null || "*".equals(indices) || "_all".equals(indices)) {
+            throw new IllegalArgumentException("Invalid index submitted");
+        }
+    }
+
     private String getElasticsearchBaseUrl() {
+        // TODO: make ES base url configurable
         return DEFAULT_ES_BASE_URL;
     }
 
