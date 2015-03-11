@@ -21,6 +21,7 @@ package org.nuxeo.drive.operations;
  * <ul>
  * <li>Server version</li>
  * <li>Nuxeo Drive update site URL</li>
+ * <li>Nuxeo Drive beta update site URL</li>
  * </ul>
  * 
  * @author Antoine Taillefer
@@ -31,13 +32,16 @@ public class NuxeoDriveClientUpdateInfo {
 
     protected String updateSiteURL;
 
+    protected String betaUpdateSiteURL;
+
     protected NuxeoDriveClientUpdateInfo() {
         // Needed for JSON deserialization
     }
 
-    public NuxeoDriveClientUpdateInfo(String serverVersion, String updateSiteURL) {
+    public NuxeoDriveClientUpdateInfo(String serverVersion, String updateSiteURL, String betaUpdateSiteURL) {
         this.serverVersion = serverVersion;
         this.updateSiteURL = updateSiteURL;
+        this.betaUpdateSiteURL = betaUpdateSiteURL;
     }
 
     public String getServerVersion() {
@@ -54,6 +58,14 @@ public class NuxeoDriveClientUpdateInfo {
 
     public void setUpdateSiteURL(String updateSiteURL) {
         this.updateSiteURL = updateSiteURL;
+    }
+
+    public String getBetaUpdateSiteURL() {
+        return betaUpdateSiteURL;
+    }
+
+    public void setBetaUpdateSiteURL(String betaUpdateSiteURL) {
+        this.betaUpdateSiteURL = betaUpdateSiteURL;
     }
 
 }
