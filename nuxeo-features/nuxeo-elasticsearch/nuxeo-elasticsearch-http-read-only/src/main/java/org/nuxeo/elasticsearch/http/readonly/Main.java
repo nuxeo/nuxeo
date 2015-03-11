@@ -20,10 +20,8 @@
 package org.nuxeo.elasticsearch.http.readonly;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.URI;
 import java.security.Principal;
 
 import javax.ws.rs.Consumes;
@@ -38,6 +36,15 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
@@ -51,35 +58,71 @@ public class Main extends ModuleRoot {
 
     private static final String DEFAULT_ES_BASE_URL = "http://localhost:9200/";
 
-    @GET
-    @Path("{path: [a-zA-Z0-9_/]+}")
-    @Consumes("application/x-www-form-urlencoded")
-    public String doGet(@PathParam("path") String path, @Context UriInfo uriInf,
-            MultivaluedMap<String, String> formParams) throws IOException {
-        URL url = getElasticsearchUrl(path, uriInf, formParams);
-        log.warn("Open: " + url + " formParams: " + formParams);
-        URLConnection conn = url.openConnection();
-        if (!formParams.isEmpty()) {
-            conn.setDoOutput(true);
-            conn.setRequestProperty("Accept-Charset", "UTF-8");
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-            try (OutputStream output = conn.getOutputStream()) {
-                output.write(formParams.keySet().iterator().next().getBytes("UTF-8"));
-            }
+    public class HttpGetWithEntity extends HttpPost {
+
+        public final static String METHOD_NAME = "GET";
+
+        public HttpGetWithEntity(URI url) {
+            super(url);
         }
-        try (java.util.Scanner s = new java.util.Scanner(conn.getInputStream())) {
-            return s.useDelimiter("\\A").next();
+
+        public HttpGetWithEntity(String url) {
+            super(url);
+        }
+
+        @Override
+        public String getMethod() {
+            return METHOD_NAME;
         }
     }
 
-    protected URL getElasticsearchUrl(String path, UriInfo uriInf, MultivaluedMap<String, String> formParams)
-            throws MalformedURLException {
-        String url = getElasticsearchBaseUrl() + (path == null ? "" : path);
+    @GET
+    @Path("{urlPath: [a-zA-Z0-9/]+_search}")
+    @Consumes("application/x-www-form-urlencoded")
+    public String doGetWithPayLoad(@PathParam("urlPath") String urlPath, @Context UriInfo uriInf,
+            MultivaluedMap<String, String> formParams) throws IOException {
+        String url = getElasticsearchUrl(uriInf);
+        log.warn("Open: " + url + " formParams: " + formParams);
+        CloseableHttpClient client = HttpClients.createDefault();
+        CloseableHttpResponse response;
+        HttpGetWithEntity e = new HttpGetWithEntity(url);
+        if (! formParams.isEmpty()) {
+            StringEntity myEntity = new StringEntity(formParams.keySet().iterator().next(), ContentType.create(
+                    "application/x-www-form-urlencoded", "UTF-8"));
+            e.setEntity(myEntity);
+        }
+        response = client.execute(e);
+        try {
+            HttpEntity entity = response.getEntity();
+            return entity != null ? EntityUtils.toString(entity) : null;
+        } finally {
+            response.close();
+        }
+    }
+
+    @GET
+    @Path("{urlPath: [a-zA-Z0-9/]+_search}")
+    public String doGet(@Context UriInfo uriInf) throws IOException {
+        String url = getElasticsearchUrl(uriInf);
+        log.warn("Open GET: " + url);
+        CloseableHttpClient client = HttpClients.createDefault();
+        CloseableHttpResponse response;
+        response = client.execute(new HttpGet(url));
+        try {
+            HttpEntity entity = response.getEntity();
+            return entity != null ? EntityUtils.toString(entity) : null;
+        } finally {
+            response.close();
+        }
+    }
+
+    protected String getElasticsearchUrl(UriInfo uriInf) throws MalformedURLException {
+        String url = getElasticsearchBaseUrl() + uriInf.getPath().substring(3);
         String query = uriInf.getRequestUri().getRawQuery();
         if (query != null) {
             url += "?" + query;
         }
-        return new URL(url);
+        return url;
     }
 
     private String getElasticsearchBaseUrl() {
