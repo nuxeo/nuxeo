@@ -8,7 +8,7 @@
       "operations" : [
         {
           "method":"GET",
-          "nickname":"getWorkflowModelById",
+          "nickname":"getWorkflowModel",
           "type":"workflow",
           <@params names = ["modelName"]/>,
           "summary":"Find a workflow model by its name",
