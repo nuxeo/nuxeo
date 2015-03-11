@@ -44,7 +44,9 @@ public class NuxeoDriveGetClientUpdateInfo {
 
         String serverVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
         String updateSiteURL = Framework.getProperty("org.nuxeo.drive.update.site.url");
-        NuxeoDriveClientUpdateInfo info = new NuxeoDriveClientUpdateInfo(serverVersion, updateSiteURL);
+        String betaUpdateSiteURL = Framework.getProperty("org.nuxeo.drive.beta.update.site.url");
+        NuxeoDriveClientUpdateInfo info = new NuxeoDriveClientUpdateInfo(serverVersion, updateSiteURL,
+                betaUpdateSiteURL);
         return NuxeoDriveOperationHelper.asJSONBlob(info);
     }
 
