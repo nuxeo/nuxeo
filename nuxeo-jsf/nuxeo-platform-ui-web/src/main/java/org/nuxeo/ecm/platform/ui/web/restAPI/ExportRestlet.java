@@ -51,6 +51,11 @@ import org.restlet.resource.Representation;
 
 import com.noelios.restlet.http.HttpConstants;
 
+/**
+ * @deprecated since 7.2. Exports are now exposed directly as renditions on the document. Exports can be generated
+ *             through the {@code ExportDocument} operation. See NXP-16585.
+ */
+@Deprecated
 public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializable {
 
     private static final long serialVersionUID = 7831287875548588711L;
