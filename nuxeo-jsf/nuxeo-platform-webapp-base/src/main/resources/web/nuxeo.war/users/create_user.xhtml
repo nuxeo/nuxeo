@@ -29,8 +29,13 @@
     </h:selectBooleanCheckbox>
     <h:outputLabel for="immediate_creation" value="#{messages['label.immediateCreation']}" />
 
-    <nxl:layout name="#{userManagementActions.immediateCreation ? 'user' : 'user_registration'}"
-      mode="create" value="#{userManagementActions.newUser}" />
+    <a4j:outputPanel rendered="#{userManagementActions.immediateCreation}">
+      <nxl:layout name="user" mode="create" value="#{userManagementActions.newUser}" />
+    </a4j:outputPanel>
+
+    <a4j:outputPanel rendered="#{not userManagementActions.immediateCreation}">
+      <nxl:layout name="user_registration" mode="create" value="#{userManagementActions.newUser}" />
+    </a4j:outputPanel>
 
     <table class="dataInput">
       <tbody>
