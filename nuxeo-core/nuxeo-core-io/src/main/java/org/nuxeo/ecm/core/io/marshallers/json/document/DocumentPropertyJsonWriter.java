@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
-import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolver;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriter;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
@@ -47,6 +46,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
 /**
  * Convert {@link Property} to Json.
@@ -102,7 +102,7 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
     protected void writeScalarProperty(JsonGenerator jg, Property prop) throws IOException {
         Type type = prop.getType();
         Object value = prop.getValue();
-        if (!fetchProperty(jg, prop)) {
+        if (!fetchProperty(jg, prop.getType().getObjectResolver(), value, prop.getPath())) {
             writeScalarPropertyValue(jg, type, value);
         }
     }
@@ -125,14 +125,14 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
         }
     }
 
-    protected boolean fetchProperty(JsonGenerator jg, Property prop) throws IOException {
-        if (prop.getValue() == null) {
+    protected boolean fetchProperty(JsonGenerator jg, ObjectResolver resolver, Object value, String path)
+            throws IOException {
+        if (value == null) {
             return false;
         }
         boolean fetched = false;
-        PropertyObjectResolver resolver = prop.getObjectResolver();
         if (resolver != null) {
-            String propertyPath = prop.getPath().replaceFirst("/", "");
+            String propertyPath = path.replaceFirst("/", "");
             String genericPropertyPath = propertyPath.replaceAll("\\[[0-9]*\\]", "");
             Set<String> fetchElements = ctx.getFetched(ENTITY_TYPE);
             boolean fetch = false;
@@ -144,7 +144,7 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
                 }
             }
             if (fetch) {
-                Object object = resolver.fetch();
+                Object object = resolver.fetch(value);
                 if (object != null) {
                     try {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -152,8 +152,7 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
                         jg.writeRawValue(baos.toString());
                         fetched = true;
                     } catch (MarshallingException e) {
-                        log.error("Unable to marshall as json the entity referenced by the property " + prop.getPath(),
-                                e);
+                        log.error("Unable to marshall as json the entity referenced by the property " + path, e);
                     }
                 }
             }
@@ -169,9 +168,13 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
                 jg.writeEndArray();
                 return;
             }
-            Type type = ((ListType) prop.getType()).getFieldType();
+            Type itemType = ((ListType) prop.getType()).getFieldType();
+            ObjectResolver resolver = itemType.getObjectResolver();
+            String path = prop.getPath();
             for (Object o : ar) {
-                writeScalarPropertyValue(jg, type, o);
+                if (!fetchProperty(jg, resolver, o, path)) {
+                    writeScalarPropertyValue(jg, itemType, o);
+                }
             }
         } else {
             ListProperty listp = (ListProperty) prop;

@@ -19,6 +19,8 @@ package org.nuxeo.ecm.core.io.marshallers.json.document;
 
 import java.util.Date;
 
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -34,8 +36,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import javax.inject.Inject;
 
 @LocalDeploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
 public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
@@ -210,11 +210,35 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
+    public void testArrayPropertiesFetching() throws Exception {
+        String pathRef = "test:/";
+        String xpath = "dr:docPathRefSimpleList";
+        document.setPropertyValue(xpath, new String[] { pathRef, pathRef, pathRef });
+        JsonAssert json = jsonAssert(document, CtxBuilder.properties("*").fetchInDoc(xpath).get());
+        json = json.has("properties." + xpath).isArray();
+        json.length(3);
+        json.childrenContains("entity-type", "document", "document", "document");
+        json.childrenContains("path", "/", "/", "/");
+    }
+
+    @Test
+    public void testInvalidValueFetching() throws Exception {
+        String pathRef = "test:/toto/is/doing/something";
+        String xpath = "dr:docPathRefSimpleList";
+        document.setPropertyValue(xpath, new String[] { pathRef, pathRef });
+        JsonAssert json = jsonAssert(document, CtxBuilder.properties("*").fetchInDoc(xpath).get());
+        json = json.has("properties." + xpath).isArray();
+        json.length(2);
+        json.contains(pathRef, pathRef);
+    }
+
+    @Test
     public void testFullFetching() throws Exception {
         String pathRef = "test:/";
         document.setPropertyValue("dr:docPathRef", pathRef);
         document.getProperty("dr:docRefType").setValue("docRefTypePath", pathRef);
         document.getProperty("dr:docPathRefList").addValue(pathRef);
+        document.getProperty("dr:docPathRefSimpleList").setValue(new String[] { pathRef, pathRef });
         JsonAssert json = jsonAssert(document, CtxBuilder.properties("*").fetchInDoc("properties").get());
         JsonAssert child;
         child = json.has("properties.dr:docPathRef").isObject();
@@ -226,6 +250,10 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
         child = json.has("properties.dr:docPathRefList[0]").isObject();
         child.has("entity-type").isEquals("document");
         child.has("path").isEquals("/");
+        child = json.has("properties.dr:docPathRefSimpleList").isArray();
+        child.length(2);
+        child.childrenContains("entity-type", "document", "document");
+        child.childrenContains("path", "/", "/");
     }
 
     @Test

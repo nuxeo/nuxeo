@@ -15,6 +15,16 @@
     </xs:simpleType>
   </xs:element>
 
+  <xs:element name="docPathRefSimpleList">
+    <xs:simpleType>
+      <xs:list>
+        <xs:simpleType>
+          <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="path" />
+        </xs:simpleType>
+      </xs:list>
+    </xs:simpleType>
+  </xs:element>
+
   <xs:element name="docPathRefList">
     <xs:complexType>
       <xs:sequence>
