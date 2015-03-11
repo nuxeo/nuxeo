@@ -247,7 +247,7 @@ public class TestCompileAndContext {
                 ("/scriptCtxIsolation.js");
         org.junit.Assert.assertNotNull(stream);
         scriptingService.run(stream, session);
-        assertEquals("[object Object]\n", outContent.toString());
+        assertEquals("[object Object]" + System.lineSeparator(), outContent.toString());
 
         stream = this.getClass().getResourceAsStream("/scriptCtxIsolation.js");
         org.junit.Assert.assertNotNull(stream);
