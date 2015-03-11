@@ -27,13 +27,16 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.io.marshallers.json.enrichers.ChildrenJsonEnricher;
 
 /**
  * This enricher adds a document list with all children to the contextParameters map. It is provided as sample and may
  * not be used directly. For instance if you have millions of children, it will get all of them.
  *
  * @since 5.7.3
+ * @deprecated This enricher was migrated to {@link ChildrenJsonEnricher}
  */
+@Deprecated
 public class ChildrenEnricher extends AbstractContentEnricher {
 
     @Override

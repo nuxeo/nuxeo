@@ -16,20 +16,23 @@
  */
 package org.nuxeo.ecm.automation.io.services.enricher;
 
+import java.io.IOException;
+
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
-
-import java.io.IOException;
+import org.nuxeo.ecm.core.io.marshallers.json.enrichers.ACLJsonEnricher;
 
 /**
  * This enricher adds a document ACLs
  *
  * @since 5.9.5
+ * @deprecated This enricher was migrated to {@link ACLJsonEnricher}
  */
+@Deprecated
 public class ACLContentEnricher extends AbstractContentEnricher {
 
     public static final String ACLS_CONTENT_ID = "acls";

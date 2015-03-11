@@ -25,10 +25,13 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.io.marshallers.json.enrichers.BreadcrumbJsonEnricher;
 
 /**
  * @since 5.7.3
+ * @deprecated This enricher was migrated to {@link BreadcrumbJsonEnricher}
  */
+@Deprecated
 public class BreadcrumbEnricher extends AbstractContentEnricher {
 
     @Override

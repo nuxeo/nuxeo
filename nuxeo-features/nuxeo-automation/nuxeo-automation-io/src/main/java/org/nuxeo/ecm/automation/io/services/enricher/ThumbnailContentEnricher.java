@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
+import org.nuxeo.ecm.platform.ui.web.io.ThumbnailJsonEnricher;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.runtime.api.Framework;
 
@@ -30,7 +31,9 @@ import org.nuxeo.runtime.api.Framework;
  * This contributor adds a document Thumbnail Download URL
  *
  * @since 5.9.5
+ * @deprecated This enricher was migrated to {@link ThumbnailJsonEnricher}
  */
+@Deprecated
 public class ThumbnailContentEnricher extends AbstractContentEnricher {
 
     public static final String THUMBNAIL_URL_LABEL = "url";

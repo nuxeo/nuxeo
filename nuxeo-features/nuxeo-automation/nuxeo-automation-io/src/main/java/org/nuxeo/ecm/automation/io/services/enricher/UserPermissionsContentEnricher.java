@@ -16,13 +16,6 @@
  */
 package org.nuxeo.ecm.automation.io.services.enricher;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-
 import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -30,11 +23,22 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.JsonGenerator;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.io.marshallers.json.enrichers.BasePermissionsJsonEnricher;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+
 /**
  * This enricher adds a list of the permissions granted to the user on the document
  *
  * @since 6.0
+ * @deprecated This enricher was migrated to {@link BasePermissionsJsonEnricher}
  */
+@Deprecated
 public class UserPermissionsContentEnricher extends AbstractContentEnricher {
 
     private static final String PERMISSIONS_PARAMETER = "permissions";
@@ -67,6 +71,7 @@ public class UserPermissionsContentEnricher extends AbstractContentEnricher {
         final Principal principal = session.getPrincipal();
 
         return Iterables.filter(availablePermissions, new Predicate<String>() {
+            @Override
             public boolean apply(String permission) {
                 return session.hasPermission(principal, doc.getRef(), permission);
             }

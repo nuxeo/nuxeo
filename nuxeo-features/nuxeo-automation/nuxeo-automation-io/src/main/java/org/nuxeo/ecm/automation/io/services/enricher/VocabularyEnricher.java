@@ -16,6 +16,12 @@
  */
 package org.nuxeo.ecm.automation.io.services.enricher;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonGenerator;
@@ -26,23 +32,18 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * This enricher adds the labels for each value of a property referencing dbl10n vocabularies.
  *
  * @since 6.0
+ * @deprecated This enricher was migrated to org.nuxeo.ecm.platform.spreadsheet.DCVocabulariesJsonEnricher
  */
+@Deprecated
 public class VocabularyEnricher extends AbstractContentEnricher {
 
     protected static final Log log = LogFactory.getLog(VocabularyEnricher.class);

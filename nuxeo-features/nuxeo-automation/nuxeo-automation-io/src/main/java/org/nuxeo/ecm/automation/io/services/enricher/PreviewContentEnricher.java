@@ -16,19 +16,22 @@
  */
 package org.nuxeo.ecm.automation.io.services.enricher;
 
+import java.io.IOException;
+
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
+import org.nuxeo.ecm.platform.preview.io.PreviewJsonEnricher;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.IOException;
 
 /**
  * This content enricher adds a document Preview URL.
  *
  * @since 6.0
+ * @deprecated This enricher was migrated to {@link PreviewJsonEnricher}
  */
+@Deprecated
 public class PreviewContentEnricher extends AbstractContentEnricher {
 
     public static final String PREVIEW_URL_LABEL = "url";
