@@ -41,8 +41,11 @@ author: lkemen@nuxeo.com
   border: none; }
 
 .documentTitle {
-  display: inline-block;
-  max-width: 25em;
+  display: inline-block }
+
+.infoViewRight .documentTitle,
+.bubbleBox.bubbleListing .documentTitle {
+  max-width: 22em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -422,9 +425,7 @@ author: lkemen@nuxeo.com
 
 .bubbleBox.bubbleListing .documentTitle {
   padding-bottom: .3em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  max-width: none;
   word-wrap: normal;
   width: 15em }
 
