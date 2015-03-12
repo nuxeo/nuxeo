@@ -91,13 +91,15 @@ public class ValidationPage {
         LayoutElement l = getLayout();
         l.getWidget("nxw_groupCode").setInputValue("invalid string");
         submitWhileTyping();
-        l.getWidget("nxw_manager:nxw_firstname").setInputValue("");
+        l.getWidget("nxw_manager:nxw_firstname").setInputValue("  ");
         submitWhileTyping();
         l.getWidget("nxw_manager:nxw_lastname").setInputValue("AA");
         JSListWidgetElement slist = l.getWidget("nxw_roles", JSListWidgetElement.class);
         slist.addNewElement();
+        slist.getSubWidget("nxw_role", 0).setInputValue("  ");
         JSListWidgetElement list = l.getWidget("nxw_users", JSListWidgetElement.class);
         list.addNewElement();
+        list.getSubWidget("nxw_fn", 0).setInputValue("  ");
         list.getSubWidget("nxw_ln", 0).setInputValue("AA");
     }
 
@@ -121,10 +123,8 @@ public class ValidationPage {
         LayoutElement l = getLayout();
         assertEquals("", l.getWidget("nxw_title").getMessageValue());
         assertEquals("Value is required", l.getWidget("nxw_groupCode").getMessageValue());
-        assertEquals("This value must match the format \".*\\S.*\".",
-                l.getWidget("nxw_manager:nxw_firstname").getMessageValue());
-        assertEquals("This value must match the format \"[A-Z][a-z '-]+\".",
-                l.getWidget("nxw_manager:nxw_lastname").getMessageValue());
+        assertEquals("Value is required", l.getWidget("nxw_manager:nxw_firstname").getMessageValue());
+        assertEquals("Value is required", l.getWidget("nxw_manager:nxw_lastname").getMessageValue());
         JSListWidgetElement slist = l.getWidget("nxw_roles", JSListWidgetElement.class);
         assertEquals("", slist.getMessageValue());
         JSListWidgetElement list = l.getWidget("nxw_users", JSListWidgetElement.class);
