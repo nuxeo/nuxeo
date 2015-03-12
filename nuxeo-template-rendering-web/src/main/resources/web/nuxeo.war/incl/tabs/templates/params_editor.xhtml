@@ -9,36 +9,34 @@
 
   <script src="#{contextPath}/scripts/template-edit-param.js"></script>
   <h:panelGroup id="params_edit">
-  <h:form enctype="multipart/form-data" id="params_edit_form">
-        <c:if test="#{bean.canAddTemplateInputs()}">
-	  <span>
-            <h:inputText value="#{bean.newInput.name}"></h:inputText>
-            <h:commandButton type="submit" styleClass="button" value="#{messages['label.template.parameter.add']}" action="#{bean.addTemplateInput}" id="button_add" />
-          </span>
-          <br />
-          <br />
-        </c:if>
+    <h:form enctype="multipart/form-data" id="params_edit_form">
+      <c:if test="#{bean.canAddTemplateInputs()}">
+	      <span>
+          <h:inputText value="#{bean.newInput.name}"></h:inputText>
+          <h:commandButton type="submit" styleClass="button" value="#{messages['label.template.parameter.add']}" action="#{bean.addTemplateInput}" id="button_add" />
+        </span>
+        <br />
+        <br />
+      </c:if>
       <nxu:repeat var="param" value="#{bean.templateEditableInputs}">
-          <ui:include src="/incl/tabs/templates/template_edit_oneparam.xhtml" />
+        <ui:include src="/incl/tabs/templates/template_edit_oneparam.xhtml" />
       </nxu:repeat>
       <c:if test="#{bean.canUpdateTemplateInputs(targetTemplate)}">
 
         <c:if test="#{bean.canAddTemplateInputs()}">
-
         </c:if>
-
-                  <p class="buttonsGadget">
-                    <h:commandButton type="submit" styleClass="button" value="#{messages['command.save']}"
-                        action="#{bean.saveTemplateInputs}" id="button_save"/>
-                    <h:commandButton styleClass="button" value="#{messages['command.cancel']}"
-                        action="#{bean.cancelTemplateInputsEdit}" immediate="true"/>
-                  </p>
-                </c:if>
-            </h:form>
-           </h:panelGroup>
-<script>
- jQuery(document).ready(function(){
+        <p class="buttonsGadget">
+          <h:commandButton type="submit" styleClass="button" value="#{messages['command.save']}"
+            action="#{bean.saveTemplateInputs}" id="button_save"/>
+          <h:commandButton styleClass="button" value="#{messages['command.cancel']}"
+            action="#{bean.cancelTemplateInputsEdit}" immediate="true"/>
+        </p>
+      </c:if>
+    </h:form>
+  </h:panelGroup>
+  <script>
+   jQuery(document).ready(function(){
       initContentWidgets();
     });
-</script>
+  </script>
 </div>
