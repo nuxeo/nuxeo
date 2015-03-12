@@ -20,15 +20,15 @@
     </div>
 
     <div class="buttonsGadget">
-      <h:commandButton value="#{messages['command.save']}" styleClass="button"
-        onclick="jQuery.fancybox.close()">
-        <f:ajax render="#{ajaxReRender}"
-          execute="@form" />
-      </h:commandButton>
-      <h:commandButton value="#{messages['command.cancel']}" styleClass="button"
-        onclick="jQuery.fancybox.close()">
+      <h:commandButton value="#{messages['command.save']}" styleClass="button">
         <f:ajax
-          execute="@this" />
+          execute="@form"
+          onevent="jQuery.fancybox.close" />
+      </h:commandButton>
+      <h:commandButton value="#{messages['command.cancel']}" styleClass="button">
+        <f:ajax
+          execute="@this"
+          onevent="jQuery.fancybox.close" />
       </h:commandButton>
     </div>
 
