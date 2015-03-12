@@ -111,6 +111,11 @@ input, select, textarea,
 button, keygen, isindex, legend, a {
   font-size: inherit }
 
+hr {
+  border-top: none;
+  border-bottom: 1px solid #eee;
+  margin: 2em 0 2.5em }
+
 /* =Compat styles */
 .field, select, textarea, .serverChoice a, .fullWidth, .tabsBar,
 .gridBox, .grayBox, .simpleBox, .infoViewRight .infoViewInfoLayout,

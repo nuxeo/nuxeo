@@ -45,15 +45,15 @@ author: lkemen@nuxeo.com
 .quarterWidth { width: 22% }
 
 /* width for tables & columns */
-.tenPercent { width: 10% }
-.twentyPercent { width: 20% }
-.thirtyPercent { width: 30% }
-.fortyPercent { width: 40% }
-.fiftyPercent { width: 50% }
-.sixtyPercent { width: 60% }
-.seventyPercent { width: 70% }
-.eightyPercent { width: 80% }
-.ninetyPercent { width: 90% }
+.tenPercent { width: 10% !important }
+.twentyPercent { width: 20% !important }
+.thirtyPercent { width: 30% !important }
+.fortyPercent { width: 40% !important }
+.fiftyPercent { width: 50% !important }
+.sixtyPercent { width: 60% !important }
+.seventyPercent { width: 70% !important }
+.eightyPercent { width: 80% !important }
+.ninetyPercent { width: 90% !important }
 
 /* reset width class */
-.autoWidth { width: auto }
+.autoWidth { width: auto !important }
