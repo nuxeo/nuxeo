@@ -22,17 +22,39 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserCreationFormPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserViewTabSubPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * Create a user in Nuxeo DM.
  */
+@RunWith(FeaturesRunner.class)
+@Features({ FakeSmtpMailServerFeature.class })
 public class ITUsersTest extends AbstractTest {
+
+    @Test
+    public void testInviteUser() throws Exception {
+        String firstname = "firstname";
+
+        UsersGroupsBasePage page;
+        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
+
+        page = usersTab.getUserCreatePage().inviteUser(TEST_USERNAME, firstname, "lastname1", "company1", "email1",
+                "members");
+
+        usersTab = page.getUsersTab(false);
+
+        // search user
+        usersTab = usersTab.searchUser(TEST_USERNAME);
+        assertFalse(usersTab.isUserFound(TEST_USERNAME));
+    }
 
     @Test
     public void testCreateViewDeleteUser() throws Exception {

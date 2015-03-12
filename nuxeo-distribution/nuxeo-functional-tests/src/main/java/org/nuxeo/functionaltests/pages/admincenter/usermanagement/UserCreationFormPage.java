@@ -77,6 +77,11 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
         return createUser(username, firstname, lastname, company, email, password, group, false);
     }
 
+    public UsersGroupsBasePage inviteUser(String username, String firstname, String lastname, String company,
+            String email, String group) throws NoSuchElementException {
+        return createUser(username, firstname, lastname, company, email, "", group, true);
+    }
+
     private boolean isObjectChecked(int index) {
         assert (index < 2 && index >= 0);
         org.junit.Assert.assertNotNull(immediateCreation);
@@ -109,7 +114,19 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
             }
             createButton.click();
         } else {
-            // TODO invite
+            usernameInput.sendKeys(username);
+            firstnameInput.sendKeys(firstname);
+            lastnameInput.sendKeys(lastname);
+            companyInput.sendKeys(company);
+            emailInput.sendKeys(email);
+            if (StringUtils.isNotBlank(group)) {
+                Select2WidgetElement groups = new Select2WidgetElement(
+                        driver,
+                        driver.findElement(By.xpath("//div[@id='s2id_createUserView:createUser:nxl_user:nxw_groups_select2']")),
+                        true);
+                groups.selectValue(group);
+            }
+            createButton.click();
         }
         return asPage(UsersGroupsBasePage.class);
     }
