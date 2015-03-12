@@ -215,6 +215,13 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
                 immediateCreation = false;
                 facesMessages.add(StatusMessage.Severity.INFO,
                         resourcesAccessor.getMessages().get("info.userManager.userCreated"));
+                if (createAnotherUser) {
+                    showCreateForm = true;
+                } else {
+                    showCreateForm = false;
+                    showUserOrGroup = true;
+                    detailsMode = null;
+                }
                 fireSeamEvent(USERS_LISTING_CHANGED);
             } else {
                 UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
@@ -227,16 +234,18 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
 
                 facesMessages.add(StatusMessage.Severity.INFO,
                         resourcesAccessor.getMessages().get("info.userManager.userInvited"));
+                if (createAnotherUser) {
+                    showCreateForm = true;
+                } else {
+                    showCreateForm = false;
+                    showUserOrGroup = false;
+                    detailsMode = null;
+                }
 
             }
             newUser = null;
-            if (createAnotherUser) {
-                showCreateForm = true;
-            } else {
-                showCreateForm = false;
-                showUserOrGroup = true;
-                detailsMode = null;
-            }
+
+
         } catch (UserAlreadyExistsException e) {
             facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get("error.userManager.userAlreadyExists"));
