@@ -12,7 +12,7 @@
 
 <h:panelGroup id="param_#{param.name}">
 
-<table>
+<table class="dataTableNoBorder">
 <tr>
 <td class="labelColumn" width="10%">  <h:outputText value="#{messages['label.template.parameter.name']}" /></td>
 <td class="fieldColumn" width="10%"><h:outputText value="#{param.name}" />  </td>
@@ -92,8 +92,8 @@
   </c:if>
 
 <c:if test="#{!param.readOnly}">
-   <td class="fieldColumn" width="10%">
-       <span class="buttonsGadget">
+   <td class="fieldColumn" width="20%">
+       <span class="floatR">
            <h:commandButton type="submit" styleClass="button" value="#{messages['command.delete']}"
                     action="#{bean.removeTemplateInput(param.name)}" id="button_rm_#{param.name}" />
        </span>
