@@ -227,17 +227,14 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
 
                 facesMessages.add(StatusMessage.Severity.INFO,
                         resourcesAccessor.getMessages().get("info.userManager.userInvited"));
+
             }
             newUser = null;
             if (createAnotherUser) {
                 showCreateForm = true;
-            } else if (immediateCreation){
-                showCreateForm = false;
-                showUserOrGroup = true;
-                detailsMode = null;
             } else {
                 showCreateForm = false;
-                showUserOrGroup = false;
+                showUserOrGroup = true;
                 detailsMode = null;
             }
         } catch (UserAlreadyExistsException e) {
