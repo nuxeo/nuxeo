@@ -312,12 +312,12 @@ public class LayoutDemoContext implements Serializable {
         modified.set(Calendar.DATE, 16);
         if (index <= 1) {
             doc.setPropertyValue("dc:modified", modified);
-            doc.setPropertyValue("dc:creator", "cartman");
-            doc.setPropertyValue("dc:lastContributor", "kenny");
+            doc.setPropertyValue("dc:creator", "Administrator");
+            doc.setPropertyValue("dc:lastContributor", "Administrator");
         } else {
             doc.setPropertyValue("dc:modified", created);
-            doc.setPropertyValue("dc:creator", "kenny");
-            doc.setPropertyValue("dc:lastContributor", "cartman");
+            doc.setPropertyValue("dc:creator", "Administrator");
+            doc.setPropertyValue("dc:lastContributor", "Administrator");
         }
         doc.setPropertyValue("uid:major_version", new Integer(1));
         doc.setPropertyValue("uid:minor_version", new Integer(index));
