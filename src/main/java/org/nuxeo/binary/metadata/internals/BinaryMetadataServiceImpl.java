@@ -203,7 +203,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
             for (Object metadata : blobMetadataOutput.keySet()) {
                 doc.setPropertyValue(metadataMapping.get(metadata), blobMetadataOutput.get(metadata).toString());
             }
-            if (session.exists(doc.getRef())) {
+
+            // document should exist if id != null
+            if (doc.getId() != null && session.exists(doc.getRef())) {
                 session.saveDocument(doc);
             }
         }
