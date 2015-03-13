@@ -139,6 +139,11 @@ public class FileManageActionsBean implements FileManageActions {
 
     protected FileManager fileManager;
 
+    /**
+     * Used to keep track of the path of the uploaded file (NXP-16745)
+     */
+    protected List<String> tmpFilePaths = new ArrayList<String>();
+
     protected FileManager getFileManagerService() {
         if (fileManager == null) {
             fileManager = Framework.getService(FileManager.class);
@@ -519,7 +524,8 @@ public class FileManageActionsBean implements FileManageActions {
     public void processUpload(FileUploadEvent uploadEvent) {
         try {
             if (fileUploadHolder != null) {
-                Blob blob = getBlob(uploadEvent);
+                FileBlob blob = getBlob(uploadEvent);
+                tmpFilePaths.add(blob.getFile().getPath());
                 fileUploadHolder.getUploadedFiles().add(new NxUploadedFile(blob));
             } else {
                 log.error("Unable to reach fileUploadHolder");
@@ -529,19 +535,25 @@ public class FileManageActionsBean implements FileManageActions {
         }
     }
 
-    public static Blob getBlob(FileUploadEvent uploadEvent) throws IOException {
+    protected static String getJSFUploadTmpDirPath() {
+        String jstTmpFileDir = Framework.getProperty(NUXEO_JSF_TMP_DIR_PROP);
+        if (StringUtils.isBlank(jstTmpFileDir)) {
+            jstTmpFileDir = null;
+        }
+        return jstTmpFileDir;
+    }
+
+    public static FileBlob getBlob(FileUploadEvent uploadEvent) throws IOException {
         // copy to a temporary file we own
         // TODO check how we can reuse RichFaces' temporary file
-        String jstTmpFileDir = Framework.getProperty(NUXEO_JSF_TMP_DIR_PROP);
-        File tmpDir;
-        if (StringUtils.isBlank(jstTmpFileDir)) {
-            tmpDir = null;
-        } else {
+        String jstTmpFileDir = getJSFUploadTmpDirPath();
+        File tmpDir = null;
+        if (jstTmpFileDir != null) {
             tmpDir = new File(jstTmpFileDir);
         }
         UploadedFile uploadedFile = uploadEvent.getUploadedFile();
         try (InputStream in = uploadedFile.getInputStream()) {
-            Blob blob = new FileBlob(in, uploadedFile.getContentType(), null, tmpDir);
+            FileBlob blob = new FileBlob(in, uploadedFile.getContentType(), null, tmpDir);
             blob.setFilename(uploadedFile.getName());
             return blob;
         }
@@ -579,11 +591,13 @@ public class FileManageActionsBean implements FileManageActions {
             if (nxuploadFiles != null) {
                 for (NxUploadedFile uploadItem : nxuploadFiles) {
                     File tempFile = uploadItem.getFile();
-                    if (tempFile != null && tempFile.exists()) {
+                    // Tmp file that have been moved are assumed to not be temporary anymore
+                    if (tempFile != null && tempFile.exists() && tmpFilePaths.contains(tempFile.getPath())) {
                         Framework.trackFile(tempFile, tempFile);
                     }
                 }
             }
+            tmpFilePaths.clear();
         }
     }
 
@@ -683,6 +697,12 @@ public class FileManageActionsBean implements FileManageActions {
     public void setUploadedFiles(Collection<NxUploadedFile> uploadedFiles) {
         if (fileUploadHolder != null) {
             fileUploadHolder.setUploadedFiles(uploadedFiles);
+        }
+        tmpFilePaths.clear();
+        if (uploadedFiles != null) {
+            for (NxUploadedFile file : uploadedFiles) {
+                tmpFilePaths.add(file.getFile().getPath());
+            }
         }
     }
 
