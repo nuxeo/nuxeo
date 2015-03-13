@@ -51,12 +51,8 @@ public class NotificationEventListenerTest extends SQLRepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
         openSession();
-        deployBundle("org.nuxeo.ecm.core.persistence");
-        deployBundle("org.nuxeo.ecm.platform.placeful.api");
-        deployBundle("org.nuxeo.ecm.platform.placeful.core");
         deployBundle("org.nuxeo.ecm.platform.notification.core");
         deployBundle("org.nuxeo.ecm.platform.notification.api");
-        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.platform.types.api");

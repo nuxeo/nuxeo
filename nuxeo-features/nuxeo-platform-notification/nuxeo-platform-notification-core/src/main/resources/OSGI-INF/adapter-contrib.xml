@@ -1,0 +1,15 @@
+<component name="org.nuxeo.ecm.platform.ec.notifications.adapter">
+
+
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
+    point="adapters">
+
+    <adapter class="org.nuxeo.ecm.platform.ec.notification.SubscriptionAdapter"
+      factory="org.nuxeo.ecm.platform.ec.notification.SubscriptionAdapterFactory" />
+
+  </extension>
+
+
+
+
+</component>
