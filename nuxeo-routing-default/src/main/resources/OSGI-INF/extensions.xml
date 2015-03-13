@@ -13,7 +13,7 @@
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
     <chain id="NRD-AC-PR-ChooseParticipants-Output">
       <operation id="Context.FetchDocument"/>
-      <operation id="Context.RunOperation">
+      <operation id="RunOperation">
         <param type="string" name="id">NRD-AC-PR-LockDocument</param>
         <param type="boolean" name="isolate">false</param>
       </operation>
@@ -27,7 +27,7 @@
       <operation id="Auth.LoginAs">
         <param type="string" name="name">expr:workflowInitiator</param>
       </operation>
-      <operation id="Context.RunOperation">
+      <operation id="RunOperation">
         <param type="string" name="id">expr:Document.isLocked()?"voidChain":"Document.Lock"</param>
         <param type="boolean" name="isolate">false</param>
       </operation>
@@ -38,11 +38,11 @@
     </chain>
     <chain id="NRD-AC-PR-ValidateNode-Output">
       <operation id="Context.FetchDocument"/>
-      <operation id="Context.RunOperation">
+      <operation id="RunOperation">
         <param type="string" name="id">NRD-AC-PR-UnlockDocument</param>
         <param type="boolean" name="isolate">false</param>
       </operation>
-      <operation id="Context.RunOperation">
+      <operation id="RunOperation">
         <param type="string" name="id">logInAudit</param>
         <param type="boolean" name="isolate">false</param>
       </operation>
@@ -52,7 +52,7 @@
       <operation id="Auth.LoginAs">
         <param type="string" name="name">expr:Context["workflowInitiator"]</param>
       </operation>
-      <operation id="Audit.Log">
+      <operation id="Audit.LogEvent">
         <param type="string" name="event">Consultation time excedeed</param>
         <param type="string" name="category">Review workflow</param>
         <param type="string" name="comment">Some consultation tasks were aborted by the system as they received no feedback message.</param>
@@ -61,7 +61,7 @@
     </chain>
     <chain id="NRD-AC-PR-storeTaskInfo">
       <operation id="Context.FetchDocument"/>
-      <operation id="Context.RunScript">
+      <operation id="RunScript">
         <param type="string" name="script">This[0]</param>
       </operation>
       <operation id="Context.SetVar">
@@ -105,26 +105,26 @@
         <param type="string" name="name">isParallelWF</param>
         <param type="object" name="value">expr:Event.context.getProperty("wfName").equals("wf.parallelDocumentReview.ParallelDocumentReview")?true:false</param>
       </operation>
-      <operation id="Context.RunOperation">
+      <operation id="RunOperation">
         <param type="string" name="id">expr:isParallelWF?"Document.Unlock":"voidChain"</param>
         <param type="boolean" name="isolate">false</param>
       </operation>
     </chain>
     <chain id="initInitiatorComment">
-      <operation id="Context.RunScript">
+      <operation id="RunScript">
         <param type="string" name="script">if((NodeVariables["comment"] != "") AND (NodeVariables["comment"] != null)){
 WorkflowVariables["initiatorComment"]= NodeVariables["comment"];}</param>
       </operation>
     </chain>
     <chain id="logInAudit">
-      <operation id="Audit.Log">
+      <operation id="Audit.LogEvent">
         <param type="string" name="event">expr:NodeVariables["button"] =="reject"?"Document refused":"Document validated"</param>
         <param type="string" name="category">Review workflow</param>
         <param type="string" name="comment">expr:@{nodeLastActor} @{NodeVariables["button"] =="reject"?"Document refused":"validated"} the document with the following comment: @{NodeVariables["comment"]}</param>
       </operation>
     </chain>
     <chain id="nextAssignee">
-      <operation id="Context.RunScript">
+      <operation id="RunScript">
         <param type="string" name="script">if (NodeVariables["button"] == "validate") {
   WorkflowVariables["index"] = WorkflowVariables["index"] + 1;
 }
@@ -138,7 +138,7 @@ else if (NodeVariables["button"] == "submit") {
     </chain>
     <chain id="notifyInitiatorEndOfWorkflow">
       <operation id="Context.FetchDocument"/>
-      <operation id="Notification.SendMail">
+      <operation id="Document.Mail">
         <param type="string" name="from">expr:Env["mail.from"]</param>
         <param type="string" name="message">The document was approved by every participant.</param>
         <param type="string" name="subject">expr:@{Env["nuxeo.notification.eMailSubjectPrefix"]} Document approved</param>
@@ -149,14 +149,14 @@ else if (NodeVariables["button"] == "submit") {
       </operation>
     </chain>
     <chain id="reinitAssigneeComment">
-      <operation id="Context.RunScript">
+      <operation id="RunScript">
         <param type="string" name="script">if((NodeVariables["comment"] != "") AND (NodeVariables["comment"] != null)){
 NodeVariables["comment"]= null;}</param>
       </operation>
     </chain>
     <chain id="terminateWorkflow">
       <operation id="Context.FetchDocument"/>
-      <operation id="Context.RunOperation">
+      <operation id="RunOperation">
         <param type="string" name="id">logInAudit</param>
         <param type="boolean" name="isolate">false</param>
       </operation>
@@ -165,11 +165,11 @@ NodeVariables["comment"]= null;}</param>
         <param type="boolean" name="isolate">false</param>
         <param type="boolean" name="rollbackGlobalOnError">false</param>
       </operation>
-      <operation id="Context.RunOperation">
+      <operation id="RunOperation">
         <param type="string" name="id">expr:WorkflowVariables["validationOrReview"] == "validation"?"validateDocument":"voidChain"</param>
         <param type="boolean" name="isolate">false</param>
       </operation>
-      <operation id="Audit.Log">
+      <operation id="Audit.LogEvent">
         <param type="string" name="event">Review completed successfully</param>
         <param type="string" name="category">Review workflow</param>
         <param type="string" name="comment">All the participants of the review have approved the document.</param>
