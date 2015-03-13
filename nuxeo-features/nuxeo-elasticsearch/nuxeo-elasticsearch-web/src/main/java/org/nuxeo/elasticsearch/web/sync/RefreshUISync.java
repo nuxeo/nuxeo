@@ -6,7 +6,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.jsf.operations.RefreshUI;
 import org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener;
 
-@Operation(id = RefreshUI.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Refresh", description = "Refresh the UI cache. This is a void operation - the input object is returned back as the oputput")
+@Operation(id = RefreshUI.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Refresh", description = "Refresh the UI cache. This is a void operation - the input object is returned back as the oputput", addToStudio = false)
 public class RefreshUISync extends RefreshUI {
 
     @OperationMethod
