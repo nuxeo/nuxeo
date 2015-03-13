@@ -65,6 +65,10 @@
         {
             "path": "/task.{format}",
             "description": "Browse and complete task"
+        },
+        {
+        "path": "/renditionAdapter.{format}",
+        "description": "Rendition on a document"
         }
     ],
     "authorizations": {
