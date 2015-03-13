@@ -19,15 +19,11 @@
 
 package org.nuxeo.ecm.platform.ec.notification;
 
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import org.nuxeo.ecm.platform.ec.placeful.Annotation;
-
-@Entity
-public class UserSubscription extends Annotation {
+public class UserSubscription  {
 
     private static final long serialVersionUID = -4511099450448368569L;
 

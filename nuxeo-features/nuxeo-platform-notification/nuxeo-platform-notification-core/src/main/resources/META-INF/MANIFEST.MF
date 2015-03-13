@@ -6,7 +6,6 @@ Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/NotificationService.xml,
  OSGI-INF/notification-contrib.xml,
- OSGI-INF/nxplacefulservice-configs-contrib.xml,
  OSGI-INF/rendering-service.xml,
  OSGI-INF/notification-listener-contrib.xml
 Export-Package: org.nuxeo.ecm.platform.ec.notification,

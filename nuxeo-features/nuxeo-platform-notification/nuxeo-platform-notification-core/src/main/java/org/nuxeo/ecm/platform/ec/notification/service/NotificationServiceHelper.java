@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.ec.notification.service;
 
-import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -39,15 +38,6 @@ public final class NotificationServiceHelper {
      */
     public static NotificationService getNotificationService() {
         return (NotificationService) Framework.getRuntime().getComponent(NotificationService.NAME);
-    }
-
-    public static PlacefulService getPlacefulService() {
-        return (PlacefulService) Framework.getRuntime().getComponent(PlacefulService.ID);
-        // return Framework.getService(PlacefulService.class);
-    }
-
-    public static PlacefulService getPlacefulServiceBean() {
-        return Framework.getService(PlacefulService.class);
     }
 
     public static UserManager getUsersService() {

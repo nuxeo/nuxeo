@@ -19,14 +19,13 @@
 
 package org.nuxeo.ecm.platform.ec.notification;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -34,8 +33,6 @@ import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
-import org.nuxeo.ecm.platform.ec.placeful.Annotation;
-import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 
 /**
  * Propagate previously set notifications when a proxy is replaced by a new version.
@@ -77,26 +74,11 @@ public class ProxySubscriptionPropagationListener implements EventListener {
         for (String replacedProxyId : replacedProxyIds) {
             // there should be only one replaced proxy, but just in case,
             // iterate over them
-            propagateSubscription(replacedProxyId, publishedDoc.getRef().toString());
+            DocumentModel fromDoc = ctx.getCoreSession().getDocument(new IdRef(replacedProxyId));
+            fromDoc.getAdapter(SubscriptionAdapter.class).copySubscriptionsTo(publishedDoc);
         }
+        ctx.getCoreSession().saveDocument(publishedDoc);
     }
 
-    protected void propagateSubscription(String fromDocId, String toDocId) {
-        PlacefulService service = NotificationServiceHelper.getPlacefulService();
-        String className = service.getAnnotationRegistry().get(NotificationService.SUBSCRIPTION_NAME);
-        String shortClassName = className.substring(className.lastIndexOf('.') + 1);
 
-        Map<String, Object> paramMap = new HashMap<String, Object>();
-        if (fromDocId != null) {
-            paramMap.put("docId", fromDocId);
-        }
-        PlacefulService placefulService = NotificationServiceHelper.getPlacefulServiceBean();
-
-        List<Annotation> subscriptions = placefulService.getAnnotationListByParamMap(paramMap, shortClassName);
-        for (Object obj : subscriptions) {
-            UserSubscription subscription = (UserSubscription) obj;
-            subscription.setDocId(toDocId);
-            placefulService.setAnnotation(subscription);
-        }
-    }
 }
