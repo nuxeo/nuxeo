@@ -44,7 +44,10 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
@@ -79,11 +82,35 @@ public class Main extends ModuleRoot {
     @Path("{indices}/{types}/_search")
     @Consumes("application/x-www-form-urlencoded")
     public String searchWithPayLoad(@PathParam("indices") String indices, @PathParam("types") String types,
-            @Context UriInfo uriInf, MultivaluedMap<String, String> formParams) throws IOException {
+            @Context UriInfo uriInf, MultivaluedMap<String, String> formParams) throws IOException, JSONException {
         String url = getSearchUrl(indices, types, uriInf);
         String payload = formParams.keySet().iterator().next();
-        log.warn("Search: " + url + " payload: " + payload);
+        NuxeoPrincipal principal = getPrincipal();
+        log.warn("Body Search: " + url + " user: " + principal + " payload: " + payload);
+        if (principal == null) {
+            throw new IllegalArgumentException("No principal provided");
+        }
+        if (!principal.isAdministrator()) {
+            payload = addSecurityFilter(payload, principal);
+        }
         return doGet(url, payload);
+    }
+
+    protected String addSecurityFilter(final String payload, NuxeoPrincipal principal) throws JSONException {
+        String[] principals = SecurityService.getPrincipalsToCheck(principal);
+        JSONObject payloadJson = new JSONObject(payload);
+        JSONObject query;
+        if (payloadJson.has("query")) {
+            query = payloadJson.getJSONObject("query");
+            payloadJson.remove("query");
+        } else {
+            query = new JSONObject("{\"match_all\":{}}");
+        }
+        JSONObject filter = new JSONObject().put("terms", new JSONObject().put("ecm:acl", principals));
+        JSONObject newQuery = new JSONObject().put("filtered",
+                new JSONObject().put("query", query).put("filter", filter));
+        payloadJson.put("query", newQuery);
+        return payloadJson.toString();
     }
 
     @GET
@@ -91,8 +118,20 @@ public class Main extends ModuleRoot {
     public String search(@PathParam("indices") String indices, @PathParam("types") String types, @Context UriInfo uriInf)
             throws IOException {
         String url = getSearchUrl(indices, types, uriInf);
-        log.warn("Search: " + url);
-        return doGet(url);
+        NuxeoPrincipal principal = getPrincipal();
+        log.warn("URI Search: " + url + " user: " + principal);
+        if (principal == null) {
+            throw new IllegalArgumentException("No principal provided");
+        }
+        if (principal.isAdministrator()) {
+            return doGet(url);
+        }
+        return performUriSearchWithSecurity(url, principal);
+    }
+
+    protected String performUriSearchWithSecurity(String url, NuxeoPrincipal principal) {
+        // TODO: convert URI Search query to a body query
+        throw new IllegalArgumentException("URI Search not implemented for non admin user");
     }
 
     @GET
@@ -167,17 +206,14 @@ public class Main extends ModuleRoot {
         }
     }
 
-    private String getElasticsearchBaseUrl() {
+    protected String getElasticsearchBaseUrl() {
         // TODO: make ES base url configurable
         return DEFAULT_ES_BASE_URL;
     }
 
-    public boolean isAdministrator() {
+    public NuxeoPrincipal getPrincipal() {
         Principal principal = ctx.getPrincipal();
-        if (principal == null) {
-            return false;
-        }
-        return ((NuxeoPrincipal) principal).isAdministrator();
+        return (NuxeoPrincipal) principal;
     }
 
 }
