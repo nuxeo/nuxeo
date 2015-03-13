@@ -88,10 +88,16 @@ author: lkemen@nuxeo.com
 
 .userClipboardContent .rf-ulst-itm a {
   display: inline-block;
+  padding: .1em 0;
   white-space: normal;
   word-break: break-all }
 
+.userClipboardContent .rf-ulst-itm > span {
+  display: block;
+  position: relative }
+
 .userClipboardContent .rf-ulst-itm .cell {
+  float: left;
   white-space: nowrap }
 
 .clipboardFunctions .rf-ulst-itm:first-of-type {
@@ -113,8 +119,6 @@ author: lkemen@nuxeo.com
   color: "link.hover (__FLAVOR__ color)" }
 
 .clipboardRemoveItem {
-  bottom: 2px;
-  float: right;
   position: absolute;
   right: 0 }
 
