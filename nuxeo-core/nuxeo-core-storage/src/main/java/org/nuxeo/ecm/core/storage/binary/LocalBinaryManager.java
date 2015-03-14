@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.trackers.files.FileEventTracker;
 
 /**
  * A simple filesystem-based binary manager. It stores the binaries according to their digest (hash), which means that
@@ -84,6 +85,9 @@ public class LocalBinaryManager extends AbstractBinaryManager {
                 base = oldBase;
             }
         }
+
+        // be sure FileTracker won't steal our files !
+        FileEventTracker.registerProtectedPath(base.getAbsolutePath());
 
         log.info("Repository '" + binaryManagerDescriptor.repositoryName + "' using "
                 + (this.getClass().equals(LocalBinaryManager.class) ? "" : (this.getClass().getSimpleName() + " and "))

@@ -9,10 +9,15 @@
 package org.nuxeo.runtime.trackers.files;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.io.FileCleaningTracker;
+import org.apache.commons.io.FileDeleteStrategy;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
@@ -37,12 +42,61 @@ import org.nuxeo.runtime.trackers.concurrent.ThreadEventListener;
  */
 public class FileEventTracker extends DefaultComponent {
 
+    protected static final Log log = LogFactory.getLog(FileEventTracker.class);
+
+    protected static SafeFileDeleteStrategy deleteStrategy = new SafeFileDeleteStrategy();
+
+    static class SafeFileDeleteStrategy extends FileDeleteStrategy {
+
+        protected CopyOnWriteArrayList<String> protectedPaths = new CopyOnWriteArrayList<String>();
+
+        protected SafeFileDeleteStrategy() {
+            super("DoNotTouchNuxeoBinaries");
+        }
+
+        protected void registerProtectedPath(String path) {
+            protectedPaths.add(path);
+        }
+
+        protected boolean isFileProtected(File fileToDelete) {
+            for (String path : protectedPaths) {
+                // do not delete files under the protected directories
+                if (fileToDelete.getPath().startsWith(path)) {
+                    log.warn("Protect file " + fileToDelete.getPath()
+                            + " from deletion : check usage of Framework.trackFile");
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        protected boolean doDelete(File fileToDelete) throws IOException {
+            if (!isFileProtected(fileToDelete)) {
+                return super.doDelete(fileToDelete);
+            } else {
+                return false;
+            }
+        }
+
+    }
+
+    /**
+     * Registers a protected path under which files should not be deleted
+     *
+     * @param path
+     * @since 7.2
+     */
+    public static void registerProtectedPath(String path) {
+        deleteStrategy.registerProtectedPath(path);
+    }
+
     protected class GCDelegate implements FileEventHandler {
         protected FileCleaningTracker delegate = new FileCleaningTracker();
 
         @Override
         public void onFile(File file, Object marker) {
-            delegate.track(file, marker);
+            delegate.track(file, marker, deleteStrategy);
         }
     }
 
@@ -178,7 +232,9 @@ public class FileEventTracker extends DefaultComponent {
         }
         try {
             for (File file : actual.files) {
-                file.delete();
+                if (!deleteStrategy.isFileProtected(file)) {
+                    file.delete();
+                }
             }
         } finally {
             threads.remove();

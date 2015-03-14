@@ -35,6 +35,7 @@ import org.nuxeo.common.file.LRUFileCache;
 import org.nuxeo.common.utils.SizeUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.trackers.files.FileEventTracker;
 
 /**
  * Abstract class for a {@link BinaryManager} that uses a cache for its files because fetching them is expensive.
@@ -93,6 +94,9 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
         long cacheSize = SizeUtils.parseSizeInBytes(cacheSizeStr);
         initializeCache(cachedir, cacheSize, fileStorage);
         log.info("Using binary cache directory: " + cachedir.getPath() + " size: " + cacheSizeStr);
+
+        // be sure FileTracker won't steal our files !
+        FileEventTracker.registerProtectedPath(cachedir.getAbsolutePath());
     }
 
     @Override
