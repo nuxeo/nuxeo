@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.notification.api;
 
 import java.io.Serializable;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
+
 public interface Notification extends Serializable {
 
     String EMAIL_NOTIFICATION = "email";
@@ -69,4 +71,5 @@ public interface Notification extends Serializable {
      * @since 5.6
      */
     String getTemplateExpr();
+
 }

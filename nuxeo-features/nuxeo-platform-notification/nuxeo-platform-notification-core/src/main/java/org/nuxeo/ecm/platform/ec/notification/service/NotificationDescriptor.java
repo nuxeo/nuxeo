@@ -25,6 +25,7 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 
 /**
@@ -74,22 +75,18 @@ public class NotificationDescriptor implements Notification {
     @XNodeList(value = "event", type = ArrayList.class, componentType = NotificationEventDescriptor.class)
     protected List<NotificationEventDescriptor> events;
 
-    @Override
     public boolean getAutoSubscribed() {
         return autoSubscribed;
     }
 
-    @Override
     public String getAvailableIn() {
         return availableIn;
     }
 
-    @Override
     public String getChannel() {
         return channel;
     }
 
-    @Override
     public boolean getEnabled() {
         return enabled;
     }
@@ -98,33 +95,28 @@ public class NotificationDescriptor implements Notification {
         return events;
     }
 
-    @Override
     public String getLabel() {
         return label;
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
     public String getSubject() {
         return subject;
     }
 
-    @Override
     public String getTemplate() {
         return template;
     }
 
-    @Override
     public String getSubjectTemplate() {
         return subjectTemplate;
     }
 
-    @Override
     public String getTemplateExpr() {
         return templateExpr;
     }
+
 }

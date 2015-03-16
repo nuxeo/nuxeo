@@ -1,13 +1,19 @@
 package org.nuxeo.ecm.platform.ec.notification;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -17,16 +23,24 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.notification.core", "org.nuxeo.ecm.platform.notification.api" })
+@RepositoryConfig(cleanup = Granularity.METHOD)
 public class UserSubscriptionAdapterTest {
 
     @Inject
     private CoreSession session;
 
+    private DocumentModel doc;
+
+    @Before
+    public void doBefore() throws Exception {
+        // Given a document
+        doc = session.createDocumentModel("/", "testDoc", "Note");
+        doc = session.createDocument(doc);
+
+    }
+
     @Test
     public void aDocumentMayHaveAUserSubscriptionAdapter() throws Exception {
-        // Given a docuemnt
-        DocumentModel doc = session.createDocumentModel("/", "testDoc", "Note");
-        doc = session.createDocument(doc);
 
         // I can get a user subscription adapter on it
         SubscriptionAdapter us = doc.getAdapter(SubscriptionAdapter.class);
@@ -34,9 +48,76 @@ public class UserSubscriptionAdapterTest {
 
         // To set and get subscriptions
         us.addSubscription("Administrator", "timetoeat");
+        us.addSubscription("toto", "timetosleep");
 
-        assertTrue("Administrator should be in the subscribers of timetoeat",
-                us.getNotificationSubscribers("timetoeat").contains("Administrator"));
+        assertThat(us.getNotificationSubscribers("timetoeat")).contains("Administrator");
+        assertThat(us.getNotificationSubscribers("timetoslepp")).doesNotContain("Administrator");
+
+    }
+
+    @Test
+    public void itCanRetrieveTheSubscriptionsOfAUserOnADocument() throws Exception {
+
+        SubscriptionAdapter us = doc.getAdapter(SubscriptionAdapter.class);
+        // To set and get subscriptions
+        us.addSubscription("Administrator", "timetoeat");
+        // To set and get subscriptions
+        us.addSubscription("toto", "timetosleep");
+
+        assertThat(us.getUserSubscriptions("Administrator")).contains("timetoeat");
+        assertThat(us.getUserSubscriptions("Administrator")).doesNotContain("timetosleep");
+
+    }
+
+    @Test
+    public void itCanUnsubscribeFromANotification() throws Exception {
+        SubscriptionAdapter us = doc.getAdapter(SubscriptionAdapter.class);
+        // To set and get subscriptions
+        us.addSubscription("Administrator", "timetoeat");
+        us.addSubscription("Administrator", "timetosleep");
+        assertThat(us.getUserSubscriptions("Administrator")).contains("timetoeat", "timetosleep");
+
+        us.removeUserNotificationSubscription("Administrator", "timetoeat");
+        assertThat(us.getUserSubscriptions("Administrator")).contains("timetosleep");
+        assertThat(us.getUserSubscriptions("Administrator")).doesNotContain("timetoeat");
+
+    }
+
+    @Test
+    public void itCanCopySubscriptionsFromADocModelToAnother() throws Exception {
+        // Given a second target document
+        DocumentModel targetDoc = session.createDocumentModel("/", "testDoc2", "Note");
+        targetDoc = session.createDocument(targetDoc);
+
+        SubscriptionAdapter us = doc.getAdapter(SubscriptionAdapter.class);
+        SubscriptionAdapter targetUs = targetDoc.getAdapter(SubscriptionAdapter.class);
+
+        us.addSubscription("Administrator", "timetoeat");
+        assertThat(us.getUserSubscriptions("Administrator")).contains("timetoeat");
+        assertThat(targetUs.getUserSubscriptions("Administrator")).doesNotContain("timetoeat");
+
+        us.copySubscriptionsTo(targetDoc);
+
+        assertThat(targetUs.getUserSubscriptions("Administrator")).contains("timetoeat");
+
+    }
+
+    @Test
+    public void itCanSubscriptToAllNotifications() throws Exception {
+        SubscriptionAdapter us = doc.getAdapter(SubscriptionAdapter.class);
+        us.addSubscriptionsToAll("Administrator");
+
+        assertThat(us.getUserSubscriptions("Administration")).hasSize(0);
+
+
+        session.createDocument(session.createDocumentModel("/", "workspace", "Workspace"));
+        DocumentModel doc = session.createDocument(session.createDocumentModel("/workspace", "subscribablenote", "Workspace"));
+
+        us = doc.getAdapter(SubscriptionAdapter.class);
+        us.addSubscriptionsToAll("Administrator");
+        assertThat(us.getUserSubscriptions("Administrator")).contains("Modification","Creation");
+
+
 
     }
 

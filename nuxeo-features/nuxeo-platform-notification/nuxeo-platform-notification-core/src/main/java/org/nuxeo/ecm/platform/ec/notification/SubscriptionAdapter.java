@@ -13,11 +13,17 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.notification.api.Notification;
+import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.runtime.api.Framework;
 
 public class SubscriptionAdapter {
+
+    private static final String NOTIF_SUBSCRIBERSKEY = "subscribers";
+
+    private static final String NOTIF_NAMEKEY = "name";
+
+    private static final String NOTIF_PROPERTY = "notif:notifications";
 
     public static final String NOTIFIABLE_FACET = "Notifiable";
 
@@ -31,16 +37,19 @@ public class SubscriptionAdapter {
 
         Map<String, Set<String>> result = new HashMap<String, Set<String>>();
 
-        List<Map<String, Serializable>> props = (List<Map<String, Serializable>>) doc.getPropertyValue("notif:notifications");
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> props = (List<Map<String, Serializable>>) doc.getPropertyValue(NOTIF_PROPERTY);
         for (Map<String, Serializable> prop : props) {
-            String notificationName = (String) prop.get("name");
-            String[] subscribers = (String[]) prop.get("subscribers");
+            String notificationName = (String) prop.get(NOTIF_NAMEKEY);
+            String[] subscribers = (String[]) prop.get(NOTIF_SUBSCRIBERSKEY);
 
-            if (!result.containsKey(notificationName)) {
-                Set<String> subscribersSet = new HashSet<String>();
-                result.put(notificationName, subscribersSet);
+            if (subscribers != null && subscribers.length > 0) {
+                if (!result.containsKey(notificationName)) {
+                    Set<String> subscribersSet = new HashSet<String>();
+                    result.put(notificationName, subscribersSet);
+                }
+                result.get(notificationName).addAll(Arrays.asList(subscribers));
             }
-            result.get(notificationName).addAll(Arrays.asList(subscribers));
         }
         return result;
 
@@ -50,11 +59,11 @@ public class SubscriptionAdapter {
         List<Map<String, Serializable>> props = new ArrayList<Map<String, Serializable>>();
         for (Entry<String, Set<String>> entry : map.entrySet()) {
             Map<String, Serializable> propMap = new HashMap<>();
-            propMap.put("name", entry.getKey());
-            propMap.put("subscribers", new ArrayList<String>(entry.getValue()));
+            propMap.put(NOTIF_NAMEKEY, entry.getKey());
+            propMap.put(NOTIF_SUBSCRIBERSKEY, new ArrayList<String>(entry.getValue()));
             props.add(propMap);
         }
-        doc.setPropertyValue("notif:notifications", (Serializable) props);
+        doc.setPropertyValue(NOTIF_PROPERTY, (Serializable) props);
     }
 
     /**
@@ -64,6 +73,7 @@ public class SubscriptionAdapter {
      * @return
      * @since 7.3
      */
+    @SuppressWarnings("unchecked")
     public List<String> getNotificationSubscribers(String notification) {
         Set<String> subscribers = getNotificationMap().get(notification);
         return subscribers != null ? new ArrayList<>(subscribers) : Collections.EMPTY_LIST;
@@ -76,9 +86,13 @@ public class SubscriptionAdapter {
      * @since 7.3
      */
     public List<String> getUserSubscriptions(String username) {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
+        List<String> result = new ArrayList<String>();
+        for (Entry<String, Set<String>> entry : getNotificationMap().entrySet()) {
+            if (entry.getValue().contains(username)) {
+                result.add(entry.getKey());
+            }
+        }
+        return result;
     }
 
     /**
@@ -90,7 +104,7 @@ public class SubscriptionAdapter {
      */
     public void addSubscription(String username, String notification) {
         Map<String, Set<String>> notificationMap = getNotificationMap();
-        if(!notificationMap.containsKey(notification)) {
+        if (!notificationMap.containsKey(notification)) {
             notificationMap.put(notification, new HashSet<>());
         }
         notificationMap.get(notification).add(username);
@@ -107,29 +121,18 @@ public class SubscriptionAdapter {
 
         Set<String> notificationNames = new HashSet<String>();
 
-        List<Notification> notifications = Framework.getLocalService(NotificationService.class).getNotificationRegistry().getNotifications();
-        for (Notification notification : notifications) {
-            // Do not subscribe to auto-subscribed notification
-            if (notification.getAutoSubscribed()) {
-                continue;
-            }
-            if (!notificationNames.contains(notification.getName())) {
-                // Check if notification is available for the current document
-                String availableIn = notification.getAvailableIn();
-                String[] types = availableIn.replace(",", " ").split(" ");
-                if (availableIn == null || "all".equals(availableIn) || "*".equals(availableIn)
-                        || Arrays.asList(types).contains(doc.getType())) {
-                    notificationNames.add(notification.getName());
-                    continue;
-                }
-                CoreSession session = doc.getCoreSession();
-                if (session != null) {
-                    for (DocumentModel parent : session.getParentDocuments(doc.getRef())) {
-                        if (Arrays.asList(types).contains(parent.getType())) {
-                            notificationNames.add(notification.getName());
-                            continue;
-                        }
-                    }
+        NotificationManager ns = Framework.getLocalService(NotificationManager.class);
+
+        for (Notification notif : ns.getNotificationsForSubscriptions(doc.getType())) {
+            notificationNames.add(notif.getName());
+        }
+
+        CoreSession session = doc.getCoreSession();
+
+        if (session != null) {
+            for (DocumentModel parent : session.getParentDocuments(doc.getRef())) {
+                for (Notification notif : ns.getNotificationsForSubscriptions(parent.getType())) {
+                    notificationNames.add(notif.getName());
                 }
             }
         }
@@ -149,9 +152,11 @@ public class SubscriptionAdapter {
      * @since 7.3
      */
     public void removeUserNotificationSubscription(String username, String notification) {
-        // TODO Auto-generated method stub
-        //
-        throw new UnsupportedOperationException();
+        Map<String, Set<String>> map = getNotificationMap();
+        if (map.containsKey(notification)) {
+            map.get(notification).remove(username);
+        }
+        setNotificationMap(map);
     }
 
     /**
@@ -161,9 +166,7 @@ public class SubscriptionAdapter {
      * @since 7.3
      */
     public void copySubscriptionsTo(DocumentModel targetDoc) {
-        // TODO Auto-generated method stub
-        //
-        throw new UnsupportedOperationException();
+        targetDoc.setPropertyValue(NOTIF_PROPERTY, doc.getPropertyValue(NOTIF_PROPERTY));
     }
 
 }

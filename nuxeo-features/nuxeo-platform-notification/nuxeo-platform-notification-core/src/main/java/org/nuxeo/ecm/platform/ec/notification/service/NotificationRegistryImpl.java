@@ -43,7 +43,7 @@ public class NotificationRegistryImpl implements NotificationRegistry {
 
     private static final Log log = LogFactory.getLog(NotificationRegistryImpl.class);
 
-    // maps Notifications to Strings that are names of the objects
+    // maps EventId to a list of notifications
     private final Map<String, List<Notification>> notificationRegistry = new HashMap<String, List<Notification>>();
 
     private final List<Notification> notificationList = new ArrayList<Notification>();
