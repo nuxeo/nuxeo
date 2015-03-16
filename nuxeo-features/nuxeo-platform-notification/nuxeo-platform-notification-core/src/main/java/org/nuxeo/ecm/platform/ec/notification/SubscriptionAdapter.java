@@ -1,3 +1,19 @@
+/*
+ * (C) Copyright 2006-2015 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     dmetzler
+ */
 package org.nuxeo.ecm.platform.ec.notification;
 
 import java.io.Serializable;
@@ -17,15 +33,20 @@ import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * Encapsulates all notification storage logic in the Notifiable facet.
+ *
+ * @since 7.3
+ */
 public class SubscriptionAdapter {
+
+    public static final String NOTIFIABLE_FACET = "Notifiable";
+
+    private static final String NOTIF_PROPERTY = "notif:notifications";
 
     private static final String NOTIF_SUBSCRIBERSKEY = "subscribers";
 
     private static final String NOTIF_NAMEKEY = "name";
-
-    private static final String NOTIF_PROPERTY = "notif:notifications";
-
-    public static final String NOTIFIABLE_FACET = "Notifiable";
 
     private DocumentModel doc;
 
@@ -33,6 +54,15 @@ public class SubscriptionAdapter {
         this.doc = doc;
     }
 
+    /**
+     * Take the document storage propery and put it in a map.
+     *
+     *   * key : notificationName
+     *   * value : list of subscribers
+     *
+     * After having modified the map, update the doc with {@link #setNotificationMap(Map)}
+     * @return
+     */
     private Map<String, Set<String>> getNotificationMap() {
 
         Map<String, Set<String>> result = new HashMap<String, Set<String>>();
@@ -55,6 +85,11 @@ public class SubscriptionAdapter {
 
     }
 
+    /**
+     * Take a map and store it in the document's notification property.
+     * To get the original map, use {@link #getNotificationMap()}
+     *
+     */
     private void setNotificationMap(Map<String, Set<String>> map) {
         List<Map<String, Serializable>> props = new ArrayList<Map<String, Serializable>>();
         for (Entry<String, Set<String>> entry : map.entrySet()) {
@@ -71,7 +106,6 @@ public class SubscriptionAdapter {
      *
      * @param notification
      * @return
-     * @since 7.3
      */
     @SuppressWarnings("unchecked")
     public List<String> getNotificationSubscribers(String notification) {
@@ -83,7 +117,6 @@ public class SubscriptionAdapter {
      * Return the list of of subscriptions for a given user
      *
      * @return
-     * @since 7.3
      */
     public List<String> getUserSubscriptions(String username) {
         List<String> result = new ArrayList<String>();
@@ -100,7 +133,6 @@ public class SubscriptionAdapter {
      *
      * @param username
      * @param notification
-     * @since 7.3
      */
     public void addSubscription(String username, String notification) {
         Map<String, Set<String>> notificationMap = getNotificationMap();
@@ -115,7 +147,6 @@ public class SubscriptionAdapter {
      * Add a subscription to all notification for a given user
      *
      * @param username
-     * @since 7.3
      */
     public void addSubscriptionsToAll(String username) {
 
@@ -149,7 +180,6 @@ public class SubscriptionAdapter {
      *
      * @param username
      * @param notification
-     * @since 7.3
      */
     public void removeUserNotificationSubscription(String username, String notification) {
         Map<String, Set<String>> map = getNotificationMap();
@@ -163,7 +193,6 @@ public class SubscriptionAdapter {
      * Copy the subscriptions of the current doc to the targetted document.
      *
      * @param targetDoc
-     * @since 7.3
      */
     public void copySubscriptionsTo(DocumentModel targetDoc) {
         targetDoc.setPropertyValue(NOTIF_PROPERTY, doc.getPropertyValue(NOTIF_PROPERTY));
