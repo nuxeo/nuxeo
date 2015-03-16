@@ -5,7 +5,7 @@ Manifest-Version: 1.0
 Bundle-Localization: bundle
 Bundle-Name: Elasticsearch HTTP Read Only API
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.nuxeo.ecm.webengine.core
+Require-Bundle: org.nuxeo.ecm.webengine.core,org.nuxeo.elasticsearch.core
 Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
