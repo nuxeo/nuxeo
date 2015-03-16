@@ -389,7 +389,7 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
             Map<Notification, List<String>> targetUsers) {
         for (Notification notification : notifs) {
             if (!notification.getAutoSubscribed()) {
-                List<String> userGroup = notificationService.getSubscribers(notification.getName(), doc.getId());
+                List<String> userGroup = notificationService.getSubscribers(notification.getName(), doc);
                 for (String subscriptor : userGroup) {
                     if (subscriptor != null) {
                         if (isUser(subscriptor)) {

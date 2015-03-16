@@ -56,14 +56,21 @@ public class SubscriptionAdapter {
 
     /**
      * Take the document storage propery and put it in a map.
-     *
-     *   * key : notificationName
-     *   * value : list of subscribers
-     *
+     * <dl>
+     *   <dt>key</dt>
+     *   <dd>notificationName</dd>
+     *   <dt>value</dt>
+     *   <dd>list of subscribers</dd>
+     * </dl>
      * After having modified the map, update the doc with {@link #setNotificationMap(Map)}
+     *
      * @return
      */
     private Map<String, Set<String>> getNotificationMap() {
+
+        if (!doc.hasFacet(SubscriptionAdapter.NOTIFIABLE_FACET)) {
+            return new HashMap<>();
+        }
 
         Map<String, Set<String>> result = new HashMap<String, Set<String>>();
 
@@ -86,9 +93,8 @@ public class SubscriptionAdapter {
     }
 
     /**
-     * Take a map and store it in the document's notification property.
-     * To get the original map, use {@link #getNotificationMap()}
-     *
+     * Take a map and store it in the document's notification property. To get the original map, use
+     * {@link #getNotificationMap()}
      */
     private void setNotificationMap(Map<String, Set<String>> map) {
         List<Map<String, Serializable>> props = new ArrayList<Map<String, Serializable>>();
@@ -98,7 +104,14 @@ public class SubscriptionAdapter {
             propMap.put(NOTIF_SUBSCRIBERSKEY, new ArrayList<String>(entry.getValue()));
             props.add(propMap);
         }
-        doc.setPropertyValue(NOTIF_PROPERTY, (Serializable) props);
+
+        if (!props.isEmpty()) {
+            if (!doc.hasFacet(SubscriptionAdapter.NOTIFIABLE_FACET)) {
+                doc.addFacet(SubscriptionAdapter.NOTIFIABLE_FACET);
+            }
+
+            doc.setPropertyValue(NOTIF_PROPERTY, (Serializable) props);
+        }
     }
 
     /**
@@ -107,10 +120,9 @@ public class SubscriptionAdapter {
      * @param notification
      * @return
      */
-    @SuppressWarnings("unchecked")
     public List<String> getNotificationSubscribers(String notification) {
         Set<String> subscribers = getNotificationMap().get(notification);
-        return subscribers != null ? new ArrayList<>(subscribers) : Collections.EMPTY_LIST;
+        return subscribers != null ? new ArrayList<>(subscribers) : Collections.emptyList();
     }
 
     /**
@@ -195,6 +207,9 @@ public class SubscriptionAdapter {
      * @param targetDoc
      */
     public void copySubscriptionsTo(DocumentModel targetDoc) {
+        if(!targetDoc.hasFacet(NOTIFIABLE_FACET)) {
+            targetDoc.addFacet(NOTIFIABLE_FACET);
+        }
         targetDoc.setPropertyValue(NOTIF_PROPERTY, doc.getPropertyValue(NOTIF_PROPERTY));
     }
 

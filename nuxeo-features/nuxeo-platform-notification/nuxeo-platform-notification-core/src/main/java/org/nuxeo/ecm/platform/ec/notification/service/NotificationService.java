@@ -48,6 +48,10 @@ import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
+import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.ec.notification.NotificationListenerHook;
 import org.nuxeo.ecm.platform.ec.notification.NotificationListenerVeto;
 import org.nuxeo.ecm.platform.ec.notification.SubscriptionAdapter;
@@ -254,16 +258,26 @@ public class NotificationService extends DefaultComponent implements Notificatio
         return doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
     }
 
+    private void disableListeners(DocumentModel doc) {
+        doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
+        doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
+        doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
+        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, true);
+
+    }
+
     public void addSubscription(String username, String notification, DocumentModel doc, Boolean sendConfirmationEmail,
             NuxeoPrincipal principal, String notificationName) throws ClientException {
 
-        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getCoreSession()) {
+        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getRepositoryName()) {
 
             @Override
             public void run() throws ClientException {
                 doc.getAdapter(SubscriptionAdapter.class).addSubscription(username, notification);
+                disableListeners(doc);
                 session.saveDocument(doc);
             }
+
         };
 
         runner.runUnrestricted();
@@ -276,11 +290,12 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
     public void addSubscriptions(String username, DocumentModel doc, Boolean sendConfirmationEmail,
             NuxeoPrincipal principal) throws ClientException {
-        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getCoreSession()) {
+        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getRepositoryName()) {
 
             @Override
             public void run() throws ClientException {
                 doc.getAdapter(SubscriptionAdapter.class).addSubscriptionsToAll(username);
+                disableListeners(doc);
                 session.saveDocument(doc);
             }
         };
@@ -298,7 +313,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
     public void removeSubscriptions(String username, List<String> notifications, DocumentModel doc)
             throws ClientException {
-        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getCoreSession()) {
+        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getRepositoryName()) {
 
             @Override
             public void run() throws ClientException {
@@ -306,6 +321,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
                 for (String notification : notifications) {
                     sa.removeUserNotificationSubscription(username, notification);
                 }
+                disableListeners(doc);
                 session.saveDocument(doc);
             }
         };
@@ -354,27 +370,22 @@ public class NotificationService extends DefaultComponent implements Notificatio
         removeSubcription(username, notification, UnrestrictedDocFetcher.fetch(docId));
     }
 
-
     public void removeSubcription(String username, String notification, DocumentModel doc) {
-        removeSubscriptions(username, Arrays.asList(new String[]{notification}), doc);
+        removeSubscriptions(username, Arrays.asList(new String[] { notification }), doc);
     }
 
-
     /**
-     *
      * @param notification
      * @param docId
      * @return
      * @throws ClientException
      * @deprecated
      * @see NotificationService#getSubscribers(String, DocumentModel)
-     *
      */
     public List<String> getUsersSubscribedToNotificationOnDocument(String notification, String docId)
             throws ClientException {
         return getSubscribers(notification, docId);
     }
-
 
     private static void registerTemplate(TemplateDescriptor td) {
         if (td.src != null && td.src.length() > 0) {

@@ -19,6 +19,10 @@ package org.nuxeo.ecm.platform.ec.notification;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
+
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -123,16 +127,16 @@ public class UserSubscriptionAdapterTest {
 
         assertThat(us.getUserSubscriptions("Administration")).hasSize(0);
 
-
         session.createDocument(session.createDocumentModel("/", "workspace", "Workspace"));
-        DocumentModel doc = session.createDocument(session.createDocumentModel("/workspace", "subscribablenote", "Workspace"));
+        DocumentModel doc = session.createDocument(session.createDocumentModel("/workspace", "subscribablenote",
+                "Workspace"));
 
         us = doc.getAdapter(SubscriptionAdapter.class);
         us.addSubscriptionsToAll("Administrator");
-        assertThat(us.getUserSubscriptions("Administrator")).contains("Modification","Creation");
-
-
+        assertThat(us.getUserSubscriptions("Administrator")).contains("Modification", "Creation");
 
     }
+
+
 
 }
