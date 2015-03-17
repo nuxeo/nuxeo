@@ -299,7 +299,7 @@ public class TransactionHelper {
                 }
             }
         } catch (Exception e) {
-            String msg = "Unable to commit/rollback  " + ut;
+            String msg = "Unable to commit/rollback";
             if (e instanceof RollbackException
                     && "Unable to commit: transaction marked for rollback".equals(e.getMessage())) {
                 // don't log as error, this happens if there's a
@@ -308,7 +308,7 @@ public class TransactionHelper {
             } else {
                 log.error(msg, e);
             }
-            throw new TransactionRuntimeException(msg, e);
+            throw new TransactionRuntimeException(msg + ": " + e.getMessage(), e);
         }
     }
 
