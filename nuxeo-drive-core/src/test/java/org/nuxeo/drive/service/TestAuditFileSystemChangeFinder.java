@@ -77,6 +77,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
@@ -204,6 +205,7 @@ public class TestAuditFileSystemChangeFinder {
     }
 
     @Test
+    @RandomBug.Repeat(issue = "NXP-16760")
     public void testFindChanges() throws Exception {
         List<FileSystemItemChange> changes;
         FileSystemItemChange change;
