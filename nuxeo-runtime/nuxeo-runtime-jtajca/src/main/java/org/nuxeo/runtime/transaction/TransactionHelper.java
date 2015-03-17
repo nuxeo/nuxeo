@@ -324,7 +324,7 @@ public class TransactionHelper {
             } else {
                 log.error(msg, e);
             }
-            throw new TransactionRuntimeException(msg, e);
+            throw new TransactionRuntimeException(msg + ": " + e.getMessage(), e);
         }
     }
 
