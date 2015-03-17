@@ -134,7 +134,7 @@
     <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
     <ant.assembly.version>2.0.3</ant.assembly.version>
-    <nuxeo.ftest.version>1.7.18-SNAPSHOT</nuxeo.ftest.version>
+    <nuxeo.ftest.version>1.7.18</nuxeo.ftest.version>
 
     <jsf.version>2.2.6</jsf.version>
     <nxjsf.version>2.2.6-NX01</nxjsf.version>
@@ -4920,7 +4920,7 @@
                 <onlyWhenRelease>true</onlyWhenRelease>
                 <excludes>
                   <!-- <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude> -->
-                  <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
+                  <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
                   <!-- <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> -->
                   <!-- <exclude>org.jboss.seam:*</exclude> -->
                   <exclude>com.googlecode.gmail4j:gmail4j</exclude>
