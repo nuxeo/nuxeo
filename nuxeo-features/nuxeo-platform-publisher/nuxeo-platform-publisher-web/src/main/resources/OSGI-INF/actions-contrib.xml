@@ -27,6 +27,7 @@
         </rule>
         <rule grant="true">
           <facet>PublishSpace</facet>
+          <permission>CanAskForPublishing</permission>
         </rule>
       </filter>
     </action>
