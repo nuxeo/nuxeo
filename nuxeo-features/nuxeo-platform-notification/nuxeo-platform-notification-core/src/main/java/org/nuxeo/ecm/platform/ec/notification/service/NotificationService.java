@@ -241,6 +241,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
         return getSubscribers(notification, UnrestrictedDocFetcher.fetch(docId));
     }
 
+    @Override
     public List<String> getSubscribers(String notification, DocumentModel doc) throws ClientException {
         return doc.getAdapter(SubscriptionAdapter.class).getNotificationSubscribers(notification);
     }
@@ -254,11 +255,12 @@ public class NotificationService extends DefaultComponent implements Notificatio
         return getSubscriptionsForUserOnDocument(username, UnrestrictedDocFetcher.fetch(docId));
     }
 
-    private List<String> getSubscriptionsForUserOnDocument(String username, DocumentModel doc) {
+    @Override
+    public List<String> getSubscriptionsForUserOnDocument(String username, DocumentModel doc) {
         return doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
     }
 
-    private void disableListeners(DocumentModel doc) {
+    private void disableEvents(DocumentModel doc) {
         doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
         doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
         doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
@@ -274,7 +276,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
             @Override
             public void run() throws ClientException {
                 doc.getAdapter(SubscriptionAdapter.class).addSubscription(username, notification);
-                disableListeners(doc);
+                disableEvents(doc);
                 session.saveDocument(doc);
             }
 
@@ -295,7 +297,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
             @Override
             public void run() throws ClientException {
                 doc.getAdapter(SubscriptionAdapter.class).addSubscriptionsToAll(username);
-                disableListeners(doc);
+                disableEvents(doc);
                 session.saveDocument(doc);
             }
         };
@@ -321,7 +323,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
                 for (String notification : notifications) {
                     sa.removeUserNotificationSubscription(username, notification);
                 }
-                disableListeners(doc);
+                disableEvents(doc);
                 session.saveDocument(doc);
             }
         };
@@ -366,11 +368,13 @@ public class NotificationService extends DefaultComponent implements Notificatio
         }
     }
 
+    @Override
     public void removeSubscription(String username, String notification, String docId) throws ClientException {
-        removeSubcription(username, notification, UnrestrictedDocFetcher.fetch(docId));
+        removeSubscription(username, notification, UnrestrictedDocFetcher.fetch(docId));
     }
 
-    public void removeSubcription(String username, String notification, DocumentModel doc) {
+    @Override
+    public void removeSubscription(String username, String notification, DocumentModel doc) {
         removeSubscriptions(username, Arrays.asList(new String[] { notification }), doc);
     }
 
@@ -531,5 +535,12 @@ public class NotificationService extends DefaultComponent implements Notificatio
     public Collection<NotificationListenerVeto> getNotificationVetos() {
         return notificationVetoRegistry.getVetos();
     }
+
+    @Override
+    public List<String> getUsersSubscribedToNotificationOnDocument(String notification, DocumentModel doc)
+            throws ClientException {
+        return getSubscribers(notification, doc);
+    }
+
 
 }

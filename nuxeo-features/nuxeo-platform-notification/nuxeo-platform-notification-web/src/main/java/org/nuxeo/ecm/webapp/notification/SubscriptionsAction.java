@@ -128,7 +128,7 @@ public class SubscriptionsAction extends InputController implements Serializable
         NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
         for (String group : principal.getAllGroups()) {
             List<String> notifs = notificationManager.getSubscriptionsForUserOnDocument("group:" + group,
-                    currentDoc.getId());
+                    currentDoc);
             for (String inheritedNotification : notifs) {
                 Notification notif = notificationManager.getNotificationByName(inheritedNotification);
                 inheritedNotifications.add(notif);
@@ -145,7 +145,7 @@ public class SubscriptionsAction extends InputController implements Serializable
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentSubscription.isSelected()) {
             notificationManager.removeSubscription("user:" + principal.getName(),
-                    currentSubscription.getNotification().getName(), currentDoc.getId());
+                    currentSubscription.getNotification().getName(), currentDoc);
         } else {
             notificationManager.addSubscription(NotificationConstants.USER_PREFIX + principal.getName(),
                     currentSubscription.getNotification().getName(), currentDoc, false, principal, "");
@@ -160,14 +160,14 @@ public class SubscriptionsAction extends InputController implements Serializable
         NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         List<String> userSubscriptions = notificationManager.getSubscriptionsForUserOnDocument(
-                NotificationConstants.USER_PREFIX + principal.getName(), currentDoc.getId());
+                NotificationConstants.USER_PREFIX + principal.getName(), currentDoc);
         if (userSubscriptions.size() == 0) {
             notificationManager.addSubscriptions(NotificationConstants.USER_PREFIX + principal.getName(), currentDoc,
                     false, principal);
             facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get(CONFIRM_FOLLOW));
         } else {
             notificationManager.removeSubscriptions(NotificationConstants.USER_PREFIX + principal.getName(),
-                    userSubscriptions, currentDoc.getId());
+                    userSubscriptions, currentDoc);
             facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get(CONFIRM_UNFOLLOW));
         }
         getNotificationsList();
@@ -197,7 +197,7 @@ public class SubscriptionsAction extends InputController implements Serializable
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
         List<String> subscriptions = notificationManager.getSubscriptionsForUserOnDocument(
-                "user:" + principal.getName(), currentDoc.getId());
+                "user:" + principal.getName(), currentDoc);
         return subscriptions;
     }
 

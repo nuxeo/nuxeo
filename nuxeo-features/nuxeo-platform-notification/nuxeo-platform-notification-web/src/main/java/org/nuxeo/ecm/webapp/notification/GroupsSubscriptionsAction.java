@@ -112,7 +112,7 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
         // removing the unselected subscriptions
         if (!removedSubscriptions.isEmpty()) {
             for (String subscription : removedSubscriptions) {
-                notificationManager.removeSubscription("user:" + principal.getName(), subscription, currentDoc.getId());
+                notificationManager.removeSubscription("user:" + principal.getName(), subscription, currentDoc);
             }
         }
 
@@ -156,7 +156,7 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         NuxeoPrincipal principal = (NuxeoPrincipal) currentUser;
         List<String> subscriptions = notificationManager.getSubscriptionsForUserOnDocument(
-                "user:" + principal.getName(), currentDoc.getId());
+                "user:" + principal.getName(), currentDoc);
         return subscriptions;
     }
 
@@ -165,7 +165,7 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
      */
     public List<String> getSubscribedUsersForNotification(String notification) throws ClientException {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        return notificationManager.getUsersSubscribedToNotificationOnDocument(notification, currentDoc.getId());
+        return notificationManager.getUsersSubscribedToNotificationOnDocument(notification, currentDoc);
     }
 
     /**
@@ -256,7 +256,7 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
                             resourcesAccessor.getMessages().get("label.notifications.alreadyRegistered"), selectedEntry);
                 }
             } else {
-                notificationManager.removeSubscription(selectedEntry, selectedNotification, currentDoc.getId());
+                notificationManager.removeSubscription(selectedEntry, selectedNotification, currentDoc);
             }
         }
         // reset

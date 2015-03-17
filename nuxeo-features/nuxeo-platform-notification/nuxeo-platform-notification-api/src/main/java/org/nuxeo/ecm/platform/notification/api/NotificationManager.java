@@ -33,19 +33,42 @@ public interface NotificationManager {
 
     /**
      * Gets the users that subscribed to a notification on a certain document.
+     *
+     * @deprecated since 7.3 use {@link #getSubscribers(String, DocumentModel)}
      */
+    @Deprecated
     List<String> getSubscribers(String notification, String docId) throws ClientException;
+
+    /**
+     * Gets the users that subscribed to a notification on a certain document.
+     */
+    List<String> getSubscribers(String notification, DocumentModel doc) throws ClientException;
+
+    /**
+     * Gets the notifications for which a user subscribed for a certain document.
+     *
+     * @deprecated since 7.3 use {@link #getSubscriptionsForUserOnDocument(String, DocumentModel)}
+     */
+    @Deprecated
+    List<String> getSubscriptionsForUserOnDocument(String username, String docId);
 
     /**
      * Gets the notifications for which a user subscribed for a certain document.
      */
-    List<String> getSubscriptionsForUserOnDocument(String username, String docId);
+    List<String> getSubscriptionsForUserOnDocument(String username, DocumentModel doc);
+
+    /**
+     * @deprecated since 7.3 use {@link #getUsersSubscribedToNotificationOnDocument(String, DocumentModel)}
+     */
+    @Deprecated
+    List<String> getUsersSubscribedToNotificationOnDocument(String notification, String docId) throws ClientException;
 
     /**
      * Gets all users and groups that subscribed to a notification on a document This is used in management of
      * subscritptions.
      */
-    List<String> getUsersSubscribedToNotificationOnDocument(String notification, String docId) throws ClientException;
+    List<String> getUsersSubscribedToNotificationOnDocument(String notification, DocumentModel doc)
+            throws ClientException;
 
     /**
      * Called when a user subscribes to a notification.
@@ -61,13 +84,26 @@ public interface NotificationManager {
 
     /**
      * @since 5.6 Called when a user unsubscribes to all notifications.
+     * @deprecated since 7.3 use {@link #removeSubscriptions(String, List, DocumentModel)}
      */
     void removeSubscriptions(String username, List<String> notifications, String docId) throws ClientException;
 
     /**
+     * @since 5.6 Called when a user unsubscribes to all notifications.
+     */
+    void removeSubscriptions(String username, List<String> notifications, DocumentModel doc) throws ClientException;
+
+    /**
      * Called when a user cancels his notification.
+     *
+     * @deprecated since 7.3 use {@link #removeSubscription(String, String, DocumentModel)}
      */
     void removeSubscription(String username, String notification, String docId) throws ClientException;
+
+    /**
+     * Called when a user cancels his notification.
+     */
+    void removeSubscription(String username, String notification, DocumentModel doc) throws ClientException;
 
     /**
      * Returns the notification manager.
