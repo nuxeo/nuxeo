@@ -34,13 +34,15 @@ public class WaitForTxTimeoutOperation {
     protected OperationContext context;
 
     @OperationMethod
-    public void run() throws Exception {
+    public String run() throws Exception {
         HttpServletRequest req = (HttpServletRequest) context.get("request");
         String delay = req.getHeader(ServletHelper.TX_TIMEOUT_HEADER_KEY);
         if (delay == null) {
-            return;
+            return "null";
         }
         long value = Integer.parseInt(delay) * 1000L * 2;
         Thread.sleep(value);
+        // send a result so that when it's flushed (buffering stops), there's no way to later change the http status
+        return delay;
     }
 }

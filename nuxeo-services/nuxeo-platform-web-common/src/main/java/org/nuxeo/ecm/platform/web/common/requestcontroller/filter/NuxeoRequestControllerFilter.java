@@ -48,6 +48,7 @@ import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestContro
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestFilterConfig;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
  * Filter to handle Transactions and Requests synchronization. This filter is useful when accessing web resources that
@@ -183,6 +184,11 @@ public class NuxeoRequestControllerFilter implements Filter {
             if (txStarted) {
                 try {
                     TransactionHelper.commitOrRollbackTransaction();
+                } catch (TransactionRuntimeException e) {
+                    // commit failed, report this to the client before stopping buffering
+                    ((HttpServletResponse) response).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                            e.getMessage());
+                    throw e;
                 } finally {
                     if (config.needTransactionBuffered()) {
                         ((BufferingHttpServletResponse) response).stopBuffering();

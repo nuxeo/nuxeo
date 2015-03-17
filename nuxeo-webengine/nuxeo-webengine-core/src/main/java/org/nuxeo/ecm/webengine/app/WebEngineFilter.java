@@ -39,6 +39,7 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
  * This filter must be declared after the nuxeo authentication filter since it needs an authentication info. The session
@@ -97,6 +98,10 @@ public class WebEngineFilter implements Filter {
                 }
                 try {
                     cleanup(config, ctx, req, resp);
+                } catch (TransactionRuntimeException e) {
+                    // commit failed, report this to the client before stopping buffering
+                    resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                    throw e;
                 } finally {
                     if (config.txStarted) {
                         ((BufferingHttpServletResponse) resp).stopBuffering();
