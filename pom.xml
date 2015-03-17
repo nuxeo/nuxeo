@@ -4923,7 +4923,6 @@
                   <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
                   <!-- <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> -->
                   <!-- <exclude>org.jboss.seam:*</exclude> -->
-                  <exclude>com.googlecode.gmail4j:gmail4j</exclude>
                 </excludes>
               </requireReleaseDeps>
               <requireMavenVersion>
