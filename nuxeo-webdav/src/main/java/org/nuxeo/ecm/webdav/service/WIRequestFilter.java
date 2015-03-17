@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingHttpServletResponse;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
  * Windows Integration Request filter, bound to /nuxeo. Allows Windows user agents to bind to the root as the expect
@@ -81,6 +82,11 @@ public class WIRequestFilter implements Filter {
                         TransactionHelper.setTransactionRollbackOnly();
                     }
                     TransactionHelper.commitOrRollbackTransaction();
+                } catch (TransactionRuntimeException e) {
+                    // commit failed, report this to the client before stopping buffering
+                    ((HttpServletResponse) response).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                            e.getMessage());
+                    throw e;
                 } finally {
                     ((BufferingHttpServletResponse) response).stopBuffering();
                 }
