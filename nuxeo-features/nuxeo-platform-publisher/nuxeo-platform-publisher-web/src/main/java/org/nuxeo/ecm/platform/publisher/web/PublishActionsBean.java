@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.publisher.web;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -109,6 +110,11 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
 
     private static final Log log = LogFactory.getLog(PublishActionsBean.class);
 
+    /**
+     * @since 7.3
+     */
+    public static final List<String> TREE_TYPES_TO_FILTER = Arrays.asList("RootSectionsPublicationTree", "RenditionPublicationCoreTree");
+
     @In(create = true)
     protected transient DocumentsListsManager documentsListsManager;
 
@@ -168,7 +174,7 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
                 PublicationTree pTree = publisherService.getPublicationTree(tree, documentManager, null,
                         navigationContext.getCurrentDocument());
                 if (pTree != null) {
-                    if (pTree.getTreeType().equals("RootSectionsPublicationTree")) {
+                    if (TREE_TYPES_TO_FILTER.contains(pTree.getTreeType())) {
                         if (pTree.getChildrenNodes().size() > 0) {
                             filteredTrees.add(tree);
                         }
