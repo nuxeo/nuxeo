@@ -95,31 +95,42 @@ public class ITContextualActionsTest extends AbstractTest {
 
         // Test favorites action
         actions.clickOnButton(actions.favoritesButton);
+        actions = filePage.getContextualActions();
 
         // Test lock action
         actions.clickOnButton(actions.lockButton);
+        actions = filePage.getContextualActions();
         states = filePage.getCurrentStates();
         Assert.assertTrue(states.contains(DOCUMENT_LOCKED));
 
         // Test download action
         actions.clickOnButton(actions.downloadButton);
+        actions = filePage.getContextualActions();
         // Test permalink action
         actions.clickOnButton(actions.permaButton);
+        actions = filePage.getContextualActions();
         // wait for element to be shown to close it, otherwise DOM may not be
         // udpated yet
         actions.findElementWithTimeout(By.className(actions.permaBoxFocusName), 20 * 1000);
         actions.clickOnButton(actions.closePermaBoxButton);
+        actions = filePage.getContextualActions();
 
         // Test follow action
         actions.clickOnButton(actions.moreButton);
+        actions = filePage.getContextualActions();
         actions.clickOnButton(actions.followButton);
+        actions = filePage.getContextualActions();
 
         // Test Add to Worklist action
         actions.clickOnButton(actions.moreButton);
+        actions = filePage.getContextualActions();
         actions.clickOnButton(actions.addToWorklistButton);
+        actions = filePage.getContextualActions();
         // Test More button & Export
         actions.clickOnButton(actions.moreButton);
+        actions = filePage.getContextualActions();
         actions.clickOnButton(actions.exportButton);
+        actions = filePage.getContextualActions();
         waitForExportPopup();
 
         logout();
