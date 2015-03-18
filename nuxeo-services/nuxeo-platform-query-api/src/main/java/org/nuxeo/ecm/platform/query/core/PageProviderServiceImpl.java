@@ -89,6 +89,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
         pageProvider.setProperties(allProps);
         pageProvider.setSortable(desc.isSortable());
         pageProvider.setParameters(parameters);
+        pageProvider.setPageSizeOptions(desc.getPageSizeOptions());
         if (searchDocument != null) {
             pageProvider.setSearchDocumentModel(searchDocument);
         }

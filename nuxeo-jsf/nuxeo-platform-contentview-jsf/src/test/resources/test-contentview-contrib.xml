@@ -20,6 +20,11 @@
         <sort column="dc:title" ascending="true" />
         <pageSize>2</pageSize>
         <maxPageSize>0</maxPageSize>
+        <pageSizeOptions>
+          <option>10</option>
+          <option>15</option>
+          <option>20</option>
+        </pageSizeOptions>
         <parameter>#{currentDocument.id}</parameter>
         <parameter>#{dummy.param}</parameter>
       </coreQueryPageProvider>

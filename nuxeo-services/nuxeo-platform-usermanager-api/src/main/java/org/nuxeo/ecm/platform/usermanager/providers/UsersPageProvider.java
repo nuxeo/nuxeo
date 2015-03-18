@@ -35,6 +35,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class UsersPageProvider extends AbstractUsersPageProvider<DocumentModel> {
 
+    private static final long serialVersionUID = 1L;
+
     @Override
     public List<DocumentModel> getCurrentPage() {
         return computeCurrentPage();
