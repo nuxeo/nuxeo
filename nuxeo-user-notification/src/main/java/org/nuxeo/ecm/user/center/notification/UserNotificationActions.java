@@ -21,12 +21,9 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.ec.notification.UserSubscription;
-import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
-import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
-import org.nuxeo.ecm.platform.ec.placeful.Annotation;
-import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
+import org.nuxeo.ecm.platform.ec.notification.SubscriptionAdapter;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
+import org.nuxeo.runtime.api.Framework;
 
 @Name("userNotificationActions")
 @Scope(ScopeType.CONVERSATION)
@@ -47,34 +44,40 @@ public class UserNotificationActions implements Serializable {
 
     @Factory(value = "userSubscriptions", scope = ScopeType.EVENT)
     public List<UserSubscription> getUserSubscriptions() throws ClientException {
-        PlacefulService service = NotificationServiceHelper.getPlacefulService();
-        String className = service.getAnnotationRegistry().get(NotificationService.SUBSCRIPTION_NAME);
-        String shortClassName = className.substring(className.lastIndexOf('.') + 1);
 
-        PlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
-        List<Annotation> tempSubscriptions = new ArrayList<Annotation>();
+        List<UserSubscription> result = new ArrayList<>();
 
-        // Would be much better if we write a method similar to
-        // PlacefulService#getAnnotationListByParamMap
-        // to run only one query using OR operand between principals
+        String prefixedUserName = NuxeoPrincipal.PREFIX + currentUser.getName();
+        result.addAll(fetchSubscriptionsFor(prefixedUserName));
 
-        // First, get user subscriptions
-        Map<String, Object> paramMap = new HashMap<String, Object>();
-        paramMap.put("userId", NuxeoPrincipal.PREFIX + currentUser.getName());
-
-        tempSubscriptions.addAll(serviceBean.getAnnotationListByParamMap(paramMap, shortClassName));
-
-        // Then, get group subscriptions
         for (String group : currentUser.getAllGroups()) {
-            paramMap.put("userId", NuxeoGroup.PREFIX + group);
-            tempSubscriptions.addAll(serviceBean.getAnnotationListByParamMap(paramMap, shortClassName));
+            String prefixedgroupName = NuxeoGroup.PREFIX + group;
+            result.addAll(fetchSubscriptionsFor(prefixedgroupName));
         }
-        reorderSubscriptions(tempSubscriptions);
+
+        reorderSubscriptions(result);
 
         return subscriptions;
     }
 
-    private void reorderSubscriptions(List<Annotation> allSubscriptions) throws ClientException {
+    private List<UserSubscription> fetchSubscriptionsFor(String prefixedUserName) {
+        List<UserSubscription> result = new ArrayList<>();
+        NotificationManager nm = Framework.getService(NotificationManager.class);
+        List<DocumentModel> subscribedDocs = nm.getSubscribedDocuments(prefixedUserName);
+        for (DocumentModel doc : subscribedDocs) {
+            //Avoid treating document the current user can't read
+            if (documentManager.exists(doc.getRef())) {
+                SubscriptionAdapter sa = doc.getAdapter(SubscriptionAdapter.class);
+                List<String> notifications = sa.getUserSubscriptions(prefixedUserName);
+                for (String notification : notifications) {
+                    result.add(new UserSubscription(doc.getId(), notification, prefixedUserName));
+                }
+            }
+        }
+        return result;
+    }
+
+    private void reorderSubscriptions(List<UserSubscription> allSubscriptions) throws ClientException {
         Map<String, List<UserSubscription>> unsortedSubscriptions = new HashMap<String, List<UserSubscription>>();
         for (Object obj : allSubscriptions) {
             UserSubscription us = (UserSubscription) obj;
