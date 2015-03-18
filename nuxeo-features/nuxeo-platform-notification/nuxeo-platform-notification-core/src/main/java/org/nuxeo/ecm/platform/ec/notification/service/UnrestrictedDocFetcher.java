@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.ec.notification.service;
 
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -27,14 +29,23 @@ public class UnrestrictedDocFetcher extends UnrestrictedSessionRunner {
 
     private DocumentModel doc;
 
-    public UnrestrictedDocFetcher(String docId) {
+    private List<DocumentModel> queryResult;
+
+    private String query;
+
+    private UnrestrictedDocFetcher() {
         super("default");
-        this.docId = docId;
     }
 
     @Override
     public void run() throws ClientException {
-        doc = session.getDocument(new IdRef(docId));
+
+        if(docId != null) {
+            doc = session.getDocument(new IdRef(docId));
+        }
+        if(query != null) {
+            queryResult = session.query(query);
+        }
     }
 
     public DocumentModel getDocument() {
@@ -42,9 +53,17 @@ public class UnrestrictedDocFetcher extends UnrestrictedSessionRunner {
     }
 
     public static DocumentModel fetch(String docId) {
-        UnrestrictedDocFetcher fetcher = new UnrestrictedDocFetcher(docId);
+        UnrestrictedDocFetcher fetcher = new UnrestrictedDocFetcher();
+        fetcher.docId = docId;
         fetcher.runUnrestricted();
         return fetcher.getDocument();
+    }
+
+    public static List<DocumentModel> query(String nxql) {
+        UnrestrictedDocFetcher fetcher = new UnrestrictedDocFetcher();
+        fetcher.query = nxql;
+        fetcher.runUnrestricted();
+        return fetcher.queryResult;
     }
 
 }

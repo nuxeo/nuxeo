@@ -150,4 +150,12 @@ public interface NotificationManager {
      */
     Set<String> getNotificationEventNames();
 
+    /**
+     * Returns the list of live docs the user is subscribed to.
+     * @param prefixedPrincipalName
+     * @return
+     * @since 7.3
+     */
+    List<DocumentModel> getSubscribedDocuments(String prefixedPrincipalName);
+
 }
