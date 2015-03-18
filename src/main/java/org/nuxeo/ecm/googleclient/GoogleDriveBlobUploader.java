@@ -28,7 +28,7 @@ import javax.faces.context.ResponseWriter;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.platform.ui.web.component.file.InputFileChoice;
 import org.nuxeo.ecm.platform.ui.web.component.file.InputFileInfo;
 import org.nuxeo.ecm.platform.ui.web.component.file.JSFBlobUploader;
@@ -53,7 +53,9 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
     public GoogleDriveBlobUploader() {
         clientId = Framework.getProperty(CLIENT_ID_PROP);
         if (StringUtils.isBlank(clientId)) {
-            throw new IllegalStateException("Missing configuration: " + CLIENT_ID_PROP);
+            // this exception is caught by JSFBlobUploaderDescriptor.getJSFBlobUploader
+            // to mean that the uploader is not available because badly configured
+            throw new IllegalStateException("Missing value for property: " + CLIENT_ID_PROP);
         }
     }
 
@@ -149,12 +151,26 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
             parent.setValid(false);
             return;
         }
-        // TODO XXX create google drive managed blob
-        Blob blob = Blobs.createBlob(string, "text/plain");
-        blob.setFilename("string.txt");
+        Blob blob = createBlob(string);
         submitted.setBlob(blob);
         submitted.setFilename(blob.getFilename());
         submitted.setMimeType(blob.getMimeType());
+    }
+
+    /**
+     * Creates a Google Drive managed blob.
+     *
+     * @param fileId the Google Drive file info
+     * @return the blob
+     */
+    protected Blob createBlob(String fileInfo) {
+        GoogleDriveBlobProvider blobProvider = (GoogleDriveBlobProvider) Framework.getService(BlobManager.class).getBlobProvider(
+                GoogleDriveComponent.GOOGLE_DRIVE_PREFIX);
+        try {
+            return blobProvider.getBlob(fileInfo);
+        } catch (IOException e) {
+            throw new RuntimeException(e); // TODO better feedback
+        }
     }
 
 }
