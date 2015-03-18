@@ -15,6 +15,11 @@
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>2</pageSize>
+      <pageSizeOptions>
+        <option>10</option>
+        <option>15</option>
+        <option>20</option>
+      </pageSizeOptions>
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT">

@@ -108,6 +108,22 @@ public interface PageProvider<T> extends Serializable {
     void setPageSize(long pageSize);
 
     /**
+     * Returns a list of available page size options to display in the page size selector.
+     * <p>
+     * Uses an hardcoded list of values, and adds up the page provider initial and current page sizes.
+     *
+     * @since 7.3
+     */
+    List<Long> getPageSizeOptions();
+
+    /**
+     * Sets the page size options.
+     *
+     * @since 7.3
+     */
+    void setPageSizeOptions(List<Long> options);
+
+    /**
      * Returns the max number of results per page. 0 means no pagination.
      * <p>
      * If page size is greater than this maximum value, it will be taken into

@@ -17,6 +17,8 @@
 package org.nuxeo.ecm.platform.query.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +68,12 @@ public class GenericPageProviderDescriptor implements PageProviderDefinition {
 
     @XNode("maxPageSize")
     protected Long maxPageSize;
+
+    /**
+     * @since 7.3
+     */
+    @XNodeList(value = "pageSizeOptions/option", type = ArrayList.class, componentType = Long.class)
+    protected List<Long> pageSizeOptions;
 
     @XNode("sortable")
     protected boolean sortable = true;
@@ -141,6 +149,21 @@ public class GenericPageProviderDescriptor implements PageProviderDefinition {
         return pageSize;
     }
 
+    public List<Long> getPageSizeOptions() {
+        List<Long> res = new ArrayList<Long>();
+        if (pageSizeOptions == null || pageSizeOptions.isEmpty()) {
+            res.addAll(Arrays.asList(5L, 10L, 20L, 30L, 40L, 50L));
+        } else {
+            res.addAll(pageSizeOptions);
+        }
+        long defaultPageSize = getPageSize();
+        if (!res.contains(defaultPageSize)) {
+            res.add(defaultPageSize);
+        }
+        Collections.sort(res);
+        return res;
+    }
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -187,6 +210,7 @@ public class GenericPageProviderDescriptor implements PageProviderDefinition {
         clone.pageSize = getPageSize();
         clone.pageSizeBinding = getPageSizeBinding();
         clone.maxPageSize = getMaxPageSize();
+        clone.pageSizeOptions = getPageSizeOptions();
         clone.sortable = isSortable();
         if (sortInfos != null) {
             clone.sortInfos = new ArrayList<SortInfoDescriptor>();

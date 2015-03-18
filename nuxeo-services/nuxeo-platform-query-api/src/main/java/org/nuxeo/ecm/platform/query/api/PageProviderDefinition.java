@@ -63,6 +63,15 @@ public interface PageProviderDefinition extends Serializable {
 
     long getPageSize();
 
+    /**
+     * Returns the list of page size options to present to users.
+     * <p>
+     * Uses an hardcoded list of values, and adds up the page provider initial page size to it.
+     *
+     * @since 7.3
+     */
+    List<Long> getPageSizeOptions();
+
     String getPageSizeBinding();
 
     Long getMaxPageSize();
