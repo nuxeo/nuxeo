@@ -34,16 +34,18 @@ public class SimpleManagedBlob extends AbstractBlob implements ManagedBlob {
 
     public final String key;
 
+    public Long length;
+
     public transient ManagedBlobProvider blobProvider;
 
     public SimpleManagedBlob(BlobInfo blobInfo, ManagedBlobProvider blobProvider) {
         this.key = blobInfo.key;
         this.blobProvider = blobProvider;
-        // TODO length
         setMimeType(blobInfo.mimeType);
         setEncoding(blobInfo.encoding);
         setFilename(blobInfo.filename);
         setDigest(blobInfo.digest);
+        length = blobInfo.length;
     }
 
     @Override
@@ -66,8 +68,7 @@ public class SimpleManagedBlob extends AbstractBlob implements ManagedBlob {
 
     @Override
     public long getLength() {
-        // TODO length
-        throw new UnsupportedOperationException();
+        return length == null ? -1 : length.longValue();
     }
 
 }

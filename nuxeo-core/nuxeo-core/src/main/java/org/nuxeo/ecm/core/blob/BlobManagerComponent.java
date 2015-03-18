@@ -73,12 +73,18 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
     @Override
     public BlobProvider getBlobProvider(String key) {
         Objects.requireNonNull(key, "The key must not be null");
+        // key exact match
+        BlobProvider blobProvider = blobProviders.get(key);
+        if (blobProvider != null) {
+            return blobProvider;
+        }
+        // key prefix
         int colon = key.indexOf(':');
         if (colon < 0) {
             return defaultBlobProvider;
         } else {
             String prefix = key.substring(0, colon);
-            BlobProvider blobProvider = blobProviders.get(prefix);
+            blobProvider = blobProviders.get(prefix);
             if (blobProvider == null) {
                 throw new NuxeoException("Unknown blob provider for key: " + key);
             }
