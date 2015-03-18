@@ -58,6 +58,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     protected long pageSize = 0;
 
+    protected List<Long> pageSizeOptions;
+
     protected long maxPageSize = getDefaultMaxPageSize();
 
     protected long resultsCount = UNKNOWN_SIZE;
@@ -235,6 +237,26 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
             setCurrentPageOffset(0);
             refresh();
         }
+    }
+
+    @Override
+    public List<Long> getPageSizeOptions() {
+        List<Long> res = new ArrayList<Long>();
+        if (pageSizeOptions != null) {
+            res.addAll(pageSizeOptions);
+        }
+        // include the actual page size of page provider if not present
+        long ppsize = getPageSize();
+        if (ppsize > 0 && !res.contains(ppsize)) {
+            res.add(Long.valueOf(ppsize));
+        }
+        Collections.sort(res);
+        return res;
+    }
+
+    @Override
+    public void setPageSizeOptions(List<Long> options) {
+        pageSizeOptions = options;
     }
 
     @Override

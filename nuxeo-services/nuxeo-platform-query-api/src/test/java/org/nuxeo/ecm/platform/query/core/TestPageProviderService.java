@@ -196,4 +196,30 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
         assertTrue(ppNames.contains(CURRENT_DOCUMENT_CHILDREN));
     }
 
+    @Test
+    public void testPageSizeOptions() {
+        PageProviderService service = Framework.getService(PageProviderService.class);
+        assertNotNull(service);
+        PageProviderDefinition def = service.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
+        assertNotNull(def);
+        List<Long> options = def.getPageSizeOptions();
+        assertEquals(4, options.size());
+        assertEquals(2L, options.get(0).longValue());
+        assertEquals(10L, options.get(1).longValue());
+        assertEquals(15L, options.get(2).longValue());
+        assertEquals(20L, options.get(3).longValue());
+
+        def = service.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
+        assertNotNull(def);
+        options = def.getPageSizeOptions();
+        assertEquals(7, options.size());
+        assertEquals(2L, options.get(0).longValue());
+        assertEquals(5L, options.get(1).longValue());
+        assertEquals(10L, options.get(2).longValue());
+        assertEquals(20L, options.get(3).longValue());
+        assertEquals(30L, options.get(4).longValue());
+        assertEquals(40L, options.get(5).longValue());
+        assertEquals(50L, options.get(6).longValue());
+    }
+
 }

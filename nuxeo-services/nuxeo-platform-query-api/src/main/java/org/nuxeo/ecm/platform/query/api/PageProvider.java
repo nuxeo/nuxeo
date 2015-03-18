@@ -124,6 +124,22 @@ public interface PageProvider<T> extends Serializable {
     void setMaxPageSize(long pageSize);
 
     /**
+     * Returns a list of available page size options to display in the page size selector.
+     * <p>
+     * Uses an hardcoded list of values, and adds up the page provider initial and current page sizes.
+     *
+     * @since 7.3
+     */
+    List<Long> getPageSizeOptions();
+
+    /**
+     * Sets the page size options.
+     *
+     * @since 7.3
+     */
+    void setPageSizeOptions(List<Long> options);
+
+    /**
      * Returns the number of result elements if available or a negative value if it is unknown:
      * <code>UNKNOWN_SIZE</code> if it is unknown as query was not done, and since 5.5,
      * <code>UNKNOWN_SIZE_AFTER_QUERY</code> if it is still unknown after query was done.

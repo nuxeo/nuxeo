@@ -21,7 +21,6 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -137,11 +136,12 @@ public class ContentViewActions implements Serializable {
      */
     @SuppressWarnings("boxing")
     public List<SelectItem> getPageSizeOptions(ContentView cv) {
+
         List<SelectItem> items = new ArrayList<SelectItem>();
         if (cv == null) {
             return items;
         }
-        List<Long> values = new ArrayList<Long>(Arrays.asList(5L, 10L, 20L, 30L, 40L, 50L));
+        List<Long> values = new ArrayList<Long>();
         if (cv.getUseGlobalPageSize()) {
             // add the global page size if not present
             Long globalSize = getGlobalPageSize();
@@ -152,10 +152,11 @@ public class ContentViewActions implements Serializable {
         long maxPageSize = 0;
         PageProvider<?> pp = cv.getCurrentPageProvider();
         if (pp != null) {
-            // include the actual page size of page provider if not present
-            long ppsize = pp.getPageSize();
-            if (ppsize > 0 && !values.contains(ppsize)) {
-                values.add(Long.valueOf(ppsize));
+            // include original page size options set on the page provider definition, as well as current page size if
+            // not present
+            List<Long> options = pp.getPageSizeOptions();
+            if (options != null) {
+                values.addAll(options);
             }
             maxPageSize = pp.getMaxPageSize();
         }

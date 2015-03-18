@@ -164,10 +164,27 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(
                 parentIdParam, dummyParam);
         checkCoreQuery(parentIdParam, pp);
+
+        // check page size options
+        List<Long> options = pp.getPageSizeOptions();
+        assertEquals(4, options.size());
+        assertEquals(2L, options.get(0).longValue());
+        assertEquals(10L, options.get(1).longValue());
+        assertEquals(15L, options.get(2).longValue());
+        assertEquals(20L, options.get(3).longValue());
+        pp.setPageSize(100);
+        assertEquals(100, pp.getPageSize());
+        options = pp.getPageSizeOptions();
+        assertEquals(5, options.size());
+        assertEquals(2L, options.get(0).longValue());
+        assertEquals(10L, options.get(1).longValue());
+        assertEquals(15L, options.get(2).longValue());
+        assertEquals(20L, options.get(3).longValue());
+        assertEquals(100L, options.get(4).longValue());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
+    @SuppressWarnings("unchecked")
     public void testCoreQueryReference() throws Exception {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_REF");
         assertNotNull(contentView);
@@ -178,6 +195,30 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(
                 parentIdParam, dummyParam);
         checkCoreQuery(parentIdParam, pp);
+
+        // check page size options
+        List<Long> options = pp.getPageSizeOptions();
+        assertEquals(7, options.size());
+        assertEquals(7, options.size());
+        assertEquals(2L, options.get(0).longValue());
+        assertEquals(5L, options.get(1).longValue());
+        assertEquals(10L, options.get(2).longValue());
+        assertEquals(20L, options.get(3).longValue());
+        assertEquals(30L, options.get(4).longValue());
+        assertEquals(40L, options.get(5).longValue());
+        assertEquals(50L, options.get(6).longValue());
+        pp.setPageSize(17);
+        assertEquals(17, pp.getPageSize());
+        options = pp.getPageSizeOptions();
+        assertEquals(8, options.size());
+        assertEquals(2L, options.get(0).longValue());
+        assertEquals(5L, options.get(1).longValue());
+        assertEquals(10L, options.get(2).longValue());
+        assertEquals(17L, options.get(3).longValue());
+        assertEquals(20L, options.get(4).longValue());
+        assertEquals(30L, options.get(5).longValue());
+        assertEquals(40L, options.get(6).longValue());
+        assertEquals(50L, options.get(7).longValue());
     }
 
     protected void checkCoreQuery(String parentIdParam, PageProvider<DocumentModel> pp) throws Exception {
