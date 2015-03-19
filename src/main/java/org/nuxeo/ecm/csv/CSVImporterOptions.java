@@ -112,8 +112,8 @@ public class CSVImporterOptions implements Serializable {
     protected CSVImporterOptions(CSVImporterDocumentFactory CSVImporterDocumentFactory, String dateFormat,
             String listSeparatorRegex, boolean updateExisting, boolean checkAllowedSubTypes, boolean sendEmail,
             int batchSize) {
-        this(CSVImporterDocumentFactory, dateFormat, listSeparatorRegex, '\\', updateExisting,
-                checkAllowedSubTypes, sendEmail, batchSize);
+        this(CSVImporterDocumentFactory, dateFormat, listSeparatorRegex, '\\', updateExisting, checkAllowedSubTypes,
+                sendEmail, batchSize);
     }
 
     /**

@@ -24,7 +24,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -34,8 +33,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -147,22 +144,22 @@ public class TestCSVImport {
         expectedMap.put("dateProp", null);
         expectedMap.put("boolProp", true);
         expectedMap.put("enumProp", null);
-        expectedMap.put("arrayProp", new String[] {"1"});
+        expectedMap.put("arrayProp", new String[] { "1" });
         expectedMap.put("intProp", null);
         expectedMap.put("floatProp", null);
         Map<String, Object> resultMap = (Map<String, Object>) doc.getPropertyValue("complexTest:complexItem");
-        assertEquals("1", ((String []) resultMap.get("arrayProp"))[0]);
+        assertEquals("1", ((String[]) resultMap.get("arrayProp"))[0]);
         expectedMap.put("arrayProp", null);
         resultMap.put("arrayProp", null);
         assertEquals(expectedMap, resultMap);
         List<Map> resultMapList = (List<Map>) doc.getPropertyValue("complexTest:listItem");
         assertEquals(2, resultMapList.size());
         resultMap = resultMapList.get(0);
-        assertEquals("1", ((String []) resultMap.get("arrayProp"))[0]);
+        assertEquals("1", ((String[]) resultMap.get("arrayProp"))[0]);
         resultMap.put("arrayProp", null);
         assertEquals(expectedMap, resultMap);
         resultMap = resultMapList.get(1);
-        assertEquals("1", ((String []) resultMap.get("arrayProp"))[0]);
+        assertEquals("1", ((String[]) resultMap.get("arrayProp"))[0]);
         expectedMap.put("stringProp", "testString2");
         resultMap.put("arrayProp", null);
         assertEquals(expectedMap, resultMap);
@@ -246,14 +243,14 @@ public class TestCSVImport {
         importLog = importLogs.get(5);
         assertEquals(7, importLog.getLine());
         assertEquals(CSVImportLog.Status.ERROR, importLog.getStatus());
-        assertEquals("Unable to convert field 'complexTest:complexItem' with value " +
-                "'{\"arrayProp\":[\"1\"],\"boolProp\":invalidBooleanValue,\"stringProp\":\"testString1\"}'",
+        assertEquals("Unable to convert field 'complexTest:complexItem' with value "
+                + "'{\"arrayProp\":[\"1\"],\"boolProp\":invalidBooleanValue,\"stringProp\":\"testString1\"}'",
                 importLog.getMessage());
         importLog = importLogs.get(6);
         assertEquals(8, importLog.getLine());
         assertEquals(CSVImportLog.Status.ERROR, importLog.getStatus());
-        assertEquals("Unable to convert field 'complexTest:complexItem' with value " +
-                "'{\"dateProp\":\"2009-02-13BAD04:40:00.00Z\"],\"boolProp\":true,\"stringProp\":\"testString1\"}'",
+        assertEquals("Unable to convert field 'complexTest:complexItem' with value "
+                + "'{\"dateProp\":\"2009-02-13BAD04:40:00.00Z\"],\"boolProp\":true,\"stringProp\":\"testString1\"}'",
                 importLog.getMessage());
 
         assertFalse(session.exists(new PathRef("/myfile")));

@@ -33,7 +33,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -351,8 +350,8 @@ public class CSVImporterWork extends AbstractWork {
                                 return null;
                             }
                         } else {
-                            fieldValue = (Serializable) ComplexTypeJSONDecoder.decode(
-                                    (ComplexType) fieldType, stringValue);
+                            fieldValue = (Serializable) ComplexTypeJSONDecoder.decode((ComplexType) fieldType,
+                                    stringValue);
                         }
                     } else {
                         if (fieldType.isListType()) {
@@ -366,8 +365,8 @@ public class CSVImporterWork extends AbstractWork {
                                 /*
                                  * Complex list.
                                  */
-                                fieldValue = (Serializable) ComplexTypeJSONDecoder.decodeList(
-                                        (ListType) fieldType, stringValue);
+                                fieldValue = (Serializable) ComplexTypeJSONDecoder.decodeList((ListType) fieldType,
+                                        stringValue);
                             }
                         } else {
                             /*
