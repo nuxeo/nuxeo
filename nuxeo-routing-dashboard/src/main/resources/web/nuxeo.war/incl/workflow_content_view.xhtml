@@ -48,7 +48,7 @@
                   disabled="#{!action.available}">
                   <f:attribute name="selectedValue" value="#{action.id}" />
                   <f:attribute name="targetComponentId" value="clickedActionIdHolder" />
-                  <f:ajax execute="@this" render="routing_tasks_buttons:workflow_action_fancybox_content"
+                  <f:ajax execute="@this" render="#{contentViewName}_buttons:workflow_action_fancybox_content"
                     listener="#{selectionActions.setStaticValue}"/>
                 </h:commandButton>
               </span>
@@ -92,7 +92,7 @@
                       'scrolling': 'auto',
                       'onClosed': closeFancybox
                     });
-                    jQuery('##{fancyboxFormId}').focusFirst();
+                    jQuery('form[id$=#{fancyboxFormId}]').focusFirst();
                   </script>
                   <div style="display:none;">
                     <div id="#{action.id}_fancybox_box">
