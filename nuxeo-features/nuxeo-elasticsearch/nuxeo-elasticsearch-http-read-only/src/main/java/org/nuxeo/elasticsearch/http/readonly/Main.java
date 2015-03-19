@@ -38,6 +38,7 @@ import org.json.JSONException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
+import org.nuxeo.runtime.api.Framework;
 
 @Path("/es")
 @WebObject(type = "es")
@@ -46,6 +47,9 @@ public class Main extends ModuleRoot {
     private static final Log log = LogFactory.getLog(Main.class);
 
     private static final String DEFAULT_ES_BASE_URL = "http://localhost:9200/";
+    private static final java.lang.String ES_BASE_URL_PROPERTY = "elasticsearch.httpReadOnly.baseUrl";
+
+    private String esBaseUrl;
 
     private final RequestValidator validator;
 
@@ -155,8 +159,10 @@ public class Main extends ModuleRoot {
     }
 
     protected String getElasticsearchBaseUrl() {
-        // TODO: make ES base url configurable
-        return DEFAULT_ES_BASE_URL;
+        if (esBaseUrl == null) {
+            esBaseUrl = Framework.getProperty(ES_BASE_URL_PROPERTY, DEFAULT_ES_BASE_URL);
+        }
+        return esBaseUrl;
     }
 
     public @NotNull NuxeoPrincipal getPrincipal() {
