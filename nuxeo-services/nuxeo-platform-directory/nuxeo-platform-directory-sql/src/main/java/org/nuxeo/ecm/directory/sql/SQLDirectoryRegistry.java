@@ -30,8 +30,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 /**
  * @since 5.6
  */
-public class SQLDirectoryRegistry extends
-        ContributionFragmentRegistry<SQLDirectoryDescriptor> {
+public class SQLDirectoryRegistry extends ContributionFragmentRegistry<SQLDirectoryDescriptor> {
 
     private static final Log log = LogFactory.getLog(SQLDirectoryRegistry.class);
 
@@ -46,9 +45,7 @@ public class SQLDirectoryRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id,
-            SQLDirectoryDescriptor descriptor,
-            SQLDirectoryDescriptor newOrigContrib) {
+    public void contributionUpdated(String id, SQLDirectoryDescriptor descriptor, SQLDirectoryDescriptor newOrigContrib) {
         String directoryName = descriptor.getName();
         if (descriptor.getRemove()) {
             log.info("Removing directory: " + directoryName);
@@ -74,8 +71,7 @@ public class SQLDirectoryRegistry extends
             try {
                 dir.shutdown();
             } catch (DirectoryException e) {
-                log.error(String.format(
-                        "Error while shutting down directory '%s'", id), e);
+                log.error(String.format("Error while shutting down directory '%s'", id), e);
             }
         }
     }

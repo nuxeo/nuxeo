@@ -32,6 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class TestFilterDirectories extends SQLDirectoryTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -41,8 +42,8 @@ public class TestFilterDirectories extends SQLDirectoryTestCase {
     @Test
     public void testFilterDirectory() throws Exception {
 
-        DirectoryServiceImpl dirServiceImpl =
-            (DirectoryServiceImpl) Framework.getRuntime().getComponent(DirectoryService.NAME);
+        DirectoryServiceImpl dirServiceImpl = (DirectoryServiceImpl) Framework.getRuntime().getComponent(
+                DirectoryService.NAME);
 
         Session unfiltredSession = dirServiceImpl.open("unfiltredTestDirectory");
         assertNotNull(unfiltredSession);
@@ -65,4 +66,3 @@ public class TestFilterDirectories extends SQLDirectoryTestCase {
     }
 
 }
-

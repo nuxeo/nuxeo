@@ -44,8 +44,7 @@ public class TestDescriptorOverride extends SQLDirectoryTestCase {
         assertEquals(0, config.getCacheMaxSize());
         assertEquals("test-users.csv", config.getDataFileName());
 
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "test-sql-directories-override-bundle.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests", "test-sql-directories-override-bundle.xml");
 
         dir = getDirectory("userDirectory");
         sqlDir = (SQLDirectory) dir;

@@ -21,8 +21,7 @@ public class TestSQLDirectoryNativeCase extends TestSQLDirectory {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "test-sql-directories-nativecase-config.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests", "test-sql-directories-nativecase-config.xml");
     }
 
 }

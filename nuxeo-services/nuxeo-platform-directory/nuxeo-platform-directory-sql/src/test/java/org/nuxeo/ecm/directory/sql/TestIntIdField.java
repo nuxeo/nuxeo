@@ -32,6 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class TestIntIdField extends SQLDirectoryTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -41,8 +42,8 @@ public class TestIntIdField extends SQLDirectoryTestCase {
     @SuppressWarnings("boxing")
     @Test
     public void testIntIdDirectory() throws Exception {
-        DirectoryServiceImpl dirServiceImpl =
-            (DirectoryServiceImpl) Framework.getRuntime().getComponent(DirectoryService.NAME);
+        DirectoryServiceImpl dirServiceImpl = (DirectoryServiceImpl) Framework.getRuntime().getComponent(
+                DirectoryService.NAME);
 
         Session session = dirServiceImpl.open("testIdDirectory");
         assertNotNull(session);

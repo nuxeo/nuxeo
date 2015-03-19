@@ -45,14 +45,13 @@ import org.nuxeo.ecm.directory.Session;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class TestSQLDirectory extends SQLDirectoryTestCase {
 
     private static final String SCHEMA = "user";
 
-    public static Calendar getCalendar(int year, int month, int day,
-            int hours, int minutes, int seconds, int milliseconds) {
+    public static Calendar getCalendar(int year, int month, int day, int hours, int minutes, int seconds,
+            int milliseconds) {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, year);
         cal.set(Calendar.MONTH, month - 1); // 0-based
@@ -73,8 +72,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
                 calendar.get(Calendar.SECOND), 0);
     }
 
-    public static void assertCalendarEquals(Calendar expected, Calendar actual)
-            throws Exception {
+    public static void assertCalendarEquals(Calendar expected, Calendar actual) throws Exception {
         if (expected.equals(actual)) {
             return;
         }
@@ -103,8 +101,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
     public void testTableReference() throws Exception {
         Session groupSession = getSession("groupDirectory");
         try {
-            Reference membersRef = getDirectory("groupDirectory").getReference(
-                    "members");
+            Reference membersRef = getDirectory("groupDirectory").getReference("members");
 
             // test initial configuration
             List<String> administrators = membersRef.getTargetIdsForSource("administrators");
@@ -120,8 +117,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertTrue(administrators.contains("user_1"));
 
             // readding the same link should not duplicate it
-            membersRef.addLinks("administrators",
-                    Arrays.asList("user_1", "user_2"));
+            membersRef.addLinks("administrators", Arrays.asList("user_1", "user_2"));
 
             administrators = membersRef.getTargetIdsForSource("administrators");
             assertEquals(3, administrators.size());
@@ -143,22 +139,19 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
 
             // readd references with the set* methods
 
-            membersRef.setTargetIdsForSource("administrators",
-                    Arrays.asList("user_1", "user_2"));
+            membersRef.setTargetIdsForSource("administrators", Arrays.asList("user_1", "user_2"));
             administrators = membersRef.getTargetIdsForSource("administrators");
             assertEquals(2, administrators.size());
             assertTrue(administrators.contains("user_1"));
             assertTrue(administrators.contains("user_2"));
 
-            membersRef.setTargetIdsForSource("administrators",
-                    Arrays.asList("user_1", "Administrator"));
+            membersRef.setTargetIdsForSource("administrators", Arrays.asList("user_1", "Administrator"));
             administrators = membersRef.getTargetIdsForSource("administrators");
             assertEquals(2, administrators.size());
             assertTrue(administrators.contains("user_1"));
             assertTrue(administrators.contains("Administrator"));
 
-            membersRef.setSourceIdsForTarget("Administrator",
-                    Arrays.asList("members"));
+            membersRef.setSourceIdsForTarget("Administrator", Arrays.asList("members"));
             administrators = membersRef.getTargetIdsForSource("administrators");
             assertEquals(1, administrators.size());
             assertTrue(administrators.contains("user_1"));
@@ -200,8 +193,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertCalendarEquals(getCalendar(1982, 3, 25, 16, 30, 47, 0),
                     (Calendar) dm.getProperty(SCHEMA, "dateField"));
 
-            List<String> groups = (List<String>) dm.getProperty(SCHEMA,
-                    "groups");
+            List<String> groups = (List<String>) dm.getProperty(SCHEMA, "groups");
             assertEquals(2, groups.size());
             assertTrue(groups.contains("administrators"));
             assertTrue(groups.contains("members"));
@@ -234,8 +226,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertCalendarEquals(getCalendar(1982, 3, 25, 16, 30, 47, 0),
                     (Calendar) dm.getProperty(SCHEMA, "dateField"));
 
-            List<String> groups = (List<String>) dm.getProperty(SCHEMA,
-                    "groups");
+            List<String> groups = (List<String>) dm.getProperty(SCHEMA, "groups");
             assertEquals(2, groups.size());
             assertTrue(groups.contains("administrators"));
             assertTrue(groups.contains("members"));
@@ -254,11 +245,9 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertEquals("user_1", dm.getProperty(SCHEMA, "username"));
             assertEquals("pass_1", dm.getProperty(SCHEMA, "password"));
             assertEquals(Long.valueOf(3), dm.getProperty(SCHEMA, "intField"));
-            assertCalendarEquals(getCalendar(2007, 9, 7, 14, 36, 28, 0),
-                    (Calendar) dm.getProperty(SCHEMA, "dateField"));
+            assertCalendarEquals(getCalendar(2007, 9, 7, 14, 36, 28, 0), (Calendar) dm.getProperty(SCHEMA, "dateField"));
             assertNull(dm.getProperty(SCHEMA, "company"));
-            List<String> groups = (List<String>) dm.getProperty(SCHEMA,
-                    "groups");
+            List<String> groups = (List<String>) dm.getProperty(SCHEMA, "groups");
             assertEquals(2, groups.size());
             assertTrue(groups.contains("group_1"));
             assertTrue(groups.contains("members"));
@@ -296,8 +285,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertNotNull(dm);
             assertEquals("user_1", dm.getProperty(SCHEMA, "username"));
             assertEquals("pass_1", dm.getProperty(SCHEMA, "password"));
-            assertCalendarEquals(getCalendar(2007, 9, 7, 14, 36, 28, 0),
-                    (Calendar) dm.getProperty(SCHEMA, "dateField"));
+            assertCalendarEquals(getCalendar(2007, 9, 7, 14, 36, 28, 0), (Calendar) dm.getProperty(SCHEMA, "dateField"));
             assertEquals(Long.valueOf(3), dm.getProperty(SCHEMA, "intField"));
             // XXX: getEntries does not fetch references anymore => groups is
             // null
@@ -317,10 +305,8 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         session = getSession("groupDirectory");
         try {
             DocumentModel doc = session.getEntry("administrators");
-            assertEquals("administrators",
-                    doc.getPropertyValue("group:groupname"));
-            assertEquals("Administrators group",
-                    doc.getPropertyValue("group:grouplabel"));
+            assertEquals("administrators", doc.getPropertyValue("group:groupname"));
+            assertEquals("Administrators group", doc.getPropertyValue("group:grouplabel"));
 
             doc = session.getEntry("group_1");
             assertEquals("group_1", doc.getPropertyValue("group:groupname"));
@@ -345,10 +331,8 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             dm.setProperty(SCHEMA, "username", "user_2");
             dm.setProperty(SCHEMA, "password", "pass_2");
             dm.setProperty(SCHEMA, "intField", Long.valueOf(2));
-            dm.setProperty(SCHEMA, "dateField",
-                    getCalendar(2001, 2, 3, 4, 5, 6, 7));
-            dm.setProperty(SCHEMA, "groups",
-                    Arrays.asList("administrators", "members"));
+            dm.setProperty(SCHEMA, "dateField", getCalendar(2001, 2, 3, 4, 5, 6, 7));
+            dm.setProperty(SCHEMA, "groups", Arrays.asList("administrators", "members"));
             session.updateEntry(dm);
             session.commit();
             session.close();
@@ -364,10 +348,8 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertFalse("pass_2".equals(password));
             assertTrue(PasswordHelper.verifyPassword("pass_2", password));
             assertEquals(Long.valueOf(2), dm.getProperty(SCHEMA, "intField"));
-            assertCalendarEquals(getCalendar(2001, 2, 3, 4, 5, 6, 7),
-                    (Calendar) dm.getProperty(SCHEMA, "dateField"));
-            List<String> groups = (List<String>) dm.getProperty(SCHEMA,
-                    "groups");
+            assertCalendarEquals(getCalendar(2001, 2, 3, 4, 5, 6, 7), (Calendar) dm.getProperty(SCHEMA, "dateField"));
+            List<String> groups = (List<String>) dm.getProperty(SCHEMA, "groups");
             assertEquals(2, groups.size());
             assertTrue(groups.contains("administrators"));
             assertTrue(groups.contains("members"));
@@ -407,8 +389,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
 
             session = getSession("groupDirectory");
             DocumentModel group1 = session.getEntry("group_1");
-            List<String> members = (List<String>) group1.getProperty("group",
-                    "members");
+            List<String> members = (List<String>) group1.getProperty("group", "members");
             assertTrue(members.isEmpty());
             // assertFalse(members.contains("group_1"));
         } finally {
@@ -482,8 +463,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
 
             // simple query does not fetch references by default => restart with
             // an explicit fetch request
-            List<String> groups = (List<String>) docModel.getProperty(SCHEMA,
-                    "groups");
+            List<String> groups = (List<String>) docModel.getProperty(SCHEMA, "groups");
             assertTrue(groups.isEmpty());
 
             list = session.query(filter, null, null, true);
@@ -650,8 +630,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         Session session = getSession();
         try {
             String schema = "user";
-            DocumentModel entry = BaseSession.createEntryModel(null, schema,
-                    null, null);
+            DocumentModel entry = BaseSession.createEntryModel(null, schema, null, null);
             entry.setProperty("user", "username", "yo");
 
             assertNull(session.getEntry("yo"));
@@ -685,8 +664,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
 
     @Test
     public void testColumnCreation() throws Exception {
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "test-sql-directories-alteration-config.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests", "test-sql-directories-alteration-config.xml");
 
         AbstractDirectory dirtmp1 = null;
         AbstractDirectory dirtmp2 = null;
@@ -698,8 +676,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             Session session = dirtmp1.getSession();
 
             String schema1 = "tmpschema1";
-            DocumentModel entry = BaseSession.createEntryModel(null, schema1,
-                    null, null);
+            DocumentModel entry = BaseSession.createEntryModel(null, schema1, null, null);
             entry.setProperty(schema1, "id", "john");
             entry.setProperty(schema1, "label", "monLabel");
 
@@ -728,8 +705,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
 
     @Test
     public void testSchemaWithPrefix() throws Exception {
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "test-sql-directories-schema-prefix.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests", "test-sql-directories-schema-prefix.xml");
         Session session = getSession();
         try {
             DocumentModel dm = session.getEntry("user_1");

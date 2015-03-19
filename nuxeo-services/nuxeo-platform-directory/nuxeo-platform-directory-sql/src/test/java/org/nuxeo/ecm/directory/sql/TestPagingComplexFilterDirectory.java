@@ -38,8 +38,7 @@ public class TestPagingComplexFilterDirectory extends SQLDirectoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "pagingDirectory-contrib.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests", "pagingDirectory-contrib.xml");
     }
 
     public Session getSession() throws ClientException {
@@ -60,8 +59,7 @@ public class TestPagingComplexFilterDirectory extends SQLDirectoryTestCase {
             assertEquals(12, entries.size());
             assertEquals("1", entries.get(0).getId());
 
-            entries = session.query(filter, filter.keySet(), order, false, 5,
-                    -1);
+            entries = session.query(filter, filter.keySet(), order, false, 5, -1);
             assertEquals(5, entries.size());
             assertEquals("1", entries.get(0).getId());
 
@@ -69,8 +67,7 @@ public class TestPagingComplexFilterDirectory extends SQLDirectoryTestCase {
             assertEquals(5, entries.size());
             assertEquals("2", entries.get(0).getId());
 
-            entries = session.query(filter, filter.keySet(), order, false, 5,
-                    11);
+            entries = session.query(filter, filter.keySet(), order, false, 5, 11);
             assertEquals(1, entries.size());
             assertEquals("12", entries.get(0).getId());
         } catch (UnsupportedOperationException e) {
@@ -88,8 +85,7 @@ public class TestPagingComplexFilterDirectory extends SQLDirectoryTestCase {
             Calendar d121211 = new DateTime(2012, 12, 11, 0, 0, 0, 0).toGregorianCalendar();
             Calendar d121224 = new DateTime(2012, 12, 24, 0, 0, 0, 0).toGregorianCalendar();
 
-            SQLBetweenFilter betweenFilter = new SQLBetweenFilter(d121110,
-                    d121224);
+            SQLBetweenFilter betweenFilter = new SQLBetweenFilter(d121110, d121224);
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("date", betweenFilter);
             List<DocumentModel> entries = session.query(filter);

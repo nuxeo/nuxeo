@@ -88,14 +88,12 @@ public class TableReference extends AbstractReference {
         SQLDirectory directory = getSQLSourceDirectory();
         String createTablePolicy = directory.getConfig().createTablePolicy;
         Table table = getTable();
-        SQLHelper helper = new SQLHelper(sqlSession.sqlConnection, table,
-                dataFileName, createTablePolicy);
+        SQLHelper helper = new SQLHelper(sqlSession.sqlConnection, table, dataFileName, createTablePolicy);
         helper.setupTable();
     }
 
     @Override
-    public void addLinks(String sourceId, List<String> targetIds)
-            throws DirectoryException {
+    public void addLinks(String sourceId, List<String> targetIds) throws DirectoryException {
         if (targetIds == null) {
             return;
         }
@@ -109,8 +107,7 @@ public class TableReference extends AbstractReference {
     }
 
     @Override
-    public void addLinks(List<String> sourceIds, String targetId)
-            throws DirectoryException {
+    public void addLinks(List<String> sourceIds, String targetId) throws DirectoryException {
         if (sourceIds == null) {
             return;
         }
@@ -123,8 +120,7 @@ public class TableReference extends AbstractReference {
         }
     }
 
-    public void addLinks(String sourceId, List<String> targetIds,
-            SQLSession session) throws DirectoryException {
+    public void addLinks(String sourceId, List<String> targetIds, SQLSession session) throws DirectoryException {
         if (targetIds == null) {
             return;
         }
@@ -133,8 +129,7 @@ public class TableReference extends AbstractReference {
         }
     }
 
-    public void addLinks(List<String> sourceIds, String targetId,
-            SQLSession session) throws DirectoryException {
+    public void addLinks(List<String> sourceIds, String targetId, SQLSession session) throws DirectoryException {
         if (sourceIds == null) {
             return;
         }
@@ -143,8 +138,7 @@ public class TableReference extends AbstractReference {
         }
     }
 
-    public boolean exists(String sourceId, String targetId, SQLSession session)
-            throws DirectoryException {
+    public boolean exists(String sourceId, String targetId, SQLSession session) throws DirectoryException {
         // String selectSql = String.format(
         // "SELECT COUNT(*) FROM %s WHERE %s = ? AND %s = ?", tableName,
         // sourceColumn, targetColumn);
@@ -153,16 +147,14 @@ public class TableReference extends AbstractReference {
         Select select = new Select(table);
         select.setFrom(table.getQuotedName());
         select.setWhat("count(*)");
-        String whereString = String.format("%s = ? and %s = ?",
-                table.getColumn(sourceColumn).getQuotedName(),
+        String whereString = String.format("%s = ? and %s = ?", table.getColumn(sourceColumn).getQuotedName(),
                 table.getColumn(targetColumn).getQuotedName());
 
         select.setWhere(whereString);
 
         String selectSql = select.getStatement();
         if (session.logger.isLogEnabled()) {
-            session.logger.logSQL(selectSql,
-                    Arrays.<Serializable> asList(sourceId, targetId));
+            session.logger.logSQL(selectSql, Arrays.<Serializable> asList(sourceId, targetId));
         }
 
         PreparedStatement ps = null;
@@ -174,8 +166,7 @@ public class TableReference extends AbstractReference {
             rs.next();
             return rs.getInt(1) > 0;
         } catch (SQLException e) {
-            throw new DirectoryException(String.format(
-                    "error reading link from %s to %s", sourceId, targetId), e);
+            throw new DirectoryException(String.format("error reading link from %s to %s", sourceId, targetId), e);
         } finally {
             try {
                 if (ps != null) {
@@ -187,8 +178,8 @@ public class TableReference extends AbstractReference {
         }
     }
 
-    public void addLink(String sourceId, String targetId, SQLSession session,
-            boolean checkExisting) throws DirectoryException {
+    public void addLink(String sourceId, String targetId, SQLSession session, boolean checkExisting)
+            throws DirectoryException {
         // OG: the following query should have avoided the round trips but
         // does not work for some reason that might be related to a bug in the
         // JDBC driver:
@@ -214,8 +205,7 @@ public class TableReference extends AbstractReference {
         insert.addColumn(table.getColumn(targetColumn));
         String insertSql = insert.getStatement();
         if (session.logger.isLogEnabled()) {
-            session.logger.logSQL(insertSql,
-                    Arrays.<Serializable> asList(sourceId, targetId));
+            session.logger.logSQL(insertSql, Arrays.<Serializable> asList(sourceId, targetId));
         }
 
         PreparedStatement ps = null;
@@ -225,8 +215,7 @@ public class TableReference extends AbstractReference {
             ps.setString(2, targetId);
             ps.execute();
         } catch (SQLException e) {
-            throw new DirectoryException(String.format(
-                    "error adding link from %s to %s", sourceId, targetId), e);
+            throw new DirectoryException(String.format("error adding link from %s to %s", sourceId, targetId), e);
         } finally {
             try {
                 if (ps != null) {
@@ -238,8 +227,8 @@ public class TableReference extends AbstractReference {
         }
     }
 
-    protected List<String> getIdsFor(String valueColumn, String filterColumn,
-            String filterValue) throws DirectoryException {
+    protected List<String> getIdsFor(String valueColumn, String filterColumn, String filterValue)
+            throws DirectoryException {
         SQLSession session = getSQLSession();
 
         // String sql = String.format("SELECT %s FROM %s WHERE %s = ?",
@@ -252,8 +241,7 @@ public class TableReference extends AbstractReference {
 
         String sql = select.getStatement();
         if (session.logger.isLogEnabled()) {
-            session.logger.logSQL(sql,
-                    Collections.<Serializable> singleton(filterValue));
+            session.logger.logSQL(sql, Collections.<Serializable> singleton(filterValue));
         }
 
         List<String> ids = new LinkedList<String>();
@@ -283,25 +271,21 @@ public class TableReference extends AbstractReference {
     }
 
     @Override
-    public List<String> getSourceIdsForTarget(String targetId)
-            throws DirectoryException {
+    public List<String> getSourceIdsForTarget(String targetId) throws DirectoryException {
         return getIdsFor(sourceColumn, targetColumn, targetId);
     }
 
     @Override
-    public List<String> getTargetIdsForSource(String sourceId)
-            throws DirectoryException {
+    public List<String> getTargetIdsForSource(String sourceId) throws DirectoryException {
         return getIdsFor(targetColumn, sourceColumn, sourceId);
     }
 
-    public void removeLinksFor(String column, String entryId, SQLSession session)
-            throws DirectoryException {
+    public void removeLinksFor(String column, String entryId, SQLSession session) throws DirectoryException {
         Table table = getTable();
-        String sql = String.format("DELETE FROM %s WHERE %s = ?",
-                table.getQuotedName(), table.getColumn(column).getQuotedName());
+        String sql = String.format("DELETE FROM %s WHERE %s = ?", table.getQuotedName(),
+                table.getColumn(column).getQuotedName());
         if (session.logger.isLogEnabled()) {
-            session.logger.logSQL(sql,
-                    Collections.<Serializable> singleton(entryId));
+            session.logger.logSQL(sql, Collections.<Serializable> singleton(entryId));
         }
         PreparedStatement ps = null;
         try {
@@ -321,13 +305,11 @@ public class TableReference extends AbstractReference {
         }
     }
 
-    public void removeLinksForSource(String sourceId, SQLSession session)
-            throws DirectoryException {
+    public void removeLinksForSource(String sourceId, SQLSession session) throws DirectoryException {
         removeLinksFor(sourceColumn, sourceId, session);
     }
 
-    public void removeLinksForTarget(String targetId, SQLSession session)
-            throws DirectoryException {
+    public void removeLinksForTarget(String targetId, SQLSession session) throws DirectoryException {
         removeLinksFor(targetColumn, targetId, session);
     }
 
@@ -353,9 +335,8 @@ public class TableReference extends AbstractReference {
         }
     }
 
-    public void setIdsFor(String idsColumn, List<String> ids,
-            String filterColumn, String filterValue, SQLSession session)
-            throws DirectoryException {
+    public void setIdsFor(String idsColumn, List<String> ids, String filterColumn, String filterValue,
+            SQLSession session) throws DirectoryException {
 
         List<String> idsToDelete = new LinkedList<String>();
         Set<String> idsToAdd = new HashSet<String>();
@@ -365,10 +346,8 @@ public class TableReference extends AbstractReference {
         Table table = getTable();
 
         // iterate over existing links to find what to add and what to remove
-        String selectSql = String.format("SELECT %s FROM %s WHERE %s = ?",
-                table.getColumn(idsColumn).getQuotedName(),
-                table.getQuotedName(),
-                table.getColumn(filterColumn).getQuotedName());
+        String selectSql = String.format("SELECT %s FROM %s WHERE %s = ?", table.getColumn(idsColumn).getQuotedName(),
+                table.getQuotedName(), table.getColumn(filterColumn).getQuotedName());
         PreparedStatement ps = null;
         try {
             ps = session.sqlConnection.prepareStatement(selectSql);
@@ -385,8 +364,7 @@ public class TableReference extends AbstractReference {
                 }
             }
         } catch (SQLException e) {
-            throw new DirectoryException("failed to fetch existing links for "
-                    + filterValue, e);
+            throw new DirectoryException("failed to fetch existing links for " + filterValue, e);
         } finally {
             try {
                 if (ps != null) {
@@ -404,8 +382,7 @@ public class TableReference extends AbstractReference {
             // "DELETE FROM %s WHERE %s = ? AND %s = ?", tableName,
             // filterColumn, idsColumn);
             Delete delete = new Delete(table);
-            String whereString = String.format("%s = ? AND %s = ?",
-                    table.getColumn(filterColumn).getQuotedName(),
+            String whereString = String.format("%s = ? AND %s = ?", table.getColumn(filterColumn).getQuotedName(),
                     table.getColumn(idsColumn).getQuotedName());
             delete.setWhere(whereString);
             String deleteSql = delete.getStatement();
@@ -414,17 +391,14 @@ public class TableReference extends AbstractReference {
                 ps = session.sqlConnection.prepareStatement(deleteSql);
                 for (String unwantedId : idsToDelete) {
                     if (session.logger.isLogEnabled()) {
-                        session.logger.logSQL(deleteSql,
-                                Arrays.<Serializable> asList(filterValue,
-                                        unwantedId));
+                        session.logger.logSQL(deleteSql, Arrays.<Serializable> asList(filterValue, unwantedId));
                     }
                     ps.setString(1, filterValue);
                     ps.setString(2, unwantedId);
                     ps.execute();
                 }
             } catch (SQLException e) {
-                throw new DirectoryException(
-                        "failed to remove unwanted links for " + filterValue, e);
+                throw new DirectoryException("failed to remove unwanted links for " + filterValue, e);
             } finally {
                 try {
                     if (ps != null) {
@@ -450,19 +424,18 @@ public class TableReference extends AbstractReference {
         }
     }
 
-    public void setSourceIdsForTarget(String targetId, List<String> sourceIds,
-            SQLSession session) throws DirectoryException {
+    public void setSourceIdsForTarget(String targetId, List<String> sourceIds, SQLSession session)
+            throws DirectoryException {
         setIdsFor(sourceColumn, sourceIds, targetColumn, targetId, session);
     }
 
-    public void setTargetIdsForSource(String sourceId, List<String> targetIds,
-            SQLSession session) throws DirectoryException {
+    public void setTargetIdsForSource(String sourceId, List<String> targetIds, SQLSession session)
+            throws DirectoryException {
         setIdsFor(targetColumn, targetIds, sourceColumn, sourceId, session);
     }
 
     @Override
-    public void setSourceIdsForTarget(String targetId, List<String> sourceIds)
-            throws DirectoryException {
+    public void setSourceIdsForTarget(String targetId, List<String> sourceIds) throws DirectoryException {
         SQLSession session = getSQLSession();
         try {
             setSourceIdsForTarget(targetId, sourceIds, session);
@@ -473,8 +446,7 @@ public class TableReference extends AbstractReference {
     }
 
     @Override
-    public void setTargetIdsForSource(String sourceId, List<String> targetIds)
-            throws DirectoryException {
+    public void setTargetIdsForSource(String sourceId, List<String> targetIds) throws DirectoryException {
         SQLSession session = getSQLSession();
         try {
             setTargetIdsForSource(sourceId, targetIds, session);
@@ -506,8 +478,7 @@ public class TableReference extends AbstractReference {
      * @param sqlSession
      * @throws DirectoryException
      */
-    protected void maybeInitialize(SQLSession sqlSession)
-            throws DirectoryException {
+    protected void maybeInitialize(SQLSession sqlSession) throws DirectoryException {
         if (!initialized) {
             initialize(sqlSession);
             initialized = true;
@@ -518,10 +489,8 @@ public class TableReference extends AbstractReference {
         if (table == null) {
             boolean nativeCase = getSQLSourceDirectory().useNativeCase();
             table = SQLHelper.addTable(tableName, getDialect(), nativeCase);
-            SQLHelper.addColumn(table, sourceColumn, ColumnType.STRING,
-                    nativeCase);
-            SQLHelper.addColumn(table, targetColumn, ColumnType.STRING,
-                    nativeCase);
+            SQLHelper.addColumn(table, sourceColumn, ColumnType.STRING, nativeCase);
+            SQLHelper.addColumn(table, targetColumn, ColumnType.STRING, nativeCase);
             // index added for Azure
             table.addIndex(null, IndexType.MAIN_NON_PRIMARY, sourceColumn);
         }
@@ -570,6 +539,7 @@ public class TableReference extends AbstractReference {
     /**
      * @since 5.6
      */
+    @Override
     public TableReference clone() {
         TableReference clone = (TableReference) super.clone();
         clone.tableName = tableName;

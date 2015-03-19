@@ -33,8 +33,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * @since 5.6
  */
-public class MockMemoryDirectoryFactory extends DefaultComponent implements
-        DirectoryFactory {
+public class MockMemoryDirectoryFactory extends DefaultComponent implements DirectoryFactory {
 
     protected Map<String, MockMemoryDirectoryDescriptor> reg = new HashMap<String, MockMemoryDirectoryDescriptor>();
 
@@ -44,8 +43,7 @@ public class MockMemoryDirectoryFactory extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         MockMemoryDirectoryDescriptor desc = (MockMemoryDirectoryDescriptor) contribution;
         String directoryName = desc.name;
@@ -59,8 +57,7 @@ public class MockMemoryDirectoryFactory extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         String directoryName = ((MockMemoryDirectoryDescriptor) contribution).name;
         reg.remove(directoryName);
@@ -72,6 +69,7 @@ public class MockMemoryDirectoryFactory extends DefaultComponent implements
         }
     }
 
+    @Override
     public Directory getDirectory(String name) {
         if (reg.containsKey(name)) {
             return new MemoryDirectory(name, null, null, "uid", "foo");
@@ -79,9 +77,11 @@ public class MockMemoryDirectoryFactory extends DefaultComponent implements
         return null;
     }
 
+    @Override
     public void shutdown() {
     }
 
+    @Override
     public List<Directory> getDirectories() {
         throw new NotImplementedException();
     }

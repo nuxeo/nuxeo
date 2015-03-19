@@ -75,8 +75,7 @@ public class SQLHelper {
 
     private JDBCLogger logger = new JDBCLogger("SQLDirectory");
 
-    public SQLHelper(Connection connection, Table table, String dataFileName,
-            char characterSeparator, String policy) {
+    public SQLHelper(Connection connection, Table table, String dataFileName, char characterSeparator, String policy) {
         this.table = table;
         this.connection = connection;
         this.policy = policy;
@@ -85,14 +84,12 @@ public class SQLHelper {
         this.characterSeparator = characterSeparator;
     }
 
-    public SQLHelper(Connection connection, Table table, String dataFileName,
-            String policy) {
+    public SQLHelper(Connection connection, Table table, String dataFileName, String policy) {
         this(connection, table, dataFileName, ',', policy);
     }
 
     public boolean setupTable() throws DirectoryException {
-        log.debug(String.format("setting up table '%s', policy='%s'",
-                tableName, policy));
+        log.debug(String.format("setting up table '%s', policy='%s'", tableName, policy));
         if (policy.equals("never")) {
             log.debug("policy='never', skipping setup");
             return false;
@@ -119,8 +116,7 @@ public class SQLHelper {
 
             if (dataFileName == null) {
                 // no dataFile found, do not try to execute it
-                log.debug(String.format("Table '%s': no data file found",
-                        tableName));
+                log.debug(String.format("Table '%s': no data file found", tableName));
                 return true;
             }
 
@@ -142,9 +138,7 @@ public class SQLHelper {
                 stmt.execute(alter);
             }
         } catch (SQLException e) {
-            throw new DirectoryException(String.format(
-                    "Table '%s' alteration failed: %s", table, e.getMessage()),
-                    e);
+            throw new DirectoryException(String.format("Table '%s' alteration failed: %s", table, e.getMessage()), e);
         }
     }
 
@@ -173,8 +167,7 @@ public class SQLHelper {
                 stmt.execute(sql);
             }
         } catch (SQLException e) {
-            throw new DirectoryException(String.format(
-                    "Table '%s' creation failed: %s", table, e.getMessage()), e);
+            throw new DirectoryException(String.format("Table '%s' creation failed: %s", table, e.getMessage()), e);
         }
     }
 
@@ -184,8 +177,7 @@ public class SQLHelper {
             return false;
         } else {
             // all fields have a matching column, this looks not that bad
-            log.debug(String.format("all fields matched for table '%s'",
-                    tableName));
+            log.debug(String.format("all fields matched for table '%s'", tableName));
             return true;
         }
     }
@@ -205,8 +197,7 @@ public class SQLHelper {
                 // TODO: check types as well
                 String fieldName = column.getPhysicalName();
                 if (!columnNames.contains(fieldName)) {
-                    log.debug(String.format("required field: %s is missing",
-                            fieldName));
+                    log.debug(String.format("required field: %s is missing", fieldName));
                     missingColumns.add(column);
 
                     if (breakAtFirstMissing) {
@@ -258,15 +249,12 @@ public class SQLHelper {
                 ResultSet rs = st.executeQuery(sql);
                 rs.next();
                 schemaName = rs.getString(1);
-                log.trace("checking existing tables for oracle database, schema: "
-                        + schemaName);
+                log.trace("checking existing tables for oracle database, schema: " + schemaName);
                 st.close();
             }
-            ResultSet rs = metaData.getTables(null, schemaName,
-                    table.getPhysicalName(), new String[] { "TABLE" });
+            ResultSet rs = metaData.getTables(null, schemaName, table.getPhysicalName(), new String[] { "TABLE" });
             boolean exists = rs.next();
-            log.debug(String.format("checking if table %s exists: %s",
-                    table.getPhysicalName(), Boolean.valueOf(exists)));
+            log.debug(String.format("checking if table %s exists: %s", table.getPhysicalName(), Boolean.valueOf(exists)));
             return exists;
         } catch (SQLException e) {
             throw new DirectoryException(e);
@@ -295,19 +283,15 @@ public class SQLHelper {
         String[] columnValues = null;
         PreparedStatement ps = null;
         try {
-            InputStream is = getClass().getClassLoader().getResourceAsStream(
-                    dataFileName);
+            InputStream is = getClass().getClassLoader().getResourceAsStream(dataFileName);
             if (is == null) {
-                is = Framework.getResourceLoader().getResourceAsStream(
-                        dataFileName);
+                is = Framework.getResourceLoader().getResourceAsStream(dataFileName);
                 if (is == null) {
-                    throw new DirectoryException("data file not found: "
-                            + dataFileName);
+                    throw new DirectoryException("data file not found: " + dataFileName);
                 }
             }
 
-            csvReader = new CSVReader(new InputStreamReader(is,
-                    SQL_SCRIPT_CHARSET), characterSeparator);
+            csvReader = new CSVReader(new InputStreamReader(is, SQL_SCRIPT_CHARSET), characterSeparator);
 
             String[] columnNames = csvReader.readNext();
             List<Column> columns = new ArrayList<Column>();
@@ -316,8 +300,7 @@ public class SQLHelper {
                 String trimmedColumnName = columnName.trim();
                 Column column = table.getColumn(trimmedColumnName);
                 if (column == null) {
-                    throw new DirectoryException("column not found: "
-                            + trimmedColumnName);
+                    throw new DirectoryException("column not found: " + trimmedColumnName);
                 }
                 columns.add(table.getColumn(trimmedColumnName));
                 insert.addColumn(column);
@@ -328,22 +311,19 @@ public class SQLHelper {
             ps = connection.prepareStatement(insertSql);
 
             while ((columnValues = csvReader.readNext()) != null) {
-                if (columnValues.length == 0
-                        || (columnValues.length == 1 && "".equals(columnValues[0]))) {
+                if (columnValues.length == 0 || (columnValues.length == 1 && "".equals(columnValues[0]))) {
                     // NXP-2538: allow columns with only one value but skip
                     // empty lines
                     continue;
                 }
                 if (columnValues.length != columnNames.length) {
-                    log.error("invalid column count while reading csv file: "
-                            + dataFileName + ", values: "
+                    log.error("invalid column count while reading csv file: " + dataFileName + ", values: "
                             + formatColumnValues(columnValues));
                     continue;
                 }
 
                 if (logger.isLogEnabled()) {
-                    List<Serializable> values = new ArrayList<Serializable>(
-                            columnNames.length);
+                    List<Serializable> values = new ArrayList<Serializable>(columnNames.length);
                     for (int i = 0; i < columnNames.length; i++) {
                         String value = columnValues[i];
                         if (SQL_NULL_MARKER.equals(value)) {
@@ -372,13 +352,9 @@ public class SQLHelper {
                         try {
                             v = Long.valueOf(value);
                         } catch (NumberFormatException e) {
-                            throw new DirectoryException(
-                                    String.format(
-                                            "failed to set column '%s' on table '%s', values: %s",
-                                            column.getPhysicalName(),
-                                            table.getPhysicalName(),
-                                            formatColumnValues(columnValues)),
-                                    e);
+                            throw new DirectoryException(String.format(
+                                    "failed to set column '%s' on table '%s', values: %s", column.getPhysicalName(),
+                                    table.getPhysicalName(), formatColumnValues(columnValues)), e);
                         }
                     } else if (column.getType().spec == ColumnSpec.TIMESTAMP) {
                         try {
@@ -386,44 +362,31 @@ public class SQLHelper {
                             cal.setTime(Timestamp.valueOf(value));
                             v = cal;
                         } catch (IllegalArgumentException e) {
-                            throw new DirectoryException(
-                                    String.format(
-                                            "failed to set column '%s' on table '%s', values: %s",
-                                            column.getPhysicalName(),
-                                            table.getPhysicalName(),
-                                            formatColumnValues(columnValues)),
-                                    e);
+                            throw new DirectoryException(String.format(
+                                    "failed to set column '%s' on table '%s', values: %s", column.getPhysicalName(),
+                                    table.getPhysicalName(), formatColumnValues(columnValues)), e);
                         }
                     } else if (column.getType().spec == ColumnSpec.DOUBLE) {
                         try {
                             v = Double.valueOf(value);
                         } catch (NumberFormatException e) {
-                            throw new DirectoryException(
-                                    String.format(
-                                            "failed to set column '%s' on table '%s', values: %s",
-                                            column.getPhysicalName(),
-                                            table.getPhysicalName(),
-                                            formatColumnValues(columnValues)),
-                                    e);
+                            throw new DirectoryException(String.format(
+                                    "failed to set column '%s' on table '%s', values: %s", column.getPhysicalName(),
+                                    table.getPhysicalName(), formatColumnValues(columnValues)), e);
                         }
                     } else {
-                        throw new DirectoryException(
-                                "unrecognized column type: " + column.getType()
-                                        + ", values: "
-                                        + formatColumnValues(columnValues));
+                        throw new DirectoryException("unrecognized column type: " + column.getType() + ", values: "
+                                + formatColumnValues(columnValues));
                     }
                     column.setToPreparedStatement(ps, i + 1, v);
                 }
                 ps.execute();
             }
         } catch (IOException e) {
-            throw new DirectoryException("Read error while reading data file: "
-                    + dataFileName, e);
+            throw new DirectoryException("Read error while reading data file: " + dataFileName, e);
         } catch (SQLException e) {
-            throw new DirectoryException(String.format(
-                    "Table '%s' initialization failed: %s, values: %s",
-                    table.getPhysicalName(), e.getMessage(),
-                    formatColumnValues(columnValues)), e);
+            throw new DirectoryException(String.format("Table '%s' initialization failed: %s, values: %s",
+                    table.getPhysicalName(), e.getMessage(), formatColumnValues(columnValues)), e);
         } finally {
             try {
                 if (csvReader != null) {
@@ -433,16 +396,14 @@ public class SQLHelper {
                     ps.close();
                 }
             } catch (IOException e) {
-                throw new DirectoryException("Error closing data file: "
-                        + dataFileName, e);
+                throw new DirectoryException("Error closing data file: " + dataFileName, e);
             } catch (SQLException sqle) {
                 throw new DirectoryException(sqle);
             }
         }
     }
 
-    public static Table addTable(String name, Dialect dialect,
-            boolean nativeCase) {
+    public static Table addTable(String name, Dialect dialect, boolean nativeCase) {
         String physicalName = dialect.getTableName(name);
         if (!nativeCase && name.length() == physicalName.length()) {
             // we can keep the name specified in the config
@@ -451,8 +412,7 @@ public class SQLHelper {
         return new TableImpl(dialect, physicalName, physicalName);
     }
 
-    public static Column addColumn(Table table, String fieldName,
-            ColumnType type, boolean nativeCase) {
+    public static Column addColumn(Table table, String fieldName, ColumnType type, boolean nativeCase) {
         String physicalName = table.getDialect().getColumnName(fieldName);
         if (!nativeCase && fieldName.length() == physicalName.length()) {
             // we can keep the name specified in the config

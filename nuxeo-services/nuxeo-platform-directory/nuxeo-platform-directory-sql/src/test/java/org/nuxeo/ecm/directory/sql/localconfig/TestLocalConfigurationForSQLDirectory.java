@@ -36,15 +36,14 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
-public class TestLocalConfigurationForSQLDirectory extends
-        SQLRepositoryTestCase {
+public class TestLocalConfigurationForSQLDirectory extends SQLRepositoryTestCase {
 
     DocumentModel workspace;
 
     DirectoryService dirService = null;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -54,27 +53,21 @@ public class TestLocalConfigurationForSQLDirectory extends
 
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         // override user schema with intField & dateField
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "test-sql-directories-schema-override.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests", "test-sql-directories-schema-override.xml");
 
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "test-sql-directories-bundle.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests", "test-sql-directories-bundle.xml");
 
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "test-sql-directories-for-local-configuration-bundle.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests", "test-sql-directories-for-local-configuration-bundle.xml");
 
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "test-types-with-directory-local-configuration.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests", "test-types-with-directory-local-configuration.xml");
 
         initRepository();
-        dirService = (DirectoryService) Framework.getRuntime().getComponent(
-                DirectoryService.NAME);
+        dirService = (DirectoryService) Framework.getRuntime().getComponent(DirectoryService.NAME);
 
     }
 
     @Test
-    public void testShouldReturnUserDirectoryWhenNoContextIsGiven()
-            throws Exception {
+    public void testShouldReturnUserDirectoryWhenNoContextIsGiven() throws Exception {
 
         Directory dir = dirService.getDirectory("userDirectory");
         assertEquals("userDirectory", dir.getName());
@@ -85,8 +78,7 @@ public class TestLocalConfigurationForSQLDirectory extends
     }
 
     @Test
-    public void testShouldReturnUserDirectoryWhenContextIsNull()
-            throws Exception {
+    public void testShouldReturnUserDirectoryWhenContextIsNull() throws Exception {
 
         Directory dir = dirService.getDirectory("userDirectory", null);
         assertEquals("userDirectory", dir.getName());
@@ -97,8 +89,7 @@ public class TestLocalConfigurationForSQLDirectory extends
     }
 
     @Test
-    public void testShouldReturnUserDirectoryWhenNoLocalConfigurationSet()
-            throws Exception {
+    public void testShouldReturnUserDirectoryWhenNoLocalConfigurationSet() throws Exception {
 
         Directory dir = dirService.getDirectory("userDirectory", workspace);
         assertEquals("userDirectory", dir.getName());
@@ -109,8 +100,7 @@ public class TestLocalConfigurationForSQLDirectory extends
     }
 
     @Test
-    public void testShouldReturnUserDirectoryWhenLocalConfigurationSetIsAnEmptyString()
-            throws Exception {
+    public void testShouldReturnUserDirectoryWhenLocalConfigurationSetIsAnEmptyString() throws Exception {
 
         setDirectorySuffix(workspace, "          ");
 
@@ -125,8 +115,7 @@ public class TestLocalConfigurationForSQLDirectory extends
     }
 
     @Test
-    public void testShouldReturnUserDirectoryWithSuffixWhenDirectoryContextIsGiven()
-            throws Exception {
+    public void testShouldReturnUserDirectoryWithSuffixWhenDirectoryContextIsGiven() throws Exception {
 
         setDirectorySuffix(workspace, "domain_a");
 
@@ -149,13 +138,13 @@ public class TestLocalConfigurationForSQLDirectory extends
 
     }
 
-    protected void setDirectorySuffix(DocumentModel doc, String directorySuffix)
-            throws ClientException {
+    protected void setDirectorySuffix(DocumentModel doc, String directorySuffix) throws ClientException {
         doc.setPropertyValue(DIRECTORY_CONFIGURATION_FIELD, directorySuffix);
         session.saveDocument(doc);
         session.save();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();

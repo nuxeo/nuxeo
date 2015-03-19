@@ -66,8 +66,7 @@ public class SQLDirectory extends AbstractDirectory {
             if (!log.isDebugEnabled()) {
                 return null;
             }
-            return new Throwable("SQL directory session init context in "
-                    + SQLDirectory.this);
+            return new Throwable("SQL directory session init context in " + SQLDirectory.this);
         }
 
         protected void checkIsNotLive() {
@@ -76,21 +75,16 @@ public class SQLDirectory extends AbstractDirectory {
                     return;
                 }
                 if (initContext != null) {
-                    log.warn("Closing a sql directory session for you "
-                            + session, initContext);
+                    log.warn("Closing a sql directory session for you " + session, initContext);
                 } else {
-                    log.warn("Closing a sql directory session for you "
-                            + session);
+                    log.warn("Closing a sql directory session for you " + session);
                 }
                 if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-                    log.warn("Closing sql directory session outside a transaction"
-                            + session);
+                    log.warn("Closing sql directory session outside a transaction" + session);
                 }
                 session.close();
             } catch (DirectoryException e) {
-                log.error(
-                        "Cannot state on sql directory session before commit "
-                                + SQLDirectory.this, e);
+                log.error("Cannot state on sql directory session before commit " + SQLDirectory.this, e);
             }
 
         }
@@ -112,8 +106,7 @@ public class SQLDirectory extends AbstractDirectory {
     public static final String TENANT_ID_FIELD = "tenantId";
 
     /**
-     * Maximum number of times we retry a connection if the server says it's
-     * overloaded.
+     * Maximum number of times we retry a connection if the server says it's overloaded.
      */
     public static final int MAX_CONNECTION_TRIES = 5;
 
@@ -163,13 +156,11 @@ public class SQLDirectory extends AbstractDirectory {
                 }
             }
             // setup table and fields maps
-            table = SQLHelper.addTable(config.tableName, dialect,
-                    useNativeCase());
+            table = SQLHelper.addTable(config.tableName, dialect, useNativeCase());
             SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
             schema = schemaManager.getSchema(config.schemaName);
             if (schema == null) {
-                throw new DirectoryException("schema not found: "
-                        + config.schemaName);
+                throw new DirectoryException("schema not found: " + config.schemaName);
             }
             schemaFieldMap = new LinkedHashMap<String, Field>();
             storedFieldNames = new LinkedList<String>();
@@ -189,8 +180,7 @@ public class SQLDirectory extends AbstractDirectory {
                     if (isId && config.isAutoincrementIdField()) {
                         type = ColumnType.AUTOINC;
                     }
-                    Column column = SQLHelper.addColumn(table, fieldName, type,
-                            useNativeCase());
+                    Column column = SQLHelper.addColumn(table, fieldName, type, useNativeCase());
                     if (isId) {
                         if (config.isAutoincrementIdField()) {
                             column.setIdentity(true);
@@ -206,16 +196,13 @@ public class SQLDirectory extends AbstractDirectory {
                 }
             }
             if (!hasPrimary) {
-                throw new DirectoryException(
-                        String.format(
-                                "Directory '%s' id field '%s' is not present in schema '%s'",
-                                getName(), getIdField(), getSchema()));
+                throw new DirectoryException(String.format(
+                        "Directory '%s' id field '%s' is not present in schema '%s'", getName(), getIdField(),
+                        getSchema()));
             }
 
-            SQLHelper helper = new SQLHelper(sqlConnection, table,
-                    config.dataFileName,
-                    config.getDataFileCharacterSeparator(),
-                    config.createTablePolicy);
+            SQLHelper helper = new SQLHelper(sqlConnection, table, config.dataFileName,
+                    config.getDataFileCharacterSeparator(), config.createTablePolicy);
             helper.setupTable();
 
             try {
@@ -255,8 +242,7 @@ public class SQLDirectory extends AbstractDirectory {
                 // context.lookup(config.dataSourceName);
             } else {
                 managedSQLSession = false;
-                dataSource = new SimpleDataSource(config.dbUrl,
-                        config.dbDriver, config.dbUser, config.dbPassword);
+                dataSource = new SimpleDataSource(config.dbUrl, config.dbDriver, config.dbUser, config.dbPassword);
             }
             log.trace("found datasource: " + dataSource);
             return dataSource;
@@ -278,22 +264,19 @@ public class SQLDirectory extends AbstractDirectory {
             }
             return connection;
         } catch (SQLException e) {
-            throw new DirectoryException("Cannot connect to SQL directory '"
-                    + getName() + "': " + e.getMessage(), e);
+            throw new DirectoryException("Cannot connect to SQL directory '" + getName() + "': " + e.getMessage(), e);
         }
     }
 
     /**
      * Gets a physical connection from a datasource.
      * <p>
-     * A few retries are done to work around databases that have problems with
-     * many open/close in a row.
+     * A few retries are done to work around databases that have problems with many open/close in a row.
      *
      * @param dataSource the datasource
      * @return the connection
      */
-    protected Connection getConnection(DataSource dataSource)
-            throws SQLException {
+    protected Connection getConnection(DataSource dataSource) throws SQLException {
         for (int tryNo = 0;; tryNo++) {
             try {
                 return dataSource.getConnection();
@@ -310,9 +293,7 @@ public class SQLDirectory extends AbstractDirectory {
                 // Happens when connections are open too fast (unit tests)
                 // -> retry a few times after a small delay
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "Connections open too fast, retrying in %ds: %s",
-                            Integer.valueOf(tryNo),
+                    log.debug(String.format("Connections open too fast, retrying in %ds: %s", Integer.valueOf(tryNo),
                             e.getMessage().replace("\n", " ")));
                 }
                 try {
@@ -358,23 +339,19 @@ public class SQLDirectory extends AbstractDirectory {
         return session;
     }
 
-    protected synchronized void addSession(final SQLSession session)
-            throws DirectoryException {
+    protected synchronized void addSession(final SQLSession session) throws DirectoryException {
         super.addSession(session);
         registerInTx(session);
     }
 
-    protected void registerInTx(final SQLSession session)
-            throws DirectoryException {
+    protected void registerInTx(final SQLSession session) throws DirectoryException {
         if (!TransactionHelper.isTransactionActive()) {
             return;
         }
         try {
-             ConnectionHelper.registerSynchronization(new TxSessionCleaner(session));
+            ConnectionHelper.registerSynchronization(new TxSessionCleaner(session));
         } catch (SystemException e) {
-            throw new DirectoryException(
-                    "Cannot register in tx for session cleanup handling "
-                            + this, e);
+            throw new DirectoryException("Cannot register in tx for session cleanup handling " + this, e);
         }
     }
 

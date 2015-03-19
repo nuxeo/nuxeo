@@ -56,16 +56,13 @@ public class PasswordHelper {
      * @return {@code true} if the password is hashed
      */
     public static boolean isHashed(String password) {
-        return password.startsWith(HSSHA)
-                || password.startsWith(HSMD5);
+        return password.startsWith(HSSHA) || password.startsWith(HSMD5);
     }
 
     /**
-     * Returns the hashed string for a password according to a given hashing
-     * algorithm.
+     * Returns the hashed string for a password according to a given hashing algorithm.
      *
-     * @param algorithm the algorithm, {@link #SSHA} or {@link #SMD5}, or
-     *            {@code null} to not hash
+     * @param algorithm the algorithm, {@link #SSHA} or {@link #SMD5}, or {@code null} to not hash
      * @param password the password
      * @return the hashed password
      */
@@ -130,12 +127,10 @@ public class PasswordHelper {
         byte[] salt = new byte[bytes.length - len];
         System.arraycopy(bytes, 0, hash, 0, hash.length);
         System.arraycopy(bytes, hash.length, salt, 0, salt.length);
-        return MessageDigest.isEqual(hash, digestWithSalt(password, salt,
-                digestalg));
+        return MessageDigest.isEqual(hash, digestWithSalt(password, salt, digestalg));
     }
 
-    public static byte[] digestWithSalt(String password, byte[] salt,
-            String algorithm) {
+    public static byte[] digestWithSalt(String password, byte[] salt, String algorithm) {
         try {
             MessageDigest md = MessageDigest.getInstance(algorithm);
             md.update(password.getBytes("UTF-8"));

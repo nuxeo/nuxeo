@@ -31,16 +31,15 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This class is used for tests, where datasources are set up from a driver, url
- * and user/password instead of a JNDI name.
+ * This class is used for tests, where datasources are set up from a driver, url and user/password instead of a JNDI
+ * name.
  */
 public class SimpleDataSource implements DataSource {
 
     private static final Log log = LogFactory.getLog(SimpleDataSource.class);
 
     /**
-     * Maximum number of time we retry a connection if the server says it's
-     * overloaded.
+     * Maximum number of time we retry a connection if the server says it's overloaded.
      */
     public static final int MAX_CONNECTION_TRIES = 5;
 
@@ -50,8 +49,7 @@ public class SimpleDataSource implements DataSource {
 
     private final String password;
 
-    public SimpleDataSource(String url, String driver, String user,
-            String password) {
+    public SimpleDataSource(String url, String driver, String user, String password) {
         url = Framework.expandVars(url);
         driver = Framework.expandVars(driver);
         user = Framework.expandVars(user);
@@ -87,9 +85,8 @@ public class SimpleDataSource implements DataSource {
                 // SQLState = "66000"
                 // Happens when connections are open too fast (unit tests)
                 // -> retry a few times after a small delay
-                log.warn(String.format(
-                        "Connections open too fast, retrying in %ds: %s",
-                        tryNo, e.getMessage().replace("\n", " ")));
+                log.warn(String.format("Connections open too fast, retrying in %ds: %s", tryNo,
+                        e.getMessage().replace("\n", " ")));
                 try {
                     Thread.sleep(1000 * tryNo);
                 } catch (InterruptedException ie) {
@@ -103,8 +100,7 @@ public class SimpleDataSource implements DataSource {
     }
 
     @Override
-    public Connection getConnection(String username, String password)
-            throws SQLException {
+    public Connection getConnection(String username, String password) throws SQLException {
         throw new UnsupportedOperationException();
     }
 
@@ -129,6 +125,7 @@ public class SimpleDataSource implements DataSource {
     }
 
     // @Override in CommonDataSource for Java SE 7 / JDBC 4.1
+    @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
         throw new SQLFeatureNotSupportedException();
     }

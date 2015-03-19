@@ -18,8 +18,6 @@
 package org.nuxeo.ecm.directory.sql.filter;
 
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
-import org.nuxeo.ecm.directory.DirectoryException;
-
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -30,6 +28,11 @@ import java.util.Calendar;
  * @since 5.7
  */
 public class SQLBetweenFilter extends SQLComplexFilter {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
     private Calendar from;
 
@@ -42,8 +45,7 @@ public class SQLBetweenFilter extends SQLComplexFilter {
     }
 
     @Override
-    public int doSetFieldValue(PreparedStatement ps, int index, Column column)
-            throws SQLException {
+    public int doSetFieldValue(PreparedStatement ps, int index, Column column) throws SQLException {
         column.setToPreparedStatement(ps, index, from);
         column.setToPreparedStatement(ps, index + 1, to);
         return index + 2;

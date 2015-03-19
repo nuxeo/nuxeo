@@ -37,6 +37,7 @@ import org.nuxeo.ecm.directory.Session;
 public class SQLDirectoryProxy implements Directory {
 
     private final SQLDirectoryDescriptor descriptor;
+
     private AbstractDirectory directory;
 
     public SQLDirectoryProxy(SQLDirectoryDescriptor descriptor) {
@@ -116,7 +117,7 @@ public class SQLDirectoryProxy implements Directory {
     }
 
     @Override
-    public void invalidateDirectoryCache() throws DirectoryException{
+    public void invalidateDirectoryCache() throws DirectoryException {
         getCache().invalidateAll();
     }
 

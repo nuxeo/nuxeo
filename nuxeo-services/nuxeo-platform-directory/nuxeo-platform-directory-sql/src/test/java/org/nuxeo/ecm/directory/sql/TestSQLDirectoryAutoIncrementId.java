@@ -35,17 +35,16 @@ public class TestSQLDirectoryAutoIncrementId extends SQLDirectoryTestCase {
 
     private static final String SCHEMA = "intIdSchema";
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "autoincrementid-contrib.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests", "autoincrementid-contrib.xml");
     }
 
     @Test
     public void testAutoIncrementId() throws Exception {
-        DirectoryService service = (DirectoryService) Framework.getRuntime().getComponent(
-                DirectoryService.NAME);
+        DirectoryService service = (DirectoryService) Framework.getRuntime().getComponent(DirectoryService.NAME);
 
         Session session = service.open("testAutoIncrement");
         assertNotNull(session);
