@@ -24,9 +24,11 @@ import static org.nuxeo.ecm.csv.Constants.CSV_TYPE_COL;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -44,6 +46,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -199,7 +202,7 @@ public class CSVImporterWork extends AbstractWork {
     public void work() {
         setStatus("Importing");
         initSession();
-        try (Reader in = new BufferedReader(new FileReader(csvFile));
+        try (Reader in = newReader(csvFile);
                 CSVParser parser = CSVFormat.DEFAULT.withEscape(options.getEscapeCharacter()).withHeader().parse(in)) {
             doImport(parser);
         } catch (IOException e) {
@@ -211,6 +214,13 @@ public class CSVImporterWork extends AbstractWork {
             sendMail();
         }
         setStatus(null);
+    }
+
+    /**
+     * @since 7.3
+     */
+    protected BufferedReader newReader(File file) throws FileNotFoundException {
+        return new BufferedReader(new InputStreamReader(new BOMInputStream(new FileInputStream(file))));
     }
 
     protected void doImport(CSVParser parser) {
