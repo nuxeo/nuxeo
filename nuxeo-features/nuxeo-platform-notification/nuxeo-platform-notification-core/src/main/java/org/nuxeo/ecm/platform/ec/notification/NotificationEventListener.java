@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
@@ -123,6 +124,11 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
             docCtx = (DocumentEventContext) ctx;
         } else {
             log.warn("Can not handle notification on a event that is not bound to a DocumentEventContext");
+            return;
+        }
+
+        if(docCtx.getSourceDocument() instanceof ShallowDocumentModel) {
+            log.trace("Can not handle notification on a event that is bound to a ShallowDocument");
             return;
         }
 
