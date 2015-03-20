@@ -40,23 +40,26 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * Exposes a limited set of Read Only Elasticsearch REST API.
+ *
+ * @since 7.3
+ */
 @Path("/es")
 @WebObject(type = "es")
 public class Main extends ModuleRoot {
-
     private static final Log log = LogFactory.getLog(Main.class);
-
     private static final String DEFAULT_ES_BASE_URL = "http://localhost:9200/";
     private static final java.lang.String ES_BASE_URL_PROPERTY = "elasticsearch.httpReadOnly.baseUrl";
-
     private String esBaseUrl;
-
     private final RequestValidator validator;
 
     public Main() {
         super();
         validator = new RequestValidator();
-        log.warn("Create a validator");
+        if (log.isDebugEnabled()) {
+            log.debug("New instance of ES module");
+        }
     }
 
     @GET
@@ -153,7 +156,7 @@ public class Main extends ModuleRoot {
         log.warn(req);
         if (!principal.isAdministrator()) {
             String docAcl = HttpClient.get(getElasticsearchBaseUrl() + req.getCheckAccessUrl());
-            validator.hasAccess(principal, docAcl);
+            validator.checkAccess(principal, docAcl);
         }
         return HttpClient.get(getElasticsearchBaseUrl() + req.getUrl());
     }

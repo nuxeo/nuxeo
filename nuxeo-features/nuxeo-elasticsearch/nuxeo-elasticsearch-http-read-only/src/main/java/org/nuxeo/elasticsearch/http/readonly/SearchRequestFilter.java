@@ -28,27 +28,24 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.security.SecurityService;
 
 /**
+ * Rewrite an Elsaticsearch search request to add security filter.
+ *
+ * URI Search are turned into Request body search.
+ *
  * @since 7.3
  */
 public class SearchRequestFilter {
 
     private static final String MATCH_ALL = "{\"query\": {\"match_all\": {}}}";
-
     private static final String QUERY_STRING = "{\"query\":{\"query_string\":{\"query\":\"%s\",\"default_field\":\"%s\",\"default_operator\":\"%s\"}}}";
     private static final String BACKSLASH_MARKER = "_@@_";
 
     private String payload;
-
     private String rawQuery;
-
     private final String types;
-
     private final String indices;
-
     private final NuxeoPrincipal principal;
-
     private String url;
-
     private String filteredPayload;
 
     public SearchRequestFilter(NuxeoPrincipal principal, String indices, String types, String rawQuery, String payload) {

@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -25,47 +26,56 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.common</groupId>
-      <artifactId>nuxeo-common</artifactId>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.theme</groupId>
-      <artifactId>nuxeo-theme-core</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <scope>provided</scope>
     </dependency>
-
-    <dependency>
-      <groupId>org.elasticsearch</groupId>
-      <artifactId>elasticsearch</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.yaml</groupId>
-      <artifactId>snakeyaml</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>4.3.3</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.elasticsearch</groupId>
+      <artifactId>elasticsearch</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>

@@ -3,11 +3,11 @@ package org.nuxeo.elasticsearch.http.readonly;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.testng.Assert;
 
 public class TestSearchRequestFilter {
 
@@ -48,7 +48,8 @@ public class TestSearchRequestFilter {
         SearchRequestFilter filter = new SearchRequestFilter(getNonAdminPrincipal(), INDICES, TYPES,
                 "q=dc\\:title:Workspaces&pretty&df=dc:title&default_operator=AND", null);
         Assert.assertEquals(filter.getUrl(), "/nxutest/doc/_search?pretty");
-        Assert.assertEquals(filter.getPayload(),
+        Assert.assertEquals(
+                filter.getPayload(),
                 "{\"query\":{\"filtered\":{\"filter\":{\"terms\":{\"ecm:acl\":[\"group1\",\"group2\",\"members\",\"jdoe\",\"Everyone\"]}},\"query\":{\"query_string\":{\"default_operator\":\"AND\",\"query\":\"dc\\:title:Workspaces\",\"default_field\":\"dc:title\"}}}}}");
     }
 

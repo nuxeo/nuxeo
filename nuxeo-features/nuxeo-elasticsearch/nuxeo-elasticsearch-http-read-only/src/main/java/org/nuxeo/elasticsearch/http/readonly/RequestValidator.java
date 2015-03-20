@@ -35,11 +35,12 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Validate request inputs.
+ *
  * @since 7.3
  */
-
 public class RequestValidator {
-    final Map<String, List<String>> indexTypes;
+    final private Map<String, List<String>> indexTypes;
 
     public RequestValidator() {
         ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
@@ -87,10 +88,9 @@ public class RequestValidator {
         return indices;
     }
 
-    public void hasAccess(NuxeoPrincipal principal, String docAcl) {
-        JSONObject docAclJson = null;
+    public void checkAccess(NuxeoPrincipal principal, String docAcl) {
         try {
-            docAclJson = new JSONObject(docAcl);
+            JSONObject docAclJson = new JSONObject(docAcl);
             JSONArray acl = docAclJson.getJSONObject("fields").getJSONArray("ecm:acl");
             String[] principals = SecurityService.getPrincipalsToCheck(principal);
             for (int i = 0; i < acl.length(); i++)

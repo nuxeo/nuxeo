@@ -1,4 +1,5 @@
 package org.nuxeo.elasticsearch.http.readonly;
+
 /*
  * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
@@ -21,6 +22,8 @@ import javax.validation.constraints.NotNull;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
+ * Rewrite a Document get request to add security.
+ *
  * @since 7.3
  */
 public class DocRequestFilter {
@@ -34,8 +37,7 @@ public class DocRequestFilter {
 
     private final String rawQuery;
 
-    public DocRequestFilter(NuxeoPrincipal principal, String indices, String types, String documentId,
-                            String rawQuery) {
+    public DocRequestFilter(NuxeoPrincipal principal, String indices, String types, String documentId, String rawQuery) {
         this.principal = principal;
         this.indices = indices;
         this.types = types;
@@ -57,7 +59,6 @@ public class DocRequestFilter {
     }
 
     public String getCheckAccessUrl() {
-        String url = "/" + indices + "/" + types + "/" + documentId + "?fields=ecm:acl";
-        return url;
+        return "/" + indices + "/" + types + "/" + documentId + "?fields=ecm:acl";
     }
 }

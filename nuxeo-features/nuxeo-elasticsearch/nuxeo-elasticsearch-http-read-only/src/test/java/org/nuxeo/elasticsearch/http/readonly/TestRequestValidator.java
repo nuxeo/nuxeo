@@ -1,6 +1,7 @@
 package org.nuxeo.elasticsearch.http.readonly;
 
 import org.json.JSONException;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,7 +11,6 @@ import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.testng.Assert;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
@@ -88,24 +88,25 @@ public class TestRequestValidator {
         validator.getIndices("?");
     }
 
-
     @Test
     public void testHasAccessAllowed() throws JSONException {
-        validator.hasAccess(TestSearchRequestFilter.getNonAdminPrincipal(),
+        validator.checkAccess(
+                TestSearchRequestFilter.getNonAdminPrincipal(),
                 "{\"_index\":\"nuxeo\",\"_type\":\"doc\",\"_id\":\"f1714dd9-ba3e-4c1a-845f-0cd2f7defd7c\",\"_version\":1,\"found\":true,\"fields\":{\"ecm:acl\":[\"Administrator\",\"members\"]}}");
     }
 
     @Test
     public void testHasAccessDenied() throws JSONException {
         exception.expect(SecurityException.class);
-        validator.hasAccess(TestSearchRequestFilter.getNonAdminPrincipal(),
+        validator.checkAccess(
+                TestSearchRequestFilter.getNonAdminPrincipal(),
                 "{\"_index\":\"nuxeo\",\"_type\":\"doc\",\"_id\":\"f1714dd9-ba3e-4c1a-845f-0cd2f7defd7c\",\"_version\":1,\"found\":true,\"fields\":{\"ecm:acl\":[\"Administrator\"]}}");
     }
 
     @Test
     public void testHasAccessNotFound() throws JSONException {
         exception.expect(SecurityException.class);
-        validator.hasAccess(TestSearchRequestFilter.getNonAdminPrincipal(),
+        validator.checkAccess(TestSearchRequestFilter.getNonAdminPrincipal(),
                 "{\"_index\":\"nuxeo\",\"_type\":\"doc\",\"_id\":\"f1714dd9-ba3e-4c1a-845f-e0cd2f7defd7c\",\"found\":false}");
     }
 
