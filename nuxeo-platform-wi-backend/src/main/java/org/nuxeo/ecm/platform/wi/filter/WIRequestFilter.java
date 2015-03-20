@@ -39,6 +39,7 @@ import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingHttpS
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.RemoteHostGuessExtractor;
 import org.nuxeo.ecm.platform.wi.backend.Backend;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 public class WIRequestFilter implements Filter {
 
@@ -97,6 +98,11 @@ public class WIRequestFilter implements Filter {
                 if (txStarted) {
                     try {
                         TransactionHelper.commitOrRollbackTransaction();
+                    } catch (TransactionRuntimeException e) {
+                        // commit failed, report this to the client before stopping buffering
+                        ((HttpServletResponse) response).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                e.getMessage());
+                        throw e;
                     } finally {
                         ((BufferingHttpServletResponse) response).stopBuffering();
                     }
