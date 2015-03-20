@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * @since TODO
+ * @since 7.2
  */
 public abstract class AbstractRenditionBuilderWork extends AbstractWork implements Work, Serializable {
 

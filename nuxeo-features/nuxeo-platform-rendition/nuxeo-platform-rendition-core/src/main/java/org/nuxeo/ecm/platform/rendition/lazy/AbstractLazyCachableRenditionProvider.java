@@ -23,25 +23,19 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.function.Function;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.cache.Cache;
-import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.transientstore.StorageEntryImpl;
 import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
-import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
@@ -49,9 +43,10 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Dummy implementation of a Lazy Rendition provider (Real implementation is part of NXP-16575)
+ * Default implementation of an asynchronous {@link RenditionProvider}
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * @since 7.2
  */
 public abstract class AbstractLazyCachableRenditionProvider implements RenditionProvider {
 
@@ -105,7 +100,7 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
             }
             wm.schedule(work);
         } else {
-            if (entry.get(COMPLETED_KEY).equals(true)) {
+            if ((Boolean.TRUE).equals(entry.get(COMPLETED_KEY))) {
                 try {
                     ts.canDelete(key);
                 } catch (IOException e) {
