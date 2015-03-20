@@ -16,17 +16,16 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * If this bundle is present in the running platform it should automatically
- * install the NuxeoContainer.
+ * If this bundle is present in the running platform it should automatically install the NuxeoContainer.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class JtaActivator extends DefaultComponent {
 
     public static final String AUTO_ACTIVATION = "NuxeoContainer.autoactivation";
 
     protected boolean isOwner = false;
+
     @Override
     public void activate(ComponentContext context) throws Exception {
         final String property = Framework.getProperty(AUTO_ACTIVATION);

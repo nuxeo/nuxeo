@@ -18,10 +18,8 @@ package org.nuxeo.ecm.automation.server.test;
 
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodec;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MyObjectCodec extends ObjectCodec<MyObject> {
 

@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy( { "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server" })
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server" })
 public class BatchManagerTest {
 
     @Test
@@ -39,8 +39,9 @@ public class BatchManagerTest {
         String batchId = bm.initBatch(null, null);
         assertNotNull(batchId);
 
-        for (int i = 0; i<10; i++) {
-            bm.addStream(batchId, ""+i, new ByteArrayInputStream(("SomeContent" + i).getBytes()), i+".txt", "text/plain");
+        for (int i = 0; i < 10; i++) {
+            bm.addStream(batchId, "" + i, new ByteArrayInputStream(("SomeContent" + i).getBytes()), i + ".txt",
+                    "text/plain");
         }
 
         List<Blob> blobs = bm.getBlobs(batchId);

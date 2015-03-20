@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 
 import com.google.inject.Inject;
@@ -89,10 +88,8 @@ public class TestRestoreInputFromScriptAndLogOperation {
         // set the input with fetch /
         chain.add(FetchDocument.ID).set("value", "/");
         // use the new operation to restore the input
-        chain.add(RestoreDocumentInputFromScript.ID).set("script",
-                "Context[\"test\"]");
-        chain.add(LogOperation.ID).set("category", "loggerName").set("message",
-                "expr:Input title @{This.title}.").set(
+        chain.add(RestoreDocumentInputFromScript.ID).set("script", "Context[\"test\"]");
+        chain.add(LogOperation.ID).set("category", "loggerName").set("message", "expr:Input title @{This.title}.").set(
                 "level", "error");
 
         // assert that the output is "/test" is the one retrieved from the

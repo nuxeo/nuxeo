@@ -23,8 +23,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(AutomationFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.test", "org.nuxeo.ecm.automation.io",
-        "org.nuxeo.ecm.automation.server" })
+@Deploy({ "org.nuxeo.ecm.automation.test", "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.server" })
 @LocalDeploy("org.nuxeo.ecm.automation.test:test-bindings-compat.xml")
 public class TestOperationRegistration {
 
@@ -44,9 +43,7 @@ public class TestOperationRegistration {
         try {
             service.putOperation(DummyCreateDocument.class);
         } catch (OperationException e) {
-            assertTrue(e.getMessage().startsWith(
-                    "An operation is already bound to: "
-                            + DummyCreateDocument.ID));
+            assertTrue(e.getMessage().startsWith("An operation is already bound to: " + DummyCreateDocument.ID));
         }
         // check nothing has changed
         op = service.getOperation(CreateDocument.ID);

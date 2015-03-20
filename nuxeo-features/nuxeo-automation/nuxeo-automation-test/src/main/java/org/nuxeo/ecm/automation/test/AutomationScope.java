@@ -33,6 +33,7 @@ public class AutomationScope implements Scope {
     public final static AutomationScope INSTANCE = new AutomationScope();
 
     protected final ThreadLocal<Map<Key<?>, Object>> values = new ThreadLocal<Map<Key<?>, Object>>() {
+        @Override
         protected Map<Key<?>, Object> initialValue() {
             return new HashMap<Key<?>, Object>();
         };
@@ -72,8 +73,7 @@ public class AutomationScope implements Scope {
     private <T> Map<Key<?>, Object> getScopedObjectMap(Key<T> key) {
         Map<Key<?>, Object> scopedObjects = values.get();
         if (scopedObjects == null) {
-            throw new OutOfScopeException("Cannot access " + key
-                    + " outside of a scoping block");
+            throw new OutOfScopeException("Cannot access " + key + " outside of a scoping block");
         }
         return scopedObjects;
     }

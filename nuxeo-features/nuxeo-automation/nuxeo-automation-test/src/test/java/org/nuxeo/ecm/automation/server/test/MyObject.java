@@ -16,10 +16,8 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
-
 /**
  * @author matic
- *
  */
 public class MyObject {
 
@@ -36,7 +34,6 @@ public class MyObject {
         this.msg = msg;
     }
 
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -45,8 +42,8 @@ public class MyObject {
         if (!(obj instanceof MyObject)) {
             return false;
         }
-        MyObject other = (MyObject)obj;
-        return this.msg.equals(other.msg);
+        MyObject other = (MyObject) obj;
+        return msg.equals(other.msg);
     }
 
     @Override

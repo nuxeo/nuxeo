@@ -20,8 +20,7 @@ public class TestDataCapsule {
     @OperationMethod
     public Blob getDataCapsule() throws IOException {
         StringWriter writer = new StringWriter();
-        JsonFactory jsonFactory = Framework.getLocalService(
-                JsonFactoryManager.class).getJsonFactory();
+        JsonFactory jsonFactory = Framework.getLocalService(JsonFactoryManager.class).getJsonFactory();
         JsonGenerator generator = jsonFactory.createJsonGenerator(writer);
 
         generator.writeObject(new MyObject());

@@ -19,7 +19,6 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 
 /**
  * @author matic
- *
  */
 @Operation(id = ReturnOperation.ID, category = Constants.CAT_EXECUTION, label = "True")
 public class ReturnOperation {
@@ -65,7 +64,6 @@ public class ReturnOperation {
     public Double doubleValue(Double d) {
         return d;
     }
-
 
     @OperationMethod
     public Float floatValue(Float f) {

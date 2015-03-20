@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.automation.test;
 
-
-
 /**
  * Shortcut to deploy bundles required by automation in your test.
  *

@@ -24,11 +24,9 @@ import javax.naming.NamingException;
 import org.apache.xbean.naming.context.WritableContext;
 
 /**
- * Naming context for nuxeo container. Basically re-locate
- * geronimo implementation in nuxeo namespace.
+ * Naming context for nuxeo container. Basically re-locate geronimo implementation in nuxeo namespace.
  *
  * @since 5.6
- *
  */
 public class NamingContext extends WritableContext {
 

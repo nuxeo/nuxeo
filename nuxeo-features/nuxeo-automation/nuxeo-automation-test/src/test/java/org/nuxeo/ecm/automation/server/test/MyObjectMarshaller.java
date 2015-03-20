@@ -25,7 +25,6 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
  * TODO must use ObjectCodec on client too.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MyObjectMarshaller implements JsonMarshaller<MyObject> {
 
@@ -48,6 +47,7 @@ public class MyObjectMarshaller implements JsonMarshaller<MyObject> {
         return jp.readValueAs(MyObject.class);
     }
 
+    @Override
     public void write(JsonGenerator jg, Object value) throws Exception {
         throw new UnsupportedOperationException();
     }

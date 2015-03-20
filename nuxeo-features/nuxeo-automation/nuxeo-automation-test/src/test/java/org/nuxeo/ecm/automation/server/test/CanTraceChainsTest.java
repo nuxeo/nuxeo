@@ -111,10 +111,8 @@ public class CanTraceChainsTest {
         assertEquals(3, calls.size());
         Call firstCall = calls.get(0);
         assertEquals(DummyOperation.ID, firstCall.getType().getId());
-        assertEquals(DummyOperation.ID,
-                firstCall.getVariables().get(DummyOperation.ID));
-        assertEquals(DummyOperation.ID,
-                firstCall.getParmeters().get(DummyOperation.ID));
+        assertEquals(DummyOperation.ID, firstCall.getVariables().get(DummyOperation.ID));
+        assertEquals(DummyOperation.ID, firstCall.getParmeters().get(DummyOperation.ID));
 
         // Deactivate trace mode -> light weight trace
         factory.toggleRecording();
@@ -126,8 +124,7 @@ public class CanTraceChainsTest {
     public void testSubchainsTrace() throws Exception {
         final String chainid = "traceSubchains";
         OperationChain chain = new OperationChain("parentChain");
-        OperationParameters runOnListParams = new OperationParameters(
-                RunOperationOnList.ID);
+        OperationParameters runOnListParams = new OperationParameters(RunOperationOnList.ID);
         runOnListParams.set("list", "list");
         runOnListParams.set("id", chainid);
         chain.add(runOnListParams);
@@ -139,12 +136,8 @@ public class CanTraceChainsTest {
         assertEquals(1, calls.size());
         List<Trace> nested = calls.get(0).getNested();
         assertEquals(2, nested.size());
-        assertEquals(
-                nested.get(0).getCalls().get(0).getVariables().get("item"),
-                "one");
-        assertEquals(
-                nested.get(1).getCalls().get(0).getVariables().get("item"),
-                "two");
+        assertEquals(nested.get(0).getCalls().get(0).getVariables().get("item"), "one");
+        assertEquals(nested.get(1).getCalls().get(0).getVariables().get("item"), "two");
     }
 
     @Test
@@ -162,9 +155,9 @@ public class CanTraceChainsTest {
         context.setInput(src);
         service.run(context, "testChainTrace");
         Trace trace = factory.getTrace("testChainTrace");
-        assertEquals("chain.doc", ((Call.ExpressionParameter)trace.getCalls().get(2).getParmeters().get
-                ("name")).getParameterValue());
-        assertEquals("name", ((Call.ExpressionParameter)trace.getCalls().get(2).getParmeters().get
-                ("name")).getParameterId());
+        assertEquals("chain.doc",
+                ((Call.ExpressionParameter) trace.getCalls().get(2).getParmeters().get("name")).getParameterValue());
+        assertEquals("name",
+                ((Call.ExpressionParameter) trace.getCalls().get(2).getParmeters().get("name")).getParameterId());
     }
 }
