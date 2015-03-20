@@ -31,15 +31,13 @@ import org.nuxeo.ecm.core.api.PathRef;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
  */
-public class DefaultCSVImporterDocumentFactory implements
-        CSVImporterDocumentFactory {
+public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFactory {
 
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void createDocument(CoreSession session, String parentPath,
-            String name, String type, Map<String, Serializable> values)
-            throws ClientException {
+    public void createDocument(CoreSession session, String parentPath, String name, String type,
+            Map<String, Serializable> values) throws ClientException {
         DocumentModel doc = session.createDocumentModel(parentPath, name, type);
         session.createDocument(doc);
         for (Map.Entry<String, Serializable> entry : values.entrySet()) {
@@ -49,8 +47,8 @@ public class DefaultCSVImporterDocumentFactory implements
     }
 
     @Override
-    public void updateDocument(CoreSession session, DocumentRef docRef,
-            Map<String, Serializable> values) throws ClientException {
+    public void updateDocument(CoreSession session, DocumentRef docRef, Map<String, Serializable> values)
+            throws ClientException {
         DocumentModel doc = session.getDocument(docRef);
         for (Map.Entry<String, Serializable> entry : values.entrySet()) {
             doc.setPropertyValue(entry.getKey(), entry.getValue());
@@ -59,9 +57,8 @@ public class DefaultCSVImporterDocumentFactory implements
     }
 
     @Override
-    public boolean exists(CoreSession session, String parentPath, String name,
-            String type, Map<String, Serializable> values)
-            throws ClientException {
+    public boolean exists(CoreSession session, String parentPath, String name, String type,
+            Map<String, Serializable> values) throws ClientException {
         String targetPath = new Path(parentPath).append(name).toString();
         DocumentRef docRef = new PathRef(targetPath);
         return session.exists(docRef);

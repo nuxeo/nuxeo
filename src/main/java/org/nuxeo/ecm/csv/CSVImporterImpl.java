@@ -35,14 +35,12 @@ import org.nuxeo.runtime.api.Framework;
 public class CSVImporterImpl implements CSVImporter {
 
     @Override
-    public String launchImport(CoreSession session, String parentPath,
-            File csvFile, String csvFileName, CSVImporterOptions options) {
-        CSVImporterWork work = new CSVImporterWork(session.getRepositoryName(),
-                parentPath, session.getPrincipal().getName(), csvFile,
-                csvFileName, options);
+    public String launchImport(CoreSession session, String parentPath, File csvFile, String csvFileName,
+            CSVImporterOptions options) {
+        CSVImporterWork work = new CSVImporterWork(session.getRepositoryName(), parentPath,
+                session.getPrincipal().getName(), csvFile, csvFileName, options);
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        workManager.schedule(work,
-                WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
+        workManager.schedule(work, WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
         return work.getId();
     }
 
@@ -57,8 +55,7 @@ public class CSVImporterImpl implements CSVImporter {
         } else if (state == State.SCHEDULED) {
             String queueId = workManager.getCategoryQueueId(CSVImporterWork.CATEGORY_CSV_IMPORTER);
             int queueSize = workManager.getQueueSize(queueId, State.SCHEDULED);
-            return new CSVImportStatus(CSVImportStatus.State.SCHEDULED, 0,
-                    queueSize);
+            return new CSVImportStatus(CSVImportStatus.State.SCHEDULED, 0, queueSize);
         } else { // RUNNING
             return new CSVImportStatus(CSVImportStatus.State.RUNNING);
         }
@@ -70,8 +67,7 @@ public class CSVImporterImpl implements CSVImporter {
     }
 
     @Override
-    public List<CSVImportLog> getImportLogs(String id,
-            CSVImportLog.Status... status) {
+    public List<CSVImportLog> getImportLogs(String id, CSVImportLog.Status... status) {
         return getLastImportLogs(id, -1, status);
     }
 
@@ -93,15 +89,12 @@ public class CSVImporterImpl implements CSVImporter {
     }
 
     @Override
-    public List<CSVImportLog> getLastImportLogs(String id, int max,
-            CSVImportLog.Status... status) {
+    public List<CSVImportLog> getLastImportLogs(String id, int max, CSVImportLog.Status... status) {
         List<CSVImportLog> importLogs = getLastImportLogs(id, max);
-        return status.length == 0 ? importLogs : filterImportLogs(importLogs,
-                status);
+        return status.length == 0 ? importLogs : filterImportLogs(importLogs, status);
     }
 
-    protected List<CSVImportLog> filterImportLogs(
-            List<CSVImportLog> importLogs, CSVImportLog.Status... status) {
+    protected List<CSVImportLog> filterImportLogs(List<CSVImportLog> importLogs, CSVImportLog.Status... status) {
         List<CSVImportLog.Status> statusList = Arrays.asList(status);
         List<CSVImportLog> filteredLogs = new ArrayList<CSVImportLog>();
         for (CSVImportLog log : importLogs) {

@@ -47,12 +47,10 @@ public class CSVImportResult {
                 errorLineCount++;
             }
         }
-        return new CSVImportResult(totalLineCount, successLineCount,
-            skippedLineCount, errorLineCount);
+        return new CSVImportResult(totalLineCount, successLineCount, skippedLineCount, errorLineCount);
     }
 
-    public CSVImportResult(long totalLineCount, long successLineCount,
-            long skippedLineCount, long errorLineCount) {
+    public CSVImportResult(long totalLineCount, long successLineCount, long skippedLineCount, long errorLineCount) {
         this.totalLineCount = totalLineCount;
         this.successLineCount = successLineCount;
         this.skippedLineCount = skippedLineCount;

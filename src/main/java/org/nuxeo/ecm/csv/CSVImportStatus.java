@@ -24,21 +24,20 @@ package org.nuxeo.ecm.csv;
 public class CSVImportStatus {
 
     private final State state;
+
     private final int positionInQueue;
+
     private final int queueSize;
 
     public enum State {
-        SCHEDULED,
-        RUNNING,
-        COMPLETED
+        SCHEDULED, RUNNING, COMPLETED
     }
 
     public CSVImportStatus(State state) {
         this(state, 0, 0);
     }
 
-    public CSVImportStatus(State state, int positionInQueue,
-            int queueSize) {
+    public CSVImportStatus(State state, int positionInQueue, int queueSize) {
         this.state = state;
         this.positionInQueue = positionInQueue;
         this.queueSize = queueSize;
