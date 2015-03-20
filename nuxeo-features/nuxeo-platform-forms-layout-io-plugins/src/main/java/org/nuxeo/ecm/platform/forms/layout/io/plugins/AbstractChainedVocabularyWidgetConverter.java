@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.io.plugins;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
@@ -34,8 +33,8 @@ import org.nuxeo.ecm.platform.forms.layout.io.plugins.helpers.VocabularyHelper;
  */
 public abstract class AbstractChainedVocabularyWidgetConverter extends AbstractWidgetDefinitionConverter {
 
-    protected List<String> getAcceptedWidgetTypes() {
-        return Arrays.asList(new String[] { "template" });
+    protected boolean isAccepted(String wType) {
+        return "template".equals(wType) || WidgetDirectoryItemsConverter.isDirectoryWidget(wType);
     }
 
     protected abstract List<String> getAcceptedWidgetNames();
@@ -48,7 +47,7 @@ public abstract class AbstractChainedVocabularyWidgetConverter extends AbstractW
     public WidgetDefinition getWidgetDefinition(WidgetDefinition widgetDef, LayoutConversionContext ctx) {
         String wType = widgetDef.getType();
         String wName = widgetDef.getName();
-        if (getAcceptedWidgetNames().contains(wName) && getAcceptedWidgetTypes().contains(wType)) {
+        if (getAcceptedWidgetNames().contains(wName) && isAccepted(wType)) {
             WidgetDefinition clone = getClonedWidget(widgetDef);
             // change select options on new widget
             WidgetSelectOption[] selectOptions = VocabularyHelper.getChainSelectVocabularySelectOptions(

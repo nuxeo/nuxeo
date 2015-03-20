@@ -34,12 +34,19 @@ public class WidgetDirectoryItemsConverter extends AbstractWidgetDefinitionConve
     public static final String DIR_NAME_PROPERTY = "directoryName";
 
     protected static enum SUPPORTED_DIR_TYPES {
-        selectOneDirectory, selectManyDirectory
+        selectOneDirectory, selectManyDirectory, selectOneRadioDirectory, selectManyCheckboxDirectory, suggestOneDirectory, suggestManyDirectory
     }
 
-    protected boolean isDirectoryWidget(String wType) {
-        return SUPPORTED_DIR_TYPES.selectManyDirectory.name().equals(wType)
-                || SUPPORTED_DIR_TYPES.selectOneDirectory.name().equals(wType);
+    /**
+     * @since 7.3
+     */
+    public static boolean isDirectoryWidget(String wType) {
+        for (SUPPORTED_DIR_TYPES item : SUPPORTED_DIR_TYPES.values()) {
+            if (item.name().equals(wType)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

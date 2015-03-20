@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -121,15 +122,23 @@ public class VocabularyHelper {
         for (DocumentModel entry : entries) {
             try {
                 String itemValue = entry.getId();
-                String itemLabel = (String) entry.getProperty(schema, LABEL_PROPERTY_NAME);
-                if (lang != null) {
-                    itemLabel = TranslationHelper.getTranslation(itemLabel, lang);
+                String itemLabel = itemValue;
+                try {
+                    itemLabel = (String) entry.getProperty(schema, LABEL_PROPERTY_NAME);
+                    if (lang != null) {
+                        itemLabel = TranslationHelper.getTranslation(itemLabel, lang);
+                    }
+                } catch (PropertyException e) {
+                    if (lang != null) {
+                        // try out l10n vocabulary structure
+                        itemLabel = (String) entry.getProperty(schema, LABEL_PROPERTY_NAME + "_" + lang);
+                    }
                 }
                 WidgetSelectOption selectOption = new WidgetSelectOptionImpl(itemLabel, itemValue);
                 res.add(selectOption);
             } catch (ClientException e) {
                 log.error(String.format("Error exporting entry with id '%s' in directory '%s'", entry.getId(),
-                        directoryName));
+                        directoryName), e);
             }
         }
         return res;
