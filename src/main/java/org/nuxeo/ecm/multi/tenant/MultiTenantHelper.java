@@ -96,7 +96,12 @@ public class MultiTenantHelper {
      */
     public static String getTenantId(String username) throws ClientException {
         UserManager userManager = Framework.getLocalService(UserManager.class);
-        return (String) userManager.getUserModel(username).getPropertyValue("user:tenantId");
+        String tenantId = null;
+        DocumentModel userModel = userManager.getUserModel(username);
+        if (userModel != null) {
+            tenantId = (String) userModel.getPropertyValue("user:tenantId");
+        }
+        return tenantId;
     }
 
     /**
