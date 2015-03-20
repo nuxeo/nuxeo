@@ -22,6 +22,7 @@ import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.Oid;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
 /**
  * Kerberos v5 in SPNEGO authentication. TODO handle NTLMSSP as a fallback position.
@@ -69,7 +70,8 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
         // much of an issue since other sso filters will not work nicely after
         // this one (as this one takes over the response and flushes it to start
         // negotiation).
-        res.setHeader("Refresh", "1;url=login.jsp");
+        String refresh = String.format("1;url=/%s/login.jsp", VirtualHostHelper.getWebAppName(req));
+        res.setHeader("Refresh", refresh);
         res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         res.setContentLength(0);
         try {
