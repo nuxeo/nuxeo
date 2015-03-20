@@ -24,7 +24,7 @@ import org.nuxeo.ecm.automation.core.impl.adapters.IntegerToLong;
 
 /**
  * Operation to test number parameter adapters, such as {@link IntegerToLong}.
- *
+ * 
  * @author Antoine Taillefer
  */
 @Operation(id = TestNumberParamAdaptersOperation.ID, category = Constants.CAT_EXECUTION, label = "Test number parameter adapters, such as IntegerToLong.")

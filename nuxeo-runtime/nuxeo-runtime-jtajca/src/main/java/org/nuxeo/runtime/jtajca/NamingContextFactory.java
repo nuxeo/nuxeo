@@ -25,13 +25,11 @@ import javax.naming.spi.InitialContextFactory;
 
 /**
  * Provides access to the nuxeo container naming context
- *
  */
 public class NamingContextFactory implements InitialContextFactory {
 
     @Override
-    public Context getInitialContext(Hashtable<?, ?> environment)
-            throws NamingException {
+    public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
         if (NuxeoContainer.rootContext == null) {
             NuxeoContainer.rootContext = new NamingContext();
         }

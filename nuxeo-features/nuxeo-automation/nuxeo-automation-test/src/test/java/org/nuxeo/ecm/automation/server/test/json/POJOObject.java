@@ -17,7 +17,6 @@ import java.util.List;
 import org.nuxeo.common.utils.StringUtils;
 
 /**
- *
  * A simple POJO class that can be mapped as a json datastructure by jackson.
  */
 public class POJOObject {
@@ -54,8 +53,7 @@ public class POJOObject {
 
     @Override
     public String toString() {
-        return String.format("%s(textContent=\"%s\", items=[\"%s\"])",
-                getClass().getSimpleName(), textContent,
+        return String.format("%s(textContent=\"%s\", items=[\"%s\"])", getClass().getSimpleName(), textContent,
                 StringUtils.join(items, "\", \""));
     }
 
@@ -64,8 +62,7 @@ public class POJOObject {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((items == null) ? 0 : items.hashCode());
-        result = prime * result
-                + ((textContent == null) ? 0 : textContent.hashCode());
+        result = prime * result + ((textContent == null) ? 0 : textContent.hashCode());
         return result;
     }
 

@@ -22,10 +22,9 @@ import javax.naming.NamingException;
 
 /**
  * Utility class used for testing JNDI space provider.
- *
+ * 
  * @author Stephane Lacoin (aka matic)
  * @since 5.5
- *
  */
 public class InitialContextAccessor extends InitialContext {
 
@@ -45,7 +44,7 @@ public class InitialContextAccessor extends InitialContext {
 
     /**
      * Check for JNDI space availability
-     *
+     * 
      * @return true if JNDI space exists
      */
     public static boolean isAvailable() {
@@ -57,8 +56,8 @@ public class InitialContextAccessor extends InitialContext {
     }
 
     /**
-     *  Try writing in JNDI space
-     *
+     * Try writing in JNDI space
+     * 
      * @param ctx
      * @return true if JNDI space is writable
      */
@@ -75,7 +74,7 @@ public class InitialContextAccessor extends InitialContext {
 
     /**
      * Get access to the default initial context implementation
-     *
+     * 
      * @return the initial context implementation
      */
     public static Context getInitialContext() {

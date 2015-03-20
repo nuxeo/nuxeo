@@ -31,9 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @since 7.1
  */
-@Operation(id = HttpStatusOperationTest.ID, category = Constants.CAT_SERVICES,
-        label = "Test Custom Http Status", description = "Test Custom Http " +
-        "Status")
+@Operation(id = HttpStatusOperationTest.ID, category = Constants.CAT_SERVICES, label = "Test Custom Http Status", description = "Test Custom Http "
+        + "Status")
 public class HttpStatusOperationTest {
 
     public static final String ID = "Test.HttpStatus";
@@ -54,13 +53,11 @@ public class HttpStatusOperationTest {
         // executed
         if (context != null) {
             if (isFailing) {
-                ExceptionTest exception = new ExceptionTest("Exception " +
-                        "Message");
+                ExceptionTest exception = new ExceptionTest("Exception " + "Message");
                 exception.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
                 throw exception;
             } else {
-                context.setHttpStatus(HttpServletResponse
-                        .SC_METHOD_NOT_ALLOWED);
+                context.setHttpStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             }
         }// else context is instanceof OperationContext
         return root;

@@ -27,16 +27,19 @@ import com.google.inject.Inject;
 @Features(AutomationFeature.class)
 public class TestCreateZip {
 
-    @Inject CoreSession session;
+    @Inject
+    CoreSession session;
 
-    @Inject AutomationService as;
+    @Inject
+    AutomationService as;
 
     @Test
     public void isServiceDeployed() {
         assertNotNull(as);
     }
 
-    @Test public void canGetZip() throws Exception {
+    @Test
+    public void canGetZip() throws Exception {
         DocumentModel ws1 = session.createDocumentModel("Workspace");
         ws1.setPathInfo("/", "ws1");
         ws1 = session.createDocument(ws1);

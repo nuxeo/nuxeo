@@ -28,11 +28,9 @@ import com.google.inject.Provider;
 import com.google.inject.Scopes;
 
 /**
- * Feature to test automation client against an Nuxeo Automation Server running
- * in a remote JVM.
- *
+ * Feature to test automation client against an Nuxeo Automation Server running in a remote JVM.
+ * 
  * @since 5.7
- *
  */
 public class RemoteAutomationServerFeature extends SimpleFeature {
 
@@ -50,8 +48,7 @@ public class RemoteAutomationServerFeature extends SimpleFeature {
         automationUrl = System.getenv(TEST_AUTOMATION_URL);
         if (automationUrl == null) {
             automationUrl = "http://localhost:8080/nuxeo/site/automation";
-            log.info("Could not find " + TEST_AUTOMATION_URL
-                    + " environment variable: fallback to: " + automationUrl);
+            log.info("Could not find " + TEST_AUTOMATION_URL + " environment variable: fallback to: " + automationUrl);
         } else {
             log.info("Testing against: " + automationUrl);
         }
@@ -70,16 +67,15 @@ public class RemoteAutomationServerFeature extends SimpleFeature {
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
         super.configure(runner, binder);
-        binder.bind(HttpAutomationClient.class).toProvider(
-                new Provider<HttpAutomationClient>() {
-                    @Override
-                    public HttpAutomationClient get() {
-                        if (client == null) {
-                            client = new HttpAutomationClient(automationUrl);
-                        }
-                        return client;
-                    }
-                }).in(Scopes.SINGLETON);
+        binder.bind(HttpAutomationClient.class).toProvider(new Provider<HttpAutomationClient>() {
+            @Override
+            public HttpAutomationClient get() {
+                if (client == null) {
+                    client = new HttpAutomationClient(automationUrl);
+                }
+                return client;
+            }
+        }).in(Scopes.SINGLETON);
         binder.bind(Session.class).toProvider(new Provider<Session>() {
             @Override
             public Session get() {
@@ -87,8 +83,7 @@ public class RemoteAutomationServerFeature extends SimpleFeature {
                     client = new HttpAutomationClient(automationUrl);
                 }
                 if (session == null) {
-                    session = client.getSession("Administrator",
-                            "Administrator");
+                    session = client.getSession("Administrator", "Administrator");
                 }
                 return session;
             }

@@ -16,11 +16,9 @@
  */
 package org.nuxeo.ecm.automation.test;
 
-
-
 /**
  * Shortcut to deploy bundles required by automation in your test.
- *
+ * 
  * @deprecated in 5.7: use EmbeddedAutomationServerFeature directly instead.
  */
 @Deprecated

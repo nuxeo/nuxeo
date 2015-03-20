@@ -35,17 +35,15 @@ import com.google.inject.Binder;
 import com.google.inject.Provider;
 
 /**
- * Based on the existing {@link PlatformFeature}, AutomationFeature is a simple
- * feature that includes org.nuxeo.ecm.automation.core and
- * org.nuxeo.ecm.automation.features bundles.
- *
+ * Based on the existing {@link PlatformFeature}, AutomationFeature is a simple feature that includes
+ * org.nuxeo.ecm.automation.core and org.nuxeo.ecm.automation.features bundles.
+ * 
  * @since 5.7
  * @since 5.6-HF02
- *
  */
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features",
-        "org.nuxeo.ecm.platform.query.api", "org.nuxeo.runtime.management" })
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api",
+        "org.nuxeo.runtime.management" })
 public class AutomationFeature extends SimpleFeature {
 
     protected final OperationContextProvider contextProvider = new OperationContextProvider();
@@ -101,10 +99,8 @@ public class AutomationFeature extends SimpleFeature {
 
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
-        binder.bind(OperationContext.class).toProvider(contextProvider).in(
-                AutomationScope.INSTANCE);
-        binder.bind(OperationCallback.class).toProvider(tracerProvider).in(
-                AutomationScope.INSTANCE);
+        binder.bind(OperationContext.class).toProvider(contextProvider).in(AutomationScope.INSTANCE);
+        binder.bind(OperationCallback.class).toProvider(tracerProvider).in(AutomationScope.INSTANCE);
         repository = runner.getFeature(CoreFeature.class).getRepository();
         tracerFactory = Framework.getLocalService(TracerFactory.class);
     }

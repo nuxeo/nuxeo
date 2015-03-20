@@ -26,9 +26,8 @@ import javax.naming.NamingException;
 
 /**
  * Search main context if name not found in nuxeo's context.
- *
+ * 
  * @since 5.6
- *
  */
 public class NamingContextFacade extends NamingContext {
 

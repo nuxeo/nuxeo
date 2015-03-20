@@ -26,17 +26,16 @@ import org.nuxeo.runtime.jtajca.NamingContext;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
- * Ensures the installation of the Nuxeo JTA/JCA {@link NamingContext} by
- * {@link NuxeoContainer}.
- *
+ * Ensures the installation of the Nuxeo JTA/JCA {@link NamingContext} by {@link NuxeoContainer}.
+ * 
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
  */
 public class javaURLContextFactory implements ObjectFactory {
 
     @Override
-    public Object getObjectInstance(Object obj, Name name, Context nameCtx,
-            Hashtable<?, ?> environment) throws Exception {
+    public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment)
+            throws Exception {
         if (obj != null || name != null || nameCtx != null) {
             throw new UnsupportedOperationException(
                     "This is case is not handled yet (see https://jira.nuxeo.com/browse/NXP-10331).");

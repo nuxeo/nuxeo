@@ -28,9 +28,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- * Basic operation that just record the documents on which it was called and
- * the parameters used
- *
+ * Basic operation that just record the documents on which it was called and the parameters used
+ * 
  * @since 5.7.2
  */
 @Operation(id = TestOperation.ID, category = Constants.CAT_SERVICES, label = "log call params", description = "Test operation that log call in a static map")

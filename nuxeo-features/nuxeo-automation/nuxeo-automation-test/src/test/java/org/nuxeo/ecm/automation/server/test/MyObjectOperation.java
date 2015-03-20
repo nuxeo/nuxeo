@@ -22,7 +22,6 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Operation(id = MyObjectOperation.ID, category = Constants.CAT_EXECUTION, label = "MyObject")
 public class MyObjectOperation {

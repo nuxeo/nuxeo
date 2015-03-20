@@ -14,8 +14,8 @@ package org.nuxeo.ecm.automation.server.test.business.client;
 import org.nuxeo.ecm.automation.client.annotations.EntityType;
 
 /**
- * Automation client File pojo example - Annotated by EntityType setting the
- * document model adapter simple name to map server side
+ * Automation client File pojo example - Annotated by EntityType setting the document model adapter simple name to map
+ * server side
  */
 @EntityType("BusinessBeanAdapter")
 public class BusinessBean {
@@ -35,8 +35,7 @@ public class BusinessBean {
     public BusinessBean() {
     }
 
-    public BusinessBean(String title, String description, String note,
-            String type, Object object) {
+    public BusinessBean(String title, String description, String note, String type, Object object) {
         this.title = title;
         this.description = description;
         this.note = note;

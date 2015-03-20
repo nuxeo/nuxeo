@@ -89,10 +89,8 @@ public class TestRestoreInputFromScriptAndLogOperation {
         // set the input with fetch /
         chain.add(FetchDocument.ID).set("value", "/");
         // use the new operation to restore the input
-        chain.add(RestoreDocumentInputFromScript.ID).set("script",
-                "Context[\"test\"]");
-        chain.add(LogOperation.ID).set("category", "loggerName").set("message",
-                "expr:Input title @{This.title}.").set(
+        chain.add(RestoreDocumentInputFromScript.ID).set("script", "Context[\"test\"]");
+        chain.add(LogOperation.ID).set("category", "loggerName").set("message", "expr:Input title @{This.title}.").set(
                 "level", "error");
 
         // assert that the output is "/test" is the one retrieved from the

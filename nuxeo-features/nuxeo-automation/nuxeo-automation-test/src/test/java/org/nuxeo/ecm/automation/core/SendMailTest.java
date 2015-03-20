@@ -39,10 +39,8 @@ import com.google.inject.Inject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, FakeSmtpMailServerFeature.class,
-        AutomationFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.notification.core",
-        "org.nuxeo.ecm.platform.notification.api",
+@Features({ CoreFeature.class, FakeSmtpMailServerFeature.class, AutomationFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.notification.core", "org.nuxeo.ecm.platform.notification.api",
         "org.nuxeo.ecm.platform.url.api", "org.nuxeo.ecm.platform.url.core" })
 public class SendMailTest {
 
@@ -85,9 +83,8 @@ public class SendMailTest {
         OperationChain chain = new OperationChain("sendEMail");
         chain.add(FetchContextDocument.ID);
         chain.add(SetDocumentBlob.ID).set("file", blob);
-        chain.add(SendMail.ID).set("from", "test@nuxeo.org").set("to",
-                "bs@nuxeo.com").set("subject", "test mail").set("asHTML", true).set(
-                "files", "file:content").set(
+        chain.add(SendMail.ID).set("from", "test@nuxeo.org").set("to", "bs@nuxeo.com").set("subject", "test mail").set(
+                "asHTML", true).set("files", "file:content").set(
                 "message",
                 "<h3>Current doc: ${Document.path}</h3> title: ${Document['dc:title']}<p>Doc link: <a href=\"${docUrl}\">${Document.title}</a>");
         service.run(ctx, chain);

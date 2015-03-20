@@ -49,7 +49,7 @@ import com.google.inject.Inject;
  * Tests file upload with the {@link BatchResource}.
  * <p>
  * Uses {@link URLConnection}.
- *
+ * 
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
@@ -67,8 +67,7 @@ public class TestBatchResource {
     public void testBatchUpload() throws Exception {
 
         // Create a File document
-        DocumentModel file = session.createDocumentModel("/", "testFile",
-                "File");
+        DocumentModel file = session.createDocumentModel("/", "testFile", "File");
         file = session.createDocument(file);
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
@@ -82,32 +81,28 @@ public class TestBatchResource {
         String mimeType = "text/plain";
         String content = "This is the content of a new file.";
         String docPath = file.getPathAsString();
-        if (batchUpload(uploadURL, batchId, fileIndex, fileName, mimeType,
-                content)) {
+        if (batchUpload(uploadURL, batchId, fileIndex, fileName, mimeType, content)) {
             batchExecuteAttachBlob(executeURL, batchId, fileIndex, docPath);
         } else {
             fail("File upload failed");
         }
 
         // Get blob from document and check its content
-        Blob blob = (Blob) clientSession.newRequest(GetDocumentBlob.ID).setInput(
-                file.getPathAsString()).execute();
+        Blob blob = (Blob) clientSession.newRequest(GetDocumentBlob.ID).setInput(file.getPathAsString()).execute();
         assertNotNull(blob);
         String blobString = new String(IOUtils.toByteArray(blob.getStream()));
         assertEquals("This is the content of a new file.", blobString);
     }
 
-    protected boolean batchUpload(String urlStr, String batchId,
-            String fileIndex, String fileName, String mimeType, String content)
-            throws IOException {
+    protected boolean batchUpload(String urlStr, String batchId, String fileIndex, String fileName, String mimeType,
+            String content) throws IOException {
         URL url = new URL(urlStr);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         try {
             // Set request headers
             byte[] bytes = content.getBytes();
             String fileSize = Integer.toString(bytes.length);
-            conn.setRequestProperty("Authorization",
-                    getAuthHeader("Administrator", "Administrator"));
+            conn.setRequestProperty("Authorization", getAuthHeader("Administrator", "Administrator"));
             conn.setRequestProperty("X-Batch-Id", batchId);
             conn.setRequestProperty("X-File-Idx", fileIndex);
             conn.setRequestProperty("X-File-Name", fileName);
@@ -130,16 +125,14 @@ public class TestBatchResource {
         }
     }
 
-    protected boolean batchExecuteAttachBlob(String urlStr, String batchId,
-            String fileIndex, String docPath) throws IOException {
+    protected boolean batchExecuteAttachBlob(String urlStr, String batchId, String fileIndex, String docPath)
+            throws IOException {
         URL url = new URL(urlStr);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         try {
             // Set request headers
-            conn.setRequestProperty("Authorization",
-                    getAuthHeader("Administrator", "Administrator"));
-            conn.setRequestProperty("Content-Type",
-                    "application/json+nxrequest");
+            conn.setRequestProperty("Authorization", getAuthHeader("Administrator", "Administrator"));
+            conn.setRequestProperty("Content-Type", "application/json+nxrequest");
             conn.setRequestProperty("Accept", "application/json+nxentity, */*");
             conn.setRequestProperty("X-NXDocumentProperties", "*");
             // Write JSON data
@@ -161,9 +154,7 @@ public class TestBatchResource {
     }
 
     protected String getAuthHeader(String userName, String password) {
-        return "Basic "
-                + new String(
-                        Base64.encodeBase64((userName + ":" + password).getBytes()));
+        return "Basic " + new String(Base64.encodeBase64((userName + ":" + password).getBytes()));
     }
 
 }
