@@ -20,6 +20,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -30,6 +33,7 @@ import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -42,6 +46,8 @@ import org.nuxeo.runtime.api.Framework;
 public class RenditionActionBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    public static final String RENDITION_REST_URL_FORMAT = "%sapi/v1/id/%s/@rendition/%s";
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
@@ -79,5 +85,21 @@ public class RenditionActionBean implements Serializable {
 
     public boolean hasVisibleRenditions() {
         return !getVisibleRenditions().isEmpty();
+    }
+
+    /**
+     * @since 7.3
+     */
+    public String getRenditionURL(String renditionName) {
+        return getRenditionURL(navigationContext.getCurrentDocument(), renditionName);
+    }
+
+    /**
+     * @since 7.3
+     */
+    public String getRenditionURL(DocumentModel doc, String renditionName) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+        return String.format(RENDITION_REST_URL_FORMAT, BaseURL.getBaseURL(request), doc.getId(), renditionName);
     }
 }

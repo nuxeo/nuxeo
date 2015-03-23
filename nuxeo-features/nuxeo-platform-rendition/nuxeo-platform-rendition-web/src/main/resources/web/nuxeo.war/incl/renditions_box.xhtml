@@ -12,10 +12,9 @@
         <nxu:graphicImage value="#{rendition.icon}" />
       </nxu:column>
       <nxu:column>
-        <nxd:restDocumentLink document="#{currentDocument}" view="#{rendition.name}" pattern="rendition"
-          target="_blank">
+        <a href="#{renditionAction.getRenditionURL(rendition.name)}" target="_blank">
           <h:outputText value="#{messages[rendition.label]}" />
-        </nxd:restDocumentLink>
+        </a>
       </nxu:column>
     </nxu:dataTable>
 
