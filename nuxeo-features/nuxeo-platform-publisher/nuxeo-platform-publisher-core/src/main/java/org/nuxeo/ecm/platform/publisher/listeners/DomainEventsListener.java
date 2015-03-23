@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.publisher.listeners;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -62,6 +63,8 @@ public class DomainEventsListener implements EventListener {
                     unregisterPublicationTrees(doc);
                 } else if (LifeCycleConstants.TRANSITION_EVENT.equals(eventName)) {
                     handleDomainLifeCycleChanged(docCtx, doc);
+                } else if (DocumentEventTypes.DOCUMENT_MOVED.equals(eventName)) {
+                    handleDomainMoved(docCtx, doc);
                 }
             }
         }
@@ -94,6 +97,18 @@ public class DomainEventsListener implements EventListener {
 
     protected void handleDomainGoesFromDeletedState(DocumentModel doc) throws ClientException {
         registerNewPublicationTrees(doc);
+    }
+
+    /**
+     * @since 7.3
+     */
+    protected void handleDomainMoved(DocumentEventContext docCtx, DocumentModel doc) throws ClientException {
+        String originalName = (String) docCtx.getProperty(CoreEventConstants.ORIGINAL_NAME);
+        if (originalName != null) {
+            PublisherServiceImpl service = (PublisherServiceImpl) Framework.getService(PublisherService.class);
+            service.unRegisterTreeConfigFor(originalName);
+            service.registerTreeConfigFor(doc);
+        }
     }
 
 }

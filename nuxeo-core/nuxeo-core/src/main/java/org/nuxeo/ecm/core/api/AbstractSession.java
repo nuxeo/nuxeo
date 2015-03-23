@@ -535,6 +535,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             }
 
             DocumentModel srcDocModel = readModel(srcDoc);
+            String originalName = srcDocModel.getName();
             if (name == null) {
                 name = srcDocModel.getName();
             }
@@ -550,6 +551,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             notifyEvent(DocumentEventTypes.ABOUT_TO_MOVE, srcDocModel, options, null, null, true, true);
 
             name = (String) options.get(CoreEventConstants.DESTINATION_NAME);
+
+            if (!originalName.equals(name)) {
+                options.put(CoreEventConstants.ORIGINAL_NAME, originalName);
+            }
 
             String comment = srcDoc.getRepositoryName() + ':' + srcDoc.getParent().getUUID();
 

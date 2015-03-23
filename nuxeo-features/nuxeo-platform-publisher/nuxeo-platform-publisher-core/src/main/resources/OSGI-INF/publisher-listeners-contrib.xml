@@ -10,6 +10,7 @@
       <event>documentCreated</event>
       <event>documentModified</event>
       <event>documentRemoved</event>
+      <event>documentMoved</event>
       <event>lifecycle_transition_event</event>
     </listener>
 

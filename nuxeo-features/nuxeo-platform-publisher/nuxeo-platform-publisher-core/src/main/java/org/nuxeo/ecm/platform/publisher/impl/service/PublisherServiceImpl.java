@@ -703,8 +703,15 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
     }
 
     public void unRegisterTreeConfigFor(DocumentModel domain) {
+        unRegisterTreeConfigFor(domain.getName());
+    }
+
+    /**
+     * @since 7.3
+     */
+    public void unRegisterTreeConfigFor(String domainName) {
         for (PublicationTreeConfigDescriptor desc : pendingDescriptors.values()) {
-            String treeName = desc.getName() + "-" + domain.getName();
+            String treeName = desc.getName() + "-" + domainName;
             treeConfigDescriptors.remove(treeName);
             for (Iterator<String> it = liveTrees.keySet().iterator(); it.hasNext();) {
                 String entry = it.next();

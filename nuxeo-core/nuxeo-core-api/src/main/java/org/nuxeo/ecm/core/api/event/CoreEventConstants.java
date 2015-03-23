@@ -78,6 +78,13 @@ public final class CoreEventConstants {
     public static final String SOURCE_REF = "sourceRef";
 
     /**
+     * Passed with documentMoved event, if the name has changed, to know the original name of the document.
+     *
+     * @since 7.3
+     */
+    public static final String ORIGINAL_NAME = "originalName";
+
+    /**
      * Passed with documentCreatedbyCopy event to be able to reset the life cycle or not
      *
      * @since 5.7

@@ -17,24 +17,33 @@
 
 package org.nuxeo.ecm.platform.publisher.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 @LocalDeploy("org.nuxeo.ecm.platform.publisher.core:OSGI-INF/publisher-content-template-contrib.xml")
 public class TestServiceWithMultipleDomains extends PublisherTestCase {
+
+    @Inject
+    protected PublisherService publisherService;
+
+    @Inject
+    protected TrashService trashService;
 
     protected DocumentModel doc2Publish;
 
@@ -68,11 +77,24 @@ public class TestServiceWithMultipleDomains extends PublisherTestCase {
         createInitialDocs("default-domain");
         createInitialDocs("another-default-domain");
 
-        PublisherService service = Framework.getLocalService(PublisherService.class);
-        List<String> treeNames = service.getAvailablePublicationTree();
+        List<String> treeNames = publisherService.getAvailablePublicationTree();
         assertEquals(2, treeNames.size());
         assertTrue(treeNames.contains("DefaultSectionsTree-default-domain"));
         assertTrue(treeNames.contains("DefaultSectionsTree-another-default-domain"));
+    }
+
+    @Test
+    public void testTreeRegistrationWhenTrashingDomain() throws Exception {
+        List<String> treeNames = publisherService.getAvailablePublicationTree();
+        assertEquals(2, treeNames.size());
+        assertTrue(treeNames.contains("DefaultSectionsTree-default-domain"));
+        assertTrue(treeNames.contains("DefaultSectionsTree-another-default-domain"));
+
+        DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
+        trashService.trashDocuments(Collections.singletonList(domain));
+
+        treeNames = publisherService.getAvailablePublicationTree();
+        assertEquals(1, treeNames.size());
     }
 
 }
