@@ -101,7 +101,6 @@ public class TestScriptRunnerInfrastructure {
         assertNotNull(scriptingService);
     }
 
-    @Ignore("NXP-16561")
     @Test
     public void shouldExecuteSimpleScript() throws Exception {
         AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
@@ -110,7 +109,7 @@ public class TestScriptRunnerInfrastructure {
         InputStream stream = this.getClass().getResourceAsStream("/simpleAutomationScript.js");
         assertNotNull(stream);
         scriptingService.run(stream, session);
-        assertEquals("Created even Documents\n", outContent.toString());
+        assertEquals("Documents Updated" + System.lineSeparator(), outContent.toString());
     }
 
     @Test

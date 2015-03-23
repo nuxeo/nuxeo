@@ -10,29 +10,20 @@ for (var i = 1; i < 10; i++) {
         "properties": {
             "dc:title": "New Title" + i,
             "dc:source": "JavaScript",
-            "dc:subjects": ["from", "javascript"]
+            "dc:subjects": ["from", "javascript"],
+            "dc:nature": "created"
         }
     });
-    var lastUUIDDigit = parseInt(newDoc.getId().slice(-1));
-    if (lastUUIDDigit % 2 == 0) {
-        newDoc = Document.Update(newDoc, {
-            "properties": {
-                "dc:nature": "even"
-            }
-        });
-    } else {
-        newDoc = Document.Update(newDoc, {
-            "properties": {
-                "dc:nature": "odd"
-            }
-        });
-    }
-    newDocs.push(newDoc);
+    newDoc = Document.Update(newDoc, {
+        "properties": {
+            "dc:nature": "updated"
+        }
+    });
 }
 
 var evenDocs = Repository.Query(null, {
-    "query": "select * from Document where dc:nature='even'"
+    "query": "select * from Document where dc:nature='updated'"
 });
 if(evenDocs.size()>0) {
-    print("Created even Documents");
+    print("Documents Updated");
 }
