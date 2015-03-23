@@ -631,7 +631,12 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     @Override
     public List<String> getGroupsInGroup(String parentId) throws ClientException {
-        return getGroupsInGroup(parentId, null);
+        NuxeoGroup group = getGroup(parentId, null);
+        if (group != null) {
+            return group.getMemberGroups();
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @Override
