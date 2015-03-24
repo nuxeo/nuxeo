@@ -160,13 +160,6 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
         return JSF_CATEGORY;
     }
 
-    protected String getStoreCategory(String cat) {
-        if (StringUtils.isBlank(cat)) {
-            return getDefaultStoreCategory();
-        }
-        return cat;
-    }
-
     @Override
     public WidgetTypeHandler getWidgetTypeHandler(String typeName) throws WidgetException {
         return getWidgetTypeHandler(getDefaultStoreCategory(), typeName);

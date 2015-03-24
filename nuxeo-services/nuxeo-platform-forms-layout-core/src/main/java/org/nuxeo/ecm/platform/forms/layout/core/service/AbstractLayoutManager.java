@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.forms.layout.core.service;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
@@ -37,6 +38,13 @@ public abstract class AbstractLayoutManager extends DefaultComponent implements 
     private static final long serialVersionUID = 1L;
 
     public abstract String getDefaultStoreCategory();
+
+    protected String getStoreCategory(String cat) {
+        if (StringUtils.isBlank(cat)) {
+            return getDefaultStoreCategory();
+        }
+        return cat;
+    }
 
     protected LayoutStore getLayoutStore() {
         return Framework.getService(LayoutStore.class);
