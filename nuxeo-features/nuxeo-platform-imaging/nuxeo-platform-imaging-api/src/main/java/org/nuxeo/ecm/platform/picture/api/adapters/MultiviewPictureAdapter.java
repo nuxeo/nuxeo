@@ -61,6 +61,8 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
 
     public static final String FIELD_TYPAGE = "typage";
 
+    public static final String FIELD_INFO = "info";
+
     public static final String SCHEMA_NAME = "picture";
 
     final DocumentModel docModel;
@@ -79,6 +81,7 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
         if (blob != null) {
             map.put(PictureView.FIELD_CONTENT, blob);
         }
+        map.put(FIELD_INFO, view.getImageInfo().toMap());
         return map;
     }
 
@@ -98,7 +101,7 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
         view.setFilename((String) map.get(PictureView.FIELD_FILENAME));
         Blob blob = (Blob) map.get(PictureView.FIELD_CONTENT);
         view.setBlob(blob);
-        view.setImageInfo(ImageInfo.fromMap((Map<String, Serializable>) map.get("info")));
+        view.setImageInfo(ImageInfo.fromMap((Map<String, Serializable>) map.get(FIELD_INFO)));
         return view;
     }
 

@@ -19,9 +19,11 @@
 package org.nuxeo.ecm.platform.picture.core.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Calendar;
 
 import javax.inject.Inject;
@@ -36,14 +38,17 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
+import org.nuxeo.ecm.platform.picture.api.PictureViewImpl;
 import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
@@ -51,12 +56,16 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.mimetype.api",
         "org.nuxeo.ecm.platform.mimetype.core", "org.nuxeo.ecm.platform.picture.api",
         "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.picture.convert" })
+@LocalDeploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")
 public class TestImagingAdapter {
 
     private static final String JPEG_IMAGE = "iptc_sample.jpg";
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected ImagingService imagingService;
 
     @Test
     public void testAdapter() throws Exception {
@@ -128,5 +137,51 @@ public class TestImagingAdapter {
 
     protected String getConversionFormat() {
         return Framework.getLocalService(ImagingService.class).getConfigurationValue("conversionFormat", "jpg");
+    }
+
+    @Test
+    public void testMultiviewPictureAdapter() throws IOException {
+        DocumentModel picture = session.createDocumentModel("/", "picture", "Picture");
+        picture = session.createDocument(picture);
+
+        MultiviewPicture mvp = picture.getAdapter(MultiviewPicture.class);
+        PictureView[] views = mvp.getViews();
+        assertEquals(4, views.length);
+
+        String path = ImagingResourcesHelper.TEST_DATA_FOLDER + "cat.gif";
+        Blob blob = Blobs.createBlob(ImagingResourcesHelper.getFileFromPath(path));
+        ImageInfo info = imagingService.getImageInfo(blob);
+        PictureView view = new PictureViewImpl();
+        view.setBlob(blob);
+        view.setDescription("a view");
+        view.setFilename("cat.gif");
+        view.setHeight(info.getHeight());
+        view.setImageInfo(info);
+        view.setTitle("a view");
+        view.setWidth(info.getWidth());
+        mvp.addView(view);
+        session.saveDocument(picture);
+
+        // refetch the Picture
+        picture = session.getDocument(picture.getRef());
+        mvp = picture.getAdapter(MultiviewPicture.class);
+        views = mvp.getViews();
+        assertEquals(5, views.length);
+
+        view = mvp.getView("a view");
+        info = view.getImageInfo();
+        assertNotEquals(0, info.getWidth());
+        assertNotEquals(0, info.getHeight());
+        assertNotEquals(0, info.getDepth());
+        assertNotNull(info.getColorSpace());
+        assertNotNull(info.getFormat());
+
+        view = mvp.getView("Thumbnail");
+        info = view.getImageInfo();
+        assertNotEquals(0, info.getWidth());
+        assertNotEquals(0, info.getHeight());
+        assertNotEquals(0, info.getDepth());
+        assertNotNull(info.getColorSpace());
+        assertNotNull(info.getFormat());
     }
 }
