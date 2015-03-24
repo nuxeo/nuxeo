@@ -43,4 +43,8 @@ public interface WidgetReference extends Serializable {
      */
     WidgetReference clone();
 
+    /**
+     * @since 7.3
+     */
+    void setName(String name);
 }

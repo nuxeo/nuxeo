@@ -55,6 +55,11 @@ public class WidgetReferenceImpl implements WidgetReference {
     }
 
     @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
     public WidgetReference clone() {
         return new WidgetReferenceImpl(category, name);
     }
