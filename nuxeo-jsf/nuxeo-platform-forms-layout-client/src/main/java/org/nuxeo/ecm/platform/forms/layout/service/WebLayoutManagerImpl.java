@@ -552,34 +552,6 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
         return layout;
     }
 
-    protected WidgetDefinition lookupWidget(LayoutDefinition layoutDef, WidgetReference widgetRef) {
-        String widgetName = widgetRef.getName();
-        WidgetDefinition wDef = null;
-        if (layoutDef != null) {
-            wDef = layoutDef.getWidgetDefinition(widgetName);
-        }
-        if (wDef == null) {
-            // try in global registry
-            wDef = lookupWidget(widgetRef);
-        }
-        return wDef;
-    }
-
-    protected WidgetDefinition lookupWidget(WidgetReference widgetRef) {
-        String widgetName = widgetRef.getName();
-        String cat = widgetRef.getCategory();
-        WidgetDefinition wDef;
-        if (StringUtils.isBlank(cat)) {
-            wDef = getWidgetDefinition(widgetName);
-        } else {
-            wDef = getLayoutStore().getWidgetDefinition(cat, widgetName);
-        }
-        if (wDef != null) {
-            wDef.setGlobal(true);
-        }
-        return wDef;
-    }
-
     @Override
     public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig config, Widget widget) {
         return getFaceletHandler(ctx, config, widget, null);

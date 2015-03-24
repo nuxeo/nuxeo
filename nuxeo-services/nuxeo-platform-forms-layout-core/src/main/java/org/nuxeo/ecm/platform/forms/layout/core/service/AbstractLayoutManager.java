@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
@@ -48,6 +49,34 @@ public abstract class AbstractLayoutManager extends DefaultComponent implements 
 
     protected LayoutStore getLayoutStore() {
         return Framework.getService(LayoutStore.class);
+    }
+
+    protected WidgetDefinition lookupWidget(LayoutDefinition layoutDef, WidgetReference widgetRef) {
+        String widgetName = widgetRef.getName();
+        WidgetDefinition wDef = null;
+        if (layoutDef != null) {
+            wDef = layoutDef.getWidgetDefinition(widgetName);
+        }
+        if (wDef == null) {
+            // try in global registry
+            wDef = lookupWidget(widgetRef);
+        }
+        return wDef;
+    }
+
+    protected WidgetDefinition lookupWidget(WidgetReference widgetRef) {
+        String widgetName = widgetRef.getName();
+        String cat = widgetRef.getCategory();
+        WidgetDefinition wDef;
+        if (StringUtils.isBlank(cat)) {
+            wDef = getWidgetDefinition(widgetName);
+        } else {
+            wDef = getLayoutStore().getWidgetDefinition(cat, widgetName);
+        }
+        if (wDef != null) {
+            wDef.setGlobal(true);
+        }
+        return wDef;
     }
 
     @Override
