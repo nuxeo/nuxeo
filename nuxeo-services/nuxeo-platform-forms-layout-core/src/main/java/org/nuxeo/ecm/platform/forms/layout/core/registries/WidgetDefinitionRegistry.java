@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.core.registries;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
@@ -46,6 +47,12 @@ public class WidgetDefinitionRegistry extends SimpleContributionRegistry<WidgetD
 
     public WidgetDefinition getWidgetDefinition(String id) {
         return getCurrentContribution(id);
+    }
+
+    public List<String> getWidgetNames() {
+        List<String> res = new ArrayList<String>();
+        res.addAll(currentContribs.keySet());
+        return res;
     }
 
     @Override

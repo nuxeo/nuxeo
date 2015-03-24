@@ -484,6 +484,14 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
         return null;
     }
 
+    public List<String> getWidgetDefinitionNames(String category) {
+        WidgetDefinitionRegistry reg = widgetsByCat.get(category);
+        if (reg != null) {
+            return reg.getWidgetNames();
+        }
+        return Collections.emptyList();
+    }
+
     @Override
     public List<LayoutDefinitionConverter> getLayoutConverters(String category) {
         List<LayoutDefinitionConverter> res = new ArrayList<LayoutDefinitionConverter>();

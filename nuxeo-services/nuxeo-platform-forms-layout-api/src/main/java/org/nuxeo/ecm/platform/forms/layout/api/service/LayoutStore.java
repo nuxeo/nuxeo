@@ -91,6 +91,11 @@ public interface LayoutStore extends Serializable {
 
     List<WidgetDefinitionConverter> getWidgetConverters(String category);
 
+    /**
+     * Returns the names of all the registered widget definitions
+     */
+    List<String> getWidgetDefinitionNames(String jsfCategory);
+
     // registry API
 
     void registerWidgetType(String category, WidgetTypeDefinition desc);
