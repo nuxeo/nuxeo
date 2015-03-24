@@ -78,6 +78,11 @@ public interface LayoutDefinition extends Serializable {
     WidgetDefinition getWidgetDefinition(String name);
 
     /**
+     * @since 7.3
+     */
+    void setWidgetDefinition(String name, WidgetDefinition widgetDef);
+
+    /**
      * Returns the list of widget names to use at a given row.
      * <p>
      * For instance, this could describe a layout like: [['title'], ['description'], ['creationDate', '',
@@ -159,5 +164,4 @@ public interface LayoutDefinition extends Serializable {
      * @since 5.5
      */
     LayoutDefinition clone();
-
 }

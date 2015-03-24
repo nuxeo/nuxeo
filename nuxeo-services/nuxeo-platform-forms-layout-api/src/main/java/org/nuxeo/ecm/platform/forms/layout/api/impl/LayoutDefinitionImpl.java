@@ -227,6 +227,14 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
     }
 
     @Override
+    public void setWidgetDefinition(String name, WidgetDefinition widgetDef) {
+        if (widgets == null) {
+            widgets = new HashMap<>();
+        }
+        widgets.put(name, widgetDef);
+    }
+
+    @Override
     public Map<String, List<RenderingInfo>> getRenderingInfos() {
         return renderingInfos;
     }
