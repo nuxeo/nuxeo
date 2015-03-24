@@ -21,7 +21,7 @@
                         ${htmlEscape(principalAuthor.firstName)} ${htmlEscape(principalAuthor.lastName)}
                         </#if> (${author}) has added a comment on <a style="color:#22aee8;text-decoration:underline;word-wrap:break-word !important;" href="${docUrl}">${docTitle}</a> at ${dateTime?datetime?string("dd/MM/yyyy - HH:mm")}.</p><br/>
                         <p style="margin:0;font-size:13px;">${htmlEscape(principalAuthor.firstName)} says:</p>
-                        <p style="margin:0;font-size:13px;">${htmlEscape(comment_text)}</p>
+                        <p style="margin:0;font-size:13px;">${comment_text}</p>
                         <br/>
                         <p style="margin:0;">
                           <a style="color:#22aee8;text-decoration:underline;word-wrap:break-word !important;" href="${docUrl}?tabIds=%3Aview_comments">&#187; See all the comments of the document</a>
