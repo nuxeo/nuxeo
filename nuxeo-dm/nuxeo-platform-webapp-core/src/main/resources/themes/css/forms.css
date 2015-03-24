@@ -18,7 +18,6 @@ optgroup {
   font-weight: bold }
 
 option {
-  background-color: white;
   font-weight: normal }
 
 .field,
@@ -82,10 +81,6 @@ input[type="password"]:focus {
   box-shadow: 0 0 3px #b5dcff;
   color: "black (__FLAVOR__ color)";
   outline: 0 none }
-
-select:focus > option:checked,
-select:focus > optgroup > option:checked {
-  background-color: "color.major.stronger (__FLAVOR__ background)" }
 
 /* Placeholders in forms */
 input[placeholder] {
