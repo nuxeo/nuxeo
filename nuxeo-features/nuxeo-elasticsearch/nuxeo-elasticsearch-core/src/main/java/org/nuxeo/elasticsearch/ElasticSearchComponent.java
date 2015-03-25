@@ -275,6 +275,11 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     @Override
+    public IndexingMonitor getIndexingMonitor() {
+        return indexingMonitor;
+    }
+
+    @Override
     public boolean isIndexingInProgress() {
         return indexingMonitor.getTotalWorkerCount() > 0;
     }
