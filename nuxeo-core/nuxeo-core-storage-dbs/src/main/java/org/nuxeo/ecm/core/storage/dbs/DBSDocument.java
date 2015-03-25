@@ -260,6 +260,9 @@ public class DBSDocument implements Document {
 
     @Override
     public String getPath() throws DocumentException {
+        if (isVersion()) {
+            return "/";
+        }
         String name = getName();
         Document doc = getParent();
         if (doc == null) {
@@ -384,8 +387,12 @@ public class DBSDocument implements Document {
 
     @Override
     public List<Document> getVersions() throws DocumentException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        List<String> ids = session.getVersionsIds(getVersionSeriesId());
+        List<Document> versions = new ArrayList<Document>();
+        for (String id : ids) {
+            versions.add(session.getDocument(id));
+        }
+        return versions;
     }
 
     @Override
