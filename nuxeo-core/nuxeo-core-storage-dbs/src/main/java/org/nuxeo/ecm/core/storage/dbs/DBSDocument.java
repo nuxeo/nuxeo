@@ -71,6 +71,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
+import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
 import org.nuxeo.runtime.api.Framework;
 
@@ -202,6 +203,15 @@ public class DBSDocument implements Document {
     protected final DBSSession session;
 
     protected boolean readonly;
+
+    protected static final Map<String, String> systemPropNameMap;
+
+    static {
+        systemPropNameMap = new HashMap<String, String>();
+        systemPropNameMap.put(SYSPROP_FULLTEXT_SIMPLE, KEY_FULLTEXT_SIMPLE);
+        systemPropNameMap.put(SYSPROP_FULLTEXT_BINARY, KEY_FULLTEXT_BINARY);
+        systemPropNameMap.put(SYSPROP_FULLTEXT_JOBID, KEY_FULLTEXT_JOBID);
+    }
 
     public DBSDocument(DBSDocumentState docState, DocumentType type, DBSSession session, boolean readonly) {
         // no state for NullDocument (parent of placeless children)
@@ -424,7 +434,7 @@ public class DBSDocument implements Document {
 
     @Override
     public Document getVersion(String label) throws DocumentException {
-        DBSDocumentState state =  session.getVersionByLabel(getVersionSeriesId(), label);
+        DBSDocumentState state = session.getVersionByLabel(getVersionSeriesId(), label);
         return session.getDocument(state);
     }
 
@@ -630,14 +640,9 @@ public class DBSDocument implements Document {
 
     @Override
     public void setSystemProp(String name, Serializable value) throws DocumentException {
-        String propertyName;
-        if (name.equals(SYSPROP_FULLTEXT_SIMPLE)) {
-            propertyName = KEY_FULLTEXT_SIMPLE;
-        } else if (name.equals(SYSPROP_FULLTEXT_BINARY)) {
-            propertyName = KEY_FULLTEXT_BINARY;
-        } else if (name.equals(SYSPROP_FULLTEXT_JOBID)) {
-            propertyName = KEY_FULLTEXT_JOBID;
-        } else {
+
+        String propertyName = systemPropNameMap.get(name);
+        if (propertyName == null) {
             throw new DocumentException("Unknown system property: " + name);
         }
         setPropertyValue(propertyName, value);
@@ -645,8 +650,19 @@ public class DBSDocument implements Document {
 
     @Override
     public <T extends Serializable> T getSystemProp(String name, Class<T> type) throws DocumentException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        String propertyName = systemPropNameMap.get(name);
+        if (propertyName == null) {
+            throw new DocumentException("Unknown system property: " + name);
+        }
+        Serializable value = getPropertyValue(propertyName);
+        if (value == null) {
+            if (type == Boolean.class) {
+                value = Boolean.FALSE;
+            } else if (type == Long.class) {
+                value = Long.valueOf(0);
+            }
+        }
+        return (T) value;
     }
 
     /**
