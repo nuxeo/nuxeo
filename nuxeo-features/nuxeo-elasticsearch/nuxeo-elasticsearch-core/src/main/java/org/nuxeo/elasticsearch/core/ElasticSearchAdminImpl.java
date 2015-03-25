@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
@@ -199,13 +200,18 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         }
         String errorMessage = null;
         try {
-            log.debug("Waiting for cluster yellow health status");
+            log.debug("Waiting for cluster yellow health status, indexes: " + Arrays.toString(indexNames));
             ClusterHealthResponse ret = client.admin().cluster().prepareHealth(indexNames).setTimeout(
                     TIMEOUT_WAIT_FOR_CLUSTER).setWaitForYellowStatus().get();
             if (ret.isTimedOut()) {
-                errorMessage = "ES Cluster health status not Yellow after " + TIMEOUT_WAIT_FOR_CLUSTER + ": " + ret;
+                errorMessage = "ES Cluster health status not Yellow after " + TIMEOUT_WAIT_FOR_CLUSTER + " give up: "
+                        + ret;
             } else {
-                log.info("ES Cluster ready: " + ret.toString());
+                if ((indexNames.length > 0) && ret.getStatus() != ClusterHealthStatus.GREEN) {
+                    log.warn("Es Cluster ready but not GREEN: " + ret);
+                } else {
+                    log.info("ES Cluster ready: " + ret);
+                }
             }
         } catch (NoNodeAvailableException e) {
             errorMessage = "Failed to connect to elasticsearch, check addressList and clusterName: " + e.getMessage();
