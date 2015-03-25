@@ -105,6 +105,7 @@ public class DocumentsMarshaller implements JsonMarshaller<Documents> {
                 jp.nextToken();
                 return readPaginableDocuments(jp);
             }
+            jp.nextToken();
         }
         return readDocuments(jp);
     }
