@@ -18,7 +18,10 @@
 package org.nuxeo.elasticsearch.work;
 
 import org.nuxeo.ecm.core.work.AbstractWork;
+import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.elasticsearch.core.ElasticSearchAdminImpl;
 import org.nuxeo.elasticsearch.core.IndexingMonitor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Abstract class for sharing the worker state
@@ -26,7 +29,7 @@ import org.nuxeo.elasticsearch.core.IndexingMonitor;
 public abstract class BaseIndexingWorker extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
-    protected final transient IndexingMonitor monitor;
+    protected transient IndexingMonitor monitor;
 
     BaseIndexingWorker(IndexingMonitor monitor) {
         monitor.incrementWorker();
@@ -40,13 +43,21 @@ public abstract class BaseIndexingWorker extends AbstractWork {
 
     @Override
     public void retryableWork() throws Exception {
-        monitor.incrementRunningWorker();
+        getMonitor().incrementRunningWorker();
         try {
             doWork();
         } finally {
-            monitor.decrementWorker();
+            getMonitor().decrementWorker();
         }
     }
 
     protected abstract void doWork() throws Exception;
+
+    public IndexingMonitor getMonitor() {
+        if (monitor == null) {
+            ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
+            monitor = esa.getIndexingMonitor();
+        }
+        return monitor;
+    }
 }
