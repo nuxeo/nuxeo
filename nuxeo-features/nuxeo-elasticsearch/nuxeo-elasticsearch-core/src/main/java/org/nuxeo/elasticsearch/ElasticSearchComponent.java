@@ -88,10 +88,10 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     private static final String EP_DOC_WRITER = "elasticSearchDocWriter";
 
     // List command signature used for deduplicate indexing command, this does not work at cluster level
-    private final Set<String> scheduledCommands = Collections.synchronizedSet(new HashSet<>());
+    private final Set<String> scheduledCommands = Collections.synchronizedSet(new HashSet<String>());
 
     // Indexing commands that where received before the index initialization
-    private final List<IndexingCommand> stackedCommands = Collections.synchronizedList(new ArrayList<>());
+    private final List<IndexingCommand> stackedCommands = Collections.synchronizedList(new ArrayList<IndexingCommand>());
 
     private final Map<String, ElasticSearchIndexConfig> indexConfig = new HashMap<>();
 
@@ -272,6 +272,11 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     @Override
     public boolean isEmbedded() {
         return esa.isEmbedded();
+    }
+
+    @Override
+    public IndexingMonitor getIndexingMonitor() {
+        return indexingMonitor;
     }
 
     @Override
