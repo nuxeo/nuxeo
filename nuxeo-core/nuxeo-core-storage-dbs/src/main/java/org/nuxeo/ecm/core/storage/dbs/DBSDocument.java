@@ -76,6 +76,7 @@ import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerStreamSupport;
 import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
+import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
@@ -212,6 +213,15 @@ public class DBSDocument implements Document {
     protected final DBSSession session;
 
     protected boolean readonly;
+
+    protected static final Map<String, String> systemPropNameMap;
+
+    static {
+        systemPropNameMap = new HashMap<String, String>();
+        systemPropNameMap.put(SYSPROP_FULLTEXT_SIMPLE, KEY_FULLTEXT_SIMPLE);
+        systemPropNameMap.put(SYSPROP_FULLTEXT_BINARY, KEY_FULLTEXT_BINARY);
+        systemPropNameMap.put(SYSPROP_FULLTEXT_JOBID, KEY_FULLTEXT_JOBID);
+    }
 
     public DBSDocument(DBSDocumentState docState, DocumentType type,
             DBSSession session, boolean readonly) {
@@ -654,14 +664,9 @@ public class DBSDocument implements Document {
     @Override
     public void setSystemProp(String name, Serializable value)
             throws DocumentException {
-        String propertyName;
-        if (name.equals(SYSPROP_FULLTEXT_SIMPLE)) {
-            propertyName = KEY_FULLTEXT_SIMPLE;
-        } else if (name.equals(SYSPROP_FULLTEXT_BINARY)) {
-            propertyName = KEY_FULLTEXT_BINARY;
-        } else if (name.equals(SYSPROP_FULLTEXT_JOBID)) {
-            propertyName = KEY_FULLTEXT_JOBID;
-        } else {
+
+        String propertyName = systemPropNameMap.get(name);
+        if (propertyName==null) {
             throw new DocumentException("Unknown system property: " + name);
         }
         setPropertyValue(propertyName, value);
@@ -670,9 +675,19 @@ public class DBSDocument implements Document {
     @Override
     public <T extends Serializable> T getSystemProp(String name, Class<T> type)
             throws DocumentException {
-        // XXX Need to implement ?
-        return null;
-    }
+        String propertyName = systemPropNameMap.get(name);
+        if (propertyName == null) {
+            throw new DocumentException("Unknown system property: " + name);
+        }
+        Serializable value = getPropertyValue(propertyName);
+        if (value == null) {
+            if (type == Boolean.class) {
+                value = Boolean.FALSE;
+            } else if (type == Long.class) {
+                value = Long.valueOf(0);
+            }
+        }
+        return (T) value;    }
 
     /**
      * Checks if the given schema should be resolved on the proxy or the target.
