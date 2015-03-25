@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.query.api.PageProviderservice.testContrib.namedParams">
+
+  <!-- test named parameters in page providers -->
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <coreQueryPageProvider name="namedParamProvider">
+      <pattern>
+        SELECT * FROM Document where dc:title=:parameter1
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="namedParamProviderInvalid">
+      <pattern>
+        SELECT * FROM Document where dc:title=:foo
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="namedParamProviderWithDoc">
+      <searchDocumentType>NamedParamDoc</searchDocumentType>
+      <pattern>
+        SELECT * FROM Document where dc:title=:np:title
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="namedParamProviderWithDocInvalid">
+      <searchDocumentType>NamedParamDoc</searchDocumentType>
+      <pattern>
+        SELECT * FROM Document where dc:title=:foo
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="namedParamProviderWithWhereClause">
+      <whereClause>
+        <predicate parameter="dc:title" operator="=">
+          <field name="parameter1" />
+        </predicate>
+      </whereClause>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="namedParamProviderWithWhereClauseWithDoc">
+      <whereClause docType="NamedParamDoc">
+        <predicate parameter="dc:title" operator="=">
+          <field xpath="np:title" />
+        </predicate>
+      </whereClause>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="namedParamProviderComplex">
+      <searchDocumentType>NamedParamDoc</searchDocumentType>
+      <whereClause>
+        <predicate parameter="dc:title" operator="=">
+          <field name="parameter1" />
+        </predicate>
+        <predicate parameter="ecm:isCheckedInVersion" operator="=">
+          <field xpath="np:isCheckedIn" />
+        </predicate>
+        <predicate parameter="dc:issued" operator="BETWEEN">
+          <field xpath="np:dateMin" />
+          <field xpath="np:dateMax" />
+        </predicate>
+      </whereClause>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </coreQueryPageProvider>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="named_param" src="schemas/named_param.xsd" prefix="np" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="NamedParamDoc" extends="Document">
+      <schema name="named_param" />
+    </doctype>
+  </extension>
+
+</component>
