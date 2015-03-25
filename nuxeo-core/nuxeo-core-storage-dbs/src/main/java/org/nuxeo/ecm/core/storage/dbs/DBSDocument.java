@@ -244,6 +244,9 @@ public class DBSDocument implements Document {
 
     @Override
     public Document getParent() throws DocumentException {
+        if (isVersion()) {
+            return session.getDocument(getVersionSeriesId()).getParent();
+        }
         String parentId = docState.getParentId();
         return parentId == null ? null : session.getDocument(parentId);
     }
@@ -261,7 +264,7 @@ public class DBSDocument implements Document {
     @Override
     public String getPath() throws DocumentException {
         if (isVersion()) {
-            return "/";
+            return session.getDocument(getVersionSeriesId()).getPath();
         }
         String name = getName();
         Document doc = getParent();
@@ -421,8 +424,8 @@ public class DBSDocument implements Document {
 
     @Override
     public Document getVersion(String label) throws DocumentException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        DBSDocumentState state =  session.getVersionByLabel(getVersionSeriesId(), label);
+        return session.getDocument(state);
     }
 
     @Override
