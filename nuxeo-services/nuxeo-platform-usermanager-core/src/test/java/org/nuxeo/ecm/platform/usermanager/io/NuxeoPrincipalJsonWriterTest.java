@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -58,6 +59,24 @@ public class NuxeoPrincipalJsonWriterTest extends
         model.has("firstName").isEquals("");
         model.has("password").isEquals("");
         model.has("groups").contains("administrators");
+        JsonAssert exGroup = json.has("extendedGroups").length(1).has(0);
+        exGroup.properties(3);
+        exGroup.has("name").isEquals("administrators");
+        exGroup.has("label").isEquals("Administrators group");
+        exGroup.has("url").isEquals("group/administrators");
+    }
+
+    @Test
+    public void testSystemUser() throws Exception {
+        NuxeoPrincipal principal = new SystemPrincipal("system");
+        JsonAssert json = jsonAssert(principal);
+        json.isObject();
+        // it has no properties
+        json.properties(5);
+        json.has("entity-type").isEquals("user");
+        json.has("id").isEquals("system");
+        json.has("isAdministrator").isTrue();
+        json.has("isAnonymous").isFalse();
         JsonAssert exGroup = json.has("extendedGroups").length(1).has(0);
         exGroup.properties(3);
         exGroup.has("name").isEquals("administrators");
