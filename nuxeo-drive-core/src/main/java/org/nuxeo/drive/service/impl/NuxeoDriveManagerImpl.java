@@ -105,7 +105,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
      */
     protected Cache<String, Map<String, Set<String>>> collectionSyncRootMemberCache;
 
-    protected ChangeFinderRegistry changeFinderRegistry;
+    protected static ChangeFinderRegistry changeFinderRegistry;
 
     protected FileSystemChangeFinder changeFinder;
 
@@ -577,7 +577,9 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        changeFinderRegistry = new ChangeFinderRegistry();
+        if (changeFinderRegistry == null) {
+            changeFinderRegistry = new ChangeFinderRegistry();
+        }
     }
 
     @Override
