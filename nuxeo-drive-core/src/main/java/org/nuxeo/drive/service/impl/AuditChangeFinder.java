@@ -56,6 +56,13 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
 
     private static final Log log = LogFactory.getLog(AuditChangeFinder.class);
 
+    protected Map<String, String> parameters = new HashMap<String, String>();
+
+    @Override
+    public void handleParameters(Map<String, String> parameters) throws ClientException {
+        this.parameters.putAll(parameters);
+    }
+
     /**
      * To be deprecated (in fact make throw {@link UnsupportedOperationException}), keeping old method based on log date
      * for backward compatibility.

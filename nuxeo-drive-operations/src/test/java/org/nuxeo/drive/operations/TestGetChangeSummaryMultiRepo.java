@@ -32,7 +32,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.FileSystemChangeSummary;
 import org.nuxeo.drive.service.FileSystemItemChange;
-import org.nuxeo.drive.service.MockChangeFinder;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.FileSystemChangeSummaryImpl;
 import org.nuxeo.ecm.automation.client.Session;
@@ -63,7 +62,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.drive.core", "org.nuxeo.drive.operations" })
 @LocalDeploy({ "org.nuxeo.drive.operations:drive-repo-ds.xml",
-        "org.nuxeo.drive.operations:test-other-repository-config.xml" })
+        "org.nuxeo.drive.operations:test-other-repository-config.xml",
+        "org.nuxeo.drive.operations:OSGI-INF/test-nuxeodrive-change-finder-contrib.xml" })
 @Jetty(port = 18080)
 public class TestGetChangeSummaryMultiRepo {
 
@@ -95,7 +95,6 @@ public class TestGetChangeSummaryMultiRepo {
 
         otherSession = CoreInstance.openCoreSession("other", "Administrator");
 
-        nuxeoDriveManager.setChangeFinder(new MockChangeFinder());
         lastSyncDate = Calendar.getInstance().getTimeInMillis();
         lastSyncActiveRoots = "";
 
