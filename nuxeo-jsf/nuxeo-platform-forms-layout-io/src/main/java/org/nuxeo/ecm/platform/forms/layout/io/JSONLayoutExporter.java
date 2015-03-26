@@ -36,11 +36,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.RenderingInfo;
+import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
@@ -668,7 +671,6 @@ public class JSONLayoutExporter {
      * @param layoutDef the layout definition
      * @param ctx the widget conversion context
      * @param widgetConverters the list of ordered widget converters to use before export
-     * @return
      */
     public static JSONObject exportToJson(String category, LayoutDefinition layoutDef, LayoutConversionContext ctx,
             List<WidgetDefinitionConverter> widgetConverters) {
@@ -841,7 +843,6 @@ public class JSONLayoutExporter {
         if (!layoutRowDef.isSelectedByDefault()) {
             json.element("selectedByDefault", false);
         }
-        layoutRowDef.isSelectedByDefault();
         JSONObject props = exportPropsByModeToJson(layoutRowDef.getProperties());
         if (!props.isEmpty()) {
             json.element("properties", props);
@@ -1084,6 +1085,144 @@ public class JSONLayoutExporter {
         WidgetReference res = new WidgetReferenceImpl(widgetRef.optString("category"),
                 widgetRef.optString("name", null));
         return res;
+    }
+
+    /**
+     * @since 7.3
+     */
+    public static JSONObject exportToJson(Layout layout) {
+        JSONObject json = new JSONObject();
+        json.element("name", layout.getName());
+
+        String type = layout.getType();
+        if (type != null) {
+            json.element("type", type);
+        }
+
+        String typeCat = layout.getTypeCategory();
+        if (typeCat != null) {
+            json.element("typeCategory", typeCat);
+        }
+
+        json.element("mode", layout.getMode());
+
+        String template = layout.getTemplate();
+        if (template != null) {
+            json.element("template", template);
+        }
+
+        JSONObject props = exportPropsToJson(layout.getProperties());
+        if (!props.isEmpty()) {
+            json.element("properties", props);
+        }
+
+        JSONArray rows = new JSONArray();
+        LayoutRow[] lRows = layout.getRows();
+        if (lRows != null) {
+            for (LayoutRow lRow : lRows) {
+                rows.add(exportToJson(lRow));
+            }
+        }
+
+        if (!rows.isEmpty()) {
+            json.element("rows", rows);
+        }
+
+        return json;
+    }
+
+    /**
+     * @since 7.3
+     */
+    public static JSONObject exportToJson(LayoutRow layoutRow) {
+        JSONObject json = new JSONObject();
+        String name = layoutRow.getName();
+        if (name != null) {
+            json.element("name", name);
+        }
+        // fill selection info only if that's not the default value from the
+        // definition
+        if (layoutRow.isAlwaysSelected()) {
+            json.element("alwaysSelected", true);
+        }
+        if (!layoutRow.isSelectedByDefault()) {
+            json.element("selectedByDefault", false);
+        }
+        layoutRow.isSelectedByDefault();
+        JSONObject props = exportPropsToJson(layoutRow.getProperties());
+        if (!props.isEmpty()) {
+            json.element("properties", props);
+        }
+        JSONArray widgets = new JSONArray();
+        Widget[] rowWidgets = layoutRow.getWidgets();
+        if (rowWidgets != null) {
+            for (Widget widget : rowWidgets) {
+                widgets.add(exportToJson(widget));
+            }
+        }
+        if (!widgets.isEmpty()) {
+            json.element("widgets", widgets);
+        }
+        return json;
+    }
+
+    /**
+     * @since 7.3
+     */
+    public static JSONObject exportToJson(Widget widget) {
+        JSONObject json = new JSONObject();
+        json.element("name", widget.getName());
+        json.element("type", widget.getType());
+        json.element("typeCategory", widget.getTypeCategory());
+        json.element("mode", widget.getMode());
+        json.element("label", widget.getLabel());
+        json.element("helpLabel", widget.getHelpLabel());
+        json.element("translated", widget.isTranslated());
+        json.element("handlingLabels", widget.isHandlingLabels());
+        JSONArray fields = new JSONArray();
+        FieldDefinition[] fieldDefs = widget.getFieldDefinitions();
+        if (fieldDefs != null) {
+            for (FieldDefinition fieldDef : fieldDefs) {
+                fields.add(exportToJson(fieldDef));
+            }
+        }
+        if (!fields.isEmpty()) {
+            json.element("fields", fields);
+        }
+
+        JSONArray subWidgets = new JSONArray();
+        Widget[] wSubWidgets = widget.getSubWidgets();
+        if (wSubWidgets != null) {
+            for (Widget wDef : wSubWidgets) {
+                subWidgets.add(exportToJson(wDef));
+            }
+        }
+        if (!subWidgets.isEmpty()) {
+            json.element("subWidgets", subWidgets);
+        }
+
+        JSONObject props = exportPropsToJson(widget.getProperties());
+        if (!props.isEmpty()) {
+            json.element("properties", props);
+        }
+
+        JSONObject controls = exportPropsToJson(widget.getControls());
+        if (!controls.isEmpty()) {
+            json.element("controls", controls);
+        }
+
+        JSONArray selectOptions = new JSONArray();
+        WidgetSelectOption[] selectOptionDefs = widget.getSelectOptions();
+        if (selectOptionDefs != null) {
+            for (WidgetSelectOption selectOptionDef : selectOptionDefs) {
+                selectOptions.add(exportToJson(selectOptionDef));
+            }
+        }
+        if (!selectOptions.isEmpty()) {
+            json.element("selectOptions", selectOptions);
+        }
+
+        return json;
     }
 
     public static JSONObject exportToJson(WidgetSelectOption selectOption) {
