@@ -265,7 +265,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
         WidgetReference widgetRef = new WidgetReferenceImpl(widgetCategory, widgetName);
         WidgetDefinition wDef = lookupWidget(widgetRef);
         if (wDef != null) {
-            return getWidget(ctx, layoutName, null, wDef, layoutMode, valueName, 0);
+            return getWidget(ctx, layoutName, null, wDef, widgetCategory, layoutMode, valueName, 0);
         }
         return null;
     }
@@ -274,7 +274,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
     public Widget getWidget(FaceletContext ctx, WidgetDefinition wDef, String layoutMode, String valueName,
             String layoutName) {
         if (wDef != null) {
-            return getWidget(ctx, layoutName, null, wDef, layoutMode, valueName, 0);
+            return getWidget(ctx, layoutName, null, wDef, getDefaultStoreCategory(), layoutMode, valueName, 0);
         }
         return null;
     }
@@ -288,7 +288,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
      */
     @SuppressWarnings("deprecation")
     protected Widget getWidget(FaceletContext context, String layoutName, LayoutDefinition layoutDef,
-            WidgetDefinition wDef, String layoutMode, String valueName, int level) {
+            WidgetDefinition wDef, String widgetCategory, String layoutMode, String valueName, int level) {
         VariableMapper orig = null;
         // avoid variable mapper changes if context is null for tests
         if (context != null) {
@@ -313,7 +313,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
         WidgetDefinition[] swDefs = wDef.getSubWidgetDefinitions();
         if (swDefs != null) {
             for (WidgetDefinition swDef : swDefs) {
-                Widget subWidget = getWidget(context, layoutName, layoutDef, swDef, wMode, valueName, level + 1);
+                Widget subWidget = getWidget(context, layoutName, layoutDef, swDef, widgetCategory, wMode, valueName,
+                        level + 1);
                 if (subWidget != null) {
                     subWidgets.add(subWidget);
                 }
@@ -323,12 +324,16 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
         WidgetReference[] swRefs = wDef.getSubWidgetReferences();
         if (swRefs != null) {
             for (WidgetReference swRef : swRefs) {
-                WidgetDefinition swDef = lookupWidget(layoutDef, swRef);
+                String cat = swRef.getCategory();
+                if (StringUtils.isBlank(cat)) {
+                    cat = widgetCategory;
+                }
+                WidgetDefinition swDef = lookupWidget(layoutDef, new WidgetReferenceImpl(cat, swRef.getName()));
                 if (swDef == null) {
                     log.error(String.format("Widget '%s' not found in layout %s", swRef.getName(), layoutName));
                 } else {
-                    Widget subWidget = getWidget(context, layoutName, layoutDef, swDef, wMode, valueName, level + 1);
-
+                    Widget subWidget = getWidget(context, layoutName, layoutDef, swDef, cat, wMode, valueName,
+                            level + 1);
                     if (subWidget != null) {
                         subWidgets.add(subWidget);
                     }
@@ -443,13 +448,17 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
                     widgets.add(null);
                     continue;
                 }
-                WidgetDefinition wDef = lookupWidget(layoutDef, widgetRef);
+                String cat = widgetRef.getCategory();
+                if (StringUtils.isBlank(cat)) {
+                    cat = getDefaultStoreCategory();
+                }
+                WidgetDefinition wDef = lookupWidget(layoutDef, new WidgetReferenceImpl(cat, widgetName));
                 if (wDef == null) {
                     log.error(String.format("Widget '%s' not found in layout %s", widgetName, layoutName));
                     widgets.add(null);
                     continue;
                 }
-                Widget widget = getWidget(ctx, layoutName, layoutDef, wDef, mode, valueName, 0);
+                Widget widget = getWidget(ctx, layoutName, layoutDef, wDef, cat, mode, valueName, 0);
                 if (widget != null) {
                     emptyRow = false;
                 }

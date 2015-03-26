@@ -19,12 +19,6 @@
 
 package org.nuxeo.ecm.platform.layout.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,6 +48,12 @@ import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.layout.facelets.DummyWidgetTypeHandler;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test layout service API
@@ -567,4 +567,33 @@ public class TestLayoutService extends NXRuntimeTestCase {
         layout = service.getLayoutDefinition("testLayout");
         assertFalse(layout.isEmpty());
     }
+
+    @Test
+    public void testLayoutNonJSFWidgetTypeCategory() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-test-contrib.xml");
+        Layout layout = service.getLayout(null, "testLayoutForCategory", BuiltinModes.VIEW, null);
+        assertNotNull(layout);
+        assertEquals("testLayoutForCategory", layout.getName());
+        assertEquals("jsf", layout.getTypeCategory());
+
+        LayoutRow[] rows = layout.getRows();
+        assertNotNull(rows);
+        assertEquals(1, rows.length);
+        LayoutRow row = rows[0];
+        Widget[] widgets = row.getWidgets();
+        assertNotNull(widgets);
+        assertEquals(1, widgets.length);
+        Widget widget = widgets[0];
+        assertEquals("globalTestWidgetWithTestCategory", widget.getName());
+        assertEquals("jsf", widget.getTypeCategory());
+        Widget[] subs = widget.getSubWidgets();
+        assertNotNull(subs);
+        // check retrieval is ok: sub widget ref category is taken from widget
+        assertEquals(1, subs.length);
+        Widget sub = subs[0];
+        assertEquals("globalTestWidgetWithTypeCategory", sub.getName());
+        // make sure it's not "jsf"
+        assertEquals("testTypeCategory", sub.getTypeCategory());
+    }
+
 }

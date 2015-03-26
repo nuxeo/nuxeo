@@ -34,7 +34,7 @@
             <field>dc:title</field>
             <field>data.ref</field>
           </defaultConfiguration>
-          <!-- this is just a test layout, configuration should match default values
+          <!-- this is just a test layout, configuration should match default values 
             for fields -->
           <layouts mode="any">
             <layout>
@@ -150,7 +150,9 @@
         <category>jsf</category>
       </categories>
       <templates>
-        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+        <template mode="any">
+          /layouts/layout_listing_template.xhtml
+        </template>
         <template mode="csv">
           /layouts/layout_listing_csv_template.xhtml
         </template>
@@ -181,6 +183,9 @@
       <fields>
         <field schema="foo">bar</field>
       </fields>
+      <subWidgetRefs>
+        <widget>globalTestWidgetWithTypeCategory</widget>
+      </subWidgetRefs>
     </widget>
 
     <widget name="globalTestWidgetWithTypeCategory" type="test"
@@ -462,7 +467,9 @@
 
     <layout name="testEmptyLayout">
       <templates>
-        <template mode="any">/layouts/netflix-nuxeo_layout_template.xhtml</template>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
       </templates>
       <rows>
         <row>
@@ -482,6 +489,18 @@
             <property name="nxl_colspan_0">1</property>
           </properties>
           <widget />
+        </row>
+      </rows>
+    </layout>
+
+    <!-- layout in another category, referencing widgets in the same category -->
+    <layout name="testLayoutForCategory">
+      <categories>
+        <category>testCategory</category>
+      </categories>
+      <rows>
+        <row>
+          <widget category="testCategory">globalTestWidgetWithTestCategory</widget>
         </row>
       </rows>
     </layout>

@@ -19,11 +19,6 @@
 
 package org.nuxeo.ecm.platform.layout.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.Serializable;
 import java.util.Map;
 
@@ -42,6 +37,11 @@ import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.layout.facelets.DummyWidgetTypeHandler;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test layout component extension points.
@@ -62,6 +62,7 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testLayoutRegistration() {
         LayoutDefinition dublincore = service.getLayoutDefinition("dublincore");
@@ -162,6 +163,7 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertEquals("testLocalSubwidget", subRefs[1].getName());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testComplexLayoutRegistration() {
         LayoutDefinition filesLayout = service.getLayoutDefinition("files");
