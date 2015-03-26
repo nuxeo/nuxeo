@@ -49,6 +49,9 @@ public class WidgetDefinitionRegistry extends SimpleContributionRegistry<WidgetD
         return getCurrentContribution(id);
     }
 
+    /**
+     * @since 7.3
+     */
     public List<String> getWidgetNames() {
         List<String> res = new ArrayList<String>();
         res.addAll(currentContribs.keySet());
