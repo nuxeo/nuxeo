@@ -213,7 +213,7 @@
     <Set name="gracefulShutdown">1000</Set>
 
 	<!-- Configure Nuxeo Tx Manager -->
-    <Call class="org.nuxeo.runtime.jtajca.NuxeoContainer" name="install"/>
+    <!--Call class="org.nuxeo.runtime.jtajca.NuxeoContainer" name="install"/-->
 
 <!--
     <New id="nxsqldirectory" class="org.mortbay.jetty.plus.naming.Resource">

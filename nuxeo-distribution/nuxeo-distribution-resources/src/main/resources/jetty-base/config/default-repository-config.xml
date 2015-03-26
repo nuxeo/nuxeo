@@ -2,11 +2,20 @@
 <component name="default-repository-config">
   <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService"
     point="repository">
-    <repository name="default"
-      factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
+    <repository name="default" label="label.default.repository"
+      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
+      <pool minPoolSize="0" maxPoolSize="20" blockingTimeoutMillis="100"
+        idleTimeoutMinutes="10" />
+      <clustering enabled="false" delay="1000" />
+      <binaryStore path="" />
+      <noDDL>false</noDDL>
+      <aclOptimizations enabled="true" />
+      <pathOptimizations enabled="true" />
+      <idType>varchar</idType>
       <indexing>
         <!-- for H2 (Lucene Analyzer): -->
-        <fulltext analyzer="org.apache.lucene.analysis.standard.StandardAnalyzer">
+        <fulltext disabled="false"
+          analyzer="org.apache.lucene.analysis.standard.StandardAnalyzer">
           <index name="default">
             <!-- all props implied -->
           </index>
@@ -17,24 +26,8 @@
             <field>dc:description</field>
           </index>
         </fulltext>
-        <!-- for PostgreSQL (Text Search Configuration):
-        <fulltext analyzer="english">
-          <index name="default">
-          </index>
-          <index name="title">
-            <field>dc:title</field>
-          </index>
-          <index name="description">
-            <field>dc:description</field>
-          </index>
-        </fulltext>
-        -->
       </indexing>
-
-      <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
-      <property name="URL">jdbc:h2:data/h2/vcsh2repo</property>
-      <property name="User">sa</property>
-      <property name="Password"></property>
+      <usersSeparator key="," />
     </repository>
   </extension>
 </component>
