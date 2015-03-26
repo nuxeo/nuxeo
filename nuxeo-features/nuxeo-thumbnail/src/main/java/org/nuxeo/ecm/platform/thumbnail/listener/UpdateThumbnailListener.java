@@ -40,6 +40,8 @@ import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
  */
 public class UpdateThumbnailListener implements PostCommitEventListener {
 
+    public static final String THUMBNAIL_UPDATED = "thumbnailUpdated";
+
     protected void processDoc(CoreSession session, DocumentModel doc) throws ClientException {
         ThumbnailAdapter thumbnailAdapter = doc.getAdapter(ThumbnailAdapter.class);
         if (thumbnailAdapter == null) {
@@ -65,6 +67,7 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
             if (doc.isVersion()) {
                 doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
             }
+            doc.putContextData(THUMBNAIL_UPDATED, true);
             session.saveDocument(doc);
         }
     }
