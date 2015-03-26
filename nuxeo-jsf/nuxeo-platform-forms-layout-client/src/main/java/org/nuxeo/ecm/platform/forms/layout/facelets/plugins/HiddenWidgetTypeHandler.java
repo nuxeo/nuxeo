@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
 import javax.faces.component.html.HtmlInputHidden;
+import javax.faces.component.html.HtmlOutputText;
 import javax.faces.view.facelets.ComponentHandler;
 import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.FaceletContext;
@@ -76,7 +77,10 @@ public class HiddenWidgetTypeHandler extends AbstractWidgetTypeHandler {
                 // add a surrounding p:html tag handler
                 return helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(new TagAttribute[0]),
                         output, UIHtmlText.class.getName(), null);
-            } else {
+            } else if (BuiltinWidgetModes.CSV.equals(mode)) {
+                return helper.getHtmlComponentHandler(widgetTagConfigId, attributes, output,
+                        HtmlOutputText.COMPONENT_TYPE, null);
+            }else {
                 return output;
             }
         }
