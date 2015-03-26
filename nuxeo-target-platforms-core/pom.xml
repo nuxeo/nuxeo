@@ -1,21 +1,19 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-target-platforms-parent</artifactId>
-    <version>7.1-SNAPSHOT</version>
+    <version>7.3-SNAPSHOT</version>
   </parent>
-
   <artifactId>nuxeo-target-platforms-core</artifactId>
   <name>Nuxeo Target Platforms - Core Module</name>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-target-platforms-api</artifactId>
     </dependency>
-
     <!-- nuxeo -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
@@ -41,7 +39,6 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-sql</artifactId>
     </dependency>
-
     <!-- third party -->
     <dependency>
       <groupId>commons-collections</groupId>
@@ -51,11 +48,10 @@
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
-
     <!-- tests -->
     <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -63,7 +59,9 @@
       <artifactId>hsqldb</artifactId>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
   </dependencies>
-
 </project>
