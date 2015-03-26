@@ -154,9 +154,10 @@ public interface NuxeoDriveManager {
 
     /**
      * Sets the {@link FileSystemChangeFinder} member.
-     * <p>
-     * TODO: make it overridable with an extension point and remove setter.
+     *
+     * @deprecated since 7.3, use {@code changeFinder} extension point instead
      */
+    @Deprecated
     public void setChangeFinder(FileSystemChangeFinder changeFinder);
 
     /**

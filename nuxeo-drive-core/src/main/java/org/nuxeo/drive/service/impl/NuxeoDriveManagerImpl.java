@@ -68,6 +68,8 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.google.common.cache.Cache;
@@ -79,6 +81,8 @@ import com.google.common.cache.CacheBuilder;
 public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriveManager {
 
     private static final Log log = LogFactory.getLog(NuxeoDriveManagerImpl.class);
+
+    public static final String CHANGE_FINDER_EP = "changeFinder";
 
     public static final String NUXEO_DRIVE_FACET = "DriveSynchronized";
 
@@ -101,8 +105,9 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
      */
     protected Cache<String, Map<String, Set<String>>> collectionSyncRootMemberCache;
 
-    // TODO: make this overridable with an extension point
-    protected FileSystemChangeFinder changeFinder = new AuditChangeFinder();
+    protected ChangeFinderRegistry changeFinderRegistry;
+
+    protected FileSystemChangeFinder changeFinder;
 
     public NuxeoDriveManagerImpl() {
         syncRootCache = CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(10000).expireAfterWrite(1,
@@ -506,9 +511,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         return changeFinder;
     }
 
-    // TODO: make changeFinder overridable with an extension point and
-    // remove setter
     @Override
+    @Deprecated
     public void setChangeFinder(FileSystemChangeFinder changeFinder) {
         this.changeFinder = changeFinder;
     }
@@ -548,6 +552,49 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         if (!syncRootRefs.contains(new IdRef(locallyEditedCollection.getId()))) {
             registerSynchronizationRoot(session.getPrincipal(), locallyEditedCollection, session);
         }
+    }
+
+    /*------------------------ DefaultComponent -----------------------------*/
+    @Override
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        if (CHANGE_FINDER_EP.equals(extensionPoint)) {
+            changeFinderRegistry.addContribution((ChangeFinderDescriptor) contribution);
+        } else {
+            log.error("Unknown extension point " + extensionPoint);
+        }
+    }
+
+    @Override
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        if (CHANGE_FINDER_EP.equals(extensionPoint)) {
+            changeFinderRegistry.removeContribution((ChangeFinderDescriptor) contribution);
+        } else {
+            log.error("Unknown extension point " + extensionPoint);
+        }
+    }
+
+    @Override
+    public void activate(ComponentContext context) {
+        super.activate(context);
+        changeFinderRegistry = new ChangeFinderRegistry();
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) {
+        super.deactivate(context);
+        changeFinderRegistry = null;
+    }
+
+    /**
+     * Sorts the contributed factories according to their order.
+     */
+    @Override
+    public void applicationStarted(ComponentContext context) {
+        initChangeFinder();
+    }
+
+    protected void initChangeFinder() {
+        changeFinder = changeFinderRegistry.changeFinder;
     }
 
 }

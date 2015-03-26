@@ -18,6 +18,7 @@ package org.nuxeo.drive.service;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -30,6 +31,11 @@ import org.nuxeo.ecm.core.api.IdRef;
  * @author Antoine Taillefer
  */
 public interface FileSystemChangeFinder extends Serializable {
+
+    /**
+     * Handles the parameters contributed through the {@code changeFinder} contribution.
+     */
+    void handleParameters(Map<String, String> parameters) throws ClientException;
 
     /**
      * Gets the changes in the repository against which the given session is bound for the given synchronization root

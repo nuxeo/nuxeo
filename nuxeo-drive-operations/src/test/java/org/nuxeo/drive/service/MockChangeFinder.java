@@ -21,7 +21,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -51,6 +53,13 @@ public class MockChangeFinder implements FileSystemChangeFinder {
     private static final long serialVersionUID = -8829376616919987451L;
 
     private static final Log log = LogFactory.getLog(MockChangeFinder.class);
+
+    protected Map<String, String> parameters = new HashMap<String, String>();
+
+    @Override
+    public void handleParameters(Map<String, String> parameters) throws ClientException {
+        this.parameters.putAll(parameters);
+    }
 
     @Override
     public List<FileSystemItemChange> getFileSystemChanges(CoreSession session, Set<IdRef> lastActiveRootRefs,
