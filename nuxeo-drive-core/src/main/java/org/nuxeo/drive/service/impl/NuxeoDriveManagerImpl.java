@@ -574,13 +574,13 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     @Override
-    public void activate(ComponentContext context) {
+    public void activate(ComponentContext context) throws Exception {
         super.activate(context);
         changeFinderRegistry = new ChangeFinderRegistry();
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
+    public void deactivate(ComponentContext context) throws Exception {
         super.deactivate(context);
         changeFinderRegistry = null;
     }
