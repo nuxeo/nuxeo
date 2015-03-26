@@ -36,8 +36,7 @@ public class ThumbnailConstants {
 
     public enum EventNames {
         /**
-         * Event sent after checking before updating document if the main blob
-         * has been updated
+         * Event sent after checking before updating document if the main blob has been updated
          */
         scheduleThumbnailUpdate
     }

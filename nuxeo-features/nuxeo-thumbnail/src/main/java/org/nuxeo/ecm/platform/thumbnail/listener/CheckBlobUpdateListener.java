@@ -27,8 +27,7 @@ import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Thumbnail listener handling document blob update and checking changes. Fire
- * an event if it's the case
+ * Thumbnail listener handling document blob update and checking changes. Fire an event if it's the case
  *
  * @since 5.7
  */
@@ -49,17 +48,14 @@ public class CheckBlobUpdateListener implements EventListener {
         Property content = doc.getProperty("file:content");
         if (DOCUMENT_CREATED.equals(event.getName()) || content.isDirty()) {
 
-            if (BEFORE_DOC_UPDATE.equals(event.getName())
-                    && doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
-                doc.setPropertyValue(
-                        ThumbnailConstants.THUMBNAIL_PROPERTY_NAME, null);
+            if (BEFORE_DOC_UPDATE.equals(event.getName()) && doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
+                doc.setPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME, null);
             }
 
             if (content.getValue() != null) {
                 doc.addFacet(ThumbnailConstants.THUMBNAIL_FACET);
                 Framework.getLocalService(EventService.class).fireEvent(
-                        ThumbnailConstants.EventNames.scheduleThumbnailUpdate.name(),
-                        context);
+                        ThumbnailConstants.EventNames.scheduleThumbnailUpdate.name(), context);
             }
         }
     }
