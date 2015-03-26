@@ -79,6 +79,28 @@ public class TestBinaryMetadataSyncListener {
 
         // Test if description has been overriden by higher order contribution
         assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:description"));
+
+        // Test the following rule: 'If the attached binary is dirty and the document metadata are not dirty, the
+        // listener reads the metadata from attached binary to document.'
+
+        // Changing the title to see after if the blob title is well propagated.
+        pdfDoc.setPropertyValue("dc:title", "notFromBlob");
+        pdfDoc.setPropertyValue("file:content", null);
+        session.saveDocument(pdfDoc);
+
+        pdfDoc = session.getDocument(pdfDoc.getRef());
+
+        assertEquals("notFromBlob", pdfDoc.getPropertyValue("dc:title"));
+
+        // Updating only the blob and simulate the same change on dc:title -> title should not be dirty.
+        pdfDoc.setPropertyValue("dc:title", "notFromBlob");
+        DocumentHelper.addBlob(pdfDoc.getProperty("file:content"), fb);
+        session.saveDocument(pdfDoc);
+
+        pdfDoc = session.getDocument(pdfDoc.getRef());
+
+        // Confirm the blob was dirty but not metadata -> title should be updated properly.
+        assertEquals("en-US", pdfDoc.getPropertyValue("dc:title"));
     }
 
     @Test
