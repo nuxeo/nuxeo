@@ -51,6 +51,8 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.GetRelations" />
     <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.DeleteRelation" />
+    <operation
       class="org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation" >
       <widgets>
         <widget name="query" type="codearea">
