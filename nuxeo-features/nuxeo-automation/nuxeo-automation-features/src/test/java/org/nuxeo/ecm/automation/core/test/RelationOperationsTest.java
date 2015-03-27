@@ -24,6 +24,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.events.EventHandlerRegistry;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.operations.services.CreateRelation;
+import org.nuxeo.ecm.automation.core.operations.services.DeleteRelation;
 import org.nuxeo.ecm.automation.core.operations.services.GetRelations;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -80,7 +81,7 @@ public class RelationOperationsTest {
     // ------ Tests comes here --------
 
     @Test
-    public void testCreateAndReadRelation() throws Exception {
+    public void testRelationOperations() throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
         OperationChain chain = new OperationChain("createRelation");
@@ -106,7 +107,18 @@ public class RelationOperationsTest {
         chain.add(FetchContextDocument.ID);
         chain.add(GetRelations.ID).set("predicate", conformsTo).set("graphName", null);
         DocumentModelList docs2 = (DocumentModelList) service.run(ctx, chain);
+
         assertEquals(docs, docs2);
+
+        ctx = new OperationContext(session);
+        ctx.setInput(src);
+        chain = new OperationChain("deleteRelation");
+        chain.add(FetchContextDocument.ID);
+        chain.add(DeleteRelation.ID).set("predicate", conformsTo).set("object", dst.getId());
+        DocumentModel doc2 = (DocumentModel) service.run(ctx, chain);
+
+        assertEquals(doc2, src);
+
     }
 
 }
