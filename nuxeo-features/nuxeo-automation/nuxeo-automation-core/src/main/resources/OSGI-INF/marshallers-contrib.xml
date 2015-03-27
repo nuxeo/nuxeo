@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.automation.marshallers" version="1.0.0">
+  <documentation>
+    Core IO registered marshallers set.
+  </documentation>
+  <extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
+    <!-- blob reader -->
+    <register class="org.nuxeo.ecm.automation.core.io.BlobJsonReader" enable="true" />
+  </extension>
+</component>

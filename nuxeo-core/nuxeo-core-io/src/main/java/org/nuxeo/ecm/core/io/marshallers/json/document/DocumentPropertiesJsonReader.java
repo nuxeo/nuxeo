@@ -26,7 +26,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
+import javax.inject.Inject;
+
 import org.codehaus.jackson.JsonNode;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
@@ -48,8 +51,6 @@ import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
-
-import javax.inject.Inject;
 
 /**
  * Convert Json as {@link List<Property>}.
@@ -124,6 +125,9 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
         } else {
             if (!(property instanceof BlobProperty)) {
                 fillComplexProperty(property, jn);
+            } else {
+                Blob blob = readEntity(Blob.class, Blob.class, jn);
+                property.setValue(blob);
             }
         }
         return property;
