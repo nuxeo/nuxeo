@@ -1,0 +1,1 @@
+print(Fn.getEmail("Administrator"));

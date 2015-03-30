@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -64,7 +65,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * @since 7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class })
+@Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.automation.scripting" })
@@ -263,6 +264,18 @@ public class TestScriptRunnerInfrastructure {
         } catch (RuntimeException e) {
             assertEquals("java.lang.ClassNotFoundException: java.io.File", e.getMessage());
         }
+    }
+
+    @Test
+    public void testFn() throws ScriptException, OperationException {
+        // Test platform functions injection
+        AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
+        assertNotNull(scriptingService);
+
+        InputStream stream = this.getClass().getResourceAsStream("/platformFunctions.js");
+        assertNotNull(stream);
+        scriptingService.run(stream, session);
+        assertEquals("Administrator@example.com" + System.lineSeparator(), outContent.toString());
     }
 
     public String toString(Map<String, Object> creationProps) {

@@ -37,6 +37,7 @@ import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.features.PlatformFunctions;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
 
@@ -138,6 +139,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         engine.setContext(new SimpleScriptContext());
         engine.eval(getJSWrapper());
         engine.put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY, new AutomationMapper(session));
+        engine.put(AutomationScriptingConstants.PLATFORM_FUNCTIONS_KEY, new PlatformFunctions());
         engine.eval(script);
     }
 
