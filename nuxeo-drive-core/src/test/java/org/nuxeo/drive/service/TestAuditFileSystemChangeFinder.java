@@ -92,6 +92,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
         "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.platform.web.common",
         "org.nuxeo.ecm.platform.query.api" })
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
+@RandomBug.Repeat(issue = "NXP-16760")
 public class TestAuditFileSystemChangeFinder {
 
     private static final Log log = LogFactory.getLog(TestAuditFileSystemChangeFinder.class);
@@ -204,7 +205,6 @@ public class TestAuditFileSystemChangeFinder {
     }
 
     @Test
-    @RandomBug.Repeat(issue = "NXP-16760")
     public void testFindChanges() throws Exception {
         List<FileSystemItemChange> changes;
         FileSystemItemChange change;
