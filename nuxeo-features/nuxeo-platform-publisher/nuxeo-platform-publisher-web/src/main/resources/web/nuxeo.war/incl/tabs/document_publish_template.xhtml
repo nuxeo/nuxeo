@@ -1,11 +1,12 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:c="http://java.sun.com/jstl/core" xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
-  xmlns:nxu="http://nuxeo.org/nxweb/util" xmlns:rich="http://richfaces.org/rich"
-  class="menu">
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich" class="menu">
 
   <a4j:outputPanel ajaxRendered="false" layout="block">
     <h:form ajaxSubmit="true" id="publishTreeForm">
@@ -24,8 +25,8 @@
             <h:selectOneListbox id="publishSelectTreeName"
               styleClass="dataInputText" size="1"
               value="#{publishActions.currentPublicationTreeNameForPublishing}">
-              <nxu:selectItems value="#{availablePublicationTrees}" var="tree"
-                itemValue="#{tree.name}"
+              <nxu:selectItems value="#{availablePublicationTrees}"
+                var="tree" itemValue="#{tree.name}"
                 itemLabel="#{messages[tree.title]}#{publishActions.getDomainName(tree.name)}" />
               <a4j:ajax event="change"
                 render=":publishTreeForm:sectionTree :publishTreeForm:publishingInfoList">
@@ -46,33 +47,28 @@
                 iconLeaf="#{publishActions.currentPublicationTreeIconCollapsed}"
                 iconExpanded="#{publishActions.currentPublicationTreeIconCollapsed}"
                 iconCollapsed="#{publishActions.currentPublicationTreeIconCollapsed}"
-                rowKeyVar="rowKey" stateVar="nodeState" id="publishTree"
+                rowKeyVar="rowKey"
+                stateVar="nodeState"
+                id="publishTree"
                 var="node">
                 <rich:treeModelRecursiveAdaptor
                   roots="#{publishActions.currentPublicationTreesForPublishing}"
                   nodes="#{node.childrenNodes}"
                   leaf="#{node.childrenNodes == null or node.childrenNodes.size == 0}"
                   id="publishRecursiveAdaptor">
-                  <rich:treeNode highlightedClass="treeNodeHighlightedClass"
-                    selectedClass="treeNodeSelectedClass" id="publishTreeNode">
-
-                    <nxu:set var="formattedPath"
-                      value="#{publishActions.getFormattedPath(node.path)}">
-                      <nxu:set var="formattedTitle"
-                        value="#{nxu:test(formattedPath == node.path, node.title, formattedPath)}">
-                        <span class="tipsyShow tipsyGravityS"
-                          title="#{formattedTitle}">#{node.title}</span>
-                      </nxu:set>
-                    </nxu:set>
-
+                  <rich:treeNode
+                    highlightedClass="treeNodeHighlightedClass"
+                    selectedClass="treeNodeSelectedClass"
+                    id="publishTreeNode">
+                    <h:outputText value="#{node.title}" />
                     <h:commandLink immediate="true"
                       action="#{publishActions.doPublish(node)}"
                       rendered="#{publishActions.canPublishTo(node)}"
                       id="publishCommandLink">
-                      <f:ajax execute="@this"
-                        render=":publishTreeForm:publishingInfoList facesStatusMessagePanel" />
+                      <f:ajax execute="@this" render=":publishTreeForm:publishingInfoList facesStatusMessagePanel" />
                       <h:graphicImage value="/icons/back.png" />
-                      <h:outputText value="#{messages['label.publish.publish']}" />
+                      <h:outputText
+                        value="#{messages['label.publish.publish']}" />
                     </h:commandLink>
                   </rich:treeNode>
                 </rich:treeModelRecursiveAdaptor>
@@ -96,19 +92,21 @@
 
         <nxu:dataTable value="#{publishedDocuments}"
           rendered="#{publishActions.currentPublicationTreeForPublishing != null and !empty publishedDocuments}"
-          var="publishedDocument" preserveSort="true" preserveDataModel="false"
-          rowClasses="dataRowEven,dataRowOdd" sortable="false"
-          styleClass="dataList">
+          var="publishedDocument" preserveSort="true"
+          preserveDataModel="false" rowClasses="dataRowEven,dataRowOdd"
+          sortable="false" styleClass="dataList">
 
           <!-- Name -->
           <nxu:column>
             <f:facet name="header">
-              <h:outputText value="#{messages['label.content.header.title']}" />
+              <h:outputText
+                value="#{messages['label.content.header.title']}" />
             </f:facet>
 
             <h:panelGroup
               rendered="#{publishActions.isRemotePublishedDocument(publishedDocument)}">
-              <h:outputText value="Remote: #{publishedDocument.parentPath}" />
+              <h:outputText
+                value="Remote: #{publishedDocument.parentPath}" />
             </h:panelGroup>
 
             <h:panelGroup
@@ -130,9 +128,11 @@
           <!--  Version of the published document -->
           <h:column>
             <f:facet name="header">
-              <h:outputText value="#{messages['label.publish.header.version']}" />
+              <h:outputText
+                value="#{messages['label.publish.header.version']}" />
             </f:facet>
-            <h:outputText value="#{publishedDocument.sourceVersionLabel}" />
+            <h:outputText
+              value="#{publishedDocument.sourceVersionLabel}" />
           </h:column>
 
           <!--  Actions for the published document  -->
@@ -144,15 +144,13 @@
               value="#{messages['command.document.unpublish']}"
               action="#{publishActions.unPublish(publishedDocument)}"
               rendered="#{publishActions.canUnpublish(publishedDocument)}">
-              <f:ajax execute="@this"
-                render=":publishTreeForm:publishingInfoList facesStatusMessagePanel" />
+              <f:ajax execute="@this" render=":publishTreeForm:publishingInfoList facesStatusMessagePanel" />
             </h:commandLink>
             <h:commandLink immediate="true" styleClass="button"
               value="#{messages['command.document.republish']}"
               action="#{publishActions.rePublish(publishedDocument)}"
               rendered="#{publishActions.canRepublish(publishedDocument)}">
-              <f:ajax execute="@this"
-                render=":publishTreeForm:publishingInfoList facesStatusMessagePanel" />
+              <f:ajax execute="@this" render=":publishTreeForm:publishingInfoList facesStatusMessagePanel" />
             </h:commandLink>
           </h:column>
         </nxu:dataTable>
