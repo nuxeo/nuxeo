@@ -119,8 +119,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
                 }
             }
         } catch (IllegalArgumentException e) {
-            throw new AutomationScriptingException(
-                    "Cannot create Nashorn Engine. Make sure you're running Nuxeo with jdk8u25 at least.", e);
+            throw new AutomationScriptingException(AutomationScriptingConstants.NASHORN_WARN_VERSION, e);
         }
     }
 

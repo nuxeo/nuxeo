@@ -70,6 +70,8 @@ public class AutomationScriptingComponent extends DefaultComponent {
                     scriptingService.setClassFilterActivation(false);
                 }
             }
+        }else{
+            log.warn(AutomationScriptingConstants.NASHORN_WARN_VERSION);
         }
     }
 
