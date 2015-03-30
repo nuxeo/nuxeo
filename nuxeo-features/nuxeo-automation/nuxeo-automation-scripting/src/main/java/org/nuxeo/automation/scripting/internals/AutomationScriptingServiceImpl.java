@@ -47,6 +47,10 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
 
     protected String jsWrapper = null;
 
+    protected boolean classFilterActivation = true;
+
+    protected boolean cacheActivation = true;
+
     protected String getJSWrapper(boolean refresh) throws OperationException {
         if (jsWrapper == null || refresh) {
             StringBuffer sb = new StringBuffer();
@@ -98,11 +102,20 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         try {
             if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE,
                     AutomationScriptingConstants.DEFAULT_PRECOMPILE_STATUS))) {
-                return new NashornScriptEngineFactory().getScriptEngine(AutomationScriptingConstants.NASHORN_OPTIONS);
+                if (classFilterActivation && cacheActivation) {
                     return new NashornScriptEngineFactory().getScriptEngine(
                             AutomationScriptingConstants.NASHORN_OPTIONS, null, new AutomationScriptingClassFilter());
+                } else if (cacheActivation) {
+                    return new NashornScriptEngineFactory().getScriptEngine(AutomationScriptingConstants.NASHORN_OPTIONS);
+                } else {
+                    return new NashornScriptEngineFactory().getScriptEngine();
+                }
             } else {
-                return new NashornScriptEngineFactory().getScriptEngine();
+                if (classFilterActivation) {
+                    return new NashornScriptEngineFactory().getScriptEngine(new AutomationScriptingClassFilter());
+                } else {
+                    return new NashornScriptEngineFactory().getScriptEngine();
+                }
             }
         } catch (IllegalArgumentException e) {
             throw new AutomationScriptingException(
@@ -134,6 +147,16 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         run(script, session);
         Invocable inv = (Invocable) engines.get();
         return inv.getInterface(scriptingOperationInterface);
+    }
+
+    @Override
+    public void setClassFilterActivation(boolean activated) {
+        this.classFilterActivation = activated;
+    }
+
+    @Override
+    public void setCacheActivation(boolean cacheActivation) {
+        this.cacheActivation = cacheActivation;
     }
 
     protected void parseAutomationIDSForScripting(Map<String, List<String>> opMap, List<String> flatOps, String id) {
