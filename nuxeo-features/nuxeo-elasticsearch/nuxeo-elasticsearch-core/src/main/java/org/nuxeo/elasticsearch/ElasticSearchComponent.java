@@ -91,7 +91,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     private final Set<String> scheduledCommands = Collections.synchronizedSet(new HashSet<String>());
 
     // Indexing commands that where received before the index initialization
-    private final List<IndexingCommand> stackedCommands = new ArrayList<>();
+    private final List<IndexingCommand> stackedCommands = Collections.synchronizedList(new ArrayList<IndexingCommand>());
 
     private final Map<String, ElasticSearchIndexConfig> indexConfig = new HashMap<>();
 
@@ -275,6 +275,11 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     @Override
+    public IndexingMonitor getIndexingMonitor() {
+        return indexingMonitor;
+    }
+
+    @Override
     public boolean isIndexingInProgress() {
         return indexingMonitor.getTotalWorkerCount() > 0;
     }
@@ -365,6 +370,14 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     @Override
     public void runIndexingWorker(List<IndexingCommand> cmds) {
+        if (!isReady()) {
+            if (log.isDebugEnabled()) {
+                log.debug("Delaying indexing commands: Waiting for Index to be initialized."
+                        + Arrays.toString(cmds.toArray()));
+            }
+            stackedCommands.addAll(cmds);
+            return;
+        }
         Map<String, List<IndexingCommand>> syncCommands = new HashMap<>();
         Map<String, List<IndexingCommand>> asyncCommands = new HashMap<>();
         for (IndexingCommand cmd : cmds) {

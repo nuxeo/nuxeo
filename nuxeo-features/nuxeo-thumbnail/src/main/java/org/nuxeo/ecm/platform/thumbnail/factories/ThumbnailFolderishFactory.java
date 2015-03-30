@@ -28,8 +28,7 @@ import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 public class ThumbnailFolderishFactory extends ThumbnailDocumentFactory {
 
     @Override
-    public Blob getThumbnail(DocumentModel doc, CoreSession session)
-            throws ClientException {
+    public Blob getThumbnail(DocumentModel doc, CoreSession session) throws ClientException {
         if (!doc.isFolder()) {
             throw new ClientException("Document is not folderish");
         }
@@ -37,8 +36,7 @@ public class ThumbnailFolderishFactory extends ThumbnailDocumentFactory {
         if (session.hasChildren(docRef)) {
             DocumentModel child = session.getChildren(docRef).get(0);
             if (!child.isFolder()) {
-                return session.getChildren(docRef).get(0).getAdapter(
-                        ThumbnailAdapter.class).getThumbnail(session);
+                return session.getChildren(docRef).get(0).getAdapter(ThumbnailAdapter.class).getThumbnail(session);
             }
         }
         return getDefaultThumbnail(doc);
