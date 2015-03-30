@@ -19,6 +19,7 @@ package org.nuxeo.automation.scripting.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -30,11 +31,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.script.ScriptException;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.automation.scripting.internals.operation
@@ -247,6 +248,21 @@ public class TestScriptRunnerInfrastructure {
         params.put("name", "testDoc");
         DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestComplexProperties", params);
         assertEquals("whatever", ((Map) ((List) result.getPropertyValue("ds:fields")).get(0)).get("sqlTypeHint"));
+    }
+
+    @Test
+    public void testClassFilter() throws ScriptException, OperationException {
+        AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
+        assertNotNull(scriptingService);
+
+        InputStream stream = this.getClass().getResourceAsStream("/classFilterScript.js");
+        assertNotNull(stream);
+        try {
+            scriptingService.run(stream, session);
+            fail();
+        } catch (RuntimeException e) {
+            assertEquals("java.lang.ClassNotFoundException: java.io.File", e.getMessage());
+        }
     }
 
     public String toString(Map<String, Object> creationProps) {
