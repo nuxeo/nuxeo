@@ -17,6 +17,9 @@
 package org.nuxeo.ecm.automation.jaxrs.io.audit;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Map;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.ext.Provider;
@@ -26,6 +29,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
 
@@ -61,6 +65,40 @@ public class LogEntryWriter extends EntityWriter<LogEntry> {
         jg.writeStringField("eventDate", ISODateTimeFormat.dateTime().print(new DateTime(logEntry.getEventDate())));
         jg.writeNumberField("id", logEntry.getId());
         jg.writeStringField("logDate", ISODateTimeFormat.dateTime().print(new DateTime(logEntry.getLogDate())));
+        writeExtendedInfos(jg, logEntry);
     }
 
+    protected void writeExtendedInfos(JsonGenerator jg, LogEntry logEntry) throws IOException, ClientException {
+        Map<String, ExtendedInfo> extended = logEntry.getExtendedInfos();
+        jg.writeObjectFieldStart("extended");
+        for (String key : extended.keySet()) {
+            ExtendedInfo ei = extended.get(key);
+            if (ei != null && ei.getSerializableValue() != null) {
+                writeExtendedInfo(jg, key, ei.getSerializableValue());
+            } else {
+                jg.writeNullField(key);
+            }
+        }
+        jg.writeEndObject();
+    }
+
+    protected void writeExtendedInfo(JsonGenerator jg, String key, Serializable value) throws IOException,
+            ClientException {
+        Class<?> clazz = value.getClass();
+        if (Long.class.isAssignableFrom(clazz)) {
+            jg.writeNumberField(key, (Long) value);
+        } else if (Integer.class.isAssignableFrom(clazz)) {
+            jg.writeNumberField(key, (Integer) value);
+        } else if (Double.class.isAssignableFrom(clazz)) {
+            jg.writeNumberField(key, (Double) value);
+        } else if (Date.class.isAssignableFrom(clazz)) {
+            jg.writeStringField(key, ISODateTimeFormat.dateTime().print(new DateTime(value)));
+        } else if (String.class.isAssignableFrom(clazz)) {
+            jg.writeStringField(key, (String) value);
+        } else if (Boolean.class.isAssignableFrom(clazz)) {
+            jg.writeBooleanField(key, (Boolean) value);
+        } else {
+            jg.writeStringField(key, value.toString());
+        }
+    }
 }
