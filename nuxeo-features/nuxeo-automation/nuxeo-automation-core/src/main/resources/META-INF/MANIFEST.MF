@@ -26,7 +26,8 @@ Export-Package: org.nuxeo.ecm.automation,
 Bundle-ActivationPolicy: lazy
 Nuxeo-Component: OSGI-INF/AutomationService.xml,
  OSGI-INF/reload-contrib.xml,
- OSGI-INF/operations-contrib.xml
+ OSGI-INF/operations-contrib.xml,
+ OSGI-INF/marshallers-contrib.xml
 Import-Package: freemarker.core,
  freemarker.template,
  groovy.lang;resolution:=optional,

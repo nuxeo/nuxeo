@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -216,7 +217,8 @@ public class NxQueryBuilder {
                 }
                 if (nxqlHasSelectClause(nxql)) {
                     selectFieldsAndTypes = NxqlQueryConverter.getSelectClauseFields(nxql);
-                    selectFields = selectFieldsAndTypes.keySet().toArray(new String[0]);
+                    Set<String> keySet = selectFieldsAndTypes.keySet();
+                    selectFields = keySet.toArray(new String[keySet.size()]);
                     returnsDocuments = false;
                 }
                 esQueryBuilder = addSecurityFilter(esQueryBuilder);

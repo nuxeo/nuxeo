@@ -20,7 +20,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.nuxeo.ecm.automation.jaxrs.io.documents.BusinessAdapterListWriter;
-import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentListWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.MultiPartFormRequestReader;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.MultiPartRequestReader;
@@ -54,7 +53,6 @@ public class APIModule extends WebEngineModule {
 
         // writers
         result.add(new JsonESDocumentWriter());
-        result.add(new JsonESDocumentListWriter());
         result.add(new BusinessAdapterListWriter());
         result.add(new SchemasWriter());
         result.add(new SchemaWriter());

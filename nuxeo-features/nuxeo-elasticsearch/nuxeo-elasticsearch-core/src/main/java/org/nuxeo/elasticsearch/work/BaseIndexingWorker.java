@@ -17,13 +17,12 @@
 
 package org.nuxeo.elasticsearch.work;
 
+import javax.validation.constraints.NotNull;
+
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.core.ElasticSearchAdminImpl;
 import org.nuxeo.elasticsearch.core.IndexingMonitor;
 import org.nuxeo.runtime.api.Framework;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * Abstract class for sharing the worker state
@@ -31,6 +30,7 @@ import javax.validation.constraints.NotNull;
 public abstract class BaseIndexingWorker extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
+
     protected transient IndexingMonitor monitor;
 
     BaseIndexingWorker(IndexingMonitor monitor) {

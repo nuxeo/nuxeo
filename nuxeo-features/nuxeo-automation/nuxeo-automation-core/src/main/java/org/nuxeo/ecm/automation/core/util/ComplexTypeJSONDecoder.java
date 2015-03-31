@@ -127,7 +127,7 @@ public class ComplexTypeJSONDecoder {
         return result;
     }
 
-    protected static Blob getBlobFromJSON(ObjectNode jsonObject) {
+    public static Blob getBlobFromJSON(ObjectNode jsonObject) {
         Blob blob = null;
         for (JSONBlobDecoder blobDecoder : blobDecoders) {
             blob = blobDecoder.getBlobFromJSON(jsonObject);
