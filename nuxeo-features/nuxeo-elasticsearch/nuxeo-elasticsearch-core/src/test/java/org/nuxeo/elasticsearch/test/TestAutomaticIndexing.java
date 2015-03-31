@@ -325,6 +325,24 @@ public class TestAutomaticIndexing {
     }
 
     @Test
+    public void shouldIndexLargeToken() throws Exception {
+        startTransaction();
+        DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
+        doc.setPropertyValue("dc:source", "search foo" + new String(new char[33000]).replace('\0', 'a'));
+        // Note that token > 32k error is raised only when using a disk storage elastic configuration
+        doc = session.createDocument(doc);
+        session.save();
+
+        TransactionHelper.commitOrRollbackTransaction();
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        waitForCompletion();
+
+        startTransaction();
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:source STARTSWITH 'search'"));
+        Assert.assertEquals(1, ret.totalSize());
+    }
+
+    @Test
     public void shouldIndexOnPublishing() throws Exception {
         startTransaction();
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
