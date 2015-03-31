@@ -25,15 +25,9 @@ import org.elasticsearch.search.lookup.SourceLookup;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Read a DocumentModel from an ES Json export.
@@ -77,17 +71,6 @@ public class JsonDocumentModelReader {
 
         DocumentModelImpl doc = new DocumentModelImpl(sid, getType(), id, new Path(path), new IdRef(id), new IdRef(
                 parentId), null, null, null, repository, false);
-
-        try {
-            // pre load datamodel to prevent DB access
-            DocumentType docType = Framework.getService(SchemaManager.class).getDocumentType(type);
-            for (Schema schema : docType.getSchemas()) {
-                doc.addDataModel(DocumentModelFactory.createDataModel(null, schema));
-            }
-        } catch (DocumentException e) {
-            log.error("Unable to preload DataModels: " + e.getMessage(), e);
-        }
-
         for (String prop : source.keySet()) {
             String schema = prop.split(":")[0];
             // schema = schema.replace("dc", "dublincore");
@@ -120,9 +103,7 @@ public class JsonDocumentModelReader {
                     doc.setPropertyValue(prop, value);
                     // doc.setProperty(schema, key, value);
                 } catch (ClientException e) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("fetchDocFromEs can not set property %s to %s", key, value));
-                    }
+                    log.info(String.format("fetchDocFromEs can not set property %s to %s", key, value));
                 }
             }
         }
