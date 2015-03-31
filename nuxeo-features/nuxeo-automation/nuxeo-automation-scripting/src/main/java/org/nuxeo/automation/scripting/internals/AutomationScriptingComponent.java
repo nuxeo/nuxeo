@@ -42,7 +42,7 @@ public class AutomationScriptingComponent extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(AutomationScriptingComponent.class);
 
-    public AutomationScriptingService scriptingService = new AutomationScriptingServiceImpl();
+    public AutomationScriptingService scriptingService;
 
     @Override
     public void activate(ComponentContext context) {
@@ -50,6 +50,8 @@ public class AutomationScriptingComponent extends DefaultComponent {
         if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_MONITOR,
                 Boolean.toString(log.isTraceEnabled())))) {
             scriptingService = MetricInvocationHandler.newProxy(scriptingService, AutomationScriptingService.class);
+        } else {
+            scriptingService = new AutomationScriptingServiceImpl();
         }
         String version = System.getProperty("java.version");
         if (version.contains(AutomationScriptingConstants.NASHORN_JAVA_VERSION)) {
@@ -70,7 +72,7 @@ public class AutomationScriptingComponent extends DefaultComponent {
                     scriptingService.setClassFilterActivation(false);
                 }
             }
-        }else{
+        } else {
             log.warn(AutomationScriptingConstants.NASHORN_WARN_VERSION);
         }
     }
