@@ -43,10 +43,6 @@
 </#if>
    "analysis" : {
       "filter" : {
-         "truncate_filter" : {
-            "length" : 256,
-            "type" : "truncate"
-         },
          "en_stem_filter" : {
             "name" : "minimal_english",
             "type" : "stemmer"
@@ -116,12 +112,11 @@
          },
          "lowercase_analyzer" : {
             "type" : "custom",
-            "filter" : [ "truncate_filter", "lowercase", "asciifolding" ],
+            "filter" : [ "lowercase", "asciifolding" ],
             "tokenizer" : "keyword"
          },
          "default" : {
             "type" : "custom",
-            "filter" : [ "truncate_filter" ],
             "tokenizer" : "keyword"
          }
       }
@@ -141,6 +136,7 @@
          "type" : "multi_field",
          "fields" : {
            "dc:title" : {
+             "index" : "not_analyzed",
              "type" : "string"
            },
            "fulltext" : {
@@ -155,7 +151,7 @@
          "fields" : {
            "dc:description" : {
              "index" : "no",
-             "include_in_all" : true,
+             "include_in_all" : "true",
              "type" : "string"
            },
            "fulltext" : {
@@ -170,7 +166,7 @@
          "fields" : {
            "note:note" : {
              "index" : "no",
-             "include_in_all" : true,
+             "include_in_all" : "true",
              "type" : "string"
            },
            "fulltext" : {
@@ -179,10 +175,9 @@
           }
         }
       },
-      "ecm:binarytext" : {
+      "ecm:binarytext*" : {
          "type" : "string",
-         "index" : "no",
-         "include_in_all" : true
+         "analyzer" : "fulltext"
       },
       "ecm:path" : {
          "type" : "multi_field",

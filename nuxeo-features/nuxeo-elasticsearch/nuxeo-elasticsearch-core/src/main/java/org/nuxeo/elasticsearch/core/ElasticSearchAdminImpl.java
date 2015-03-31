@@ -215,10 +215,11 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             }
         } catch (NoNodeAvailableException e) {
             errorMessage = "Failed to connect to elasticsearch, check addressList and clusterName: " + e.getMessage();
-        }
-        if (errorMessage != null) {
-            log.error(errorMessage);
-            throw new RuntimeException(errorMessage);
+        } finally {
+            if (errorMessage != null) {
+                log.error(errorMessage);
+                throw new RuntimeException(errorMessage);
+            }
         }
     }
 

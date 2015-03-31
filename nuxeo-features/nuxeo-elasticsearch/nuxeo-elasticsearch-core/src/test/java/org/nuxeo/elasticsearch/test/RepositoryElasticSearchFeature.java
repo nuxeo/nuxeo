@@ -17,6 +17,7 @@
 
 package org.nuxeo.elasticsearch.test;
 
+import org.junit.After;
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;

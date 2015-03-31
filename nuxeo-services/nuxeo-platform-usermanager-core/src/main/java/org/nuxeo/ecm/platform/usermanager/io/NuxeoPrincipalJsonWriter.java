@@ -120,9 +120,6 @@ public class NuxeoPrincipalJsonWriter extends ExtensibleEntityJsonWriter<NuxeoPr
 
     private void writeProperties(JsonGenerator jg, NuxeoPrincipal principal) throws IOException {
         DocumentModel doc = principal.getModel();
-        if (doc == null) {
-            return;
-        }
         String userSchema = userManager.getUserSchemaName();
         DocumentPart userPart = doc.getPart(userSchema);
         if (userPart == null) {

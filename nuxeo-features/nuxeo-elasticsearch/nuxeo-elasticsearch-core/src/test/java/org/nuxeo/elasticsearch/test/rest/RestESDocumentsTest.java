@@ -36,6 +36,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.core.util.Properties;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentListWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -96,6 +97,61 @@ public class RestESDocumentsTest extends BaseTest {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         // System.err.println(node.toString());
         assertEquals("Note 0", node.get("note:note").getTextValue());
+    }
+
+    @Test
+    public void iCanGetTheChildrenOfADocument() throws Exception {
+        // Given a folder
+        DocumentModel folder = RestServerInit.getFolder(1, session);
+
+        // When I query for it children
+        ClientResponse response = getResponse(RequestType.GETES, "id/" + folder.getId() + "/@" + ChildrenAdapter.NAME);
+
+        // Then I get elasticsearch bulk output for the two document
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        assertEquals(Integer.valueOf(session.getChildren(folder.getRef()).size()).toString(),
+                response.getHeaders().getFirst(JsonESDocumentListWriter.HEADER_RESULTS_COUNT));
+        // The first node is the an index action it looks like
+        // {"index":{"_index":"nuxeo","_type":"doc","_id":"c0941844-7729-431f-9d07-57c6a6580716"}}
+        String content = IOUtils.toString(response.getEntityInputStream());
+        assertEquals(7019, content.length());
+    }
+
+    @Test
+    public void iCanSetTheIndexAndTypeOfBulkOutput() throws Exception {
+        // Given a folder
+        DocumentModel folder = RestServerInit.getFolder(1, session);
+
+        // When I query for it children
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("esIndex", "myIndex");
+        queryParams.putSingle("esType", "myType");
+        ClientResponse response = getResponse(RequestType.GETES, "id/" + folder.getId() + "/@" + ChildrenAdapter.NAME,
+                null, queryParams, null, null);
+        // Then I get elasticsearch bulk output for the two document
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        // The first node is the an index action it looks like
+        // {"index":{"_index":"nuxeo","_type":"doc","_id":"c0941844-7729-431f-9d07-57c6a6580716"}}
+        String content = IOUtils.toString(response.getEntityInputStream());
+        assertEquals(7044, content.length());
+    }
+
+    @Test
+    public void iCanGetESJsonFromAPageProvider() throws Exception {
+        // Given a note with "nuxeo" in its description
+        DocumentModel folder = RestServerInit.getFolder(1, session);
+
+        // When I search for "nuxeo" with appropriate header
+        ClientResponse response = getResponse(RequestType.GETES, "path" + folder.getPathAsString() + "/@"
+                + PageProviderAdapter.NAME + "/TEST_PP");
+
+        // Then I get elasticsearch bulk output for the two document
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        assertEquals("2", response.getHeaders().getFirst(JsonESDocumentListWriter.HEADER_RESULTS_COUNT));
+        // The first node is the an index action it looks like
+        // {"index":{"_index":"nuxeo","_type":"doc","_id":"c0941844-7729-431f-9d07-57c6a6580716"}}
+        String content = IOUtils.toString(response.getEntityInputStream());
+        assertEquals(2807, content.length());
     }
 
     @Test

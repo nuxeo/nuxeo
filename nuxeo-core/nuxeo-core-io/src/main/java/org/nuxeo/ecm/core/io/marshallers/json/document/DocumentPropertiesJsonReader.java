@@ -26,10 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.inject.Inject;
-
 import org.codehaus.jackson.JsonNode;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
@@ -44,7 +41,6 @@ import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
@@ -52,6 +48,8 @@ import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
+
+import javax.inject.Inject;
 
 /**
  * Convert Json as {@link List<Property>}.
@@ -126,9 +124,6 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
         } else {
             if (!(property instanceof BlobProperty)) {
                 fillComplexProperty(property, jn);
-            } else {
-                Blob blob = readEntity(Blob.class, Blob.class, jn);
-                property.setValue(blob);
             }
         }
         return property;
@@ -136,9 +131,8 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
 
     private void fillScalarProperty(Property property, JsonNode jn) throws IOException {
         Object value = null;
-        Type type = property.getType();
         if (jn.isObject()) {
-            ObjectResolver resolver = type.getObjectResolver();
+            ObjectResolver resolver = property.getType().getObjectResolver();
             if (resolver == null) {
                 throw new MarshallingException("Unable to parse the property " + property.getPath());
             }
@@ -159,7 +153,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
                         + " value cannot be resolved by the matching resolver " + resolver.getName());
             }
         } else {
-            value = getPropertyValue(((SimpleType) type).getPrimitiveType(), jn);
+            value = getPropertyValue(property.getType(), jn);
         }
         property.setValue(value);
     }
@@ -195,7 +189,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
             Iterator<JsonNode> it = jn.getElements();
             while (it.hasNext()) {
                 elNode = it.next();
-                Object value = getPropertyValue(((SimpleType) type).getPrimitiveType(), elNode);
+                Object value = getPropertyValue(type, elNode);
                 values.add(value);
             }
             property.setValue(values);

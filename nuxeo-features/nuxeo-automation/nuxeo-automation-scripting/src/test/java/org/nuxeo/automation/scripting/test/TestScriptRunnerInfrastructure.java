@@ -19,7 +19,6 @@ package org.nuxeo.automation.scripting.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -31,11 +30,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.script.ScriptException;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.automation.scripting.internals.operation
@@ -54,7 +53,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -65,7 +63,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * @since 7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
+@Features({ CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.automation.scripting" })
@@ -249,33 +247,6 @@ public class TestScriptRunnerInfrastructure {
         params.put("name", "testDoc");
         DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestComplexProperties", params);
         assertEquals("whatever", ((Map) ((List) result.getPropertyValue("ds:fields")).get(0)).get("sqlTypeHint"));
-    }
-
-    @Test
-    public void testClassFilter() throws ScriptException, OperationException {
-        AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
-        assertNotNull(scriptingService);
-
-        InputStream stream = this.getClass().getResourceAsStream("/classFilterScript.js");
-        assertNotNull(stream);
-        try {
-            scriptingService.run(stream, session);
-            fail();
-        } catch (RuntimeException e) {
-            assertEquals("java.lang.ClassNotFoundException: java.io.File", e.getMessage());
-        }
-    }
-
-    @Test
-    public void testFn() throws ScriptException, OperationException {
-        // Test platform functions injection
-        AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
-        assertNotNull(scriptingService);
-
-        InputStream stream = this.getClass().getResourceAsStream("/platformFunctions.js");
-        assertNotNull(stream);
-        scriptingService.run(stream, session);
-        assertEquals("Administrator@example.com" + System.lineSeparator(), outContent.toString());
     }
 
     public String toString(Map<String, Object> creationProps) {

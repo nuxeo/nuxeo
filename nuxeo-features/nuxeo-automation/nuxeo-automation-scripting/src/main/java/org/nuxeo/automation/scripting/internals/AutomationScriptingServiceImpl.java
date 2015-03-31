@@ -37,7 +37,6 @@ import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
-import org.nuxeo.ecm.automation.features.PlatformFunctions;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
 
@@ -47,10 +46,6 @@ import org.nuxeo.runtime.api.Framework;
 public class AutomationScriptingServiceImpl implements AutomationScriptingService {
 
     protected String jsWrapper = null;
-
-    protected boolean classFilterActivation = true;
-
-    protected boolean cacheActivation = true;
 
     protected String getJSWrapper(boolean refresh) throws OperationException {
         if (jsWrapper == null || refresh) {
@@ -103,23 +98,13 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         try {
             if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE,
                     AutomationScriptingConstants.DEFAULT_PRECOMPILE_STATUS))) {
-                if (classFilterActivation && cacheActivation) {
-                    return new NashornScriptEngineFactory().getScriptEngine(
-                            AutomationScriptingConstants.NASHORN_OPTIONS, null, new AutomationScriptingClassFilter());
-                } else if (cacheActivation) {
-                    return new NashornScriptEngineFactory().getScriptEngine(AutomationScriptingConstants.NASHORN_OPTIONS);
-                } else {
-                    return new NashornScriptEngineFactory().getScriptEngine();
-                }
+                return new NashornScriptEngineFactory().getScriptEngine(AutomationScriptingConstants.NASHORN_OPTIONS);
             } else {
-                if (classFilterActivation) {
-                    return new NashornScriptEngineFactory().getScriptEngine(new AutomationScriptingClassFilter());
-                } else {
-                    return new NashornScriptEngineFactory().getScriptEngine();
-                }
+                return new NashornScriptEngineFactory().getScriptEngine();
             }
         } catch (IllegalArgumentException e) {
-            throw new AutomationScriptingException(AutomationScriptingConstants.NASHORN_WARN_VERSION, e);
+            throw new AutomationScriptingException(
+                    "Cannot create Nashorn Engine. Make sure you're running Nuxeo with jdk8u25 at least.", e);
         }
     }
 
@@ -138,7 +123,6 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         engine.setContext(new SimpleScriptContext());
         engine.eval(getJSWrapper());
         engine.put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY, new AutomationMapper(session));
-        engine.put(AutomationScriptingConstants.PLATFORM_FUNCTIONS_KEY, new PlatformFunctions());
         engine.eval(script);
     }
 
@@ -148,16 +132,6 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         run(script, session);
         Invocable inv = (Invocable) engines.get();
         return inv.getInterface(scriptingOperationInterface);
-    }
-
-    @Override
-    public void setClassFilterActivation(boolean activated) {
-        this.classFilterActivation = activated;
-    }
-
-    @Override
-    public void setCacheActivation(boolean cacheActivation) {
-        this.cacheActivation = cacheActivation;
     }
 
     protected void parseAutomationIDSForScripting(Map<String, List<String>> opMap, List<String> flatOps, String id) {

@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.binary.metadata"
              point="metadataMappings">
-    <metadataMapping id="EXIF" processor="exifTool" blobXPath="file:content" ignorePrefix="false">
+    <metadataMapping id="EXIF" processor="exifTool" blobXPath="file:content">
       <metadata name="EXIF:ImageDescription" xpath="imd:image_description"/>
       <metadata name="EXIF:UserComment" xpath="imd:user_comment"/>
       <metadata name="EXIF:Equipment" xpath="imd:equipment"/>
@@ -22,7 +22,7 @@
       <metadata name="EXIF:Orientation" xpath="imd:orientation"/>
       <metadata name="EXIF:FNumber" xpath="imd:fnumber"/>
     </metadataMapping>
-    <metadataMapping id="IPTC" processor="exifTool" blobXPath="file:content" ignorePrefix="false">
+    <metadataMapping id="IPTC" processor="exifTool" blobXPath="file:content">
       <metadata name="IPTC:Source" xpath="dc:source"/>
       <metadata name="IPTC:CopyrightNotice" xpath="dc:rights"/>
       <metadata name="IPTC:Description" xpath="dc:description"/>

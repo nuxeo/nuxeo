@@ -59,16 +59,4 @@ public interface AutomationScriptingService {
      */
     <T> T getInterface(Class<T> scriptingOperationInterface, String script,
             CoreSession session) throws ScriptException, OperationException;
-
-    /**
-     * Activate/Deactivate Nashorn class filter.
-     * @param activated
-     */
-    void setClassFilterActivation(boolean activated);
-
-    /**
-     * Activate/Deactivate Nashorn cache.
-     * @param activated
-     */
-    void setCacheActivation(boolean activated);
 }

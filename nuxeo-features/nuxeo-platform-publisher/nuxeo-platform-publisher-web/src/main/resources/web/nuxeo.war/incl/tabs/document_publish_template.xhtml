@@ -60,14 +60,7 @@
                     highlightedClass="treeNodeHighlightedClass"
                     selectedClass="treeNodeSelectedClass"
                     id="publishTreeNode">
-                    <nxu:set var="formattedPath"
-                      value="#{publishActions.getFormattedPath(node.path)}">
-                      <nxu:set var="formattedTitle"
-                        value="#{nxu:test(formattedPath == node.path, node.title, formattedPath)}">
-                        <span class="tipsyShow tipsyGravityS"
-                          title="#{formattedTitle}">#{node.title}</span>
-                       </nxu:set>
-                    </nxu:set>
+                    <h:outputText value="#{node.title}" />
                     <h:commandLink immediate="true"
                       action="#{publishActions.doPublish(node)}"
                       rendered="#{publishActions.canPublishTo(node)}"

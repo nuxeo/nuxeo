@@ -78,7 +78,6 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
         return PREFIX;
     }
 
-    @Override
     public String getUrlFromDocumentView(DocumentView docView) {
         DocumentLocation docLoc = docView.getDocumentLocation();
         String filepath = docView.getParameter(FILE_PROPERTY_PATH_KEY);
@@ -89,7 +88,7 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
             items.add(docLoc.getServerName());
             items.add(docLoc.getDocRef().toString());
             items.add(filepath);
-            items.add(URIUtils.quoteURIPathToken(filename));
+            items.add(URIUtils.quoteURIPathComponent(filename, true));
             String uri = StringUtils.join(items, "/");
 
             Map<String, String> requestParams = new HashMap<String, String>(docView.getParameters());
@@ -103,7 +102,6 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
     /**
      * Extracts document location from a Zope-like URL ie : server/path_or_docId/view_id/tab_id .
      */
-    @Override
     public DocumentView getDocumentViewFromUrl(String url) {
         final Pattern pattern = Pattern.compile(getPrefix() + URLPattern);
         Matcher m = pattern.matcher(url);

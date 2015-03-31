@@ -16,8 +16,6 @@
  */
 package org.nuxeo.automation.scripting.internals;
 
-import jdk.nashorn.api.scripting.ClassFilter;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
@@ -42,7 +40,9 @@ public class AutomationScriptingComponent extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(AutomationScriptingComponent.class);
 
-    public AutomationScriptingService scriptingService;
+    public static final String XP_OPERATION = "operation";
+
+    public AutomationScriptingService scriptingService = new AutomationScriptingServiceImpl();
 
     @Override
     public void activate(ComponentContext context) {
@@ -50,36 +50,12 @@ public class AutomationScriptingComponent extends DefaultComponent {
         if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_MONITOR,
                 Boolean.toString(log.isTraceEnabled())))) {
             scriptingService = MetricInvocationHandler.newProxy(scriptingService, AutomationScriptingService.class);
-        } else {
-            scriptingService = new AutomationScriptingServiceImpl();
-        }
-        String version = System.getProperty("java.version");
-        if (version.contains(AutomationScriptingConstants.NASHORN_JAVA_VERSION)) {
-            if (version.compareTo(AutomationScriptingConstants.COMPLIANT_JAVA_VERSION_CACHE) < 0) {
-                log.warn(AutomationScriptingConstants.NASHORN_WARN_CACHE);
-                scriptingService.setCacheActivation(false);
-                scriptingService.setClassFilterActivation(false);
-            } else if (version.compareTo(AutomationScriptingConstants.COMPLIANT_JAVA_VERSION_CACHE) >= 0
-                    && version.compareTo(AutomationScriptingConstants.COMPLIANT_JAVA_VERSION_CLASS_FILTER) < 0) {
-                log.warn(AutomationScriptingConstants.NASHORN_WARN_CLASS_FILTER);
-                scriptingService.setClassFilterActivation(false);
-            } else {
-                // Double security check to find if class filter exists or not (check on jdk8u40)
-                try {
-                    Class<?> klass = Class.forName(ClassFilter.class.getName());
-                } catch (ClassNotFoundException e) {
-                    log.warn(AutomationScriptingConstants.NASHORN_WARN_CLASS_FILTER);
-                    scriptingService.setClassFilterActivation(false);
-                }
-            }
-        } else {
-            log.warn(AutomationScriptingConstants.NASHORN_WARN_VERSION);
         }
     }
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (AutomationScriptingConstants.XP_OPERATION.equals(extensionPoint)) {
+        if (XP_OPERATION.equals(extensionPoint)) {
             AutomationService automationService = Framework.getLocalService(AutomationService.class);
             ScriptingOperationDescriptor desc = (ScriptingOperationDescriptor) contribution;
             ScriptingOperationTypeImpl type = new ScriptingOperationTypeImpl(automationService, desc);
@@ -95,7 +71,7 @@ public class AutomationScriptingComponent extends DefaultComponent {
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (AutomationScriptingConstants.XP_OPERATION.equals(extensionPoint)) {
+        if (XP_OPERATION.equals(extensionPoint)) {
             AutomationService automationService = Framework.getLocalService(AutomationService.class);
             ScriptingOperationDescriptor desc = (ScriptingOperationDescriptor) contribution;
             ScriptingOperationTypeImpl type = new ScriptingOperationTypeImpl(automationService, desc);

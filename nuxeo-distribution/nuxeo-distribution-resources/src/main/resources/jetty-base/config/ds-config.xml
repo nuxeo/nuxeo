@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+?xml version="1.0"?>
 <component name="config:datasources">
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
     <datasource name="jdbc/nuxeo" driverClassName="org.h2.Driver"

@@ -105,10 +105,6 @@ public class BaseTest {
         return getResponse(requestType, path, null, null, mp, null);
     }
 
-    protected ClientResponse getResponse(RequestType requestType, String path, MultiPart mp, Map<String, String> headers) {
-        return getResponse(requestType, path, null, null, mp, headers);
-    }
-
     protected ClientResponse getResponse(RequestType requestType, String path,
             MultivaluedMap<String, String> queryParams) {
         return getResponse(requestType, path, null, queryParams, null, null);

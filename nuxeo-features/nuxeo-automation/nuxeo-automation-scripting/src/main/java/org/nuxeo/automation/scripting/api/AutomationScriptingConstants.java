@@ -33,20 +33,4 @@ public class AutomationScriptingConstants {
 
     public static final String[] NASHORN_OPTIONS = new String[] { "-strict", "--persistent-code-cache",
             "--class-cache-size=50" };
-
-    public static final String XP_OPERATION = "operation";
-
-    public static final String NASHORN_JAVA_VERSION = "1.8";
-
-    public static final String COMPLIANT_JAVA_VERSION_CACHE = "1.8.0_25";
-
-    public static final String COMPLIANT_JAVA_VERSION_CLASS_FILTER = "1.8.0_40";
-
-    public static final String NASHORN_WARN_CLASS_FILTER = "Class Filter is not available. jdk8u40 is required to activate Automation Javascript imports security.";
-
-    public static final String NASHORN_WARN_CACHE = "Nashorn cache is not available. jdk8u25 is required to optimize Automation Javascript performances.";
-
-    public static final String NASHORN_WARN_VERSION = "Cannot use Nashorn. jdk8 is required to activate Automation Javascript.";
-
-    public static final String PLATFORM_FUNCTIONS_KEY = "Fn";
 }

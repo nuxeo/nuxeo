@@ -20,9 +20,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -30,8 +27,6 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,9 +37,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -90,14 +83,6 @@ public class LogEntryWriterTest {
         entry.setComment("comment");
         entry.setDocLifeCycle("deleted");
         entry.setLogDate(new Date());
-        Map<String, ExtendedInfo> extendedInfo = new HashMap<String, ExtendedInfo>();
-
-        DateTime testDate = new DateTime();
-        extendedInfo.put("extInfo1", ExtendedInfoImpl.createExtendedInfo("testString"));
-        extendedInfo.put("extInfo2", ExtendedInfoImpl.createExtendedInfo(2L));
-        extendedInfo.put("extInfo3", ExtendedInfoImpl.createExtendedInfo(testDate));
-
-        entry.setExtendedInfos(extendedInfo);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = factory.createJsonGenerator(out);
 
@@ -110,21 +95,5 @@ public class LogEntryWriterTest {
         ObjectMapper m = new ObjectMapper();
         JsonNode node = m.readTree(out.toString());
         assertEquals("Workflow", node.get("category").getTextValue());
-        Iterator<Map.Entry<String, JsonNode>> infos = node.get("extended").getFields();
-        int count = 0;
-        while (infos.hasNext()) {
-            Map.Entry<String, JsonNode> info = infos.next();
-            count++;
-            if ("extInfo1".equals(info.getKey())) {
-                assertEquals("testString", info.getValue().getTextValue());
-            }
-            if ("extInfo2".equals(info.getKey())) {
-                assertEquals(2L, info.getValue().getLongValue());
-            }
-            if ("extInfo3".equals(info.getKey())) {
-                assertEquals(testDate, ISODateTimeFormat.dateTime().parseDateTime(info.getValue().getTextValue()));
-            }
-        }
-        assertEquals(3, count);
     }
 }

@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.io.registry.MarshallingException;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
 import org.nuxeo.ecm.core.schema.types.ListType;
-import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
@@ -104,7 +103,7 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
         Type type = prop.getType();
         Object value = prop.getValue();
         if (!fetchProperty(jg, prop.getType().getObjectResolver(), value, prop.getPath())) {
-            writeScalarPropertyValue(jg, ((SimpleType) type).getPrimitiveType(), value);
+            writeScalarPropertyValue(jg, type, value);
         }
     }
 
@@ -174,7 +173,7 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
             String path = prop.getPath();
             for (Object o : ar) {
                 if (!fetchProperty(jg, resolver, o, path)) {
-                    writeScalarPropertyValue(jg, ((SimpleType) itemType).getPrimitiveType(), o);
+                    writeScalarPropertyValue(jg, itemType, o);
                 }
             }
         } else {

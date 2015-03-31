@@ -156,32 +156,10 @@ public final class URIUtils {
      *
      * @since 5.6
      * @param the uri path to quote
-     * @param quoteSlash true if "/" character should be quoted and replaced by %2F
-     * @param quoteAt true if "@" character should be quoted and replaced by %40
+     * @param quoteSlash true if "/" character should be quoted
+     * @param quoteAt true if "@" character should be quoted
      */
     public static String quoteURIPathComponent(String s, boolean quoteSlash, boolean quoteAt) {
-        return quoteURIPathComponent(s, quoteSlash ? "%2F" : null, quoteAt ? "%40" : null);
-    }
-
-    /**
-     * Quotes a URI path token. For example, a blob filename. It replaces "/" by "-".
-     *
-     * @since 7.3
-     * @param the uri path token to quote
-     */
-    public static String quoteURIPathToken(String s) {
-        return quoteURIPathComponent(s, "-", "%40");
-    }
-
-    /**
-     * Quotes a URI path component, with ability to quote "/" and "@" characters or not depending on the URI path
-     *
-     * @since 5.6
-     * @param the uri path to quote
-     * @param slashSequence if null, do not quote "/", otherwise, replace "/" by the given sequence
-     * @param atSequence if null, do not quote "@", otherwise, replace "@" by the given sequence
-     */
-    protected static String quoteURIPathComponent(String s, String slashSequence, String atSequence) {
         if ("".equals(s)) {
             return s;
         }
@@ -204,11 +182,11 @@ public final class URIUtils {
         r = r.replace("?", "%3F");
         r = r.replace("[", "%5B");
         r = r.replace("]", "%5D");
-        if (atSequence != null) {
-            r = r.replace("@", atSequence);
+        if (quoteAt) {
+            r = r.replace("@", "%40");
         }
-        if (slashSequence != null) {
-            r = r.replace("/", slashSequence);
+        if (quoteSlash) {
+            r = r.replace("/", "%2F");
         }
         return r;
     }
