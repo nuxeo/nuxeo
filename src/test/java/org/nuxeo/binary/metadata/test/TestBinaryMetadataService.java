@@ -19,6 +19,7 @@ package org.nuxeo.binary.metadata.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -152,6 +153,24 @@ public class TestBinaryMetadataService {
 
         // Test if description has been overriden by higher order contribution
         assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:description"));
+    }
 
+    @Test
+    public void itShouldAcceptQuoteInMetadataAndAllASCII() {
+        // Get the document with MP3 attached
+        DocumentModel musicFile = BinaryMetadataServerInit.getFile(0, session);
+        BlobHolder musicBlobHolder = musicFile.getAdapter(BlobHolder.class);
+        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(musicBlobHolder.getBlob(), true);
+        assertNotNull(blobProperties);
+        assertEquals("Twist", blobProperties.get("Title").toString());
+
+        // Write Non ASCII Character
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("SourceURL", "l'adresse idéale");
+        try {
+            binaryMetadataService.writeMetadata(musicBlobHolder.getBlob(), metadata, true);
+        } catch (IllegalArgumentException e) {
+            fail(e.getMessage());
+        }
     }
 }

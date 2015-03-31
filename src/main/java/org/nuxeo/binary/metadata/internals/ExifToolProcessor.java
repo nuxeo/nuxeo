@@ -179,6 +179,7 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
                 metadataValue = StringUtils.EMPTY;
             }
             metadataValue = metadataValue.toString().replace(" ", "\\ ");
+            metadataValue = metadataValue.toString().replaceAll("'", "");
             sb.append("-" + metadata + "=" + metadataValue + " ");
         }
         return sb.toString();
