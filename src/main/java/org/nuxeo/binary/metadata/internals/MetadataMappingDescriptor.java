@@ -38,6 +38,9 @@ public class MetadataMappingDescriptor {
     @XNode("@blobXPath")
     protected String blobXPath;
 
+    @XNode("@ignorePrefix")
+    protected Boolean ignorePrefix = true;
+
     @XNodeList(value = "metadata", componentType = MetadataDescriptor.class, type = ArrayList.class)
     protected List<MetadataDescriptor> metadataDescriptors;
 
@@ -74,5 +77,9 @@ public class MetadataMappingDescriptor {
 
     public String getBlobXPath() {
         return blobXPath;
+    }
+
+    public Boolean getIgnorePrefix() {
+        return ignorePrefix;
     }
 }

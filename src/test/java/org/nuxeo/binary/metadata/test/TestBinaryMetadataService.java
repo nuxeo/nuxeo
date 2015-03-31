@@ -91,7 +91,7 @@ public class TestBinaryMetadataService {
         // Get the document with MP3 attached
         DocumentModel musicFile = BinaryMetadataServerInit.getFile(0, session);
         BlobHolder musicBlobHolder = musicFile.getAdapter(BlobHolder.class);
-        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(musicBlobHolder.getBlob());
+        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(musicBlobHolder.getBlob(), false);
         assertNotNull(blobProperties);
         assertEquals("Twist", blobProperties.get("ID3:Title").toString());
         assertEquals("Divine Recordings", blobProperties.get("ID3:Publisher").toString());
@@ -103,7 +103,7 @@ public class TestBinaryMetadataService {
         DocumentModel musicFile = BinaryMetadataServerInit.getFile(0, session);
         BlobHolder musicBlobHolder = musicFile.getAdapter(BlobHolder.class);
         Map<String, Object> blobProperties = binaryMetadataService.readMetadata(musicBlobHolder.getBlob(),
-                musicMetadata);
+                musicMetadata, false);
         assertNotNull(blobProperties);
         assertEquals(4, blobProperties.size());
         assertEquals("Twist", blobProperties.get("ID3:Title").toString());
@@ -117,17 +117,18 @@ public class TestBinaryMetadataService {
         BlobHolder psdBlobHolder = psdFile.getAdapter(BlobHolder.class);
 
         // Check the content
-        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(psdBlobHolder.getBlob(), PSDMetadata);
+        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(psdBlobHolder.getBlob(), PSDMetadata,
+                false);
         assertNotNull(blobProperties);
         assertEquals(2, blobProperties.size());
         assertEquals(100, blobProperties.get("EXIF:ImageHeight"));
         assertEquals("Adobe Photoshop CS4 Macintosh", blobProperties.get("EXIF:Software").toString());
 
         // Write a new content
-        assertTrue(binaryMetadataService.writeMetadata(psdBlobHolder.getBlob(), inputPSDMetadata));
+        assertTrue(binaryMetadataService.writeMetadata(psdBlobHolder.getBlob(), inputPSDMetadata, false));
 
         // Check the content
-        blobProperties = binaryMetadataService.readMetadata(psdBlobHolder.getBlob(), PSDMetadata);
+        blobProperties = binaryMetadataService.readMetadata(psdBlobHolder.getBlob(), PSDMetadata, false);
         assertNotNull(blobProperties);
         assertEquals(2, blobProperties.size());
         assertEquals(200, blobProperties.get("EXIF:ImageHeight"));

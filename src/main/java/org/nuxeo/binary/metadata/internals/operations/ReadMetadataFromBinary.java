@@ -23,6 +23,7 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
@@ -37,8 +38,11 @@ public class ReadMetadataFromBinary {
     @Context
     protected BinaryMetadataService binaryMetadataService;
 
+    @Param(name = "ignorePrefix", required = false, description = "Ignore metadata prefixes or not")
+    boolean ignorePrefix = true;
+
     @OperationMethod
     public Map<String, Object> run(Blob blob) {
-        return binaryMetadataService.readMetadata(blob);
+        return binaryMetadataService.readMetadata(blob, ignorePrefix);
     }
 }

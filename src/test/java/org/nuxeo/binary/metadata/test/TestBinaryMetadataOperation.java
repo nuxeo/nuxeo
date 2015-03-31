@@ -105,8 +105,8 @@ public class TestBinaryMetadataOperation {
         Map<String, Object> blobProperties = (Map<String, Object>) automationService.run(operationContext,
                 ReadMetadataFromBinary.ID);
         assertNotNull(blobProperties);
-        assertEquals("Twist", blobProperties.get("ID3:Title").toString());
-        assertEquals("Divine Recordings", blobProperties.get("ID3:Publisher").toString());
+        assertEquals("Twist", blobProperties.get("Title").toString());
+        assertEquals("Divine Recordings", blobProperties.get("Publisher").toString());
     }
 
     @Test
@@ -131,7 +131,7 @@ public class TestBinaryMetadataOperation {
         BlobHolder jpgBlobHolder = jpgFile.getAdapter(BlobHolder.class);
 
         // Check the content
-        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(jpgBlobHolder.getBlob());
+        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(jpgBlobHolder.getBlob(), false);
         assertNotNull(blobProperties);
         assertEquals("Google", blobProperties.get("EXIF:Make"));
         assertEquals("Nexus", blobProperties.get("EXIF:Model").toString());
@@ -141,7 +141,7 @@ public class TestBinaryMetadataOperation {
         automationService.run(operationContext, WriteMetadataToBinaryFromContext.ID, jpgParameters);
 
         // Check the content
-        blobProperties = binaryMetadataService.readMetadata(jpgBlobHolder.getBlob());
+        blobProperties = binaryMetadataService.readMetadata(jpgBlobHolder.getBlob(), false);
         assertNotNull(blobProperties);
         assertEquals("Nuxeo", blobProperties.get("EXIF:Make"));
         assertEquals("Platform", blobProperties.get("EXIF:Model").toString());
@@ -156,7 +156,7 @@ public class TestBinaryMetadataOperation {
         automationService.run(operationContext, WriteMetadataToBinaryFromDocument.ID, jpgParameters);
 
         // Check the content
-        blobProperties = binaryMetadataService.readMetadata(jpgBlobHolder.getBlob());
+        blobProperties = binaryMetadataService.readMetadata(jpgBlobHolder.getBlob(), false);
         assertNotNull(blobProperties);
         assertEquals("Nexus", blobProperties.get("EXIF:Make"));
         assertEquals("Google", blobProperties.get("EXIF:Model").toString());
@@ -168,22 +168,23 @@ public class TestBinaryMetadataOperation {
         DocumentModel musicFile = BinaryMetadataServerInit.getFile(0, session);
         BlobHolder musicBlobHolder = musicFile.getAdapter(BlobHolder.class);
         operationContext.setInput(musicBlobHolder.getBlob());
-        automationService.run(operationContext, ReadMetadataFromBinaryToContext.ID);
+        Map<String, Object> params = new HashMap<>();
+        params.put("ignorePrefix", false);
+        automationService.run(operationContext, ReadMetadataFromBinaryToContext.ID, params);
         assertNotNull(operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA));
         assertEquals("Metal",
                 ((Map) operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA)).get("ID3:Genre"));
 
         // Run the same operation with specific properties listing
         operationContext.setInput(musicBlobHolder.getBlob());
-        Map<String,Object> parameters = new HashMap<>();
+        Map<String, Object> parameters = new HashMap<>();
         StringList metadata = new StringList();
         metadata.add("ID3:Title");
         metadata.add("ID3:Year");
         parameters.put("metadata", metadata);
         automationService.run(operationContext, ReadMetadataFromBinaryToContext.ID, parameters);
         assertNotNull(operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA));
-        assertNull(((Map) operationContext.get(ReadMetadataFromBinaryToContext
-                .CTX_BINARY_METADATA)).get("ID3:Genre"));
-        assertEquals(2,((Map) operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA)).size());
+        assertNull(((Map) operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA)).get("ID3:Genre"));
+        assertEquals(2, ((Map) operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA)).size());
     }
 }

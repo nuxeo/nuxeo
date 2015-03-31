@@ -27,14 +27,29 @@ public class BinaryMetadataConstants {
     public static final String EXIFTOOL_READ = "exiftool-read";
 
     /**
+     * @since 7.3
+     */
+    public static final String EXIFTOOL_READ_NOPREFIX = "exiftool-read-noprefix";
+
+    /**
      * Commandline id - read metadata listing from binary with exiftool.
      */
     public static final String EXIFTOOL_READ_TAGLIST = "exiftool-read-taglist";
 
     /**
+     * @since 7.3
+     */
+    public static final String EXIFTOOL_READ_TAGLIST_NOPREFIX = "exiftool-read-taglist-noprefix";
+
+    /**
      * Commandline id - Write metadata into binary with exiftool.
      */
     public static final String EXIFTOOL_WRITE = "exiftool-write";
+
+    /**
+     * @since 7.3
+     */
+    public static final String EXIFTOOL_WRITE_NOPREFIX = "exiftool-write-noprefix";
 
     public static final String METADATA_MAPPING_EP = "metadataMappings";
 

@@ -29,27 +29,25 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  */
 public class MetadataRuleRegistry extends SimpleContributionRegistry<MetadataRuleDescriptor> {
 
-    protected final Set<MetadataRuleDescriptor> contribs = new TreeSet<>(
-            new Comparator<MetadataRuleDescriptor>() {
+    protected final Set<MetadataRuleDescriptor> contribs = new TreeSet<>(new Comparator<MetadataRuleDescriptor>() {
 
-                @Override
-                public int compare(MetadataRuleDescriptor o1, MetadataRuleDescriptor o2) {
-                    int order = o1.getOrder().compareTo(o2.getOrder());
-                    if (order != 0) {
-                        return order;
-                    }
-                    return o1.getId().compareTo(o2.getId());
-                }
+        @Override
+        public int compare(MetadataRuleDescriptor o1, MetadataRuleDescriptor o2) {
+            int order = o1.getOrder().compareTo(o2.getOrder());
+            if (order != 0) {
+                return order;
+            }
+            return o1.getId().compareTo(o2.getId());
+        }
 
-            });
-
+    });
 
     @Override
     public String getContributionId(MetadataRuleDescriptor metadataRuleDescriptor) {
         return metadataRuleDescriptor.getId();
     }
 
-    protected void handleApplicationStarted(){
+    protected void handleApplicationStarted() {
         contribs.addAll(currentContribs.values());
     }
 

@@ -51,6 +51,9 @@ public class WriteMetadataToBinaryFromDocument {
     @Param(name = "blobXPath", required = false, description = "The blob xpath on the document. Default blob property for empty parameter.")
     protected String blobXPath;
 
+    @Param(name = "ignorePrefix", required = false, description = "Ignore metadata prefixes or not")
+    boolean ignorePrefix = true;
+
     @OperationMethod
     public void run(DocumentModel doc) {
         Map<String, Object> metadataMap = new HashMap<>(metadata.size());
@@ -58,20 +61,21 @@ public class WriteMetadataToBinaryFromDocument {
             metadataMap.put(entry.getKey(), entry.getValue());
         }
         Blob blob;
-        if(blobXPath !=null){
-           blob = doc.getProperty(blobXPath).getValue(Blob.class);
-       }else{
-           BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
-           blob = blobHolder.getBlob();
-       }
-        if(blob!= null) {
-            binaryMetadataService.writeMetadata(processor, blob, metadataMap);
-        }else{
+        if (blobXPath != null) {
+            blob = doc.getProperty(blobXPath).getValue(Blob.class);
+        } else {
+            BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
+            blob = blobHolder.getBlob();
+        }
+        if (blob != null) {
+            binaryMetadataService.writeMetadata(processor, blob, metadataMap, ignorePrefix);
+        } else {
             String message;
-            if(blobXPath!=null){
-                message = "No blob attached for document '"+doc.getId()+"'. Please specify a blobXPath parameter."; 
-            }else{
-                message = "No blob attached for document '"+doc.getId()+"' and blob xpath '"+blobXPath+"'. Please specify another blobXPath parameter.";
+            if (blobXPath != null) {
+                message = "No blob attached for document '" + doc.getId() + "'. Please specify a blobXPath parameter.";
+            } else {
+                message = "No blob attached for document '" + doc.getId() + "' and blob xpath '" + blobXPath
+                        + "'. Please specify another blobXPath parameter.";
             }
             throw new BinaryMetadataException(message);
         }

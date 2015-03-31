@@ -38,35 +38,40 @@ public interface BinaryMetadataService {
      * @param processorName Name of the contributed processor to run.
      * @param blob Binary which metadata are read.
      * @param metadataNames Metadata list to extract from the binary.
+     * @param ignorePrefix Since 7.3
      * @return Extracted metadata.
      */
-    public Map<String, Object> readMetadata(String processorName, Blob blob, List<String> metadataNames);
+    public Map<String, Object> readMetadata(String processorName, Blob blob, List<String> metadataNames,
+            boolean ignorePrefix);
 
     /**
      * Read and return metadata from a given binary and a given metadata list with Nuxeo default processor.
      *
      * @param blob Binary which metadata are read.
      * @param metadataNames Metadata list to extract from the binary.
+     * @param ignorePrefix Since 7.3
      * @return Extracted metadata.
      */
-    public Map<String, Object> readMetadata(Blob blob, List<String> metadataNames);
+    public Map<String, Object> readMetadata(Blob blob, List<String> metadataNames, boolean ignorePrefix);
 
     /**
      * Read and return metadata from a given binary with Nuxeo default processor.
      *
      * @param blob Binary which metadata are read.
+     * @param ignorePrefix Since 7.3
      * @return Extracted metadata.
      */
-    public Map<String, Object> readMetadata(Blob blob);
+    public Map<String, Object> readMetadata(Blob blob, boolean ignorePrefix);
 
     /**
      * Read and return metadata from a given binary with a given processor.
      *
      * @param processorName Name of the contributed processor to run.
      * @param blob Binary which metadata are read.
+     * @param ignorePrefix Since 7.3
      * @return Extracted metadata.
      */
-    public Map<String, Object> readMetadata(String processorName, Blob blob);
+    public Map<String, Object> readMetadata(String processorName, Blob blob, boolean ignorePrefix);
 
     /**
      * Write given metadata into a given binary with a given processor.
@@ -74,18 +79,20 @@ public interface BinaryMetadataService {
      * @param processorName Name of the contributed processor to run.
      * @param blob Binary which metadata are written.
      * @param metadata Injected metadata.
+     * @param ignorePrefix Since 7.3
      * @return success or not.
      */
-    public boolean writeMetadata(String processorName, Blob blob, Map<String, Object> metadata);
+    public boolean writeMetadata(String processorName, Blob blob, Map<String, Object> metadata, boolean ignorePrefix);
 
     /**
      * Write given metadata into a given binary with a Nuxeo default processor.
      *
      * @param blob Binary which metadata are written.
      * @param metadata Injected metadata.
+     * @param ignorePrefix Since 7.3
      * @return success or not.
      */
-    public boolean writeMetadata(Blob blob, Map<String, Object> metadata);
+    public boolean writeMetadata(Blob blob, Map<String, Object> metadata, boolean ignorePrefix);
 
     /**
      * Write given metadata mapping id into a given binary with a Nuxeo default processor.

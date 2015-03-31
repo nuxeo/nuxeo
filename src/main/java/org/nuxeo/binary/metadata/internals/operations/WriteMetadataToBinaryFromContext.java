@@ -41,6 +41,9 @@ public class WriteMetadataToBinaryFromContext {
     @Context
     protected BinaryMetadataService binaryMetadataService;
 
+    @Param(name = "ignorePrefix", required = false, description = "Ignore metadata prefixes or not")
+    boolean ignorePrefix = true;
+
     @Param(name = "processor", required = false, description = "The processor to execute for overriding the input blob.")
     protected String processor = "exifTool";
 
@@ -53,6 +56,6 @@ public class WriteMetadataToBinaryFromContext {
         for (Map.Entry<String, String> entry : metadata.entrySet()) {
             metadataMap.put(entry.getKey(), entry.getValue());
         }
-        binaryMetadataService.writeMetadata(processor, blob, metadataMap);
+        binaryMetadataService.writeMetadata(processor, blob, metadataMap, ignorePrefix);
     }
 }

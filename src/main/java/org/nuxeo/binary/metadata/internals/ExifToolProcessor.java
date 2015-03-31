@@ -33,7 +33,8 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api
+        .CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
@@ -57,11 +58,12 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
     }
 
     @Override
-    public boolean writeMetadata(Blob blob, Map<String, Object> metadata) {
-        CommandAvailability ca = commandLineService.getCommandAvailability(BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST);
+    public boolean writeMetadata(Blob blob, Map<String, Object> metadata, boolean ignorePrefix) {
+        String command = ignorePrefix ? BinaryMetadataConstants.EXIFTOOL_WRITE_NOPREFIX
+                : BinaryMetadataConstants.EXIFTOOL_WRITE;
+        CommandAvailability ca = commandLineService.getCommandAvailability(command);
         if (!ca.isAvailable()) {
-            throw new BinaryMetadataException("Command '" + BinaryMetadataConstants.EXIFTOOL_WRITE
-                    + "' is not available.");
+            throw new BinaryMetadataException("Command '" + command + "' is not available.");
         }
         if (blob == null) {
             throw new BinaryMetadataException("The following command " + ca + " cannot be executed with a null blob");
@@ -72,7 +74,7 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
                 CmdParameters params = new CmdParameters();
                 params.addNamedParameter("inFilePath", source.getFile(), true);
                 params.addNamedParameter("tagList", getCommandTags(metadata), false);
-                er = commandLineService.execCommand(BinaryMetadataConstants.EXIFTOOL_WRITE, params);
+                er = commandLineService.execCommand(command, params);
             }
             boolean success = er.isSuccessful();
             if (!success) {
@@ -81,19 +83,19 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
             }
             return success;
         } catch (CommandNotAvailable commandNotAvailable) {
-            throw new BinaryMetadataException("Command '" + BinaryMetadataConstants.EXIFTOOL_WRITE
-                    + "' is not available.", commandNotAvailable);
+            throw new BinaryMetadataException("Command '" + command + "' is not available.", commandNotAvailable);
         } catch (IOException ioException) {
             throw new BinaryMetadataException(ioException);
         }
     }
 
     @Override
-    public Map<String, Object> readMetadata(Blob blob, List<String> metadata) {
-        CommandAvailability ca = commandLineService.getCommandAvailability(BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST);
+    public Map<String, Object> readMetadata(Blob blob, List<String> metadata, boolean ignorePrefix) {
+        String command = ignorePrefix ? BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST_NOPREFIX
+                : BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST;
+        CommandAvailability ca = commandLineService.getCommandAvailability(command);
         if (!ca.isAvailable()) {
-            throw new BinaryMetadataException("Command '" + BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST
-                    + "' is not available.");
+            throw new BinaryMetadataException("Command '" + command + "' is not available.");
         }
         if (blob == null) {
             throw new BinaryMetadataException("The following command " + ca + " cannot be executed with a null blob");
@@ -104,23 +106,23 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
                 CmdParameters params = new CmdParameters();
                 params.addNamedParameter("inFilePath", source.getFile(), true);
                 params.addNamedParameter("tagList", getCommandTags(metadata), false);
-                er = commandLineService.execCommand(BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST, params);
+                er = commandLineService.execCommand(command, params);
             }
             return returnResultMap(er);
         } catch (CommandNotAvailable commandNotAvailable) {
-            throw new RuntimeException("Command '" + BinaryMetadataConstants.EXIFTOOL_READ_TAGLIST
-                    + "' is not available.", commandNotAvailable);
+            throw new RuntimeException("Command '" + command + "' is not available.", commandNotAvailable);
         } catch (IOException ioException) {
             throw new BinaryMetadataException(ioException);
         }
     }
 
     @Override
-    public Map<String, Object> readMetadata(Blob blob) {
-        CommandAvailability ca = commandLineService.getCommandAvailability(BinaryMetadataConstants.EXIFTOOL_READ);
+    public Map<String, Object> readMetadata(Blob blob, boolean ignorePrefix) {
+        String command = ignorePrefix ? BinaryMetadataConstants.EXIFTOOL_READ_NOPREFIX
+                : BinaryMetadataConstants.EXIFTOOL_READ;
+        CommandAvailability ca = commandLineService.getCommandAvailability(command);
         if (!ca.isAvailable()) {
-            throw new BinaryMetadataException("Command '" + BinaryMetadataConstants.EXIFTOOL_READ
-                    + "' is not available.");
+            throw new BinaryMetadataException("Command '" + command + "' is not available.");
         }
         if (blob == null) {
             throw new BinaryMetadataException("The following command " + ca + " cannot be executed with a null blob");
@@ -130,12 +132,11 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
             try (CloseableFile source = blob.getCloseableFile()) {
                 CmdParameters params = new CmdParameters();
                 params.addNamedParameter("inFilePath", source.getFile(), true);
-                er = commandLineService.execCommand(BinaryMetadataConstants.EXIFTOOL_READ, params);
+                er = commandLineService.execCommand(command, params);
             }
             return returnResultMap(er);
         } catch (CommandNotAvailable commandNotAvailable) {
-            throw new RuntimeException("Command '" + BinaryMetadataConstants.EXIFTOOL_READ + "' is not available.",
-                    commandNotAvailable);
+            throw new RuntimeException("Command '" + command + "' is not available.", commandNotAvailable);
         } catch (IOException ioException) {
             throw new BinaryMetadataException(ioException);
         }

@@ -12,7 +12,8 @@
     <documentation>
       <code>
         <processor id="exifTool"
-                   class="org.nuxeo.binary.metadata.ExifToolProcessor"/>
+                   class="org.nuxeo.binary.metadata.ExifToolProcessor"
+                   prefix="true"/>
       </code>
     </documentation>
   </extension-point>
@@ -22,7 +23,8 @@
             class="org.nuxeo.binary.metadata.internals.MetadataMappingDescriptor"/>
     <documentation>
       <code>
-        <metadataMapping id="xmp" processor="exifTool" blobXPath="file:content">
+        <metadataMapping id="xmp" processor="exifTool" blobXPath="file:content"
+                         ignorePrefix="true">
           <metadata name="tiff:ImageWidth" xpath="xmp:ImageWidth"/>
           <metadata name="tiff:ImageLength" xpath="xmp:ImageLength"/>
           <metadata name="xmp:CreatorTool" xpath="xmp:CreatorTool"/>
@@ -66,17 +68,17 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
-     point="operations">
-  <operation
-          class="org.nuxeo.binary.metadata.internals.operations.WriteMetadataToBinaryFromDocument"/>
-  <operation
-          class="org.nuxeo.binary.metadata.internals.operations.WriteMetadataToBinaryFromContext"/>
-  <operation
-          class="org.nuxeo.binary.metadata.internals.operations.TriggerMetadataMappingOnDocument"/>
-  <operation
-          class="org.nuxeo.binary.metadata.internals.operations.ReadMetadataFromBinaryToContext"/>
-  <operation
-          class="org.nuxeo.binary.metadata.internals.operations.ReadMetadataFromBinary"/>
+             point="operations">
+    <operation
+            class="org.nuxeo.binary.metadata.internals.operations.WriteMetadataToBinaryFromDocument"/>
+    <operation
+            class="org.nuxeo.binary.metadata.internals.operations.WriteMetadataToBinaryFromContext"/>
+    <operation
+            class="org.nuxeo.binary.metadata.internals.operations.TriggerMetadataMappingOnDocument"/>
+    <operation
+            class="org.nuxeo.binary.metadata.internals.operations.ReadMetadataFromBinaryToContext"/>
+    <operation
+            class="org.nuxeo.binary.metadata.internals.operations.ReadMetadataFromBinary"/>
 
   </extension>
 

@@ -29,30 +29,32 @@ import org.nuxeo.ecm.core.api.Blob;
 public interface BinaryMetadataProcessor {
 
     /**
-     * Write given metadata into given blob.
+     * Write given metadata into given blob. Since 7.3 ignorePrefix is added.
      *
      * @param blob Blob to write.
      * @param metadata Metadata to inject.
+     * @param ignorePrefix
      * @return success or not.
      */
-    public boolean writeMetadata(Blob blob, Map<String, Object> metadata);
+    public boolean writeMetadata(Blob blob, Map<String, Object> metadata, boolean ignorePrefix);
 
     /**
-     * Read from a given blob given metadata map.
+     * Read from a given blob given metadata map. Since 7.3 ignorePrefix is added.
      *
      * @param blob Blob to read.
      * @param metadata Metadata to extract.
+     * @param ignorePrefix
      * @return Metadata map.
      */
-    public Map<String, Object> readMetadata(Blob blob, List<String> metadata);
+    public Map<String, Object> readMetadata(Blob blob, List<String> metadata, boolean ignorePrefix);
 
     /**
-     * Read all metadata from a given blob.
+     * Read all metadata from a given blob. Since 7.3 ignorePrefix is added.
      *
      * @param blob Blob to read.
+     * @param ignorePrefix
      * @return Metadata map.
      */
-    public Map<String, Object> readMetadata(Blob blob);
-
+    public Map<String, Object> readMetadata(Blob blob, boolean ignorePrefix);
 
 }

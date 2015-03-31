@@ -47,6 +47,9 @@ public class ReadMetadataFromBinaryToContext {
     @Context
     protected OperationContext operationContext;
 
+    @Param(name = "ignorePrefix", required = false, description = "Ignore metadata prefixes or not")
+    boolean ignorePrefix = true;
+
     @Param(name = "processor", required = false, description = "The processor to execute for overriding the input blob.")
     protected String processor = "exifTool";
 
@@ -56,15 +59,15 @@ public class ReadMetadataFromBinaryToContext {
     @OperationMethod
     public void run(Blob blob) {
         if (metadata == null || metadata.isEmpty()) {
-            operationContext.put(CTX_BINARY_METADATA, binaryMetadataService
-                    .readMetadata(blob));
+            operationContext.put(CTX_BINARY_METADATA, binaryMetadataService.readMetadata(blob, ignorePrefix));
         } else {
             ArrayList<String> metadataList = new ArrayList<>();
             for (String meta : metadata) {
                 metadataList.add(meta);
             }
-            operationContext.put(CTX_BINARY_METADATA, binaryMetadataService
-                    .readMetadata(blob, metadataList));
+            operationContext.put(CTX_BINARY_METADATA,
+                    binaryMetadataService.readMetadata(blob, metadataList,
+                            ignorePrefix));
         }
     }
 }

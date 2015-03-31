@@ -44,8 +44,8 @@ public class BinaryMetadataWork extends AbstractWork {
 
     protected final String docId;
 
-    public BinaryMetadataWork(String repositoryName, String docId, LinkedList<MetadataMappingDescriptor> mappingDescriptors,
-            DocumentEventContext docCtx) {
+    public BinaryMetadataWork(String repositoryName, String docId,
+            LinkedList<MetadataMappingDescriptor> mappingDescriptors, DocumentEventContext docCtx) {
         super("BinaryMetadataUpdate|docId=" + docId);
         setDocument(repositoryName, docId);
         this.mappingDescriptors = mappingDescriptors;

@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
@@ -54,60 +53,62 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     private static final Log log = LogFactory.getLog(BinaryMetadataServiceImpl.class);
 
     @Override
-    public Map<String, Object> readMetadata(String processorName, Blob blob, List<String> metadataNames) {
+    public Map<String, Object> readMetadata(String processorName, Blob blob, List<String> metadataNames,
+            boolean ignorePrefix) {
         try {
             BinaryMetadataProcessor processor = getProcessor(processorName);
-            return processor.readMetadata(blob, metadataNames);
+            return processor.readMetadata(blob, metadataNames, ignorePrefix);
         } catch (NoSuchMethodException e) {
             throw new BinaryMetadataException(e);
         }
     }
 
     @Override
-    public Map<String, Object> readMetadata(Blob blob, List<String> metadataNames) {
+    public Map<String, Object> readMetadata(Blob blob, List<String>
+            metadataNames, boolean ignorePrefix) {
         try {
             BinaryMetadataProcessor processor = getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID);
-            return processor.readMetadata(blob, metadataNames);
+            return processor.readMetadata(blob, metadataNames, ignorePrefix);
         } catch (NoSuchMethodException e) {
             throw new BinaryMetadataException(e);
         }
     }
 
     @Override
-    public Map<String, Object> readMetadata(Blob blob) {
+    public Map<String, Object> readMetadata(Blob blob, boolean ignorePrefix) {
         try {
             BinaryMetadataProcessor processor = getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID);
-            return processor.readMetadata(blob);
+            return processor.readMetadata(blob, ignorePrefix);
         } catch (NoSuchMethodException e) {
             throw new BinaryMetadataException(e);
         }
     }
 
     @Override
-    public Map<String, Object> readMetadata(String processorName, Blob blob) {
+    public Map<String, Object> readMetadata(String processorName, Blob blob, boolean ignorePrefix) {
         try {
             BinaryMetadataProcessor processor = getProcessor(processorName);
-            return processor.readMetadata(blob);
+            return processor.readMetadata(blob, ignorePrefix);
         } catch (NoSuchMethodException e) {
             throw new BinaryMetadataException(e);
         }
     }
 
     @Override
-    public boolean writeMetadata(String processorName, Blob blob, Map<String, Object> metadata) {
+    public boolean writeMetadata(String processorName, Blob blob, Map<String, Object> metadata, boolean ignorePrefix) {
         try {
             BinaryMetadataProcessor processor = getProcessor(processorName);
-            return processor.writeMetadata(blob, metadata);
+            return processor.writeMetadata(blob, metadata, ignorePrefix);
         } catch (NoSuchMethodException e) {
             throw new BinaryMetadataException(e);
         }
     }
 
     @Override
-    public boolean writeMetadata(Blob blob, Map<String, Object> metadata) {
+    public boolean writeMetadata(Blob blob, Map<String, Object> metadata, boolean ignorePrefix) {
         try {
             BinaryMetadataProcessor processor = getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID);
-            return processor.writeMetadata(blob, metadata);
+            return processor.writeMetadata(blob, metadata, ignorePrefix);
         } catch (NoSuchMethodException e) {
             throw new BinaryMetadataException(e);
         }
@@ -124,7 +125,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                 metadataMapping.put(metadataDescriptor.getName(), doc.getPropertyValue(metadataDescriptor.getXpath()));
             }
             BinaryMetadataProcessor processor = getProcessor(processorName);
-            return processor.writeMetadata(blob, metadataMapping);
+            return processor.writeMetadata(blob, metadataMapping, mappingDescriptor.getIgnorePrefix());
         } catch (NoSuchMethodException e) {
             throw new BinaryMetadataException(e);
         }
@@ -141,9 +142,8 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
             for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor : mappingDescriptor.getMetadataDescriptors()) {
                 metadataMapping.put(metadataDescriptor.getName(), doc.getPropertyValue(metadataDescriptor.getXpath()));
             }
-            BinaryMetadataProcessor processor = getProcessor(
-                    BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID);
-            return processor.writeMetadata(blob, metadataMapping);
+            BinaryMetadataProcessor processor = getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID);
+            return processor.writeMetadata(blob, metadataMapping, mappingDescriptor.getIgnorePrefix());
         } catch (NoSuchMethodException e) {
             throw new BinaryMetadataException(e);
         }
@@ -178,8 +178,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         // Creating mapping properties Map.
         Map<String, String> metadataMapping = new HashMap<>();
         List<String> blobMetadata = new ArrayList<>();
-        MetadataMappingDescriptor mappingDescriptor = BinaryMetadataComponent.self.mappingRegistry.getMappingDescriptorMap().get(mappingDescriptorId);
-
+        MetadataMappingDescriptor mappingDescriptor = BinaryMetadataComponent.self.mappingRegistry.getMappingDescriptorMap().get(
+                mappingDescriptorId);
+        boolean ignorePrefix = mappingDescriptor.getIgnorePrefix();
         // Extract blob from the contributed xpath
         Blob blob = doc.getProperty(mappingDescriptor.getBlobXPath()).getValue(Blob.class);
         if (blob != null && mappingDescriptor.getMetadataDescriptors() != null
@@ -193,10 +194,10 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
             String processorId = mappingDescriptor.getProcessor();
             Map<String, Object> blobMetadataOutput;
             if (processorId != null) {
-                blobMetadataOutput = readMetadata(processorId, blob, blobMetadata);
+                blobMetadataOutput = readMetadata(processorId, blob, blobMetadata, ignorePrefix);
 
             } else {
-                blobMetadataOutput = readMetadata(blob, blobMetadata);
+                blobMetadataOutput = readMetadata(blob, blobMetadata, ignorePrefix);
             }
 
             // Write doc properties from outputs.
@@ -324,7 +325,8 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                         + "'. Or check your rule contribution with proper metadataMapping-id.");
                 continue;
             }
-            mappingResult.add(BinaryMetadataComponent.self.mappingRegistry.getMappingDescriptorMap().get(mappingDescriptorId));
+            mappingResult.add(BinaryMetadataComponent.self.mappingRegistry.getMappingDescriptorMap().get(
+                    mappingDescriptorId));
         }
         return mappingResult;
     }
