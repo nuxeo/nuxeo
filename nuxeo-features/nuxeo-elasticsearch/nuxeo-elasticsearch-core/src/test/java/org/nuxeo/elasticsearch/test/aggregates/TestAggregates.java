@@ -94,7 +94,8 @@ public class TestAggregates {
             doc.setPropertyValue("dc:nature", "Nature" + i % 2);
             doc.setPropertyValue("dc:coverage", "Coverage" + i % 3);
             doc.setPropertyValue("common:size", 1024 * i);
-            doc.setPropertyValue("dc:created", new Date(new DateTime().minusWeeks(i).getMillis()));
+            // remove few hours so when there is a DST change in the period this does not affect the results
+            doc.setPropertyValue("dc:created", new Date(new DateTime().minusWeeks(i).minusHours(2).getMillis()));
             doc = session.createDocument(doc);
         }
         TransactionHelper.commitOrRollbackTransaction();
