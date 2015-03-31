@@ -43,6 +43,10 @@
 </#if>
    "analysis" : {
       "filter" : {
+         "truncate_filter" : {
+            "length" : 256,
+            "type" : "truncate"
+         },
          "en_stem_filter" : {
             "name" : "minimal_english",
             "type" : "stemmer"
@@ -112,11 +116,12 @@
          },
          "lowercase_analyzer" : {
             "type" : "custom",
-            "filter" : [ "lowercase", "asciifolding" ],
+            "filter" : [ "truncate_filter", "lowercase", "asciifolding" ],
             "tokenizer" : "keyword"
          },
          "default" : {
             "type" : "custom",
+            "filter" : [ "truncate_filter" ],
             "tokenizer" : "keyword"
          }
       }
@@ -136,7 +141,6 @@
          "type" : "multi_field",
          "fields" : {
            "dc:title" : {
-             "index" : "not_analyzed",
              "type" : "string"
            },
            "fulltext" : {
