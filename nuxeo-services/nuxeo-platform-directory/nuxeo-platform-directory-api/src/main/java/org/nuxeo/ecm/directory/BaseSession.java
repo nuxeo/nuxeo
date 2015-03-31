@@ -138,6 +138,7 @@ public abstract class BaseSession implements Session {
                 if (currentDesc.groups != null) {
                     for (int j = 0; j < currentDesc.groups.length; j++) {
                         String groupName = currentDesc.groups[j];
+                        userGroups.add(SecurityConstants.EVERYONE);
                         if (userGroups.contains(groupName)) {
                             return true;
                         }
