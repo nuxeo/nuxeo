@@ -57,12 +57,12 @@ public class AutomationScriptingComponent extends DefaultComponent {
                 log.warn(AutomationScriptingConstants.NASHORN_WARN_CACHE);
                 scriptingService.setCacheActivation(false);
                 scriptingService.setClassFilterActivation(false);
-            } else if (version.compareTo(AutomationScriptingConstants.COMPLIANT_JAVA_VERSION_CACHE) > 0
+            } else if (version.compareTo(AutomationScriptingConstants.COMPLIANT_JAVA_VERSION_CACHE) >= 0
                     && version.compareTo(AutomationScriptingConstants.COMPLIANT_JAVA_VERSION_CLASS_FILTER) < 0) {
                 log.warn(AutomationScriptingConstants.NASHORN_WARN_CLASS_FILTER);
                 scriptingService.setClassFilterActivation(false);
             } else {
-                // Double security check to find if class filter exists or not (jdk8u40)
+                // Double security check to find if class filter exists or not (check on jdk8u40)
                 try {
                     Class<?> klass = Class.forName(ClassFilter.class.getName());
                 } catch (ClassNotFoundException e) {
