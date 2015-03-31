@@ -284,6 +284,7 @@ public class TestAutomaticIndexing {
     @Test
     public void shouldIndexBinaryFulltext() throws Exception {
         startTransaction();
+        activateSynchronousMode(); // this is to prevent race condition that happen NXP-16169
         DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
         BlobHolder holder = doc.getAdapter(BlobHolder.class);
         holder.setBlob(new StringBlob("You know for search"));
@@ -300,6 +301,26 @@ public class TestAutomaticIndexing {
         Assert.assertEquals(1, ret.totalSize());
 
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext='search'"));
+        Assert.assertEquals(1, ret.totalSize());
+    }
+
+    @Test
+    public void shouldIndexLargeBinaryFulltext() throws Exception {
+        startTransaction();
+        activateSynchronousMode(); // this is to prevent race condition that happen NXP-16169
+        DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
+        BlobHolder holder = doc.getAdapter(BlobHolder.class);
+        holder.setBlob(new StringBlob(new String(new char[33000]).replace('\0', 'a') + " search"));
+        // Note that token > 32k fails only when using a disk storage elastic configuration
+        doc = session.createDocument(doc);
+        session.save();
+
+        TransactionHelper.commitOrRollbackTransaction();
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        waitForCompletion();
+
+        startTransaction();
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext='search'"));
         Assert.assertEquals(1, ret.totalSize());
     }
 

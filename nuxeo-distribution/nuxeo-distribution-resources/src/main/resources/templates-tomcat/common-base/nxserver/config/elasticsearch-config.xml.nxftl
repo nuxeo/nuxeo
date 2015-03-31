@@ -151,7 +151,7 @@
          "fields" : {
            "dc:description" : {
              "index" : "no",
-             "include_in_all" : "true",
+             "include_in_all" : true,
              "type" : "string"
            },
            "fulltext" : {
@@ -166,7 +166,7 @@
          "fields" : {
            "note:note" : {
              "index" : "no",
-             "include_in_all" : "true",
+             "include_in_all" : true,
              "type" : "string"
            },
            "fulltext" : {
@@ -175,9 +175,10 @@
           }
         }
       },
-      "ecm:binarytext*" : {
+      "ecm:binarytext" : {
          "type" : "string",
-         "analyzer" : "fulltext"
+         "index" : "no",
+         "include_in_all" : true
       },
       "ecm:path" : {
          "type" : "multi_field",
