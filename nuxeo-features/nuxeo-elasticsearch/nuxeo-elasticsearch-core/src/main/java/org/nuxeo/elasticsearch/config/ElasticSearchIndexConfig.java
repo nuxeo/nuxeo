@@ -58,22 +58,50 @@ public class ElasticSearchIndexConfig {
     @XNode("settings")
     protected String settings;
 
-    final public static String DEFAULT_SETTING = "{\n" + "   \"number_of_shards\" : 1,\n" +
-            "   \"number_of_replicas\" : 0,\n" +"   \"analysis\" : {\n" + "      \"filter\" : {\n"
-            + "         \"en_stem_filter\" : {\n" + "            \"name\" : \"minimal_english\",\n"
-            + "            \"type\" : \"stemmer\"\n" + "         },\n" + "         \"en_stop_filter\" : {\n"
-            + "            \"stopwords\" : [\n" + "               \"_english_\"\n" + "            ],\n"
-            + "            \"type\" : \"stop\"\n" + "         }\n" + "      },\n" + "      \"tokenizer\" : {\n"
-            + "         \"path_tokenizer\" : {\n" + "            \"delimiter\" : \"/\",\n"
-            + "            \"type\" : \"path_hierarchy\"\n" + "         }\n" + "      },\n"
-            + "      \"analyzer\" : {\n" + "         \"en_analyzer\" : {\n" + "            \"alias\" : \"fulltext\",\n"
-            + "            \"filter\" : [\n" + "               \"lowercase\",\n"
-            + "               \"en_stop_filter\",\n" + "               \"en_stem_filter\",\n"
-            + "               \"asciifolding\"\n" + "            ],\n" + "            \"type\" : \"custom\",\n"
-            + "            \"tokenizer\" : \"standard\"\n" + "         },\n" + "         \"path_analyzer\" : {\n"
-            + "            \"type\" : \"custom\",\n" + "            \"tokenizer\" : \"path_tokenizer\"\n"
-            + "         },\n" + "         \"default\" : {\n" + "            \"type\" : \"custom\",\n"
-            + "            \"tokenizer\" : \"keyword\"\n" + "         }\n" + "      }\n" + "   }\n" + "}";
+    final public static String DEFAULT_SETTING = "{\n" //
+            + "   \"number_of_shards\" : 1,\n" //
+            + "   \"number_of_replicas\" : 0,\n" //
+            + "   \"analysis\" : {\n" //
+            + "      \"filter\" : {\n" //
+            + "         \"en_stem_filter\" : {\n" //
+            + "            \"name\" : \"minimal_english\",\n" //
+            + "            \"type\" : \"stemmer\"\n" //
+            + "         },\n" //
+            + "         \"en_stop_filter\" : {\n" //
+            + "            \"stopwords\" : [\n" //
+            + "               \"_english_\"\n" //
+            + "            ],\n" //
+            + "            \"type\" : \"stop\"\n" //
+            + "         }\n" //
+            + "      },\n" //
+            + "      \"tokenizer\" : {\n" //
+            + "         \"path_tokenizer\" : {\n" //
+            + "            \"delimiter\" : \"/\",\n" //
+            + "            \"type\" : \"path_hierarchy\"\n" //
+            + "         }\n" + "      },\n" //
+            + "      \"analyzer\" : {\n" //
+            + "         \"en_analyzer\" : {\n" //
+            + "            \"alias\" : \"fulltext\",\n" //
+            + "            \"filter\" : [\n" //
+            + "               \"lowercase\",\n" //
+            + "               \"en_stop_filter\",\n" //
+            + "               \"en_stem_filter\",\n" //
+            + "               \"asciifolding\"\n" //
+            + "            ],\n" //
+            + "            \"type\" : \"custom\",\n" //
+            + "            \"tokenizer\" : \"standard\"\n" //
+            + "         },\n" //
+            + "         \"path_analyzer\" : {\n" //
+            + "            \"type\" : \"custom\",\n" //
+            + "            \"tokenizer\" : \"path_tokenizer\"\n" //
+            + "         },\n" //
+            + "         \"default\" : {\n" //
+            + "            \"type\" : \"custom\",\n" //
+            + "            \"tokenizer\" : \"keyword\"\n" //
+            + "         }\n" //
+            + "      }\n" //
+            + "   }\n" //
+            + "}";
 
     @XNode("mapping")
     protected String mapping;
