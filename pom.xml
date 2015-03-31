@@ -3486,7 +3486,7 @@
             <artifactId>slf4j-jdk14</artifactId>
           </exclusion>
           <exclusion>
-            <groupId>commons-io</groupId>
+            <groupId>org.apache.commons</groupId>
             <artifactId>commons-io</artifactId>
           </exclusion>
         </exclusions>
