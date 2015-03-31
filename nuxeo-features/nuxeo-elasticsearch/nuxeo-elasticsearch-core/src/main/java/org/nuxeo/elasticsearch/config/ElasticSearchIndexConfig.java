@@ -111,9 +111,10 @@ public class ElasticSearchIndexConfig {
             + "          }\n" //
             + "        }\n" //
             + "      },\n" //
-            + "      \"ecm:binarytext*\" : {\n" //
+            + "      \"ecm:binarytext\" : {\n" //
             + "         \"type\" : \"string\",\n" //
-            + "         \"analyzer\" : \"fulltext\"\n" //
+            + "         \"index\" : \"no\",\n" //
+            + "         \"include_in_all\" : true\n" //
             + "      },\n" //
             + "      \"ecm:path\" : {\n" //
             + "         \"type\" : \"multi_field\",\n" //
