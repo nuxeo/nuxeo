@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
@@ -135,8 +136,9 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
 
     private void fillScalarProperty(Property property, JsonNode jn) throws IOException {
         Object value = null;
+        Type type = property.getType();
         if (jn.isObject()) {
-            ObjectResolver resolver = property.getType().getObjectResolver();
+            ObjectResolver resolver = type.getObjectResolver();
             if (resolver == null) {
                 throw new MarshallingException("Unable to parse the property " + property.getPath());
             }
@@ -157,7 +159,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
                         + " value cannot be resolved by the matching resolver " + resolver.getName());
             }
         } else {
-            value = getPropertyValue(property.getType(), jn);
+            value = getPropertyValue(((SimpleType) type).getPrimitiveType(), jn);
         }
         property.setValue(value);
     }
@@ -193,7 +195,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
             Iterator<JsonNode> it = jn.getElements();
             while (it.hasNext()) {
                 elNode = it.next();
-                Object value = getPropertyValue(type, elNode);
+                Object value = getPropertyValue(((SimpleType) type).getPrimitiveType(), elNode);
                 values.add(value);
             }
             property.setValue(values);
