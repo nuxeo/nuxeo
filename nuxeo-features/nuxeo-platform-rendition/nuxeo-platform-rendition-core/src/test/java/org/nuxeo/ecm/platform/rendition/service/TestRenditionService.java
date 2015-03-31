@@ -103,17 +103,16 @@ public class TestRenditionService {
         assertFalse(renditionDefinitions.isEmpty());
         assertEquals(6, renditionDefinitions.size());
 
-        RenditionServiceImpl renditionServiceImpl = (RenditionServiceImpl) renditionService;
-        assertTrue(renditionServiceImpl.renditionDefinitions.containsKey(PDF_RENDITION_DEFINITION));
-        RenditionDefinition rd = renditionServiceImpl.renditionDefinitions.get(PDF_RENDITION_DEFINITION);
+        RenditionDefinition rd = renditionDefinitions.stream().filter(
+                renditionDefinition -> PDF_RENDITION_DEFINITION.equals(renditionDefinition.getName())).findFirst().get();
         assertNotNull(rd);
         assertEquals(PDF_RENDITION_DEFINITION, rd.getName());
         assertEquals("blobToPDF", rd.getOperationChain());
         assertEquals("label.rendition.pdf", rd.getLabel());
         assertTrue(rd.isEnabled());
 
-        assertTrue(renditionServiceImpl.renditionDefinitions.containsKey("renditionDefinitionWithCustomOperationChain"));
-        rd = renditionServiceImpl.renditionDefinitions.get("renditionDefinitionWithCustomOperationChain");
+        rd = renditionDefinitions.stream().filter(
+                renditionDefinition -> "renditionDefinitionWithCustomOperationChain".equals(renditionDefinition.getName())).findFirst().get();
         assertNotNull(rd);
         assertEquals("renditionDefinitionWithCustomOperationChain", rd.getName());
         assertEquals("Dummy", rd.getOperationChain());
@@ -273,8 +272,7 @@ public class TestRenditionService {
     public void testRenderAProxyDocument() throws ClientException {
         DocumentModel file = createBlobFile();
 
-        DocumentModel proxy = session.createProxy(file.getRef(), new PathRef(
-                "/"));
+        DocumentModel proxy = session.createProxy(file.getRef(), new PathRef("/"));
         DocumentRef renditionRef = renditionService.storeRendition(proxy, PDF_RENDITION_DEFINITION);
         DocumentModel rendition = session.getDocument(renditionRef);
         assertTrue(rendition.isVersion());

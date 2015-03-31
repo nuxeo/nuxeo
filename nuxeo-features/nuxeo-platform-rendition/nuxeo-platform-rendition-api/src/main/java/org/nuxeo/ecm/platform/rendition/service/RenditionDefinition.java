@@ -16,13 +16,13 @@
 
 package org.nuxeo.ecm.platform.rendition.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Definition of a rendition.
@@ -39,7 +39,7 @@ public class RenditionDefinition {
     protected String name;
 
     @XNode("@enabled")
-    boolean enabled = true;
+    Boolean enabled;
 
     @XNode("label")
     protected String label;
@@ -57,13 +57,13 @@ public class RenditionDefinition {
      * @since 6.0
      */
     @XNode("allowEmptyBlob")
-    protected boolean allowEmptyBlob = false;
+    protected Boolean allowEmptyBlob;
 
     /**
      * @since 6.0
      */
     @XNode("@visible")
-    protected boolean visible = true;
+    protected Boolean visible;
 
     @XNode("@class")
     protected Class<? extends RenditionProvider> providerClass;
@@ -82,7 +82,14 @@ public class RenditionDefinition {
     }
 
     public boolean isEnabled() {
-        return enabled;
+        return enabled == null || enabled;
+    }
+
+    /**
+     * @since 7.3
+     */
+    public boolean isEnabledSet() {
+        return enabled != null;
     }
 
     public String getLabel() {
@@ -125,12 +132,26 @@ public class RenditionDefinition {
         return contentType;
     }
 
+    /**
+     * @since 7.3
+     */
     public boolean isEmptyBlobAllowed() {
-        return allowEmptyBlob;
+        return allowEmptyBlob != null && allowEmptyBlob;
+    }
+
+    public boolean isEmptyBlobAllowedSet() {
+        return allowEmptyBlob != null;
     }
 
     public boolean isVisible() {
         return visible;
+    }
+
+    /**
+     * @since 7.3
+     */
+    public boolean isVisibleSet() {
+        return visible == null || visible;
     }
 
     public List<String> getFilterIds() {
@@ -179,5 +200,28 @@ public class RenditionDefinition {
 
     public void setFilterIds(List<String> filterIds) {
         this.filterIds = filterIds;
+    }
+
+    /**
+     * @since 7.3
+     */
+    @Override
+    public RenditionDefinition clone() {
+        RenditionDefinition clone = new RenditionDefinition();
+        clone.name = name;
+        clone.enabled = enabled;
+        clone.label = label;
+        clone.icon = icon;
+        clone.kind = kind;
+        clone.operationChain = operationChain;
+        clone.allowEmptyBlob = allowEmptyBlob;
+        clone.visible = visible;
+        clone.providerClass = providerClass;
+        clone.contentType = contentType;
+        if (filterIds != null) {
+            clone.filterIds = new ArrayList<>();
+            clone.filterIds.addAll(filterIds);
+        }
+        return clone;
     }
 }
