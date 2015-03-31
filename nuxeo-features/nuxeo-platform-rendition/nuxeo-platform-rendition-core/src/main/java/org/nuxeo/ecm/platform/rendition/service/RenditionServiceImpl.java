@@ -66,13 +66,23 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     @Deprecated
     protected AutomationService automationService;
 
+    /**
+     * @deprecated since 7.3.
+     */
+    @Deprecated
     protected Map<String, RenditionDefinition> renditionDefinitions;
+
+    /**
+     * @since 7.3. RenditionDefinitions are store in {@link #renditionDefinitionRegistry}.
+     */
+    protected RenditionDefinitionRegistry renditionDefinitionRegistry;
 
     protected RenditionDefinitionProviderRegistry renditionDefinitionProviderRegistry;
 
     @Override
     public void activate(ComponentContext context) {
         renditionDefinitions = new HashMap<>();
+        renditionDefinitionRegistry = new RenditionDefinitionRegistry();
         renditionDefinitionProviderRegistry = new RenditionDefinitionProviderRegistry();
         super.activate(context);
     }
@@ -80,18 +90,19 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     @Override
     public void deactivate(ComponentContext context) {
         renditionDefinitions = null;
+        renditionDefinitionRegistry = null;
         renditionDefinitionProviderRegistry = null;
         super.deactivate(context);
     }
 
     public RenditionDefinition getRenditionDefinition(String name) {
-        return renditionDefinitions.get(name);
+        return renditionDefinitionRegistry.getRenditionDefinition(name);
     }
 
     @Override
     @Deprecated
     public List<RenditionDefinition> getDeclaredRenditionDefinitions() {
-        return new ArrayList<>(renditionDefinitions.values());
+        return new ArrayList<>(renditionDefinitionRegistry.descriptors.values());
     }
 
     @Override
@@ -108,14 +119,9 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     @Override
     public List<RenditionDefinition> getAvailableRenditionDefinitions(DocumentModel doc) {
+
         List<RenditionDefinition> defs = new ArrayList<>();
-        for (RenditionDefinition def : renditionDefinitions.values()) {
-            if (canUseRenditionDefinition(def, doc) && def.getProvider().isAvailable(doc, def)) {
-                defs.add(def);
-            }
-
-        }
-
+        defs.addAll(renditionDefinitionRegistry.getRenditionDefinitions(doc));
         defs.addAll(renditionDefinitionProviderRegistry.getRenditionDefinitions(doc));
 
         // XXX what about "lost renditions" ?
@@ -184,12 +190,17 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (RENDITION_DEFINITIONS_EP.equals(extensionPoint)) {
-            registerRendition((RenditionDefinition) contribution);
+            RenditionDefinition renditionDefinition = (RenditionDefinition) contribution;
+            renditionDefinitionRegistry.addContribution(renditionDefinition);
         } else if (RENDITON_DEFINION_PROVIDERS_EP.equals(extensionPoint)) {
             renditionDefinitionProviderRegistry.addContribution((RenditionDefinitionProviderDescriptor) contribution);
         }
     }
 
+    /**
+     * @deprecated since 7.3. RenditionDefinitions are store in {@link #renditionDefinitionRegistry}.
+     */
+    @Deprecated
     protected void registerRendition(RenditionDefinition renditionDefinition) {
         String name = renditionDefinition.getName();
         if (name == null) {
@@ -215,6 +226,10 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         setupProvider(renditionDefinition);
     }
 
+    /**
+     * @deprecated since 7.3. RenditionDefinitions are store in {@link #renditionDefinitionRegistry}.
+     */
+    @Deprecated
     protected void setupProvider(RenditionDefinition definition) {
         if (definition.getProviderClass() == null) {
             definition.setProvider(new DefaultAutomationRenditionProvider());
@@ -246,10 +261,16 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (RENDITION_DEFINITIONS_EP.equals(extensionPoint)) {
-            unregisterRendition((RenditionDefinition) contribution);
+            renditionDefinitionRegistry.removeContribution((RenditionDefinition) contribution);
+        } else if (RENDITON_DEFINION_PROVIDERS_EP.equals(extensionPoint)) {
+            renditionDefinitionProviderRegistry.removeContribution((RenditionDefinitionProviderDescriptor) contribution);
         }
     }
 
+    /**
+     * @deprecated since 7.3. RenditionDefinitions are store in {@link #renditionDefinitionRegistry}.
+     */
+    @Deprecated
     protected void unregisterRendition(RenditionDefinition renditionDefinition) {
         String name = renditionDefinition.getName();
         renditionDefinitions.remove(name);
@@ -264,7 +285,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     @Override
     public Rendition getRendition(DocumentModel doc, String renditionName, boolean store) throws RenditionException {
 
-        RenditionDefinition renditionDefinition = renditionDefinitions.get(renditionName);
+        RenditionDefinition renditionDefinition = renditionDefinitionRegistry.getRenditionDefinition(renditionName);
         if (renditionDefinition == null) {
             renditionDefinition = renditionDefinitionProviderRegistry.getRenditionDefinition(renditionName, doc);
             if (renditionDefinition == null) {
