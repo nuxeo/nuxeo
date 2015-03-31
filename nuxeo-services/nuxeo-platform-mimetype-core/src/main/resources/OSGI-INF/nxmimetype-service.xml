@@ -659,6 +659,7 @@
     <mimetype normalized="application/zip" binary="true" iconPath="zip.png">
       <mimetypes>
         <mimetype>application/zip</mimetype>
+        <mimetype>application/x-zip-compressed</mimetype>
       </mimetypes>
       <extensions>
         <extension>zip</extension>
