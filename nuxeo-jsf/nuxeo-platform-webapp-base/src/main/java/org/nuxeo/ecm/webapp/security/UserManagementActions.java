@@ -47,6 +47,7 @@ import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
@@ -90,6 +91,8 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     protected boolean immediateCreation = false;
 
     protected boolean createAnotherUser = false;
+
+	protected String defaultRepositoryName = null;
 
     @Override
     protected String computeListingMode() throws ClientException {
@@ -264,8 +267,22 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         }
     }
 
+    private String getDefaultRepositoryName() {
+        if (defaultRepositoryName == null) {
+            try {
+                defaultRepositoryName = Framework.getService(
+                        RepositoryManager.class).getDefaultRepository().getName();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return defaultRepositoryName;
+    }
+
     public void updateUser() throws ClientException {
-        userManager.updateUser(selectedUser);
+    	UpdateUserUnrestricted runner = new UpdateUserUnrestricted(getDefaultRepositoryName(), selectedUser);
+        runner.runUnrestricted();
+         
         detailsMode = DETAILS_VIEW_MODE;
         fireSeamEvent(USERS_LISTING_CHANGED);
     }

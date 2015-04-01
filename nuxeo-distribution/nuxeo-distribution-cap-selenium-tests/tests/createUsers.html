@@ -938,6 +938,109 @@
 	<td>link=Log out</td>
 	<td></td>
 </tr>
+
+<!-- check user can change its own password -->
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>linnet</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>linnet1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>linnet</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=Home</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=Profile</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Change password</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Password</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='editUserPassword:nxl_user_2:nxw_passwordMatcher_firstPassword']</td>
+	<td>linnet2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='editUserPassword:nxl_user_2:nxw_passwordMatcher_secondPassword']</td>
+	<td>linnet2</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>linnet</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>linnet2</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>linnet</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
 </tbody></table>
 </body>
 </html>
