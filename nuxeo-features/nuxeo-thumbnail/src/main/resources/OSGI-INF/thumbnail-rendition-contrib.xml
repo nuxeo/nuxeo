@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.thumbnail.listener.renditions">
+
+  <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService"
+    point="renditionDefinitions">
+
+    <renditionDefinition name="thumbnail" cmisName="nuxeo:icon"
+      class="org.nuxeo.ecm.platform.thumbnail.rendition.ThumbnailRenditionProvider">
+      <label>label.rendition.thumbnail</label>
+      <icon>/icons/pdf.png</icon>
+      <kind>cmis:thumbnail</kind>
+      <contentType>image/jpeg</contentType>
+    </renditionDefinition>
+
+  </extension>
+
+</component>

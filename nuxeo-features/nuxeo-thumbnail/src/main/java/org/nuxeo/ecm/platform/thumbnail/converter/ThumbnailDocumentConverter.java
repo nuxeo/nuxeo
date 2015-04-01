@@ -32,6 +32,7 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -62,6 +63,7 @@ public class ThumbnailDocumentConverter implements Converter {
             Blob blob = blobHolder.getBlob();
 
             Blob targetBlob = Blobs.createBlobWithExtension(".png");
+            targetBlob.setMimeType("image/png");
             try (CloseableFile source = blob.getCloseableFile()) {
                 CmdParameters params = new CmdParameters();
                 String size;
