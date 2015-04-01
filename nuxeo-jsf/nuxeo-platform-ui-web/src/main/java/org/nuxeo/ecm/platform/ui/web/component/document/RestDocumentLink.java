@@ -34,12 +34,14 @@ import javax.faces.component.html.HtmlOutputLink;
 import javax.faces.context.FacesContext;
 import javax.faces.event.FacesEvent;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.component.VariableManager;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 
 import com.sun.faces.renderkit.html_basic.HtmlBasicRenderer.Param;
 
@@ -83,6 +85,11 @@ public class RestDocumentLink extends HtmlOutputLink {
     protected String pattern;
 
     protected Boolean newConversation;
+
+    /**
+     * @since 7.3
+     */
+    protected String baseURL;
 
     /**
      * @since 5.7
@@ -159,9 +166,18 @@ public class RestDocumentLink extends HtmlOutputLink {
         }
 
         String pattern = getPattern();
+        String baseURL = getBaseURL();
+        if (StringUtils.isEmpty(baseURL)) {
+            baseURL = BaseURL.getBaseURL();
+        }
 
-        return doc != null ? DocumentModelFunctions.documentUrl(pattern, doc, viewId, params, true)
-                : DocumentModelFunctions.repositoryUrl(pattern, repoName, viewId, params, true);
+        // new conversation variable handled by renderer
+        boolean useNewConversation = true;
+        if (doc == null) {
+            return DocumentModelFunctions.repositoryUrl(pattern, repoName, viewId, params, useNewConversation, baseURL);
+        } else {
+            return DocumentModelFunctions.documentUrl(pattern, doc, viewId, params, useNewConversation, baseURL);
+        }
     }
 
     protected Param[] getParamList() {
@@ -334,6 +350,32 @@ public class RestDocumentLink extends HtmlOutputLink {
 
     public void setTab(String tab) {
         this.tab = tab;
+    }
+
+    /**
+     * @since 7.3
+     */
+    public String getBaseURL() {
+        if (baseURL != null) {
+            return baseURL;
+        }
+        ValueExpression ve = getValueExpression("baseURL");
+        if (ve != null) {
+            try {
+                return (String) ve.getValue(getFacesContext().getELContext());
+            } catch (ELException e) {
+                throw new FacesException(e);
+            }
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @since 7.3
+     */
+    public void setBaseURL(String baseURL) {
+        this.baseURL = baseURL;
     }
 
     public String getView() {
@@ -529,7 +571,7 @@ public class RestDocumentLink extends HtmlOutputLink {
     @Override
     public Object saveState(FacesContext context) {
         return new Object[] { super.saveState(context), document, documentIdRef, view, tab, subTab, tabs, addTabInfo,
-                pattern, newConversation, var, resolveOnly };
+                pattern, newConversation, baseURL, var, resolveOnly };
     }
 
     @Override
@@ -545,8 +587,9 @@ public class RestDocumentLink extends HtmlOutputLink {
         addTabInfo = (Boolean) values[7];
         pattern = (String) values[8];
         newConversation = (Boolean) values[9];
-        var = (String) values[10];
-        resolveOnly = (Boolean) values[11];
+        baseURL = (String) values[10];
+        var = (String) values[11];
+        resolveOnly = (Boolean) values[12];
     }
 
 }
