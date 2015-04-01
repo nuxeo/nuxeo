@@ -31,10 +31,9 @@ public class AutomationScriptingConstants {
 
     public static final String DEFAULT_PRECOMPILE_STATUS = "true";
 
-    public static final String[] NASHORN_OPTIONS = new String[] { "-strict", "--persistent-code-cache",
-            "--class-cache-size=50" };
-
     public static final String XP_OPERATION = "operation";
+
+    public static final String NX_NASHORN = "nx-nashorn";
 
     public static final String NASHORN_JAVA_VERSION = "1.8";
 

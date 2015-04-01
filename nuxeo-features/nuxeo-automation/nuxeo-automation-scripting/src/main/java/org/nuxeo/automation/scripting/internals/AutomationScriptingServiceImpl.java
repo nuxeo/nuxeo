@@ -12,6 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
+ *  Stephane Lacoin <slacoin@nuxeo.com>
+ *  Vladimir Pasquier <vpasquier@nuxeo.com>
  */
 package org.nuxeo.automation.scripting.internals;
 
@@ -25,10 +27,9 @@ import java.util.Map;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
-
-import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
@@ -47,10 +48,6 @@ import org.nuxeo.runtime.api.Framework;
 public class AutomationScriptingServiceImpl implements AutomationScriptingService {
 
     protected String jsWrapper = null;
-
-    protected boolean classFilterActivation = true;
-
-    protected boolean cacheActivation = true;
 
     protected String getJSWrapper(boolean refresh) throws OperationException {
         if (jsWrapper == null || refresh) {
@@ -95,33 +92,8 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     protected final ThreadLocal<ScriptEngine> engines = new ThreadLocal<ScriptEngine>() {
         @Override
         protected ScriptEngine initialValue() {
-            return getEngine();
         }
     };
-
-    protected ScriptEngine getEngine() {
-        try {
-            if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE,
-                    AutomationScriptingConstants.DEFAULT_PRECOMPILE_STATUS))) {
-                if (classFilterActivation && cacheActivation) {
-                    return new NashornScriptEngineFactory().getScriptEngine(
-                            AutomationScriptingConstants.NASHORN_OPTIONS, null, new AutomationScriptingClassFilter());
-                } else if (cacheActivation) {
-                    return new NashornScriptEngineFactory().getScriptEngine(AutomationScriptingConstants.NASHORN_OPTIONS);
-                } else {
-                    return new NashornScriptEngineFactory().getScriptEngine();
-                }
-            } else {
-                if (classFilterActivation) {
-                    return new NashornScriptEngineFactory().getScriptEngine(new AutomationScriptingClassFilter());
-                } else {
-                    return new NashornScriptEngineFactory().getScriptEngine();
-                }
-            }
-        } catch (IllegalArgumentException e) {
-            throw new AutomationScriptingException(AutomationScriptingConstants.NASHORN_WARN_VERSION, e);
-        }
-    }
 
     @Override
     public void run(InputStream in, CoreSession session) throws ScriptException, OperationException {
@@ -148,16 +120,6 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         run(script, session);
         Invocable inv = (Invocable) engines.get();
         return inv.getInterface(scriptingOperationInterface);
-    }
-
-    @Override
-    public void setClassFilterActivation(boolean activated) {
-        this.classFilterActivation = activated;
-    }
-
-    @Override
-    public void setCacheActivation(boolean cacheActivation) {
-        this.cacheActivation = cacheActivation;
     }
 
     protected void parseAutomationIDSForScripting(Map<String, List<String>> opMap, List<String> flatOps, String id) {
