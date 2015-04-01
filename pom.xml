@@ -134,6 +134,7 @@
     <module>nuxeo-logs-viewer</module>
     <module>nuxeo-platform-spreadsheet</module>
     <module>nuxeo-binary-metadata</module>
+    <module>nuxeo-segment.io-connector</module>
   </modules>
 
   <dependencyManagement>
@@ -1192,6 +1193,14 @@
         <artifactId>nuxeo-platform-spreadsheet</artifactId>
         <version>${nuxeo.spreadsheet.version}</version>
       </dependency>
+      
+      <!-- Github Segment IO -->
+      <dependency>
+        <groupId>org.nuxeo.addons</groupId>
+        <artifactId>nuxeo-segmentio-connector</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
