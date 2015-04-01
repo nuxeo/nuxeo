@@ -38,6 +38,12 @@ public class RenditionDefinition {
     @XNode("@name")
     protected String name;
 
+    /**
+     * @since 7.3
+     */
+    @XNode("@cmisName")
+    protected String cmisName;
+
     @XNode("@enabled")
     Boolean enabled;
 
@@ -79,6 +85,10 @@ public class RenditionDefinition {
 
     public String getName() {
         return name;
+    }
+
+    public String getCmisName() {
+        return cmisName;
     }
 
     public boolean isEnabled() {
@@ -144,14 +154,14 @@ public class RenditionDefinition {
     }
 
     public boolean isVisible() {
-        return visible;
+        return visible == null || visible;
     }
 
     /**
      * @since 7.3
      */
     public boolean isVisibleSet() {
-        return visible == null || visible;
+        return visible != null;
     }
 
     public List<String> getFilterIds() {
@@ -160,6 +170,10 @@ public class RenditionDefinition {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setCmisName(String cmisName) {
+        this.cmisName = cmisName;
     }
 
     public void setEnabled(boolean enabled) {
@@ -209,6 +223,7 @@ public class RenditionDefinition {
     public RenditionDefinition clone() {
         RenditionDefinition clone = new RenditionDefinition();
         clone.name = name;
+        clone.cmisName = cmisName;
         clone.enabled = enabled;
         clone.label = label;
         clone.icon = icon;

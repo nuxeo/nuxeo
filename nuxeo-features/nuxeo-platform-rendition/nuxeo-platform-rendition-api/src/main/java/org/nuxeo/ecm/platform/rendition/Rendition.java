@@ -44,7 +44,14 @@ public interface Rendition {
     String getName();
 
     /**
-     * Returns the {@link RenditionDefinition} label s@return
+     * Returns the {@link RenditionDefinition} CMIS name
+     *
+     * @since 7.3
+     */
+    String getCmisName();
+
+    /**
+     * Returns the {@link RenditionDefinition} label
      */
     String getLabel();
 
