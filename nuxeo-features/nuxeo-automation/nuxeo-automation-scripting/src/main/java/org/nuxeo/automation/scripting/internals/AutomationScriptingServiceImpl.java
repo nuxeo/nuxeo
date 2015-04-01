@@ -92,6 +92,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     protected final ThreadLocal<ScriptEngine> engines = new ThreadLocal<ScriptEngine>() {
         @Override
         protected ScriptEngine initialValue() {
+            return Framework.getService(ScriptEngineManager.class).getEngineByName(AutomationScriptingConstants.NX_NASHORN);
         }
     };
 

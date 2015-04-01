@@ -104,6 +104,9 @@ public class AutomationScriptingComponent extends DefaultComponent {
         if (adapter.isAssignableFrom(AutomationScriptingService.class)) {
             return adapter.cast(scriptingService);
         }
+        if (adapter.isAssignableFrom(ScriptEngineManager.class)) {
+            return adapter.cast(scriptingFactory.scriptEngineManager);
+        }
         return null;
     }
 
