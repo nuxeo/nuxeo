@@ -45,6 +45,8 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.tag.TagService;
@@ -326,6 +328,10 @@ public class TestAutomaticIndexing {
 
     @Test
     public void shouldIndexLargeToken() throws Exception {
+        if (!(DatabaseHelper.DATABASE instanceof DatabaseH2)) {
+            // db backend need to support field bigger than 32k
+            return;
+        }
         startTransaction();
         DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
         doc.setPropertyValue("dc:source", "search foo" + new String(new char[33000]).replace('\0', 'a'));
