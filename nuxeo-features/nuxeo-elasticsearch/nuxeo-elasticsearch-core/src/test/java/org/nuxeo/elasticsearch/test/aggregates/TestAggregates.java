@@ -87,7 +87,7 @@ public class TestAggregates {
     protected ElasticSearchIndexing esi;
 
     protected void buildDocs() throws Exception {
-        DateTime yesterdayNoon = new DateTime(DateTimeZone.UTC).withTimeAtStartOfDay().minusDays(1).plusHours(12);
+        DateTime yesterdayNoon = new DateTime(DateTimeZone.UTC).toDateMidnight().toDateTime().minusDays(1).plusHours(12);
         for (int i = 0; i < 10; i++) {
             String name = "doc" + i;
             DocumentModel doc = session.createDocumentModel("/", name, "File");
@@ -709,7 +709,7 @@ public class TestAggregates {
         Assert.assertNotNull(ppdef);
         DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
         DateTimeFormatter fmt = DateTimeFormat.forPattern("dd-MM-yyy");
-        DateTime yesterdayNoon = new DateTime(DateTimeZone.UTC).withTimeAtStartOfDay().minusDays(1).plusHours(12);
+        DateTime yesterdayNoon = new DateTime(DateTimeZone.UTC).toDateMidnight().toDateTime().minusDays(1).plusHours(12);
         String[] created = { fmt.print(new DateTime(yesterdayNoon.minusWeeks(3).getMillis())),
                 fmt.print(new DateTime(yesterdayNoon.minusWeeks(6).getMillis())) };
         model.setProperty("advanced_search", "created_histo_agg", created);
