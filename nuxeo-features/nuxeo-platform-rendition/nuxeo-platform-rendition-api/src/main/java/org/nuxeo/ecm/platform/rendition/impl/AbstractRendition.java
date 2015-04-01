@@ -27,7 +27,7 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 
 /**
  * Base implementation of the {@link Rendition} interface that mainly wrapps the {@link RenditionDefinition}
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public abstract class AbstractRendition implements Rendition {
@@ -48,6 +48,11 @@ public abstract class AbstractRendition implements Rendition {
     @Override
     public String getName() {
         return definition.getName();
+    }
+
+    @Override
+    public String getCmisName() {
+        return definition.getCmisName();
     }
 
     @Override

@@ -48,7 +48,17 @@ public class RenditionDefinitionRegistry extends ContributionFragmentRegistry<Re
     protected Map<String, RenditionDefinition> descriptors = new HashMap<>();
 
     public RenditionDefinition getRenditionDefinition(String name) {
-        return descriptors.get(name);
+        RenditionDefinition renditionDefinition = descriptors.get(name);
+        if (renditionDefinition == null) {
+            // could be the CMIS name
+            for (RenditionDefinition rd : descriptors.values()) {
+                if (name.equals(rd.getCmisName())) {
+                    renditionDefinition = rd;
+                    break;
+                }
+            }
+        }
+        return renditionDefinition;
     }
 
     public List<RenditionDefinition> getRenditionDefinitions(DocumentModel doc) {
@@ -116,6 +126,11 @@ public class RenditionDefinitionRegistry extends ContributionFragmentRegistry<Re
     public void merge(RenditionDefinition source, RenditionDefinition dest) {
         if (source.isEnabledSet() && source.isEnabled() != dest.isEnabled()) {
             dest.setEnabled(source.isEnabled());
+        }
+
+        String cmisName = source.getCmisName();
+        if (cmisName != null) {
+            dest.setCmisName(cmisName);
         }
 
         String label = source.getLabel();
