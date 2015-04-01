@@ -63,6 +63,10 @@ public class ElasticSearchIndexConfig {
             + "   \"number_of_replicas\" : 0,\n" //
             + "   \"analysis\" : {\n" //
             + "      \"filter\" : {\n" //
+            + "         \"truncate_filter\" : {\n" //
+            + "            \"length\" : 256,\n" //
+            + "            \"type\" : \"truncate\"\n" //
+            + "         },\n" //
             + "         \"en_stem_filter\" : {\n" //
             + "            \"name\" : \"minimal_english\",\n" //
             + "            \"type\" : \"stemmer\"\n" //
@@ -97,7 +101,10 @@ public class ElasticSearchIndexConfig {
             + "         },\n" //
             + "         \"default\" : {\n" //
             + "            \"type\" : \"custom\",\n" //
-            + "            \"tokenizer\" : \"keyword\"\n" //
+            + "            \"tokenizer\" : \"keyword\",\n" //
+            + "            \"filter\" : [\n" //
+            + "               \"truncate_filter\"\n" //
+            + "            ]\n" //
             + "         }\n" //
             + "      }\n" //
             + "   }\n" //
@@ -115,7 +122,6 @@ public class ElasticSearchIndexConfig {
             + "         \"type\" : \"multi_field\",\n" //
             + "         \"fields\" : {\n" //
             + "           \"dc:title\" : {\n" //
-            + "             \"index\" : \"not_analyzed\",\n" //
             + "             \"type\" : \"string\"\n" //
             + "           },\n" //
             + "           \"fulltext\" : {\n" //
@@ -129,7 +135,6 @@ public class ElasticSearchIndexConfig {
             + "         \"type\" : \"multi_field\",\n" //
             + "         \"fields\" : {\n" //
             + "           \"dc:description\" : {\n" //
-            + "             \"index\" : \"not_analyzed\",\n" //
             + "             \"type\" : \"string\"\n" //
             + "           },\n" //
             + "           \"fulltext\" : {\n" //

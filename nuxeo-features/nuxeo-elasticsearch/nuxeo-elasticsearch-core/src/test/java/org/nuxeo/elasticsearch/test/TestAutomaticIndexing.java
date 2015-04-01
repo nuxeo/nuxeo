@@ -33,7 +33,6 @@ import org.elasticsearch.search.SearchHit;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -44,6 +43,8 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.tag.TagService;
@@ -322,6 +323,26 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext='search'"));
+        Assert.assertEquals(1, ret.totalSize());
+    }
+
+    @Test
+    public void shouldIndexLargeToken() throws Exception {
+        if (!(DatabaseHelper.DATABASE instanceof DatabaseH2)) {
+            // db backend need to support field bigger than 32k
+            return;
+        }
+        startTransaction();
+        DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
+        doc.setPropertyValue("dc:source", "search foo" + new String(new char[33000]).replace('\0', 'a'));
+        // Note that token > 32k error is raised only when using a disk storage elastic configuration
+        doc = session.createDocument(doc);
+        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        waitForCompletion();
+        startTransaction();
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:source STARTSWITH 'search'"));
         Assert.assertEquals(1, ret.totalSize());
     }
 
