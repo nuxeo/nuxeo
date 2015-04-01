@@ -102,8 +102,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (CONFIG_EP.equalsIgnoreCase(extensionPoint)) {
             config = (SegmentIOConfig) contribution;
         } else if (MAPPER_EP.equalsIgnoreCase(extensionPoint)) {
@@ -118,7 +117,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context)  {
         String key = getWriteKey();
         if (DEFAULT_DEBUG_KEY.equals(key)) {
             log.info("Run Segment.io in debug mode : nothing will be sent to the server");
@@ -145,6 +144,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         }
     }
 
+    @Override
     public String getWriteKey() {
         if (config != null) {
             if (config.writeKey != null) {
@@ -154,6 +154,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         return Framework.getProperty(WRITE_KEY, DEFAULT_DEBUG_KEY);
     }
 
+    @Override
     public Map<String, String> getGlobalParameters() {
         if (config != null) {
             if (config.parameters != null) {
@@ -178,10 +179,12 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         return flusher;
     }
 
+    @Override
     public void identify(NuxeoPrincipal principal) {
         identify(principal, null);
     }
 
+    @Override
     public Providers getProviders() {
         if (providers == null) {
             providers = new Providers();
@@ -198,6 +201,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         return providers;
     }
 
+    @Override
     public void identify(NuxeoPrincipal principal,
             Map<String, Serializable> metadata) {
 
@@ -287,10 +291,12 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         return filter.canTrack(principalName);
     }
 
+    @Override
     public void track(NuxeoPrincipal principal, String eventName) {
         track(principal, null);
     }
 
+    @Override
     public void track(NuxeoPrincipal principal, String eventName,
             Map<String, Serializable> metadata) {
 
@@ -321,6 +327,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         }
     }
 
+    @Override
     public void flush() {
         if (!debugMode) {
             // only flush if Analytics was actually initialized
@@ -346,6 +353,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         return event2Mappers;
     }
 
+    @Override
     public SegmentIOUserFilter getUserFilters() {
         return userFilters;
     }
