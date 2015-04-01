@@ -643,13 +643,35 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return documentUrl(null, doc, null, null, false);
     }
 
+    /**
+     * @deprecated since 7.3, use {@link #documentUrl(String, DocumentLocation, String, Map, boolean, String)} instead.
+     */
     public static String documentUrl(String patternName, DocumentModel doc, String viewId,
             Map<String, String> parameters, boolean newConversation) {
-        return documentUrl(patternName, doc, viewId, parameters, newConversation, null);
+        return documentUrl(patternName, doc, viewId, parameters, newConversation, (HttpServletRequest) null);
     }
 
+    /**
+     * @deprecated since 7.3, use {@link #documentUrl(String, DocumentLocation, String, Map, boolean, String)} instead.
+     */
     public static String documentUrl(String patternName, DocumentModel doc, String viewId,
             Map<String, String> parameters, boolean newConversation, HttpServletRequest req) {
+        String baseURL = null;
+        if (req == null) {
+            baseURL = BaseURL.getBaseURL();
+        } else {
+            baseURL = BaseURL.getBaseURL(req);
+        }
+        return documentUrl(patternName, doc, viewId, parameters, newConversation, baseURL);
+    }
+
+    /**
+     * Computes a document URL.
+     *
+     * @since 7.3
+     */
+    public static String documentUrl(String patternName, DocumentModel doc, String viewId,
+            Map<String, String> parameters, boolean newConversation, String baseURL) {
         DocumentLocation docLoc = new DocumentLocationImpl(doc);
         if (viewId == null || viewId.length() == 0) {
             viewId = getDefaultView(doc);
@@ -659,7 +681,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (doc.isVersion()) {
             parameters.put("version", "true");
         }
-        return documentUrl(patternName, docLoc, viewId, parameters, newConversation, req);
+        return documentUrl(patternName, docLoc, viewId, parameters, newConversation, baseURL);
     }
 
     /**
@@ -667,56 +689,75 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      */
     public static String documentUrl(String patternName, DocumentLocation docLoc, String viewId,
             Map<String, String> parameters, boolean newConversation, HttpServletRequest req) {
-        try {
-            DocumentView docView = new DocumentViewImpl(docLoc, viewId, parameters);
-
-            // generate url
-            URLPolicyService service = Framework.getService(URLPolicyService.class);
-            if (patternName == null || patternName.length() == 0) {
-                patternName = service.getDefaultPatternName();
-            }
-
-            String baseURL = null;
-            if (req == null) {
-                baseURL = BaseURL.getBaseURL();
-            } else {
-                baseURL = BaseURL.getBaseURL(req);
-            }
-
-            String url = service.getUrlFromDocumentView(patternName, docView, baseURL);
-
-            // pass conversation info if needed
-            if (!newConversation && url != null) {
-                url = RestHelper.addCurrentConversationParameters(url);
-            }
-
-            return url;
-        } catch (Exception e) {
-            log.error("Could not generate url for document", e);
+        String baseURL = null;
+        if (req == null) {
+            baseURL = BaseURL.getBaseURL();
+        } else {
+            baseURL = BaseURL.getBaseURL(req);
         }
-        return null;
+        return documentUrl(patternName, docLoc, viewId, parameters, newConversation, baseURL);
+    }
+
+    /**
+     * Computes a document URL.
+     *
+     * @since 7.3
+     */
+    public static String documentUrl(String patternName, DocumentLocation docLoc, String viewId,
+            Map<String, String> parameters, boolean newConversation, String baseURL) {
+        DocumentView docView = new DocumentViewImpl(docLoc, viewId, parameters);
+
+        // generate url
+        URLPolicyService service = Framework.getService(URLPolicyService.class);
+        if (patternName == null || patternName.length() == 0) {
+            patternName = service.getDefaultPatternName();
+        }
+
+        String url = service.getUrlFromDocumentView(patternName, docView, baseURL);
+
+        // pass conversation info if needed
+        if (!newConversation && url != null) {
+            url = RestHelper.addCurrentConversationParameters(url);
+        }
+
+        return url;
     }
 
     /**
      * Computes an URL for a {@code repositoryName} only.
      *
      * @since 5.7
+     * @deprecated since 7.3, use {@link #repositoryUrl(String, String, String, Map, boolean, String)} instead.
      */
     public static String repositoryUrl(String patternName, String repositoryName, String viewId,
             Map<String, String> parameters, boolean newConversation) {
-        return repositoryUrl(patternName, repositoryName, viewId, parameters, newConversation, null);
+        return repositoryUrl(patternName, repositoryName, viewId, parameters, newConversation,
+                (HttpServletRequest) null);
     }
 
     /**
      * Computes an URL for a {@code repositoryName} only.
      *
      * @since 5.7
+     * @deprecated since 7.3, use {@link #repositoryUrl(String, String, String, Map, boolean, String)} instead.
      */
     public static String repositoryUrl(String patternName, String repositoryName, String viewId,
             Map<String, String> parameters, boolean newConversation, HttpServletRequest req) {
         DocumentLocation docLoc = new DocumentLocationImpl(repositoryName, null);
         parameters = parameters == null ? new HashMap<String, String>() : parameters;
         return documentUrl(patternName, docLoc, viewId, parameters, newConversation, req);
+    }
+
+    /**
+     * Computes an URL for a {@code repositoryName} only.
+     *
+     * @since 7.3
+     */
+    public static String repositoryUrl(String patternName, String repositoryName, String viewId,
+            Map<String, String> parameters, boolean newConversation, String baseURL) {
+        DocumentLocation docLoc = new DocumentLocationImpl(repositoryName, null);
+        parameters = parameters == null ? new HashMap<String, String>() : parameters;
+        return documentUrl(patternName, docLoc, viewId, parameters, newConversation, baseURL);
     }
 
     protected static void addQueryParameter(StringBuilder sb, String name, String value, boolean isFirst)

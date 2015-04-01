@@ -207,12 +207,13 @@ public class RestHelper implements Serializable {
     }
 
     public String getDocumentUrl(DocumentModel doc, String viewId, boolean newConversation) {
-        return DocumentModelFunctions.documentUrl(null, doc, viewId, null, newConversation, null);
+        return DocumentModelFunctions.documentUrl(null, doc, viewId, null, newConversation, BaseURL.getBaseURL());
     }
 
     public String getDocumentUrl(String patternName, DocumentModel doc, String viewId, Map<String, String> parameters,
             boolean newConversation) {
-        return DocumentModelFunctions.documentUrl(patternName, doc, viewId, parameters, newConversation, null);
+        return DocumentModelFunctions.documentUrl(patternName, doc, viewId, parameters, newConversation,
+                BaseURL.getBaseURL());
     }
 
     @Factory(value = "baseURL", scope = ScopeType.CONVERSATION)
@@ -259,7 +260,7 @@ public class RestHelper implements Serializable {
             sb.append("/print");
             parameters.put("theme", sb.toString());
         }
-        return DocumentModelFunctions.documentUrl(null, doc, null, parameters, false, null);
+        return DocumentModelFunctions.documentUrl(null, doc, null, parameters, false, BaseURL.getBaseURL());
     }
 
     public static HttpServletResponse getHttpServletResponse() {
