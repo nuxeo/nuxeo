@@ -79,8 +79,7 @@
   </xs:complexType>
 
   <xs:simpleType name="vstringList">
-    <!-- Field not seen by parent complex (?) <xs:list itemType="nxv:lnType" /> -->
-    <xs:list itemType="xs:string" />
+    <xs:list itemType="nxv:lnType" />
   </xs:simpleType>
 
 </xs:schema>

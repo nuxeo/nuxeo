@@ -101,6 +101,11 @@ public class ValidationPage {
         list.addNewElement();
         list.getSubWidget("nxw_fn", 0).setInputValue("  ");
         list.getSubWidget("nxw_ln", 0).setInputValue("AA");
+        JSListWidgetElement llist = l.getWidget("nxw_listOfListsWidget", JSListWidgetElement.class);
+        llist.addNewElement();
+        JSListWidgetElement subList = llist.getSubWidget("nxw_stringListItem", 0, JSListWidgetElement.class, false);
+        subList.addNewElement();
+        subList.getSubWidget("nxw_stringListSubItem", 0).setInputValue("aaa");
     }
 
     public void fillLayoutValid() {
@@ -117,6 +122,11 @@ public class ValidationPage {
         list.addNewElement();
         list.getSubWidget("nxw_fn", 0).setInputValue("AA");
         list.getSubWidget("nxw_ln", 0).setInputValue("Aa");
+        JSListWidgetElement llist = l.getWidget("nxw_listOfListsWidget", JSListWidgetElement.class);
+        llist.addNewElement();
+        JSListWidgetElement subList = llist.getSubWidget("nxw_stringListItem", 0, JSListWidgetElement.class, false);
+        subList.addNewElement();
+        subList.getSubWidget("nxw_stringListSubItem", 0).setInputValue("Aaa");
     }
 
     public void checkLayoutEmpty() {
@@ -148,6 +158,10 @@ public class ValidationPage {
         assertEquals("This value must match the format \".*\\S.*\".", list.getSubWidget("nxw_fn", 0).getMessageValue());
         assertEquals("This value must match the format \"[A-Z][a-z '-]+\".",
                 list.getSubWidget("nxw_ln", 0).getMessageValue());
+        JSListWidgetElement llist = l.getWidget("nxw_listOfListsWidget", JSListWidgetElement.class);
+        JSListWidgetElement subList = llist.getSubWidget("nxw_stringListItem", 0, JSListWidgetElement.class, false);
+        assertEquals("This value must match the format \"[A-Z][a-z '-]+\".",
+                subList.getSubWidget("nxw_stringListSubItem", 0).getMessageValue());
     }
 
     public void checkLayoutValid() {
@@ -163,6 +177,9 @@ public class ValidationPage {
         assertEquals("", list.getMessageValue());
         assertEquals("", list.getSubWidget("nxw_fn", 0).getMessageValue());
         assertEquals("", list.getSubWidget("nxw_ln", 0).getMessageValue());
+        JSListWidgetElement llist = l.getWidget("nxw_listOfListsWidget", JSListWidgetElement.class);
+        JSListWidgetElement subList = llist.getSubWidget("nxw_stringListItem", 0, JSListWidgetElement.class, false);
+        assertEquals("", subList.getSubWidget("nxw_stringListSubItem", 0).getMessageValue());
     }
 
 }
