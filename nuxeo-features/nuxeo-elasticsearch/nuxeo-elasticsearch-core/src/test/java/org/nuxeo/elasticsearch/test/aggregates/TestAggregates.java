@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang.SystemUtils;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Assert;
@@ -86,6 +87,7 @@ public class TestAggregates {
     protected ElasticSearchIndexing esi;
 
     protected void buildDocs() throws Exception {
+        DateTime yesterdayNoon = new DateTime(DateTimeZone.UTC).withTimeAtStartOfDay().minusDays(1).plusHours(12);
         for (int i = 0; i < 10; i++) {
             String name = "doc" + i;
             DocumentModel doc = session.createDocumentModel("/", name, "File");
@@ -94,8 +96,7 @@ public class TestAggregates {
             doc.setPropertyValue("dc:nature", "Nature" + i % 2);
             doc.setPropertyValue("dc:coverage", "Coverage" + i % 3);
             doc.setPropertyValue("common:size", 1024 * i);
-            // remove few hours so when there is a DST change in the period this does not affect the results
-            doc.setPropertyValue("dc:created", new Date(new DateTime().minusWeeks(i).minusHours(2).getMillis()));
+            doc.setPropertyValue("dc:created", new Date(yesterdayNoon.minusWeeks(i).getMillis()));
             doc = session.createDocument(doc);
         }
         TransactionHelper.commitOrRollbackTransaction();
@@ -130,7 +131,7 @@ public class TestAggregates {
                 + "  \"from\" : 0,\n" //
                 + "  \"size\" : 10,\n" //
                 + "  \"query\" : {\n" //
-                + "    \"match_all\" : { }\n"
+                + "    \"match_all\" : { }\n" //
                 + "  },\n" //
                 + "  \"fields\" : \"_id\",\n" //
                 + "  \"aggregations\" : {\n" //
@@ -408,7 +409,7 @@ public class TestAggregates {
                 + "  \"query\" : {\n" //
                 + "    \"match_all\" : { }\n" //
                 + "  },\n" //
-                + "  \"fields\" : \"_id\",\n"
+                + "  \"fields\" : \"_id\",\n" //
                 + "  \"aggregations\" : {\n" //
                 + "    \"created_filter\" : {\n" //
                 + "      \"filter\" : {\n" //
@@ -708,8 +709,9 @@ public class TestAggregates {
         Assert.assertNotNull(ppdef);
         DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
         DateTimeFormatter fmt = DateTimeFormat.forPattern("dd-MM-yyy");
-        String[] created = { fmt.print(new DateTime().minusWeeks(3).getMillis()),
-                fmt.print(new DateTime().minusWeeks(6).getMillis()) };
+        DateTime yesterdayNoon = new DateTime(DateTimeZone.UTC).withTimeAtStartOfDay().minusDays(1).plusHours(12);
+        String[] created = { fmt.print(new DateTime(yesterdayNoon.minusWeeks(3).getMillis())),
+                fmt.print(new DateTime(yesterdayNoon.minusWeeks(6).getMillis())) };
         model.setProperty("advanced_search", "created_histo_agg", created);
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
