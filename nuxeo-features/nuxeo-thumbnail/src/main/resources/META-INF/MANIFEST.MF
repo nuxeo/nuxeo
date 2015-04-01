@@ -13,5 +13,6 @@ Nuxeo-Component: OSGI-INF/thumbnail-commandline-imagemagick-contrib.xml,
  OSGI-INF/thumbnail-urlservice-contrib.xml,
  OSGI-INF/thumbnail-core-types-contrib.xml,
  OSGI-INF/thumbnail-listener-contrib.xml,
- OSGI-INF/thumbnail-authentication-contrib.xml
+ OSGI-INF/thumbnail-authentication-contrib.xml,
+ OSGI-INF/thumbnail-rendition-contrib.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.thumbnail;singleton:=true
