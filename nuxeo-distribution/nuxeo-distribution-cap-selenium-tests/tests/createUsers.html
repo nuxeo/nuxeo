@@ -933,6 +933,120 @@
 	<td>sg+linnet@nuxeo.com</td>
 	<td></td>
 </tr>
+
+<tr>
+	<td>click</td>
+	<td>link=Back to the list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Create a new user</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation:1']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_username']</td>
+	<td>ksmith</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstname']</td>
+	<td>Kelly</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_lastname']</td>
+	<td>Smith</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_company']</td>
+	<td>Nuxeo</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_passwordMatcher_firstPassword']</td>
+	<td>ksmith1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_passwordMatcher_secondPassword']</td>
+	<td>ksmith1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_email']</td>
+	<td>devnull@nuxeo.com</td>
+</tr>
+<!-- Since 5.7.3 group is a select2 widget-->
+<tr>
+    <td>select2Type</td>
+    <td>css=div[id$='nxw_groups_select2']</td>
+    <td>members</td>
+</tr>
+<tr>
+    <td>waitForSelect2</td>
+    <td>10000</td>
+    <td></td>
+</tr>
+<tr>
+    <td>clickAt</td>
+    <td>css=.select2-result-selectable</td>
+    <td></td>
+</tr>
+<!--  -->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@id='createUserView:createUser:button_save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Log out</td>
@@ -948,12 +1062,12 @@
 <tr>
 	<td>type</td>
 	<td>username</td>
-	<td>linnet</td>
+	<td>ksmith</td>
 </tr>
 <tr>
 	<td>type</td>
 	<td>password</td>
-	<td>linnet1</td>
+	<td>ksmith1</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
@@ -962,7 +1076,7 @@
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
-	<td>linnet</td>
+	<td>ksmith</td>
 	<td></td>
 </tr>
 <tr>
@@ -988,12 +1102,12 @@
 <tr>
 	<td>type</td>
 	<td>//input[@id='editUserPassword:nxl_user_2:nxw_passwordMatcher_firstPassword']</td>
-	<td>linnet2</td>
+	<td>ksmith2</td>
 </tr>
 <tr>
 	<td>type</td>
 	<td>//input[@id='editUserPassword:nxl_user_2:nxw_passwordMatcher_secondPassword']</td>
-	<td>linnet2</td>
+	<td>ksmith2</td>
 </tr>
 <tr>
 	<td>watchA4jRequests</td>
@@ -1024,12 +1138,12 @@
 <tr>
 	<td>type</td>
 	<td>username</td>
-	<td>linnet</td>
+	<td>ksmith</td>
 </tr>
 <tr>
 	<td>type</td>
 	<td>password</td>
-	<td>linnet2</td>
+	<td>ksmith2</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
@@ -1043,7 +1157,7 @@
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
-	<td>linnet</td>
+	<td>ksmith</td>
 	<td></td>
 </tr>
 <tr>
