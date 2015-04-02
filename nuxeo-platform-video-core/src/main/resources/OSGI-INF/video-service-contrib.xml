@@ -5,11 +5,11 @@
     point="videoConversions">
 
     <videoConversion name="MP4 480p" converter="convertToMP4" height="480"
-      rendition="true" renditionVisible="false" />
+      rendition="true" />
     <videoConversion name="WebM 480p" converter="convertToWebM" height="480"
-      rendition="true" renditionVisible="false" />
+      rendition="true" />
     <videoConversion name="Ogg 480p" converter="convertToOgg" height="480"
-      rendition="true" renditionVisible="false" />
+      rendition="true" />
 
   </extension>
 

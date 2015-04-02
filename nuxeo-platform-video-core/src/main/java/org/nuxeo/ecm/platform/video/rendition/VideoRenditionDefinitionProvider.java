@@ -40,6 +40,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class VideoRenditionDefinitionProvider implements RenditionDefinitionProvider {
 
+    public static final String VIDEO_RENDITION_KIND = "nuxeo:video:conversion";
+
     @Override
     public List<RenditionDefinition> getRenditionDefinitions(DocumentModel doc) {
         VideoDocument videoDocument = doc.getAdapter(VideoDocument.class);
@@ -58,6 +60,7 @@ public class VideoRenditionDefinitionProvider implements RenditionDefinitionProv
                     RenditionDefinition renditionDefinition = new RenditionDefinition();
                     renditionDefinition.setEnabled(true);
                     renditionDefinition.setName(transcodedVideo.getName());
+                    renditionDefinition.setKind(VIDEO_RENDITION_KIND);
                     renditionDefinition.setProvider(new VideoRenditionProvider());
                     renditionDefinition.setVisible(videoConversion.isRenditionVisible());
                     renditionDefinition.setLabel(transcodedVideo.getName());

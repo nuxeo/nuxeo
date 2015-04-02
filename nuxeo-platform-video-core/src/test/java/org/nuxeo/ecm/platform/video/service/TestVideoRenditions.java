@@ -105,14 +105,14 @@ public class TestVideoRenditions {
         for (RenditionDefinition definition : availableRenditionDefinitions) {
             if (definition.getName().equals(transcodedVideo.getName())) {
                 assertTrue(definition.isEnabled());
-                assertFalse(definition.isVisible());
+                assertTrue(definition.isVisible());
                 assertEquals(transcodedVideo.getName(), definition.getName());
                 assertEquals(transcodedVideo.getName(), definition.getLabel());
             }
         }
 
         List<Rendition> availableRenditions = renditionService.getAvailableRenditions(doc, true);
-        assertEquals(3, availableRenditions.size());
+        assertEquals(4, availableRenditions.size());
         availableRenditions = renditionService.getAvailableRenditions(doc, false);
         assertEquals(4, availableRenditions.size());
         for (Rendition rendition : availableRenditions) {
