@@ -117,6 +117,7 @@
         <supportedModes>
           <mode>view</mode>
         </supportedModes>
+        <containingForm>true</containingForm>
         <!-- no configurable properties -->
       </configuration>
       <handler-class>
