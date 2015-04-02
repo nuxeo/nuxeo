@@ -96,6 +96,8 @@ final public class ElasticSearchConstants {
 
     public static final String REINDEX_BUCKET_WRITE_PROPERTY = "elasticsearch.reindex.bucketWriteSize";
 
+    public static final String REINDEX_ON_STARTUP_PROPERTY = "elastcisearch.reindex.onStartup";
+
     public static final String DISABLE_AUTO_INDEXING = "disableAutoIndexing";
 
     public static final String ES_SYNC_INDEXING_FLAG = "ESSyncIndexing";

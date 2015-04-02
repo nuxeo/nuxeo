@@ -72,3 +72,5 @@ elasticsearch.indexing.maxThreads=4
 elasticsearch.indexing.clearCompletedAfterSeconds=90
 # Display Elasticsearch cluster and nodes information in the admin center @since 6.0-HF06, always true for embedded mode 
 elasticsearch.adminCenter.displayClusterInfo=false
+# Reindex the repository content on startup if the index is empty
+elastcisearch.reindex.onStartup=false
