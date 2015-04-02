@@ -31,6 +31,7 @@ import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBas
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.openqa.selenium.By;
 
 /**
  * Create a user in Nuxeo DM.
@@ -48,8 +49,9 @@ public class ITUsersTest extends AbstractTest {
 
         page = usersTab.getUserCreatePage().inviteUser(TEST_USERNAME, firstname, "lastname1", "company1", "email1",
                 "members");
-
-        usersTab = page.getUsersTab(false);
+        
+        //Need few seconds to display the search view after
+        page.findElementWithTimeout(By.id("usersListingView:searchForm:searchText"), 5000);
 
         // search user
         usersTab = usersTab.searchUser(TEST_USERNAME);
