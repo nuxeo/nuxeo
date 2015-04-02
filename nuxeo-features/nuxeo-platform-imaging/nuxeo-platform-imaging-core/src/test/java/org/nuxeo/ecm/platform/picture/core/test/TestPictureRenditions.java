@@ -81,8 +81,9 @@ public class TestPictureRenditions {
 
         List<Rendition> availableRenditions = renditionService.getAvailableRenditions(doc);
         assertEquals(7, availableRenditions.size());
+        // they are all visible
         availableRenditions = renditionService.getAvailableRenditions(doc, true);
-        assertEquals(3, availableRenditions.size());
+        assertEquals(7, availableRenditions.size());
     }
 
     @Test

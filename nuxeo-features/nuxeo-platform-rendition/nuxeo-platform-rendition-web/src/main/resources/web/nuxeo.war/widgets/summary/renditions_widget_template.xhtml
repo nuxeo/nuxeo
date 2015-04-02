@@ -6,25 +6,32 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-<c:if test="#{!empty currentDocumentVisibleRenditions}">
+  <nxu:set var="excludedKinds"
+    value="#{widgetProperty_excludedKinds}"
+    resolveTwice="true">
+  <nxu:set var="renditions" value="#{renditionAction.getVisibleRenditions(excludedKinds)}" cache="true">
+    <c:if test="#{!empty renditions}">
 
-  <h3 class="summaryTitle">
-    <h:outputText value="#{messages['label.summary.renditions.title']}" />
-  </h3>
+      <h3 class="summaryTitle">
+        <h:outputText value="#{messages['label.summary.renditions.title']}" />
+      </h3>
 
-  <h:outputText value="#{messages['label.summary.renditions.header']}" />
+      <h:outputText value="#{messages['label.summary.renditions.header']}" />
 
-  <nxu:dataTable value="#{currentDocumentVisibleRenditions}"
-    var="rendition" styleClass="dataOutput">
-    <nxu:column styleClass="iconColumn">
-      <nxu:graphicImage value="#{rendition.icon}" />
-    </nxu:column>
-    <nxu:column>
-      <nxd:restDocumentLink document="#{currentDocument}" view="#{rendition.name}" pattern="rendition">
-        <h:outputText value="#{messages[rendition.label]}" />
-      </nxd:restDocumentLink>
-    </nxu:column>
-  </nxu:dataTable>
+      <nxu:dataTable value="#{renditions}"
+        var="rendition" styleClass="dataOutput">
+        <nxu:column styleClass="iconColumn">
+          <nxu:graphicImage value="#{rendition.icon}" />
+        </nxu:column>
+        <nxu:column>
+          <nxd:restDocumentLink document="#{currentDocument}" view="#{rendition.name}" pattern="rendition">
+            <h:outputText value="#{messages[rendition.label]}" />
+          </nxd:restDocumentLink>
+        </nxu:column>
+      </nxu:dataTable>
 
-</c:if>
+    </c:if>
+  </nxu:set>
+  </nxu:set>
+
 </div>

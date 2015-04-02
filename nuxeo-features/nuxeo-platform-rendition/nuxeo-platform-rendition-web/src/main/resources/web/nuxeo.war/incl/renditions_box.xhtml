@@ -6,17 +6,23 @@
 
   <div class="content">
 
-    <nxu:dataTable value="#{currentDocumentVisibleRenditions}"
-      var="rendition" styleClass="dataOutput">
-      <nxu:column styleClass="iconColumn">
-        <nxu:graphicImage value="#{rendition.icon}" />
-      </nxu:column>
-      <nxu:column>
-        <a href="#{renditionAction.getRenditionURL(rendition.name)}" target="_blank">
-          <h:outputText value="#{messages[rendition.label]}" />
-        </a>
-      </nxu:column>
-    </nxu:dataTable>
+    <nxu:set var="excludedKinds"
+      value="#{action.properties.excludedKinds}"
+      resolveTwice="true">
+    <nxu:set var="renditions" value="#{renditionAction.getVisibleRenditions(excludedKinds)}" cache="true">
+      <nxu:dataTable value="#{renditions}"
+        var="rendition" styleClass="dataOutput">
+        <nxu:column styleClass="iconColumn">
+          <nxu:graphicImage value="#{rendition.icon}" />
+        </nxu:column>
+        <nxu:column>
+          <a href="#{renditionAction.getRenditionURL(rendition.name)}" target="_blank">
+            <h:outputText value="#{messages[rendition.label]}" />
+          </a>
+        </nxu:column>
+      </nxu:dataTable>
+    </nxu:set>
+    </nxu:set>
 
   </div>
 

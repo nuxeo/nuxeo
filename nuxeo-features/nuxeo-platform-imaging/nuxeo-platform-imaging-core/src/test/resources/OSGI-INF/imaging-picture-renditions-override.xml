@@ -5,7 +5,7 @@
     point="pictureConversions">
 
     <pictureConversion id="Thumbnail" rendition="false" />
-    <pictureConversion id="Small" renditionVisible="true" />
+    <pictureConversion id="Small" renditionVisible="false" />
     <pictureConversion id="Medium" rendition="false" />
 
   </extension>

@@ -40,6 +40,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PictureRenditionDefinitionProvider implements RenditionDefinitionProvider {
 
+    public static final String PICTURE_RENDITION_KIND = "nuxeo:picture:conversion";
+
     @Override
     public List<RenditionDefinition> getRenditionDefinitions(DocumentModel doc) {
         MultiviewPicture multiviewPicture = doc.getAdapter(MultiviewPicture.class);
@@ -58,6 +60,7 @@ public class PictureRenditionDefinitionProvider implements RenditionDefinitionPr
                     RenditionDefinition renditionDefinition = new RenditionDefinition();
                     renditionDefinition.setEnabled(true);
                     renditionDefinition.setName(pictureView.getTitle());
+                    renditionDefinition.setKind(PICTURE_RENDITION_KIND);
                     renditionDefinition.setProvider(new PictureRenditionProvider());
                     renditionDefinition.setVisible(pictureConversion.isRenditionVisible());
                     renditionDefinition.setLabel(pictureView.getTitle());

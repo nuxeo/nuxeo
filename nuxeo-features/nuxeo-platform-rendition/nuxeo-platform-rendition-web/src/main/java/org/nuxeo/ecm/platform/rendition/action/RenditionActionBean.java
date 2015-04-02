@@ -18,11 +18,13 @@ package org.nuxeo.ecm.platform.rendition.action;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -74,17 +76,28 @@ public class RenditionActionBean implements Serializable {
     }
 
     /**
-     * @since 7.2
+     * @since 7.3
      */
-    @Factory(value = "currentDocumentVisibleRenditions", scope = ScopeType.EVENT)
-    public List<Rendition> getVisibleRenditions() {
+    public List<Rendition> getVisibleRenditions(String excludedKinds) {
         DocumentModel doc = navigationContext.getCurrentDocument();
         RenditionService rs = Framework.getLocalService(RenditionService.class);
-        return rs.getAvailableRenditions(doc, true);
+        List<Rendition> availableRenditions = rs.getAvailableRenditions(doc, true);
+
+        List<Rendition> filteredRenditions = availableRenditions;
+        if (StringUtils.isNotBlank(excludedKinds)) {
+            filteredRenditions = new ArrayList<>();
+            List<String> excludedKindList = Arrays.asList(excludedKinds.split(","));
+            for (Rendition rendition : availableRenditions) {
+                if (!excludedKindList.contains(rendition.getKind())) {
+                    filteredRenditions.add(rendition);
+                }
+            }
+        }
+        return filteredRenditions;
     }
 
-    public boolean hasVisibleRenditions() {
-        return !getVisibleRenditions().isEmpty();
+    public boolean hasVisibleRenditions(String excludedKinds) {
+        return !getVisibleRenditions(excludedKinds).isEmpty();
     }
 
     /**

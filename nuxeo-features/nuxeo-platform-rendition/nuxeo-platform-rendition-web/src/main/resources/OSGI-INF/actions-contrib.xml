@@ -14,6 +14,7 @@
         <property name="height">40%</property>
         <property name="scrolling">auto</property>
         <property name="ajaxSupport">true</property>
+        <property name="excludedKinds">nuxeo:video:conversion,nuxeo:picture:conversion</property>
       </properties>
       <filter-id>hasVisibleRenditions</filter-id>
     </action>
@@ -25,7 +26,7 @@
 
     <filter id="hasVisibleRenditions">
       <rule grant="true">
-        <condition>#{renditionAction.hasVisibleRenditions()}</condition>
+        <condition>#{renditionAction.hasVisibleRenditions('nuxeo:video:conversion,nuxeo:picture:conversion')}</condition>
       </rule>
     </filter>
 
