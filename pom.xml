@@ -135,6 +135,7 @@
     <module>nuxeo-platform-spreadsheet</module>
     <module>nuxeo-binary-metadata</module>
     <module>nuxeo-segment.io-connector</module>
+    <module>nuxeo-target-platforms</module>
   </modules>
 
   <dependencyManagement>
@@ -1203,6 +1204,46 @@
       <dependency>
         <groupId>org.nuxeo.addons</groupId>
         <artifactId>nuxeo-segmentio-connector</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Target Platforms -->
+
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-target-platforms-api</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-target-platforms-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-target-platforms-core</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-target-platforms-io</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-target-platforms-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-target-platforms-jaxrs</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-target-platforms-sample</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
