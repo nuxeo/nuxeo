@@ -18,6 +18,7 @@
 package org.nuxeo.elasticsearch;
 
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_ENABLED_PROPERTY;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_ON_STARTUP_PROPERTY;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,8 +29,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.transaction.Transaction;
 
@@ -86,6 +90,8 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     private static final String EP_INDEX = "elasticSearchIndex";
 
     private static final String EP_DOC_WRITER = "elasticSearchDocWriter";
+
+    private static final long REINDEX_TIMEOUT = 20;
 
     // List command signature used for deduplicate indexing command, this does not work at cluster level
     private final Set<String> scheduledCommands = Collections.synchronizedSet(new HashSet<>());
@@ -161,7 +167,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
             break;
         default:
             throw new IllegalStateException("Invalid EP: " + extensionPoint);
-       }
+        }
     }
 
     @Override
@@ -176,6 +182,28 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         ess = new ElasticSearchServiceImpl(esa);
         initListenerThreadPool();
         processStackedCommands();
+        reindexOnStartup();
+    }
+
+    private void reindexOnStartup() {
+        boolean reindexOnStartup = Boolean.parseBoolean(Framework.getProperty(REINDEX_ON_STARTUP_PROPERTY, "false"));
+        if (!reindexOnStartup) {
+            return;
+        }
+        for (String repositoryName : esa.getInitializedRepositories()) {
+            log.warn(String.format("Indexing repository: %s on startup", repositoryName));
+            runReindexingWorker(repositoryName, "SELECT ecm:uuid FROM Document");
+            try {
+                prepareWaitForIndexing().get(REINDEX_TIMEOUT, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException e) {
+                log.error(e.getMessage(), e);
+            } catch (TimeoutException e) {
+                log.warn(String.format("Indexation of repository %s not finised after %d s, continuing in background",
+                        repositoryName, REINDEX_TIMEOUT));
+            }
+        }
     }
 
     protected boolean isElasticsearchEnabled() {
@@ -471,7 +499,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     @Deprecated
     @Override
     public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
-                                   SortInfo... sortInfos) throws ClientException {
+            SortInfo... sortInfos) throws ClientException {
         NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder).limit(limit).offset(offset).addSort(
                 sortInfos);
         return query(query);

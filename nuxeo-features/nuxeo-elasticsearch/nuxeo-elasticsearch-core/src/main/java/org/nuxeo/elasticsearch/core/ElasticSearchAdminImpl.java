@@ -89,6 +89,8 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     private boolean embedded = true;
 
+    private List<String> repositoryInitialized = new ArrayList<>();
+
     /**
      * Init the admin service, remote configuration if not null will take precedence over local embedded configuration.
      */
@@ -373,7 +375,9 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             }
             getClient().admin().indices().preparePutMapping(conf.getName()).setType(conf.getType()).setSource(
                     conf.getMapping()).execute().actionGet();
-
+            if (!dropIfExists) {
+                repositoryInitialized.add(conf.getRepositoryName());
+            }
         }
         // make sure the index is ready before returning
         checkClusterHealth(conf.getName());
@@ -454,5 +458,12 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     Map<String, String> getRepositoryMap() {
         return repoNames;
+    }
+
+    /**
+     * Get the list of repository names that have their index created.
+     */
+    public List<String> getInitializedRepositories() {
+        return repositoryInitialized;
     }
 }

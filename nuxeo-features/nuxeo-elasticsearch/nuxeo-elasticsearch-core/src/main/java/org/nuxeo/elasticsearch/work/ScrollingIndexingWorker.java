@@ -96,6 +96,9 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
     }
 
     protected void scheduleBucketWorker(List<String> bucket, boolean isLast) {
+        if (bucket.isEmpty()) {
+            return;
+        }
         BucketIndexingWorker subWorker = new BucketIndexingWorker(monitor, repositoryName, bucket, isLast);
         getWorkManager().schedule(subWorker);
     }
