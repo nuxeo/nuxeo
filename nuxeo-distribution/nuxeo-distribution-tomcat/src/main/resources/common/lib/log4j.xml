@@ -357,6 +357,10 @@
   <category name="org.nuxeo.ecm.automation.core">
     <priority value="INFO" />
   </category>
+  <!-- Display by default WARN logs for Automation Scripting -->
+  <category name="org.nuxeo.ecm.automation.scripting">
+    <priority value="WARN" />
+  </category>
 
   <category name="javax.enterprise.resource.webcontainer.jsf.renderkit">
     <priority value="INFO" />
