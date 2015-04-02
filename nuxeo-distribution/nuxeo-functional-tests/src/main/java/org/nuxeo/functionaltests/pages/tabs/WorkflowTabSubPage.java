@@ -28,7 +28,7 @@ import org.openqa.selenium.support.FindBy;
 
 public class WorkflowTabSubPage extends DocumentBasePage {
 
-    @FindBy(xpath = "//form[contains(@id, 'nxl_current_route_layout_current_route_user_tasks_form')]")
+    @FindBy(xpath = "//form[contains(@id, 'nxl_tasks_form')]")
     public WebElement workflowTasksForm;
 
     @FindBy(xpath = "//select[contains(@id, 'nxw_validationOrReview')]")

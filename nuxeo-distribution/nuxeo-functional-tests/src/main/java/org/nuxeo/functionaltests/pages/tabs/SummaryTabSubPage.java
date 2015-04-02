@@ -36,7 +36,7 @@ public class SummaryTabSubPage extends AbstractPage {
     @FindBy(xpath = "//select[contains(@id, 'nxw_start_route_widget')]")
     public WebElement workflowSelector;
 
-    @FindBy(xpath = "//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_current_document_single_tasks_form')]")
+    @FindBy(xpath = "//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_current_document_single_tasks')]")
     public WebElement workflowTasksForm;
 
     @FindBy(xpath = "//div[@class='nxw_lastContributor']")
@@ -71,7 +71,7 @@ public class SummaryTabSubPage extends AbstractPage {
 
     public boolean openTaskForCurrentUser() {
         return findElementWithTimeout(
-                By.xpath("//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_current_document_single_tasks_form')]")).getText().contains(
+                By.xpath("//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_current_document_single_tasks')]")).getText().contains(
                 "Please accept or reject the document");
     }
 

@@ -562,6 +562,7 @@
         <supportedModes>
           <mode>view</mode>
         </supportedModes>
+        <containingForm>true</containingForm>
         <!-- no configurable properties -->
       </configuration>
       <handler-class>
@@ -735,7 +736,7 @@
       </labels>
       <controls mode="any">
         <control name="handleLabels">true</control>
-        <control name="requireSurroundingForm">true</control>
+        <control name="requireSurroundingForm">false</control>
       </controls>
     </widget>
 
