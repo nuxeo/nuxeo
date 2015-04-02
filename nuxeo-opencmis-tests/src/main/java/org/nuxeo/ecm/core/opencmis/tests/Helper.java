@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -120,6 +121,10 @@ public class Helper {
         file1.setPropertyValue("dc:lastContributor", "john");
         file1.setPropertyValue("dc:coverage", "foo/bar");
         file1.setPropertyValue("dc:subjects", new String[] { "foo", "gee/moo" });
+        file1.addFacet(ThumbnailConstants.THUMBNAIL_FACET);
+        Blob thumbnailBlob = Blobs.createBlob(Helper.class.getResource("/text.png").openStream(), "image/png");
+        thumbnailBlob.setFilename("test.png");
+        file1.setPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME, (Serializable) thumbnailBlob);
         file1 = createDocument(session, file1);
 
         ACPImpl acp;

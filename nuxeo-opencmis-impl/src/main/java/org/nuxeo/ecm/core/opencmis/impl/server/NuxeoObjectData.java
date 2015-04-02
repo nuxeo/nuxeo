@@ -27,8 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 
@@ -65,6 +65,7 @@ import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -76,6 +77,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
 import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
+import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
@@ -323,7 +325,6 @@ public class NuxeoObjectData implements ObjectData {
             BigInteger skipCount, CallContext callContext) {
         try {
             List<RenditionData> list = new ArrayList<RenditionData>();
-            list.addAll(getIconRendition(doc, callContext));
             list.addAll(getRenditionServiceRenditions(doc, callContext));
             // rendition filter
             if (!STAR.equals(renditionFilter)) {
@@ -368,6 +369,10 @@ public class NuxeoObjectData implements ObjectData {
         }
     }
 
+    /**
+     * @deprecated since 7.3. The thumbnail is now a default rendition, see NXP-16662.
+     */
+    @Deprecated
     protected static List<RenditionData> getIconRendition(DocumentModel doc, CallContext callContext)
             throws ClientException, IOException {
         String iconPath;
@@ -394,6 +399,10 @@ public class NuxeoObjectData implements ObjectData {
         return Collections.<RenditionData> singletonList(ren);
     }
 
+    /**
+     * @deprecated since 7.3. The thumbnail is now a default rendition, see NXP-16662.
+     */
+    @Deprecated
     public static InputStream getIconStream(String iconPath, CallContext context) throws ClientException {
         if (iconPath == null || iconPath.length() == 0) {
             return null;
@@ -412,16 +421,35 @@ public class NuxeoObjectData implements ObjectData {
             throws ClientException, IOException {
         RenditionService renditionService = Framework.getLocalService(RenditionService.class);
         List<RenditionDefinition> defs = renditionService.getAvailableRenditionDefinitions(doc);
-        List<RenditionData> list = new ArrayList<RenditionData>(defs.size());
+        List<RenditionData> list = new ArrayList<>(defs.size());
         for (RenditionDefinition def : defs) {
             if (!def.isVisible()) {
                 continue;
             }
             RenditionDataImpl ren = new RenditionDataImpl();
-            ren.setStreamId(REND_STREAM_RENDITION_PREFIX + def.getName());
-            ren.setKind(REND_KIND_NUXEO_RENDITION);
+            String cmisName = def.getCmisName();
+            if (StringUtils.isBlank(cmisName)) {
+                cmisName = REND_STREAM_RENDITION_PREFIX + def.getName();
+            }
+            ren.setStreamId(cmisName);
+            String kind = def.getKind();
+            ren.setKind(StringUtils.isNotBlank(kind) ? kind : REND_KIND_NUXEO_RENDITION);
             ren.setTitle(def.getLabel());
             ren.setMimeType(def.getContentType());
+
+            // cmis:thumbnail specific case
+            if (REND_KIND_CMIS_THUMBNAIL.equals(ren.getKind())) {
+                Rendition rendition = renditionService.getRendition(doc, def.getName());
+                Blob blob = rendition.getBlob();
+                if (blob != null) {
+                    ren.setTitle(blob.getFilename());
+                    SimpleImageInfo info = new SimpleImageInfo(blob.getStream());
+                    ren.setBigLength(BigInteger.valueOf(info.getLength()));
+                    ren.setBigWidth(BigInteger.valueOf(info.getWidth()));
+                    ren.setBigHeight(BigInteger.valueOf(info.getHeight()));
+                    ren.setMimeType(info.getMimeType());
+                }
+            }
             list.add(ren);
         }
         return list;

@@ -14,7 +14,6 @@ package org.nuxeo.ecm.core.opencmis.impl.server;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
-import static org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData.REND_STREAM_ICON;
 import static org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData.REND_STREAM_RENDITION_PREFIX;
 
 import java.io.IOException;
@@ -858,15 +857,10 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             throw new CmisConstraintException("No content stream: " + objectId);
         }
         try {
-            if (REND_STREAM_ICON.equals(streamId)) {
-                return getIconRenditionStream(objectId);
-            }
-            if (streamId.startsWith(REND_STREAM_RENDITION_PREFIX)) {
-                String renditionName = streamId.substring(REND_STREAM_RENDITION_PREFIX.length());
-                ContentStream cs = getRenditionServiceStream(objectId, renditionName);
-                if (cs != null) {
-                    return cs;
-                }
+            String renditionName = streamId.replaceAll("^" + REND_STREAM_RENDITION_PREFIX, "");
+            ContentStream cs = getRenditionServiceStream(objectId, renditionName);
+            if (cs != null) {
+                return cs;
             }
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
@@ -874,6 +868,10 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         throw new CmisInvalidArgumentException("Invalid stream id: " + streamId);
     }
 
+    /**
+     * @deprecated since 7.3. The thumbnail is now a default rendition, see NXP-16662.
+     */
+    @Deprecated
     protected ContentStream getIconRenditionStream(String objectId) throws ClientException {
         DocumentModel doc = getDocumentModel(objectId);
         String iconPath;

@@ -64,9 +64,6 @@ import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.AllowableActions;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.Principal;
-import org.apache.chemistry.opencmis.commons.data.Properties;
-import org.apache.chemistry.opencmis.commons.data.PropertyData;
-import org.apache.chemistry.opencmis.commons.data.PropertyString;
 import org.apache.chemistry.opencmis.commons.data.RenditionData;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.enums.Action;
@@ -82,7 +79,6 @@ import org.apache.chemistry.opencmis.commons.impl.Base64;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlEntryImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlPrincipalDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
-import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.commons.httpclient.util.DateUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -94,7 +90,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.Lock;
@@ -132,10 +127,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CmisFeature.class)
-@Deploy({ "org.nuxeo.ecm.webengine.core", //
-        "org.nuxeo.ecm.automation.core" //
-})
-@LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml")
+@Deploy({ "org.nuxeo.ecm.webengine.core" })
+@LocalDeploy({ "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 public class CmisSuiteSession {
 
@@ -538,6 +531,8 @@ public class CmisSuiteSession {
         };
     };
 
+    private static final int THUMBNAIL_SIZE = 394;
+
     @Test
     public void testRenditions() throws Exception {
         boolean checkStream = !(isAtomPub || isBrowser);
@@ -559,9 +554,9 @@ public class CmisSuiteSession {
         ContentStream cs = ((Document) ob).getContentStream("nuxeo:icon");
         assertNotNull(cs);
         assertEquals("image/png", cs.getMimeType());
-        assertEquals("text.png", cs.getFileName());
+        assertTrue(cs.getFileName().endsWith(".png"));
         if (!(isAtomPub || isBrowser)) {
-            assertEquals(TEXT_PNG_ICON_SIZE, cs.getLength());
+            assertEquals(THUMBNAIL_SIZE, cs.getLength());
         }
 
         // get renditions with object
@@ -588,20 +583,18 @@ public class CmisSuiteSession {
         // constructor call to of.convertRendition with null)
     }
 
-    private static final int TEXT_PNG_ICON_SIZE = 394;
-
     protected void check(Rendition ren, boolean checkStream) {
         assertEquals("cmis:thumbnail", ren.getKind());
         assertEquals("nuxeo:icon", ren.getStreamId());
         assertEquals("image/png", ren.getMimeType());
-        assertEquals("text.png", ren.getTitle());
-        assertEquals(TEXT_PNG_ICON_SIZE, ren.getLength());
+        assertTrue(ren.getTitle().endsWith(".png"));
+        assertEquals(THUMBNAIL_SIZE, ren.getLength());
         if (checkStream) {
             // get rendition stream
             ContentStream cs = ren.getContentStream();
             assertEquals("image/png", cs.getMimeType());
-            assertEquals("text.png", cs.getFileName());
-            assertEquals(TEXT_PNG_ICON_SIZE, cs.getLength());
+            assertTrue(cs.getFileName().endsWith(".png"));
+            assertEquals(THUMBNAIL_SIZE, cs.getLength());
         }
     }
 

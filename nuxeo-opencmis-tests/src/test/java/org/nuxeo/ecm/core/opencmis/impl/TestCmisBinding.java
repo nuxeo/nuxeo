@@ -1783,7 +1783,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals(emptyListNegativeMatch() ? 3 : 1, res.getNumItems().intValue());
         statement = "SELECT cmis:name FROM File WHERE ANY dc:contributors NOT IN ('pete', 'bob')";
         res = query(statement);
-        assertEquals(emptyListNegativeMatch()? 2 : 0, res.getNumItems().intValue());
+        assertEquals(emptyListNegativeMatch() ? 2 : 0, res.getNumItems().intValue());
     }
 
     @Test
@@ -1841,7 +1841,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         checkValue(NuxeoTypeHelper.NX_FACETS, Arrays.asList("Commentable", "CustomFacetWithoutSchema", "Downloadable",
-                "HasRelatedText", "Publishable", "Versionable"), res.getObjects().get(0));
+                "HasRelatedText", "Publishable", "Thumbnail", "Versionable"), res.getObjects().get(0));
         statement = "SELECT * FROM File WHERE 'CustomFacetWithMySchema2' = ANY nuxeo:secondaryObjectTypeIds";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());

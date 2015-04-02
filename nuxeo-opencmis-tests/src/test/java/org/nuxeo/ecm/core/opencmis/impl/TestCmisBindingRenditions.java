@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.core.opencmis.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -35,20 +36,14 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CmisFeature.class, CmisFeatureConfiguration.class })
-@Deploy({ "org.nuxeo.ecm.platform.commandline.executor", //
-        "org.nuxeo.ecm.core.convert.api", //
-        "org.nuxeo.ecm.core.convert", //
-        "org.nuxeo.ecm.core.convert.plugins", //
-        "org.nuxeo.ecm.platform.convert", //
-        "org.nuxeo.ecm.platform.rendition.api", //
-        "org.nuxeo.ecm.platform.rendition.core", //
-        "org.nuxeo.ecm.automation.core" //
-})
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 public class TestCmisBindingRenditions extends TestCmisBindingBase {
+
+    private static final int THUMBNAIL_SIZE = 394;
 
     @Inject
     protected CoreSession coreSession;
@@ -75,8 +70,6 @@ public class TestCmisBindingRenditions extends TestCmisBindingBase {
         };
     };
 
-    public static final int TEXT_PNG_ICON_SIZE = 394;
-
     @Test
     public void testRenditions() throws Exception {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
@@ -91,7 +84,7 @@ public class TestCmisBindingRenditions extends TestCmisBindingBase {
         assertEquals("cmis:thumbnail", ren.getKind());
         assertEquals("nuxeo:icon", ren.getStreamId());
         assertEquals("image/png", ren.getMimeType());
-        assertEquals("text.png", ren.getTitle());
+        assertTrue(ren.getTitle().endsWith(".png"));
 
         ren = renditions.get(1);
         assertEquals("nuxeo:rendition", ren.getKind());
@@ -102,8 +95,8 @@ public class TestCmisBindingRenditions extends TestCmisBindingBase {
         ContentStream cs;
         cs = objService.getContentStream(repositoryId, ob.getId(), "nuxeo:icon", null, null, null);
         assertEquals("image/png", cs.getMimeType());
-        assertEquals("text.png", cs.getFileName());
-        assertEquals(TEXT_PNG_ICON_SIZE, cs.getBigLength().longValue());
+        assertEquals("testfile1_Title.png", cs.getFileName());
+        assertEquals(THUMBNAIL_SIZE, cs.getBigLength().longValue());
 
         cs = objService.getContentStream(repositoryId, ob.getId(), "nuxeo:rendition:pdf", null, null, null);
         assertEquals("application/pdf", cs.getMimeType());

@@ -37,6 +37,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
         "org.nuxeo.ecm.core.convert.api", //
         "org.nuxeo.ecm.core.convert", //
         "org.nuxeo.ecm.core.convert.plugins", //
+        "org.nuxeo.ecm.platform.convert", //
         // MyDocType
         "org.nuxeo.ecm.core.opencmis.tests", //
         // MIME Type Icon Updater for renditions
@@ -48,10 +49,11 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
         "org.nuxeo.ecm.platform.types.api", //
         "org.nuxeo.ecm.platform.types.core", //
         // Rendition Service
-        "org.nuxeo.ecm.actions",
+        "org.nuxeo.ecm.actions", //
         "org.nuxeo.ecm.platform.rendition.api", //
         "org.nuxeo.ecm.platform.rendition.core", //
         "org.nuxeo.ecm.automation.core", //
+        "org.nuxeo.ecm.platform.thumbnail", //
         // NuxeoCmisServiceFactoryManager registration
         "org.nuxeo.ecm.core.opencmis.bindings", //
         // QueryMaker registration
@@ -60,7 +62,8 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
         "org.nuxeo.ecm.directory.types.contrib", //
         "org.nuxeo.ecm.platform.login", //
         "org.nuxeo.ecm.platform.web.common" })
-@LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/validation-contrib.xml")
+@LocalDeploy({ "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/validation-contrib.xml", //
+        "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/disable-thumbnail-listener.xml" })
 public class CmisFeature extends SimpleFeature {
 
     @Override
