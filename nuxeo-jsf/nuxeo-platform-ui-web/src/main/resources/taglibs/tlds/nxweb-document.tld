@@ -234,6 +234,15 @@
       </description>
     </attribute>
     <attribute>
+      <name>baseURL</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        String stating the server base URL to use (http://localhost:8080/nuxeo for instance).
+        Defaults to the current server page displaying the URL if not filled.
+      </description>
+    </attribute>
+    <attribute>
       <name>addTabInFo</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
