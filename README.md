@@ -1,5 +1,24 @@
 # About the Nuxeo Platform
 
+<table>
+<tr>
+<td> Build & Unit tests </td><td>
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=nuxeo-master)](http://qa.nuxeo.org/jenkins/job/nuxeo-master)
+</td></tr>
+<tr>
+<td> Selenium functional testing </td><td>
+[![Test Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=FT-nuxeo-master-selenium-cap-tomcat)](http://qa.nuxeo.org/jenkins/job/FT-nuxeo-master-selenium-cap-tomcat)
+</td></tr>
+<tr>
+<td> WebDrive functional testing </td><td>
+[![Test Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=FT-nuxeo-master-webdriver-cap-tomcat)](http://qa.nuxeo.org/jenkins/job/FT-nuxeo-master-webdriver-cap-tomcat)
+</td></tr>
+<tr>
+<td> Funkload tests with multi-DB </td><td>
+[![Test Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=FT-nuxeo-master-funkload-cap-tomcat-multidb)](http://qa.nuxeo.org/jenkins/job/FT-nuxeo-master-funkload-cap-tomcat-multidb)
+</td></tr>
+</table>
+
 The [Nuxeo Platform](http://www.nuxeo.com/products/content-management-platform/) is an open source customizable and extensible content management platform for building business applications. It provides the foundation for developing document management, digital asset management and case management application. You can easily add features using ready-to-use addons or by extending the platform using its extension point system.
 
 The Nuxeo Platform is developed and supported by Nuxeo, with contributions from the community.
