@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.test.pository.${nuxeo.test.vcs.repository}">
+  <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService"
+    point="repository">
+    <repository name="${nuxeo.test.vcs.repository}"
+      factory="${nuxeo.test.vcs.repository-factory}">
+      <binaryManager class="${nuxeo.test.vcs.binary-manager}"
+        key="${nuxeo.test.vcs.binary-manager-key}" />
+     <indexing>
+        <neverPerDocumentFacets>
+          <facet>NotPerDocFacet</facet>
+        </neverPerDocumentFacets>
+        <fulltext disabled="true">
+        </fulltext>
+      </indexing>
+      <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
+      <property name="URL">${nuxeo.test.vcs.url}</property>
+      <property name="User">${nuxeo.test.vcs.user}</property>
+      <property name="Password">${nuxeo.test.vcs.password}</property>
+    </repository>
+  </extension>
+</component>

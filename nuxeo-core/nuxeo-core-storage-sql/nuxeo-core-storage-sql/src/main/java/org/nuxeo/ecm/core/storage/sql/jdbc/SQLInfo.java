@@ -557,7 +557,7 @@ public class SQLInfo {
         /*
          * fulltext
          */
-        if (!model.getRepositoryDescriptor().getFulltextDisabled()) {
+        if (!model.getRepositoryDescriptor().getFulltextSearchDisabled()) {
             Table table = database.getTable(model.FULLTEXT_TABLE_NAME);
             FulltextConfiguration fulltextConfiguration = model.getFulltextConfiguration();
             if (fulltextConfiguration.indexNames.size() > 1 && !dialect.supportsMultipleFulltextIndexes()) {
