@@ -240,6 +240,7 @@ install nuxeo-dam</echo>
         <include name="freemarker-*" />
         <include name="mail-*" />
         <include name="xercesImpl-*" />
+        <include name="xml-apis-*" />
         <!-- install sl4j bridge in container classpath -->
         <include name="slf4j*" />
         <include name="jcl-over-slf4j*" />

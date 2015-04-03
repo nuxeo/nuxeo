@@ -700,7 +700,7 @@ public class XSDLoader {
         for (XSParticle child : group) {
             XSTerm term = child.getTerm();
             XSElementDecl element = term.asElementDecl();
-            int maxOccur = child.getMaxOccurs();
+            int maxOccur = child.getMaxOccurs().intValue();
 
             if (element == null) {
                 // assume this is a xs:choice group
@@ -787,7 +787,7 @@ public class XSDLoader {
         }
 
         return new ListTypeImpl(schema.getName(), name, type, element.getName(), defValue, flags, constraints,
-                particle.getMinOccurs(), particle.getMaxOccurs());
+                particle.getMinOccurs().intValue(), particle.getMaxOccurs().intValue());
     }
 
     protected static ListType createListType(Schema schema, String name, Type itemType, int min, int max)

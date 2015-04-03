@@ -129,7 +129,7 @@
     <nuxeo.webengine.version>7.3-SNAPSHOT</nuxeo.webengine.version>
     <nuxeo.features.version>7.3-SNAPSHOT</nuxeo.features.version>
 
-    <nuxeo.connect.client.version>1.4.20</nuxeo.connect.client.version>
+    <nuxeo.connect.client.version>1.4.21-SNAPSHOT</nuxeo.connect.client.version>
     <!-- nuxeo-distribution-tools is still used as a dependency -->
     <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
@@ -1468,9 +1468,21 @@
       </dependency>
 
       <dependency>
+        <groupId>xml-apis</groupId>
+        <artifactId>xml-apis</artifactId>
+        <version>1.4.01</version>
+      </dependency>
+
+      <dependency>
         <groupId>xom</groupId>
         <artifactId>xom</artifactId>
-        <version>1.1</version>
+        <version>1.2.5</version>
+        <exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- javax -->
       <dependency>
@@ -1853,7 +1865,7 @@
       <dependency>
         <groupId>org.apache.xmlbeans</groupId>
         <artifactId>xmlbeans</artifactId>
-        <version>2.3.0</version>
+        <version>2.6.0</version>
         <exclusions>
           <exclusion>
             <groupId>stax</groupId>
@@ -1889,14 +1901,7 @@
       <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
-        <version>2.9.1</version>
-        <exclusions>
-          <!-- exclude bad versions 1.O.b2 -->
-          <exclusion>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-          </exclusion>
-        </exclusions>
+        <version>2.11.0</version>
       </dependency>
       <dependency>
         <groupId>jmimemagic</groupId>
@@ -2087,6 +2092,10 @@
           <exclusion>
             <groupId>javax.el</groupId>
             <artifactId>el-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -2437,7 +2446,7 @@
       <dependency>
         <groupId>com.sun.xsom</groupId>
         <artifactId>xsom</artifactId>
-        <version>20081112</version>
+        <version>20140925</version>
       </dependency>
       <dependency>
         <groupId>com.sun.xml</groupId>
@@ -2927,11 +2936,11 @@
 
       <dependency>
         <groupId>org.codehaus.woodstox</groupId>
-        <artifactId>wstx-asl</artifactId>
-        <version>3.2.9</version>
+        <artifactId>woodstox-core-asl</artifactId>
+        <version>4.2.0</version>
         <exclusions>
           <exclusion>
-            <groupId>stax</groupId>
+            <groupId>javax.xml.stream</groupId>
             <artifactId>stax-api</artifactId>
           </exclusion>
         </exclusions>
@@ -3046,6 +3055,12 @@
         <artifactId>gwt-dnd</artifactId>
         <version>3.1.2</version>
         <scope>provided</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.google.gwt.inject</groupId>
@@ -3427,6 +3442,11 @@
       </dependency>
       <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-java</artifactId>
+        <version>${selenium.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-support</artifactId>
         <version>${selenium.version}</version>
       </dependency>
@@ -3767,7 +3787,7 @@
       <dependency>
         <groupId>jaxen</groupId>
         <artifactId>jaxen</artifactId>
-        <version>1.1.1</version>
+        <version>1.1.6</version>
       </dependency>
       <dependency>
         <groupId>xalan</groupId>
@@ -3801,6 +3821,10 @@
           <exclusion>
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis-ext</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-ext</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -4357,7 +4381,22 @@
         <artifactId>com-duosecurity-java-client</artifactId>
         <version>1.0.0</version>
       </dependency>
+
+      <dependency>
+        <groupId>com.octo.captcha</groupId>
+        <artifactId>jcaptcha</artifactId>
+        <version>1.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.github.segmentio</groupId>
+        <artifactId>analytics</artifactId>
+        <version>0.4.2</version>
+      </dependency>
+
     </dependencies>
+
+
   </dependencyManagement>
 
   <dependencies>
@@ -4948,6 +4987,12 @@
                   <exclude>com.google.guava:guava-jdk5</exclude> <!-- use regular com.google.guava:guava instead -->
                 </excludes>
                 <message>com.google.guava:guava-jdk5 must not be used, use com.google.guava:guava instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>javax.xml.stream:stax-api</exclude> <!-- defined in the J2SE -->
+                </excludes>
+                <message>javax.xml.stream:stax-api must not be used, already defines in J2SE</message>
               </bannedDependencies>
             </rules>
             <skip>false</skip>
