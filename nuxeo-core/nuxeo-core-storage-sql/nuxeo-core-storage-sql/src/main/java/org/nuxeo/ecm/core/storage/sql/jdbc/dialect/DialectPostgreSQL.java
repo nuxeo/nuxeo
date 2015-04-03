@@ -1018,7 +1018,7 @@ public class DialectPostgreSQL extends Dialect {
         properties.put("aclOptimizationsEnabled", Boolean.valueOf(aclOptimizationsEnabled));
         properties.put("pathOptimizationsEnabled", Boolean.valueOf(pathOptimizationsEnabled));
         properties.put("fulltextAnalyzer", fulltextAnalyzer);
-        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
+        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextSearchDisabled));
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
         properties.put("proxiesEnabled", Boolean.valueOf(proxiesEnabled));
         properties.put("softDeleteEnabled", Boolean.valueOf(softDeleteEnabled));

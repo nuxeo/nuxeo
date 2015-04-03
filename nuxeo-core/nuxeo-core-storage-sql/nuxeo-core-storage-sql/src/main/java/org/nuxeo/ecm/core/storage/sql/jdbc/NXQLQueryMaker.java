@@ -1233,8 +1233,8 @@ public class NXQLQueryMaker implements QueryMaker {
             if (!(node.rvalue instanceof StringLiteral)) {
                 throw new QueryMakerException(NXQL.ECM_FULLTEXT + " requires literal string as right argument");
             }
-            if (model.getRepositoryDescriptor().getFulltextDisabled()) {
-                throw new QueryMakerException("Fulltext disabled by configuration");
+            if (model.getRepositoryDescriptor().getFulltextSearchDisabled()) {
+                throw new QueryMakerException("Fulltext search disabled by configuration");
             }
             String[] nameref = new String[] { name };
             boolean useIndex = findFulltextIndexOrField(model, nameref);

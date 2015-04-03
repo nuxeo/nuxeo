@@ -711,7 +711,7 @@ public class DialectOracle extends Dialect {
         properties.put("pathOptimizationsEnabled", Boolean.valueOf(pathOptimizationsEnabled));
         properties.put("pathOptimizationsVersion1", (pathOptimizationsVersion == 1) ? true : false);
         properties.put("pathOptimizationsVersion2", (pathOptimizationsVersion == 2) ? true : false);
-        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
+        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextSearchDisabled));
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
         properties.put("proxiesEnabled", Boolean.valueOf(proxiesEnabled));
         properties.put("softDeleteEnabled", Boolean.valueOf(softDeleteEnabled));

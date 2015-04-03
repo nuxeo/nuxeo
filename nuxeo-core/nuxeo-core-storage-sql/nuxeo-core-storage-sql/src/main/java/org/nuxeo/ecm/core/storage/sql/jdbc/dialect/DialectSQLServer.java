@@ -100,6 +100,7 @@ public class DialectSQLServer extends Dialect {
         if (engineEdition == 5) { // 5 = SQL Azure
             azure = true;
             fulltextDisabled = true;
+            fulltextSearchDisabled = true;
             if (repositoryDescriptor != null) {
                 repositoryDescriptor.setFulltextDisabled(true);
             }
@@ -528,7 +529,7 @@ public class DialectSQLServer extends Dialect {
         properties.put("lockEscalationDisabled", Boolean.valueOf(supportsLockEscalationDisable()));
         properties.put("md5HashString", getMd5HashString());
         properties.put("reseedAclrModified", azure ? "" : "DBCC CHECKIDENT('aclr_modified', RESEED, 0);");
-        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
+        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextSearchDisabled));
         properties.put("fulltextCatalog", fulltextCatalog);
         properties.put("aclOptimizationsEnabled", Boolean.valueOf(aclOptimizationsEnabled));
         properties.put("pathOptimizationsEnabled", Boolean.valueOf(pathOptimizationsEnabled));

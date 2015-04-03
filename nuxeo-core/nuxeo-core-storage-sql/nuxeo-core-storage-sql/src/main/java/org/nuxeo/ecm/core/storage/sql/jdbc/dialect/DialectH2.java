@@ -335,7 +335,7 @@ public class DialectH2 extends Dialect {
         for (String perm : permissions) {
             permsList.add("('" + perm + "')");
         }
-        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
+        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextSearchDisabled));
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
         properties.put("readPermissions", StringUtils.join(permsList, ", "));
         properties.put("h2Functions", "org.nuxeo.ecm.core.storage.sql.db.H2Functions");

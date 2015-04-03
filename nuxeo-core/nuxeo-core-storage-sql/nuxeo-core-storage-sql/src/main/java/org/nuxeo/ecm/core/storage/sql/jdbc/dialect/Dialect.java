@@ -153,6 +153,8 @@ public abstract class Dialect {
 
     protected boolean fulltextDisabled;
 
+    protected boolean fulltextSearchDisabled;
+
     protected final boolean aclOptimizationsEnabled;
 
     /**
@@ -242,6 +244,7 @@ public abstract class Dialect {
         }
         if (repositoryDescriptor == null) {
             fulltextDisabled = true;
+            fulltextSearchDisabled = true;
             aclOptimizationsEnabled = false;
             readAclMaxSize = 0;
             clusteringEnabled = false;
@@ -249,6 +252,7 @@ public abstract class Dialect {
             proxiesEnabled = true;
         } else {
             fulltextDisabled = repositoryDescriptor.getFulltextDisabled();
+            fulltextSearchDisabled = repositoryDescriptor.getFulltextSearchDisabled();
             aclOptimizationsEnabled = repositoryDescriptor.getAclOptimizationsEnabled();
             readAclMaxSize = repositoryDescriptor.getReadAclMaxSize();
             clusteringEnabled = repositoryDescriptor.getClusteringEnabled();

@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -322,6 +322,20 @@ public class RepositoryDescriptor {
         fulltextDisabled = Boolean.valueOf(disabled);
     }
 
+    @XNode("indexing/fulltext@searchDisabled")
+    private Boolean fulltextSearchDisabled;
+
+    public boolean getFulltextSearchDisabled() {
+        if (getFulltextDisabled()) {
+            return true;
+        }
+        return defaultFalse(fulltextSearchDisabled);
+    }
+
+    public void setFulltextSearchDisabled(boolean disabled) {
+        fulltextSearchDisabled = Boolean.valueOf(disabled);
+    }
+
     @XNode("indexing/fulltext@analyzer")
     public String fulltextAnalyzer;
 
@@ -429,6 +443,7 @@ public class RepositoryDescriptor {
         clusteringEnabled = other.clusteringEnabled;
         clusteringDelay = other.clusteringDelay;
         fulltextDisabled = other.fulltextDisabled;
+        fulltextSearchDisabled = other.fulltextSearchDisabled;
         fulltextAnalyzer = other.fulltextAnalyzer;
         fulltextParser = other.fulltextParser;
         fulltextCatalog = other.fulltextCatalog;
@@ -511,6 +526,9 @@ public class RepositoryDescriptor {
         }
         if (other.fulltextDisabled != null) {
             fulltextDisabled = other.fulltextDisabled;
+        }
+        if (other.fulltextSearchDisabled != null) {
+            fulltextSearchDisabled = other.fulltextSearchDisabled;
         }
         if (other.fulltextAnalyzer != null) {
             fulltextAnalyzer = other.fulltextAnalyzer;

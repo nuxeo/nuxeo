@@ -261,7 +261,7 @@ public class DialectDerby extends Dialect {
     public Map<String, Serializable> getSQLStatementsProperties(Model model, Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("idType", "VARCHAR(36)");
-        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
+        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextSearchDisabled));
         properties.put("derbyFunctions", derbyFunctions);
         properties.put(SQLStatement.DIALECT_WITH_NO_SEMICOLON, Boolean.TRUE);
         return properties;
