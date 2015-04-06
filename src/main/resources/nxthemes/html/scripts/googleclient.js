@@ -8,12 +8,14 @@ nuxeo.utils = nuxeo.utils || {};
 // authId: element id of "please authenticate" span, initially hidden
 // inputId: element id of input fields to save the doc id
 // infoId: element id of span to fill with doc info
-nuxeo.utils.GoogleDrivePicker = function(clientId, pickId, authId, inputId, infoId) {
+// domain: limit account picker to this domain
+nuxeo.utils.GoogleDrivePicker = function(clientId, pickId, authId, inputId, infoId, domain) {
     this.clientId = clientId;
     this.pickId = pickId;
     this.authId = authId;
     this.inputId = inputId;
     this.infoId = infoId;
+    this.domain = domain;
     gapi.load('picker', {
         'callback' : this.init.bind(this)
     });
@@ -52,7 +54,8 @@ nuxeo.utils.GoogleDrivePicker.prototype = {
         gapi.auth.authorize({
             client_id : this.clientId,
             scope : 'email https://www.googleapis.com/auth/drive.readonly',
-            immediate : immediate
+            immediate : immediate,
+            hd : this.domain
         }, callback);
     },
 

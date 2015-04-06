@@ -50,6 +50,9 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
     // ClientId for the file picker auth
     public static final String CLIENT_ID_PROP = "nuxeo.google.clientid";
 
+    // restrict sign-in to accounts at this domain
+    public static final String GOOGLE_DOMAIN_PROP = "nuxeo.google.domain";
+
     protected String clientId;
 
     public GoogleDriveBlobUploader() {
@@ -98,8 +101,8 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
         writer.writeAttribute("class", "button GoogleDrivePickerButton", null);
         String onButtonClick = onClick
                 + ";"
-                + String.format("new nuxeo.utils.GoogleDrivePicker('%s','%s','%s','%s','%s')",
-            clientId, pickId, authId, inputId, infoId);
+                + String.format("new nuxeo.utils.GoogleDrivePicker('%s','%s','%s','%s','%s','%s')",
+            clientId, pickId, authId, inputId, infoId, getGoogleDomain());
         writer.writeAttribute("onclick", onButtonClick, null);
 
         writer.startElement("span", parent);
@@ -176,5 +179,10 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
     protected GoogleDriveBlobProvider getGoogleDriveBlobProvider() {
         return (GoogleDriveBlobProvider) Framework.getService(BlobManager.class)
             .getBlobProvider(GoogleDriveComponent.GOOGLE_DRIVE_PREFIX);
+    }
+
+    protected String getGoogleDomain() {
+        String domain = Framework.getProperty(GOOGLE_DOMAIN_PROP);
+        return (domain != null) ? domain : "";
     }
 }
