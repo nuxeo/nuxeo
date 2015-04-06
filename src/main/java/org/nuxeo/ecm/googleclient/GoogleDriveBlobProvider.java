@@ -13,18 +13,17 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Nelson Silva
  */
 package org.nuxeo.ecm.googleclient;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
@@ -32,49 +31,29 @@ import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.ManagedBlobProvider;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.googleclient.credential.CredentialFactory;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 
 /**
  * Provider for blobs getting information from Google Drive.
  *
- * @since 7.2
+ * @since 7.3
  */
 public class GoogleDriveBlobProvider implements ManagedBlobProvider {
 
-    public static final String SERVICE_ACCOUNT_ID_PROP = "nuxeo.google.serviceAccountId";
+    private static final String APPLICATION_NAME = "Nuxeo/0";
 
-    public static final String SERVICE_ACCOUNT_P12_PATH_PROP = "nuxeo.google.serviceAccountP12Path";
+    private final CredentialFactory credentialFactory;
 
-    private static final String USER = "fguillaume@nuxeo.com"; // XXX don't hardcode
-
-    protected String serviceAccountId;
-
-    protected String p12;
-
-    public GoogleDriveBlobProvider() {
-        serviceAccountId = Framework.getProperty(SERVICE_ACCOUNT_ID_PROP);
-        if (StringUtils.isBlank(serviceAccountId)) {
-            throw new NuxeoException("Missing value for property: " + SERVICE_ACCOUNT_ID_PROP);
-        }
-        p12 = Framework.getProperty(SERVICE_ACCOUNT_P12_PATH_PROP);
-        if (StringUtils.isBlank(p12)) {
-            throw new NuxeoException("Missing value for property: " + SERVICE_ACCOUNT_P12_PATH_PROP);
-        }
-        java.io.File p12File = new java.io.File(p12);
-        if (!p12File.exists()) {
-            throw new NuxeoException("No such file: " + p12 + " for property: " + SERVICE_ACCOUNT_P12_PATH_PROP);
-        }
+    public GoogleDriveBlobProvider(CredentialFactory credentialFactory) {
+        this.credentialFactory = credentialFactory;
     }
 
     @Override
@@ -108,14 +87,20 @@ public class GoogleDriveBlobProvider implements ManagedBlobProvider {
         return fileInfo;
     }
 
-    protected String getFileId(String fileInfo) {
-        // TODO add user in fileInfo
-        return fileInfo;
+    protected String getUser(String fileInfo) {
+        return getFileInfo(fileInfo)[0];
     }
 
-    protected String getUser(String fileInfo) {
-        // TODO add user in fileInfo
-        return USER;
+    protected String getFileId(String fileInfo) {
+        return getFileInfo(fileInfo)[1];
+    }
+
+    protected String[] getFileInfo(String fileInfo) {
+        String[] parts = fileInfo.split(":");
+        if (parts.length != 2) {
+            throw new IllegalArgumentException(fileInfo);
+        }
+        return parts;
     }
 
     @Override
@@ -169,14 +154,14 @@ public class GoogleDriveBlobProvider implements ManagedBlobProvider {
     /**
      * Gets the blob for a Google Drive file.
      *
-     * @param fileInfo the file info
+     * @param fileInfo the file info ({email}:{fileId})
      * @return the blob
      */
     public Blob getBlob(String fileInfo) throws IOException {
         String user = getUser(fileInfo);
         String fileId = getFileId(fileInfo);
         File file = getService(user).files().get(fileId).execute();
-        String key = GoogleDriveComponent.GOOGLE_DRIVE_PREFIX + ":" + fileId;
+        String key = String.format("%s:%s:%s", GoogleDriveComponent.GOOGLE_DRIVE_PREFIX, user, fileId);
         String filename = file.getOriginalFilename();
         if (filename == null) {
             filename = file.getTitle().replace("/", "-");
@@ -191,44 +176,16 @@ public class GoogleDriveBlobProvider implements ManagedBlobProvider {
         return new SimpleManagedBlob(blobInfo, this);
     }
 
-    protected static JsonFactory getJsonFactory() {
-        return JacksonFactory.getDefaultInstance();
-    }
-
-    protected static HttpTransport getHttpTransport() throws IOException {
-        try {
-            return GoogleNetHttpTransport.newTrustedTransport();
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e);
-        }
+    public Credential getCredential(String user) throws IOException {
+        return credentialFactory.build(user);
     }
 
     protected Drive getService(String user) throws IOException {
-        GoogleCredential credential = getCredential(user);
+        Credential credential = getCredential(user);
         HttpTransport httpTransport = credential.getTransport();
         JsonFactory jsonFactory = credential.getJsonFactory();
         return new Drive.Builder(httpTransport, jsonFactory, credential) //
-        .setApplicationName("Nuxeo/0") // set application name to avoid a WARN
+        .setApplicationName(APPLICATION_NAME) // set application name to avoid a WARN
         .build();
     }
-
-    protected GoogleCredential getCredential(String user) throws IOException {
-        return getCredentialFromServiceAccount(user, serviceAccountId, p12);
-    }
-
-    protected GoogleCredential getCredentialFromServiceAccount(String user, String serviceAccountId, String p12)
-            throws IOException {
-        try {
-            return new GoogleCredential.Builder() //
-            .setTransport(getHttpTransport()) //
-            .setJsonFactory(getJsonFactory()) //
-            .setServiceAccountId(serviceAccountId) //
-            .setServiceAccountPrivateKeyFromP12File(new java.io.File(p12)) //
-            .setServiceAccountScopes(Collections.singleton(DriveScopes.DRIVE)) //
-            .setServiceAccountUser(user).build();
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e);
-        }
-    }
-
 }

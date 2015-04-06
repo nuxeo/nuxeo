@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Nelson Silva
  */
 package org.nuxeo.ecm.googleclient;
 
@@ -38,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * JSF Blob Upload based on Google Drive blobs.
  *
- * @since 7.2
+ * @since 7.3
  */
 public class GoogleDriveBlobUploader implements JSFBlobUploader {
 
@@ -46,6 +47,7 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
 
     public static final String GOOGLE_API_CLIENT_JS_URL = "https://apis.google.com/js/client.js";
 
+    // ClientId for the file picker auth
     public static final String CLIENT_ID_PROP = "nuxeo.google.clientid";
 
     protected String clientId;
@@ -96,8 +98,8 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
         writer.writeAttribute("class", "button GoogleDrivePickerButton", null);
         String onButtonClick = onClick
                 + ";"
-                + String.format("new nuxeo.utils.GoogleDrivePicker('%s','%s','%s','%s','%s')", clientId, pickId,
-                        authId, inputId, infoId);
+                + String.format("new nuxeo.utils.GoogleDrivePicker('%s','%s','%s','%s','%s')",
+            clientId, pickId, authId, inputId, infoId);
         writer.writeAttribute("onclick", onButtonClick, null);
 
         writer.startElement("span", parent);
@@ -160,17 +162,19 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
     /**
      * Creates a Google Drive managed blob.
      *
-     * @param fileId the Google Drive file info
+     * @param fileInfo the Google Drive file info
      * @return the blob
      */
     protected Blob createBlob(String fileInfo) {
-        GoogleDriveBlobProvider blobProvider = (GoogleDriveBlobProvider) Framework.getService(BlobManager.class).getBlobProvider(
-                GoogleDriveComponent.GOOGLE_DRIVE_PREFIX);
         try {
-            return blobProvider.getBlob(fileInfo);
+            return getGoogleDriveBlobProvider().getBlob(fileInfo);
         } catch (IOException e) {
             throw new RuntimeException(e); // TODO better feedback
         }
     }
 
+    protected GoogleDriveBlobProvider getGoogleDriveBlobProvider() {
+        return (GoogleDriveBlobProvider) Framework.getService(BlobManager.class)
+            .getBlobProvider(GoogleDriveComponent.GOOGLE_DRIVE_PREFIX);
+    }
 }

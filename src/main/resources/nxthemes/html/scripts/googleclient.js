@@ -39,7 +39,7 @@ nuxeo.utils.GoogleDrivePicker.prototype = {
                 document.getElementById(this.pickId).style.display = "";
                 document.getElementById(this.authId).style.display = "none";
             }
-            this.showPicker();
+            this.onAuth(token);
         } else {
             // ask the user for a second click,
             // this is needed to work with popup blockers
@@ -51,9 +51,19 @@ nuxeo.utils.GoogleDrivePicker.prototype = {
     doAuth : function(immediate, callback) {
         gapi.auth.authorize({
             client_id : this.clientId,
-            scope : 'https://www.googleapis.com/auth/drive.readonly',
+            scope : 'email https://www.googleapis.com/auth/drive.readonly',
             immediate : immediate
         }, callback);
+    },
+
+    onAuth : function(token) {
+      // retrieve the account's email
+      jQuery.getJSON("https://www.googleapis.com/oauth2/v1/tokeninfo?access_token= " + token.access_token)
+          .done(function(info) {
+            this.email = info.email;
+            // display the picker
+            this.showPicker();
+          }.bind(this));
     },
 
     showPicker : function() {
@@ -74,7 +84,7 @@ nuxeo.utils.GoogleDrivePicker.prototype = {
         if (action == google.picker.Action.PICKED) {
             var doc = data[google.picker.Response.DOCUMENTS][0];
             if (this.inputId) {
-                document.getElementById(this.inputId).value = doc[google.picker.Document.ID];
+                document.getElementById(this.inputId).value = this.email + ':' + doc[google.picker.Document.ID];
             }
             if (this.infoId) {
                 document.getElementById(this.infoId).innerHTML = '<img src="' + doc[google.picker.Document.ICON_URL]
