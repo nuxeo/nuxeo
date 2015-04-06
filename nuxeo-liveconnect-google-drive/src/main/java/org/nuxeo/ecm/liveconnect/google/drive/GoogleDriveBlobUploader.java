@@ -27,8 +27,12 @@ import javax.faces.component.html.HtmlInputText;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
+import com.google.api.client.auth.oauth2.Credential;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.platform.ui.web.component.file.InputFileChoice;
 import org.nuxeo.ecm.platform.ui.web.component.file.InputFileInfo;
@@ -43,12 +47,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class GoogleDriveBlobUploader implements JSFBlobUploader {
 
+    private static final Log log = LogFactory.getLog(GoogleDriveBlobUploader.class);
+
     public static final String UPLOAD_GOOGLE_DRIVE_FACET_NAME = "uploadGoogleDrive";
 
     public static final String GOOGLE_API_CLIENT_JS_URL = "https://apis.google.com/js/client.js";
-
-    // ClientId for the file picker auth
-    public static final String CLIENT_ID_PROP = "nuxeo.google.clientid";
 
     // restrict sign-in to accounts at this domain
     public static final String GOOGLE_DOMAIN_PROP = "nuxeo.google.domain";
@@ -56,11 +59,12 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
     protected String clientId;
 
     public GoogleDriveBlobUploader() {
-        clientId = Framework.getProperty(CLIENT_ID_PROP);
-        if (StringUtils.isBlank(clientId)) {
+        try {
+            getGoogleDriveBlobProvider();
+        } catch (NuxeoException e) {
             // this exception is caught by JSFBlobUploaderDescriptor.getJSFBlobUploader
             // to mean that the uploader is not available because badly configured
-            throw new IllegalStateException("Missing value for property: " + CLIENT_ID_PROP);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -99,10 +103,12 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
         writer.startElement("button", parent);
         writer.writeAttribute("type", "button", null);
         writer.writeAttribute("class", "button GoogleDrivePickerButton", null);
+
+        // TODO pass existing access token
         String onButtonClick = onClick
                 + ";"
                 + String.format("new nuxeo.utils.GoogleDrivePicker('%s','%s','%s','%s','%s','%s')",
-            clientId, pickId, authId, inputId, infoId, getGoogleDomain());
+            getClientId(), pickId, authId, inputId, infoId, getGoogleDomain());
         writer.writeAttribute("onclick", onButtonClick, null);
 
         writer.startElement("span", parent);
@@ -156,6 +162,16 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
             parent.setValid(false);
             return;
         }
+
+        // check if we can get an access token
+        String user = getUser(string);
+        String accessToken = getAccessToken(user);
+        if (accessToken == null) {
+            ComponentUtils.addErrorMessage(context, parent, "error.inputFile.accessToken", new Object[] { user });
+            parent.setValid(false);
+            return;
+        }
+
         Blob blob = createBlob(string);
         submitted.setBlob(blob);
         submitted.setFilename(blob.getFilename());
@@ -184,5 +200,29 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
     protected String getGoogleDomain() {
         String domain = Framework.getProperty(GOOGLE_DOMAIN_PROP);
         return (domain != null) ? domain : "";
+    }
+
+    protected String getClientId() {
+        String clientId = getGoogleDriveBlobProvider().getClientId();
+        return (clientId != null) ? clientId : "";
+    }
+
+    protected String getUser(String fileInfo) {
+        return getGoogleDriveBlobProvider().getUser(fileInfo);
+    }
+
+    protected String getAccessToken(String user) {
+        try {
+            Credential credential = getGoogleDriveBlobProvider().getCredential(user);
+            if (credential != null) {
+                String accessToken = credential.getAccessToken();
+                if (accessToken != null) {
+                    return accessToken;
+                }
+            }
+        } catch (IOException e) {
+            log.error("Failed to get access token for " + user, e);
+        }
+        return null;
     }
 }

@@ -52,6 +52,9 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
+import org.nuxeo.ecm.liveconnect.google.drive.credential.WebApplicationCredentialFactory;
+import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
+import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -74,7 +77,14 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
 
     public static final String SERVICE_ACCOUNT_P12_PATH_PROP = "serviceAccountP12Path";
 
-    private CredentialFactory credentialFactory;
+    // ClientId for the file picker auth
+    public static final String CLIENT_ID_PROP = "clientId";
+
+    private String serviceAccountId;
+
+    private java.io.File serviceAccountP12File;
+
+    private String clientId;
 
     /** {@link File} resource cache */
     private Cache fileCache;
@@ -85,20 +95,24 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
             // TODO avoid this by passing a parameter to the GoogleDriveBlobUploader when constructed
             throw new IllegalArgumentException("Must be registered for name: " + PREFIX + ", not: " + blobProviderId);
         }
-        // Service account configuration
-        String serviceAccountId = properties.get(SERVICE_ACCOUNT_ID_PROP);
+        // Validate service account configuration
+        serviceAccountId = properties.get(SERVICE_ACCOUNT_ID_PROP);
         if (StringUtils.isBlank(serviceAccountId)) {
-            throw new NuxeoException("Missing value for property: " + SERVICE_ACCOUNT_ID_PROP);
+            return;
         }
         String p12 = properties.get(SERVICE_ACCOUNT_P12_PATH_PROP);
         if (StringUtils.isBlank(p12)) {
             throw new NuxeoException("Missing value for property: " + SERVICE_ACCOUNT_P12_PATH_PROP);
         }
-        java.io.File p12File = new java.io.File(p12);
-        if (!p12File.exists()) {
+        serviceAccountP12File = new java.io.File(p12);
+        if (!serviceAccountP12File.exists()) {
             throw new NuxeoException("No such file: " + p12 + " for property: " + SERVICE_ACCOUNT_P12_PATH_PROP);
         }
-        credentialFactory = new ServiceAccountCredentialFactory(serviceAccountId, p12File);
+
+        clientId = properties.get(CLIENT_ID_PROP);
+        if (StringUtils.isBlank(clientId)) {
+            throw new NuxeoException("Missing value for property: " + CLIENT_ID_PROP);
+        }
     }
 
     @Override
@@ -245,7 +259,18 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
     }
 
     protected Credential getCredential(String user) throws IOException {
-        return credentialFactory.build(user);
+        return getCredentialFactory().build(user);
+    }
+
+    protected CredentialFactory getCredentialFactory() {
+        OAuth2ServiceProvider provider = Framework.getLocalService(OAuth2ServiceProviderRegistry.class).getProvider(PREFIX);
+        if (provider != null && provider.isEnabled()) {
+            // Web application configuration
+            return new WebApplicationCredentialFactory(provider);
+        } else {
+            // Service account configuration
+            return new ServiceAccountCredentialFactory(serviceAccountId, serviceAccountP12File);
+        }
     }
 
     protected Drive getService(String user) throws IOException {
@@ -315,5 +340,14 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
         JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
         ObjectParser parser = new JsonObjectParser(jsonFactory);
         return parser.parseAndClose(new StringReader(json), File.class);
+    }
+
+    public String getClientId() {
+        OAuth2ServiceProvider provider = getOAuth2Provider();
+        return (provider != null && provider.isEnabled()) ? provider.getClientId() : clientId;
+    }
+
+    private OAuth2ServiceProvider getOAuth2Provider() {
+        return Framework.getLocalService(OAuth2ServiceProviderRegistry.class).getProvider(PREFIX);
     }
 }
