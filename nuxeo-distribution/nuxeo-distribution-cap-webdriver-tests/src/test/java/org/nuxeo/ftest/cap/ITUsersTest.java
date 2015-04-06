@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
@@ -41,6 +42,7 @@ import org.openqa.selenium.By;
 public class ITUsersTest extends AbstractTest {
 
     @Test
+    @Ignore
     public void testInviteUser() throws Exception {
         
 
