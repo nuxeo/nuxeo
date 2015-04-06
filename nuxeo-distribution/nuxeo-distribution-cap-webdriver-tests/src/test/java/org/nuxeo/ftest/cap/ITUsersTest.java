@@ -42,19 +42,20 @@ public class ITUsersTest extends AbstractTest {
 
     @Test
     public void testInviteUser() throws Exception {
-        String firstname = "firstname";
+        
 
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-
-        usersTab.getUserCreatePage().inviteUser(TEST_USERNAME, firstname, "lastname1", "company1", "email1",
+        String username = TEST_USERNAME + System.currentTimeMillis();
+        
+        usersTab.getUserCreatePage().inviteUser(username , username, "lastname1", "company1", "email1",
                 "members");
         
         //Need few seconds to display the search view after
         UsersGroupsBasePage.findElementWithTimeout(By.id("usersListingView:searchForm:searchText"));
 
         // search user
-        usersTab = usersTab.searchUser(TEST_USERNAME);
-        assertFalse(usersTab.isUserFound(TEST_USERNAME));
+        usersTab = usersTab.searchUser(username);
+        assertFalse(usersTab.isUserFound(username));
     }
 
     @Test
