@@ -19,20 +19,29 @@
 
 package org.nuxeo.ecm.webengine.model.io;
 
+import static org.apache.commons.logging.LogFactory.getLog;
+import static org.nuxeo.ecm.platform.ui.web.download.DownloadServlet.NXBIGBLOB_PREFIX;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.logging.Log;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -41,10 +50,40 @@ import org.nuxeo.ecm.webengine.WebException;
 @Produces({ "*/*", "text/plain" })
 public class BlobWriter implements MessageBodyWriter<Blob> {
 
+    private static final Log log = getLog(BlobWriter.class);
+
+    public static final String BLOB_ID = "blobId";
+
+    @Context
+    private HttpServletRequest request;
+
+    @Context
+    private HttpServletResponse response;
+
+    @Context
+    private ServletContext servletContext;
+
     public void writeTo(Blob t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
+        if (Framework.isTestModeSet()) {
+            transferBlob(t, entityStream);
+        } else {
+            // internal forward to DownloadServlet
+            request.setAttribute(BLOB_ID, t);
+            String url = String.format("/%s/%s", NXBIGBLOB_PREFIX, BLOB_ID);
+            try {
+                servletContext.getRequestDispatcher(url).forward(request, response);
+            } catch (ServletException e) {
+                log.error("Error while forwarding to DownloadServlet", e);
+                transferBlob(t, entityStream);
+            }
+        }
+
+    }
+
+    protected void transferBlob(Blob blob, OutputStream entityStream) throws IOException {
         BufferingServletOutputStream.stopBufferingThread();
-        t.transferTo(entityStream);
+        blob.transferTo(entityStream);
         entityStream.flush();
     }
 

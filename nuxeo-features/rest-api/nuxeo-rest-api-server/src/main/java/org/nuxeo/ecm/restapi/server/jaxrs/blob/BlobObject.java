@@ -75,7 +75,7 @@ public class BlobObject extends DefaultObject {
     }
 
     @GET
-    public Response doGet(@Context Request request) throws ClientException {
+    public Object doGet(@Context Request request) throws ClientException {
 
         if (xpath == null) {
             xpath = getXpathFromRequest();
@@ -87,24 +87,27 @@ public class BlobObject extends DefaultObject {
             if (blob == null) {
                 throw new WebResourceNotFoundException("No attached file at " + xpath);
             }
-            String fileName = blob.getFilename();
-            if (fileName == null) {
+            if (blob.getFilename() == null) {
                 p = p.getParent();
                 if (p.isComplex()) { // special handling for file and files
                     // schema
                     try {
-                        fileName = (String) p.getValue("filename");
+                        blob.setFilename((String) p.getValue("filename"));
                     } catch (PropertyException e) {
-                        fileName = "Unknown";
+                        blob.setFilename("Unknown");
                     }
                 }
             }
-            return buildResponseFromBlob(request, ctx.getRequest(), blob, fileName);
+            return blob;
         } catch (ClientException e) {
             throw WebException.wrap("Failed to get the attached file", e);
         }
     }
 
+    /**
+     * @deprecated since 7.3. Now returns directly the Blob and use default {@code BlobWriter}.
+     */
+    @Deprecated
     public static Response buildResponseFromBlob(Request request, HttpServletRequest httpServletRequest, Blob blob,
             String filename) {
         if (filename == null) {

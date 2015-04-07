@@ -58,11 +58,11 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class DownloadServlet extends HttpServlet {
 
-    protected static final String NXDOWNLOADINFO_PREFIX = "nxdownloadinfo";
+    public static final String NXDOWNLOADINFO_PREFIX = "nxdownloadinfo";
 
-    protected static final String NXBIGFILE_PREFIX = "nxbigfile";
+    public static final String NXBIGFILE_PREFIX = "nxbigfile";
 
-    protected static final String NXBIGBLOB_PREFIX = "nxbigblob";
+    public static final String NXBIGBLOB_PREFIX = "nxbigblob";
 
     protected static final int BUFFER_SIZE = 1024 * 512;
 
@@ -76,7 +76,11 @@ public class DownloadServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        handleDownload(req, resp);
+    }
 
+    protected void handleDownload(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
+            IOException {
         String requestURI;
         try {
             requestURI = new URI(req.getRequestURI()).getPath();
@@ -93,9 +97,24 @@ public class DownloadServlet extends HttpServlet {
             // the name of this zip is sent in the request
             handleDownloadTemporaryZip(req, resp, requestURI);
         } else if (requestURI.contains("/" + NXBIGBLOB_PREFIX + "/")) {
-            // handle the download of a Blob referenced in Http Session
+            // handle the download of a Blob referenced in Http request or Session
             handleDownloadSingleBlob(req, resp, requestURI);
         }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        handleDownload(req, resp);
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        handleDownload(req, resp);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        handleDownload(req, resp);
     }
 
     protected Blob resolveBlob(HttpServletRequest req, HttpServletResponse resp, String requestURI)
@@ -246,17 +265,23 @@ public class DownloadServlet extends HttpServlet {
 
     protected void handleDownloadSingleBlob(HttpServletRequest req, HttpServletResponse resp, String requestURI)
             throws ServletException {
-
         String blobId = requestURI.replace(VirtualHostHelper.getContextPath(req) + "/" + NXBIGBLOB_PREFIX + "/", "");
-        HttpSession session = req.getSession(false);
-        if (session == null) {
-            log.error("Unable to download blob since the holding http session does not exist");
-            return;
+        Blob blob = (Blob) req.getAttribute(blobId);
+        if (blob != null) {
+            req.removeAttribute(blobId);
+        } else {
+            HttpSession session = req.getSession(false);
+            if (session == null) {
+                log.error("Unable to download blob since the holding http session does not exist");
+                return;
+            }
+            blob = (Blob) session.getAttribute(blobId);
+            if (blob != null) {
+                session.removeAttribute(blobId);
+            }
         }
 
-        Blob blob = (Blob) session.getAttribute(blobId);
         if (blob != null) {
-            session.removeAttribute(blobId);
             try {
                 downloadBlob(req, resp, blob, null);
             } catch (IOException e) {

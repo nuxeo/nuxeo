@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
-import org.nuxeo.ecm.restapi.server.jaxrs.blob.BlobObject;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
@@ -57,6 +56,6 @@ public class RenditionAdapter extends DefaultAdapter {
             throw new WebResourceNotFoundException(String.format("No Blob was found for rendition '%s'", renditionName));
         }
 
-        return BlobObject.buildResponseFromBlob(request, ctx.getRequest(), blob, null);
+        return blob;
     }
 }
