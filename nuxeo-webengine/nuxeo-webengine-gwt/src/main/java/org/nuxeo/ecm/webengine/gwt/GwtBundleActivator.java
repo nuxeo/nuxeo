@@ -23,19 +23,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.ZipUtils;
-import org.nuxeo.runtime.RuntimeServiceEvent;
-import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
 /**
  * This activator must be used as an activator by bundles that wants to deploy GWT resources in a nuxeo server.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class GwtBundleActivator implements BundleActivator {
+public class GwtBundleActivator implements BundleActivator, FrameworkListener {
 
     protected static final Log log = LogFactory.getLog(GwtBundleActivator.class);
 
@@ -53,21 +53,7 @@ public class GwtBundleActivator implements BundleActivator {
         if (GWT_DEV_MODE) {
             return;
         }
-        Framework.addListener(new RuntimeServiceListener() {
-
-            @Override
-            public void handleEvent(RuntimeServiceEvent event) {
-                if (event.id != RuntimeServiceEvent.RUNTIME_STARTED) {
-                    return;
-                }
-                Framework.removeListener(this);
-                try {
-                    installGwtApp(GwtBundleActivator.this.context.getBundle());
-                } catch (IOException cause) {
-                    log.error("Cannot install gwt app", cause);
-                }
-            }
-        });
+        context.addFrameworkListener(this);
     }
 
     @Override
@@ -90,6 +76,17 @@ public class GwtBundleActivator implements BundleActivator {
             ZipUtils.unzip("gwt-war", file, GWT_ROOT);
             markerFile.getParentFile().mkdirs();
             markerFile.createNewFile();
+        }
+    }
+
+    @Override
+    public void frameworkEvent(FrameworkEvent event) {
+        if (event.getType() == FrameworkEvent.STARTED) {
+            try {
+                installGwtApp(context.getBundle());
+            } catch (IOException cause) {
+                throw new RuntimeException("Cannot start GWT", cause);
+            }
         }
     }
 
