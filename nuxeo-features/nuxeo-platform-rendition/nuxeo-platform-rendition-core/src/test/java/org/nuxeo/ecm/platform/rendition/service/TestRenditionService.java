@@ -45,7 +45,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -82,6 +81,9 @@ public class TestRenditionService {
 
     @Inject
     protected RuntimeHarness runtimeHarness;
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
@@ -226,7 +228,7 @@ public class TestRenditionService {
         assertTrue(rendition.getHostDocument().getRef().equals(file.getRef()));
 
         // needed for MySQL otherwise version order could be random
-        DatabaseHelper.DATABASE.maybeSleepToNextSecond();
+        coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
 
         // now store rendition for version 0.2
         rendition = renditionService.getRendition(file, PDF_RENDITION_DEFINITION, true);

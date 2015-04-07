@@ -74,9 +74,9 @@ public class TestSQLRepositoryReadAcls extends TXSQLRepositoryTestCase {
 
         CyclicBarrier barrier = new CyclicBarrier(2);
         CountDownLatch firstReady = new CountDownLatch(1);
-        PrepareUserReadAclsJob r1 = new PrepareUserReadAclsJob(name, username, database.repositoryName, firstReady,
+        PrepareUserReadAclsJob r1 = new PrepareUserReadAclsJob(name, username, database.getRepositoryName(), firstReady,
                 barrier);
-        PrepareUserReadAclsJob r2 = new PrepareUserReadAclsJob(name, username, database.repositoryName, null, barrier);
+        PrepareUserReadAclsJob r2 = new PrepareUserReadAclsJob(name, username, database.getRepositoryName(), null, barrier);
         Thread t1 = null;
         Thread t2 = null;
         try {

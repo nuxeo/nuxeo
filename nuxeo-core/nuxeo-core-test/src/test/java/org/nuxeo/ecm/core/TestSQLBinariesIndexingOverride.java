@@ -21,9 +21,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
-import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
-import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -78,7 +75,7 @@ public class TestSQLBinariesIndexingOverride extends TXSQLRepositoryTestCase {
         assertEquals(1, res.size());
         Map<String, String> map = session.getBinaryFulltext(res.get(0).getRef());
         assertTrue(map.containsValue("test"));
-        if (!(DatabaseHelper.DATABASE instanceof DatabaseMySQL || DatabaseHelper.DATABASE instanceof DatabaseSQLServer)) {
+        if (!(database.isVCSMySQL() || database.isVCSSQLServer())) {
             // we have 2 binaries field
             assertTrue(map.containsKey("binarytext"));
             assertTrue(map.containsKey("binarytext_binaries"));

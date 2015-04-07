@@ -29,8 +29,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.DatabaseDerby;
-import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.XAResourceConnectionAdapter;
@@ -87,11 +85,10 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
     }
 
     /**
-     * H2 cannot have one connection doing an insert in a tx and annother using the same table, as it waits for a lock.
+     * H2 cannot have one connection doing an insert in a tx and another using the same table, as it waits for a lock.
      */
     protected boolean canUseTwoConnections() {
-        return !(database instanceof DatabaseH2 //
-        || database instanceof DatabaseDerby);
+        return !(database.isVCSH2() || database.isVCSDerby());
     }
 
     protected String getValidationQuery(Connection connection) throws StorageException {

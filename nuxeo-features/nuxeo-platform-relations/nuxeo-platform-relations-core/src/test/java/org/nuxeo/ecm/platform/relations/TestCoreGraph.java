@@ -88,9 +88,9 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         service = Framework.getService(RelationManager.class);
 
         statements = new ArrayList<Statement>();
-        doc1 = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE, database.repositoryName
+        doc1 = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE, database.getRepositoryName()
                 + "/00010000-2c86-46fa-909e-02494bcb0001");
-        doc2 = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE, database.repositoryName
+        doc2 = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE, database.getRepositoryName()
                 + "/00020000-2c86-46fa-909e-02494bcb0002");
         isBasedOn = new QNameResourceImpl(DC_TERMS_NS, "IsBasedOn");
         references = new QNameResourceImpl(DC_TERMS_NS, "References");

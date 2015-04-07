@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.repository.AbstractRepositoryTestCase;
 import org.nuxeo.ecm.platform.annotations.repository.URNDocumentViewTranslator;
@@ -236,7 +235,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
         session.save();
         waitForAsyncExec();
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        sleepForFulltext();
 
         results = session.query("SELECT * FROM Document WHERE ecm:fulltext = 'zombie'", 10);
         assertEquals(1, results.size());

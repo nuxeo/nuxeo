@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -24,7 +25,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
@@ -104,9 +104,8 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
 
     @Test
     public void testFulltextOnlyNoteFile() throws Exception {
-        if (!(database instanceof DatabaseH2)) {
-            return;
-        }
+        assumeTrue(database.isVCSH2());
+
         // deploy contrib where only Note and File documents are fulltext
         // indexed
         deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-fulltext-note-file-only-contrib.xml");
@@ -141,9 +140,8 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
 
     @Test
     public void testFulltextNoteFileExcluded() throws Exception {
-        if (!(database instanceof DatabaseH2)) {
-            return;
-        }
+        assumeTrue(database.isVCSH2());
+
         // deploy contrib where only Note and File are not fulltext indexed
         deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-fulltext-note-file-excluded-contrib.xml");
 
@@ -177,9 +175,8 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
 
     @Test
     public void testFulltextMixedConfig() throws Exception {
-        if (!(database instanceof DatabaseH2)) {
-            return;
-        }
+        assumeTrue(database.isVCSH2());
+
         // deploy contrib where fulltext configuration is mixed
         // include types should have the priority
         deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-fulltext-mixed-contrib.xml");
@@ -214,9 +211,8 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
 
     @Test
     public void testNotFulltextIndexableFacet() throws Exception {
-        if (!(database instanceof DatabaseH2)) {
-            return;
-        }
+        assumeTrue(database.isVCSH2());
+
         // deploy contrib where only Note and File are not fulltext indexed
         deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-repository-h2-contrib.xml");
         deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-core-types-note-not-indexable-contrib.xml");

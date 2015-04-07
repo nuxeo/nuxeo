@@ -94,6 +94,14 @@
       <artifactId>nuxeo-core-storage-sql-test</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-mem</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-mongodb</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>commons-logging</groupId>
@@ -136,7 +144,7 @@
       <artifactId>junit</artifactId>
       <scope>compile</scope>
     </dependency>
-    
+
     <dependency>
      <groupId>dumbster</groupId>
      <artifactId>dumbster</artifactId>

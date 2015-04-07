@@ -71,7 +71,7 @@ public class TestJenaOrCoreGraphFactory extends SQLRepositoryTestCase {
         assertTrue(service.graphRegistry.containsKey("jenagraph"));
 
         // put some stuff in the graph
-        QNameResource doc = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE, database.repositoryName
+        QNameResource doc = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE, database.getRepositoryName()
                 + "/00010000-2c86-46fa-909e-02494bcb0001");
         QNameResource isBasedOn = new QNameResourceImpl(DC_TERMS_NS, "IsBasedOn");
         jenaGraph.add(new StatementImpl(doc, isBasedOn, doc));

@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
@@ -62,6 +63,9 @@ public abstract class AbstractRepositoryTestCase {
     protected URI uri;
 
     protected Annotation annotation;
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected AnnotationsService service;
@@ -140,6 +144,10 @@ public abstract class AbstractRepositoryTestCase {
     protected void waitForAsyncExec() {
         EventServiceImpl evtService = (EventServiceImpl) Framework.getLocalService(EventService.class);
         evtService.waitForAsyncCompletion();
+    }
+
+    protected void sleepForFulltext() {
+        coreFeature.getStorageConfiguration().sleepForFulltext();
     }
 
     protected void openSession() {

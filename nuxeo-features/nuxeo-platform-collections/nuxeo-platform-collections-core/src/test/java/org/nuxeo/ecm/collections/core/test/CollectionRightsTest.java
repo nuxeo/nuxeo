@@ -37,7 +37,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -53,6 +53,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
         "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.platform.web.common" })
 public class CollectionRightsTest {
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     CollectionManager collectionManager;
@@ -92,7 +95,8 @@ public class CollectionRightsTest {
 
         DocumentRef docRef = testFile.getRef();
 
-        userSession = CoreInstance.openCoreSession(DatabaseHelper.DATABASE.repositoryName, "user1");
+        String repositoryName = coreFeature.getStorageConfiguration().getRepositoryName();
+        userSession = CoreInstance.openCoreSession(repositoryName, "user1");
 
         testFile = userSession.getDocument(docRef);
 

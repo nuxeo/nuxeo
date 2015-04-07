@@ -44,8 +44,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
@@ -147,9 +145,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
             }
         }.runUnrestricted();
         session.save();
-        // wait for fulltext indexing
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        waitForFulltextIndexing();
     }
 
     @SuppressWarnings("unchecked")

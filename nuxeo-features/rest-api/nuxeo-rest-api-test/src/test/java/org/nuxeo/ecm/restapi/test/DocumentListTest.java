@@ -22,6 +22,7 @@ import static org.junit.Assert.assertFalse;
 import java.io.IOException;
 import java.util.Arrays;
 
+import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
@@ -31,7 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.server.jaxrs.QueryObject;
@@ -61,6 +62,9 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class DocumentListTest extends BaseTest {
 
+    @Inject
+    protected CoreFeature coreFeature;
+
     @Test
     public void iCanGetTheChildrenOfADocument() throws Exception {
         // Given a folder
@@ -87,7 +91,7 @@ public class DocumentListTest extends BaseTest {
         // Waiting for all async events work for indexing content before
         // executing fulltext search
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        coreFeature.getStorageConfiguration().sleepForFulltext();
 
         // When I search for "nuxeo"
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();

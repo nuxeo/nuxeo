@@ -50,11 +50,6 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.storage.sql.DatabaseDerby;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
-import org.nuxeo.ecm.core.storage.sql.DatabaseOracle;
-import org.nuxeo.ecm.core.storage.sql.DatabasePostgreSQL;
-import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
 
@@ -444,7 +439,7 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         assertEquals(1, session.query(query).size());
 
         // BBB for direct PostgreSQL syntax
-        if (DatabaseHelper.DATABASE instanceof DatabasePostgreSQL) {
+        if (database.isVCSPostgreSQL()) {
             query = "SELECT * FROM File WHERE ecm:fulltext = 'wor:*'";
             assertEquals(1, session.query(query).size());
         }
@@ -453,20 +448,21 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         // not in H2 (with Lucene default parser)
         // not in MySQL
         // not in Derby
-        if (DatabaseHelper.DATABASE instanceof DatabasePostgreSQL || DatabaseHelper.DATABASE instanceof DatabaseOracle
-                || DatabaseHelper.DATABASE instanceof DatabaseSQLServer) {
+        if (database.isVCSPostgreSQL() //
+                || database.isVCSOracle() //
+                || database.isVCSSQLServer()) {
             query = "SELECT * FROM File WHERE ecm:fulltext = '\"hello wor*\"'";
             assertEquals(1, session.query(query).size());
         }
         // prefix wildcard in the middle of a phrase
         // really only in Oracle, and approximation in PostgreSQL
-        if (DatabaseHelper.DATABASE instanceof DatabasePostgreSQL || DatabaseHelper.DATABASE instanceof DatabaseOracle) {
+        if (database.isVCSPostgreSQL() || database.isVCSOracle()) {
             query = "SELECT * FROM File WHERE ecm:fulltext = '\"hel* world\"'";
             assertEquals(1, session.query(query).size());
             query = "SELECT * FROM File WHERE ecm:fulltext = '\"hel* wor*\"'";
             assertEquals(1, session.query(query).size());
             // PostgreSQL mid-phrase wildcards are too greedy
-            if (DatabaseHelper.DATABASE instanceof DatabaseOracle) {
+            if (database.isVCSOracle()) {
                 // no match wanted here
                 query = "SELECT * FROM File WHERE ecm:fulltext = '\"hel* citizens\"'";
                 assertEquals(0, session.query(query).size());
@@ -546,7 +542,7 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
 
     @Test
     public void testFulltextExpressionSyntax() throws Exception {
-        assumeTrue(!(database instanceof DatabaseDerby));
+        assumeTrue(!database.isVCSDerby());
 
         createDocs();
         waitForFulltextIndexing();
@@ -661,7 +657,7 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
     // don't use small words, they are eliminated by some fulltext engines
     @Test
     public void testFulltextExpressionPhrase() throws Exception {
-        assumeTrue(!(database instanceof DatabaseDerby));
+        assumeTrue(!database.isVCSDerby());
 
         String query;
 
@@ -707,11 +703,8 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
 
     @Test
     public void testFulltextSecondary() throws Exception {
-        if (!database.supportsMultipleFulltextIndexes()) {
-            System.out.println("Skipping multi-fulltext test for unsupported database: "
-                    + database.getClass().getName());
-            return;
-        }
+        assumeTrue("Skipping multi-fulltext test for unsupported database", database.supportsMultipleFulltextIndexes());
+
         createDocs();
         String query;
         DocumentModelList dml;

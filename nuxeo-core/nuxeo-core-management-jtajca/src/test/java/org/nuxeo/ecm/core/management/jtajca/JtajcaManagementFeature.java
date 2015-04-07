@@ -8,7 +8,6 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.transaction.TransactionManager;
 
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.IgnoreNonPooledCondition;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -51,7 +50,8 @@ public class JtajcaManagementFeature extends SimpleFeature {
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
         // bind repository
-        NuxeoContainer.getConnectionManager(DatabaseHelper.DATABASE.repositoryName);
+        String repositoryName = runner.getFeature(CoreFeature.class).getStorageConfiguration().getRepositoryName();
+        NuxeoContainer.getConnectionManager(repositoryName);
 
         MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
         bind(binder, mbs, ConnectionPoolMonitor.class);

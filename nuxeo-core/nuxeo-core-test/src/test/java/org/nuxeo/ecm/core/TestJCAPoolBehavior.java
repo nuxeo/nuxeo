@@ -17,6 +17,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,6 +28,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
@@ -57,7 +59,7 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
     @Override
     protected void deployRepositoryContrib() throws Exception {
         super.deployRepositoryContrib();
-        desc = Framework.getLocalService(SQLRepositoryService.class).getRepositoryDescriptor(database.repositoryName);
+        desc = Framework.getLocalService(SQLRepositoryService.class).getRepositoryDescriptor(database.getRepositoryName());
         desc.pool.setMinPoolSize(MIN_POOL_SIZE);
         desc.pool.setMaxPoolSize(MAX_POOL_SIZE);
         desc.pool.setBlockingTimeoutMillis(BLOCKING_TIMEOUT);
@@ -179,22 +181,21 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
     @Test
     public void testMultipleRepositoriesPerTransaction() throws Exception {
         // config for second repo available only for H2
-        if (!(database instanceof DatabaseH2)) {
-            return;
-        }
-        DatabaseH2 db = (DatabaseH2) database;
+        assumeTrue("Test only works with H2", database.isVCSH2());
+
+        DatabaseH2 db = (DatabaseH2) DatabaseHelper.DATABASE;
         db.setUp2();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test", "OSGI-INF/test-pooling-h2-repo2-contrib.xml");
         // open a second repository
-        try (CoreSession session2 = CoreInstance.openCoreSession(database.repositoryName + "2",
+        try (CoreSession session2 = CoreInstance.openCoreSession(database.getRepositoryName() + "2",
                 SecurityConstants.ADMINISTRATOR)) {
             doTestMultipleRepositoriesPerTransaction(session2);
         }
     }
 
     protected void doTestMultipleRepositoriesPerTransaction(CoreSession session2) throws Exception {
-        assertEquals(database.repositoryName, session.getRepositoryName());
-        assertEquals(database.repositoryName + "2", session2.getRepositoryName());
+        assertEquals(database.getRepositoryName(), session.getRepositoryName());
+        assertEquals(database.getRepositoryName() + "2", session2.getRepositoryName());
         assertTrue(TransactionHelper.isTransactionActive());
         assertNotSame("Sessions from two different repos", session.getRootDocument().getId(),
                 session2.getRootDocument().getId());

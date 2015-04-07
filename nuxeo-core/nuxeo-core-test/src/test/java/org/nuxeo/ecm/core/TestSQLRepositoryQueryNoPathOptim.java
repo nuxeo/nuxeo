@@ -44,7 +44,7 @@ public class TestSQLRepositoryQueryNoPathOptim extends SQLRepositoryTestCase {
         deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-no-pathoptimizations-contrib.xml");
         openSession();
         RepositoryDescriptor desc = Framework.getLocalService(SQLRepositoryService.class).getRepositoryDescriptor(
-                database.repositoryName);
+                database.getRepositoryName());
         Assert.assertFalse("Path optim should be disabled", desc.getPathOptimizationsEnabled());
     }
 

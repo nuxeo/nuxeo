@@ -46,8 +46,6 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
 
-    private static final String NO_TX_CANNOT_RECONN = "No transaction, cannot reconnect";
-
     @Before
     public void checkAssumptions() {
         assumeTrue(hasPoolingConfig());
@@ -59,7 +57,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
     @Test
     public void testSessionSharing() throws Exception {
         RepositoryService repositoryManager = Framework.getLocalService(RepositoryService.class);
-        Repository repo = repositoryManager.getRepository(REPOSITORY_NAME);
+        Repository repo = repositoryManager.getRepository(database.getRepositoryName());
         assertEquals(1, repo.getActiveSessionsCount());
 
         CoreSession session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);

@@ -58,10 +58,10 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.storage.sql.DatabaseDerby;
-import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
+
+import static org.junit.Assume.assumeTrue;
 
 /**
  * @author Dragos Mihalache
@@ -276,13 +276,11 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
     @Test
     public void testQueryBasic2() throws Exception {
+        // ?
+        assumeTrue(!database.isVCSDerby());
+
         createDocs();
         DocumentModelList dml;
-
-        if (database == DatabaseDerby.INSTANCE) {
-            // ?
-            return;
-        }
 
         dml = session.query("SELECT * FROM Document WHERE dc:title ILIKE 'test%'");
         assertEquals(5, dml.size());
@@ -482,10 +480,8 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
     @Test
     public void testOrderBySameColumns() throws Exception {
-        if (database instanceof DatabaseSQLServer) {
-            // SQL Server cannot ORDER BY foo, foo
-            return;
-        }
+        // SQL Server cannot ORDER BY foo, foo
+        assumeTrue("SQL Server cannot ORDER BY foo, foo", !database.isVCSSQLServer());
 
         String sql;
         DocumentModelList dml;
@@ -992,7 +988,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         dml = session.query("SELECT * FROM Document WHERE dc:created BETWEEN DATE '2007-03-15' AND DATE '2008-01-01'");
         assertEquals(1, dml.size());
 
-        if (!(database instanceof DatabaseDerby)) {
+        if (!database.isVCSDerby()) {
             // Derby 10.5.3.0 has bugs with LEFT JOIN and NOT BETWEEN
             // http://issues.apache.org/jira/browse/DERBY-4388
 

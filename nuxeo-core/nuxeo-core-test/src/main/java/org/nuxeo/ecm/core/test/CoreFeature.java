@@ -62,6 +62,12 @@ public class CoreFeature extends SimpleFeature {
 
     protected boolean cleaned;
 
+    protected StorageConfiguration storageConfiguration = new StorageConfiguration();
+
+    public StorageConfiguration getStorageConfiguration() {
+        return storageConfiguration;
+    }
+
     public RepositorySettings getRepository() {
         return repository;
     }

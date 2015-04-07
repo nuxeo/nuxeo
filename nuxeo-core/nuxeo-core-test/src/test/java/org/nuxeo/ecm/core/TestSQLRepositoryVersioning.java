@@ -46,7 +46,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
 import org.nuxeo.ecm.core.versioning.VersioningService;
@@ -73,7 +72,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
      * Sleep 1s, useful for stupid databases (like MySQL) that don't have subsecond resolution in TIMESTAMP fields.
      */
     public void maybeSleepToNextSecond() {
-        DatabaseHelper.DATABASE.maybeSleepToNextSecond();
+        database.maybeSleepToNextSecond();
     }
 
     @Test

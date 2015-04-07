@@ -18,6 +18,8 @@
 
 package org.nuxeo.elasticsearch.test;
 
+import static org.junit.Assume.assumeTrue;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
@@ -45,8 +47,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.tag.TagService;
@@ -73,6 +74,9 @@ public class TestAutomaticIndexing {
     private static final String IDX_NAME = "nxutest";
 
     private static final String TYPE_NAME = "doc";
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
@@ -328,10 +332,9 @@ public class TestAutomaticIndexing {
 
     @Test
     public void shouldIndexLargeToken() throws Exception {
-        if (!(DatabaseHelper.DATABASE instanceof DatabaseH2)) {
-            // db backend need to support field bigger than 32k
-            return;
-        }
+        assumeTrue("DB backend needs to support fields bigger than 32k",
+                coreFeature.getStorageConfiguration().isVCSH2());
+
         startTransaction();
         DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
         doc.setPropertyValue("dc:source", "search foo" + new String(new char[33000]).replace('\0', 'a'));

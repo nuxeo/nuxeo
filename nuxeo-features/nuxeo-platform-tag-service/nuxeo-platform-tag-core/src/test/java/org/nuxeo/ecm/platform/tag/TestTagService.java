@@ -42,11 +42,9 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
-import org.nuxeo.ecm.core.storage.sql.DatabaseOracle;
-import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -72,6 +70,9 @@ public class TestTagService {
     protected static final Log log = LogFactory.getLog(TestTagService.class);
 
     @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
     protected CoreSession session;
 
     @Inject
@@ -83,7 +84,8 @@ public class TestTagService {
     // Oracle fails if we do too many connections in a short time, sleep
     // here to prevent this.
     public void maybeSleep() throws Exception {
-        if (DatabaseHelper.DATABASE instanceof DatabaseOracle || DatabaseHelper.DATABASE instanceof DatabaseSQLServer) {
+        StorageConfiguration storageConfiguration = coreFeature.getStorageConfiguration();
+        if (storageConfiguration.isVCSOracle() || storageConfiguration.isVCSSQLServer()) {
             Thread.sleep(5 * 1000);
         }
     }

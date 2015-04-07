@@ -18,7 +18,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory;
 import org.nuxeo.ecm.core.test.NoopRepositoryInit;
 
