@@ -88,6 +88,10 @@ After installing the plugin, make sure before starting to include your DuoWeb Ke
 
 The `YOUR_APPLICATION_KEY` can be generated as followed in [DuoWeb documentation](https://www.duosecurity.com/docs/duoweb#1.-generate-an-akey)
 
+## QA results
+
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-duoweb-authentication-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-duoweb-authentication-master/)
+
 ###Report & Contribute
 
 We are glad to welcome new developers on this initiative, and even simple usage feedback is great.
@@ -98,11 +102,7 @@ We are glad to welcome new developers on this initiative, and even simple usage 
 ##About
 ###Nuxeo
 
-[Nuxeo](http://www.nuxeo.com) provides a modular, extensible Java-based [open source software platform for enterprise content management](http://www.nuxeo.com/en/products/content-management-platform), and packaged applications for [document management](http://www.nuxeo.com/en/products/document-management), [digital asset management](http://www.nuxeo.com/en/products/digital-asset-management), [social collaboration](http://www.nuxeo.com/en/products/social-collaboration) and [case management](http://www.nuxeo.com/en/products/case-management).
-
-Designed by developers for developers, the Nuxeo platform offers a modern architecture, a powerful plug-in model and extensive packaging capabilities for building content applications.
-
-More information on: <http://www.nuxeo.com/>
+Nuxeo dramatically improves how content-based applications are built, managed and deployed, making customers more agile, innovative and successful. Nuxeo provides a next generation, enterprise ready platform for building traditional and cutting-edge content oriented applications. Combining a powerful application development environment with SaaS-based tools and a modular architecture, the Nuxeo Platform and Products provide clear business value to some of the most recognizable brands including Verizon, Electronic Arts, Netflix, Sharp, FICO, the U.S. Navy, and Boeing. Nuxeo is headquartered in New York and Paris. More information is available at www.nuxeo.com.
 
 ###DuoWeb
 DuoWeb signup:
