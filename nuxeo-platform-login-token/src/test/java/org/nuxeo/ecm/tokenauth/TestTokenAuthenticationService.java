@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
@@ -57,6 +58,9 @@ public class TestTokenAuthenticationService {
 
     @Inject
     protected DirectoryService directoryService;
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @After
     public void cleanDirectories() throws Exception {
@@ -179,7 +183,7 @@ public class TestTokenAuthenticationService {
         assertEquals(3, tokenAuthenticationService.getTokenBindings("joe").size());
 
         // Bindings should be sorted by descendant creation date
-        if (!(DatabaseHelper.DATABASE instanceof DatabaseMySQL)) {
+        if (coreFeature.getStorageConfiguration().hasSubSecondResolution()) {
             DocumentModel tokenBinding = tokenBindings.get(0);
             String binding1Token = (String) tokenBinding.getPropertyValue("authtoken:token");
             log.debug("binding1Token = " + binding1Token);
