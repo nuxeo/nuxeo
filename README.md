@@ -18,28 +18,28 @@ For this, a generic listener is provided : based on the configuration it will co
 A typical use case could be :
 
     `loginSucceed`    in Nuxeo => call identify on segment.io
-    `documentCreated` in Nuxeo => call track    on segment.io	
+    `documentCreated` in Nuxeo => call track    on segment.io
 
 ## Building / Install
 
-Build : 
+Build :
 
     mvn clean install
 
 Install bundle
 
-    cp target/nuxeo-segmentio-connector-5.8.jar  $NX_TOMCAT/nxserver/plugins/.
+    cp target/nuxeo-segmentio-connector-5.8.jar $NUXEO_HOME/templates/custom/bundles/
 
 Install lib
 
-    cp ~/.m2/repository/com/github/segmentio/analytics/0.3.1/analytics-0.3.1.jar  $NX_TOMCAT/nxserver/lib/.
-    cp ~/.m2/repository/com/google/code/gson/gson/2.2/gson-2.2.jar $NX_TOMCAT/nxserver/lib/.
+    cp ~/.m2/repository/com/github/segmentio/analytics/0.3.1/analytics-0.3.1.jar $NUXEO_HOME/templates/custom/lib/
+    cp ~/.m2/repository/com/google/code/gson/gson/2.2/gson-2.2.jar $NUXEO_HOME/templates/custom/lib/
 
-## Downloadling 
+## Downloadling
 
-The project is automatically built by http://qa.nuxeo.org/jenkins/job/nuxeo-segment.io-connector-master/
+The project is automatically built by http://qa.nuxeo.org/jenkins/job/addons_nuxeo-segment.io-connector-master/
 
-You can download the last stable jat from : http://qa.nuxeo.org/jenkins/job/nuxeo-segment.io-connector-master/lastSuccessfulBuild/artifact/target/
+You can download the last stable JAR from: http://qa.nuxeo.org/jenkins/job/addons_nuxeo-segment.io-connector-master/lastSuccessfulBuild/artifact/target/
 
 ## Server side integration
 
@@ -61,12 +61,12 @@ However, you can override this default binding, by providing custom bindng for t
 
 The parameters binding, is generated from a Groovy script evaluated in a context containing :
 
- - `event` : the Nuxeo event object 
+ - `event` : the Nuxeo event object
  - `eventContext` : context of the event (shortcut for `event.getContext()`)
  - `principal` : the `NuxeoPrincipal` user object
  - `mapping` : the HashMap that will be used to resolve the mapping
 
-If the event is associated to a Document event, the context will also contain : 
+If the event is associated to a Document event, the context will also contain :
 
  - `doc` : the source DocumentModel for the event
  - `repository` : name of the source repository
@@ -77,7 +77,7 @@ The `principal` is normally extracted from the context and will be used to fetch
 
 ### Parameters bindings
 
-Here is a simple binding : 
+Here is a simple binding :
 
 *Bind `loginSucceed` to call identify on segment.io*
 
@@ -106,7 +106,7 @@ Here is a simple binding :
 
 The `parameters` system is used to generate a Groovy script.
 
-Typically, this XML configuration 
+Typically, this XML configuration
 
       <parameters>
         <parameter name="plugin">eventContext.getProperty("AuthenticationPlugin")</parameter>
@@ -121,7 +121,7 @@ Will result in this script
       </groovy>
 
 If needed you can directly contribute the groovy script in addition or in replacement of the parameters binding.
- 
+
 ### About Grouping
 
 The SegmentIO java lib does not expose a group API, but the corresponding REST API does exist.
@@ -149,13 +149,13 @@ You can also do a direct integration in your xhtml template using :
 
     <ui:include src="/incl/segmentio.xhtml" />
 
-### Other Web UI 
+### Other Web UI
 
 Outside of JSF, for example in WebEngine, you can include a dynamically generated script :
 
     <script src="/nuxeo/site/segmentIO"></script>
 
-This script will : 
+This script will :
 
  - dynamic loading analytics.js + dependencies
  - init analytics.js with the configured WriteKey
@@ -177,10 +177,17 @@ An alternative is to use a script that is generated for your user:
 
 XXX should be the actual login of the currently loggedin user.
 
-Typically : 
+Typically :
 
     <script src="/nuxeo/site/segmentIO/user/${Context.principal.name}"></script>
 
 NB : this script is served for authenticated users.
 
 
+## QA results
+
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-segment.io-connector-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-segment.io-connector-master/)
+
+# About Nuxeo
+
+Nuxeo dramatically improves how content-based applications are built, managed and deployed, making customers more agile, innovative and successful. Nuxeo provides a next generation, enterprise ready platform for building traditional and cutting-edge content oriented applications. Combining a powerful application development environment with SaaS-based tools and a modular architecture, the Nuxeo Platform and Products provide clear business value to some of the most recognizable brands including Verizon, Electronic Arts, Netflix, Sharp, FICO, the U.S. Navy, and Boeing. Nuxeo is headquartered in New York and Paris. More information is available at www.nuxeo.com.
