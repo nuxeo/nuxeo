@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.suggestbox.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,8 +34,6 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -148,9 +147,7 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         session.createDocument(fileBob);
 
         session.save();
-        // wait for fulltext indexing
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        waitForFulltextIndexing();
     }
 
     @After
@@ -162,9 +159,7 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
     @Test
     // TODO change the test when the redirection to the new search tab will be handled
     public void testDefaultSuggestionConfigurationWithKeyword() throws SuggestionException {
-        if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
-            return;
-        }
+        assumeTrue("No multiple fulltext indexes", database.supportsMultipleFulltextIndexes());
 
         // build a suggestion context
         NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
@@ -191,9 +186,7 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
     @Test
     // TODO change the test when the redirection to the new search tab will be handled
     public void testDefaultSuggestionConfigurationWithDate() throws SuggestionException {
-        if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
-            return;
-        }
+        assumeTrue("No multiple fulltext indexes", database.supportsMultipleFulltextIndexes());
 
         // build a suggestion context
         NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
@@ -229,6 +222,8 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
 
     @Test
     public void testSearchUserLimit() throws Exception {
+        assumeTrue("No multiple fulltext indexes", database.supportsMultipleFulltextIndexes());
+
         Session userSession = userdir.getSession();
         try {
             for (int i = 0; i < 10; i++) {
@@ -240,9 +235,6 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
             }
         } finally {
             userSession.close();
-        }
-        if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
-            return;
         }
 
         // build a suggestion context
@@ -265,9 +257,7 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
     @Test
     // TODO change the test when the redirection to the new search tab will be handled
     public void testDefaultSuggestionConfigurationWithUsersAndGroups() throws SuggestionException {
-        if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
-            return;
-        }
+        assumeTrue("No multiple fulltext indexes", database.supportsMultipleFulltextIndexes());
 
         // build a suggestion context
         NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
@@ -340,11 +330,10 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
 
     @Test
     public void testSpecialCharacterHandlingInSuggesters() throws SuggestionException {
+        assumeTrue("No multiple fulltext indexes", database.supportsMultipleFulltextIndexes());
+
         // check that special characters are not interpreted by the search
         // backend
-        if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
-            return;
-        }
 
         // build a suggestion context
         NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
