@@ -36,10 +36,11 @@ You can then deploy Nuxeo Digital Signature to your Tomcat instance with:
 
     $ ant deploy-tomcat
 
-You can also take all generated jar files (currently 3, present in the target directories of all submodules of this project) and place them in the <NUXEO_HOME>/nxserver/plugins directory of your Nuxeo CAP instance.
+You can also take all generated jar files (currently 3, present in the target directories of all submodules of this project), copy them into `$NUXEO_HOME/templates/custom/bundles/` and activate the "custom" template.
 
 
 ## Project Structure
+
 This project can be divided conceptually into 3 parts:
 
 1) certificate generation (low-level PKI object operations, CA operations)
@@ -50,6 +51,7 @@ This project can be divided conceptually into 3 parts:
 
 
 ## Configuration:
+
 1) Install your root keystore file in a secured directory
 
 To do initial testing you can use the keystore specified in:
@@ -60,13 +62,10 @@ To do initial testing you can use the keystore specified in:
 *Note: cryptography exportation laws differ between countries so make sure you are using adequate encryption configuration, libraries and tools.*
 
 
-## About Nuxeo
+## QA results
 
-Nuxeo provides a modular, extensible Java-based [open source software platform for enterprise content management] [1] and packaged applications for [document management] [2], [digital asset management] [3] and [case management] [4]. Designed by developers for developers, the Nuxeo platform offers a modern architecture, a powerful plug-in model and extensive packaging capabilities for building content applications.
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-signature-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-signature-master/)
 
-[1]: http://www.nuxeo.com/en/products/ep
-[2]: http://www.nuxeo.com/en/products/document-management
-[3]: http://www.nuxeo.com/en/products/dam
-[4]: http://www.nuxeo.com/en/products/case-management
+# About Nuxeo
 
-More information on: <http://www.nuxeo.com/>
+Nuxeo dramatically improves how content-based applications are built, managed and deployed, making customers more agile, innovative and successful. Nuxeo provides a next generation, enterprise ready platform for building traditional and cutting-edge content oriented applications. Combining a powerful application development environment with SaaS-based tools and a modular architecture, the Nuxeo Platform and Products provide clear business value to some of the most recognizable brands including Verizon, Electronic Arts, Netflix, Sharp, FICO, the U.S. Navy, and Boeing. Nuxeo is headquartered in New York and Paris. More information is available at www.nuxeo.com.
