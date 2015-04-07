@@ -35,6 +35,7 @@ nuxeo.vcs.max-pool-size=20
 nuxeo.vcs.blocking-timeout-millis=100
 nuxeo.vcs.idle-timeout-minutes=10
 nuxeo.vcs.fulltext.disabled=false
+nuxeo.vcs.fulltext.search.disabled=false
 nuxeo.vcs.noddl=false
 nuxeo.vcs.idtype=varchar
 
