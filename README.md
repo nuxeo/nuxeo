@@ -5,7 +5,7 @@ This project is an on-going project, supported by Nuxeo.
 
 ## Building
 ### Requirements
-Buidling Nuxeo Spreadsheet requires the following software:
+Building Nuxeo Spreadsheet requires the following software:
 - [Bower] (http://bower.io)
 - [Node.js] (http://nodejs.org)
 - [gulp] (http://gulpjs.com)
@@ -22,9 +22,12 @@ Nuxeo Spreadsheet is available as a packaged add-on [from the Nuxeo Marketplace]
 ## Resources
 ### Documentation
 The documentation for Nuxeo Spreadsheet is available in our Documentation Center: http://doc.nuxeo.com/x/0xQ5AQ
+
 ### Following Project QA Status
-Follow the project build status on http://qa.nuxeo.org/jenkins/job/addons_nuxeo-platform-spreadsheet-master/
-### Reporting Issues 
+
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-platform-spreadsheet-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-platform-spreadsheet-master/)
+
+### Reporting Issues
 You can follow the developments in the Nuxeo Platform project of our JIRA bug tracker, which includes a Spreadsheet component: [https://jira.nuxeo.com/browse/NXP/component/14505](https://jira.nuxeo.com/browse/NXP/component/14505).
 
 You can report issues on [answers.nuxeo.com](http://answers.nuxeo.com).
