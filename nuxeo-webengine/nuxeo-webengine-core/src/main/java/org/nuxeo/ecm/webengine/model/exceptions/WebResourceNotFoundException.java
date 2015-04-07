@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webengine.model.exceptions;
 
+import javax.ws.rs.core.Response;
+
 import org.nuxeo.ecm.webengine.WebException;
 
 /**
@@ -29,11 +31,11 @@ public class WebResourceNotFoundException extends WebException {
     private static final long serialVersionUID = 1L;
 
     public WebResourceNotFoundException(String message) {
-        super(message, 404);
+        super(message, Response.Status.NOT_FOUND.getStatusCode());
     }
 
     public WebResourceNotFoundException(String message, Throwable cause) {
-        super(message, cause, 404);
+        super(message, cause, Response.Status.NOT_FOUND.getStatusCode());
     }
 
 }
