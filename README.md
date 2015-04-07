@@ -5,9 +5,9 @@
 The file importer comes as a Java library (with nuxeo runtime service) and a sample JAX-RS interface to launch, monitor and abort import jobs.
 This project is an on-going project, supported by Nuxeo
 
-## Building 
+## Building
 ### How to Build Nuxeo Platform Importer
-Build the Nuxeo Platform Importer with Maven:    
+Build the Nuxeo Platform Importer with Maven:
 ```$ mvn install -Dmaven.test.skip=true```
 
 ## Deploying
@@ -15,14 +15,14 @@ Nuxeo Platform Importer is available as two package add-ons [from the Nuxeo Mark
 https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-platform-importer
 https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-scan-importer
 
-## Resources 
+## Resources
 ### Documentation
 The documentation for Nuxeo Platform Importer is available in our Documentation Center: http://doc.nuxeo.com/x/gYBVAQ
 
 ### Following Project QA Status
-Follow the project build status on: http://qa.nuxeo.org/jenkins/job/addons_nuxeo-platform-importer-master/
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-platform-importer-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-platform-importer-master/)
 
-### Reporting Issues 
+### Reporting Issues
 You can follow the developments in the Nuxeo Platform project of our JIRA bug tracker, which includes a Nuxeo Platform Importer component:
 https://jira.nuxeo.com/browse/NXP/component/10621
 
