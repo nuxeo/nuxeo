@@ -80,6 +80,7 @@
                 id="#{widget.id}_input" model="model"
                 template="#{templateValue}"
                 required="#{widgetProperty_required}"
+                removeEmpty="#{widgetProperty_removeEmpty}"
                 diff="#{widgetProperty_diff}"
                 rendered="#{isEditMode or not empty fieldOrValue}">
                 <tr class="#{model.rowIndex % 2 == 0 ? 'dataRowEven': 'dataRowOdd'} listItem">
@@ -107,6 +108,7 @@
                 id="#{widget.id}_input" model="model"
                 template="#{templateValue}"
                 required="#{widgetProperty_required}"
+                removeEmpty="#{widgetProperty_removeEmpty}"
                 diff="#{widgetProperty_diff}"
                 rendered="#{isEditMode or not empty fieldOrValue}">
                 <tr>
@@ -139,6 +141,7 @@
             id="#{widget.id}_input" model="model"
             template="#{templateValue}"
             required="#{widgetProperty_required}"
+            removeEmpty="#{widgetProperty_removeEmpty}"
             diff="#{widgetProperty_diff}"
             rendered="#{isEditMode or not empty fieldOrValue}">
             <h:panelGrid columns="#{isEditMode and showActions?2:1}">
@@ -181,6 +184,7 @@
             id="#{widget.id}_input" model="model"
             template="#{templateValue}"
             required="#{widgetProperty_required}"
+            removeEmpty="#{widgetProperty_removeEmpty}"
             diff="#{widgetProperty_diff}"
             rendered="#{isEditMode or not empty fieldOrValue}">
             <h:panelGrid columns="#{isEditMode and showActions?2:1}" styleClass="listItem">

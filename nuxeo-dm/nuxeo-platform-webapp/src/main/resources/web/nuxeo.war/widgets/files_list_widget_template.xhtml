@@ -44,6 +44,7 @@
       <a4j:outputPanel ajaxRendered="true" layout="block"
         id="#{widget.id}_panel" styleClass="jsContextKeeper_#{widget.id}">
         <nxu:inputList value="#{field}" id="#{widget.id}_input" model="model"
+          removeEmpty="#{widgetProperty_removeEmpty}"
           template="#{nxd:propertyDefaultValue(widget.fieldDefinitions[0].propertyName)}"
           required="#{widgetProperty_required}" diff="#{widget.properties['diff']}">
 
