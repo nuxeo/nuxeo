@@ -52,22 +52,17 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.RenditionException;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
-        "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.actions", "org.nuxeo.ecm.platform.rendition.api",
-        "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.mimetype.core" })
+@Features(RenditionFeature.class)
 @LocalDeploy("org.nuxeo.ecm.platform.rendition.core:test-rendition-contrib.xml")
 public class TestRenditionService {
 
@@ -122,7 +117,6 @@ public class TestRenditionService {
 
     @Test
     public void testAvailableRenditionDefinitions() throws Exception {
-
         DocumentModel file = session.createDocumentModel("/", "file", "File");
         file.setPropertyValue("dc:title", "TestFile");
         file = session.createDocument(file);

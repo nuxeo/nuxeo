@@ -35,14 +35,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.rendition.Renderable;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -51,12 +46,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@RepositoryConfig(init = DefaultRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
-        "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.actions", "org.nuxeo.ecm.platform.rendition.api",
-        "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.platform.mimetype.api", "org.nuxeo.ecm.platform.mimetype.core" })
+@Features(RenditionFeature.class)
 @LocalDeploy({ "org.nuxeo.ecm.platform.rendition.core:test-renditionprovider-contrib.xml" })
 public class TestRenditionProvider {
 
