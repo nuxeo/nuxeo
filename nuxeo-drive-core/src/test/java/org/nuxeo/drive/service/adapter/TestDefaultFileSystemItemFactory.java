@@ -60,8 +60,6 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
-import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -103,6 +101,9 @@ public class TestDefaultFileSystemItemFactory {
     protected RuntimeHarness harness;
 
     @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
     protected CoreSession session;
 
     @Inject
@@ -141,7 +142,7 @@ public class TestDefaultFileSystemItemFactory {
      * For databases that don't have sub-second resolution, sleep a bit to get to the next second.
      */
     protected void maybeSleepToNextSecond() {
-        DatabaseHelper.DATABASE.maybeSleepToNextSecond();
+        coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
     }
 
     @Before
@@ -731,7 +732,7 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals(4, folderChildren.size());
         // Don't check children order against MySQL database because of the
         // milliseconds limitation
-        boolean ordered = !(DatabaseHelper.DATABASE instanceof DatabaseMySQL);
+        boolean ordered = coreFeature.getStorageConfiguration().hasSubSecondResolution();
         checkChildren(folderChildren, folder.getId(), note.getId(), file.getId(), subFolder.getId(),
                 adaptableChild.getId(), ordered);
     }

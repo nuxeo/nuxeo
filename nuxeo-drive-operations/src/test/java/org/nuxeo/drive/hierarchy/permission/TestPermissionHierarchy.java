@@ -68,10 +68,9 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
-import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
-import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
@@ -110,6 +109,9 @@ public class TestPermissionHierarchy {
     private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
 
     private static final String CONTENT_PREFIX = "The content of file ";
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
@@ -807,7 +809,8 @@ public class TestPermissionHierarchy {
     }
 
     protected void waitIfMySQLOrSQLServer() throws InterruptedException {
-        if (DatabaseHelper.DATABASE instanceof DatabaseMySQL || DatabaseHelper.DATABASE instanceof DatabaseSQLServer) {
+        StorageConfiguration storageConfiguration = coreFeature.getStorageConfiguration();
+        if (storageConfiguration.isVCSMySQL() || storageConfiguration.isVCSSQLServer()) {
             Thread.sleep(1000);
         }
     }

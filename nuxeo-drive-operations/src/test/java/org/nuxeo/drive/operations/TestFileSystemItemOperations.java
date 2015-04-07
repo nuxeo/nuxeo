@@ -60,8 +60,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
-import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -91,6 +90,9 @@ public class TestFileSystemItemOperations {
     private static final String SYNC_ROOT_FOLDER_ITEM_ID_PREFIX = "defaultSyncRootFolderItemFactory#test#";
 
     private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
@@ -350,7 +352,7 @@ public class TestFileSystemItemOperations {
 
         // Don't check children order against MySQL database because of the
         // milliseconds limitation
-        boolean ordered = !(DatabaseHelper.DATABASE instanceof DatabaseMySQL);
+        boolean ordered = coreFeature.getStorageConfiguration().hasSubSecondResolution();
         checkChildren(children, subFolder1.getId(), file3.getId(), file4.getId(), ordered);
     }
 
