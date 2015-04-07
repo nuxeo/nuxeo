@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -52,6 +51,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.snapshot" })
 @LocalDeploy("org.nuxeo.snapshot:relations-default-jena-contrib.xml")
 public class TestTreePublication {
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
@@ -82,7 +84,7 @@ public class TestTreePublication {
     private StringBuilder debug = new StringBuilder();
 
     protected void maybeSleepToNextSecond() {
-        DatabaseHelper.DATABASE.maybeSleepToNextSecond();
+        coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
     }
 
     protected void debugCreationDate(DocumentModel doc) {
