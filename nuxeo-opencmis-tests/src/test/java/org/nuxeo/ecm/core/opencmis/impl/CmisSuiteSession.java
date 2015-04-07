@@ -106,10 +106,9 @@ import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoContentStream;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
 import org.nuxeo.ecm.core.opencmis.tests.StatusLoggingDefaultHttpInvoker;
-import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
-import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -153,6 +152,9 @@ public class CmisSuiteSession {
     protected RuntimeHarness harness;
 
     @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
     protected CmisFeatureSession cmisFeatureSession;
 
     @Inject
@@ -192,7 +194,7 @@ public class CmisSuiteSession {
 
     protected void setUpData() throws Exception {
         repoDetails = Helper.makeNuxeoRepository(coreSession);
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        coreFeature.getStorageConfiguration().sleepForFulltext();
     }
 
     protected void waitForAsyncCompletion() {
@@ -938,8 +940,8 @@ public class CmisSuiteSession {
         properties.put("dc:modified", lastModifiedCalendar);
         folder.updateProperties(properties, true);
         // TODO XXX fix timezone issues with H2 / SQL Server
-        DatabaseHelper database = DatabaseHelper.DATABASE;
-        if (!(database instanceof DatabaseH2 || database instanceof DatabaseSQLServer)) {
+        StorageConfiguration storageConfiguration = coreFeature.getStorageConfiguration();
+        if (!(storageConfiguration.isVCSH2() || storageConfiguration.isVCSSQLServer())) {
             assertEquals(lastModifiedCalendar.getTimeInMillis(),
                     ((GregorianCalendar) folder.getPropertyValue("dc:modified")).getTimeInMillis());
         }
@@ -959,7 +961,7 @@ public class CmisSuiteSession {
             response = client.execute(request);
             assertEquals(HttpServletResponse.SC_OK, response.getStatusLine().getStatusCode());
             // TODO XXX fix timezone issues with H2 / SQL Server
-            if (!(database instanceof DatabaseH2 || database instanceof DatabaseSQLServer)) {
+            if (!(storageConfiguration.isVCSH2() || storageConfiguration.isVCSSQLServer())) {
                 assertEquals(lastModified, response.getLastHeader("Last-Modified").getValue());
             }
         } finally {

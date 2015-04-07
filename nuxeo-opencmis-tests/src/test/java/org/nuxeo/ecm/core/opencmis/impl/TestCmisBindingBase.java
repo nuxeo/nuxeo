@@ -17,6 +17,7 @@ import static org.junit.Assume.assumeTrue;
 import java.io.File;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -42,7 +43,7 @@ import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoBinding;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepositories;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -82,6 +83,9 @@ public abstract class TestCmisBindingBase {
     protected CmisBinding binding;
 
     protected String file5id;
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     protected void assumeSupportsJoins() {
         assumeTrue("joins not supported", supportsJoins());
@@ -170,11 +174,11 @@ public abstract class TestCmisBindingBase {
 
     protected void sleepForFulltext() {
         waitForAsyncCompletion();
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        coreFeature.getStorageConfiguration().sleepForFulltext();
     }
 
     protected boolean supportsMultipleFulltextIndexes() {
-        return DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes();
+        return coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes();
     }
 
     protected void nextTransaction() {
