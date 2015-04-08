@@ -39,7 +39,7 @@ class Connection extends nuxeo.Client {
 
       var xhrFields = {};
       if (this._username && this._password) {
-        headers['Authorization'] = 'Basic ' + btoa(this._username + ':' + this._password);
+        headers.Authorization = 'Basic ' + btoa(this._username + ':' + this._password);
         xhrFields = {
           withCredentials: true
         };

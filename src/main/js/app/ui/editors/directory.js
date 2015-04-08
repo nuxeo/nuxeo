@@ -98,7 +98,7 @@ function DirectoryRenderer(instance, td, row, col, prop, value, cellProperties) 
     if (!Array.isArray(value)) {
       value = value.split(',');
     }
-    arguments[5] = getLabels(ctx, cellProperties, value).join(',');
+    arguments[5] = getLabels(ctx, cellProperties, value).join(','); // jshint ignore:line
   }
   cellProperties.defaultRenderer.apply(this, arguments);
 }

@@ -17,10 +17,10 @@
   "trailing": true,
   "smarttabs": true,
   "jquery": true,
+  "-W078": false, // setter without a getter
   "globals": {
     "nuxeo": true,
     "$": true,
     "Handsontable": true
   }
-
 }
