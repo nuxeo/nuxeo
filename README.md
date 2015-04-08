@@ -21,14 +21,14 @@ temporary credentials from the instance role (if any).
 
 # Optional parameters
 
-- nuxeo.s3storage.region : the region code your S3 bucket will be placed in.  
-  For us-east-1 (the default), don't set this parameter  
-  For us-west-1 (Northern California), use us-west-1  
-  For us-west-2 (Oregon), use us-west-2  
-  For eu-west-1 (Ireland), use EU  
-  For ap-southeast-1 (Singapore), use ap-southeast-1  
-  For ap-northeast-1 (Tokyo), use ap-northeast-1  
-  For sa-east-1 (Sao Paulo), use sa-east-1  
+- nuxeo.s3storage.region : the region code your S3 bucket will be placed in.
+  For us-east-1 (the default), don't set this parameter
+  For us-west-1 (Northern California), use us-west-1
+  For us-west-2 (Oregon), use us-west-2
+  For eu-west-1 (Ireland), use EU
+  For ap-southeast-1 (Singapore), use ap-southeast-1
+  For ap-northeast-1 (Tokyo), use ap-northeast-1
+  For sa-east-1 (Sao Paulo), use sa-east-1
 
 - nuxeo.s3storage.cachesize : size of the local cache (default is 100MB).
 
@@ -67,18 +67,19 @@ mandatory once you specify a keystore) :
 - nuxeo.s3storage.crypt.key.password = the key password
 
 
-## About Nuxeo
+# Building
 
-Nuxeo provides a modular, extensible Java-based [open source software
-platform for enterprise content management] [5] and packaged applications
-for [document management] [6], [digital asset management] [7] and
-[case management] [8]. Designed by developers for developers, the Nuxeo
-platform offers a modern architecture, a powerful plug-in model and
-extensive packaging capabilities for building content applications.
+    mvn clean install
 
-[5]: http://www.nuxeo.com/en/products/ep
-[6]: http://www.nuxeo.com/en/products/document-management
-[7]: http://www.nuxeo.com/en/products/dam
-[8]: http://www.nuxeo.com/en/products/case-management
+## Deploying
 
-More information on: <http://www.nuxeo.com/>
+Install [the Amazon S3 Online Storage Marketplace Package](https://connect.nuxeo.com/nuxeo/site/marketplace/package/amazon-s3-online-storage).
+Or manually copy the built artifacts into `$NUXEO_HOME/templates/custom/bundles/` and activate the "custom" template.
+
+## QA results
+
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-core-binarymanager-s3-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-core-binarymanager-s3-master/)
+
+# About Nuxeo
+
+Nuxeo dramatically improves how content-based applications are built, managed and deployed, making customers more agile, innovative and successful. Nuxeo provides a next generation, enterprise ready platform for building traditional and cutting-edge content oriented applications. Combining a powerful application development environment with SaaS-based tools and a modular architecture, the Nuxeo Platform and Products provide clear business value to some of the most recognizable brands including Verizon, Electronic Arts, Netflix, Sharp, FICO, the U.S. Navy, and Boeing. Nuxeo is headquartered in New York and Paris. More information is available at www.nuxeo.com.
