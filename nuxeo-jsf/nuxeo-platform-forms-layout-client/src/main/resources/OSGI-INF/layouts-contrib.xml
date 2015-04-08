@@ -990,6 +990,25 @@
       </fields>
     </widget>
 
+    <widget name="list_removeEmpty" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Remove empty item(s)</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This boolean attribute allows to remove null items from the list on edit.
+          Items are only removed when there are changes to the list items.
+          Available since 7.3.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>removeEmpty</field>
+      </fields>
+    </widget>
+
     <widget name="container_subwidgets_display" type="selectOneListbox">
       <categories>
         <category>widgetTypeConf</category>
@@ -2795,6 +2814,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">list_listTemplateItem</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">list_removeEmpty</widget>
                 </row>
               </rows>
             </layout>
