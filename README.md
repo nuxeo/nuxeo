@@ -15,9 +15,10 @@ You should then have the 'Nuxeo Drive' tab in your Home allowing you to download
 
 ## QA results
 
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-drive-server-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-drive-server-master/)
-
-[![Build Multi-DB](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-drive-server-master-multidb)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-drive-server-master-multidb/)
+| Nuxeo QA Job | Status |
+|-----|--------|
+| Build Status | [![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-drive-server-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-drive-server-master/) |
+| Build Multi-DB | [![Build Multi-DB](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-drive-server-master-multidb)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-drive-server-master-multidb/) |
 
 # About Nuxeo
 
