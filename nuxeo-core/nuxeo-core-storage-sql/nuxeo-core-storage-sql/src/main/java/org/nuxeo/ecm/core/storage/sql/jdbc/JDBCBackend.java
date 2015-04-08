@@ -213,6 +213,10 @@ public class JDBCBackend implements RepositoryBackend {
                 // first connection, initialize the database
                 mapper.createDatabase();
             }
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Database ready, fulltext: disabled=%b searchDisabled=%b.",
+                        repositoryDescriptor.getFulltextDisabled(), repositoryDescriptor.getFulltextSearchDisabled()));
+            }
         }
         if (kind == MapperKind.CLUSTER_NODE_HANDLER) {
             clusterNodeHandler = new ClusterNodeHandler(mapper, repositoryDescriptor);

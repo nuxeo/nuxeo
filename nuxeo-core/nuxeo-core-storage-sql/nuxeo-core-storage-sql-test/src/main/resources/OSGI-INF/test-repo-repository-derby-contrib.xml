@@ -14,6 +14,8 @@
         <neverPerDocumentFacets>
           <facet>NotPerDocFacet</facet>
         </neverPerDocumentFacets>
+        <fulltext disabled="${nuxeo.test.vcs.fulltext.disabled}"
+          searchDisabled="${nuxeo.test.vcs.fulltext.search.disabled}"/>
       </indexing>
       <xa-datasource>org.apache.derby.jdbc.EmbeddedXADataSource</xa-datasource>
       <property name="createDatabase">create</property>

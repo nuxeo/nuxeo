@@ -33,28 +33,26 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
-@Features({ RepositoryElasticSearchFeature.class })
+@Features({ FulltextVcsSearchDisabledFeature.class, RepositoryElasticSearchFeature.class })
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
-public class TestFullltextDisabled extends TestFulltextEnabled {
+public class TestFulltextSearchDisabled extends TestFulltextEnabled {
 
     @Inject
     protected CoreFeature coreFeature;
 
     @Override
     @Test
-    @LocalDeploy("org.nuxeo.elasticsearch.core:test-repo-fulltext-disabled-contrib.xml")
     public void testFulltext() throws Exception {
-        assumeTrue(coreFeature.getStorageConfiguration().isVCSH2());
-
         createFileWithBlob();
-        // no binary fulltext extraction
+        // binary fulltext extraction is done
         String nxql = "SELECT * FROM Document WHERE ecm:fulltext='search'";
         DocumentModelList esRet = ess.query(new NxQueryBuilder(session).nxql(nxql));
-        Assert.assertEquals(0, esRet.totalSize());
+        Assert.assertEquals(1, esRet.totalSize());
 
         // fulltext search with VCS is not allowed
         exception.expect(ClientException.class);
         DocumentModelList coreRet = session.query(nxql);
+        Assert.assertEquals(0, coreRet.totalSize());
     }
 
 }

@@ -15,7 +15,8 @@
         <neverPerDocumentFacets>
           <facet>NotPerDocFacet</facet>
         </neverPerDocumentFacets>
-        <fulltext catalog="nuxeo" analyzer="French"/>
+        <fulltext catalog="nuxeo" analyzer="French" disabled="${nuxeo.test.vcs.fulltext.disabled}"
+          searchDisabled="${nuxeo.test.vcs.fulltext.search.disabled}"/>
       </indexing>
       <xa-datasource>${nuxeo.test.vcs.xadatasource}</xa-datasource>
       <property name="ServerName">${nuxeo.test.vcs.server}</property>
