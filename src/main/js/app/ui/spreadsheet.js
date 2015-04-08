@@ -158,7 +158,7 @@ class Spreadsheet {
         });
       })
     ).catch((err) => {
-      console.log(err);
+      console.error(err);
     }).then((result) => {
       this.ht.clearUndo();
       this.ht.render();
@@ -178,7 +178,7 @@ class Spreadsheet {
           continue;
         }
         var uid = this.data[idx].uid;
-        var doc = this._dirty[uid] = this._dirty[uid] || {};
+        var doc = this._dirty[uid] = this._dirty[uid] || {'entity-type': 'document'};
 
         // Split csv values into array
         var column = this._columnsByField[field];
