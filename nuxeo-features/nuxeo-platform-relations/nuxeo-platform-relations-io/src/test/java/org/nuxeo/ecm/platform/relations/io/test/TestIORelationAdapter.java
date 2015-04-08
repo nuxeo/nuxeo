@@ -18,6 +18,11 @@
 
 package org.nuxeo.ecm.platform.relations.io.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -27,15 +32,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -43,7 +44,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.io.api.IOManager;
 import org.nuxeo.ecm.platform.io.api.IOResourceAdapter;
@@ -60,7 +60,6 @@ import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.io.IORelationResources;
 import org.nuxeo.ecm.platform.relations.jena.JenaGraph;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * Test layout component extension points.
@@ -68,8 +67,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class TestIORelationAdapter extends SQLRepositoryTestCase {
-
-    private static final String repoName = DatabaseHelper.DATABASE.repositoryName;
 
     private static final String graphName = "myrelations";
 
@@ -103,6 +100,8 @@ public class TestIORelationAdapter extends SQLRepositoryTestCase {
 
     private JenaGraph graph;
 
+    private String repoName;
+
     @Override
     @Before
     public void setUp() throws Exception {
@@ -123,6 +122,7 @@ public class TestIORelationAdapter extends SQLRepositoryTestCase {
         this.graph = (JenaGraph) graph;
 
         createDocuments();
+        repoName = database.getRepositoryName();
     }
 
     private void createDocuments() throws ClientException {

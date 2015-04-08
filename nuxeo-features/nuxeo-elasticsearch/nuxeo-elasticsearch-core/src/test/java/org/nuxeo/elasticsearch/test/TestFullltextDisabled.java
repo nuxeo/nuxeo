@@ -17,13 +17,16 @@
 
 package org.nuxeo.elasticsearch.test;
 
+import static org.junit.Assume.assumeTrue;
+
+import javax.inject.Inject;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -34,13 +37,15 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestFullltextDisabled extends TestFulltextEnabled {
 
+    @Inject
+    protected CoreFeature coreFeature;
+
     @Override
     @Test
     @LocalDeploy("org.nuxeo.elasticsearch.core:test-repo-fulltext-disabled-contrib.xml")
     public void testFulltext() throws Exception {
-        if (!(DatabaseHelper.DATABASE instanceof DatabaseH2)) {
-            return;
-        }
+        assumeTrue(coreFeature.getStorageConfiguration().isVCSH2());
+
         createFileWithBlob();
         // no binary fulltext extraction
         String nxql = "SELECT * FROM Document WHERE ecm:fulltext='search'";
