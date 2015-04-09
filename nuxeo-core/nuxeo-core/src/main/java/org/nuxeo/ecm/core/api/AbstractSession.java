@@ -864,6 +864,17 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
+    public boolean hasChild(DocumentRef parent, String name) throws ClientException {
+        try {
+            Document doc = resolveReference(parent);
+            checkPermission(doc, READ_CHILDREN);
+            return doc.hasChild(name);
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to check existence of child " + name, e);
+        }
+    }
+
+    @Override
     public DocumentModelList getChildren(DocumentRef parent) throws ClientException {
         return getChildren(parent, null, READ, null, null);
     }

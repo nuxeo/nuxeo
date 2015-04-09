@@ -550,6 +550,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
+        assertFalse(session.hasChild(root.getRef(), name));
+        assertFalse(session.hasChild(root.getRef(), name2));
+
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
         childDocs.add(childFile);
@@ -558,6 +561,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         assertEquals(name, returnedChildDocs.get(0).getName());
         assertEquals(name2, returnedChildDocs.get(1).getName());
+
+        assertTrue(session.hasChild(root.getRef(), name));
+        assertTrue(session.hasChild(root.getRef(), name2));
 
         DocumentModel retrievedChild = session.getChild(root.getRef(), name);
 

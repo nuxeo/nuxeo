@@ -235,6 +235,19 @@ public interface CoreSession extends AutoCloseable {
     DocumentModel getChild(DocumentRef parent, String name) throws ClientException;
 
     /**
+     * Tests if the document has a child with the given name.
+     * <p>
+     * This operation silently ignores non-folder documents: If the document is not a folder then returns false.
+     *
+     * @param parent the document
+     * @param name the child name
+     * @return {@code true} if the document has a child with the given name
+     *
+     * @since 7.3
+     */
+    boolean hasChild(DocumentRef parent, String name) throws ClientException;
+
+    /**
      * Gets the children of the given parent.
      *
      * @param parent the parent reference
