@@ -106,9 +106,6 @@ public class LifeCycleServiceImpl extends DefaultComponent implements LifeCycleS
                 if (state == null) {
                     throw new LifeCycleException(String.format("State '%s' is not a valid state " + "for lifecycle %s",
                             initialStateName, lifeCycleName));
-                } else if (!documentLifeCycle.getInitialStateNames().contains(initialStateName)) {
-                    log.warn(String.format("State '%s' is not a valid initial state " + "for lifecycle %s",
-                            initialStateName, lifeCycleName));
                 }
             }
         }
