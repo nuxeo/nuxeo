@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -25,29 +25,36 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.joda.time.DateTime;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.sql.filter.SQLBetweenFilter;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-public class TestPagingComplexFilterDirectory extends SQLDirectoryTestCase {
-    @Before
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.directory.sql.tests", "pagingDirectory-contrib.xml");
-    }
+@RunWith(FeaturesRunner.class)
+@Features(SQLDirectoryFeature.class)
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@LocalDeploy("org.nuxeo.ecm.directory.sql.tests:pagingDirectory-contrib.xml")
+public class TestPagingComplexFilterDirectory {
 
-    public Session getSession() throws ClientException {
-        return getSession("pagingDirectory");
-    }
+    private static final String DIR = "pagingDirectory";
+
+    @Inject
+    protected DirectoryService directoryService;
 
     @Test
     public void testPaging() throws ClientException {
-        Session session = getSession();
+        Session session = directoryService.open(DIR);
         try {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("label", "Label");
@@ -71,7 +78,7 @@ public class TestPagingComplexFilterDirectory extends SQLDirectoryTestCase {
             assertEquals(1, entries.size());
             assertEquals("12", entries.get(0).getId());
         } catch (UnsupportedOperationException e) {
-            // Swallow it
+            // paging not supported by dialect (NXP-10647)
         } finally {
             session.close();
         }
@@ -79,7 +86,7 @@ public class TestPagingComplexFilterDirectory extends SQLDirectoryTestCase {
 
     @Test
     public void testComplexFilter() throws ClientException {
-        Session session = getSession();
+        Session session = directoryService.open(DIR);
         try {
             Calendar d121110 = new DateTime(2012, 11, 10, 0, 0, 0, 0).toGregorianCalendar();
             Calendar d121211 = new DateTime(2012, 12, 11, 0, 0, 0, 0).toGregorianCalendar();

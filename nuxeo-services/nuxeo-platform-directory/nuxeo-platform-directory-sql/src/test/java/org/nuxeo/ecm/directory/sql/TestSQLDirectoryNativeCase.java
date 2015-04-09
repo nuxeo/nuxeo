@@ -16,12 +16,16 @@
  */
 package org.nuxeo.ecm.directory.sql;
 
-public class TestSQLDirectoryNativeCase extends TestSQLDirectory {
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.directory.sql.tests", "test-sql-directories-nativecase-config.xml");
-    }
+@RunWith(FeaturesRunner.class)
+@Features(SQLDirectoryFeature.class)
+@LocalDeploy("org.nuxeo.ecm.directory.sql.tests:test-sql-directories-nativecase-config.xml")
+public class TestSQLDirectoryNativeCase extends SQLDirectoryTestSuite {
 
 }

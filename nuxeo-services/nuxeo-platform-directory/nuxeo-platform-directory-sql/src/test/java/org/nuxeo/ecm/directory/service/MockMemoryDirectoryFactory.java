@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.directory.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +84,11 @@ public class MockMemoryDirectoryFactory extends DefaultComponent implements Dire
 
     @Override
     public List<Directory> getDirectories() {
-        throw new NotImplementedException();
+        List<Directory> directories = new ArrayList<>();
+        for (String name : reg.keySet()) {
+            directories.add(getDirectory(name));
+        }
+        return directories;
     }
 
 }

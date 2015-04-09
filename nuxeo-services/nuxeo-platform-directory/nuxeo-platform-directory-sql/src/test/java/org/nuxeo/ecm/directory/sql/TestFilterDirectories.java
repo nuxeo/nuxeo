@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,39 +12,42 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Nuxeo
  */
-
 package org.nuxeo.ecm.directory.sql;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import javax.inject.Inject;
 
-import org.nuxeo.ecm.directory.DirectoryServiceImpl;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-public class TestFilterDirectories extends SQLDirectoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(SQLDirectoryFeature.class)
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@LocalDeploy("org.nuxeo.ecm.directory.sql.tests:filterDirectoryContrib.xml")
+public class TestFilterDirectories {
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.directory.sql.tests", "filterDirectoryContrib.xml");
-    }
+    @Inject
+    protected DirectoryService directoryService;
 
     @Test
     public void testFilterDirectory() throws Exception {
-
-        DirectoryServiceImpl dirServiceImpl = (DirectoryServiceImpl) Framework.getRuntime().getComponent(
-                DirectoryService.NAME);
-
-        Session unfiltredSession = dirServiceImpl.open("unfiltredTestDirectory");
+        Session unfiltredSession = directoryService.open("unfiltredTestDirectory");
         assertNotNull(unfiltredSession);
         assertEquals(5, unfiltredSession.getEntries().size());
         assertNotNull(unfiltredSession.getEntry("1"));
@@ -55,7 +58,7 @@ public class TestFilterDirectories extends SQLDirectoryTestCase {
         queryFilter.put("lang", "en");
         assertEquals(2, unfiltredSession.query(queryFilter).size());
 
-        Session filtredSession = dirServiceImpl.open("filtredTestDirectory");
+        Session filtredSession = directoryService.open("filtredTestDirectory");
         assertNotNull(filtredSession);
         assertEquals(2, filtredSession.getEntries().size());
         assertNotNull(filtredSession.getEntry("1"));

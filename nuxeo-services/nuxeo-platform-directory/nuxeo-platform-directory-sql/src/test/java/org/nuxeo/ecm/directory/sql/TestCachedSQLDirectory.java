@@ -19,18 +19,29 @@
 
 package org.nuxeo.ecm.directory.sql;
 
+import javax.inject.Inject;
+
 import org.eclipse.jdt.internal.core.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.redis.RedisFeature;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.DirectoryCache;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
-public class TestCachedSQLDirectory extends TestSQLDirectory {
-
-    protected final static String CACHE_CONTRIB = "sql-directory-cache-config.xml";
+@RunWith(FeaturesRunner.class)
+@Features(SQLDirectoryFeature.class)
+@Deploy("org.nuxeo.ecm.core.cache")
+@LocalDeploy("org.nuxeo.ecm.directory.sql.tests:sql-directory-cache-config.xml")
+public class TestCachedSQLDirectory extends SQLDirectoryTestSuite {
 
     protected final static String REDIS_CACHE_CONFIG = "sql-directory-redis-cache-config.xml";
 
@@ -38,20 +49,17 @@ public class TestCachedSQLDirectory extends TestSQLDirectory {
 
     protected final static String ENTRY_CACHE_WITHOUT_REFERENCES_NAME = "sql-entry-cache-without-references";
 
-    @Override
+    @Inject
+    protected RuntimeHarness harness;
+
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
 
-        deployBundle("org.nuxeo.ecm.core.cache");
-
-        if (RedisFeature.setup(this)) {
-            deployTestContrib("org.nuxeo.ecm.directory.sql.tests", REDIS_CACHE_CONFIG);
-        } else {
-            deployTestContrib("org.nuxeo.ecm.directory.sql.tests", CACHE_CONTRIB);
+        if (RedisFeature.setup(harness)) {
+            harness.deployTestContrib("org.nuxeo.ecm.directory.sql.tests", REDIS_CACHE_CONFIG);
         }
-        fireFrameworkStarted();
-        AbstractDirectory dir = getSQLDirectory();
 
+        AbstractDirectory dir = getSQLDirectory();
         DirectoryCache cache = dir.getCache();
         cache.setEntryCacheName(ENTRY_CACHE_NAME);
         cache.setEntryCacheWithoutReferencesName(ENTRY_CACHE_WITHOUT_REFERENCES_NAME);

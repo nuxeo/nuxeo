@@ -14,6 +14,7 @@ import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -64,7 +65,7 @@ public class TestSessionsAreClosedAutomatically {
 
     @Before
     public void fetchUserDirectory() throws DirectoryException {
-        userDirectory = SQLDirectoryTestCase.getDirectory("userDirectory");
+        userDirectory = Framework.getService(DirectoryService.class).getDirectory("userDirectory");
         Assert.assertNotNull(userDirectory);
     }
 

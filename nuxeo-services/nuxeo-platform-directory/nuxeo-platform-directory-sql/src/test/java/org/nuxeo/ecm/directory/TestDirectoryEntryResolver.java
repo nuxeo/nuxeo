@@ -32,17 +32,31 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.schema.types.SimpleType;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
-import org.nuxeo.ecm.directory.sql.SQLDirectoryTestCase;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-public class TestDirectoryEntryResolver extends SQLDirectoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ SQLDirectoryFeature.class, TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@LocalDeploy("org.nuxeo.ecm.directory.sql.tests:test-directory-resolver-contrib.xml")
+public class TestDirectoryEntryResolver {
 
     private static final String REFERENCED_DIRECTORY2 = "referencedDirectory2";
 
@@ -56,27 +70,24 @@ public class TestDirectoryEntryResolver extends SQLDirectoryTestCase {
 
     private static final String ENTRY_LABEL = "Label123";
 
+    @Inject
     protected CoreSession coreSession;
 
+    @Inject
     protected DocumentValidationService validator;
+
+    @Inject
+    protected DirectoryService directoryService;
 
     protected DocumentModel doc;
 
     protected DocumentModel entry1;
 
-    protected DocumentModel entry2;
-
     @Before
     public void setup() throws Exception {
-        deployContrib("org.nuxeo.ecm.directory.sql.tests", "test-directory-resolver-contrib.xml");
-        coreSession = Framework.getService(CoreSession.class);
-        validator = Framework.getService(DocumentValidationService.class);
-        Session session1 = getSession(REFERENCED_DIRECTORY1);
+        Session session1 = directoryService.open(REFERENCED_DIRECTORY1);
         entry1 = session1.getEntry(ENTRY_ID);
         session1.close();
-        Session session2 = getSession(REFERENCED_DIRECTORY2);
-        entry2 = session2.getEntry(ENTRY_ID);
-        session2.close();
         doc = coreSession.createDocumentModel("/", "doc1", "DirectoryReferencer");
     }
 

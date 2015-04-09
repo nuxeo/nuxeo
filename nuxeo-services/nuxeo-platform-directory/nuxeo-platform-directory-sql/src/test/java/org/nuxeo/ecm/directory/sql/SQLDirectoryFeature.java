@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -16,20 +16,21 @@
  */
 package org.nuxeo.ecm.directory.sql;
 
-import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javax.inject.Inject;
+import java.util.Map.Entry;
 
 import org.junit.runners.model.FrameworkMethod;
+import org.nuxeo.ecm.core.api.DataModel;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
@@ -48,15 +49,15 @@ import com.google.inject.name.Names;
  */
 @Features({ ClientLoginFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.core.schema",
-        "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.directory.sql" })
+@Deploy({ "org.nuxeo.ecm.directory.api", //
+        "org.nuxeo.ecm.directory", //
+        "org.nuxeo.ecm.core.schema", //
+        "org.nuxeo.ecm.directory.types.contrib", //
+        "org.nuxeo.ecm.directory.sql" })
 public class SQLDirectoryFeature extends SimpleFeature {
     public static final String USER_DIRECTORY_NAME = "userDirectory";
 
     public static final String GROUP_DIRECTORY_NAME = "groupDirectory";
-
-    @Inject
-    DirectoryService directoryService;
 
     @Override
     public void configure(final FeaturesRunner runner, Binder binder) {
@@ -75,16 +76,24 @@ public class SQLDirectoryFeature extends SimpleFeature {
         });
     }
 
-    protected final Map<Directory, Set<String>> savedContext = new HashMap<>();
+    protected final Map<String, Map<String, Map<String, Object>>> allDirectoryData = new HashMap<>();
 
     @Override
     public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
-        for (Directory dir : Framework.getService(DirectoryService.class).getDirectories()) {
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
+        // record all directories in their entirety
+        allDirectoryData.clear();
+        for (Directory dir : directoryService.getDirectories()) {
+            Map<String, Map<String, Object>> data = new HashMap<>();
             Session session = dir.getSession();
             try {
-                String field = session.getIdField();
-                Map<String, Serializable> filter = Collections.emptyMap();
-                savedContext.put(dir, new HashSet<String>(session.getProjection(filter, field)));
+                List<DocumentModel> entries = session.query(Collections.emptyMap(), Collections.emptySet(),
+                        Collections.emptyMap(), true); // fetch references
+                for (DocumentModel entry : entries) {
+                    DataModel dm = entry.getDataModel(dir.getSchema());
+                    data.put(entry.getId(), dm.getMap());
+                }
+                allDirectoryData.put(dir.getName(), data);
             } finally {
                 session.close();
             }
@@ -93,16 +102,35 @@ public class SQLDirectoryFeature extends SimpleFeature {
 
     @Override
     public void afterTeardown(FeaturesRunner runner) throws Exception {
-        for (Map.Entry<Directory, Set<String>> each : savedContext.entrySet()) {
-            Directory directory = each.getKey();
-            Session session = directory.getSession();
-            final Set<String> projection = each.getValue();
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
+        // clear all directories
+        for (Directory dir : directoryService.getDirectories()) {
+            Session session = dir.getSession();
             try {
-                String field = session.getIdField();
-                Map<String, Serializable> filter = Collections.emptyMap();
-                for (String id : session.getProjection(filter, field)) {
-                    if (!projection.contains(id)) {
-                        session.deleteEntry(id);
+                List<String> ids = session.getProjection(Collections.emptyMap(), dir.getIdField());
+                for (String id : ids) {
+                    session.deleteEntry(id);
+                }
+            } finally {
+                session.close();
+            }
+        }
+        // re-create all directory entries
+        for (Entry<String, Map<String, Map<String, Object>>> each : allDirectoryData.entrySet()) {
+            String directoryName = each.getKey();
+            Directory directory = directoryService.getDirectory(directoryName);
+            Collection<Map<String, Object>> data = each.getValue().values();
+            Session session = directory.getSession();
+            try {
+                for (Map<String, Object> map : data) {
+                    try {
+                        session.createEntry(map);
+                    } catch (DirectoryException e) {
+                        // happens for filter directories
+                        // or when testing config changes
+                        if (!e.getMessage().contains("already exists") && !e.getMessage().contains("Missing id")) {
+                            throw e;
+                        }
                     }
                 }
             } finally {
