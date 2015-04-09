@@ -257,4 +257,17 @@ public class TestCompileAndContext {
                 "Object]" + System.lineSeparator(), outContent.toString());
     }
 
+
+    @Test
+    public void testAutomationCtxSharing() throws Exception {
+        org.junit.Assert.assertNotNull(scriptingService);
+
+        InputStream stream = this.getClass().getResourceAsStream
+                ("/shareAutomationContext.js");
+        org.junit.Assert.assertNotNull(stream);
+        scriptingService.run(stream, session);
+        assertEquals("OK" + System.lineSeparator(), outContent.toString());
+    }
+
+
 }
