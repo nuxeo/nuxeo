@@ -17,62 +17,64 @@
 
 package org.nuxeo.ecm.platform.publisher.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import javax.inject.Inject;
 
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-public class TestServiceRegistration extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.content.template", //
+        "org.nuxeo.ecm.platform.types.api", //
+        "org.nuxeo.ecm.platform.types.core", //
+        "org.nuxeo.ecm.platform.versioning.api", //
+        "org.nuxeo.ecm.platform.versioning", //
+        "org.nuxeo.ecm.platform.query.api", //
+        "org.nuxeo.ecm.platform.publisher.core.contrib", //
+        "org.nuxeo.ecm.platform.publisher.core", //
+})
+public class TestServiceRegistration {
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployBundle("org.nuxeo.ecm.platform.types.api");
-        deployBundle("org.nuxeo.ecm.platform.types.core");
-        deployBundle("org.nuxeo.ecm.platform.versioning.api");
-        deployBundle("org.nuxeo.ecm.platform.versioning");
-        deployBundle("org.nuxeo.ecm.platform.query.api");
-        deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
-        deployBundle("org.nuxeo.ecm.platform.publisher.core");
+    @Inject
+    protected CoreSession session;
 
-        openSession();
-        fireFrameworkStarted();
-    }
+    @Inject
+    protected PublisherService publisherService;
 
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
+    @Inject
+    RemotePublicationTreeManager remotePublicationTreeManager;
 
     @Test
     public void testMainService() throws Exception {
-        PublisherService service = Framework.getLocalService(PublisherService.class);
-        assertNotNull(service);
+        assertNotNull(publisherService);
     }
 
     @Test
     public void testTreeService() throws Exception {
-        RemotePublicationTreeManager service = Framework.getLocalService(RemotePublicationTreeManager.class);
-        assertNotNull(service);
+        assertNotNull(remotePublicationTreeManager);
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.platform.publisher.core:OSGI-INF/publisher-contrib.xml")
     public void testContrib() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.publisher.core", "OSGI-INF/publisher-contrib.xml");
-        PublisherService service = Framework.getLocalService(PublisherService.class);
-        List<String> treeNames = service.getAvailablePublicationTree();
+        List<String> treeNames = publisherService.getAvailablePublicationTree();
         assertEquals(1, treeNames.size());
     }
 

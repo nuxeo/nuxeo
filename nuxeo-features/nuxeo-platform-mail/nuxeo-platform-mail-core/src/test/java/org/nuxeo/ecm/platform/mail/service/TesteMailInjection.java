@@ -28,32 +28,55 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 import org.nuxeo.ecm.platform.mail.action.MessageActionPipe;
 import org.nuxeo.ecm.platform.mail.action.Visitor;
 import org.nuxeo.ecm.platform.mail.utils.MailCoreConstants;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @author Laurent Doguin
  */
-public class TesteMailInjection extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.mail", //
+        "org.nuxeo.ecm.platform.mail.types", //
+        "org.nuxeo.ecm.platform.mimetype.api", //
+        "org.nuxeo.ecm.platform.mimetype.core", //
+        "org.nuxeo.ecm.core.convert", //
+        "org.nuxeo.ecm.core.convert.api", //
+        "org.nuxeo.ecm.core.convert.plugins", //
+})
+public class TesteMailInjection {
 
+    @Inject
     protected MailService mailService;
+
+    @Inject
+    protected CoreSession session;
 
     protected String incomingDocumentType;
 
@@ -63,24 +86,7 @@ public class TesteMailInjection extends SQLRepositoryTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.mail");
-        deployBundle("org.nuxeo.ecm.platform.mail.types");
-        deployBundle("org.nuxeo.ecm.platform.mimetype.api");
-        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.core.convert.api");
-        deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        mailService = Framework.getService(MailService.class);
-        assertNotNull(mailService);
-        openSession();
         createMailFolders();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
     }
 
     @Test

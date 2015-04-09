@@ -1,17 +1,23 @@
 package org.nuxeo.ecm.platform.publisher.impl.service;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.publisher.impl.finder.DefaultRootSectionsFinder;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /*
  * (C) Copyright 2012 Nuxeo SAS (http://nuxeo.com/) and contributors.
@@ -30,24 +36,17 @@ import org.nuxeo.ecm.platform.publisher.impl.finder.DefaultRootSectionsFinder;
  *     tmartins - test methods for DefaultRootSectionsFinder
  */
 
-public class TestRootSectionFinder extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+public class TestRootSectionFinder {
+
+    @Inject
+    protected CoreSession session;
 
     Set<String> sectionRootTypes = new HashSet<String>();
 
     Set<String> sectionTypes = new HashSet<String>();
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        openSession();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
 
     @Test
     public void testBuildQuery() throws Exception {

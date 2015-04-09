@@ -29,19 +29,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.commons.io.FilenameUtils;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
@@ -50,40 +55,35 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.descriptors.PublicationTreeConfigDescriptor;
 import org.nuxeo.ecm.platform.publisher.impl.localfs.LocalFSPublicationTree;
 import org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestFSPublishing extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.content.template", //
+        "org.nuxeo.ecm.platform.types.api", //
+        "org.nuxeo.ecm.platform.types.core", //
+        "org.nuxeo.ecm.platform.versioning.api", //
+        "org.nuxeo.ecm.platform.versioning", //
+        "org.nuxeo.ecm.platform.query.api", //
+        "org.nuxeo.ecm.platform.publisher.core.contrib", //
+        "org.nuxeo.ecm.platform.publisher.core", //
+})
+public class TestFSPublishing {
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected PublisherService service;
 
     protected DocumentModel doc2Publish;
 
     protected DocumentLocation doc2publishLocation;
 
     protected File rootFolder;
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployBundle("org.nuxeo.ecm.platform.types.api");
-        deployBundle("org.nuxeo.ecm.platform.types.core");
-        deployBundle("org.nuxeo.ecm.platform.versioning.api");
-        deployBundle("org.nuxeo.ecm.platform.versioning");
-        deployBundle("org.nuxeo.ecm.platform.query.api");
-
-        deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
-        deployBundle("org.nuxeo.ecm.platform.publisher.core");
-
-        fireFrameworkStarted();
-        openSession();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
 
     protected void createInitialDocs() throws Exception {
 
@@ -144,7 +144,6 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
 
         registerFSTree("TestingFSTree");
 
-        PublisherService service = Framework.getLocalService(PublisherService.class);
         PublicationTree tree = service.getPublicationTree("TestingFSTree", session, null);
 
         // check browsing
@@ -216,7 +215,6 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
     }
 
     private void registerFSTree(String treeName) throws Exception {
-        PublisherService service = Framework.getLocalService(PublisherService.class);
         PublisherServiceImpl fullService = (PublisherServiceImpl) service;
 
         // dynamic contrib
@@ -256,7 +254,6 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         writeFile(xmlFile, xmlContent);
 
         registerFSTree("TestingFSTree");
-        PublisherService service = Framework.getLocalService(PublisherService.class);
         PublicationTree tree = service.getPublicationTree("TestingFSTree", session, null);
 
         assertEquals(0, tree.getExistingPublishedDocument(doc2publishLocation).size());
@@ -282,7 +279,6 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
 
         registerFSTree("TestingFSTree");
 
-        PublisherService service = Framework.getLocalService(PublisherService.class);
         PublicationTree tree = service.getPublicationTree("TestingFSTree", session, null);
 
         List<PublicationNode> sectionsNodes = tree.getChildrenNodes();

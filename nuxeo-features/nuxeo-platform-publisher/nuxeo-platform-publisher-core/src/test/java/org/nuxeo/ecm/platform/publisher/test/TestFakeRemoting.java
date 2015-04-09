@@ -24,15 +24,20 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
@@ -40,39 +45,35 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl;
 import org.nuxeo.ecm.platform.publisher.remoting.client.ClientRemotePublicationNode;
 import org.nuxeo.ecm.platform.publisher.remoting.client.ClientRemotePublicationTree;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-public class TestFakeRemoting extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.content.template", //
+        "org.nuxeo.ecm.platform.types.api", //
+        "org.nuxeo.ecm.platform.types.core", //
+        "org.nuxeo.ecm.platform.versioning.api", //
+        "org.nuxeo.ecm.platform.versioning", //
+        "org.nuxeo.ecm.platform.query.api", //
+        "org.nuxeo.ecm.platform.publisher.core.contrib", //
+        "org.nuxeo.ecm.platform.publisher.core", //
+})
+@LocalDeploy("org.nuxeo.ecm.platform.publisher.test:OSGI-INF/publisher-remote-contrib-test.xml")
+public class TestFakeRemoting {
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected PublisherService service;
 
     DocumentModel workspace;
 
     DocumentModel doc2Publish;
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployBundle("org.nuxeo.ecm.platform.types.api");
-        deployBundle("org.nuxeo.ecm.platform.types.core");
-        deployBundle("org.nuxeo.ecm.platform.versioning.api");
-        deployBundle("org.nuxeo.ecm.platform.versioning");
-        deployBundle("org.nuxeo.ecm.platform.query.api");
-
-        deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
-        deployBundle("org.nuxeo.ecm.platform.publisher.core");
-
-        fireFrameworkStarted();
-        openSession();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
 
     protected void createInitialDocs() throws Exception {
 
@@ -112,10 +113,7 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
     public void testCorePublishingWithRemoting() throws Exception {
         createInitialDocs();
 
-        deployContrib("org.nuxeo.ecm.platform.publisher.test", "OSGI-INF/publisher-remote-contrib-test.xml");
-
         // check service config
-        PublisherService service = Framework.getLocalService(PublisherService.class);
         List<String> treeNames = service.getAvailablePublicationTree();
         assertTrue(treeNames.contains("ClientRemoteTree"));
 
@@ -207,11 +205,6 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
     public void testWrappingThroughRemoting() throws Exception {
         createInitialDocs();
 
-        deployContrib("org.nuxeo.ecm.platform.publisher.test", "OSGI-INF/publisher-remote-contrib-test.xml");
-
-        // check service config
-        PublisherService service = Framework.getLocalService(PublisherService.class);
-
         // check proxy publication tree
         PublicationTree proxyTree = service.getPublicationTree("ClientRemoteTree", session, null);
         List<PublicationNode> nodes = proxyTree.getChildrenNodes();
@@ -278,8 +271,6 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
     public void testTitleWithSpaces() throws Exception {
         createInitialDocs();
 
-        deployContrib("org.nuxeo.ecm.platform.publisher.test", "OSGI-INF/publisher-remote-contrib-test.xml");
-
         DocumentModel doc = session.createDocumentModel(workspace.getPathAsString(), "file2", "File");
         doc.setProperty("dublincore", "title", "A title with spaces");
 
@@ -288,8 +279,6 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
         doc.setProperty("file", "content", blob);
 
         doc = session.createDocument(doc);
-
-        PublisherService service = Framework.getLocalService(PublisherService.class);
 
         PublicationTree clientTree = service.getPublicationTree("ClientRemoteTree", session, null);
         List<PublicationNode> clientNodes = clientTree.getChildrenNodes();
