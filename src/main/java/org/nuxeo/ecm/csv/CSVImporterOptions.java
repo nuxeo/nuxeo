@@ -81,8 +81,7 @@ public class CSVImporterOptions implements Serializable {
         }
 
         public CSVImporterOptions build() {
-            return new CSVImporterOptions(CSVImporterDocumentFactory,
-                    dateFormat, listSeparatorRegex, updateExisting,
+            return new CSVImporterOptions(CSVImporterDocumentFactory, dateFormat, listSeparatorRegex, updateExisting,
                     checkAllowedSubTypes, sendEmail, batchSize);
         }
     }
@@ -101,11 +100,9 @@ public class CSVImporterOptions implements Serializable {
 
     protected final int batchSize;
 
-    protected CSVImporterOptions(
-            CSVImporterDocumentFactory CSVImporterDocumentFactory,
-            String dateFormat, String listSeparatorRegex,
-            boolean updateExisting, boolean checkAllowedSubTypes,
-            boolean sendEmail, int batchSize) {
+    protected CSVImporterOptions(CSVImporterDocumentFactory CSVImporterDocumentFactory, String dateFormat,
+            String listSeparatorRegex, boolean updateExisting, boolean checkAllowedSubTypes, boolean sendEmail,
+            int batchSize) {
         this.CSVImporterDocumentFactory = CSVImporterDocumentFactory;
         this.dateFormat = dateFormat;
         this.listSeparatorRegex = listSeparatorRegex;

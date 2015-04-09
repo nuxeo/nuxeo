@@ -44,8 +44,7 @@ public class CSVImportLog implements Serializable {
 
     protected final String[] params;
 
-    public CSVImportLog(long line, Status status, String message,
-            String localizedMessage, String... params) {
+    public CSVImportLog(long line, Status status, String message, String localizedMessage, String... params) {
         this.line = line;
         this.status = status;
         this.message = message;
@@ -74,8 +73,7 @@ public class CSVImportLog implements Serializable {
     }
 
     public String getI18nMessage(Locale locale) {
-        return I18NUtils.getMessageString("messages", getLocalizedMessage(),
-                getLocalizedMessageParams(), locale);
+        return I18NUtils.getMessageString("messages", getLocalizedMessage(), getLocalizedMessageParams(), locale);
     }
 
     public String getI18nMessage() {

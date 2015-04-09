@@ -44,8 +44,7 @@ public class CSVImportId {
         return create(repositoryName, path, computeDigest(csvFile));
     }
 
-    public static String create(String repositoryName, String path,
-            String csvBlobDigest) {
+    public static String create(String repositoryName, String path, String csvBlobDigest) {
         return repositoryName + ':' + path + ":csvImport:" + csvBlobDigest;
     }
 

@@ -79,12 +79,10 @@ public class CSVImportActions implements Serializable {
 
     public void importCSVFile() {
         if (csvFile != null) {
-            CSVImporterOptions options = new CSVImporterOptions.Builder().sendEmail(
-                    notifyUserByEmail).build();
+            CSVImporterOptions options = new CSVImporterOptions.Builder().sendEmail(notifyUserByEmail).build();
             CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
             csvImportId = csvImporter.launchImport(documentManager,
-                    navigationContext.getCurrentDocument().getPathAsString(),
-                    csvFile, csvFileName, options);
+                    navigationContext.getCurrentDocument().getPathAsString(), csvFile, csvFileName, options);
         }
     }
 
@@ -113,8 +111,7 @@ public class CSVImportActions implements Serializable {
             return Collections.emptyList();
         }
         CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
-        return csvImporter.getImportLogs(csvImportId, Status.SKIPPED,
-                Status.ERROR);
+        return csvImporter.getImportLogs(csvImportId, Status.SKIPPED, Status.ERROR);
     }
 
     public CSVImportResult getImportResult() {

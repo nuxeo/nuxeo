@@ -29,8 +29,8 @@ import org.nuxeo.ecm.csv.CSVImportLog.Status;
  */
 public interface CSVImporter {
 
-    String launchImport(CoreSession session, String parentPath, File csvFile,
-            String csvFileName, CSVImporterOptions options);
+    String launchImport(CoreSession session, String parentPath, File csvFile, String csvFileName,
+            CSVImporterOptions options);
 
     CSVImportStatus getImportStatus(String id);
 
