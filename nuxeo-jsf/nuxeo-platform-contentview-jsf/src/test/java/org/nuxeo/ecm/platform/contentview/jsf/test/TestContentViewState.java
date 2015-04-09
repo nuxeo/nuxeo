@@ -33,17 +33,23 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayout;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayoutImpl;
@@ -54,14 +60,29 @@ import org.nuxeo.ecm.platform.contentview.json.JSONContentViewState;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.ui.web.jsf.MockFacesContext;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
  * @since 5.4.2
  */
-public class TestContentViewState extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.query.api", //
+        "org.nuxeo.ecm.platform.contentview.jsf", //
+})
+@LocalDeploy("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-contrib.xml")
+public class TestContentViewState {
 
+    @Inject
     ContentViewService service;
+
+    @Inject
+    protected CoreSession session;
 
     MockFacesContext facesContext;
 
@@ -69,19 +90,8 @@ public class TestContentViewState extends SQLRepositoryTestCase {
 
     DocumentModel searchDocument;
 
-    @Override
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-
-        deployContrib("org.nuxeo.ecm.platform.query.api", "OSGI-INF/pageprovider-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf", "OSGI-INF/contentview-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-contrib.xml");
-
-        service = Framework.getService(ContentViewService.class);
-        assertNotNull(service);
-
-        openSession();
         searchDocument = session.createDocumentModel("File");
         searchDocument.setPropertyValue("dc:title", "search keywords");
         searchDocument.setPropertyValue("dc:modified", getModifiedDate());
@@ -97,14 +107,11 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         assertNotNull(FacesContext.getCurrentInstance());
     }
 
-    @Override
     @After
-    public void tearDown() throws Exception {
-        closeSession();
+    public void tearDown() {
         if (facesContext != null) {
             facesContext.relieveCurrent();
         }
-        super.tearDown();
     }
 
     protected Calendar getModifiedDate() {

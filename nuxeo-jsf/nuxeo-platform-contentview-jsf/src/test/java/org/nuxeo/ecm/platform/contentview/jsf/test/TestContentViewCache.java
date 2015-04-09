@@ -24,13 +24,19 @@ import static org.junit.Assert.assertTrue;
 import java.util.UUID;
 
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewCache;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayout;
@@ -38,42 +44,43 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayoutImpl;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.ui.web.jsf.MockFacesContext;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author Anahide Tchertchian
  */
-public class TestContentViewCache extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.query.api", //
+        "org.nuxeo.ecm.platform.contentview.jsf", //
+})
+@LocalDeploy("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-contrib.xml")
+public class TestContentViewCache {
 
+    @Inject
     ContentViewService service;
 
-    MockFacesContext facesContext;
+    @Inject
+    protected CoreSession session;
 
-    DocumentModel currentDocument;
+    MockFacesContext facesContext;
 
     DocumentModel container1;
 
     DocumentModel container2;
 
-    @Override
     @Before
-    public void setUp() throws Exception {
-        super.setUp();
-
-        deployContrib("org.nuxeo.ecm.platform.query.api", "OSGI-INF/pageprovider-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf", "OSGI-INF/contentview-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-contrib.xml");
-
+    public void setUp() {
         // set mock faces context for needed properties resolution
         facesContext = new MockFacesContext();
         facesContext.mapExpression("#{dummy.param}", UUID.randomUUID().toString());
         facesContext.setCurrent();
         assertNotNull(FacesContext.getCurrentInstance());
 
-        service = Framework.getService(ContentViewService.class);
-        assertNotNull(service);
-
-        openSession();
         facesContext.mapVariable("documentManager", session);
 
         DocumentModel root = session.getRootDocument();
@@ -90,14 +97,11 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         createTestDocuments(container2);
     }
 
-    @Override
     @After
-    public void tearDown() throws Exception {
-        closeSession();
+    public void tearDown() {
         if (facesContext != null) {
             facesContext.relieveCurrent();
         }
-        super.tearDown();
     }
 
     protected void createTestDocuments(DocumentModel container) throws ClientException {
@@ -117,7 +121,7 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
     public void testContentViewCache() throws Exception {
         ContentViewCache cache = new ContentViewCache();
 
-        currentDocument = container1;
+        DocumentModel currentDocument = container1;
         facesContext.mapVariable("currentDocument", currentDocument);
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);

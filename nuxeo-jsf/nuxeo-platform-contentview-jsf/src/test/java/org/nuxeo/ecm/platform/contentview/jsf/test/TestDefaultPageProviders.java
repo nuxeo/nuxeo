@@ -21,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -30,12 +31,16 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -44,7 +49,10 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -54,13 +62,35 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.platform.ui.web.jsf.MockFacesContext;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author Anahide Tchertchian
  */
-public class TestDefaultPageProviders extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.query.api", //
+        "org.nuxeo.ecm.platform.contentview.jsf", //
+})
+@LocalDeploy("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-contrib.xml")
+public class TestDefaultPageProviders {
 
+    @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
     ContentViewService service;
+
+    @Inject
+    protected CoreSession coreSession;
+
+    // user "bob"
+    protected CoreSession session;
 
     MockFacesContext facesContext;
 
@@ -68,26 +98,17 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
     private String dummyParam = UUID.randomUUID().toString();
 
-    @Override
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-
-        deployContrib("org.nuxeo.ecm.platform.query.api", "OSGI-INF/pageprovider-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf", "OSGI-INF/contentview-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-contrib.xml");
-
         // set rights to user "bob" on root
-        openSession();
         ACP acp = new ACPImpl();
         ACL acl = new ACLImpl();
         acl.add(new ACE("bob", SecurityConstants.EVERYTHING, true));
         acp.addACL(acl);
-        session.setACP(session.getRootDocument().getRef(), acp, false);
-        session.save();
-        closeSession();
+        coreSession.setACP(coreSession.getRootDocument().getRef(), acp, false);
+        coreSession.save();
 
-        session = openSessionAs("bob");
+        session = CoreInstance.openCoreSession(coreSession.getRepositoryName(), "bob");
 
         searchDocument = session.createDocumentModel("File");
 
@@ -108,12 +129,14 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         createTestDocuments();
     }
 
-    @Override
     @After
-    public void tearDown() throws Exception {
-        closeSession(session);
-        facesContext.relieveCurrent();
-        super.tearDown();
+    public void tearDown() {
+        if (session != null) {
+            session.close();
+        }
+        if (facesContext != null) {
+            facesContext.relieveCurrent();
+        }
     }
 
     protected void createTestDocuments() throws ClientException {
@@ -145,7 +168,11 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
             }
         }.runUnrestricted();
         session.save();
-        waitForFulltextIndexing();
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+        coreFeature.getStorageConfiguration().waitForFulltextIndexing();
     }
 
     @SuppressWarnings("unchecked")
@@ -571,9 +598,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
     @SuppressWarnings("unchecked")
     @Test
     public void testCoreQueryWithSearchDocument() throws Exception {
-        if (!database.supportsMultipleFulltextIndexes()) {
-            return;
-        }
+        assumeTrue(coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
+
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
         assertNotNull(contentView);
 
@@ -587,9 +613,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
     @SuppressWarnings("unchecked")
     @Test
     public void testCoreQueryWithSearchDocumentReference() throws Exception {
-        if (!database.supportsMultipleFulltextIndexes()) {
-            return;
-        }
+        assumeTrue(coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
+
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF");
         assertNotNull(contentView);
 

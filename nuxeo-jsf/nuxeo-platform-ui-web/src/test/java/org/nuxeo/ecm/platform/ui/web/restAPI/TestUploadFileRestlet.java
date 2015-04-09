@@ -16,42 +16,43 @@
  */
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import javax.inject.Inject;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
-import org.nuxeo.runtime.AbstractRuntimeService;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * Unit testing the save operation of upload file restlet
  *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
-public class TestUploadFileRestlet extends SQLRepositoryTestCase implements LiveEditConstants {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.ecm.platform.ui")
+public class TestUploadFileRestlet implements LiveEditConstants {
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.ui");
-        openSession();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
+    @Inject
+    protected CoreSession session;
 
     /**
      * Unit test of the upload file restlet.
@@ -107,7 +108,7 @@ public class TestUploadFileRestlet extends SQLRepositoryTestCase implements Live
     @Test
     public void testUploadRestletSaveWithAutoIncr() throws Exception {
         // mock property setting
-        ((AbstractRuntimeService) runtime).setProperty("org.nuxeo.ecm.platform.liveedit.autoversioning", "minor");
+        Framework.getProperties().setProperty("org.nuxeo.ecm.platform.liveedit.autoversioning", "minor");
 
         // create a empty File document
         DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
