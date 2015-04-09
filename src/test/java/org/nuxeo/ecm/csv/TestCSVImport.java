@@ -64,6 +64,8 @@ public class TestCSVImport {
 
     private static final String DOCS_NOT_OK_CSV = "docs_not_ok.csv";
 
+    private static final String DOCS_WITH_LIFECYCLE_CSV = "docs_with_lifecycle.csv";
+
     @Inject
     protected CoreSession session;
 
@@ -235,4 +237,24 @@ public class TestCSVImport {
         assertEquals("File", doc.getType());
     }
 
+    @Test
+    public void shouldCreateDocumentWithGivenLifeCycleState() throws InterruptedException, ClientException {
+        CSVImporterOptions options = CSVImporterOptions.DEFAULT_OPTIONS;
+        TransactionHelper.commitOrRollbackTransaction();
+
+        String importId = csvImporter.launchImport(session, "/", getCSVFile(DOCS_WITH_LIFECYCLE_CSV),
+                DOCS_WITH_LIFECYCLE_CSV, options);
+
+        workManager.awaitCompletion(10000, TimeUnit.SECONDS);
+        TransactionHelper.startTransaction();
+
+        List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
+        assertEquals(1, importLogs.size());
+        CSVImportLog importLog = importLogs.get(0);
+        assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
+
+        assertTrue(session.exists(new PathRef("/myfile")));
+        DocumentModel doc = session.getDocument(new PathRef("/myfile"));
+        assertEquals("obsolete", doc.getCurrentLifeCycleState());
+    }
 }

@@ -58,6 +58,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -98,6 +99,13 @@ public class CSVImporterWork extends AbstractWork {
     public static final String CATEGORY_CSV_IMPORTER = "csvImporter";
 
     public static final String CONTENT_FILED_TYPE_NAME = "content";
+
+    /**
+     * CSV headers that won't be checked if the field exists on the document type.
+     *
+     * @since 7.3
+     */
+    public static List<String> AUTHORIZED_HEADERS = Arrays.asList(NXQL.ECM_LIFECYCLESTATE);
 
     protected String parentPath;
 
@@ -285,15 +293,19 @@ public class CSVImporterWork extends AbstractWork {
 
             String fieldName = headerValue;
             if (!CSV_NAME_COL.equals(headerValue) && !CSV_TYPE_COL.equals(headerValue)) {
-                if (!docType.hasField(fieldName)) {
-                    fieldName = fieldName.split(":")[1];
-                }
-                if (docType.hasField(fieldName) && !StringUtils.isBlank(lineValue)) {
-                    Serializable convertedValue = convertValue(docType, fieldName, headerValue, lineValue, lineNumber);
-                    if (convertedValue == null) {
-                        return null;
+                if (AUTHORIZED_HEADERS.contains(headerValue) && !StringUtils.isBlank(lineValue)) {
+                    values.put(headerValue, lineValue);
+                } else {
+                    if (!docType.hasField(fieldName)) {
+                        fieldName = fieldName.split(":")[1];
                     }
-                    values.put(headerValue, convertedValue);
+                    if (docType.hasField(fieldName) && !StringUtils.isBlank(lineValue)) {
+                        Serializable convertedValue = convertValue(docType, fieldName, headerValue, lineValue, lineNumber);
+                        if (convertedValue == null) {
+                            return null;
+                        }
+                        values.put(headerValue, convertedValue);
+                    }
                 }
             }
         }
