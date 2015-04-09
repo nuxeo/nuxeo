@@ -25,6 +25,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Server Entry point to a server GWT module. Must be extended by the webengine resource used to load the studio
@@ -48,10 +49,8 @@ public abstract class GwtResource extends ModuleRoot {
     @GET
     @Path("{path:.*}")
     public Response getResource(@PathParam("path") String path) {
-        // System.out.println(">>> "+GWT_ROOT.getAbsolutePath());
-        // avoid putting automatic no cache headers
         ctx.getRequest().setAttribute("org.nuxeo.webengine.DisableAutoHeaders", "true");
-        File file = new File(GwtBundleActivator.GWT_ROOT, path);
+        File file = Framework.getService(GwtResolver.class).resolve(path);
         if (file.isFile()) {
             ResponseBuilder resp = Response.ok(file);
             String fpath = file.getPath();

@@ -16,13 +16,12 @@
  */
 package org.nuxeo.ecm.webengine.gwt;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -41,9 +40,7 @@ public class GwtBundleActivator implements BundleActivator, FrameworkListener {
 
     public static final String GWT_DEV_MODE_PROP = "nuxeo.gwt_dev_mode";
 
-    public static final File GWT_ROOT = new File(Environment.getDefault().getWeb(), "root.war/gwt");
-
-    public static final boolean GWT_DEV_MODE = "true".equals(System.getProperty(GWT_DEV_MODE_PROP, "false"));
+    public static final boolean GWT_DEV_MODE = "true".equals(Framework.getProperty(GWT_DEV_MODE_PROP, "false"));
 
     protected BundleContext context;
 
@@ -61,22 +58,12 @@ public class GwtBundleActivator implements BundleActivator, FrameworkListener {
         this.context = null;
     }
 
-    protected void installGwtApp(Bundle bundle) throws IOException {
-        GWT_ROOT.mkdirs();
-        String symName = bundle.getSymbolicName();
-        // check the marker file to avoid copying twice
-        File markerFile = new File(GWT_ROOT, ".metadata/" + symName);
-        File file = Framework.getRuntime().getBundleFile(bundle);
-        if (file == null) {
-            log.warn("A GWT module without a war directory inside");
-            return;
+    protected void installGwtApp(Bundle bundle) throws IOException, URISyntaxException {
+        URL location = bundle.getEntry("gwt-war");
+        if (location == null) {
+            throw new IOException("Cannot locate gwt-war in " + bundle.getSymbolicName());
         }
-        if (markerFile.lastModified() < file.lastModified()) {
-            log.info("Installing GWT Application from bundle " + symName);
-            ZipUtils.unzip("gwt-war", file, GWT_ROOT);
-            markerFile.getParentFile().mkdirs();
-            markerFile.createNewFile();
-        }
+        Framework.getService(GwtResolver.class).install(location.toURI());
     }
 
     @Override
@@ -84,7 +71,7 @@ public class GwtBundleActivator implements BundleActivator, FrameworkListener {
         if (event.getType() == FrameworkEvent.STARTED) {
             try {
                 installGwtApp(context.getBundle());
-            } catch (IOException cause) {
+            } catch (IOException | URISyntaxException cause) {
                 throw new RuntimeException("Cannot start GWT", cause);
             }
         }

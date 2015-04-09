@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.gwt.user.server.rpc.SerializationPolicy;
@@ -43,8 +44,9 @@ public class WebEngineGwtServlet extends RemoteServiceServlet {
 
     private static Log log = LogFactory.getLog(WebEngineGwtServlet.class);
 
-    public static boolean HOSTED_MODE = false;
+    protected boolean HOSTED_MODE = false;
 
+    @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         try {
@@ -70,13 +72,13 @@ public class WebEngineGwtServlet extends RemoteServiceServlet {
             String strongName) {
         if (HOSTED_MODE) {
             return super.doGetSerializationPolicy(request, moduleBaseURL, strongName);
-        } else { // We are in production mode : return webengine policy
-            return _doGetSerializationPolicy(request, moduleBaseURL, strongName);
         }
+        // We are in production mode : return webengine policy
+        return _doGetSerializationPolicy(request, moduleBaseURL, strongName);
     }
 
     protected SerializationPolicy _doGetSerializationPolicy(HttpServletRequest request, String moduleBaseURL,
-            String strongName) {
+            String strongName)  {
 
         String modulePath = null;
         if (moduleBaseURL != null) {
@@ -92,26 +94,20 @@ public class WebEngineGwtServlet extends RemoteServiceServlet {
         if (moduleId.length() == 0) {
             moduleId = "root";
         }
-
-        File dir = GwtBundleActivator.GWT_ROOT;
-        dir = new File(dir, moduleId);
-        if (!dir.isDirectory()) { // use default
-            log.warn("Could not find gwt resources in web/root.war/gwt for module " + moduleId);
-            return super.doGetSerializationPolicy(request, moduleBaseURL, strongName);
-        }
-        String path = SerializationPolicyLoader.getSerializationPolicyFileName(strongName);
-        log.debug("Found gwt serialization policy file: " + path);
-        File policyFile = new File(dir, path);
+        File dir = new File(Framework.getService(GwtResolver.class).resolve(moduleId), moduleId);
+        String filename = SerializationPolicyLoader.getSerializationPolicyFileName(strongName);
+        File policyFile = new File(dir, filename);
         if (!policyFile.isFile()) {
-            log.warn("Could not find gwt serialization policy file for module " + moduleId + " [ " + path + " ]");
+            log.warn("Could not find gwt serialization policy file for module " + moduleId + " [ " + filename + " ]");
             return super.doGetSerializationPolicy(request, moduleBaseURL, strongName);
         }
+        log.debug("Found gwt serialization policy file: " + policyFile);
         FileInputStream in = null;
         try {
             in = new FileInputStream(policyFile);
             return SerializationPolicyLoader.loadFromStream(in, null);
         } catch (IOException e) {
-            log.error("Failed to read gwt serialization policy file for module " + moduleId + " [ " + path + " ]", e);
+            log.error("Failed to read gwt serialization policy file for module " + moduleId + " [ " + filename + " ]", e);
             return super.doGetSerializationPolicy(request, moduleBaseURL, strongName);
         } catch (ParseException e) {
             log.error("Failed to parse the policy file '" + policyFile + "'", e);
