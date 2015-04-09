@@ -39,6 +39,9 @@
     </div>
   </c:if>
   <c:if test="#{hasMainBlob}">
+    <c:set var="blobLength" value="#{currentDocumentAsBlobHolder.blob.length}" />
+    <c:set var="fileUrl"
+           value="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}" />
     <div class="dropzone dropContent" context="mainBlob" id="mainBlobDropZone">
     <table class="smallTable">
       <tbody>
@@ -48,16 +51,17 @@
           </td>
           <td class="fieldColumn" docRef="#{currentDocument.id}">
             <div class="dropout"
-              downloadUrl="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}"
+              downloadUrl="#{fileUrl}"
               fileName="#{currentDocumentAsBlobHolder.blob.filename}"
               mimetype="#{currentDocumentAsBlobHolder.blob.mimeType}">
               <nxh:graphicImage value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}"
                 rendered="#{! empty nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
-              <nxh:outputLink
-                value="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}">
-                <h:outputText value="#{currentDocumentAsBlobHolder.blob.filename}"/>
+              <nxh:outputLink value="#{fileUrl}">
+                  <h:outputText value="#{currentDocumentAsBlobHolder.blob.filename}"/>
               </nxh:outputLink>
-              <h:outputText styleClass="detail" value=" #{nxu:printFileSize(currentDocumentAsBlobHolder.blob.length)}"/>
+              <c:if test="#{blobLength >= 0}">
+                  <h:outputText styleClass="detail" value="#{nxu:printFileSize(currentDocumentAsBlobHolder.blob.length)}"/>
+              </c:if>
             </div>
           </td>
           <td class="actionsColumn">
@@ -73,7 +77,7 @@
                   title="#{messages['label.document.directEdit']}"/>
               </h:outputLink>
             </nxu:methodResult>
-            <nxu:methodResult name="hasPDFCapabilities"
+            <nxu:set var="hasPDFCapabilities"
               value="#{conversionActions.isExportableToPDF(currentDocumentAsBlobHolder)}">
               <h:panelGroup rendered="#{hasPDFCapabilities}">
                 <nxh:commandLink
@@ -84,7 +88,7 @@
                   alt="#{messages['label.document.generatePdf']}"/>
               </nxh:commandLink>
               </h:panelGroup>
-            </nxu:methodResult>
+            </nxu:set>
           </td>
         </tr>
       </tbody>

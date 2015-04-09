@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webapp.action;
 
+import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -42,7 +44,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
-import org.nuxeo.ecm.core.convert.api.ConversionException;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
@@ -123,8 +125,26 @@ public class ConversionActionBean implements ConversionAction {
         if (blob == null) {
             return false;
         }
+        // check if there's a conversion available in case it's a managed blob
+        if (blob instanceof ManagedBlob) {
+            if (getPDFConversionURL((ManagedBlob) blob) != null) {
+                return true;
+            }
+        }
         String mimetype = blob.getMimeType();
         return isMimeTypeExportableToPDF(mimetype);
+    }
+
+    protected String getPDFConversionURL(ManagedBlob blob) {
+        try {
+            URI uri = blob.getAvailableConversions(ManagedBlob.UsageHint.DOWNLOAD).get(PDF_MIMETYPE);
+            if (uri != null) {
+                return uri.toString();
+            }
+        } catch (IOException e) {
+            log.error("Failed to retrieve available conversions", e);
+        }
+        return null;
     }
 
     protected boolean isMimeTypeExportableToPDF(String mimetype) {
@@ -192,6 +212,21 @@ public class ConversionActionBean implements ConversionAction {
 
     public String generatePdfFileFromBlobHolder(BlobHolder bh) {
         try {
+
+            // if blob is managed redirect to the conversion URL when available
+            Blob blob = bh.getBlob();
+            if (blob instanceof ManagedBlob) {
+                String url = getPDFConversionURL((ManagedBlob) blob);
+                if (url != null) {
+                    try {
+                        FacesContext.getCurrentInstance().getExternalContext().redirect(url);
+                        return null;
+                    } catch (IOException e) {
+                        //
+                    }
+                }
+            }
+
             if (pdfConverterName == null) {
                 log.error("No PDF converter was found.");
                 return "pdf_generation_error";
