@@ -51,7 +51,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
@@ -172,6 +171,19 @@ public class TestScriptRunnerInfrastructure {
         ctx.setInput("John");
         Object result = automationService.run(ctx, "Scripting.ChainedHello", params);
         assertEquals("Hello Bonjour John", result.toString());
+
+    }
+
+    @Test
+    public void simpleCallToScriptingOperationsChain() throws Exception {
+
+        AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
+        assertNotNull(scriptingService);
+
+        InputStream stream = this.getClass().getResourceAsStream("/simpleCallToChain.js");
+        assertNotNull(stream);
+        scriptingService.run(stream, session);
+        assertEquals("Hello Bonjour John" + System.lineSeparator(), outContent.toString());
 
     }
 

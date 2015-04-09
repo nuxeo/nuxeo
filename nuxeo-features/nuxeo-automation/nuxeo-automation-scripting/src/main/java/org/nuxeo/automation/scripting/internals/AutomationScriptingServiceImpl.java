@@ -57,9 +57,6 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
             List<String> flatOps = new ArrayList<>();
             List<String> ids = new ArrayList<>();
             for (OperationType op : as.getOperations()) {
-                if (op.getDocumentation().isChain()) {
-                    continue;
-                }
                 ids.add(op.getId());
                 if (op.getAliases() != null) {
                     Collections.addAll(ids, op.getAliases());
