@@ -15,6 +15,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.net.URI;
+import java.util.Collections;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
@@ -73,6 +76,26 @@ public class BinaryBlob extends AbstractBlob implements ManagedBlob, Serializabl
     @Override
     public String getKey() {
         return binary.getDigest();
+    }
+
+    @Override
+    public URI getURI(UsageHint hint) throws IOException {
+        return getFile().toURI();
+    }
+
+    @Override
+    public InputStream getConvertedStream(String mimeType) throws IOException {
+        return null;
+    }
+
+    @Override
+    public Map<String, URI> getAvailableConversions(UsageHint hint) throws IOException {
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public InputStream getThumbnail() throws IOException {
+        return null;
     }
 
     @Override

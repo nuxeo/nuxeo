@@ -18,6 +18,8 @@ package org.nuxeo.ecm.core.blob;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
@@ -36,9 +38,9 @@ public class SimpleManagedBlob extends AbstractBlob implements ManagedBlob {
 
     public Long length;
 
-    public transient ManagedBlobProvider blobProvider;
+    public transient BlobProvider blobProvider;
 
-    public SimpleManagedBlob(BlobInfo blobInfo, ManagedBlobProvider blobProvider) {
+    public SimpleManagedBlob(BlobInfo blobInfo, BlobProvider blobProvider) {
         this.key = blobInfo.key;
         this.blobProvider = blobProvider;
         setMimeType(blobInfo.mimeType);
@@ -53,17 +55,44 @@ public class SimpleManagedBlob extends AbstractBlob implements ManagedBlob {
         return key;
     }
 
-    protected ManagedBlobProvider getBlobProvider() {
-        if (blobProvider == null) {
-            // after deserialization the transient will be null
-            blobProvider = (ManagedBlobProvider) Framework.getService(BlobManager.class).getBlobProvider(key);
-        }
-        return blobProvider;
+    @Override
+    public InputStream getStream() throws IOException {
+        URI uri = getURI(UsageHint.STREAM);
+        return getBlobProvider().getStream(key, uri);
     }
 
     @Override
-    public InputStream getStream() throws IOException {
-        return getBlobProvider().getStream(this);
+    public URI getURI(UsageHint hint) throws IOException {
+        return getBlobProvider().getURI(this, hint);
+    }
+
+    @Override
+    public InputStream getConvertedStream(String mimeType) throws IOException {
+        Map<String, URI> conversions = getAvailableConversions(UsageHint.STREAM);
+        URI uri = conversions.get(mimeType);
+        if (uri == null) {
+            return null;
+        }
+        return getBlobProvider().getStream(key, uri);
+    }
+
+    @Override
+    public Map<String, URI> getAvailableConversions(UsageHint hint) throws IOException {
+        return getBlobProvider().getAvailableConversions(this, hint);
+    }
+
+    @Override
+    public InputStream getThumbnail() throws IOException {
+        URI uri = getBlobProvider().getThumbnail(this, UsageHint.STREAM);
+        return getBlobProvider().getStream(key, uri);
+    }
+
+    public BlobProvider getBlobProvider() {
+        if (blobProvider == null) {
+            // after deserialization the transient will be null
+            blobProvider = Framework.getService(BlobManager.class).getBlobProvider(key);
+        }
+        return blobProvider;
     }
 
     @Override

@@ -13,10 +13,14 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Nelson Silva
  */
 package org.nuxeo.ecm.core.blob;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
@@ -53,5 +57,43 @@ public interface BlobProvider {
      * @return the blob information
      */
     BlobInfo getBlobInfo(String repositoryName, Blob blob, Document doc) throws IOException;
+
+    /**
+     * Gets an {@link java.io.InputStream} for the data of a managed blob.
+     * <p>
+     * Like all {@link java.io.InputStream}, the result must be closed when done with it to avoid resource leaks.
+     *
+     * @param blobKey the managed blob's key
+     * @param uri the {@link URI}
+     * @return the stream
+     */
+    InputStream getStream(String blobKey, URI uri) throws IOException;
+
+    /**
+     * Gets an {@link java.net.URI} for the content of a managed blob.
+     *
+     * @param blob the managed blob
+     * @param hint {@link ManagedBlob.UsageHint}
+     *
+     * @return the {@link java.net.URI
+     */
+    URI getURI(ManagedBlob blob, ManagedBlob.UsageHint hint) throws IOException;
+
+    /**
+     * Gets a map of available MIME type conversions and corresponding {@link URI} for a managed blob.
+     *
+     * @return a map of MIME types and {@link URI}, which may be empty
+     */
+    Map<String, URI> getAvailableConversions(ManagedBlob blob, ManagedBlob.UsageHint hint) throws IOException;
+
+    /**
+     * Gets an {@link java.net.URI} for the thumbnail of a managed blob.
+     *
+     * @param blob the managed blob
+     * @param hint {@link ManagedBlob.UsageHint}
+     *
+     * @return the {@link java.net.URI
+     */
+    URI getThumbnail(ManagedBlob blob, ManagedBlob.UsageHint hint) throws IOException;
 
 }

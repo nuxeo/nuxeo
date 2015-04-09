@@ -13,15 +13,21 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Nelson Silva
  */
 package org.nuxeo.ecm.core.storage.binary;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Collections;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.model.Document;
 
 /**
@@ -58,6 +64,26 @@ public class BinaryBlobProvider implements BlobProvider {
         blobInfo.filename = blob.getFilename();
         blobInfo.digest = blob.getDigest();
         return blobInfo;
+    }
+
+    @Override
+    public InputStream getStream(String blobKey, URI uri) throws IOException {
+        return null;
+    }
+
+    @Override
+    public URI getURI(ManagedBlob blob, ManagedBlob.UsageHint hint) throws IOException {
+        return null;
+    }
+
+    @Override
+    public Map<String, URI> getAvailableConversions(ManagedBlob blob, ManagedBlob.UsageHint hint) throws IOException {
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public URI getThumbnail(ManagedBlob blob, ManagedBlob.UsageHint hint) throws IOException {
+        return null;
     }
 
 }
