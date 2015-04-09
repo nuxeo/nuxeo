@@ -835,6 +835,11 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         return queuing.find(workId, state);
     }
 
+    @Override
+    public Work find(String workId, State state) {
+        return queuing.find(workId, state);
+    }
+
     /** @param state SCHEDULED, RUNNING or null for both */
     protected boolean hasWorkInState(String workId, State state) {
         return queuing.isWorkInState(workId, state);

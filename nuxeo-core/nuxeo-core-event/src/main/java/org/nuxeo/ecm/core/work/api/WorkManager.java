@@ -177,6 +177,18 @@ public interface WorkManager {
     Work find(Work work, State state, boolean useEquals, int[] pos);
 
     /**
+     * Finds a work instance.
+     *
+     * @param workId the id of the work to find
+     * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
+     *            RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null} for non-completed
+     * @return the found work instance, or {@code null} if not found
+     *
+     * @since 7.3
+     */
+    Work find(String workId, State state);
+
+    /**
      * Gets the state in which a work instance is.
      * <p>
      * This can be {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING RUNNING}, {@link State#COMPLETED COMPLETED},
