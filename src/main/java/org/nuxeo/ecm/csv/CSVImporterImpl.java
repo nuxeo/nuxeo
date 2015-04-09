@@ -74,11 +74,9 @@ public class CSVImporterImpl implements CSVImporter {
     @Override
     public List<CSVImportLog> getLastImportLogs(String id, int max) {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        Work workId = new CSVImporterWork(id);
-        int[] pos = new int[1];
-        Work work = workManager.find(workId, null, true, pos);
+        Work work = workManager.find(id, null);
         if (work == null) {
-            work = workManager.find(workId, State.COMPLETED, true, pos);
+            work = workManager.find(id, State.COMPLETED);
             if (work == null) {
                 return Collections.emptyList();
             }
@@ -108,9 +106,7 @@ public class CSVImporterImpl implements CSVImporter {
     @Override
     public CSVImportResult getImportResult(String id) {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        Work work = new CSVImporterWork(id);
-        int[] pos = new int[1];
-        work = workManager.find(work, State.COMPLETED, true, pos);
+        Work work = workManager.find(id, State.COMPLETED);
         if (work == null) {
             return null;
         }
