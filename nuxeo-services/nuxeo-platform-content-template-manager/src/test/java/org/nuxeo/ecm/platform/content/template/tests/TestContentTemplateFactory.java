@@ -19,57 +19,56 @@
 
 package org.nuxeo.ecm.platform.content.template.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import javax.inject.Inject;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.content.template.service.ContentFactory;
 import org.nuxeo.ecm.platform.content.template.service.ContentFactoryDescriptor;
 import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
 import org.nuxeo.ecm.platform.content.template.service.ContentTemplateServiceImpl;
 import org.nuxeo.ecm.platform.content.template.service.FactoryBindingDescriptor;
 import org.nuxeo.ecm.platform.content.template.service.NotificationDescriptor;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-public class TestContentTemplateFactory extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@LocalDeploy({ "org.nuxeo.ecm.platform.content.template.tests:test-content-template-framework.xml",
+        "org.nuxeo.ecm.platform.content.template.tests:test-content-template-contrib.xml",
+        "org.nuxeo.ecm.platform.content.template.tests:test-content-template-listener.xml" })
+public class TestContentTemplateFactory {
 
+    @Inject
     protected ContentTemplateService service;
+
+    @Inject
+    protected CoreSession session;
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests", "test-content-template-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests", "test-content-template-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests", "test-content-template-listener.xml");
-
-        openSession();
-        assertNotNull(session);
-
-        DocumentModel root = session.getDocument(new PathRef("/"));
-        assertNotNull(root);
-
-        service = Framework.getLocalService(ContentTemplateService.class);
-        service.executeFactoryForType(root);
-
-        assertNotNull(service);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
+        service.executeFactoryForType(session.getRootDocument());
     }
 
     @Test

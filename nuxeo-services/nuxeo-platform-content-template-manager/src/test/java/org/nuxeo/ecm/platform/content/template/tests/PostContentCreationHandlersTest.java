@@ -17,44 +17,45 @@
 
 package org.nuxeo.ecm.platform.content.template.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import javax.inject.Inject;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public class PostContentCreationHandlersTest extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.ecm.platform.content.template")
+@LocalDeploy({ "org.nuxeo.ecm.platform.content.template.tests:test-content-template-handlers-contrib.xml",
+        "org.nuxeo.ecm.platform.content.template.tests:test-content-template-handlers-contrib.xml" })
+public class PostContentCreationHandlersTest {
 
+    @Inject
     protected ContentTemplateService service;
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests", "test-content-template-handlers-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests", "test-content-template-handlers-contrib.xml");
-        fireFrameworkStarted();
-        openSession();
-
-        service = Framework.getLocalService(ContentTemplateService.class);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
+    @Inject
+    protected CoreSession session;
 
     @Test
     public void testHandler() throws Exception {

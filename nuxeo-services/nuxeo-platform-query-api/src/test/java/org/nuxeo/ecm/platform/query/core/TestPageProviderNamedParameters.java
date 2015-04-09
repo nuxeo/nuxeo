@@ -36,12 +36,14 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -50,10 +52,10 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * @since 7.3
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy({ "org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml",
-        "org.nuxeo.ecm.platform.query.api:test-pageprovider-namedparams-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@LocalDeploy("org.nuxeo.ecm.platform.query.api:test-pageprovider-namedparams-contrib.xml")
 public class TestPageProviderNamedParameters {
 
     @Inject
@@ -85,8 +87,6 @@ public class TestPageProviderNamedParameters {
         }
         session.save();
     }
-
-
 
     protected Map<String, Serializable> getPageProviderProps() {
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();

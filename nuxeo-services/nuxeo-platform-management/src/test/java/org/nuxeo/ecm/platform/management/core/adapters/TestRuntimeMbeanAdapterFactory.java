@@ -16,36 +16,35 @@
  */
 package org.nuxeo.ecm.platform.management.core.adapters;
 
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.management.adapters.RuntimeInventoryFactory;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ResourceFactoryDescriptor;
-import org.nuxeo.runtime.management.ResourcePublisher;
 import org.nuxeo.runtime.management.ResourcePublisherService;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public class TestRuntimeMbeanAdapterFactory extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.runtime.management")
+public class TestRuntimeMbeanAdapterFactory {
 
+    @Inject
     protected ResourcePublisherService managementService;
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.runtime.management");
-        managementService = (ResourcePublisherService) Framework.getService(ResourcePublisher.class);
-    }
 
     @Test
     public void testRegisterFactories() throws Exception {
-        doRegisterInventoryFactory();
-    }
-
-    public void doRegisterInventoryFactory() throws Exception {
         ResourceFactoryDescriptor factoryDescriptor = new ResourceFactoryDescriptor(RuntimeInventoryFactory.class);
         managementService.registerContribution(factoryDescriptor, "factories", null);
     }

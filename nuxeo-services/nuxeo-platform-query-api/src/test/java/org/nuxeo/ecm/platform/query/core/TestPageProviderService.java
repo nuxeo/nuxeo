@@ -28,48 +28,47 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
-import org.nuxeo.ecm.core.api.AbstractSession;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
  * @author Anahide Tchertchian
  * @since 5.4
  */
-public class TestPageProviderService extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@LocalDeploy("org.nuxeo.ecm.platform.query.api.test:test-pageprovider-contrib.xml")
+public class TestPageProviderService {
 
     private static final String CURRENT_DOCUMENT_CHILDREN = "CURRENT_DOCUMENT_CHILDREN";
 
     private static final String FOO = "foo";
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        openSession();
-    }
+    @Inject
+    protected RuntimeHarness harness;
 
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
-
-    @Override
-    protected void deployRepositoryContrib() throws Exception {
-        super.deployRepositoryContrib();
-        deployContrib("org.nuxeo.ecm.platform.query.api", "OSGI-INF/pageprovider-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.query.api.test", "test-pageprovider-contrib.xml");
-    }
+    @Inject
+    protected CoreSession coreSession;
 
     @Test
     public void testRegistration() throws Exception {
@@ -113,16 +112,19 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
         assertEquals("File", def.getSearchDocumentType());
 
         // test override
-        deployContrib("org.nuxeo.ecm.platform.query.api.test", "test-pageprovider-override-contrib.xml");
-
-        def = service.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
-        assertNotNull(def);
-        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", def.getName());
-        assertNull(def.getWhereClause().getFixedPart());
-        assertEquals(1, def.getSortInfos().size());
-        assertEquals("dc:description", def.getSortInfos().get(0).getSortColumn());
-        assertFalse(def.getSortInfos().get(0).getSortAscending());
-        assertEquals("File2", def.getSearchDocumentType());
+        harness.deployContrib("org.nuxeo.ecm.platform.query.api.test", "test-pageprovider-override-contrib.xml");
+        try {
+            def = service.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
+            assertNotNull(def);
+            assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", def.getName());
+            assertNull(def.getWhereClause().getFixedPart());
+            assertEquals(1, def.getSortInfos().size());
+            assertEquals("dc:description", def.getSortInfos().get(0).getSortColumn());
+            assertFalse(def.getSortInfos().get(0).getSortAscending());
+            assertEquals("File2", def.getSearchDocumentType());
+        } finally {
+            harness.undeployContrib("org.nuxeo.ecm.platform.query.api.test", "test-pageprovider-override-contrib.xml");
+        }
     }
 
     /**
@@ -144,15 +146,24 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
         assertEquals(2, def.getPageSize());
 
         // test override when disabling page provider
-        deployContrib("org.nuxeo.ecm.platform.query.api.test", "test-pageprovider-override-contrib.xml");
-        def = service.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
-        assertNull(def);
+        harness.deployContrib("org.nuxeo.ecm.platform.query.api.test", "test-pageprovider-override-contrib.xml");
+        try {
+            def = service.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
+            assertNull(def);
 
-        // test override again after, changed page size
-        deployContrib("org.nuxeo.ecm.platform.query.api.test", "test-pageprovider-override-contrib2.xml");
-        def = service.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
-        assertEquals(CURRENT_DOCUMENT_CHILDREN, def.getName());
-        assertEquals(20, def.getPageSize());
+            // test override again after, changed page size
+            harness.deployContrib("org.nuxeo.ecm.platform.query.api.test", "test-pageprovider-override-contrib2.xml");
+            try {
+                def = service.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
+                assertEquals(CURRENT_DOCUMENT_CHILDREN, def.getName());
+                assertEquals(20, def.getPageSize());
+            } finally {
+                harness.undeployContrib("org.nuxeo.ecm.platform.query.api.test",
+                        "test-pageprovider-override-contrib2.xml");
+            }
+        } finally {
+            harness.undeployContrib("org.nuxeo.ecm.platform.query.api.test", "test-pageprovider-override-contrib.xml");
+        }
     }
 
     @Test
@@ -163,7 +174,7 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
         PageProviderDefinition ppd = pps.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
         ppd.setPattern("SELECT * FROM Document");
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (AbstractSession) session);
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) coreSession);
         PageProvider<?> pp = pps.getPageProvider(CURRENT_DOCUMENT_CHILDREN, ppd, null, null, Long.valueOf(1),
                 Long.valueOf(0), props);
 

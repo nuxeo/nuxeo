@@ -24,15 +24,21 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.After;
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Testing the mime type icon updater listener. This listener should update mime type of a blob when this one is dirty
@@ -42,29 +48,21 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  * @author Benjamin Jalon <bjalon@nuxeo.com>
  */
-public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.filemanager.api", //
+        "org.nuxeo.ecm.platform.filemanager.core", //
+        "org.nuxeo.ecm.platform.mimetype.api", //
+        "org.nuxeo.ecm.platform.mimetype.core", //
+        "org.nuxeo.ecm.platform.types.api", //
+        "org.nuxeo.ecm.platform.types.core", //
+})
+@LocalDeploy({ "org.nuxeo.ecm.platform.filemanager.core.listener:OSGI-INF/filemanager-iconupdater-event-contrib.xml",
+        "org.nuxeo.ecm.platform.filemanager.core.listener.test:OSGI-INF/core-type-contrib.xml" })
+public class TestMimetypeIconUpdater {
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.mimetype.api");
-        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
-        deployBundle("org.nuxeo.ecm.platform.filemanager.api");
-        deployBundle("org.nuxeo.ecm.platform.filemanager.core");
-        deployBundle("org.nuxeo.ecm.platform.types.api");
-        deployBundle("org.nuxeo.ecm.platform.types.core");
-        deployContrib("org.nuxeo.ecm.platform.filemanager.core.listener",
-                "OSGI-INF/filemanager-iconupdater-event-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.filemanager.core.listener.test", "OSGI-INF/core-type-contrib.xml");
-
-        openSession();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
+    @Inject
+    protected CoreSession coreSession;
 
     /**
      * Testing a mime type and icon update (only done on file:content)
@@ -139,13 +137,8 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         assertNull(icon); // default icon, not overridden by mime type
     }
 
-    protected CoreSession getCoreSession() {
-        return session;
-    }
-
     protected DocumentModel createWithoutPrefixBlobDocument(boolean setMimeType) throws ClientException {
-        DocumentModel withoutPrefixBlobDoc = getCoreSession().createDocumentModel("/", "testFile",
-                "WithoutPrefixDocument");
+        DocumentModel withoutPrefixBlobDoc = coreSession.createDocumentModel("/", "testFile", "WithoutPrefixDocument");
         withoutPrefixBlobDoc.setProperty("dublincore", "title", "TestFile");
 
         Blob blob = Blobs.createBlob("SOMEDUMMYDATA", null, null, "test.pdf");
@@ -154,16 +147,16 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         }
         withoutPrefixBlobDoc.setProperty("wihtoutpref", "blob", blob);
 
-        withoutPrefixBlobDoc = getCoreSession().createDocument(withoutPrefixBlobDoc);
+        withoutPrefixBlobDoc = coreSession.createDocument(withoutPrefixBlobDoc);
 
-        getCoreSession().saveDocument(withoutPrefixBlobDoc);
-        getCoreSession().save();
+        coreSession.saveDocument(withoutPrefixBlobDoc);
+        coreSession.save();
 
         return withoutPrefixBlobDoc;
     }
 
     protected DocumentModel createWithPrefixBlobDocument(boolean setMimeType) throws ClientException {
-        DocumentModel withoutPrefixBlobDoc = getCoreSession().createDocumentModel("/", "testFile", "SimpleBlobDocument");
+        DocumentModel withoutPrefixBlobDoc = coreSession.createDocumentModel("/", "testFile", "SimpleBlobDocument");
         withoutPrefixBlobDoc.setProperty("dublincore", "title", "TestFile");
 
         Blob blob = Blobs.createBlob("SOMEDUMMYDATA", null, null, "test.pdf");
@@ -172,16 +165,16 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         }
         withoutPrefixBlobDoc.setProperty("simpleblob", "blob", blob);
 
-        withoutPrefixBlobDoc = getCoreSession().createDocument(withoutPrefixBlobDoc);
+        withoutPrefixBlobDoc = coreSession.createDocument(withoutPrefixBlobDoc);
 
-        getCoreSession().saveDocument(withoutPrefixBlobDoc);
-        getCoreSession().save();
+        coreSession.saveDocument(withoutPrefixBlobDoc);
+        coreSession.save();
 
         return withoutPrefixBlobDoc;
     }
 
     protected DocumentModel createFileDocument(boolean setMimeType) throws ClientException {
-        DocumentModel fileDoc = getCoreSession().createDocumentModel("/", "testFile", "File");
+        DocumentModel fileDoc = coreSession.createDocumentModel("/", "testFile", "File");
         fileDoc.setProperty("dublincore", "title", "TestFile");
 
         Blob blob = Blobs.createBlob("SOMEDUMMYDATA", null, null, "test.pdf");
@@ -190,30 +183,30 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         }
         fileDoc.setProperty("file", "content", blob);
 
-        fileDoc = getCoreSession().createDocument(fileDoc);
+        fileDoc = coreSession.createDocument(fileDoc);
 
-        getCoreSession().saveDocument(fileDoc);
-        getCoreSession().save();
+        coreSession.saveDocument(fileDoc);
+        coreSession.save();
 
         return fileDoc;
     }
 
     protected DocumentModel removeMainBlob(DocumentModel doc) throws ClientException {
         doc.setPropertyValue("file:content", null);
-        doc = getCoreSession().saveDocument(doc);
-        getCoreSession().save();
+        doc = coreSession.saveDocument(doc);
+        coreSession.save();
         return doc;
     }
 
     protected DocumentModel createWorkspace() throws ClientException {
-        DocumentModel doc = getCoreSession().createDocumentModel("/", "testWorkspace", "Workspace");
+        DocumentModel doc = coreSession.createDocumentModel("/", "testWorkspace", "Workspace");
         doc.setProperty("dublincore", "title", "TestWorkspace");
         Blob blob = Blobs.createBlob("SOMEDUMMYDATA", null, null, "test.pdf");
         // blob.setMimeType("application/pdf");
         doc.setProperty("file", "content", blob);
-        doc = getCoreSession().createDocument(doc);
-        getCoreSession().saveDocument(doc);
-        getCoreSession().save();
+        doc = coreSession.createDocument(doc);
+        coreSession.saveDocument(doc);
+        coreSession.save();
         return doc;
     }
 

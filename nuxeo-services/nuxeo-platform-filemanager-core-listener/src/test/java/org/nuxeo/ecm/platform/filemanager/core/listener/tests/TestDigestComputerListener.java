@@ -19,30 +19,55 @@
 
 package org.nuxeo.ecm.platform.filemanager.core.listener.tests;
 
-import org.junit.Before;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
+import javax.inject.Inject;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-public class TestDigestComputerListener extends AbstractListener {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.filemanager.api", //
+        "org.nuxeo.ecm.platform.filemanager.core", //
+        "org.nuxeo.ecm.platform.mimetype.core" })
+@LocalDeploy({
+        "org.nuxeo.ecm.platform.filemanager.core.listener:OSGI-INF/filemanager-digestcomputer-event-contrib.xml",
+        "org.nuxeo.ecm.platform.filemanager.core.listener.test:OSGI-INF/nxfilemanager-digest-contrib.xml" })
+public class TestDigestComputerListener {
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.filemanager.api");
-        deployBundle("org.nuxeo.ecm.platform.filemanager.core");
-        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
-        deployContrib("org.nuxeo.ecm.platform.filemanager.core.listener",
-                "OSGI-INF/filemanager-digestcomputer-event-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.filemanager.core.listener.test",
-                "OSGI-INF/nxfilemanager-digest-contrib.xml");
+    @Inject
+    protected CoreSession coreSession;
+
+    protected DocumentModel createFileDocument() throws ClientException {
+        DocumentModel fileDoc = coreSession.createDocumentModel("/", "testFile", "File");
+        fileDoc.setProperty("dublincore", "title", "TestFile");
+        Blob blob = Blobs.createBlob("SOMEDUMMYDATA");
+        blob.setFilename("test.pdf");
+        blob.setMimeType("application/pdf");
+        fileDoc.setProperty("file", "content", blob);
+        fileDoc = coreSession.createDocument(fileDoc);
+        coreSession.saveDocument(fileDoc);
+        coreSession.save();
+        return fileDoc;
     }
 
     @Test
     public void testDigest() throws Exception {
-        DocumentModel file = createFileDocument(true);
+        DocumentModel file = createFileDocument();
         Blob blob = (Blob) file.getProperty("file", "content");
         assertNotNull(blob);
 

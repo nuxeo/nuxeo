@@ -23,10 +23,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -37,42 +39,27 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventProducer;
-import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * DublinCoreStorage Test Case.
  */
-public class TestDublinCoreStorage extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@Deploy("org.nuxeo.ecm.platform.dublincore")
+@LocalDeploy("org.nuxeo.ecm.platform.dublincore.tests:OSGI-INF/types-contrib.xml")
+public class TestDublinCoreStorage {
 
-    private DocumentModel root;
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-
-        deployBundle("org.nuxeo.ecm.platform.dublincore");
-        deployContrib("org.nuxeo.ecm.platform.dublincore.tests", "OSGI-INF/types-contrib.xml");
-        deployBundle("org.nuxeo.ecm.core.event");
-
-        EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
-        eventAdmin.setBulkModeEnabled(true);
-        eventAdmin.setListenerEnabledFlag("sql-storage-binary-text", false);
-
-        openSession();
-        root = session.getRootDocument();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
+    @Inject
+    protected CoreSession session;
 
     @Test
     public void testStorageService() {
@@ -82,7 +69,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
 
     @Test
     public void testCreationDateAndCreator() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file-007", "File");
+        DocumentModel childFile = new DocumentModelImpl("/", "file-007", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
         assertNotNull(childFile2.getPropertyValue("dc:created"));
         assertEquals("Administrator", childFile2.getPropertyValue("dc:creator"));
@@ -90,7 +77,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
 
     @Test
     public void testModificationDate() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file-008", "File");
+        DocumentModel childFile = new DocumentModelImpl("/", "file-008", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
 
         try {
@@ -115,7 +102,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
     // Wait until we can have a real list management
     @Test
     public void testContributors() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file-008", "File");
+        DocumentModel childFile = new DocumentModelImpl("/", "file-008", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
         DataModel dm = childFile2.getDataModel("dublincore");
 
@@ -128,6 +115,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
 
         // modify security to test with a new user
 
+        DocumentModel root = session.getRootDocument();
         ACP acp = root.getACP();
         ACL[] acls = acp.getACLs();
         ACL theAcl = acls[0];
@@ -137,22 +125,22 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
 
         // create a new session
         session.save();
-        closeSession();
-        session = openSessionAs("Jacky");
 
-        DocumentModel childFile3 = session.getDocument(childFile2.getRef());
-        childFile3.setProperty("dublincore", "source", "testing");
-        childFile3 = session.saveDocument(childFile3);
+        try (CoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), "Jacky")) {
+            DocumentModel childFile3 = session2.getDocument(childFile2.getRef());
+            childFile3.setProperty("dublincore", "source", "testing");
+            childFile3 = session2.saveDocument(childFile3);
 
-        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
-        contributorsList = Arrays.asList(contributorsArray);
-        assertTrue(contributorsList.contains("Jacky"));
-        assertEquals("Administrator", childFile3.getProperty("dublincore", "creator"));
+            contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
+            contributorsList = Arrays.asList(contributorsArray);
+            assertTrue(contributorsList.contains("Jacky"));
+            assertEquals("Administrator", childFile3.getProperty("dublincore", "creator"));
+        }
     }
 
     @Test
     public void testLastContributor() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file-008", "File");
+        DocumentModel childFile = new DocumentModelImpl("/", "file-008", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
         DataModel dm = childFile2.getDataModel("dublincore");
 
@@ -164,6 +152,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         assertTrue(contributorsList.contains("Administrator"));
 
         // modify security to test with tow new user
+        DocumentModel root = session.getRootDocument();
         ACP acp = root.getACP();
         ACL[] acls = acp.getACLs();
         ACL theAcl = acls[0];
@@ -172,54 +161,51 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         ace = new ACE("Fredo", SecurityConstants.EVERYTHING, true);
         theAcl.add(ace);
         root.setACP(acp, true);
+        session.save();
 
         // create a new session
-        session.save();
-        closeSession();
-        session = openSessionAs("Jacky");
+        try (CoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), "Jacky")) {
+            DocumentModel childFile3 = session2.getDocument(childFile2.getRef());
+            childFile3.setProperty("dublincore", "source", "testing");
+            childFile3 = session2.saveDocument(childFile3);
 
-        DocumentModel childFile3 = session.getDocument(childFile2.getRef());
-        childFile3.setProperty("dublincore", "source", "testing");
-        childFile3 = session.saveDocument(childFile3);
-
-        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
-        contributorsList = Arrays.asList(contributorsArray);
-        assertTrue(contributorsList.contains("Jacky"));
-        assertEquals(1, contributorsList.indexOf("Jacky"));
-        assertEquals("Jacky", childFile3.getProperty("dublincore", "lastContributor"));
-        session.save();
-        closeSession();
+            contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
+            contributorsList = Arrays.asList(contributorsArray);
+            assertTrue(contributorsList.contains("Jacky"));
+            assertEquals(1, contributorsList.indexOf("Jacky"));
+            assertEquals("Jacky", childFile3.getProperty("dublincore", "lastContributor"));
+            session2.save();
+        }
 
         // Test if a new contributor will be at the end of the list
-        session = openSessionAs("Fredo");
+        try (CoreSession session3 = CoreInstance.openCoreSession(session.getRepositoryName(), "Fredo")) {
+            DocumentModel childFile3 = session3.getDocument(childFile2.getRef());
+            childFile3.setProperty("dublincore", "source", "testing2"); // make a change
+            childFile3 = session3.saveDocument(childFile3);
 
-        childFile3 = session.getDocument(childFile2.getRef());
-        childFile3.setProperty("dublincore", "source", "testing2"); // make a change
-        childFile3 = session.saveDocument(childFile3);
-
-        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
-        contributorsList = Arrays.asList(contributorsArray);
-        assertTrue(contributorsList.contains("Fredo"));
-        assertEquals("Fredo", childFile3.getProperty("dublincore", "lastContributor"));
-        session.save();
-        closeSession();
+            contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
+            contributorsList = Arrays.asList(contributorsArray);
+            assertTrue(contributorsList.contains("Fredo"));
+            assertEquals("Fredo", childFile3.getProperty("dublincore", "lastContributor"));
+            session3.save();
+        }
 
         // Test if a previously contributor will be move to the end of the list
-        session = openSessionAs("Administrator");
+        try (CoreSession session4 = CoreInstance.openCoreSession(session.getRepositoryName(), "Administrator")) {
+            DocumentModel childFile3 = session4.getDocument(childFile2.getRef());
+            childFile3.setProperty("dublincore", "source", "testing");
+            childFile3 = session4.saveDocument(childFile3);
 
-        childFile3 = session.getDocument(childFile2.getRef());
-        childFile3.setProperty("dublincore", "source", "testing");
-        childFile3 = session.saveDocument(childFile3);
-
-        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
-        contributorsList = Arrays.asList(contributorsArray);
-        assertTrue(contributorsList.contains("Administrator"));
-        assertEquals("Administrator", childFile3.getProperty("dublincore", "lastContributor"));
+            contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
+            contributorsList = Arrays.asList(contributorsArray);
+            assertTrue(contributorsList.contains("Administrator"));
+            assertEquals("Administrator", childFile3.getProperty("dublincore", "lastContributor"));
+        }
     }
 
     @Test
     public void testContributorsAndModifiedDoesntChangeIfTheresNoChanges() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file-008", "File");
+        DocumentModel childFile = new DocumentModelImpl("/", "file-008", "File");
         childFile = session.createDocument(childFile);
         DataModel dm = childFile.getDataModel("dublincore");
         // backup the data to check
@@ -287,7 +273,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
 
     @Test
     public void testDisableListener() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file-007", "File");
+        DocumentModel childFile = new DocumentModelImpl("/", "file-007", "File");
         childFile.setPropertyValue("dc:creator", "Bender");
         Date now = new Date();
         childFile.setPropertyValue("dc:created", now);
@@ -307,13 +293,13 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
 
     @Test
     public void testCreatorForUnrestrictedSessionCreatedDoc() throws Exception {
-        closeSession();
-        session = openSessionAs("Jacky");
-        CreateDocumentUnrestricted runner = new CreateDocumentUnrestricted(session);
-        runner.runUnrestricted();
-        DocumentModel doc = runner.getFolder();
-        String creator = (String) doc.getPropertyValue("dc:creator");
-        assertEquals("Jacky", creator);
+        try (CoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), "Jacky")) {
+            CreateDocumentUnrestricted runner = new CreateDocumentUnrestricted(session2);
+            runner.runUnrestricted();
+            DocumentModel doc = runner.getFolder();
+            String creator = (String) doc.getPropertyValue("dc:creator");
+            assertEquals("Jacky", creator);
+        }
     }
 
     public class CreateDocumentUnrestricted extends UnrestrictedSessionRunner {

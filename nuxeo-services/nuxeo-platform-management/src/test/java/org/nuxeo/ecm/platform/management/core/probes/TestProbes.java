@@ -16,45 +16,51 @@
  */
 package org.nuxeo.ecm.platform.management.core.probes;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import javax.inject.Inject;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.management.statuses.ProbeScheduler;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ResourcePublisher;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public class TestProbes extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.runtime.management", //
+        "org.nuxeo.ecm.core.management", //
+        "org.nuxeo.ecm.platform.management", //
+})
+public class TestProbes {
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.runtime.management");
-        deployBundle("org.nuxeo.ecm.core.management");
-        deployBundle("org.nuxeo.ecm.platform.management");
-        openSession();
-        fireFrameworkStarted();
-    }
+    @Inject
+    protected ProbeScheduler scheduler;
 
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
+    @Inject
+    protected ResourcePublisher publisher;
+
+    @Inject
+    protected ProbeManager runner;
 
     @Test
     public void testScheduling() throws MalformedObjectNameException {
-        ProbeScheduler scheduler = Framework.getLocalService(ProbeScheduler.class);
         assertFalse(scheduler.isEnabled());
 
         scheduler.enable();
@@ -63,15 +69,14 @@ public class TestProbes extends SQLRepositoryTestCase {
         scheduler.disable();
         assertFalse(scheduler.isEnabled());
 
-        ResourcePublisher publisher = Framework.getLocalService(ResourcePublisher.class);
         assertTrue(publisher.getResourcesName().contains(new ObjectName("org.nuxeo:name=probeScheduler,type=service")));
     }
 
     @Test
     public void testPopulateRepository() throws Exception {
-        ProbeInfo info = getProbeRunner().getProbeInfo("populateRepository");
+        ProbeInfo info = runner.getProbeInfo("populateRepository");
         assertNotNull(info);
-        info = getProbeRunner().runProbe(info);
+        info = runner.runProbe(info);
         assertFalse(info.isInError());
         String result = info.getStatus().getAsString();
         System.out.print("populateRepository Probe result : " + result);
@@ -79,15 +84,11 @@ public class TestProbes extends SQLRepositoryTestCase {
 
     @Test
     public void testQueryRepository() throws Exception {
-        ProbeInfo info = getProbeRunner().getProbeInfo("queryRepository");
+        ProbeInfo info = runner.getProbeInfo("queryRepository");
         assertNotNull(info);
-        info = getProbeRunner().runProbe(info);
+        info = runner.runProbe(info);
         assertFalse(info.isInError());
         System.out.print(info.getStatus().getAsString());
-    }
-
-    ProbeManager getProbeRunner() throws Exception {
-        return Framework.getService(ProbeManager.class);
     }
 
 }

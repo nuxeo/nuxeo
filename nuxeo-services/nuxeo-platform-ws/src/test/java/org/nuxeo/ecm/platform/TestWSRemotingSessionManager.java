@@ -19,43 +19,49 @@
 
 package org.nuxeo.ecm.platform;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.Comparator;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import javax.inject.Inject;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.api.ws.DocumentProperty;
 import org.nuxeo.ecm.platform.api.ws.DocumentSnapshot;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSession;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSessionManager;
 import org.nuxeo.ecm.platform.ws.NuxeoRemotingBean;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.ecm.platform.ws")
+public class TestWSRemotingSessionManager {
 
+    @Inject
     WSRemotingSessionManager service;
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        service = Framework.getService(WSRemotingSessionManager.class);
-        assertNotNull(service);
-    }
-
-    @Override
-    protected void deployRepositoryContrib() throws Exception {
-        super.deployRepositoryContrib();
-        deployBundle("org.nuxeo.ecm.platform.ws");
-        deployContrib("org.nuxeo.ecm.platform.tests", "login-config.xml");
-    }
+    @Inject
+    protected CoreSession session;
 
     @Test
     public void testGetSessionWithNullSid() {
@@ -106,10 +112,9 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.platform.tests:login-config.xml")
     public void testSnapshotProperties() throws ClientException {
-        openSession();
-        DocumentModel rootDocument = session.getRootDocument();
-        DocumentModel doc = session.createDocumentModel(rootDocument.getPathAsString(), "youps", "File");
+        DocumentModel doc = session.createDocumentModel("/", "youps", "File");
         doc.setProperty("dublincore", "title", "huum");
         doc = session.createDocument(doc);
         session.save();
@@ -139,7 +144,6 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
 
         // cleanup
         remoting.disconnect(sid);
-        closeSession();
     }
 
 }
