@@ -32,7 +32,7 @@
     </action>
 
     <action id="selectDocumentToBeAddedToCollection" order="0" label="label.addToCollection.selectDocToBeAddedToCollection"
-      type="fancybox" icon="/icons/action_add.gif" accessKey="u">
+      type="fancybox" icon="/icons/add_to_collection.png" accessKey="u">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>canSelectedToBeAddedToCollection</filter-id>
       <properties>
