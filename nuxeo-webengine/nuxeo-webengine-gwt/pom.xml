@@ -43,19 +43,6 @@
       <optional>true</optional>
       <scope>compile</scope>
     </dependency>
-    <!--
-      This artifact is required only in gwt dev mode - to launch a nuxeo server.
-      It is not required at runtime in web mode
-    -->
-    <!-- Is this still needed ? seems that distribution tool launcher is quite deprecated -->
-    <!-- Still needed by Studio dev launcher -->
-    <dependency>
-      <groupId>org.nuxeo.build</groupId>
-      <artifactId>nuxeo-distribution-tools</artifactId>
-      <version>1.15</version>
-      <scope>compile</scope>
-      <optional>true</optional>
-    </dependency>
   </dependencies>
   <build>
     <plugins>
