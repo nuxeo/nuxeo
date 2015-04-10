@@ -11,6 +11,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -78,9 +80,19 @@ public class Root extends ModuleRoot {
         String userId = (isInstalledApp) ? WEOAuthConstants.INSTALLED_APP_USER_ID : getCurrentUsername();
 
         HttpResponse response = flow.newTokenRequest(code).setRedirectUri(redirectUri).executeUnparsed();
-        TokenResponse tokenResponse = response.parseAs(TokenResponse.class);
 
-        Credential credential = flow.createAndStoreCredential(tokenResponse, userId);
+        UnrestrictedSessionRunner sessionRunner = new UnrestrictedSessionRunner(ctx.getCoreSession()) {
+            @Override
+            public void run() throws ClientException {
+                try {
+                    TokenResponse tokenResponse = response.parseAs(TokenResponse.class);
+                    Credential credential = flow.createAndStoreCredential(tokenResponse, userId);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        sessionRunner.runUnrestricted();
 
         return getView("index");
     }

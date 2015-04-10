@@ -174,7 +174,20 @@ public class OAuth2TokenStore implements CredentialStore {
         Session session = null;
         try {
             session = ds.open(DIRECTORY_NAME);
-            DocumentModel entry = session.createEntry(aToken.toMap());
+
+            // clear old tokens
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Object> aTokenMap = aToken.toMap();
+            filter.put("refreshToken", (String) aTokenMap.get("refreshToken"));
+            DocumentModelList entries = session.query(filter);
+            for (DocumentModel entry : entries) {
+                session.deleteEntry(entry);
+            }
+
+            // add new token
+            DocumentModel entry = session.createEntry(aTokenMap);
+            session.updateEntry(entry);
+
             return getTokenFromDirectoryEntry(entry);
         } finally {
             if (session != null) {

@@ -5,8 +5,13 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import org.jboss.seam.annotations.In;
+
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -32,6 +37,9 @@ public abstract class DirectoryBasedEditor implements Serializable {
     protected abstract String getSchemaName();
 
     protected boolean showAddForm = false;
+
+    @In(create = true)
+    protected transient CoreSession documentManager;
 
     public boolean getShowAddForm() {
         return showAddForm;
@@ -115,27 +123,39 @@ public abstract class DirectoryBasedEditor implements Serializable {
 
     public void saveEntry() throws DirectoryException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = ds.open(getDirectoryName());
+        Session directorySession = ds.open(getDirectoryName());
         try {
-            session.updateEntry(editableEntry);
+            UnrestrictedSessionRunner sessionRunner = new UnrestrictedSessionRunner(documentManager) {
+                @Override
+                public void run() throws ClientException {
+                    directorySession.updateEntry(editableEntry);
+                }
+            };
+            sessionRunner.runUnrestricted();
             editableEntry = null;
             entries = null;
         } finally {
-            session.close();
+            directorySession.close();
         }
     }
 
     public void deleteEntry(String entryId) throws DirectoryException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = ds.open(getDirectoryName());
+        Session directorySession = ds.open(getDirectoryName());
         try {
-            session.deleteEntry(entryId);
+            UnrestrictedSessionRunner sessionRunner = new UnrestrictedSessionRunner(documentManager) {
+                @Override
+                public void run() throws ClientException {
+                    directorySession.deleteEntry(entryId);
+                }
+            };
+            sessionRunner.runUnrestricted();
             if (editableEntry != null && editableEntry.getId().equals(entryId)) {
                 editableEntry = null;
             }
             entries = null;
         } finally {
-            session.close();
+            directorySession.close();
         }
     }
 
