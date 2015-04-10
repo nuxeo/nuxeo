@@ -18,6 +18,7 @@ package org.nuxeo.ecm.webengine.gwt;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -44,17 +46,10 @@ public class WebEngineGwtServlet extends RemoteServiceServlet {
 
     private static Log log = LogFactory.getLog(WebEngineGwtServlet.class);
 
-    protected boolean HOSTED_MODE = false;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        try {
-            Class.forName("com.google.gwt.dev.HostedMode");
-            HOSTED_MODE = true;
-        } catch (ReflectiveOperationException e) {
-            HOSTED_MODE = false;
-        }
     }
 
     /**
@@ -70,15 +65,15 @@ public class WebEngineGwtServlet extends RemoteServiceServlet {
     @Override
     protected SerializationPolicy doGetSerializationPolicy(HttpServletRequest request, String moduleBaseURL,
             String strongName) {
-        if (HOSTED_MODE) {
-            return super.doGetSerializationPolicy(request, moduleBaseURL, strongName);
+        try {
+            return _doGetSerializationPolicy(request, moduleBaseURL, strongName);
+        } catch (FileNotFoundException cause) {
+            throw new NuxeoException("Cannot find serialization policy for " + moduleBaseURL, cause);
         }
-        // We are in production mode : return webengine policy
-        return _doGetSerializationPolicy(request, moduleBaseURL, strongName);
     }
 
     protected SerializationPolicy _doGetSerializationPolicy(HttpServletRequest request, String moduleBaseURL,
-            String strongName)  {
+            String strongName) throws FileNotFoundException  {
 
         String modulePath = null;
         if (moduleBaseURL != null) {
@@ -94,9 +89,8 @@ public class WebEngineGwtServlet extends RemoteServiceServlet {
         if (moduleId.length() == 0) {
             moduleId = "root";
         }
-        File dir = new File(Framework.getService(GwtResolver.class).resolve(moduleId), moduleId);
         String filename = SerializationPolicyLoader.getSerializationPolicyFileName(strongName);
-        File policyFile = new File(dir, filename);
+        File policyFile = Framework.getService(GwtResolver.class).resolve(moduleId+"/"+filename);
         if (!policyFile.isFile()) {
             log.warn("Could not find gwt serialization policy file for module " + moduleId + " [ " + filename + " ]");
             return super.doGetSerializationPolicy(request, moduleBaseURL, strongName);

@@ -5,6 +5,7 @@ import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystems;
@@ -16,6 +17,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.nuxeo.common.Environment;
@@ -24,9 +26,14 @@ public class GwtResolver {
 
     public static final File GWT_ROOT = new File(Environment.getDefault().getWeb(), "root.war/gwt");
 
-    protected final Map<String, GwtAppResolver> resolvers = new HashMap<String, GwtAppResolver>();
+    protected final Map<String, CompositeAppResolver> resolvers = new HashMap<String, CompositeAppResolver>();
 
     protected static final GwtAppResolver ROOT_RESOLVER = new GwtAppResolver() {
+
+        @Override
+        public URI source() {
+            return GWT_ROOT.toURI();
+        }
 
         @Override
         public File resolve(String path) {
@@ -34,16 +41,43 @@ public class GwtResolver {
         }
     };
 
+    class CompositeAppResolver {
+        final Map<URI, GwtAppResolver> resolvers = new LinkedHashMap<URI, GwtAppResolver>();
+
+        void install(GwtAppResolver resolver) {
+            resolvers.put(resolver.source(), resolver);
+        }
+
+        void uninstall(URI source) {
+            resolvers.remove(source);
+        }
+
+        public File resolve(String path) throws FileNotFoundException {
+            for (GwtAppResolver each : resolvers.values()) {
+                File file = each.resolve(path);
+                if (file.exists()) {
+                    return file;
+                }
+            }
+            throw new FileNotFoundException(path);
+        }
+    }
+
     public void install(String name, URI location) throws IOException {
         File root = install(location);
-        resolvers.put(name, new GwtAppResolver() {
+        install(name, new GwtAppResolver() {
 
             @Override
-            public File resolve(String pathname) {
-                return new File(root, pathname);
+            public URI source() {
+                return location;
             }
 
+            @Override
+            public File resolve(String path) throws FileNotFoundException {
+                return new File(root, path);
+            }
         });
+
     }
 
     protected File install(URI location) throws IOException {
@@ -61,14 +95,17 @@ public class GwtResolver {
     }
 
     public void install(String name, GwtAppResolver resolver) {
-        resolvers.put(name, resolver);
+        if (!resolvers.containsKey(name)) {
+            resolvers.put(name, new CompositeAppResolver());
+        }
+        resolvers.get(name).install(resolver);
     }
 
     public void uninstall(String name) {
         resolvers.remove(name);
     }
 
-    public File resolve(String path) {
+    public File resolve(String path) throws FileNotFoundException {
         int indexOf = path.indexOf('/');
         if (indexOf == -1) {
             if (resolvers.containsKey(path)) {

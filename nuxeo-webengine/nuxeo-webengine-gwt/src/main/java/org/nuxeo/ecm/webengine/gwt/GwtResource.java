@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.webengine.gwt;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -45,10 +46,11 @@ public abstract class GwtResource extends ModuleRoot {
 
     /**
      * Gets a static resource from the GWT module.
+     * @throws FileNotFoundException
      */
     @GET
     @Path("{path:.*}")
-    public Response getResource(@PathParam("path") String path) {
+    public Response getResource(@PathParam("path") String path) throws FileNotFoundException {
         ctx.getRequest().setAttribute("org.nuxeo.webengine.DisableAutoHeaders", "true");
         File file = Framework.getService(GwtResolver.class).resolve(path);
         if (file.isFile()) {

@@ -1,8 +1,12 @@
 package org.nuxeo.ecm.webengine.gwt;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.URI;
 
 public interface GwtAppResolver {
 
-    File resolve(String path);
+    URI source();
+
+    File resolve(String path) throws FileNotFoundException;
 }
