@@ -29,28 +29,48 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.webdav.backend.AbstractBackendFactory;
 import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.ecm.webdav.backend.BackendHelper;
 import org.nuxeo.ecm.webdav.backend.SearchBackendFactory;
 import org.nuxeo.ecm.webdav.backend.SimpleBackendFactory;
 import org.nuxeo.ecm.webdav.service.WIRequestFilter;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.wss.servlet.WSSRequest;
 import org.nuxeo.wss.spi.WSSBackend;
 import org.nuxeo.wss.spi.WSSListItem;
 
-public class TestSimpleBackend extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.types.api", //
+        "org.nuxeo.ecm.platform.types.core", //
+        "org.nuxeo.ecm.platform.mimetype.api", //
+        "org.nuxeo.ecm.platform.mimetype.core", //
+        "org.nuxeo.ecm.platform.filemanager.api", //
+        "org.nuxeo.ecm.platform.filemanager.core", //
+        "org.nuxeo.ecm.platform.content.template", //
+        "org.nuxeo.ecm.webdav", //
+})
+public class TestSimpleBackend {
 
     public static class WSSListItemSorter implements Comparator<WSSListItem> {
         @Override
@@ -61,22 +81,11 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
 
     public static WSSListItemSorter wssListItemSorter = new WSSListItemSorter();
 
-    @Override
+    @Inject
+    protected CoreSession session;
+
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.platform.types.api");
-        deployBundle("org.nuxeo.ecm.platform.types.core");
-        deployBundle("org.nuxeo.ecm.platform.mimetype.api");
-        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
-        deployBundle("org.nuxeo.ecm.platform.filemanager.api");
-        deployBundle("org.nuxeo.ecm.platform.filemanager.core");
-        deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployBundle("org.nuxeo.ecm.webdav");
-        fireFrameworkStarted();
-        openSession();
-
         DocumentModel ws1 = session.createDocumentModel("/default-domain/workspaces", "ws1", "Workspace");
         ws1.setPropertyValue("dc:title", "Ws1");
         ws1 = session.createDocument(ws1);
@@ -133,13 +142,6 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         doc4 = session.createDocument(doc4);
 
         session.save();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
     }
 
     protected WSSBackend createWssBackend(AbstractBackendFactory factory) {
