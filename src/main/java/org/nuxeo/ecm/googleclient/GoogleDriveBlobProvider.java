@@ -19,16 +19,16 @@ package org.nuxeo.ecm.googleclient;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
-import org.nuxeo.ecm.core.blob.ManagedBlobProvider;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.googleclient.credential.CredentialFactory;
@@ -46,7 +46,7 @@ import com.google.api.services.drive.model.File;
  *
  * @since 7.3
  */
-public class GoogleDriveBlobProvider implements ManagedBlobProvider {
+public class GoogleDriveBlobProvider implements BlobProvider {
 
     private static final String APPLICATION_NAME = "Nuxeo/0";
 
@@ -67,89 +67,63 @@ public class GoogleDriveBlobProvider implements ManagedBlobProvider {
         throw new UnsupportedOperationException("Storing a standard blob is not supported");
     }
 
-    protected String getFileId(ManagedBlob blob) {
-        String fileInfo = getFileInfo(blob);
-        return getFileId(fileInfo);
-    }
-
-    protected String getUser(ManagedBlob blob) {
-        String fileInfo = getFileInfo(blob);
-        return getUser(fileInfo);
-    }
-
-    protected String getFileInfo(ManagedBlob blob) {
-        String key = blob.getKey();
-        int colon = key.indexOf(':');
-        if (colon < 0) {
-            throw new IllegalArgumentException(key);
-        }
-        String fileInfo = key.substring(colon + 1);
-        return fileInfo;
-    }
-
-    protected String getUser(String fileInfo) {
-        return getFileInfo(fileInfo)[0];
-    }
-
-    protected String getFileId(String fileInfo) {
-        return getFileInfo(fileInfo)[1];
-    }
-
-    protected String[] getFileInfo(String fileInfo) {
-        String[] parts = fileInfo.split(":");
-        if (parts.length != 2) {
-            throw new IllegalArgumentException(fileInfo);
-        }
-        return parts;
-    }
-
     @Override
-    public InputStream getStream(ManagedBlob blob) throws IOException {
-        String user = getUser(blob);
-        String fileId = getFileId(blob);
-        Drive service = getService(user);
-        File file = service.files().get(fileId).execute();
-        String url = file.getDownloadUrl();
-        if (url == null) {
-            throw new NuxeoException("No download URL for file: " + fileId);
-        }
-        HttpResponse resp = service.getRequestFactory().buildGetRequest(new GenericUrl(url)).execute();
-        return resp.getContent();
-    }
-
-    @Override
-    public InputStream getConvertedStream(ManagedBlob blob, String mimeType) throws IOException {
-        String user = getUser(blob);
-        String fileId = getFileId(blob);
-        Drive service = getService(user);
-        File file = service.files().get(fileId).execute();
-        Map<String, String> exportLinks = file.getExportLinks();
+    public URI getURI(ManagedBlob blob, ManagedBlob.UsageHint usage) throws IOException {
         String url = null;
-        if (exportLinks != null) {
-            url = exportLinks.get(mimeType);
+        File file = getFile(blob);
+        switch (usage) {
+        case STREAM:
+            url = file.getDownloadUrl();
+            break;
+        case DOWNLOAD:
+            url = file.getWebContentLink();
+            if (url == null) {
+                url = file.getAlternateLink();
+            }
+            break;
+        case VIEW:
+        case EDIT:
+            url = file.getAlternateLink();
+            break;
+        case EMBED:
+            url = file.getEmbedLink();
+            if (url == null) {
+                // non-native file resources do not return an embedLink but it is available
+                url = file.getAlternateLink();
+                URI uri = asURI(url).resolve("./preview");
+                url = uri.toString();
+            }
+            break;
         }
-        if (url == null) {
-            return null;
-        }
-        HttpResponse resp = service.getRequestFactory().buildGetRequest(new GenericUrl(url)).execute();
+        return (url != null) ? asURI(url) : null;
+    }
+    
+    @Override
+    public InputStream getStream(String blobKey, URI uri) throws IOException {
+        String info = getFileInfo(blobKey);
+        String user = getUser(info);
+        HttpResponse resp = doGet(user, uri);
         return resp.getContent();
     }
 
     @Override
-    public List<String> getAvailableConversions(ManagedBlob blob) throws IOException {
-        String user = getUser(blob);
-        String fileId = getFileId(blob);
-        Drive service = getService(user);
-        File file = service.files().get(fileId).execute();
+    public Map<String, URI> getAvailableConversions(ManagedBlob blob, ManagedBlob.UsageHint hint) throws IOException {
+        File file = getFile(blob);
         Map<String, String> exportLinks = file.getExportLinks();
-        return exportLinks == null ? Collections.emptyList() : new ArrayList<>(exportLinks.keySet());
+        if (exportLinks == null) {
+            return Collections.emptyMap();
+        }
+        Map<String, URI> conversions = new HashMap<>();
+        for (String mimeType : exportLinks.keySet()) {
+            conversions.put(mimeType, asURI(exportLinks.get(mimeType)));
+        }
+        return conversions;
     }
 
-    // other links available in the file metadata:
-    // alternateLink = web link to go edit online
-    // embedLink = web link for an online preview
-    // iconLink = link to icon (static, no auth)
-    // thumbnailLink = link to document thumbnail
+    @Override
+    public URI getThumbnail(ManagedBlob blob, ManagedBlob.UsageHint hint) throws IOException {
+        return asURI(getFile(blob).getThumbnailLink());
+    }
 
     /**
      * Gets the blob for a Google Drive file.
@@ -160,7 +134,7 @@ public class GoogleDriveBlobProvider implements ManagedBlobProvider {
     public Blob getBlob(String fileInfo) throws IOException {
         String user = getUser(fileInfo);
         String fileId = getFileId(fileInfo);
-        File file = getService(user).files().get(fileId).execute();
+        File file = getFile(user, fileId);
         String key = String.format("%s:%s:%s", GoogleDriveComponent.GOOGLE_DRIVE_PREFIX, user, fileId);
         String filename = file.getOriginalFilename();
         if (filename == null) {
@@ -172,11 +146,41 @@ public class GoogleDriveBlobProvider implements ManagedBlobProvider {
         blobInfo.encoding = null; // TODO extract from mimeType
         blobInfo.filename = filename;
         blobInfo.length = file.getFileSize();
-        blobInfo.digest = file.getMd5Checksum();
+        // etag for native docs and md5 for everything else
+        String digest = file.getMd5Checksum();
+        if (digest == null) {
+            digest = file.getEtag();
+        }
+        blobInfo.digest = digest;
         return new SimpleManagedBlob(blobInfo, this);
     }
 
-    public Credential getCredential(String user) throws IOException {
+    protected String getFileInfo(String key) {
+        int colon = key.indexOf(':');
+        if (colon < 0) {
+            throw new IllegalArgumentException(key);
+        }
+        String fileInfo = key.substring(colon + 1);
+        return fileInfo;
+    }
+
+    protected String getUser(String fileInfo) {
+        return getFileInfoParts(fileInfo)[0];
+    }
+
+    protected String getFileId(String fileInfo) {
+        return getFileInfoParts(fileInfo)[1];
+    }
+
+    protected String[] getFileInfoParts(String fileInfo) {
+        String[] parts = fileInfo.split(":");
+        if (parts.length != 2) {
+            throw new IllegalArgumentException(fileInfo);
+        }
+        return parts;
+    }
+
+    protected Credential getCredential(String user) throws IOException {
         return credentialFactory.build(user);
     }
 
@@ -187,5 +191,40 @@ public class GoogleDriveBlobProvider implements ManagedBlobProvider {
         return new Drive.Builder(httpTransport, jsonFactory, credential) //
         .setApplicationName(APPLICATION_NAME) // set application name to avoid a WARN
         .build();
+    }
+
+    protected File getFile(ManagedBlob blob) throws IOException {
+        String fileInfo = getFileInfo(blob.getKey());
+        String user = getUser(fileInfo);
+        String fileId = getFileId(fileInfo);
+        return getFile(user, fileId);
+    }
+
+    protected File getFile(String user, String fileId) throws IOException {
+        return getService(user).files().get(fileId).execute();
+    }
+
+    /**
+     * Executes a GET request with the user's credentials
+     *
+     * @return a {@link HttpResponse}
+     */
+    protected HttpResponse doGet(String user, URI url) throws IOException {
+        return getService(user).getRequestFactory().buildGetRequest(new GenericUrl(url)).execute();
+    }
+
+    /**
+     * Parse a {@link URI}.
+     *
+     * @return the {@link URI} or null if it fails
+     */
+    private URI asURI(String link) {
+        URI uri = null;
+        try {
+            uri = new URI(link);
+        } catch (URISyntaxException e) {
+            //
+        }
+        return uri;
     }
 }
