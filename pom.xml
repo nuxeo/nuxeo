@@ -1202,7 +1202,7 @@
       
       <!-- Github Segment IO -->
       <dependency>
-        <groupId>org.nuxeo.addons</groupId>
+        <groupId>org.nuxeo</groupId>
         <artifactId>nuxeo-segmentio-connector</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
