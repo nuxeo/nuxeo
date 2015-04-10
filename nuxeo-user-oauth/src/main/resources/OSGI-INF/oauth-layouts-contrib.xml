@@ -66,6 +66,80 @@
         </properties>
       </widget>
     </layout>
+
+    <layout name="oauth2ProviderTokenLayoutUserDashboard">
+      <templates>
+        <template mode="any">
+          /directory/directoryOAuth_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>id</widget>
+        </row>
+        <row>
+          <widget>serviceName</widget>
+        </row>
+        <row>
+          <widget>accessToken</widget>
+        </row>
+        <row>
+          <widget>refreshToken</widget>
+        </row>
+        <row>
+          <widget>creationDate</widget>
+        </row>
+      </rows>
+
+      <widget name="id" type="text">
+        <labels>
+          <label mode="any">Id</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Token.id</field>
+        </fields>
+        <widgetModes>
+          <mode value="edit">hidden</mode>
+        </widgetModes>
+      </widget>
+      <widget name="serviceName" type="text">
+        <labels>
+          <label mode="any">Service Name</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Token.serviceName</field>
+        </fields>
+      </widget>
+      <widget name="accessToken" type="text">
+        <labels>
+          <label mode="any">Access Token </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Token.accessToken</field>
+        </fields>
+      </widget>
+      <widget name="refreshToken" type="text">
+        <labels>
+          <label mode="any">Refresh Token</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Token.refreshToken</field>
+        </fields>
+      </widget>
+      <widget name="creationDate" type="datetime">
+        <labels>
+          <label mode="any">Creation Date</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Token.creationDate</field>
+        </fields>
+      </widget>
+    </layout>
   </extension>
 
 </component>

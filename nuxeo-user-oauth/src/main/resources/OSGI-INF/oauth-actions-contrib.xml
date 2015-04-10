@@ -18,6 +18,11 @@
       <category>AuthorizedApplication_sub_tab</category>
     </action>
 
+    <action id="OAuthTokens" link="/incl/oauth/user_tokens.xhtml" label="user.center.oauthtokens" order="55">
+      <category>USER_CENTER</category>
+      <filter-id>not_anonymous</filter-id>
+    </action>
+
   </extension>
 
 </component>
