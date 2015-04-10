@@ -16,14 +16,16 @@
  */
 package org.nuxeo.apidoc.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import javax.inject.Inject;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
@@ -33,43 +35,33 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestDocumentationService extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.apidoc.core")
+public class TestDocumentationService {
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.event");
+    @Inject
+    protected CoreSession session;
 
-        deployBundle("org.nuxeo.ecm.directory.api");
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.directory.sql");
-        deployBundle("org.nuxeo.ecm.platform.usermanager.api");
-        deployBundle("org.nuxeo.ecm.platform.usermanager");
+    @Inject
+    protected DocumentationService ds;
 
-        deployBundle("org.nuxeo.apidoc.core");
-        openSession();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
-
-    protected SnapshotManager getSnapshotManager() {
-        return Framework.getLocalService(SnapshotManager.class);
-    }
+    @Inject
+    protected SnapshotManager snapshotManager;
 
     @Test
     public void testService() throws Exception {
-        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
-        assertNotNull(ds);
-
-        DistributionSnapshot runtimeSnapshot = getSnapshotManager().getRuntimeSnapshot();
+        DistributionSnapshot runtimeSnapshot = snapshotManager.getRuntimeSnapshot();
 
         BundleGroup bg = runtimeSnapshot.getBundleGroup("org.nuxeo.ecm.core");
         assertNotNull(bg);
@@ -90,9 +82,6 @@ public class TestDocumentationService extends SQLRepositoryTestCase {
     }
 
     protected void doTestDocumentationOnArtifact(NuxeoArtifact artifact) throws Exception {
-
-        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
-
         List<String> applicableVersions = new ArrayList<String>();
         applicableVersions.add(artifact.getVersion());
 

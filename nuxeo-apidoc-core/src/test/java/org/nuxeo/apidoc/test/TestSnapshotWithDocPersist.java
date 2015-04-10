@@ -22,11 +22,10 @@ import static org.junit.Assert.assertNotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.After;
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.documentation.DefaultDocumentationType;
 import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
@@ -34,57 +33,34 @@ import org.nuxeo.apidoc.introspection.BundleGroupImpl;
 import org.nuxeo.apidoc.introspection.BundleInfoImpl;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
-import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestSnapshotWithDocPersist extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.automation.core", //
+        "org.nuxeo.apidoc.core", //
+})
+public class TestSnapshotWithDocPersist {
 
-    private static final Log log = LogFactory.getLog(TestSnapshotWithDocPersist.class);
+    @Inject
+    protected CoreSession session;
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.event");
-
-        deployBundle("org.nuxeo.ecm.directory.api");
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.directory.sql");
-        deployBundle("org.nuxeo.ecm.platform.usermanager.api");
-        deployBundle("org.nuxeo.ecm.platform.usermanager");
-
-        deployBundle("org.nuxeo.ecm.automation.core");
-
-        deployBundle("org.nuxeo.apidoc.core");
-        openSession();
-
-        // Force cleanup ... ???
-        DocumentModelList docs = session.query("select * from NXDocumentation");
-        if (docs.size() > 0) {
-            for (DocumentModel doc : docs) {
-                session.removeDocument(doc.getRef());
-            }
-        }
-        session.save();
-
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
-
-    protected SnapshotManager getSnapshotManager() {
-        return Framework.getLocalService(SnapshotManager.class);
-    }
+    @Inject
+    protected SnapshotManager snapshotManager;
 
     @Test
     public void testPersistWithLiveDoc() throws Exception {
 
-        DistributionSnapshot runtimeSnapshot = getSnapshotManager().getRuntimeSnapshot();
+        DistributionSnapshot runtimeSnapshot = snapshotManager.getRuntimeSnapshot();
 
         Map<String, ResourceDocumentationItem> liveDoc = new HashMap<String, ResourceDocumentationItem>();
         BundleInfoImpl bi = (BundleInfoImpl) runtimeSnapshot.getBundle("org.nuxeo.ecm.core.api");
@@ -112,7 +88,7 @@ public class TestSnapshotWithDocPersist extends SQLRepositoryTestCase {
 
         ((BundleGroupImpl) bi.getBundleGroup()).addLiveDoc(bi.getParentLiveDoc());
 
-        DistributionSnapshot persistent = getSnapshotManager().persistRuntimeSnapshot(session);
+        DistributionSnapshot persistent = snapshotManager.persistRuntimeSnapshot(session);
         assertNotNull(persistent);
 
         session.save();
@@ -124,14 +100,14 @@ public class TestSnapshotWithDocPersist extends SQLRepositoryTestCase {
         // assertEquals(4, docs.size());
 
         // save an other time
-        persistent = getSnapshotManager().persistRuntimeSnapshot(session);
+        persistent = snapshotManager.persistRuntimeSnapshot(session);
         assertNotNull(persistent);
         session.save();
 
         docs = session.query("select * from NXDocumentation");
         assertEquals(nbDocs, docs.size());
 
-        persistent = getSnapshotManager().getSnapshot(runtimeSnapshot.getKey(), session);
+        persistent = snapshotManager.getSnapshot(runtimeSnapshot.getKey(), session);
         assertNotNull(persistent);
 
         AssociatedDocuments docItems = persistent.getBundle("org.nuxeo.ecm.core.api").getAssociatedDocuments(session);
