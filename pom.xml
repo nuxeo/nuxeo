@@ -151,7 +151,7 @@
     <elasticsearch.version>1.1.2</elasticsearch.version>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
-    <gwt.version>2.5.1</gwt.version>
+    <gwt.version>2.7.0-NX1</gwt.version>
     <guice.version>3.0</guice.version>
     <jersey.version>1.18.3</jersey.version>
     <jetty.mortbay.version>6.1.26</jetty.mortbay.version>
@@ -3032,6 +3032,12 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-codeserver</artifactId>
+        <version>${gwt.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
         <version>2.2.2</version>
@@ -3073,7 +3079,7 @@
       <dependency>
         <groupId>com.allen-sauer.gwt.dnd</groupId>
         <artifactId>gwt-dnd</artifactId>
-        <version>3.1.2</version>
+        <version>3.3.3</version>
         <scope>provided</scope>
         <exclusions>
           <exclusion>
