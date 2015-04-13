@@ -74,7 +74,7 @@ public class Documents implements Serializable, OperationInput, Iterable<Documen
         return false;
     }
 
-    public String getInputRef() {
+    public String toString() {
         StringBuilder buf = new StringBuilder();
         int size = size();
         if (size == 0) {
@@ -87,7 +87,7 @@ public class Documents implements Serializable, OperationInput, Iterable<Documen
         return buf.toString();
     }
 
-    public String toString() {
+    public String getInputRef() {
         StringBuilder buf = new StringBuilder("docs:");
         int size = size();
         if (size == 0) {
