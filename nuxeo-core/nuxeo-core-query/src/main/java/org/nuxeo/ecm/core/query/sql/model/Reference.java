@@ -21,27 +21,39 @@ import org.apache.commons.lang.StringUtils;
  */
 public class Reference implements Operand {
 
-    private static final long serialVersionUID = -1725102431543210429L;
+    private static final long serialVersionUID = -1725102431543210430L;
 
     public final String name;
 
     public final String cast;
 
+    public final EsHint esHint;
+
     public Reference(String name) {
         this.name = name;
         cast = null;
+        esHint = null;
     }
 
     /** @since 5.6 */
     public Reference(String name, String cast) {
         this.name = name;
         this.cast = cast;
+        esHint = null;
     }
 
     /** @since 5.6 */
     public Reference(Reference other, String cast) {
         this.name = other.name;
         this.cast = cast;
+        esHint = null;
+    }
+
+    /** @since 7.3 */
+    public Reference(Reference other, EsHint hint) {
+        this.name = other.name;
+        cast = null;
+        this.esHint = hint;
     }
 
     @Override
@@ -51,11 +63,12 @@ public class Reference implements Operand {
 
     @Override
     public String toString() {
-        if (cast == null) {
-            return name;
-        } else {
+        if (cast != null) {
             return cast + '(' + name + ')';
+        } else if (esHint != null) {
+            return esHint.toString() + " " + name;
         }
+        return name;
     }
 
     @Override
@@ -70,16 +83,28 @@ public class Reference implements Operand {
     }
 
     private boolean equals(Reference other) {
-        return name.equals(other.name) && StringUtils.equals(cast, other.cast);
+        if (!name.equals(other.name)) {
+            return false;
+        }
+        if (cast != null || other.cast != null) {
+            return StringUtils.equals(cast, other.cast);
+        }
+        if (esHint != null) {
+            return esHint.equals(other.esHint);
+        } else if (other.esHint != null) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = 31 + (cast == null ? 0 : cast.hashCode());
+        int result = 31 + (cast == null ? 0 : cast.hashCode()) + (esHint == null ? 0 : esHint.hashCode());
         return 31 * result + name.hashCode();
     }
 
     public boolean isPathReference() {
         return false;
     }
+
 }

@@ -50,9 +50,11 @@ terminal SELECT, FROM, WHERE, AS,
          ORDERBY, GROUPBY, HAVING, LIMIT, DISTINCT, ALL,
          ASC, DESC, AND, OR, NOT, SUM, SUB, DIV, MUL, EQ, NOTEQ, LT, GT, LTEQ, GTEQ,
          COMMA, LPARA, RPARA, LOCATION, STARTSWITH, TYPE,
-         DATE, TIMESTAMP, OFFSET, IS, NULL, ISNULL, ISNOTNULL;
+         DATE, TIMESTAMP, OFFSET, IS, NULL, ISNULL, ISNOTNULL,
+         LHINT_ES, RHINT, INDEX, ANALYZER, OPERATOR;
 
-terminal String IDENTIFIER, FROM_IDENTIFIER, PATH_IDENTIFIER, STRING, INTEGER, DOUBLE;
+terminal String IDENTIFIER, FROM_IDENTIFIER, PATH_IDENTIFIER, STRING, INTEGER, DOUBLE,
+         ES_IDENTIFIER;
 
 
 non terminal SQLQuery      query;
@@ -77,8 +79,11 @@ non terminal LiteralList   literal_list;
 non terminal OrderByList   order_by_list;
 non terminal OrderByExpr   order_by_expr;
 non terminal String        from_key;
-
-
+non terminal EsHint        es_hint;
+non terminal String        es_analyzer;
+non terminal String        es_operator;
+non terminal EsIdentifierList es_identifier_list;
+non terminal EsIdentifierList es_index;
 /* -------------Precedence and Associatively of Terminals Section----------- */
 
 /*
@@ -301,6 +306,9 @@ reference ::= simple_reference:ref
             /* cast */
             | DATE LPARA simple_reference:ref RPARA
                 {: RESULT = new Reference(ref, "DATE"); :}
+            /* hints */
+            | es_hint:hint simple_reference:ref
+                {: RESULT = new Reference(ref, hint); :}
             ;
 
 simple_reference ::= IDENTIFIER:v
@@ -340,7 +348,6 @@ literal_list ::= literal:v
                    {: l.add(v); RESULT = l; :}
                ;
 
-
 function ::= IDENTIFIER:name LPARA RPARA
                {: RESULT = new Function(name);:}
            | IDENTIFIER:name LPARA function_args:args RPARA
@@ -353,3 +360,38 @@ function_args ::= predicate_operand:v
                     {: l.add(v); RESULT = l; :}
                 ;
 
+es_identifier_list ::= ES_IDENTIFIER:v
+                   {: RESULT = new EsIdentifierList(); RESULT.add(v); :}
+               | es_identifier_list:l COMMA ES_IDENTIFIER:v
+                   {: l.add(v); RESULT = l; :}
+               ;
+
+es_index ::= INDEX LPARA es_identifier_list:v RPARA
+               {: RESULT = v; :}
+             ;
+
+es_analyzer ::= ANALYZER LPARA ES_IDENTIFIER:v RPARA
+                 {: RESULT = v; :}
+                ;
+
+es_operator ::= OPERATOR LPARA ES_IDENTIFIER:v RPARA
+                  {: RESULT = v; :}
+                ;
+
+es_hint ::= LHINT_ES es_index:index RHINT
+                {: RESULT = new EsHint(index, null, null); :}
+            | LHINT_ES es_analyzer:analyzer RHINT
+                {: RESULT = new EsHint(null, analyzer, null); :}
+            | LHINT_ES es_operator:operator RHINT
+                {: RESULT = new EsHint(null, null, operator); :}
+            | LHINT_ES es_index:index es_analyzer:analyzer RHINT
+                {: RESULT = new EsHint(index, analyzer, null); :}
+            | LHINT_ES es_index:index es_operator:operator RHINT
+                {: RESULT = new EsHint(index, null, operator); :}
+            | LHINT_ES es_analyzer:analyzer es_operator:operator RHINT
+                {: RESULT = new EsHint(null, analyzer, operator); :}
+            | LHINT_ES es_index:index es_analyzer:analyzer es_operator:operator RHINT
+                {: RESULT = new EsHint(index, analyzer, operator); :}
+            | LHINT_ES RHINT
+                {: RESULT = null; :}
+            ;
