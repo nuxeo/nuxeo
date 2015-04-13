@@ -29,66 +29,66 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoInfo;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public class TestVideoService extends SQLRepositoryTestCase {
-
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(TestVideoService.class);
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.core.convert.api", //
+        "org.nuxeo.ecm.core.convert", //
+        "org.nuxeo.ecm.platform.commandline.executor", //
+        "org.nuxeo.ecm.platform.types.api", //
+        "org.nuxeo.ecm.platform.types.core", //
+        "org.nuxeo.ecm.automation.core", //
+        "org.nuxeo.ecm.platform.picture.core", //
+        "org.nuxeo.ecm.platform.picture.api", //
+        "org.nuxeo.ecm.platform.picture.convert", //
+        "org.nuxeo.ecm.platform.video.convert", //
+        "org.nuxeo.ecm.platform.video.core", //
+})
+public class TestVideoService {
 
     public static final String DELTA_MP4 = "DELTA.mp4";
 
+    @Inject
+    protected CoreSession session;
+
+    @Inject
     protected VideoService videoService;
+
+    @Inject
+    protected EventServiceAdmin eventServiceAdmin;
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core.convert.api");
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployBundle("org.nuxeo.ecm.platform.types.api");
-        deployBundle("org.nuxeo.ecm.platform.types.core");
-        deployBundle("org.nuxeo.ecm.automation.core");
-        deployBundle("org.nuxeo.ecm.platform.picture.core");
-        deployBundle("org.nuxeo.ecm.platform.picture.api");
-        deployBundle("org.nuxeo.ecm.platform.picture.convert");
-        deployBundle("org.nuxeo.ecm.platform.video.convert");
-        deployBundle("org.nuxeo.ecm.platform.video.core");
-
-        openSession();
-
-        EventServiceAdmin eventServiceAdmin = Framework.getLocalService(EventServiceAdmin.class);
         eventServiceAdmin.setListenerEnabledFlag("videoAutomaticConversions", false);
         eventServiceAdmin.setListenerEnabledFlag("sql-storage-binary-text", false);
-
-        videoService = Framework.getLocalService(VideoService.class);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
     }
 
     @Test

@@ -30,16 +30,19 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.internal.AssumptionViolatedException;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -47,30 +50,70 @@ import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.video.Stream;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoDocument;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Tests that the VideoImporter class works by importing a sample video
  */
-public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.core.convert.api", //
+        "org.nuxeo.ecm.core.convert", //
+        "org.nuxeo.ecm.platform.commandline.executor", //
+        "org.nuxeo.ecm.platform.types.api", //
+        "org.nuxeo.ecm.platform.types.core", //
+        "org.nuxeo.ecm.platform.mimetype.api", //
+        "org.nuxeo.ecm.platform.mimetype.core", //
+        "org.nuxeo.ecm.automation.core", //
+        "org.nuxeo.ecm.platform.picture.core", //
+        "org.nuxeo.ecm.platform.picture.api", //
+        "org.nuxeo.ecm.platform.picture.convert", //
+        "org.nuxeo.ecm.platform.video.convert", //
+        "org.nuxeo.ecm.platform.video.core", //
+        "org.nuxeo.ecm.platform.filemanager.api", //
+        "org.nuxeo.ecm.platform.filemanager.core", //
+})
+public class TestVideoImporterAndListeners {
 
     // http://www.elephantsdream.org/
     public static final String ELEPHANTS_DREAM = "elephantsdream-160-mpeg4-su-ac3.avi";
 
-    public static final Log log = LogFactory.getLog(TestVideoImporterAndListeners.class);
-
     protected static final String VIDEO_TYPE = "Video";
 
+    public static final Log log = LogFactory.getLog(TestVideoImporterAndListeners.class);
+
+    @Inject
+    protected RepositorySettings repositorySettings;
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected EventServiceAdmin eventServiceAdmin;
+
+    @Inject
     protected FileManager fileManagerService;
 
-    protected DocumentModel root;
+    @Inject
+    protected CommandLineExecutorService cles;
+
+    @Inject
+    protected EventService eventService;
 
     private File getTestFile() {
         return new File(FileUtils.getResourcePathFromContext("test-data/sample.mpg"));
@@ -86,46 +129,18 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         return new SimpleBlobHolder(blob);
     }
 
-    @Override
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core.convert.api");
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployBundle("org.nuxeo.ecm.platform.types.api");
-        deployBundle("org.nuxeo.ecm.platform.types.core");
-        deployBundle("org.nuxeo.ecm.platform.mimetype.api");
-        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
-        deployBundle("org.nuxeo.ecm.automation.core");
-        deployBundle("org.nuxeo.ecm.platform.picture.core");
-        deployBundle("org.nuxeo.ecm.platform.picture.api");
-        deployBundle("org.nuxeo.ecm.platform.picture.convert");
-        deployBundle("org.nuxeo.ecm.platform.video.convert");
-        deployBundle("org.nuxeo.ecm.platform.video.core");
-
-        // use these to get the fileManagerService
-        deployBundle("org.nuxeo.ecm.platform.filemanager.api");
-        deployBundle("org.nuxeo.ecm.platform.filemanager.core");
-
-        openSession();
-
-        EventServiceAdmin eventServiceAdmin = Framework.getLocalService(EventServiceAdmin.class);
         eventServiceAdmin.setListenerEnabledFlag("videoAutomaticConversions", false);
         eventServiceAdmin.setListenerEnabledFlag("sql-storage-binary-text", false);
-
-        root = session.getRootDocument();
-        fileManagerService = Framework.getService(FileManager.class);
     }
 
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        fileManagerService = null;
-        root = null;
-        closeSession();
-        super.tearDown();
+    protected void waitForAsyncCompletion() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+        eventService.waitForAsyncCompletion();
     }
 
     @Test
@@ -165,21 +180,21 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         File testFile = getTestFile();
         Blob blob = Blobs.createBlob(testFile, "video/mpg");
         blob.setFilename("Test file.mov");
-        String rootPath = root.getPathAsString();
         assertNotNull(blob);
-        assertNotNull(rootPath);
         assertNotNull(session);
         assertNotNull(fileManagerService);
 
-        DocumentModel docModel = fileManagerService.createDocumentFromBlob(session, blob, rootPath, true,
+        DocumentModel docModel = fileManagerService.createDocumentFromBlob(session, blob, "/", true,
                 "test-data/sample.mpg");
 
         assertNotNull(docModel);
         DocumentRef ref = docModel.getRef();
         session.save();
 
-        closeSession();
-        openSession();
+        // reopen session
+        repositorySettings.releaseSession();
+        waitForAsyncCompletion();
+        session = repositorySettings.createSession();
 
         docModel = session.getDocument(ref);
         assertEquals("Video", docModel.getType());
@@ -188,14 +203,13 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         assertNotNull(docModel.getProperty("file:content"));
         assertEquals("sample.mpg", docModel.getPropertyValue("file:filename"));
 
-        CommandAvailability ca = Framework.getService(CommandLineExecutorService.class).getCommandAvailability(
-                "ffmpeg-screenshot");
+        CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot");
         if (!ca.isAvailable()) {
             log.warn("ffmpeg-screenshot is not avalaible, skipping the end of the test");
             throw new AssumptionViolatedException("ffmpeg-screenshot is not avalaible");
         }
 
-        Framework.getService(EventService.class).waitForAsyncCompletion();
+        waitForAsyncCompletion();
 
         // the test video is very short, no storyboard:
         Serializable duration = docModel.getPropertyValue(DURATION_PROPERTY);
@@ -210,8 +224,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
 
     @Test
     public void testImportBigVideo() throws Exception {
-        CommandAvailability ca = Framework.getService(CommandLineExecutorService.class).getCommandAvailability(
-                "ffmpeg-screenshot");
+        CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot");
         if (!ca.isAvailable()) {
             log.warn("ffmpeg-screenshot is not avalaible, skipping the end of the test");
             throw new AssumptionViolatedException("ffmpeg-screenshot is not avalaible");
@@ -222,8 +235,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         docModel = session.createDocument(docModel);
         session.save();
 
-        Framework.getService(EventService.class).waitForAsyncCompletion();
-        session.save();
+        waitForAsyncCompletion();
 
         docModel = session.getDocument(docModel.getRef());
         // the test video last around 10 minutes
@@ -270,8 +282,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         docModel = session.saveDocument(docModel);
 
         session.save();
-        Framework.getService(EventService.class).waitForAsyncCompletion();
-        session.save();
+        waitForAsyncCompletion();
 
         docModel = session.getDocument(docModel.getRef());
 
@@ -284,7 +295,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         File testFile = getTestFile();
         Blob blob = Blobs.createBlob(testFile, "video/mpg");
         blob.setFilename("Sample.mpg");
-        String rootPath = root.getPathAsString();
+        String rootPath = "/";
         assertNotNull(blob);
         assertNotNull(rootPath);
         assertNotNull(session);
@@ -294,8 +305,10 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
                 "test-data/sample.mpg");
         session.save();
 
-        closeSession();
-        openSession();
+        // reopen session
+        repositorySettings.releaseSession();
+        waitForAsyncCompletion();
+        session = repositorySettings.createSession();
 
         docModel = session.getDocument(docModel.getRef());
         assertEquals("Video", docModel.getType());
