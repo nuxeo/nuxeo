@@ -15,9 +15,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import org.nuxeo.common.Environment;
@@ -26,9 +28,9 @@ public class GwtResolver {
 
     public static final File GWT_ROOT = new File(Environment.getDefault().getWeb(), "root.war/gwt");
 
-    protected final Map<String, CompositeAppResolver> resolvers = new HashMap<String, CompositeAppResolver>();
+    protected final Map<String, CompositeStrategy> strategies = new HashMap<String, CompositeStrategy>();
 
-    protected static final GwtAppResolver ROOT_RESOLVER = new GwtAppResolver() {
+    protected static final GwtAppResolver.Strategy ROOT_RESOLVER_STRATEGY = new GwtAppResolver.Strategy() {
 
         @Override
         public URI source() {
@@ -41,31 +43,39 @@ public class GwtResolver {
         }
     };
 
-    class CompositeAppResolver {
-        final Map<URI, GwtAppResolver> resolvers = new LinkedHashMap<URI, GwtAppResolver>();
+    class CompositeStrategy {
+        final Map<URI, GwtAppResolver.Strategy> strategiesByKey = new HashMap<URI, GwtAppResolver.Strategy>();
 
-        void install(GwtAppResolver resolver) {
-            resolvers.put(resolver.source(), resolver);
+        final List<GwtAppResolver.Strategy> strategies = new ArrayList<GwtAppResolver.Strategy>();
+
+        void install(GwtAppResolver.Strategy strategy) {
+            strategiesByKey.put(strategy.source(), strategy);
+            strategies.add(strategy);
         }
 
         void uninstall(URI source) {
-            resolvers.remove(source);
+            GwtAppResolver.Strategy strategy = strategiesByKey.remove(source);
+            if (strategy == null) {
+                return;
+            }
+            strategies.remove(strategy);
         }
 
         public File resolve(String path) throws FileNotFoundException {
-            for (GwtAppResolver each : resolvers.values()) {
-                File file = each.resolve(path);
+            ListIterator<GwtAppResolver.Strategy> it = strategies.listIterator(strategies.size());
+            while (it.hasPrevious()) {
+                File file = it.previous().resolve(path);
                 if (file.exists()) {
                     return file;
                 }
             }
-            throw new FileNotFoundException(path);
+            return null;
         }
     }
 
-    public void install(String name, URI location) throws IOException {
+    public GwtAppResolver.Strategy newStrategy(URI location) throws IOException {
         File root = install(location);
-        install(name, new GwtAppResolver() {
+        return new GwtAppResolver.Strategy() {
 
             @Override
             public URI source() {
@@ -76,8 +86,7 @@ public class GwtResolver {
             public File resolve(String path) throws FileNotFoundException {
                 return new File(root, path);
             }
-        });
-
+        };
     }
 
     protected File install(URI location) throws IOException {
@@ -94,30 +103,34 @@ public class GwtResolver {
         return GWT_ROOT;
     }
 
-    public void install(String name, GwtAppResolver resolver) {
-        if (!resolvers.containsKey(name)) {
-            resolvers.put(name, new CompositeAppResolver());
+    public void install(String name, GwtAppResolver.Strategy strategy) {
+        if (!strategies.containsKey(name)) {
+            strategies.put(name, new CompositeStrategy());
         }
-        resolvers.get(name).install(resolver);
+        strategies.get(name).install(strategy);
+    }
+
+    public void install(String name, URI location) throws IOException {
+        install(name, newStrategy(location));
     }
 
     public void uninstall(String name) {
-        resolvers.remove(name);
+        strategies.remove(name);
     }
 
     public File resolve(String path) throws FileNotFoundException {
         int indexOf = path.indexOf('/');
         if (indexOf == -1) {
-            if (resolvers.containsKey(path)) {
-                return resolvers.get(path).resolve("/");
+            if (strategies.containsKey(path)) {
+                return strategies.get(path).resolve("/");
             }
-            return new File(GWT_ROOT, path);
+            return ROOT_RESOLVER_STRATEGY.resolve(path);
         }
         String name = path.substring(0, indexOf);
-        if (resolvers.containsKey(name)) {
-            return resolvers.get(name).resolve(path);
+        if (strategies.containsKey(name)) {
+            return strategies.get(name).resolve(path);
         }
-        return ROOT_RESOLVER.resolve(path);
+        return ROOT_RESOLVER_STRATEGY.resolve(path);
     }
 
     public class TreeImporter implements FileVisitor<Path> {

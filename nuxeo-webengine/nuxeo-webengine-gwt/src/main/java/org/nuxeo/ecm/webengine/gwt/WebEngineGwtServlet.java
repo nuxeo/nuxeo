@@ -91,7 +91,7 @@ public class WebEngineGwtServlet extends RemoteServiceServlet {
         }
         String filename = SerializationPolicyLoader.getSerializationPolicyFileName(strongName);
         File policyFile = Framework.getService(GwtResolver.class).resolve(moduleId+"/"+filename);
-        if (!policyFile.isFile()) {
+        if (policyFile == null || !policyFile.isFile()) {
             log.warn("Could not find gwt serialization policy file for module " + moduleId + " [ " + filename + " ]");
             return super.doGetSerializationPolicy(request, moduleBaseURL, strongName);
         }

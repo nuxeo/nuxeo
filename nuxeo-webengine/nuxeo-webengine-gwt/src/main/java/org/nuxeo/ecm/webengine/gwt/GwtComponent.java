@@ -1,5 +1,8 @@
 package org.nuxeo.ecm.webengine.gwt;
 
+import java.io.IOException;
+
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -9,17 +12,24 @@ public class GwtComponent extends DefaultComponent {
     protected final GwtResolver resolver = new GwtResolver();
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (contribution instanceof GwtAppDescriptor) {
-            GwtAppDescriptor descriptor = (GwtAppDescriptor) contribution;
-            resolver.install(descriptor.name, descriptor.resolver);
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)  {
+        if (contribution instanceof GwtAppResolver) {
+            GwtAppResolver descriptor = (GwtAppResolver) contribution;
+            resolver.install(descriptor.name, descriptor.strategy);
+        } else if (contribution instanceof GwtAppLocation) {
+            GwtAppLocation location = (GwtAppLocation)contribution;
+            try {
+                resolver.install(location.name, location.dir.toURI());
+            } catch (IOException cause) {
+                throw new NuxeoException("Cannot install " + location, cause);
+            }
         }
     }
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (contribution instanceof GwtAppDescriptor) {
-            GwtAppDescriptor descriptor = (GwtAppDescriptor) contribution;
+        if (contribution instanceof GwtAppResolver) {
+            GwtAppResolver descriptor = (GwtAppResolver) contribution;
             resolver.uninstall(descriptor.name);
         }
     }

@@ -13,7 +13,8 @@
   </service>
   
   <extension-point name="install">
-    <object class="org.nuxeo.ecm.webengine.gwt.GwtAppDescriptor"/>
+    <object class="org.nuxeo.ecm.webengine.gwt.GwtAppResolver"/>
+    <object class="org.nuxeo.ecm.webengine.gwt.GwtAppLocation"/>
   </extension-point>
 
 </component>
