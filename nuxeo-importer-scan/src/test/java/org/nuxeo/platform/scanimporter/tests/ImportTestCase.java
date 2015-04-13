@@ -17,12 +17,31 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public abstract class ImportTestCase extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.importer.core", //
+        "org.nuxeo.ecm.platform.scanimporter", //
+})
+public abstract class ImportTestCase {
+
+    @Inject
+    protected CoreSession session;
 
     protected List<File> tmp = new ArrayList<File>();
 
@@ -38,7 +57,6 @@ public abstract class ImportTestCase extends SQLRepositoryTestCase {
     }
 
     @After
-    @Override
     public void tearDown() throws Exception {
         for (File dir : tmp) {
             if (dir.exists()) {
@@ -46,7 +64,6 @@ public abstract class ImportTestCase extends SQLRepositoryTestCase {
             }
         }
         tmp.clear();
-        super.tearDown();
     }
 
 }

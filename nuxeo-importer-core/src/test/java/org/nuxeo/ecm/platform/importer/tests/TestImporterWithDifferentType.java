@@ -16,52 +16,43 @@
 
 package org.nuxeo.ecm.platform.importer.tests;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import javax.inject.Inject;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.importer.executor.DefaultImporterExecutor;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.source.RandomTextSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * Test class to check DefaultFactory with specified type.
  *
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
  */
-public class TestImporterWithDifferentType extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.ecm.platform.content.template")
+public class TestImporterWithDifferentType {
 
-    public TestImporterWithDifferentType() {
-        super();
-    }
-
-    protected TestImporterWithDifferentType(String name) {
-        super(name);
-    }
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.platform.content.template");
-        fireFrameworkStarted();
-        openSession();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
+    @Inject
+    protected CoreSession session;
 
     @Test
     public void testNoteImport() throws Exception {

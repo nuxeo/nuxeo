@@ -16,31 +16,42 @@
  */
 package org.nuxeo.ecm.platform.importer.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.importer.service.DefaultImporterService;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author Thibaud Arguillere
  * @since 5.9.2
  */
-public class TestDefaultImporterServiceWithMetaAndDocType extends SQLRepositoryTestCase {
-    private static final Log log = LogFactory.getLog(TestDefaultImporterServiceWithMetaAndDocType.class);
-
-    public static final String IMPORTER_CORE_TEST_BUNDLE = "org.nuxeo.ecm.platform.importer.core.test";
-
-    public static final String IMPORTER_CORE_BUNDLE = "org.nuxeo.ecm.platform.importer.core";
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.content.template", //
+        "org.nuxeo.ecm.platform.importer.core", //
+})
+@LocalDeploy("org.nuxeo.ecm.platform.importer.core.test:test-importer-service-contrib-metadata-with-doctype.xml")
+public class TestDefaultImporterServiceWithMetaAndDocType {
 
     private static final String kIMPORT_FOLDER_NAME = "metadatas-with-doctype";
 
@@ -48,42 +59,14 @@ public class TestDefaultImporterServiceWithMetaAndDocType extends SQLRepositoryT
 
     private static final String kBRANCH_FOLDER_PATH = "/default-domain/workspaces/" + kIMPORT_FOLDER_NAME + "/branch1";
 
-    public TestDefaultImporterServiceWithMetaAndDocType() {
-        super();
-    }
+    @Inject
+    protected CoreSession session;
 
-    protected TestDefaultImporterServiceWithMetaAndDocType(String name) {
-        super(name);
-    }
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        fireFrameworkStarted();
-        openSession();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
-
-    @Override
-    protected void deployRepositoryContrib() throws Exception {
-        super.deployRepositoryContrib();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployBundle(IMPORTER_CORE_BUNDLE);
-        deployContrib(IMPORTER_CORE_TEST_BUNDLE, "test-importer-service-contrib-metadata-with-doctype.xml");
-    }
+    @Inject
+    protected DefaultImporterService importerService;
 
     @Test
     public void testImporterContribution() throws Exception {
-        DefaultImporterService importerService = Framework.getService(DefaultImporterService.class);
-        assertNotNull(importerService);
-
         File source = FileUtils.getResourceFileFromContext(kIMPORT_FOLDER_NAME);
         String targetPath = "/default-domain/workspaces/";
 

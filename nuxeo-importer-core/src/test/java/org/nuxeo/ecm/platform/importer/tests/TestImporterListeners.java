@@ -17,47 +17,31 @@
 
 package org.nuxeo.ecm.platform.importer.tests;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
 import org.nuxeo.ecm.platform.importer.executor.DefaultImporterExecutor;
 import org.nuxeo.ecm.platform.importer.listener.ImporterListener;
 import org.nuxeo.ecm.platform.importer.source.RandomTextSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-public class TestImporterListeners extends SQLRepositoryTestCase {
-
-    public TestImporterListeners() {
-        super();
-    }
-
-    protected TestImporterListeners(String name) {
-        super(name);
-    }
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.platform.content.template");
-        fireFrameworkStarted();
-        openSession();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.ecm.platform.content.template")
+public class TestImporterListeners {
 
     @Test
     public void testImportWithListeners() throws Exception {

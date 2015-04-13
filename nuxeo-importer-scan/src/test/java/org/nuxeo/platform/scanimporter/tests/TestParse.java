@@ -20,33 +20,27 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.scanimporter.service.ScanFileBlobHolder;
 import org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 public class TestParse extends ImportTestCase {
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.platform.scanimporter", "OSGI-INF/importerservice-framework.xml");
-    }
+    @Inject
+    protected ScannedFileMapperService sfms;
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib1.xml")
     public void testSimpleParse() throws Exception {
 
         String testPath = deployTestFiles("test1");
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
-
-        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/importerservice-test-contrib1.xml");
-
-        ScannedFileMapperService sfms = Framework.getLocalService(ScannedFileMapperService.class);
-        assertNotNull(sfms);
 
         ScanFileBlobHolder bh = sfms.parseMetaData(xmlFile);
 
@@ -74,16 +68,12 @@ public class TestParse extends ImportTestCase {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib2.xml")
     public void testRSParse() throws Exception {
 
         String testPath = deployTestFiles("test2");
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
-
-        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/importerservice-test-contrib2.xml");
-
-        ScannedFileMapperService sfms = Framework.getLocalService(ScannedFileMapperService.class);
-        assertNotNull(sfms);
 
         ScanFileBlobHolder bh = sfms.parseMetaData(xmlFile);
 
@@ -99,16 +89,12 @@ public class TestParse extends ImportTestCase {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib4.xml")
     public void testSimpleDocTypeMapping() throws Exception {
 
         String testPath = deployTestFiles("test4");
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
-
-        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/importerservice-test-contrib4.xml");
-
-        ScannedFileMapperService sfms = Framework.getLocalService(ScannedFileMapperService.class);
-        assertNotNull(sfms);
 
         assertEquals("Workspace", sfms.getTargetContainerType());
 
@@ -128,16 +114,12 @@ public class TestParse extends ImportTestCase {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib5.xml")
     public void testCustomDocTypeMapping() throws Exception {
 
         String testPath = deployTestFiles("test4");
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
-
-        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/importerservice-test-contrib5.xml");
-
-        ScannedFileMapperService sfms = Framework.getLocalService(ScannedFileMapperService.class);
-        assertNotNull(sfms);
 
         assertEquals("Workspace", sfms.getTargetContainerType());
 

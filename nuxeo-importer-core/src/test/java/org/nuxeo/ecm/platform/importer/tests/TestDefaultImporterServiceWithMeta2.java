@@ -1,55 +1,46 @@
 package org.nuxeo.ecm.platform.importer.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.importer.service.DefaultImporterService;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-public class TestDefaultImporterServiceWithMeta2 extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.content.template", //
+        "org.nuxeo.ecm.platform.importer.core", //
+})
+@LocalDeploy("org.nuxeo.ecm.platform.importer.core.test:test-importer-service-contrib2.xml")
+public class TestDefaultImporterServiceWithMeta2 {
 
-    public static final String IMPORTER_CORE_TEST_BUNDLE = "org.nuxeo.ecm.platform.importer.core.test";
+    @Inject
+    protected CoreSession session;
 
-    public static final String IMPORTER_CORE_BUNDLE = "org.nuxeo.ecm.platform.importer.core";
-
-    public TestDefaultImporterServiceWithMeta2() {
-        super();
-    }
-
-    protected TestDefaultImporterServiceWithMeta2(String name) {
-        super(name);
-    }
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        fireFrameworkStarted();
-        openSession();
-    }
-
-    @Override
-    protected void deployRepositoryContrib() throws Exception {
-        super.deployRepositoryContrib();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployBundle(IMPORTER_CORE_BUNDLE);
-        deployContrib(IMPORTER_CORE_TEST_BUNDLE, "test-importer-service-contrib2.xml");
-    }
+    @Inject
+    protected DefaultImporterService importerService;
 
     @Test
     public void testImporterContribution() throws Exception {
-        DefaultImporterService importerService = Framework.getService(DefaultImporterService.class);
-        assertNotNull(importerService);
-
         File source = FileUtils.getResourceFileFromContext("import-src-with-metadatas");
         String targetPath = "/default-domain/workspaces/";
 
@@ -84,13 +75,6 @@ public class TestDefaultImporterServiceWithMeta2 extends SQLRepositoryTestCase {
         assertEquals("subject6", contributors[0]);
         assertEquals("subject7", contributors[1]);
 
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
     }
 
 }

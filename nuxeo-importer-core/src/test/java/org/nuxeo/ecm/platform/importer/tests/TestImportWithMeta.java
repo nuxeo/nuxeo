@@ -19,52 +19,40 @@
 
 package org.nuxeo.ecm.platform.importer.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.util.Calendar;
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
+import javax.inject.Inject;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.importer.executor.DefaultImporterExecutor;
 import org.nuxeo.ecm.platform.importer.source.FileWithMetadataSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestImportWithMeta extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.ecm.platform.content.template")
+public class TestImportWithMeta {
 
-    public TestImportWithMeta() {
-        super();
-    }
-
-    protected TestImportWithMeta(String name) {
-        super(name);
-    }
-
-    @Override
-    protected void deployRepositoryContrib() throws Exception {
-        super.deployRepositoryContrib();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.platform.content.template");
-    }
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        fireFrameworkStarted();
-        openSession();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
+    @Inject
+    protected CoreSession session;
 
     @Test
     public void testMDImport() throws Exception {
