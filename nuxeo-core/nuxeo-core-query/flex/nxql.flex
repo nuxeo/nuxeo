@@ -65,7 +65,6 @@ PathIdentifier = {Identifier} (\/ {IdentifierOrIndex})+
 IdentifierOrIndex = {Identifier} | {Index} | {Identifier} \[ {Index} \]
 Index = {DecIntegerLiteral} | \* | \* {DecIntegerLiteral}
 
-
 /* integer literal */
 DecIntegerLiteral = 0 | [1-9][0-9]*
 /* double literal */
@@ -76,10 +75,14 @@ FLit2    = \. [0-9]+
 FLit3    = [0-9]+
 Exponent = [eE] [+-]? [0-9]+
 
+/* Elasticsearch Hints */
+EsHint = "\/*+" [Ee] [Ss] ":"
+EsIdentifier = [:jletter:] [a-zA-Z0-9_:.-\\\^]*
 
 
 %state SQ_STRING
 %state STRING
+%state ES_HINT
 
 
 %%
@@ -236,6 +239,8 @@ Exponent = [eE] [+-]? [0-9]+
     {PathIdentifier}    { return symbol(sym.PATH_IDENTIFIER, yytext()); }
     {FromIdentifier}    { return symbol(sym.FROM_IDENTIFIER, yytext()); }
 
+    /* Hints */
+    {EsHint}            { string.setLength(0); yybegin(ES_HINT); return symbol(sym.LHINT_ES); }
 }
 
 <STRING> {
@@ -264,7 +269,24 @@ Exponent = [eE] [+-]? [0-9]+
     \\                  { string.append('\\'); }
 }
 
-
+<ES_HINT> {
+    "*/"                { yybegin(YYINITIAL);
+                          return symbol(sym.RHINT); }
+    {WhiteSpace}        { /* ignore */ }
+    "INDEX"             { return symbol(sym.INDEX); }
+    "Index"             { return symbol(sym.INDEX); }
+    "index"             { return symbol(sym.INDEX); }
+    "ANALYZER"          { return symbol(sym.ANALYZER); }
+    "Analyzer"          { return symbol(sym.ANALYZER); }
+    "analyzer"          { return symbol(sym.ANALYZER); }
+    "OPERATOR"          { return symbol(sym.OPERATOR); }
+    "Operator"          { return symbol(sym.OPERATOR); }
+    "operator"          { return symbol(sym.OPERATOR); }
+    "("                 { return symbol(sym.LPARA); }
+    ")"                 { return symbol(sym.RPARA); }
+    ","                 { return symbol(sym.COMMA); }
+    {EsIdentifier}      { return symbol(sym.ES_IDENTIFIER, yytext()); }
+}
 
 /* error fallback */
 .|\n                    { scanError(); }

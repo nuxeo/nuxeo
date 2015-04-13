@@ -14,12 +14,17 @@
 
 package org.nuxeo.ecm.core.query.sql;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import org.junit.Test;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
 import org.nuxeo.ecm.core.query.sql.model.DoubleLiteral;
+import org.nuxeo.ecm.core.query.sql.model.EsHint;
+import org.nuxeo.ecm.core.query.sql.model.EsIdentifierList;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.FromClause;
 import org.nuxeo.ecm.core.query.sql.model.Function;
@@ -337,7 +342,90 @@ public class TestQueryParser {
 
         Operand lvalue = query.getWhereClause().predicate.lvalue;
         assertTrue(lvalue instanceof Reference); // with cast
-        assertEquals(new Reference("dc:modified", "DATE"), (Reference) lvalue);
+        assertEquals(new Reference("dc:modified", "DATE"), lvalue);
+    }
+
+    @Test
+    public void testEsHintIndex() {
+        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+ES: INDEX(dc:title.ngram) */ dc:title = 'foo'");
+        Operand lvalue = query.getWhereClause().predicate.lvalue;
+        assertTrue(lvalue instanceof Reference);
+        assertEquals(1, ((Reference) lvalue).esHint.getIndex().length);
+        assertEquals(new Reference(new Reference("dc:title"), new EsHint(new EsIdentifierList("dc:title.ngram"), null,
+                null)), lvalue);
+    }
+
+    @Test
+    public void testEsHintIndexBoost() {
+        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+es: INDEX(dc:title.ngram^3) */ dc:title = 'foo'");
+        Operand lvalue = query.getWhereClause().predicate.lvalue;
+        assertTrue(lvalue instanceof Reference);
+        assertEquals(1, ((Reference) lvalue).esHint.getIndex().length);
+        assertEquals(new Reference(new Reference("dc:title"), new EsHint(new EsIdentifierList("dc:title.ngram^3"),
+                null, null)), lvalue);
+    }
+
+    @Test
+    public void testEsHintMultiIndex() {
+        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+ES: INDEX(dc:title,dc:description) */ ecm:fulltext = 'foo'");
+        Operand lvalue = query.getWhereClause().predicate.lvalue;
+        assertTrue(lvalue instanceof Reference);
+        assertEquals(2, ((Reference) lvalue).esHint.getIndex().length);
+        assertEquals(new Reference(new Reference("ecm:fulltext"), new EsHint(new EsIdentifierList(
+                "dc:title,dc:description"), null, null)), lvalue);
+    }
+
+    @Test
+    public void testEsHintAnalyzer() {
+        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+ES: ANALYZER(fulltext) */ dc:title LIKE 'foo'");
+        Operand lvalue = query.getWhereClause().predicate.lvalue;
+        assertTrue(lvalue instanceof Reference);
+        assertEquals(new Reference(new Reference("dc:title"), new EsHint(null, "fulltext", null)), lvalue);
+    }
+
+    @Test
+    public void testEsHintOperator() {
+        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+ES: OPERATOR(regex) */ dc:title = 'foo|bar|ba*'");
+        Operand lvalue = query.getWhereClause().predicate.lvalue;
+        assertTrue(lvalue instanceof Reference);
+        assertEquals(new Reference(new Reference("dc:title"), new EsHint(null, null, "regex")), lvalue);
+    }
+
+    @Test
+    public void testEsHintIndexAndAnalyzer() {
+        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+ES: Index(dc:title.ngram) analyzer(fulltext) */ dc:title = 'foo'");
+        Operand lvalue = query.getWhereClause().predicate.lvalue;
+        assertTrue(lvalue instanceof Reference);
+        assertEquals(new Reference(new Reference("dc:title"), new EsHint(new EsIdentifierList("dc:title.ngram"),
+                "fulltext", null)), lvalue);
+    }
+
+    @Test
+    public void testEsHintIndexAnalyzerAndOperator() {
+        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+ES: Index(dc:title.ngram) analyzer(fulltext) operator(fuzzy)*/ dc:title = 'foo'");
+        Operand lvalue = query.getWhereClause().predicate.lvalue;
+        assertTrue(lvalue instanceof Reference);
+        assertEquals(new Reference(new Reference("dc:title"), new EsHint(new EsIdentifierList("dc:title.ngram"),
+                "fulltext", "fuzzy")), lvalue);
+    }
+
+    @Test
+    public void testEsHintMultiClauses() {
+        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+ES: INDEX(dc:title.ngram) */ dc:title = 'foo' " +
+                "AND /*+ES: ANALYZER(fulltext2) */ dc:description LIKE 'bar'");
+        Operand pred = query.getWhereClause().predicate.rvalue;
+        assertTrue(pred instanceof Predicate);
+        Operand lvalue = ((Predicate) pred).lvalue;
+        assertTrue(lvalue instanceof Reference);
+        assertEquals(new Reference(new Reference("dc:description"), new EsHint(null, "fulltext2", null)), lvalue);
+    }
+
+    @Test
+    public void testEsHintEmpty() {
+        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+ES: */ dc:title = 'foo'");
+        Operand lvalue = query.getWhereClause().predicate.lvalue;
+        assertTrue(lvalue instanceof Reference);
+        assertEquals(new Reference(new Reference("dc:title"), (EsHint) null), lvalue);
     }
 
     @Test
@@ -660,6 +748,7 @@ public class TestQueryParser {
     }
 
     @Test
+    @SuppressWarnings( "deprecation" )
     public void testPrepareStringLiteral() {
         assertEquals("'foo'", SQLQueryParser.prepareStringLiteral("foo"));
         assertEquals("'can\\'t'", SQLQueryParser.prepareStringLiteral("can't"));
