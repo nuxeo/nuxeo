@@ -653,6 +653,13 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
+    public void importAllRouteModels(CoreSession session) {
+        for (URL url : getRouteModelTemplateResources()) {
+            importRouteModel(url, true, session);
+        }
+    }
+
+    @Override
     public DocumentRoute importRouteModel(URL modelToImport, boolean overwrite, CoreSession session)
             throws ClientException {
         if (modelToImport == null) {
@@ -778,18 +785,21 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             }
         }
         String query = String.format(ROUTE_MODEL_DOC_ID_WITH_ID_QUERY, NXQL.escapeString(id));
-        IterableQueryResult results = session.queryAndFetch(query, "NXQL");
-        if (results.size() == 0) {
-            throw new ClientRuntimeException("No route found for id: " + id);
-        }
-        if (results.size() != 1) {
-            throw new ClientRuntimeException("More than one route model found with id: " + id);
-        }
         List<String> routeIds = new ArrayList<String>();
-        for (Map<String, Serializable> map : results) {
-            routeIds.add(map.get("ecm:uuid").toString());
+        IterableQueryResult results = session.queryAndFetch(query, "NXQL");
+        try {
+            if (results.size() == 0) {
+                throw new ClientRuntimeException("No route found for id: " + id);
+            }
+            if (results.size() != 1) {
+                throw new ClientRuntimeException("More than one route model found with id: " + id);
+            }
+            for (Map<String, Serializable> map : results) {
+                routeIds.add(map.get("ecm:uuid").toString());
+            }
+        } finally {
+            results.close();
         }
-        results.close();
         String routeDocId = routeIds.get(0);
         if (modelsChache == null) {
             modelsChache = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(10, TimeUnit.MINUTES).build();

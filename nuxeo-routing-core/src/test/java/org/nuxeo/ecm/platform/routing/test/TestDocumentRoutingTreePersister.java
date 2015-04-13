@@ -22,9 +22,11 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -40,22 +42,20 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
     protected DocumentRoutingPersister persister;
 
     @Before
-    public void setUp() throws Exception {
-        super.setUp();
+    public void createPersister() throws Exception {
         persister = new DocumentRoutingTreePersister();
     }
 
     @Test
     public void testGetOrCreateRootOfDocumentRouteInstanceStructure() throws Exception {
-        deployBundle(TEST_BUNDLE);
         DocumentModel doc = persister.getOrCreateRootOfDocumentRouteInstanceStructure(session);
         assertNotNull(doc);
         assertEquals(doc.getPathAsString(), TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT);
         session.save();
-        closeSession();
-        CoreSession membersSession = openSessionAs("members");
-        assertFalse(membersSession.hasPermission(doc.getRef(), SecurityConstants.READ));
-        closeSession(membersSession);
+
+        try (CoreSession membersSession = CoreInstance.openCoreSession(session.getRepositoryName(), "members")) {
+            assertFalse(membersSession.hasPermission(doc.getRef(), SecurityConstants.READ));
+        }
     }
 
     /**
@@ -63,7 +63,6 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
      */
     @Test
     public void testDocumentRouteInstancesRootCreation() throws Exception {
-        deployBundle(TEST_BUNDLE);
         // create a document coming before '/default-domain' in name order
         DocumentModel firstDoc = session.createDocumentModel("/", "aaa", "File");
         firstDoc = session.createDocument(firstDoc);
@@ -72,10 +71,10 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
         assertNotNull(doc);
         assertEquals(doc.getPathAsString(), TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT);
         session.save();
-        closeSession();
-        CoreSession membersSession = openSessionAs("members");
-        assertFalse(membersSession.hasPermission(doc.getRef(), SecurityConstants.READ));
-        closeSession(membersSession);
+
+        try (CoreSession membersSession = CoreInstance.openCoreSession(session.getRepositoryName(), "members")) {
+            assertFalse(membersSession.hasPermission(doc.getRef(), SecurityConstants.READ));
+        }
     }
 
     @Test
@@ -97,10 +96,11 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
         assertTrue(instance.getPathAsString().startsWith(TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT));
         docsId = (List<String>) instance.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME);
         assertEquals("1", docsId.get(0));
-        closeSession();
-        CoreSession managersSession = openSessionAs(DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME);
-        assertEquals(3, managersSession.getChildren(instance.getRef()).size());
-        closeSession(managersSession);
+
+        try (CoreSession managersSession = CoreInstance.openCoreSession(session.getRepositoryName(),
+                DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME)) {
+            assertEquals(3, managersSession.getChildren(instance.getRef()).size());
+        }
     }
 
     @Test

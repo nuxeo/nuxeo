@@ -16,9 +16,6 @@
  */
 package org.nuxeo.ecm.platform.routing.core.listener;
 
-import java.net.URL;
-import java.util.List;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
@@ -38,10 +35,7 @@ public class RouteModelsInitializator extends RepositoryInitializationHandler {
         // This method gets called as a system user
         // so we have all needed rights to do the check and the creation
         DocumentRoutingService service = Framework.getLocalService(DocumentRoutingService.class);
-        List<URL> routeModelTemplateResouces = service.getRouteModelTemplateResources();
-        for (URL url : routeModelTemplateResouces) {
-            service.importRouteModel(url, true, session);
-        }
+        service.importAllRouteModels(session);
         session.save();
     }
 

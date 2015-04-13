@@ -16,9 +16,6 @@
  */
 package org.nuxeo.ecm.platform.routing.core.listener;
 
-import java.net.URL;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -67,10 +64,7 @@ public class RouteModelsReloader implements EventListener {
                     @Override
                     public void run() throws ClientException {
                         DocumentRoutingService service = Framework.getLocalService(DocumentRoutingService.class);
-                        List<URL> routeModelTemplateResouces = service.getRouteModelTemplateResources();
-                        for (URL url : routeModelTemplateResouces) {
-                            service.importRouteModel(url, true, session);
-                        }
+                        service.importAllRouteModels(session);
                     }
                 }.runUnrestricted();
                 txSucceed = true;

@@ -21,22 +21,30 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.RoutingTaskService;
 import org.nuxeo.ecm.platform.routing.dm.adapter.RoutingTask;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
-import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author ldoguin
@@ -44,9 +52,36 @@ import org.nuxeo.runtime.api.Framework;
  *             since 5.6
  */
 @Deprecated
-public class TestRoutingTaskService extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.content.template", //
+        "org.nuxeo.ecm.directory.api", //
+        "org.nuxeo.ecm.directory", //
+        "org.nuxeo.ecm.platform.usermanager", //
+        "org.nuxeo.ecm.directory.types.contrib", //
+        "org.nuxeo.ecm.directory.sql", //
+        "org.nuxeo.ecm.platform.task.core", //
+        "org.nuxeo.ecm.platform.routing.core", //
+        "org.nuxeo.ecm.platform.test", //
+        "org.nuxeo.ecm.platform.task.core", //
+        "org.nuxeo.ecm.platform.task.testing", //
+        "org.nuxeo.ecm.platform.routing.dm", //
+})
+@LocalDeploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml")
+public class TestRoutingTaskService {
 
+    @Inject
+    protected CoreSession session;
+
+    @Inject
     protected UserManager userManager;
+
+    @Inject
+    protected TaskService taskService;
+
+    @Inject
+    protected DocumentRoutingService routing;
 
     protected NuxeoPrincipal administrator;
 
@@ -60,29 +95,8 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
 
     protected DocumentModel targetDoc;
 
-    @Override
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-
-        deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployBundle("org.nuxeo.ecm.directory.api");
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.platform.usermanager");
-        deployBundle("org.nuxeo.ecm.directory.types.contrib");
-        deployBundle("org.nuxeo.ecm.directory.sql");
-        deployBundle("org.nuxeo.ecm.platform.task.core");
-        deployBundle("org.nuxeo.ecm.platform.routing.core");
-        deployBundle("org.nuxeo.ecm.platform.test");
-        deployContrib("org.nuxeo.ecm.platform.test", "test-usermanagerimpl/directory-config.xml");
-        deployBundle(TaskUTConstants.CORE_BUNDLE_NAME);
-        deployBundle(TaskUTConstants.TESTING_BUNDLE_NAME);
-
-        deployBundle(TestConstants.DM_BUNDLE);
-
-        userManager = Framework.getService(UserManager.class);
-        assertNotNull(userManager);
-
         administrator = userManager.getPrincipal(SecurityConstants.ADMINISTRATOR);
         assertNotNull(administrator);
 
@@ -98,21 +112,12 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
         user4 = userManager.getPrincipal("myuser4");
         assertNotNull(user4);
 
-        openSession();
         targetDoc = session.createDocumentModel("/", "targetDocument", "File");
         targetDoc = session.createDocument(targetDoc);
     }
 
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     @Test
     public void testService() throws Exception {
-        TaskService taskService = Framework.getLocalService(TaskService.class);
-        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
         List<String> actorIds = new ArrayList<String>();
         List<Task> tasks = taskService.createTask(session, administrator, targetDoc, "MyRoutingTask", actorIds, false,
                 null, null, null, null, "/");
@@ -121,7 +126,6 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
         DocumentModel taskDoc = session.getDocument(new PathRef("/MyRoutingTask"));
         RoutingTask routingTask = taskDoc.getAdapter(RoutingTask.class);
         assertNotNull(routingTask);
-        closeSession(session);
     }
 
     @Test
@@ -131,6 +135,6 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
         assertNotNull(taskStep);
         taskStep = session.createDocument(taskStep);
         assertNotNull(taskStep);
-        closeSession(session);
     }
+
 }

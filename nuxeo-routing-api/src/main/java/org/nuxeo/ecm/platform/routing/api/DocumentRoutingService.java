@@ -364,6 +364,15 @@ public interface DocumentRoutingService {
     boolean isRoutable(DocumentModel doc);
 
     /**
+     * Imports all the route models resource templates.
+     *
+     * @param session the core session to use
+     *
+     * @since 7.3
+     */
+    void importAllRouteModels(CoreSession session);
+
+    /**
      * Creates a route model in the root models folder defined by the current persister. The templateResource is a zip
      * tree xml export of a route document and it is imported using the core-io importer.
      *

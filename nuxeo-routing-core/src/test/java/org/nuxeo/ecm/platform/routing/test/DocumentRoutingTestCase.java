@@ -16,12 +16,13 @@
  */
 package org.nuxeo.ecm.platform.routing.test;
 
+import static org.junit.Assert.assertNotNull;
+
+import javax.inject.Inject;
+
 import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-
+import org.junit.Ignore;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -30,62 +31,84 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
-import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author arussel
  */
-public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
+@Ignore
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.content.template", //
+        "org.nuxeo.ecm.automation.core", //
+        "org.nuxeo.ecm.directory", //
+        "org.nuxeo.ecm.platform.usermanager", //
+        "org.nuxeo.ecm.directory.types.contrib", //
+        "org.nuxeo.ecm.directory.sql", //
+        "org.nuxeo.ecm.platform.userworkspace.core", //
+        "org.nuxeo.ecm.platform.userworkspace.types", //
+        "org.nuxeo.ecm.platform.types.api", //
+        "org.nuxeo.ecm.platform.query.api", //
+        "org.nuxeo.ecm.platform.task.api", //
+        "org.nuxeo.ecm.platform.task.core", //
+        "org.nuxeo.ecm.platform.mimetype.api", //
+        "org.nuxeo.ecm.platform.mimetype.core", //
+        "org.nuxeo.ecm.platform.filemanager.api", //
+        "org.nuxeo.ecm.platform.filemanager.core", //
+        "org.nuxeo.ecm.platform.routing.core", //
+})
+@LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml",
+        "org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-sql-directories-contrib.xml",
+        "org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-graph-types-contrib.xml", })
+public class DocumentRoutingTestCase {
+
     public static final String ROOT_PATH = "/";
 
     public static final String WORKSPACES_PATH = "/default-domain/workspaces";
 
     public static final String TEST_BUNDLE = "org.nuxeo.ecm.platform.routing.core.test";
 
-    protected DocumentRoutingEngineService engineService;
-
-    protected DocumentRoutingService service;
-
     public static final String ROUTE1 = "route1";
 
-    @Override
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected DocumentRoutingEngineService engineService;
+
+    @Inject
+    protected DocumentRoutingService service;
+
+    @Inject
+    protected WorkManager workManager;
+
+    @Inject
+    protected ContentTemplateService ctService;
+
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-
-        // deploy and test content template
-        deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployBundle("org.nuxeo.ecm.automation.core");
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.platform.usermanager");
-        deployBundle("org.nuxeo.ecm.directory.types.contrib");
-        deployBundle("org.nuxeo.ecm.directory.sql");
-        deployBundle("org.nuxeo.ecm.platform.userworkspace.core");
-        deployBundle("org.nuxeo.ecm.platform.userworkspace.types");
-        deployBundle("org.nuxeo.ecm.platform.types.api");
-        deployContrib("org.nuxeo.ecm.platform.test", "test-usermanagerimpl/directory-config.xml");
-        deployContrib(TEST_BUNDLE, "OSGI-INF/test-sql-directories-contrib.xml");
-        deployContrib(TEST_BUNDLE, "OSGI-INF/test-graph-types-contrib.xml");
-        deployContrib(TaskUTConstants.CORE_BUNDLE_NAME, "OSGI-INF/task-core-types-contrib.xml");
-        deployContrib(TaskUTConstants.CORE_BUNDLE_NAME, "OSGI-INF/task-lifecycle-contrib.xml");
-        deployBundle(TestConstants.CORE_BUNDLE);
         CounterListener.resetCouner();
+        service.invalidateRouteModelsCache();
 
-        Framework.getLocalService(WorkManager.class).init();
+        workManager.init();
 
-        openSession();
         DocumentModel root = session.getRootDocument();
-        ContentTemplateService ctService = Framework.getService(ContentTemplateService.class);
         ctService.executeFactoryForType(root);
-        assertEquals(3, session.getChildren(session.getChildren(root.getRef()).get(0).getRef()).size());
+
         DocumentModel workspaces = session.getDocument(new PathRef(WORKSPACES_PATH));
         assertNotNull(workspaces);
         ACP acp = workspaces.getACP();
@@ -94,22 +117,6 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         session.setACP(workspaces.getRef(), acp, true);
         session.saveDocument(workspaces);
         session.save();
-        // test our services
-        engineService = Framework.getService(DocumentRoutingEngineService.class);
-        service = Framework.getService(DocumentRoutingService.class);
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
-
-    @Test
-    public void testServices() throws Exception {
-        assertNotNull(engineService);
-        assertNotNull(service);
     }
 
     public DocumentModel createDocumentRouteModel(CoreSession session, String name, String path) throws ClientException {
