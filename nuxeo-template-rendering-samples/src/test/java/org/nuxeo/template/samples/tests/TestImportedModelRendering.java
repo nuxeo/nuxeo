@@ -38,17 +38,17 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@RepositoryConfig(cleanup = Granularity.CLASS)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.core.event",
         "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.platform.mimetype.api",
         "org.nuxeo.ecm.platform.mimetype.core", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
@@ -66,6 +66,9 @@ public class TestImportedModelRendering {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected ConversionService cs;
 
     @Test
     public void testNote4Web() throws Exception {
@@ -114,8 +117,6 @@ public class TestImportedModelRendering {
         assertNotNull(blob);
         assertTrue(blob.getFilename().endsWith(".pdf"));
 
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
-
         BlobHolder textBH = cs.convertToMimeType("text/plain", new SimpleBlobHolder(blob),
                 new HashMap<String, Serializable>());
         assertNotNull(textBH);
@@ -156,8 +157,6 @@ public class TestImportedModelRendering {
         assertNotNull(blob);
         assertTrue(blob.getFilename().endsWith(".xls"));
 
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
-
         BlobHolder textBH = cs.convert("xl2text", new SimpleBlobHolder(blob), new HashMap<String, Serializable>());
         assertNotNull(textBH);
         String text = textBH.getBlob().getString();
@@ -187,8 +186,6 @@ public class TestImportedModelRendering {
         Blob blob = interventionTemplate.renderWithTemplate("Delivery Statement");
         assertNotNull(blob);
         assertTrue(blob.getFilename().endsWith(".pdf"));
-
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
 
         BlobHolder textBH = cs.convertToMimeType("text/plain", new SimpleBlobHolder(blob),
                 new HashMap<String, Serializable>());

@@ -19,12 +19,6 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
 public class TestFMProcessing extends SimpleTemplateDocTestCase {
 
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.mimetype.api");
-        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
-    }
-
     @Test
     public void testDocumentsAttributes() throws Exception {
         TemplateBasedDocument adapter = setupTestDocs();

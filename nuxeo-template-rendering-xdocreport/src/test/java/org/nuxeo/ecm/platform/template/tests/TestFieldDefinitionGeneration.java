@@ -1,23 +1,29 @@
 package org.nuxeo.ecm.platform.template.tests;
 
+import static org.junit.Assert.assertTrue;
+
+import javax.inject.Inject;
+
 import org.junit.Test;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.runtime.api.Framework;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.template.processors.xdocreport.FieldDefinitionGenerator;
-import static org.junit.Assert.*;
 
-public class TestFieldDefinitionGeneration extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@LocalDeploy("org.nuxeo.template.manager.xdocreport.test:core-types-contrib.xml")
+public class TestFieldDefinitionGeneration {
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployContrib("org.nuxeo.template.manager.xdocreport.test", "core-types-contrib.xml");
-        openSession();
-    }
+    @Inject
+    protected CoreSession session;
 
     @Test
     public void testGeneration() throws Exception {
@@ -42,14 +48,6 @@ public class TestFieldDefinitionGeneration extends SQLRepositoryTestCase {
         assertTrue(xml.contains("<field name=\"doc.testComplex.complex1\" list=\"false\""));
         assertTrue(xml.contains("<field name=\"doc.testComplex.complex1.maximum\" list=\"false\""));
         assertTrue(xml.contains("<field name=\"doc.testComplex.complex1.unit\" list=\"false\""));
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        EventService eventService = Framework.getLocalService(EventService.class);
-        eventService.waitForAsyncCompletion();
-        closeSession();
-        super.tearDown();
     }
 
 }

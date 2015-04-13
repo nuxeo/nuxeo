@@ -6,33 +6,40 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
-public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.dublincore", //
+        "org.nuxeo.template.manager.api", //
+        "org.nuxeo.template.manager", //
+        "org.nuxeo.template.manager.jaxrs", //
+})
+public class TestTemplateSourceTypeBindings {
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.platform.dublincore");
-        deployBundle("org.nuxeo.template.manager.api");
-        deployBundle("org.nuxeo.template.manager");
-        deployContrib("org.nuxeo.template.manager.jaxrs", "OSGI-INF/core-types-contrib.xml");
-        deployContrib("org.nuxeo.template.manager.jaxrs", "OSGI-INF/life-cycle-contrib.xml");
-        openSession();
-    }
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected TemplateProcessorService tps;
 
     protected TemplateSourceDocument createTemplateDoc(String name) throws Exception {
 
@@ -74,7 +81,6 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
     public void testAvailableTemplates() throws Exception {
         TemplateSourceDocument t1 = createTemplateDoc("t1");
         session.save();
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
 
         List<DocumentModel> docs = tps.getAvailableTemplateDocs(session, null);
         assertEquals(1, docs.size());
@@ -87,14 +93,6 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         docs = tps.getAvailableTemplateDocs(session, "all");
         assertEquals(2, docs.size());
 
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        EventService eventService = Framework.getLocalService(EventService.class);
-        eventService.waitForAsyncCompletion();
-        closeSession();
-        super.tearDown();
     }
 
 }

@@ -12,37 +12,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
-public abstract class SimpleTemplateDocTestCase extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.dublincore", //
+        "org.nuxeo.template.manager.api", //
+        "org.nuxeo.template.manager", //
+        "org.nuxeo.template.manager.jxls", //
+})
+public abstract class SimpleTemplateDocTestCase {
 
     protected abstract Blob getTemplateBlob() throws IOException;
 
     protected static final String TEMPLATE_NAME = "mytestTemplate";
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.platform.dublincore");
-        deployBundle("org.nuxeo.template.manager.api");
-        deployBundle("org.nuxeo.template.manager");
-        deployContrib("org.nuxeo.template.manager.jxls", "OSGI-INF/templateprocessor-contrib.xml");
-        openSession();
-    }
+    @Inject
+    protected CoreSession session;
 
     protected TemplateBasedDocument setupTestDocs() throws Exception {
 
@@ -116,14 +121,6 @@ public abstract class SimpleTemplateDocTestCase extends SQLRepositoryTestCase {
         params.add(input5);
 
         return params;
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        EventService eventService = Framework.getLocalService(EventService.class);
-        eventService.waitForAsyncCompletion();
-        closeSession();
-        super.tearDown();
     }
 
 }

@@ -9,44 +9,40 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessor;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.processors.docx.WordXMLRawTemplateProcessor;
 
-public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.template.manager.api", //
+        "org.nuxeo.template.manager", //
+})
+public class TestWordXMLRawProcessing {
 
     protected static final String TEMPLATE_NAME = "mytestTemplate";
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.event");
-
-        deployBundle("org.nuxeo.template.manager.api");
-        deployBundle("org.nuxeo.template.manager");
-        openSession();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        EventService eventService = Framework.getLocalService(EventService.class);
-        eventService.waitForAsyncCompletion();
-        closeSession();
-        super.tearDown();
-    }
+    @Inject
+    protected CoreSession session;
 
     protected List<TemplateInput> getTestParams() {
 

@@ -9,38 +9,53 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
-public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.dublincore", //
+        "org.nuxeo.template.manager.api", //
+        "org.nuxeo.template.manager", //
+})
+public class TestTemplateSourceTypeBindings {
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.platform.dublincore");
-        deployBundle("org.nuxeo.template.manager.api");
-        deployContrib("org.nuxeo.template.manager", "OSGI-INF/core-types-contrib.xml");
-        deployContrib("org.nuxeo.template.manager", "OSGI-INF/life-cycle-contrib.xml");
-        deployContrib("org.nuxeo.template.manager", "OSGI-INF/adapter-contrib.xml");
-        deployContrib("org.nuxeo.template.manager", "OSGI-INF/templateprocessor-service.xml");
-        deployContrib("org.nuxeo.template.manager", "OSGI-INF/templateprocessor-contrib.xml");
-        deployContrib("org.nuxeo.template.manager", "OSGI-INF/listener-contrib.xml");
-        openSession();
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected EventService eventService;
+
+    @Inject
+    protected TemplateProcessorService tps;
+
+    protected void waitForAsyncCompletion() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+        eventService.waitForAsyncCompletion();
     }
 
     protected TemplateSourceDocument createTemplateDoc(String name) throws Exception {
@@ -91,9 +106,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         session.save();
 
         // wait for Async listener to run !
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        waitForAsyncCompletion();
 
         Map<String, List<String>> mapping = tps.getTypeMapping();
 
@@ -101,7 +114,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         assertTrue(mapping.get("Note").contains(t1.getAdaptedDoc().getId()));
 
         // wait for Async listener to run !
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        waitForAsyncCompletion();
 
         // test override
         TemplateSourceDocument t2 = createTemplateDoc("t2");
@@ -113,7 +126,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         session.save();
 
         // wait for Async listener to run !
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        waitForAsyncCompletion();
 
         session.save();
 
@@ -140,7 +153,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         session.save();
 
         // wait for Async listener to run !
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        waitForAsyncCompletion();
 
         // now create a simple file
         DocumentModel root = session.getRootDocument();
@@ -156,7 +169,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         // remove binding
         t1.setForcedTypes(new String[] {}, true);
         session.save();
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        waitForAsyncCompletion();
 
         // now create a simple file
         DocumentModel simpleFile2 = session.createDocumentModel(root.getPathAsString(), "myTestFile2", "File");
@@ -184,7 +197,6 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         // verify that not template is associated
         assertNull(simpleNote.getAdapter(TemplateBasedDocument.class));
 
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
         simpleNote = tps.makeTemplateBasedDocument(simpleNote, t1.getAdaptedDoc(), true);
 
         // verify that template has been associated
@@ -208,7 +220,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         session.save();
 
         // wait for Async listener to run !
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        waitForAsyncCompletion();
 
         // now create a simple file
         DocumentModel root = session.getRootDocument();
@@ -226,14 +238,6 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         assertTrue(templateNames.contains("t1"));
         assertTrue(templateNames.contains("t2"));
 
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        EventService eventService = Framework.getLocalService(EventService.class);
-        eventService.waitForAsyncCompletion();
-        closeSession();
-        super.tearDown();
     }
 
 }
