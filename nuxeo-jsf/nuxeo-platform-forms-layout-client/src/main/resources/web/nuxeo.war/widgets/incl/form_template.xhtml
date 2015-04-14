@@ -25,7 +25,7 @@ Templating zone to define:
 <c:if test="#{addForm}">
   <c:if test="#{not useAjaxForm}">
     <h:form id="#{formId}" enctype="multipart/form-data"
-      styleClass="#{formStyleClass}">
+      styleClass="#{formStyleClass}" disableDoubleClickShield="#{disableDoubleClickShield}">
       <ui:insert name="form_template_content" />
     </h:form>
   </c:if>

@@ -49,6 +49,9 @@
     <nxu:set var="modeValueHolderId"
       value="#{widget.id}_modeValueHolder"
       cache="true">
+    <nxu:set var="disableDoubleClickShield"
+      value="#{nxu:test(empty widgetProperty_disableDoubleClickShield, false, widgetProperty_disableDoubleClickShield)}"
+      cache="true">
 
     <nxu:valueHolder
       id="#{modeValueHolderId}"
