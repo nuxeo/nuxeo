@@ -30,6 +30,8 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
  */
 public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
 
+    private static final String CONTEXT_ATTRIBUTE = "context";
+
     private static final Log logger = LogFactory.getLog(Krb5Authenticator.class);
 
     private static final String WWW_AUTHENTICATE = "WWW-Authenticate";
@@ -58,7 +60,9 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
     public Boolean handleLoginPrompt(HttpServletRequest req, HttpServletResponse res, String baseURL) {
 
         logger.debug("Sending login prompt...");
-        res.setHeader(WWW_AUTHENTICATE, NEGOTIATE);
+        if (res.getHeader(WWW_AUTHENTICATE) == null) {
+            res.setHeader(WWW_AUTHENTICATE, NEGOTIATE);
+        }
         // hack to support fallback to form auth in case the
         // client does not answer the SPNEGO challenge.
         // This will obviously break if form auth is disabled; but this isn't
@@ -91,14 +95,17 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
             return null;
         }
 
-        byte[] token = new Base64(-1).decode(authorization.substring(NEGOTIATE.length() + 1));
+        byte[] token = Base64.decodeBase64(authorization.substring(NEGOTIATE.length() + 1));
         byte[] respToken = null;
 
         GSSContext context = null;
 
         try {
             synchronized (this) {
-                context = MANAGER.createContext(serverCredential);
+                context = (GSSContext) req.getSession().getAttribute(CONTEXT_ATTRIBUTE);
+                if (context == null) {
+                    context = MANAGER.createContext(serverCredential);
+                }
                 respToken = context.acceptSecContext(token, 0, token.length);
 
             }
@@ -107,14 +114,17 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
                 String username = principal.split("@")[0]; // throw away the realm
                 UserIdentificationInfo info = new UserIdentificationInfo(username, "Trust");
                 info.setLoginPluginName("Trusting_LM");
+                req.getSession().removeAttribute(CONTEXT_ATTRIBUTE);
                 return info;
             } else {
+                // save context in the HTTP session to be reused after client response
                 // need another roundtrip
-                res.setHeader(WWW_AUTHENTICATE, NEGOTIATE + " " + new Base64(-1).encode(respToken));
+                res.setHeader(WWW_AUTHENTICATE, NEGOTIATE + " " + Base64.encodeBase64String(respToken));
                 return null;
             }
 
         } catch (GSSException ge) {
+            req.getSession().removeAttribute(CONTEXT_ATTRIBUTE);
             logger.error("Cannot accept provided security token", ge);
             return null;
         }
