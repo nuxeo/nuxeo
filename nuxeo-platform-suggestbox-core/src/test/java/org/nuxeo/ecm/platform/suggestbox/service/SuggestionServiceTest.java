@@ -28,21 +28,50 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.After;
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.memory.MemoryDirectory;
 import org.nuxeo.ecm.directory.memory.MemoryDirectoryFactory;
 import org.nuxeo.ecm.platform.suggestbox.service.suggesters.I18nHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
-public class SuggestionServiceTest extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.query.api", //
+        "org.nuxeo.ecm.platform.types.api", //
+        "org.nuxeo.ecm.platform.types.core", //
+        "org.nuxeo.ecm.webapp.base", //
+        "org.nuxeo.ecm.platform.usermanager.api", //
+        "org.nuxeo.ecm.platform.usermanager", //
+        "org.nuxeo.ecm.directory", //
+        "org.nuxeo.ecm.directory.types.contrib", //
+        "org.nuxeo.ecm.platform.suggestbox.core", //
+})
+public class SuggestionServiceTest {
+
+    @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
+    protected CoreSession session;
 
     protected SuggestionService suggestionService;
 
@@ -52,19 +81,6 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        // PageProvider API
-        deployBundle("org.nuxeo.ecm.platform.query.api");
-
-        // type icons
-        deployBundle("org.nuxeo.ecm.platform.types.api");
-        deployBundle("org.nuxeo.ecm.platform.types.core");
-        deployBundle("org.nuxeo.ecm.webapp.base");
-        deployBundle("org.nuxeo.ecm.platform.usermanager.api");
-        deployBundle("org.nuxeo.ecm.platform.usermanager");
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.directory.types.contrib");
-
         // some in memory directories for the users and groups
         DirectoryService dService = Framework.getLocalService(DirectoryService.class);
         MemoryDirectoryFactory memoryDirectoryFactory = new MemoryDirectoryFactory();
@@ -78,11 +94,7 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         groupDir = new MemoryDirectory("groupDirectory", "group", groupSet, "groupname", null);
         memoryDirectoryFactory.registerDirectory(groupDir);
 
-        // myself
-        deployBundle("org.nuxeo.ecm.platform.suggestbox.core");
-
         // create some documents to be looked up
-        openSession();
         makeSomeDocuments();
 
         // create some users and groups
@@ -150,16 +162,19 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         waitForFulltextIndexing();
     }
 
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
+    protected void waitForFulltextIndexing() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+        coreFeature.getStorageConfiguration().waitForFulltextIndexing();
     }
 
     @Test
     // TODO change the test when the redirection to the new search tab will be handled
     public void testDefaultSuggestionConfigurationWithKeyword() throws SuggestionException {
-        assumeTrue("No multiple fulltext indexes", database.supportsMultipleFulltextIndexes());
+        assumeTrue("No multiple fulltext indexes",
+                coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
 
         // build a suggestion context
         NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
@@ -186,7 +201,8 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
     @Test
     // TODO change the test when the redirection to the new search tab will be handled
     public void testDefaultSuggestionConfigurationWithDate() throws SuggestionException {
-        assumeTrue("No multiple fulltext indexes", database.supportsMultipleFulltextIndexes());
+        assumeTrue("No multiple fulltext indexes",
+                coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
 
         // build a suggestion context
         NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
@@ -222,7 +238,8 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
 
     @Test
     public void testSearchUserLimit() throws Exception {
-        assumeTrue("No multiple fulltext indexes", database.supportsMultipleFulltextIndexes());
+        assumeTrue("No multiple fulltext indexes",
+                coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
 
         Session userSession = userdir.getSession();
         try {
@@ -257,7 +274,8 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
     @Test
     // TODO change the test when the redirection to the new search tab will be handled
     public void testDefaultSuggestionConfigurationWithUsersAndGroups() throws SuggestionException {
-        assumeTrue("No multiple fulltext indexes", database.supportsMultipleFulltextIndexes());
+        assumeTrue("No multiple fulltext indexes",
+                coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
 
         // build a suggestion context
         NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
@@ -330,7 +348,8 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
 
     @Test
     public void testSpecialCharacterHandlingInSuggesters() throws SuggestionException {
-        assumeTrue("No multiple fulltext indexes", database.supportsMultipleFulltextIndexes());
+        assumeTrue("No multiple fulltext indexes",
+                coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
 
         // check that special characters are not interpreted by the search
         // backend
