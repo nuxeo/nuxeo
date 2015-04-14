@@ -36,6 +36,7 @@
         <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
         <ui:param name="disableMultiPartForm" value="#{widgetControl_disableMultiPartForm}" />
         <ui:param name="formStyleClass" value="subWidgetForm" />
+        <ui:param name="disableDoubleClickShield" value="#{widgetControl_disableDoubleClickShield}" />
         <ui:define name="form_template_content">
           <c:if test="#{action.properties.displayWidgetLabel}">
             <ui:include src="/widgets/incl/widget_label_template.xhtml" />
