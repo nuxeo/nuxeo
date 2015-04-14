@@ -75,7 +75,7 @@ public class Documents implements Serializable, OperationInput, Iterable<Documen
     }
 
     public String getInputRef() {
-        StringBuilder buf = new StringBuilder();
+        StringBuilder buf = new StringBuilder("docs:");
         int size = size();
         if (size == 0) {
             return buf.toString();
