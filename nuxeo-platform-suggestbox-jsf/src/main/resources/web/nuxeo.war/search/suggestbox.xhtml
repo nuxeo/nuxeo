@@ -31,7 +31,7 @@
 	  <ui:include src="/incl/select2_js.xhtml" />
 
 	  <a4j:region>
-	    <h:inputHidden id="#{widget.id}_select2" value="#{documentTagIds}">
+	    <h:inputHidden id="#{widget.id}_select2" value="">
 	      <f:converter converterId="select2Converter" />
 	    </h:inputHidden>
 	    <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
