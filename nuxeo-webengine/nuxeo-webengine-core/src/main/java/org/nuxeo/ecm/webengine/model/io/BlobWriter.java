@@ -64,6 +64,7 @@ public class BlobWriter implements MessageBodyWriter<Blob> {
     @Context
     private ServletContext servletContext;
 
+    @Override
     public void writeTo(Blob t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         // Ensure transaction is committed before writing blob to response
@@ -97,11 +98,13 @@ public class BlobWriter implements MessageBodyWriter<Blob> {
         entityStream.flush();
     }
 
+    @Override
     public long getSize(Blob arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         long n = arg0.getLength();
         return n <= 0 ? -1 : n;
     }
 
+    @Override
     public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2, MediaType arg3) {
         return Blob.class.isAssignableFrom(arg0);
     }
