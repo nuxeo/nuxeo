@@ -52,6 +52,9 @@
     <nxu:set var="modeValueHolderId"
       value="#{widget.id}_modeValueHolder"
       cache="true">
+    <nxu:set var="disableDoubleClickShield"
+      value="#{nxu:test(empty widgetProperty_disableDoubleClickShield, false, widgetProperty_disableDoubleClickShield)}"
+      cache="true">
 
     <nxu:valueHolder
       id="#{modeValueHolderId}"
@@ -145,6 +148,7 @@
               <ui:param name="useAjaxForm" value="#{useAjaxForm}" />
               <ui:param name="onFormSubmit" value="#{nxu:test(useAjaxForm, 'onSubmitToggledForm(); return true;', '')}" />
               <ui:param name="formStyleClass" value="#{nxu:test(useAjaxForm, safeEditEnabled, '')}" />
+              <ui:param name="disableDoubleClickShield" value="#{disableDoubleClickShield}" />
 
               <ui:define name="form_template_content">
 

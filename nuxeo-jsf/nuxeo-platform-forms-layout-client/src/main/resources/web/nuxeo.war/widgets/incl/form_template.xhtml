@@ -25,7 +25,7 @@ Templating zone to define:
 
 <c:if test="#{addForm}">
 
-  <h:form id="#{formId}"
+  <h:form id="#{formId}" disableDoubleClickShield="#{disableDoubleClickShield}"
     enctype="#{useAjaxForm or disableMultipartForm?'':'multipart/form-data'}"
     onsubmit="#{onFormSubmit}"
     styleClass="#{formStyleClass}">
