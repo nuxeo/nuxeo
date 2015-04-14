@@ -21,6 +21,7 @@
     <module>nuxeo-webengine-core</module>
     <module>nuxeo-webengine-ui</module>
     <module>nuxeo-webengine-gwt</module>
+    <module>nuxeo-webengine-gwt-codeserver</module>
     <module>nuxeo-webengine-invite</module>
     <module>nuxeo-theme-webengine</module>
   </modules>
