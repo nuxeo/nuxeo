@@ -17,7 +17,7 @@ import java.util.Map;
 
 import javax.mail.internet.MimeMultipart;
 
-import org.apache.commons.codec.Charsets;
+import java.nio.charset.StandardCharsets;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -101,7 +101,7 @@ public class HttpConnector implements Connector {
                     entity = new MultipartRequestEntity((MimeMultipart) obj);
                 } else {
                     try {
-                        entity = new StringEntity(obj.toString(), Charsets.UTF_8);
+                        entity = new StringEntity(obj.toString(), StandardCharsets.UTF_8);
                     } catch (UnsupportedCharsetException e) {
                         throw new Error("Cannot encode into UTF-8", e);
                     }
