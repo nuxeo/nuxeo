@@ -81,7 +81,7 @@ public class HttpConnector implements Connector {
     }
 
     /**
-     * @see #HttpConnector(HttpClient, long)
+     * @see {@link HttpConnector(HttpClient, long)}
      * @since 5.7
      */
     public HttpConnector(HttpClient http, HttpContext ctx, int httpConnectionTimeout) {
