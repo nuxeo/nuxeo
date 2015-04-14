@@ -42,6 +42,7 @@ import org.apache.commons.logging.Log;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -65,6 +66,8 @@ public class BlobWriter implements MessageBodyWriter<Blob> {
 
     public void writeTo(Blob t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
+        // Ensure transaction is committed before writing blob to response
+        commitAndReopenTransaction();
         if (Framework.isTestModeSet()) {
             transferBlob(t, entityStream);
         } else {
@@ -79,6 +82,13 @@ public class BlobWriter implements MessageBodyWriter<Blob> {
             }
         }
 
+    }
+
+    protected void commitAndReopenTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
     }
 
     protected void transferBlob(Blob blob, OutputStream entityStream) throws IOException {
