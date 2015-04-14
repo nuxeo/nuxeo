@@ -15,6 +15,7 @@
   <extension-point name="install">
     <object class="org.nuxeo.ecm.webengine.gwt.GwtAppResolver"/>
     <object class="org.nuxeo.ecm.webengine.gwt.GwtAppLocation"/>
+    <object class="org.nuxeo.ecm.webengine.gwt.GwtAppBundleLocation"/>
   </extension-point>
 
 </component>
