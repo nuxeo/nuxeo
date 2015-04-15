@@ -28,7 +28,9 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -252,16 +254,28 @@ public class ObjectCodecService {
             return node.getBooleanValue();
         } else if (node.isTextual()) {
             return node.getTextValue();
+        } else if (node.isArray()) {
+            List<Object> result = new ArrayList<>();
+            Iterator<JsonNode> elements = node.getElements();
+            while (elements.hasNext()) {
+                result.add(readNode(elements.next(), cl, session));
+            }
+            return result;
         }
         JsonNode entityTypeNode = node.get("entity-type");
         JsonNode valueNode = node.get("value");
         if (entityTypeNode != null && entityTypeNode.isTextual()) {
-            // handle structured entity with an explicit type declaration
-            if (valueNode == null) {
-                return null;
-            }
             String type = entityTypeNode.getTextValue();
             ObjectCodec<?> codec = codecsByName.get(type);
+            // handle structured entity with an explicit type declaration
+            JsonParser jp = jsonFactory.createJsonParser(node.toString());
+            if (valueNode == null) {
+                if (codec == null) {
+                    return readGenericObject(jp, type, cl);
+                } else {
+                    return codec.read(jp, session);
+                }
+            }
             JsonParser valueParser = valueNode.traverse();
             if (valueParser.getCurrentToken() == null) {
                 valueParser.nextToken();
