@@ -3060,7 +3060,7 @@
       <dependency>
         <groupId>com.allen-sauer.gwt.log</groupId>
         <artifactId>gwt-log</artifactId>
-        <version>3.1.6</version>
+        <version>3.3.2</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
