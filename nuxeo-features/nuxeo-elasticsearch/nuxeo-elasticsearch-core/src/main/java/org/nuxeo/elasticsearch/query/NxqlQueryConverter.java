@@ -33,16 +33,21 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.CommonTermsQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.query.sql.model.DefaultQueryVisitor;
+import org.nuxeo.ecm.core.query.sql.model.EsHint;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.FromClause;
 import org.nuxeo.ecm.core.query.sql.model.FromList;
@@ -156,14 +161,15 @@ final public class NxqlQueryConverter {
                         }
                     }
                     // add expression to the last builder
-                    builders.getLast().add(makeQueryFromSimpleExpression(op.toString(), name, value, values));
+                    EsHint hint = (ref != null) ? ref.esHint : null;
+                    builders.getLast().add(makeQueryFromSimpleExpression(op.toString(), name, value, values, hint));
                 }
             }
         });
         QueryBuilder queryBuilder = ret.get();
         if (!fromList.isEmpty()) {
             return QueryBuilders.filteredQuery(queryBuilder,
-                    makeQueryFromSimpleExpression("IN", NXQL.ECM_PRIMARYTYPE, null, fromList.toArray()).filter);
+                    makeQueryFromSimpleExpression("IN", NXQL.ECM_PRIMARYTYPE, null, fromList.toArray(), null).filter);
         }
         return queryBuilder;
     }
@@ -192,34 +198,19 @@ final public class NxqlQueryConverter {
         return query;
     }
 
-    public static QueryAndFilter makeQueryFromSimpleExpression(String op, String name, Object value, Object[] values) {
+    public static QueryAndFilter makeQueryFromSimpleExpression(String op, String name, Object value, Object[] values,
+                                                               EsHint hint) {
         QueryBuilder query = null;
         FilterBuilder filter = null;
         if (NXQL.ECM_ISVERSION_OLD.equals(name)) {
             name = NXQL.ECM_ISVERSION;
         }
         name = getComplexFieldName(name);
-        if (name.startsWith(NXQL.ECM_FULLTEXT)
+        if (hint != null && hint.operator != null) {
+            query = makeHintQuery(name, value, hint);
+        } else if (name.startsWith(NXQL.ECM_FULLTEXT)
                 && ("=".equals(op) || "!=".equals(op) || "<>".equals(op) || "LIKE".equals(op) || "NOT LIKE".equals(op))) {
-            String field = name.replace(NXQL.ECM_FULLTEXT, "");
-            if (field.startsWith(".")) {
-                field = field.substring(1) + ".fulltext";
-            } else {
-                // map ecm:fulltext_someindex to default
-                field = FULLTEXT_FIELD;
-            }
-            String queryString = (String) value;
-            org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator defaultOperator;
-            if (queryString.startsWith(SIMPLE_QUERY_PREFIX)) {
-                // elasticsearch-specific syntax
-                queryString = queryString.substring(SIMPLE_QUERY_PREFIX.length());
-                defaultOperator = SimpleQueryStringBuilder.Operator.OR;
-            } else {
-                queryString = translateFulltextQuery(queryString);
-                defaultOperator = SimpleQueryStringBuilder.Operator.AND;
-            }
-            query = QueryBuilders.simpleQueryString(queryString).field(field).defaultOperator(defaultOperator).analyzer(
-                    "fulltext");
+            query = makeFulltextQuery(name, (String) value, hint);
             if ("!=".equals(op) || "<>".equals(op) || "NOT LIKE".equals(op)) {
                 filter = FilterBuilders.notFilter(FilterBuilders.queryFilter(query));
                 query = null;
@@ -229,18 +220,7 @@ final public class NxqlQueryConverter {
         } else if ("<>".equals(op) || "!=".equals(op)) {
             filter = FilterBuilders.notFilter(FilterBuilders.termFilter(name, value));
         } else if ("LIKE".equals(op) || "ILIKE".equals(op) || "NOT LIKE".equals(op) || "NOT ILIKE".equals(op)) {
-            // ILIKE will work only with a correct mapping
-            String likeValue = ((String) value).replace("%", "*");
-            String fieldName = name;
-            if (op.contains("ILIKE")) {
-                likeValue = likeValue.toLowerCase();
-                fieldName = name + ".lowercase";
-            }
-            if (StringUtils.countMatches(likeValue, "*") == 1 && likeValue.endsWith("*")) {
-                query = QueryBuilders.matchPhrasePrefixQuery(fieldName, likeValue.replace("*", ""));
-            } else {
-                query = QueryBuilders.wildcardQuery(fieldName, likeValue);
-            }
+            query = makeLikeQuery(op, name, (String) value, hint);
             if (op.startsWith("NOT")) {
                 filter = FilterBuilders.notFilter(FilterBuilders.queryFilter(query));
                 query = null;
@@ -256,11 +236,7 @@ final public class NxqlQueryConverter {
                 filter = FilterBuilders.notFilter(filter);
             }
         } else if ("STARTSWITH".equals(op)) {
-            if (name.equals(NXQL.ECM_PATH)) {
-                filter = FilterBuilders.termFilter(name + ".children", value);
-            } else {
-                filter = FilterBuilders.prefixFilter(name, (String) value);
-            }
+            filter = makeStartsWithQuery(name, value);
         } else if (">".equals(op)) {
             filter = FilterBuilders.rangeFilter(name).gt(value);
         } else if ("<".equals(op)) {
@@ -275,6 +251,138 @@ final public class NxqlQueryConverter {
             filter = FilterBuilders.existsFilter(name);
         }
         return new QueryAndFilter(query, filter);
+    }
+
+    private static QueryBuilder makeHintQuery(String name, Object value, EsHint hint) {
+        QueryBuilder ret;
+        String fieldName = (hint.index != null) ? hint.index :  name;
+        switch (hint.operator) {
+            case "match":
+                MatchQueryBuilder matchQuery = QueryBuilders.matchQuery(fieldName, value);
+                if (hint.analyzer != null) {
+                    matchQuery.analyzer(hint.analyzer);
+                }
+                ret = matchQuery;
+                break;
+            case "match_phrase":
+                matchQuery = QueryBuilders.matchPhraseQuery(fieldName, value);
+                if (hint.analyzer != null) {
+                    matchQuery.analyzer(hint.analyzer);
+                }
+                ret = matchQuery;
+                break;
+            case "match_phrase_prefix":
+                matchQuery = QueryBuilders.matchPhrasePrefixQuery(fieldName, value);
+                if (hint.analyzer != null) {
+                    matchQuery.analyzer(hint.analyzer);
+                }
+                ret = matchQuery;
+                break;
+            case "multi_match":
+                // hint.index must be set
+                MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(value, hint.getIndex());
+                if (hint.analyzer != null) {
+                    multiMatchQuery.analyzer(hint.analyzer);
+                }
+                ret = multiMatchQuery;
+                break;
+            case "regex":
+                ret = QueryBuilders.regexpQuery(fieldName, (String) value);
+                break;
+            case "fuzzy":
+                ret = QueryBuilders.fuzzyQuery(fieldName, (String) value);
+                break;
+            case "wildcard":
+                ret = QueryBuilders.wildcardQuery(fieldName, (String) value);
+                break;
+            case "common":
+                CommonTermsQueryBuilder commonQuery = QueryBuilders.commonTerms(fieldName, value);
+                if (hint.analyzer != null) {
+                    commonQuery.analyzer(hint.analyzer);
+                }
+                ret = commonQuery;
+                break;
+            case "query_string":
+                QueryStringQueryBuilder queryString = QueryBuilders.queryString((String) value);
+                if (hint.index != null) {
+                    for (String index: hint.getIndex()) {
+                        queryString.field(index);
+                    }
+                } else {
+                    queryString.defaultField(fieldName);
+                }
+                if (hint.analyzer != null) {
+                    queryString.analyzer(hint.analyzer);
+                }
+                ret = queryString;
+                break;
+            default:
+                throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is unknown");
+        }
+        return ret;
+    }
+
+    private static FilterBuilder makeStartsWithQuery(String name, Object value) {
+        FilterBuilder filter;
+        if (name.equals(NXQL.ECM_PATH)) {
+            filter = FilterBuilders.termFilter(name + ".children", value);
+        } else {
+            filter = FilterBuilders.prefixFilter(name, (String) value);
+        }
+        return filter;
+    }
+
+    private static QueryBuilder makeLikeQuery(String op, String name, String value, EsHint hint) {
+        // ILIKE will work only with a correct mapping
+        String likeValue = value.replace("%", "*");
+        String fieldName = name;
+        if (op.contains("ILIKE")) {
+            likeValue = likeValue.toLowerCase();
+            fieldName = name + ".lowercase";
+        }
+        if (hint != null && hint.index != null) {
+            fieldName = hint.index;
+        }
+        // use match phrase prefix when possible
+        if (StringUtils.countMatches(likeValue, "*") == 1 && likeValue.endsWith("*")) {
+            MatchQueryBuilder query = QueryBuilders.matchPhrasePrefixQuery(fieldName, likeValue.replace("*", ""));
+            if (hint != null && hint.analyzer != null) {
+                query.analyzer(hint.analyzer);
+            }
+            return query;
+        }
+        return QueryBuilders.wildcardQuery(fieldName, likeValue);
+    }
+
+    private static QueryBuilder makeFulltextQuery(String name, String value, EsHint hint) {
+        String field = name.replace(NXQL.ECM_FULLTEXT, "");
+        if (field.startsWith(".")) {
+            field = field.substring(1) + ".fulltext";
+        } else {
+            // map ecm:fulltext_someindex to default
+            field = FULLTEXT_FIELD;
+        }
+        String queryString = value;
+        SimpleQueryStringBuilder.Operator defaultOperator;
+        if (queryString.startsWith(SIMPLE_QUERY_PREFIX)) {
+            // elasticsearch-specific syntax
+            queryString = queryString.substring(SIMPLE_QUERY_PREFIX.length());
+            defaultOperator = SimpleQueryStringBuilder.Operator.OR;
+        } else {
+            queryString = translateFulltextQuery(queryString);
+            defaultOperator = SimpleQueryStringBuilder.Operator.AND;
+        }
+        String analyzer = (hint != null && hint.analyzer != null) ? hint.analyzer: "fulltext";
+        SimpleQueryStringBuilder query = QueryBuilders.simpleQueryString(queryString).defaultOperator(defaultOperator)
+                .analyzer(analyzer);
+        if (hint != null && hint.index != null) {
+            for (String index: hint.getIndex()) {
+                query.field(index);
+            }
+        } else {
+            query.field(field);
+        }
+        return query;
     }
 
     protected static String getComplexFieldName(String name) {
