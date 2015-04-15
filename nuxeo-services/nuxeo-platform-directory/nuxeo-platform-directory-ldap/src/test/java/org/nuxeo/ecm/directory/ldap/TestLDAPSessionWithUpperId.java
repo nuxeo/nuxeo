@@ -25,8 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -45,6 +47,7 @@ public class TestLDAPSessionWithUpperId extends LDAPDirectoryTestCase {
 
     protected static final String GROUP_SCHEMANAME = "group";
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -52,12 +55,21 @@ public class TestLDAPSessionWithUpperId extends LDAPDirectoryTestCase {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             fail("This test is not configured for an external server");
         } else {
-            deployContrib("org.nuxeo.ecm.directory.ldap.tests", INTERNAL_SERVER_SETUP_UPPER_ID);
+            runtimeHarness.deployContrib("org.nuxeo.ecm.directory.ldap.tests", INTERNAL_SERVER_SETUP_UPPER_ID);
             getLDAPDirectory("userDirectory").setTestServer(server);
             getLDAPDirectory("groupDirectory").setTestServer(server);
         }
     }
 
+    @Override
+    @After
+    public void tearDown() throws Exception {
+        if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+        } else {
+            runtimeHarness.undeployContrib("org.nuxeo.ecm.directory.ldap.tests", INTERNAL_SERVER_SETUP_UPPER_ID);
+        }
+        super.tearDown();
+    }
     // override tests to get specific use cases
 
     @SuppressWarnings("rawtypes")

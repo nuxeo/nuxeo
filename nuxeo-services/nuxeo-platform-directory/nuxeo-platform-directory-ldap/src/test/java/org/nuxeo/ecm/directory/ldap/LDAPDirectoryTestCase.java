@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -47,20 +48,39 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.directory.server.protocol.shared.store.LdifFileLoader;
 import org.apache.directory.server.protocol.shared.store.LdifLoadFilter;
 import org.bouncycastle.x509.X509V1CertificateGenerator;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
  * @author <a href="ogrisel@nuxeo.com">Olivier Grisel</a>
  */
-public abstract class LDAPDirectoryTestCase extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.directory.sql", //
+        "org.nuxeo.ecm.directory.ldap.tests", //
+})
+@LocalDeploy({ "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryTypes.xml",
+        "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryService.xml",
+        "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/LDAPDirectoryFactory.xml",
+        "org.nuxeo.ecm.directory.ldap.tests:TestSQLDirectories.xml", })
+public abstract class LDAPDirectoryTestCase {
 
     private static final Log log = LogFactory.getLog(LDAPDirectoryTestCase.class);
 
     protected MockLdapServer server;
-
-    public static final String TEST_BUNDLE = "org.nuxeo.ecm.directory.ldap.tests";
 
     // change this flag to use an external LDAP directory instead of the
     // non networked default ApacheDS implementation
@@ -86,6 +106,9 @@ public abstract class LDAPDirectoryTestCase extends SQLRepositoryTestCase {
 
     public String INTERNAL_SERVER_SETUP_OVERRIDE = "TestDirectoriesWithInternalApacheDS-override.xml";
 
+    @Inject
+    protected RuntimeHarness runtimeHarness;
+
     public List<String> getLdifFiles() {
         List<String> ldifFiles = new ArrayList<String>();
         ldifFiles.add("sample-users.ldif");
@@ -96,22 +119,12 @@ public abstract class LDAPDirectoryTestCase extends SQLRepositoryTestCase {
         return ldifFiles;
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
-
-        deployBundle("org.nuxeo.ecm.directory.sql");
-
-        // setup the client environment
-        deployBundle("org.nuxeo.ecm.directory.ldap.tests");
-        deployTestContrib(TEST_BUNDLE, "ldap-test-setup/DirectoryTypes.xml");
-        deployTestContrib(TEST_BUNDLE, "ldap-test-setup/DirectoryService.xml");
-        deployTestContrib(TEST_BUNDLE, "ldap-test-setup/LDAPDirectoryFactory.xml");
-        deployTestContrib(TEST_BUNDLE, "TestSQLDirectories.xml");
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            deployTestContrib(TEST_BUNDLE, EXTERNAL_SERVER_SETUP);
+            runtimeHarness.deployContrib("org.nuxeo.ecm.directory.ldap.tests", EXTERNAL_SERVER_SETUP);
         } else {
-            deployTestContrib(TEST_BUNDLE, INTERNAL_SERVER_SETUP);
+            runtimeHarness.deployContrib("org.nuxeo.ecm.directory.ldap.tests", INTERNAL_SERVER_SETUP);
             server = new MockLdapServer(new File(Framework.getRuntime().getHome(), "ldap"));
             getLDAPDirectory("userDirectory").setTestServer(server);
             getLDAPDirectory("groupDirectory").setTestServer(server);
@@ -127,29 +140,27 @@ public abstract class LDAPDirectoryTestCase extends SQLRepositoryTestCase {
         }
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
-        try {
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-                LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession();
+        if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession();
+            try {
+                DirContext ctx = session.getContext();
+                destroyRecursively("ou=people,dc=example,dc=com", ctx, -1);
+                destroyRecursively("ou=groups,dc=example,dc=com", ctx, -1);
+            } finally {
+                session.close();
+            }
+            runtimeHarness.undeployContrib("org.nuxeo.ecm.directory.ldap.tests", EXTERNAL_SERVER_SETUP);
+        } else {
+            if (server != null) {
                 try {
-                    DirContext ctx = session.getContext();
-                    destroyRecursively("ou=people,dc=example,dc=com", ctx, -1);
-                    destroyRecursively("ou=groups,dc=example,dc=com", ctx, -1);
+                    server.shutdownLdapServer();
                 } finally {
-                    session.close();
-                }
-            } else {
-                if (server != null) {
-                    try {
-                        server.shutdownLdapServer();
-                    } finally {
-                        server = null;
-                    }
+                    server = null;
                 }
             }
-        } finally {
-            super.tearDown();
+            runtimeHarness.undeployContrib("org.nuxeo.ecm.directory.ldap.tests", INTERNAL_SERVER_SETUP);
         }
     }
 

@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -37,7 +36,7 @@ import org.nuxeo.ecm.directory.Session;
  */
 public class TestLDAPSessionUsingSSL extends LDAPDirectoryTestCase {
 
-    @Before
+    @Override
     public void setUp() throws Exception {
         EXTERNAL_SERVER_SETUP = "TestDirectoriesWithExternalOpenLDAP-SSL.xml";
         super.setUp();

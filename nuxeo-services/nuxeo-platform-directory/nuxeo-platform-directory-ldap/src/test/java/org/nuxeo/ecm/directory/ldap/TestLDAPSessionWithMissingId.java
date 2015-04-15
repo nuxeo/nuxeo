@@ -19,6 +19,11 @@
 
 package org.nuxeo.ecm.directory.ldap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,10 +34,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -49,17 +54,29 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
 
     protected static final String GROUP_SCHEMANAME = "group";
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         // override default defs
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            deployContrib("org.nuxeo.ecm.directory.ldap.tests", EXTERNAL_SERVER_SETUP_OVERRIDE);
+            runtimeHarness.deployContrib("org.nuxeo.ecm.directory.ldap.tests", EXTERNAL_SERVER_SETUP_OVERRIDE);
         } else {
-            deployContrib("org.nuxeo.ecm.directory.ldap.tests", INTERNAL_SERVER_SETUP_OVERRIDE);
+            runtimeHarness.deployContrib("org.nuxeo.ecm.directory.ldap.tests", INTERNAL_SERVER_SETUP_OVERRIDE);
             getLDAPDirectory("userDirectory").setTestServer(server);
             getLDAPDirectory("groupDirectory").setTestServer(server);
         }
+    }
+
+    @Override
+    @After
+    public void tearDown() throws Exception {
+        if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            runtimeHarness.undeployContrib("org.nuxeo.ecm.directory.ldap.tests", EXTERNAL_SERVER_SETUP_OVERRIDE);
+        } else {
+            runtimeHarness.undeployContrib("org.nuxeo.ecm.directory.ldap.tests", INTERNAL_SERVER_SETUP_OVERRIDE);
+        }
+        super.tearDown();
     }
 
     // override tests to get specific use cases
