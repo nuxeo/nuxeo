@@ -11,6 +11,9 @@
  */
 package org.nuxeo.ecm.automation.client.model;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import java.util.Date;
 
 /**
@@ -136,10 +139,12 @@ public class Document extends DocRef {
         return repository;
     }
 
+    @JsonProperty("uid")
     public String getId() {
         return ref;
     }
 
+    @JsonProperty("entity-type")
     @Override
     public String getInputType() {
         return "document";
@@ -192,6 +197,7 @@ public class Document extends DocRef {
         return properties.getString("dc:title");
     }
 
+    @JsonIgnore
     public PropertyMap getProperties() {
         return properties;
     }
