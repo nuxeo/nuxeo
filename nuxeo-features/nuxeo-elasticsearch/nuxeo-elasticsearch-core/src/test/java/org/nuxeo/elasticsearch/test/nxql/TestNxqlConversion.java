@@ -168,8 +168,8 @@ public class TestNxqlConversion {
                 + "        \"ecm:primaryType\" : [ \"File\" ]\n" + "      }\n" + "    }\n" + "  }\n" + "}", es);
         es = NxqlQueryConverter.toESQueryBuilder("select * from File, Note").toString();
         assertEqualsEvenUnderWindows("{\n" + "  \"filtered\" : {\n" + "    \"query\" : {\n"
-                + "      \"match_all\" : { }\n" + "    },\n" + "    \"filter\" : {\n" + "      \"terms\" : {\n"
-                + "        \"ecm:primaryType\" : [ \"File\", \"Note\" ]\n" + "      }\n" + "    }\n" + "  }\n" + "}",
+                        + "      \"match_all\" : { }\n" + "    },\n" + "    \"filter\" : {\n" + "      \"terms\" : {\n"
+                        + "        \"ecm:primaryType\" : [ \"File\", \"Note\" ]\n" + "      }\n" + "    }\n" + "  }\n" + "}",
                 es);
     }
 
@@ -251,7 +251,7 @@ public class TestNxqlConversion {
                 + "      }\n" + "    }\n" + "  }\n" + "}", es);
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where f1 IS NOT NULL").toString();
         assertEqualsEvenUnderWindows("{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n"
-                + "      \"exists\" : {\n" + "        \"field\" : \"f1\"\n" + "      }\n" + "    }\n" + "  }\n" + "}",
+                        + "      \"exists\" : {\n" + "        \"field\" : \"f1\"\n" + "      }\n" + "    }\n" + "  }\n" + "}",
                 es);
     }
 
@@ -460,6 +460,138 @@ public class TestNxqlConversion {
                 + "      \"term\" : {\n" + "        \"name\" : \"foo\"\n" + "      }\n" + "    }\n" + "  }\n" + "}", es);
         Assert.assertEquals(1, qb.getSortInfos().size());
         Assert.assertEquals("SortInfo [sortColumn=name, sortAscending=false]", qb.getSortInfos().get(0).toString());
+    }
+
+    @Test
+    public void testConvertHintOperator() throws Exception {
+        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(some:field) ANALYZER(my_analyzer) OPERATOR(match) */ dc:subjects = 'foo'").toString();
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"match\" : {\n" + //
+                "    \"some:field\" : {\n" + //
+                "      \"query\" : \"foo\",\n" + //
+                "      \"type\" : \"boolean\",\n" + //
+                "      \"analyzer\" : \"my_analyzer\"\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(match_phrase) */ dc:title = 'foo'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"match\" : {\n" + //
+                "    \"dc:title\" : {\n" + //
+                "      \"query\" : \"foo\",\n" + //
+                "      \"type\" : \"phrase\"\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(match_phrase_prefix) */ dc:title = 'this is a test'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"match\" : {\n" + //
+                "    \"dc:title\" : {\n" + //
+                "      \"query\" : \"this is a test\",\n" + //
+                "      \"type\" : \"phrase_prefix\"\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(dc:title^3,dc:description) OPERATOR(multi_match) */ dc:title = 'this is a test'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"multi_match\" : {\n" + //
+                "    \"query\" : \"this is a test\",\n" + //
+                "    \"fields\" : [ \"dc:title^3\", \"dc:description\" ]\n" + //
+                "  }\n" + //
+                "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(regex) */ dc:title = 's.*y'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"regexp\" : {\n" + //
+                "    \"dc:title\" : {\n" + //
+                "      \"value\" : \"s.*y\"\n" +  //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(fuzzy) */ dc:title = 'ki'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"fuzzy\" : {\n" + //
+                "    \"dc:title\" : {\n" + //
+                "      \"value\" : \"ki\"\n" +  //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(wildcard) */ dc:title = 'ki*y'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"wildcard\" : {\n" + //
+                "    \"dc:title\" : {\n" + //
+                "      \"wildcard\" : \"ki*y\"\n" +  //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(dc:title,dc:description) ANALYZER(fulltext) OPERATOR(query_string) */ dc:title = 'this AND that OR thus'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"query_string\" : {\n" + //
+                "    \"query\" : \"this AND that OR thus\",\n" + //
+                "    \"fields\" : [ \"dc:title\", \"dc:description\" ],\n" + //
+                "    \"analyzer\" : \"fulltext\"\n" + //
+                "  }\n" + //
+                "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(common) */ dc:title = 'this is bonsai cool'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"common\" : {\n" + //
+                "    \"dc:title\" : {\n" + //
+                "      \"query\" : \"this is bonsai cool\"\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+
+    }
+
+    @Test
+    public void testConvertHintLike() throws Exception {
+        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(some:field) ANALYZER(my_analyzer) */ dc:subjects LIKE 'foo*'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"match\" : {\n" + //
+                "    \"some:field\" : {\n" + //
+                "      \"query\" : \"foo\",\n" + //
+                "      \"type\" : \"phrase_prefix\",\n" + //
+                "      \"analyzer\" : \"my_analyzer\"\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(some:field) */ dc:subjects LIKE '%foo%'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"wildcard\" : {\n" + //
+                "    \"some:field\" : {\n" + //
+                "      \"wildcard\" : \"*foo*\"\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+
+    }
+
+    @Test
+    public void testConvertHintFulltext() throws Exception {
+        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(dc:title.fulltext,dc:description.fulltext) */ ecm:fulltext = 'foo'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"simple_query_string\" : {\n" + //
+                "    \"query\" : \"foo\",\n" + //
+                "    \"fields\" : [ \"dc:description.fulltext\", \"dc:title.fulltext\" ],\n" + //
+                "    \"analyzer\" : \"fulltext\",\n" + //
+                "    \"default_operator\" : \"and\"\n" + //
+                "  }\n" + //
+                "}", es);
+        // boost title
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(dc_title^3,dc_description) */ ecm:fulltext = 'foo'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"simple_query_string\" : {\n" + //
+                "    \"query\" : \"foo\",\n" + //
+                "    \"fields\" : [ \"dc_title^3\", \"dc_description\" ],\n" + //
+                "    \"analyzer\" : \"fulltext\",\n" + //
+                "    \"default_operator\" : \"and\"\n" + //
+                "  }\n" + //
+                "}", es);
     }
 
     protected void assertEqualsEvenUnderWindows(String expected, String actual) {

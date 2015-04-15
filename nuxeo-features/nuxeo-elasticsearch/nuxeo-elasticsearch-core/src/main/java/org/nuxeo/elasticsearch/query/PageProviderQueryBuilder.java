@@ -115,7 +115,7 @@ public class PageProviderQueryBuilder {
                     name = NXQL.ECM_FULLTEXT + "." + name;
                 }
             }
-            eb.add(NxqlQueryConverter.makeQueryFromSimpleExpression(operator, name, value, values));
+            eb.add(NxqlQueryConverter.makeQueryFromSimpleExpression(operator, name, value, values, null));
         }
         return eb.get();
     }
