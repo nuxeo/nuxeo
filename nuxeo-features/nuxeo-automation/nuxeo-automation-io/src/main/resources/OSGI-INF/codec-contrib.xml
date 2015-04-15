@@ -1,0 +1,7 @@
+<component name="org.nuxeo.ecm.automation.io.services.IOComponent.codec.contrib">
+
+  <extension point="codecs" target="org.nuxeo.ecm.automation.io.services.IOComponent">
+    <codec class="org.nuxeo.ecm.automation.io.services.codec.DocumentModelCodec" />
+  </extension>
+
+</component>
