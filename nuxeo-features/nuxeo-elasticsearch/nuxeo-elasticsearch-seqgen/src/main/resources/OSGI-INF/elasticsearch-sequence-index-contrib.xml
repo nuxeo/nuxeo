@@ -5,27 +5,25 @@
     point="elasticSearchIndex">
 
     <elasticSearchIndex name="sequence" type="seqId" >
-    
+
     <settings>
       {
-      "number_of_shards"     : 1,           
-      "auto_expand_replicas" : "0-all"  
+        "number_of_shards"     : 1,
+        "auto_expand_replicas" : "0-all"
       }
-    </settings>  
-    
+    </settings>
+
     <mapping>
       {
-        "sequence" : {
-           "_source" : { "enabled" : 0 },
-           "_all"    : { "enabled" : 0 },
-           "_type"   : { "index" : "no" },
-           "enabled" : 0
-        }
+        "_source" : {"enabled": false},
+        "_all"    : {"enabled": false},
+        "_type"   : {"index": "no"},
+        "enabled" : false
       }
     </mapping>
-    
+
     </elasticSearchIndex>
 
   </extension>
-  
+
 </component>
