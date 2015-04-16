@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.pages.ProfilePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserCreationFormPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserViewTabSubPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
@@ -60,6 +61,37 @@ public class ITUsersTest extends AbstractTest {
         assertFalse(usersTab.isUserFound(username));
     }
 
+    
+    @Test
+    public void userCanChangeItsOwnPassword() throws Exception
+    {
+    	String firstname = "firstname";
+
+        UsersGroupsBasePage page;
+        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
+        String username = "jsmith";
+        usersTab = usersTab.searchUser(username);
+        if (!usersTab.isUserFound(username)) {
+            page = usersTab.getUserCreatePage().createUser(username, firstname, "lastname1", "company1", "email1",
+                    TEST_PASSWORD, "members");
+            // no confirmation message anymore
+            // assertEquals(page.getFeedbackMessage(), "User created");
+            usersTab = page.getUsersTab(true);
+        }
+        
+        logout();
+        
+        //Change the user password
+        String newPassword = "newpwd";
+        ProfilePage profilePage = login(username, TEST_PASSWORD).getUserHome().goToProfile();
+        profilePage.getChangePasswordUserTab().changePassword(newPassword);        
+        logout();
+        
+        login(username, newPassword).getUserHome().goToProfile();
+        logout();
+        
+    }
+    
     @Test
     public void testCreateViewDeleteUser() throws Exception {
         String firstname = "firstname";

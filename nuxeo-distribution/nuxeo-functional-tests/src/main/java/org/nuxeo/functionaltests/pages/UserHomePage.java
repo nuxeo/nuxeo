@@ -72,5 +72,10 @@ public class UserHomePage extends AbstractPage {
         findElementWithTimeout(By.linkText("Dashboard")).click();
         return this;
     }
+    
+    public ProfilePage goToProfile() {
+    	findElementWithTimeout(By.linkText("Profile")).click();
+        return asPage(ProfilePage.class);
+    }
 
 }
