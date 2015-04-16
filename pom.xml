@@ -151,7 +151,7 @@
     <elasticsearch.version>1.1.2</elasticsearch.version>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
-    <gwt.version>2.5.1</gwt.version>
+    <gwt.version>2.7.0-NX1</gwt.version>
     <guice.version>3.0</guice.version>
     <jersey.version>1.17.1</jersey.version>
     <jetty.mortbay.version>6.1.26</jetty.mortbay.version>
@@ -844,12 +844,11 @@
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-gwt</artifactId>
         <version>${nuxeo.webengine.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.nuxeo.build</groupId>
-            <artifactId>nuxeo-distribution-tools</artifactId>
-          </exclusion>
-        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-gwt-codeserver</artifactId>
+        <version>${nuxeo.webengine.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
@@ -3015,6 +3014,12 @@
       </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-codeserver</artifactId>
+        <version>${gwt.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.gwt</groupId>
         <artifactId>gwt-servlet</artifactId>
         <version>${gwt.version}</version>
         <scope>runtime</scope>
@@ -3043,7 +3048,7 @@
       <dependency>
         <groupId>com.allen-sauer.gwt.log</groupId>
         <artifactId>gwt-log</artifactId>
-        <version>3.1.6</version>
+        <version>3.3.2</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -3061,7 +3066,7 @@
       <dependency>
         <groupId>com.allen-sauer.gwt.dnd</groupId>
         <artifactId>gwt-dnd</artifactId>
-        <version>3.1.2</version>
+        <version>3.3.3</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -4633,6 +4638,7 @@
                 <goal>compile</goal>
               </goals>
               <configuration>
+                <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
                 <extraJvmArgs>-Xmx512M -Xms128M -XX:MaxPermSize=384m -Djava.io.tmpdir=${project.build.directory}</extraJvmArgs>
                 <warSourceDirectory>src/main/resources/web/nuxeo.war</warSourceDirectory>
                 <webappDirectory>${project.build.outputDirectory}/gwt-war</webappDirectory>

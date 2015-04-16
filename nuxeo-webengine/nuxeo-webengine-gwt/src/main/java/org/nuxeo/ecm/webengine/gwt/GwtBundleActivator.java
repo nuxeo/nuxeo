@@ -17,85 +17,67 @@
 package org.nuxeo.ecm.webengine.gwt;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.ZipUtils;
-import org.nuxeo.runtime.RuntimeServiceEvent;
-import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
 /**
- * This activator must be used as an activator by bundles that wants to deploy
- * GWT resources in a nuxeo server.
+ * This activator must be used as an activator by bundles that wants to deploy GWT resources in a nuxeo server.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class GwtBundleActivator implements BundleActivator {
+public class GwtBundleActivator implements BundleActivator, FrameworkListener {
 
     protected static final Log log = LogFactory.getLog(GwtBundleActivator.class);
 
+    public static final File GWT_ROOT = GwtResolver.GWT_ROOT;
+
     public static final String GWT_DEV_MODE_PROP = "nuxeo.gwt_dev_mode";
 
-    public static final File GWT_ROOT = new File(
-            Environment.getDefault().getWeb(), "root.war/gwt");
-
-    public static final boolean GWT_DEV_MODE = "true".equals(System.getProperty(
-            GWT_DEV_MODE_PROP, "false"));
+    public static final boolean GWT_DEV_MODE = "true".equals(Framework.getProperty(GWT_DEV_MODE_PROP, "false"));
 
     protected BundleContext context;
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) {
         this.context = context;
         if (GWT_DEV_MODE) {
             return;
         }
-        Framework.addListener(new RuntimeServiceListener() {
-
-            @Override
-            public void handleEvent(RuntimeServiceEvent event) {
-               if (event.id != RuntimeServiceEvent.RUNTIME_STARTED) {
-                   return;
-               }
-               Framework.removeListener(this);
-               try {
-                   installGwtApp(GwtBundleActivator.this.context.getBundle());
-               } catch (Exception cause) {
-                   log.error("Cannot install gwt app", cause);
-               }
-            }
-        });
+        context.addFrameworkListener(this);
     }
 
-
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) {
         this.context = null;
     }
 
-    protected void installGwtApp(Bundle bundle) throws Exception {
-        GWT_ROOT.mkdirs();
-        String symName = bundle.getSymbolicName();
-        // check the marker file to avoid copying twice
-        File markerFile = new File(GWT_ROOT, ".metadata/" + symName);
-        File file = Framework.getRuntime().getBundleFile(bundle);
-        if (file == null) {
-            log.warn("A GWT module without a war directory inside");
-            return;
+    protected void installGwtApp(Bundle bundle) throws IOException, URISyntaxException {
+        URL location = bundle.getEntry("gwt-war");
+        if (location == null) {
+            throw new IOException("Cannot locate gwt-war in " + bundle.getSymbolicName());
         }
-        if (markerFile.lastModified() < file.lastModified()) {
-            log.info("Installing GWT Application from bundle " + symName);
-            ZipUtils.unzip("gwt-war", file, GWT_ROOT);
-            markerFile.getParentFile().mkdirs();
-            markerFile.createNewFile();
-        }
+        Framework.getService(GwtResolver.class).install(location.toURI());
     }
 
-
+    @Override
+    public void frameworkEvent(FrameworkEvent event) {
+        if (event.getType() == FrameworkEvent.STARTED) {
+            try {
+                installGwtApp(context.getBundle());
+            } catch (IOException | URISyntaxException cause) {
+                throw new RuntimeException("Cannot start GWT", cause);
+            }
+        }
+    }
 
 }
