@@ -37,16 +37,14 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Provider
-@Produces( { "*/*", "text/plain" })
+@Produces({ "*/*", "text/plain" })
 public class BlobWriter implements MessageBodyWriter<Blob> {
 
-    public void writeTo(Blob t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
+    @Override
+    public void writeTo(Blob t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         // Ensure transaction is committed before writing blob to response
         commitAndReopenTransaction();
         try {
@@ -65,14 +63,14 @@ public class BlobWriter implements MessageBodyWriter<Blob> {
         }
     }
 
-    public long getSize(Blob arg0, Class<?> arg1, Type arg2, Annotation[] arg3,
-            MediaType arg4) {
+    @Override
+    public long getSize(Blob arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         long n = arg0.getLength();
         return n <= 0 ? -1 : n;
     }
 
-    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
-            MediaType arg3) {
+    @Override
+    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2, MediaType arg3) {
         return Blob.class.isAssignableFrom(arg0);
     }
 
