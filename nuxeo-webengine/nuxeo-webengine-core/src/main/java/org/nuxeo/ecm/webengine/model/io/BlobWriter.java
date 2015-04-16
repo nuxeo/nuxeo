@@ -33,6 +33,7 @@ import javax.ws.rs.ext.Provider;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -46,12 +47,21 @@ public class BlobWriter implements MessageBodyWriter<Blob> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
+        // Ensure transaction is committed before writing blob to response
+        commitAndReopenTransaction();
         try {
             BufferingServletOutputStream.stopBufferingThread();
             t.transferTo(entityStream);
             entityStream.flush();
         } catch (Throwable e) {
             throw WebException.wrap("Failed to render resource", e);
+        }
+    }
+
+    protected void commitAndReopenTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
         }
     }
 
