@@ -31,7 +31,7 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
  */
 public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
 
-    private static final String CONTEXT_ATTRIBUTE = "context";
+    private static final String CONTEXT_ATTRIBUTE = "Krb5Authenticator_context";
 
     private static final Log logger = LogFactory.getLog(Krb5Authenticator.class);
 
@@ -120,6 +120,7 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
                 return info;
             } else {
                 // save context in the HTTP session to be reused after client response
+                req.getSession().setAttribute(CONTEXT_ATTRIBUTE, context);
                 // need another roundtrip
                 res.setHeader(WWW_AUTHENTICATE, NEGOTIATE + " " + Base64.encodeBase64String(respToken));
                 return null;
