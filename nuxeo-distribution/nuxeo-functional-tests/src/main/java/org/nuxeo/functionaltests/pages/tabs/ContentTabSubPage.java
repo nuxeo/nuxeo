@@ -52,6 +52,8 @@ public class ContentTabSubPage extends DocumentBasePage {
 
     private static final String PAST_BUTTON_XPATH = "//input[@value=\"Paste\"]";
 
+    private static final String ADD_TO_WORKLIST_BUTTON_XPATH = "//input[@value=\"Add to worklist\"]";
+    
     private static final String DELETE_BUTTON_XPATH = "//input[@value=\"Delete\"]";
 
     private static final String SELECT_ALL_BUTTON_XPATH = "//input[@type=\"checkbox\" and @title=\"Select all / deselect all\"]";
@@ -134,7 +136,18 @@ public class ContentTabSubPage extends DocumentBasePage {
 
         return asPage(DocumentBasePage.class);
     }
+    
+    public DocumentBasePage addToWorkList(String documentTitle) {
+        // get all table item and if the link has the documents title, click
+        // (enable) checkbox
 
+    	selectDocumentByTitles(documentTitle);
+    	findElementWaitUntilEnabledAndClick(By.xpath(ADD_TO_WORKLIST_BUTTON_XPATH));
+
+        return asPage(DocumentBasePage.class);
+    }
+    
+    
     protected void deleteSelectedDocuments() {
         findElementWaitUntilEnabledAndClick(By.xpath(DELETE_BUTTON_XPATH));
         Alert alert = driver.switchTo().alert();
