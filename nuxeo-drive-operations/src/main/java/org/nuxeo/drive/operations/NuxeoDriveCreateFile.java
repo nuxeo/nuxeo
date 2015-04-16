@@ -71,9 +71,6 @@ public class NuxeoDriveCreateFile {
         NuxeoDriveOperationHelper.normalizeMimeTypeAndEncoding(blob);
         FileItem fileItem = fileSystemItemManager.createFile(parentId, blob, ctx.getPrincipal());
 
-        // Commit transaction explicitly to ensure client-side consistency
-        // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed
-        NuxeoDriveOperationHelper.commitAndReopenTransaction();
         return NuxeoDriveOperationHelper.asJSONBlob(fileItem);
     }
 

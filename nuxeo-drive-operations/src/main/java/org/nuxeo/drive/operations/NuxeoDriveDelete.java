@@ -53,10 +53,6 @@ public class NuxeoDriveDelete {
         } catch (UnsupportedOperationException e) {
             throw new InvalidOperationException(e);
         }
-
-        // Commit transaction explicitly to ensure client-side consistency
-        // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed
-        NuxeoDriveOperationHelper.commitAndReopenTransaction();
     }
 
 }
