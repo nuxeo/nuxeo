@@ -16,7 +16,6 @@
  */
 package org.nuxeo.drive.operations.test;
 
-import org.nuxeo.drive.operations.NuxeoDriveOperationHelper;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -31,7 +30,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Create batch of test documents in a single automation query
- * 
+ *
  * @author Olivier Grisel
  */
 @Operation(id = NuxeoDriveCreateTestDocuments.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Create test documents")
@@ -70,9 +69,6 @@ public class NuxeoDriveCreateTestDocuments {
                 Thread.sleep(delay);
             }
         }
-        // Commit transaction explicitly to ensure client-side consistency
-        // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed
-        NuxeoDriveOperationHelper.commitAndReopenTransaction();
         return StreamingBlob.createFromString(number.toString(), "text/plain");
     }
 }

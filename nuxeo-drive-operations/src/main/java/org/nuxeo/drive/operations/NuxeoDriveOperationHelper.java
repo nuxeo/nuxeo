@@ -27,7 +27,6 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Helper for Nuxeo Drive operations.
@@ -38,13 +37,6 @@ public final class NuxeoDriveOperationHelper {
 
     private NuxeoDriveOperationHelper() {
         // Helper class
-    }
-
-    public static void commitAndReopenTransaction() {
-        if (TransactionHelper.isTransactionActive()) {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
     }
 
     public static void normalizeMimeTypeAndEncoding(Blob blob) throws ParseException {
