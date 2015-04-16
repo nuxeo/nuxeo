@@ -79,7 +79,7 @@ public abstract class BaseSession implements Session {
         }
         String username = currentUser.getName();
         List<String> userGroups = currentUser.getAllGroups();
-
+        userGroups.add(SecurityConstants.EVERYONE);
         if (username.equalsIgnoreCase(LoginComponent.SYSTEM_USERNAME)) {
             return true;
         }

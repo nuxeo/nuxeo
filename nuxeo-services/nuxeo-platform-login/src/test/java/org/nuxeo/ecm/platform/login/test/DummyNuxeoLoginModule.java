@@ -284,7 +284,6 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
 
             String principalId = String.valueOf(random.nextLong());
             principal.setPrincipalId(principalId);
-            ((NuxeoPrincipalImpl) principal).allGroups.add(SecurityConstants.EVERYONE);
             return principal;
         } catch (Exception e) {
             log.error("createIdentity failed", e);
