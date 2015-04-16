@@ -32,7 +32,7 @@ public interface CommandLineExecutorService {
 
     Pattern VALID_PARAMETER_PATTERN = Pattern.compile("[\\p{L}_0-9-.%:=/\\\\ ]+");
 
-    Pattern VALID_PARAMETER_PATTERN_WIN = Pattern.compile("[\\p{L}_0-9-.%:=/\\\\ ()]+");
+    Pattern VALID_PARAMETER_PATTERN_WIN = Pattern.compile("[\\p{L}_0-9-.%~:=/\\\\ ()]+");
 
     CommandAvailability getCommandAvailability(String commandName);
 
