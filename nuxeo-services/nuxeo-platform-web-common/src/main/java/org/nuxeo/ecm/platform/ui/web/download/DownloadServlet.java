@@ -102,21 +102,6 @@ public class DownloadServlet extends HttpServlet {
         }
     }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        handleDownload(req, resp);
-    }
-
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        handleDownload(req, resp);
-    }
-
-    @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        handleDownload(req, resp);
-    }
-
     protected Blob resolveBlob(HttpServletRequest req, HttpServletResponse resp, String requestURI)
             throws ServletException {
 
@@ -290,7 +275,7 @@ public class DownloadServlet extends HttpServlet {
         }
     }
 
-    protected void downloadBlob(HttpServletRequest req, HttpServletResponse resp, Blob blob, String fileName)
+    public static void downloadBlob(HttpServletRequest req, HttpServletResponse resp, Blob blob, String fileName)
             throws IOException, ServletException {
         InputStream in = blob.getStream();
         OutputStream out = resp.getOutputStream();
@@ -358,7 +343,7 @@ public class DownloadServlet extends HttpServlet {
         }
     }
 
-    public void handleClientDisconnect(IOException ioe) throws IOException {
+    public static void handleClientDisconnect(IOException ioe) throws IOException {
         if (ExceptionHelper.isClientAbortError(ioe)) {
             ExceptionHelper.logClientAbort(ioe);
         } else {

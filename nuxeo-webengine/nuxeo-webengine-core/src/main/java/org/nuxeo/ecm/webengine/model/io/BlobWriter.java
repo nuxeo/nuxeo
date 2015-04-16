@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webengine.model.io;
 
 import static org.apache.commons.logging.LogFactory.getLog;
-import static org.nuxeo.ecm.platform.ui.web.download.DownloadServlet.NXBIGBLOB_PREFIX;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -40,6 +39,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.platform.ui.web.download.DownloadServlet;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -72,14 +72,10 @@ public class BlobWriter implements MessageBodyWriter<Blob> {
         if (Framework.isTestModeSet()) {
             transferBlob(t, entityStream);
         } else {
-            // internal forward to DownloadServlet
-            request.setAttribute(BLOB_ID, t);
-            String url = String.format("/%s/%s", NXBIGBLOB_PREFIX, BLOB_ID);
             try {
-                servletContext.getRequestDispatcher(url).forward(request, response);
+                DownloadServlet.downloadBlob(request, response, t, t.getFilename());
             } catch (ServletException e) {
-                log.error("Error while forwarding to DownloadServlet", e);
-                transferBlob(t, entityStream);
+                log.error("Error while downloading blob", e);
             }
         }
 
