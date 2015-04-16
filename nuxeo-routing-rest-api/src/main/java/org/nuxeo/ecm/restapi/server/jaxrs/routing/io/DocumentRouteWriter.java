@@ -34,6 +34,7 @@ import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.io.util.JsonEncodeDecodeUtils;
 
@@ -79,7 +80,8 @@ public class DocumentRouteWriter extends EntityWriter<DocumentRoute> {
             jg.writeFieldName("variables");
             jg.writeStartObject();
             for (Entry<String, Serializable> e : graphRoute.getVariables().entrySet()) {
-                JsonEncodeDecodeUtils.encodeVariableEntry(e, jg, request);
+                JsonEncodeDecodeUtils.encodeVariableEntry(item.getDocument(), GraphNode.PROP_VARIABLES_FACET, e, jg,
+                        request);
             }
             jg.writeEndObject();
             String graphResourceUrl = "";

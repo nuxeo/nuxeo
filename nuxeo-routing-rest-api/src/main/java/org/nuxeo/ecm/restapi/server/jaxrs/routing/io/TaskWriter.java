@@ -34,7 +34,6 @@ import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.plexus.util.StringUtils;
 import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -134,7 +133,7 @@ public class TaskWriter extends EntityWriter<Task> {
         jg.writeStartObject();
         // add nodeVariables
         for (Entry<String, Serializable> e : node.getVariables().entrySet()) {
-            JsonEncodeDecodeUtils.encodeVariableEntry(e, jg, request);
+            JsonEncodeDecodeUtils.encodeVariableEntry(node.getDocument(), GraphNode.PROP_VARIABLES_FACET, e, jg, request);
         }
         // add workflow variables
         if (workflowInstance != null) {
@@ -142,9 +141,7 @@ public class TaskWriter extends EntityWriter<Task> {
             final SchemaManager schemaManager = Framework.getService(SchemaManager.class);
             final Schema transientSchema = schemaManager.getSchema(transientSchemaName);
             for (Entry<String, Serializable> e : workflowInstance.getVariables().entrySet()) {
-                if (transientSchema == null || transientSchema.hasField(e.getKey())) {
-                    JsonEncodeDecodeUtils.encodeVariableEntry(e, jg, request);
-                }
+                JsonEncodeDecodeUtils.encodeVariableEntry(workflowInstance.getDocument(), GraphRoute.PROP_VARIABLES_FACET, e, jg, request);
             }
         }
         jg.writeEndObject();
@@ -201,13 +198,4 @@ public class TaskWriter extends EntityWriter<Task> {
         return ENTITY_TYPE;
     }
 
-    protected static void writeVariableEntry(Entry<String, Serializable> e, JsonGenerator jg, HttpServletRequest request)
-            throws JsonGenerationException, IOException {
-        if (e.getValue() instanceof Blob) {
-            jg.writeFieldName(e.getKey());
-            JsonEncodeDecodeUtils.encodeBlob((Blob) e.getValue(), jg, request);
-        } else {
-            jg.writeObjectField(e.getKey(), e.getValue());
-        }
-    }
 }

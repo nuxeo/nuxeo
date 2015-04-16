@@ -28,21 +28,28 @@ import java.util.Map.Entry;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ObjectNode;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.apache.commons.codec.binary.Base64;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 7.2
  */
 public class JsonEncodeDecodeUtils {
 
-    public static void encodeBlob(Blob blob, JsonGenerator jg, ServletRequest request) throws JsonGenerationException,
-            IOException {
+    public static void encodeBlob(DocumentModel doc, String propVariableFacet, String variableName, Blob blob,
+            JsonGenerator jg, ServletRequest request) throws JsonGenerationException, IOException {
         if (blob == null) {
             jg.writeNull();
             return;
@@ -74,14 +81,30 @@ public class JsonEncodeDecodeUtils {
         }
         jg.writeStringField("length", Long.toString(blob.getLength()));
 
-        // Write url as data URI
-        StringBuilder data = new StringBuilder("data:");
-        if (blob.getMimeType() != null) {
-            data.append(blob.getMimeType());
+        String blobUrlPrefix = null;
+        StringBuilder sb = new StringBuilder(VirtualHostHelper.getBaseURL(request));
+        sb.append("nxbigfile/").append(doc.getRepositoryName()).append("/").append(doc.getId()).append("/");
+        blobUrlPrefix = sb.toString();
+
+        String facet = null;
+        try {
+            facet = (String) doc.getPropertyValue(propVariableFacet);
+        } catch (PropertyNotFoundException e) {
+            facet = propVariableFacet;
         }
-        data.append(";base64,");
-        data.append(Base64.encodeBase64String(blob.getByteArray()));
-        jg.writeStringField("url", data.toString());
+        if (StringUtils.isBlank(facet)) {
+            return;
+        }
+        CompositeType type = Framework.getLocalService(SchemaManager.class).getFacet(facet);
+
+        StringBuilder blobUrlBuilder = new StringBuilder(blobUrlPrefix);
+        blobUrlBuilder.append(type.getField(variableName).getName());
+        blobUrlBuilder.append("/");
+        String filename = blob.getFilename();
+        if (filename != null) {
+            blobUrlBuilder.append(URIUtils.quoteURIPathComponent(filename, true));
+        }
+        jg.writeStringField("url", blobUrlBuilder.toString());
 
         jg.writeEndObject();
     }
@@ -96,7 +119,7 @@ public class JsonEncodeDecodeUtils {
             String key = variable.getKey();
             JsonNode value = variable.getValue();
             if (value.isNumber()) {
-                // We are working with String will will be corretly decoded by
+                // We are working with String which will be correctly decoded by
                 // org.nuxeo.ecm.platform.routing.core.impl.GraphVariablesUtil.setJSONVariables(DocumentModel, String,
                 // Map<String, String>, boolean)
                 // But we'll definitely need to convert submitted json variable to proper typed objects
@@ -116,14 +139,14 @@ public class JsonEncodeDecodeUtils {
         return variables;
     }
 
-    public static void encodeVariableEntry(Entry<String, Serializable> e, JsonGenerator jg, HttpServletRequest request)
-            throws JsonGenerationException, IOException {
+    public static void encodeVariableEntry(DocumentModel doc, String propVariableFacet, Entry<String, Serializable> e, JsonGenerator jg,
+            HttpServletRequest request) throws JsonGenerationException, IOException {
         if (e.getValue() instanceof Blob) {
             jg.writeFieldName(e.getKey());
-            JsonEncodeDecodeUtils.encodeBlob((Blob) e.getValue(), jg, request);
+            JsonEncodeDecodeUtils.encodeBlob(doc, propVariableFacet, e.getKey(), (Blob) e.getValue(), jg,
+                    request);
         } else {
             jg.writeObjectField(e.getKey(), e.getValue());
         }
     }
-
 }
