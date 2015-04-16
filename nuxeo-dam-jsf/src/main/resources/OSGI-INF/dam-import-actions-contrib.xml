@@ -39,7 +39,7 @@
         <param type="string" name="message">label.dam.assets.imported</param>
       </operation>
       <operation id="WebUI.Refresh" />
-      <operation id="WebUi.DestroySeamContext" />
+      <operation id="WebUI.DestroySeamContext" />
     </chain>
 
     <chain id="Dam.ImportWithMetaDataInSeam">
