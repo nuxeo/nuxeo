@@ -493,12 +493,20 @@ public class TestNxqlConversion {
                 "  }\n" + //
                 "}", es);
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(dc:title^3,dc:description) OPERATOR(multi_match) */ dc:title = 'this is a test'").toString();
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"multi_match\" : {\n" + //
-                "    \"query\" : \"this is a test\",\n" + //
-                "    \"fields\" : [ \"dc:title^3\", \"dc:description\" ]\n" + //
-                "  }\n" + //
-                "}", es);
+        // fields are not ordered
+        assertIn(es,
+                "{\n" + //
+                        "  \"multi_match\" : {\n" + //
+                        "    \"query\" : \"this is a test\",\n" + //
+                        "    \"fields\" : [ \"dc:title^3\", \"dc:description\" ]\n" + //
+                        "  }\n" + //
+                        "}",
+                "{\n" + //
+                        "  \"multi_match\" : {\n" + //
+                        "    \"query\" : \"this is a test\",\n" + //
+                        "    \"fields\" : [ \"dc:description\", \"dc:title^3\" ]\n" + //
+                        "  }\n" + //
+                        "}");
 
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(regex) */ dc:title = 's.*y'").toString();
         assertEqualsEvenUnderWindows("{\n" + //
@@ -528,13 +536,22 @@ public class TestNxqlConversion {
                 "}", es);
 
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(dc:title,dc:description) ANALYZER(fulltext) OPERATOR(query_string) */ dc:title = 'this AND that OR thus'").toString();
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"query_string\" : {\n" + //
-                "    \"query\" : \"this AND that OR thus\",\n" + //
-                "    \"fields\" : [ \"dc:title\", \"dc:description\" ],\n" + //
-                "    \"analyzer\" : \"fulltext\"\n" + //
-                "  }\n" + //
-                "}", es);
+        // fields are not ordered
+        assertIn(es,
+                "{\n" + //
+                        "  \"query_string\" : {\n" + //
+                        "    \"query\" : \"this AND that OR thus\",\n" + //
+                        "    \"fields\" : [ \"dc:title\", \"dc:description\" ],\n" + //
+                        "    \"analyzer\" : \"fulltext\"\n" + //
+                        "  }\n" + //
+                        "}",
+                "{\n" + //
+                        "  \"query_string\" : {\n" + //
+                        "    \"query\" : \"this AND that OR thus\",\n" + //
+                        "    \"fields\" : [ \"dc:description\", \"dc:title\" ],\n" + //
+                        "    \"analyzer\" : \"fulltext\"\n" + //
+                        "  }\n" + //
+                        "}");
 
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(common) */ dc:title = 'this is bonsai cool'").toString();
         assertEqualsEvenUnderWindows("{\n" + //
@@ -573,37 +590,53 @@ public class TestNxqlConversion {
 
     @Test
     public void testConvertHintFulltext() throws Exception {
-        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(dc:title.fulltext,dc:description.fulltext) */ ecm:fulltext = 'foo'").toString();
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"simple_query_string\" : {\n" + //
-                "    \"query\" : \"foo\",\n" + //
-                "    \"fields\" : [ \"dc:description.fulltext\", \"dc:title.fulltext\" ],\n" + //
-                "    \"analyzer\" : \"fulltext\",\n" + //
-                "    \"default_operator\" : \"and\"\n" + //
-                "  }\n" + //
-                "}", es);
-        // boost title
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(dc_title^3,dc_description) */ ecm:fulltext = 'foo'").toString();
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"simple_query_string\" : {\n" + //
-                "    \"query\" : \"foo\",\n" + //
-                "    \"fields\" : [ \"dc_title^3\", \"dc_description\" ],\n" + //
-                "    \"analyzer\" : \"fulltext\",\n" + //
-                "    \"default_operator\" : \"and\"\n" + //
-                "  }\n" + //
-                "}", es);
+        // search on title and description, boost title
+        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(dc:title.fulltext^3,dc:description.fulltext) */ ecm:fulltext = 'foo'").toString();
+        // fields are not ordered
+        assertIn(es,
+                "{\n" + //
+                        "  \"simple_query_string\" : {\n" + //
+                        "    \"query\" : \"foo\",\n" + //
+                        "    \"fields\" : [ \"dc:title.fulltext^3\", \"dc:description.fulltext\" ],\n" + //
+                        "    \"analyzer\" : \"fulltext\",\n" + //
+                        "    \"default_operator\" : \"and\"\n" + //
+                        "  }\n" + //
+                        "}",
+                "{\n" + //
+                        "  \"simple_query_string\" : {\n" + //
+                        "    \"query\" : \"foo\",\n" + //
+                        "    \"fields\" : [ \"dc:description.fulltext\", \"dc:title.fulltext^3\" ],\n" + //
+                        "    \"analyzer\" : \"fulltext\",\n" + //
+                        "    \"default_operator\" : \"and\"\n" + //
+                        "  }\n" + //
+                        "}");
     }
 
     protected void assertEqualsEvenUnderWindows(String expected, String actual) {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            // make tests pass under Windows
-            expected = expected.trim();
-            expected = expected.replace("\n", "");
-            expected = expected.replace("\r", "");
-            actual = actual.trim();
-            actual = actual.replace("\n", "");
-            actual = actual.replace("\r", "");
-        }
+        expected = normalizeString(expected);
+        actual = normalizeString(actual);
         Assert.assertEquals(expected, actual);
     }
+
+    private String normalizeString(String str) {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            str = str.trim();
+            str = str.replace("\n", "");
+            str = str.replace("\r", "");
+        }
+        return str;
+    }
+
+    protected void assertIn(String actual, String... expected) {
+        actual = normalizeString(actual);
+        for (String exp : expected) {
+            exp = normalizeString(exp);
+            if (exp.equals(actual)) {
+                return;
+            }
+        }
+        // fail
+        Assert.assertEquals(expected[0], actual);
+    }
+
 }
