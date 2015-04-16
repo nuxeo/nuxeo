@@ -5,18 +5,23 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>7.3-SNAPSHOT</version>
+    <version>6.0-HF11-SNAPSHOT</version>
   </parent>
   <artifactId>nuxeo-segmentio-connector</artifactId>
   <name>nuxeo-segmentio-connector</name>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.github.segmentio</groupId>
+        <artifactId>analytics</artifactId>
+        <version>0.4.2</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   <dependencies>
     <dependency>
       <groupId>com.github.segmentio</groupId>
       <artifactId>analytics</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-core</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
