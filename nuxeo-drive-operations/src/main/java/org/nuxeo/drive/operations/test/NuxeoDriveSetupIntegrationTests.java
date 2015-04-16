@@ -23,7 +23,6 @@ import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.T
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.drive.operations.NuxeoDriveOperationHelper;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -88,10 +87,6 @@ public class NuxeoDriveSetupIntegrationTests {
         }
         String testUserCredentials = createTestUsers(prefixedUserNames);
         createTestWorkspace(prefixedUserNames);
-
-        // Commit transaction explicitly to ensure client-side consistency
-        // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed
-        NuxeoDriveOperationHelper.commitAndReopenTransaction();
 
         return new StringBlob(testUserCredentials, "text/plain");
     }
