@@ -110,6 +110,11 @@
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <createTablePolicy>on_missing_columns</createTablePolicy>
+      <permissions>
+      	<permission name="Write">
+      		<group>Everyone</group>
+      	</permission>
+      </permissions>
     </directory>
 
     <directory name="language">
