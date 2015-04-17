@@ -39,7 +39,7 @@
 
     <c:if test="#{!isReadOnly}">
       <td class="fieldColumn">
-        <h:commandButton value="#{messages[detailButtonLabel]}"
+        <h:commandButton value="#{messages['command.edit']}"
           id="#{layout.id}_editButton"
           styleClass="button"
           action="#{bean.editEntry(value.id)}"

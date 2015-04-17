@@ -978,12 +978,6 @@
           <widget>serviceName</widget>
         </row>
         <row>
-          <widget>accessToken</widget>
-        </row>
-        <row>
-          <widget>refreshToken</widget>
-        </row>
-        <row>
           <widget>nuxeoLogin</widget>
         </row>
         <row>
@@ -999,6 +993,9 @@
         <fields>
           <field>oauth2Token.id</field>
         </fields>
+        <widgetModes>
+          <mode value="edit">hidden</mode>
+        </widgetModes>
       </widget>
       <widget name="serviceName" type="text">
         <labels>
@@ -1007,33 +1004,6 @@
         <translated>true</translated>
         <fields>
           <field>oauth2Token.serviceName</field>
-        </fields>
-      </widget>
-      <widget name="accessToken" type="text">
-        <labels>
-          <label mode="any">Access Token </label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>oauth2Token.accessToken</field>
-        </fields>
-      </widget>
-      <widget name="refreshToken" type="text">
-        <labels>
-          <label mode="any">Refresh Token</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>oauth2Token.refreshToken</field>
-        </fields>
-      </widget>
-      <widget name="clientId" type="text">
-        <labels>
-          <label mode="any">Client Id</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>oauth2Token.clientId</field>
         </fields>
       </widget>
       <widget name="nuxeoLogin" type="text">
@@ -1045,7 +1015,6 @@
           <field>oauth2Token.nuxeoLogin</field>
         </fields>
       </widget>
-
       <widget name="creationDate" type="datetime">
         <labels>
           <label mode="any">Creation Date</label>
