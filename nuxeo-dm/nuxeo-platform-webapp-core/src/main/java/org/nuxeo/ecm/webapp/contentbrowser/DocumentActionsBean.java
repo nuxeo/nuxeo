@@ -23,6 +23,7 @@ import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.types.Type;
@@ -238,6 +240,21 @@ public class DocumentActionsBean extends InputController implements DocumentActi
                 String filename = DocumentFileCodec.getFilename(doc, docView);
                 // download
                 FacesContext context = FacesContext.getCurrentInstance();
+
+                if (blob instanceof ManagedBlob) {
+                    ManagedBlob managedBlob = (ManagedBlob) blob;
+                    HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
+                    try {
+                        URI uri = managedBlob.getURI(ManagedBlob.UsageHint.DOWNLOAD);
+                        if (uri != null) {
+                            response.sendRedirect(uri.toString());
+                            return;
+                        }
+                    } catch (IOException e) {
+                        log.error("Error while redirecting to blob provider's uri", e);
+                    }
+                }
+
                 if (blob.getLength() > Functions.getBigFileSizeLimit()) {
                     HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
                     HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();

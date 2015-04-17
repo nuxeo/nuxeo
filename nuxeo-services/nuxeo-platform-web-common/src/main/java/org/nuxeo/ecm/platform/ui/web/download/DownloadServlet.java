@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
@@ -277,6 +278,16 @@ public class DownloadServlet extends HttpServlet {
 
     public static void downloadBlob(HttpServletRequest req, HttpServletResponse resp, Blob blob, String fileName)
             throws IOException, ServletException {
+
+        if (blob instanceof ManagedBlob) {
+            ManagedBlob managedBlob = (ManagedBlob) blob;
+            URI uri = managedBlob.getURI(ManagedBlob.UsageHint.DOWNLOAD);
+            if (uri != null) {
+                resp.sendRedirect(uri.toString());
+                return;
+            }
+        }
+
         InputStream in = blob.getStream();
         OutputStream out = resp.getOutputStream();
         try {
