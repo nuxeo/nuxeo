@@ -76,7 +76,7 @@
       <ui:fragment rendered="#{isEditMode and not widgetProperty_hideAddButton}">
         <a id="#{listClientId}_add" class="button smallButton listWidgetActionAdd" href="#nogo"
            onclick="return nuxeo.utils.addFromListTemplate('#{listClientId}', jQuery(this).prev());">
-          <h:outputText value="#{messages['command.addNewAttachedFile']}" />
+          <h:outputText value="#{nxu:test(empty widgetProperty_addLabel, messages['command.addNewAttachedFile'], nxu:test(widget.translated, messages[widgetProperty_addLabel], widgetProperty_addLabel))}" />
         </a>
       </ui:fragment>
 

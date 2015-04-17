@@ -81,7 +81,7 @@
         styleClass="button smallButton" >
         <f:param name="for" value="#{widget.id}_input" />
         <f:param name="type" value="add" />
-        <h:outputText value="#{messages['command.addNewAttachedFile']}" />
+        <h:outputText value="#{nxu:test(empty widgetProperty_addLabel, messages['command.addNewAttachedFile'], nxu:test(widget.translated, messages[widgetProperty_addLabel], widgetProperty_addLabel))}" />
       </a4j:commandLink>
 
     </a4j:region>

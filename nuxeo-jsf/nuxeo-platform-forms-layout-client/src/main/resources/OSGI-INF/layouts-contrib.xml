@@ -1028,6 +1028,26 @@
       </fields>
     </widget>
 
+    <widget name="list_addLabel" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Number of open item(s)</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This string attribute allows to configure the label used for
+          the 'add' action on the list widget. It is translated if the widget
+          is marked as translated.
+          Available since 7.3.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>addLabel</field>
+      </fields>
+    </widget>
+
     <widget name="container_subwidgets_display" type="selectOneListbox">
       <categories>
         <category>widgetTypeConf</category>
@@ -2839,6 +2859,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">list_number</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">list_addLabel</widget>
                 </row>
               </rows>
             </layout>
