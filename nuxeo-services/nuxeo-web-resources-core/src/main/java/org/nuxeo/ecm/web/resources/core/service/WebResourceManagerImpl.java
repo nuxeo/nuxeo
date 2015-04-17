@@ -175,7 +175,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
     }
 
     @Override
-    public List<Resource> getResources(ResourceContext context, String bundleName, ResourceType type) {
+    public List<Resource> getResources(ResourceContext context, String bundleName, String type) {
         List<Resource> res = new ArrayList<>();
         ResourceBundle rb = resourceBundles.getResourceBundle(bundleName);
         if (rb == null) {
@@ -194,7 +194,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
                 log.error(String.format("Could not resolve resource '%s' on bundle '%s'", r, bundleName));
                 continue;
             }
-            if (type != null && !type.matches(r)) {
+            if (!ResourceType.matches(type, r)) {
                 continue;
             }
             graph.addVertex(rn);
@@ -211,7 +211,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
         return res;
     }
 
-    protected Map<String, Resource> getSubResources(DAG graph, Resource r, ResourceType type) {
+    protected Map<String, Resource> getSubResources(DAG graph, Resource r, String type) {
         Map<String, Resource> res = new HashMap<String, Resource>();
         for (String dn : r.getDependencies()) {
             Resource d = getResource(dn);
@@ -219,7 +219,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
                 log.error(String.format("Unknown resource dependency named '%s'", dn));
                 continue;
             }
-            if (type != null && !type.matches(d)) {
+            if (!ResourceType.matches(type, d)) {
                 continue;
             }
             res.put(dn, d);

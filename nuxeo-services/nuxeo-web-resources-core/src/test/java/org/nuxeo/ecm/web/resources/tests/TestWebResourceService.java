@@ -69,21 +69,21 @@ public class TestWebResourceService {
         Resource r = service.getResource("jquery.js");
         assertNotNull(r);
         assertEquals("jquery.js", r.getName());
-        assertEquals(ResourceType.js, r.getType());
+        assertEquals(ResourceType.js.name(), r.getType());
         assertEquals(0, r.getDependencies().size());
         assertEquals("scripts/jquery.js", r.getPath());
 
         r = service.getResource("effects");
         assertNotNull(r);
         assertEquals("effects", r.getName());
-        assertEquals(ResourceType.js, r.getType());
+        assertEquals(ResourceType.js.name(), r.getType());
         assertEquals(0, r.getDependencies().size());
         assertEquals("scripts/effects.js", r.getPath());
 
         r = service.getResource("foldable-box.js");
         assertNotNull(r);
         assertEquals("foldable-box.js", r.getName());
-        assertEquals(ResourceType.js, r.getType());
+        assertEquals(ResourceType.js.name(), r.getType());
         assertEquals(1, r.getDependencies().size());
         assertEquals("effects", r.getDependencies().get(0));
         assertEquals("scripts/foldable-box.js", r.getPath());
@@ -91,7 +91,7 @@ public class TestWebResourceService {
         r = service.getResource("foldable-box.css");
         assertNotNull(r);
         assertEquals("foldable-box.css", r.getName());
-        assertEquals(ResourceType.css, r.getType());
+        assertEquals(ResourceType.css.name(), r.getType());
         assertEquals(0, r.getDependencies().size());
         assertEquals("css/foldable-box.css", r.getPath());
 
@@ -107,7 +107,7 @@ public class TestWebResourceService {
             r = service.getResource("my.css");
             assertNotNull(r);
             assertEquals("my.css", r.getName());
-            assertEquals(ResourceType.css, r.getType());
+            assertEquals(ResourceType.css.name(), r.getType());
             assertEquals(0, r.getDependencies().size());
             assertEquals("css/my.css", r.getPath());
 
@@ -168,7 +168,7 @@ public class TestWebResourceService {
         assertEquals("cycle2.js", res.get(1).getName());
         assertEquals("cycle1.js", res.get(2).getName());
 
-        res = service.getResources(ctx, "myapp", ResourceType.any);
+        res = service.getResources(ctx, "myapp", ResourceType.any.name());
         assertNotNull(res);
         assertEquals(4, res.size());
         assertEquals("jquery.js", res.get(0).getName());
@@ -176,14 +176,14 @@ public class TestWebResourceService {
         assertEquals("foldable-box.js", res.get(2).getName());
         assertEquals("foldable-box.css", res.get(3).getName());
 
-        res = service.getResources(ctx, "myapp", ResourceType.js);
+        res = service.getResources(ctx, "myapp", ResourceType.js.name());
         assertNotNull(res);
         assertEquals(3, res.size());
         assertEquals("jquery.js", res.get(0).getName());
         assertEquals("effects", res.get(1).getName());
         assertEquals("foldable-box.js", res.get(2).getName());
 
-        res = service.getResources(ctx, "myapp", ResourceType.css);
+        res = service.getResources(ctx, "myapp", ResourceType.css.name());
         assertNotNull(res);
         assertEquals(1, res.size());
         assertEquals("foldable-box.css", res.get(0).getName());

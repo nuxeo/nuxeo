@@ -29,7 +29,7 @@ public interface Resource extends Serializable {
 
     String getName();
 
-    ResourceType getType();
+    String getType();
 
     String getPath();
 

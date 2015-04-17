@@ -67,6 +67,6 @@ public interface WebResourceManager {
      * Returns the ordered list of resources for given bundle name, filtered using given type.
      * <p>
      */
-    List<Resource> getResources(ResourceContext context, String bundleName, ResourceType type);
+    List<Resource> getResources(ResourceContext context, String bundleName, String type);
 
 }

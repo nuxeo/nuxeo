@@ -16,12 +16,14 @@
  */
 package org.nuxeo.ecm.web.resources.api;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * @since 7.3
  */
 public enum ResourceType {
 
-    any, unknown, css, js, bundle;
+    any, unknown, css, js;
 
     public static final ResourceType parse(String type) {
         for (ResourceType item : values()) {
@@ -36,10 +38,24 @@ public enum ResourceType {
         if (ResourceType.any == this) {
             return true;
         }
-        if (r.getType() == ResourceType.any) {
+        if (r.getType() == null) {
             return true;
         }
-        if (r.getType() == this) {
+        if (this.name().toLowerCase().equals(r.getType().toLowerCase())) {
+            return true;
+        }
+        return false;
+    }
+
+    public static final boolean matches(String type, Resource r) {
+        if (StringUtils.isBlank(type) || ResourceType.any.name().equals(type.toLowerCase())) {
+            return true;
+        }
+        String rt = r.getType();
+        if (StringUtils.isBlank(rt)) {
+            return true;
+        }
+        if (type.toLowerCase().equals(rt.toLowerCase())) {
             return true;
         }
         return false;

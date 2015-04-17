@@ -25,7 +25,6 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.web.resources.api.Resource;
-import org.nuxeo.ecm.web.resources.api.ResourceType;
 
 /**
  * @since 7.3
@@ -62,12 +61,12 @@ public class ResourceDescriptor implements Resource {
     }
 
     @Override
-    public ResourceType getType() {
+    public String getType() {
         if (StringUtils.isBlank(type)) {
             // try to infer it from name for easier declaration
-            return ResourceType.parse(FileUtils.getFileExtension(name));
+            return FileUtils.getFileExtension(name);
         }
-        return ResourceType.parse(type);
+        return type;
     }
 
     @Override

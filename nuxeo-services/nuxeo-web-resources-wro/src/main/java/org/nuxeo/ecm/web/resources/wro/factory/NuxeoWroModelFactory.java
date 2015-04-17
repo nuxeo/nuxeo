@@ -18,6 +18,7 @@ package org.nuxeo.ecm.web.resources.wro.factory;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.web.resources.api.Resource;
@@ -53,7 +54,7 @@ public class NuxeoWroModelFactory implements WroModelFactory {
         for (ResourceBundle bundle : bundles) {
             String groupName = bundle.getName();
             Group group = new Group(groupName);
-            List<Resource> resources = service.getResources(rcontext, groupName, ResourceType.any);
+            List<Resource> resources = service.getResources(rcontext, groupName, ResourceType.any.name());
             if (resources != null) {
                 for (Resource resource : resources) {
                     ro.isdc.wro.model.resource.Resource wr = toWroResource(groupName, resource);
@@ -70,7 +71,7 @@ public class NuxeoWroModelFactory implements WroModelFactory {
     protected ro.isdc.wro.model.resource.Resource toWroResource(String bundle, Resource resource) {
         ro.isdc.wro.model.resource.ResourceType type = toWroResourceType(resource.getType());
         if (type == null) {
-            log.error(String.format("Cannot handle resource type '%s' for resource '%s'", resource.getType().name(),
+            log.error(String.format("Cannot handle resource type '%s' for resource '%s'", resource.getType(),
                     resource.getName()));
             return null;
         }
@@ -85,11 +86,14 @@ public class NuxeoWroModelFactory implements WroModelFactory {
         return res;
     }
 
-    protected ro.isdc.wro.model.resource.ResourceType toWroResourceType(ResourceType type) {
-        if (ResourceType.js.equals(type)) {
+    protected ro.isdc.wro.model.resource.ResourceType toWroResourceType(String type) {
+        if (StringUtils.isBlank(type)) {
+            return null;
+        }
+        if (ResourceType.js.name().equals(type.toLowerCase())) {
             return ro.isdc.wro.model.resource.ResourceType.JS;
         }
-        if (ResourceType.css.equals(type)) {
+        if (ResourceType.css.name().equals(type.toLowerCase())) {
             return ro.isdc.wro.model.resource.ResourceType.CSS;
         }
         return null;
