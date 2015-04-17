@@ -25,11 +25,24 @@ import org.nuxeo.common.Environment;
 
 public class GwtResolver {
 
-    public static final File GWT_ROOT = new File(Environment.getDefault().getWeb(), "root.war/gwt");
+    public interface Strategy {
+
+        URI source();
+
+        File resolve(String path);
+    }
+    
+    public static final File GWT_ROOT = locateRoot();
+
+    private static File locateRoot() {
+		File dir = new File(Environment.getDefault().getWeb(), "root.war/gwt");
+		dir.mkdirs();
+		return dir;
+	}
 
     protected final Map<String, CompositeStrategy> strategies = new HashMap<String, CompositeStrategy>();
 
-    protected static final GwtAppResolver.Strategy ROOT_RESOLVER_STRATEGY = new GwtAppResolver.Strategy() {
+    protected static final Strategy ROOT_RESOLVER_STRATEGY = new Strategy() {
 
         @Override
         public URI source() {
@@ -43,17 +56,17 @@ public class GwtResolver {
     };
 
     class CompositeStrategy {
-        final Map<URI, GwtAppResolver.Strategy> strategiesByKey = new HashMap<URI, GwtAppResolver.Strategy>();
+        final Map<URI, Strategy> strategiesByKey = new HashMap<URI, Strategy>();
 
-        final List<GwtAppResolver.Strategy> strategies = new ArrayList<GwtAppResolver.Strategy>();
+        final List<Strategy> strategies = new ArrayList<Strategy>();
 
-        void install(GwtAppResolver.Strategy strategy) {
+        void install(Strategy strategy) {
             strategiesByKey.put(strategy.source(), strategy);
             strategies.add(strategy);
         }
 
         void uninstall(URI source) {
-            GwtAppResolver.Strategy strategy = strategiesByKey.remove(source);
+            Strategy strategy = strategiesByKey.remove(source);
             if (strategy == null) {
                 return;
             }
@@ -61,7 +74,7 @@ public class GwtResolver {
         }
 
         public File resolve(String path) {
-            ListIterator<GwtAppResolver.Strategy> it = strategies.listIterator(strategies.size());
+            ListIterator<Strategy> it = strategies.listIterator(strategies.size());
             while (it.hasPrevious()) {
                 File file = it.previous().resolve(path);
                 if (file.exists()) {
@@ -72,9 +85,9 @@ public class GwtResolver {
         }
     }
 
-    public GwtAppResolver.Strategy newStrategy(final URI location) throws IOException {
+    public Strategy newStrategy(final URI location) throws IOException {
         final File root = install(location);
-        return new GwtAppResolver.Strategy() {
+        return new Strategy() {
 
 
             @Override
@@ -104,7 +117,7 @@ public class GwtResolver {
         return GWT_ROOT;
     }
 
-    public void install(String name, GwtAppResolver.Strategy strategy) {
+    public void install(String name, Strategy strategy) {
         if (!strategies.containsKey(name)) {
             strategies.put(name, new CompositeStrategy());
         }
@@ -149,7 +162,10 @@ public class GwtResolver {
             if (dir == source) {
                 return CONTINUE;
             }
-            Files.copy(dir, toSinkPath(dir), COPY_ATTRIBUTES);
+            Path sinkPath = toSinkPath(dir);
+            if (!Files.exists(sinkPath)) {
+				Files.createDirectory(sinkPath);
+			}
             return CONTINUE;
         }
 

@@ -5,17 +5,14 @@ import java.io.File;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
-@XObject("location")
-public class GwtAppLocation {
+@XObject("directory")
+public class GwtWarDirectory extends GwtWarLocation {
 
-    @XNode("@application")
-    public String name = "unknown";
-
-    @XNode("dir")
+    @XNode
     public File dir = new File("/dev/null");
 
     @Override
     public String toString() {
-        return "GWT location [" + name + "," + dir + "]";
+        return "GWT War Directory [" + name + "," + dir + "]";
     }
 }

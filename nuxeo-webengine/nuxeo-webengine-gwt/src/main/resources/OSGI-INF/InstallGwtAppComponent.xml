@@ -13,9 +13,9 @@
   </service>
   
   <extension-point name="install">
-    <object class="org.nuxeo.ecm.webengine.gwt.GwtAppResolver"/>
-    <object class="org.nuxeo.ecm.webengine.gwt.GwtAppLocation"/>
-    <object class="org.nuxeo.ecm.webengine.gwt.GwtAppBundleLocation"/>
+    <object class="org.nuxeo.ecm.webengine.gwt.GwtWarBundle"/>
+    <object class="org.nuxeo.ecm.webengine.gwt.GwtWarDirectory"/>
+    <object class="org.nuxeo.ecm.webengine.gwt.GwtWarStrategy"/>
   </extension-point>
 
 </component>
