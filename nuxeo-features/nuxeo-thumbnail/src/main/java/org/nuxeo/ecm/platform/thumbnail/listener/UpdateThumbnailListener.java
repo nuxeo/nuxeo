@@ -9,21 +9,27 @@
  * Contributors:
  * Vladimir Pasquier <vpasquier@nuxeo.com>
  * Laurent Doguin <ldoguin@nuxeo.com>
+ * Nelson Silva <nsilva@nuxeo.com>
  */
 package org.nuxeo.ecm.platform.thumbnail.listener;
 
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -44,11 +50,14 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
     public static final String THUMBNAIL_UPDATED = "thumbnailUpdated";
 
     protected void processDoc(CoreSession session, DocumentModel doc) throws ClientException {
-        ThumbnailAdapter thumbnailAdapter = doc.getAdapter(ThumbnailAdapter.class);
-        if (thumbnailAdapter == null) {
-            return;
+        Blob thumbnailBlob = getManagedThumbnail(doc);
+        if (thumbnailBlob == null) {
+            ThumbnailAdapter thumbnailAdapter = doc.getAdapter(ThumbnailAdapter.class);
+            if (thumbnailAdapter == null) {
+                return;
+            }
+            thumbnailBlob = thumbnailAdapter.computeThumbnail(session);
         }
-        Blob thumbnailBlob = thumbnailAdapter.computeThumbnail(session);
         if (thumbnailBlob != null) {
             if (!doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
                 doc.addFacet(ThumbnailConstants.THUMBNAIL_FACET);
@@ -71,6 +80,26 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
             }
             doc.putContextData(THUMBNAIL_UPDATED, true);
             session.saveDocument(doc);
+        }
+    }
+
+    private Blob getManagedThumbnail(DocumentModel doc) throws ClientException {
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        if (bh == null) {
+            return null;
+        }
+        Blob blob = bh.getBlob();
+        if (blob == null || !(blob instanceof ManagedBlob)) {
+            return null;
+        }
+        try {
+            InputStream is = ((ManagedBlob) blob).getThumbnail();
+            if (is == null) {
+                return null;
+            }
+            return Blobs.createBlob(is);
+        } catch (IOException e) {
+            throw new ClientException("Failed to get managed blob thumbnail", e);
         }
     }
 
