@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,6 +41,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.api.NothingToPreviewException;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
@@ -129,6 +133,20 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
             return;
         }
 
+        // if it's a managed blob try to use the embed uri
+        Blob blobToPreview = getBlobToPreview(xpath);
+        if (blobToPreview instanceof ManagedBlob) {
+            try {
+                URI uri = ((ManagedBlob) blobToPreview).getURI(ManagedBlob.UsageHint.EMBED);
+                if (uri != null) {
+                    res.redirectSeeOther(uri.toString());
+                    return;
+                }
+            } catch (IOException e) {
+                handleError(res, e);
+            }
+        }
+
         localeSetup(req);
 
         List<Blob> previewBlobs;
@@ -162,6 +180,19 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
         } catch (IOException e) {
             handleError(res, e);
         }
+    }
+
+    /**
+     * @since 7.3
+     */
+    private Blob getBlobToPreview(String xpath) {
+        BlobHolder bh;
+        if ((xpath == null) || ("default".equals(xpath))) {
+            bh = targetDocument.getAdapter(BlobHolder.class);
+        } else {
+            bh = new DocumentBlobHolder(targetDocument, xpath);
+        }
+        return bh.getBlob();
     }
 
     /**
