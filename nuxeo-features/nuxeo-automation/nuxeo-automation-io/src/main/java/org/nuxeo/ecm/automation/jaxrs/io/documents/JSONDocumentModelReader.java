@@ -118,58 +118,35 @@ public class JSONDocumentModelReader implements
     public static DocumentModel readJson(JsonParser jp,
             MultivaluedMap<String, String> httpHeaders,
             HttpServletRequest request) throws Exception {
-        JsonToken tok = jp.nextToken();
-
-        // skip {
-        if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
-            tok = jp.nextToken();
-        }
-        SimpleDocumentModel simpleDoc = new SimpleDocumentModel();
-        String type = null;
-        String name = null;
-        String uid = null;
-        while (tok != null && tok != JsonToken.END_OBJECT) {
-            String key = jp.getCurrentName();
-            jp.nextToken();
-            if ("properties".equals(key)) {
-                DocumentHelper.setJSONProperties(null, simpleDoc,
-                        readProperties(jp));
-            } else if ("name".equals(key)) {
-                name = jp.readValueAs(String.class);
-            } else if ("type".equals(key)) {
-                type = jp.readValueAs(String.class);
-            } else if ("uid".equals(key)) {
-                uid = jp.readValueAs(String.class);
-            } else if ("entity-type".equals(key)) {
-                String entityType = jp.readValueAs(String.class);
-                if (!"document".equals(entityType)) {
-                    throw new WebApplicationException(
-                            Response.Status.BAD_REQUEST);
-                }
-            } else {
-                log.debug("Unknown key: " + key);
-                jp.skipChildren();
-            }
-
-            tok = jp.nextToken();
-        }
-
-        if (tok == null) {
-            throw new IllegalArgumentException("Unexpected end of stream.");
-        }
-
-        if (StringUtils.isNotBlank(type)) {
-            simpleDoc.setType(type);
-        }
-
-        if (StringUtils.isNotBlank(name)) {
-            simpleDoc.setPathInfo(null, name);
-        }
+        ReadDocumentJson readDocumentJson = new ReadDocumentJson(jp).invoke();
+        String uid = readDocumentJson.getUid();
+        SimpleDocumentModel simpleDoc = readDocumentJson.getSimpleDoc();
 
         // If a uid is specified, we try to get the doc from
         // the core session
         if (uid != null) {
             CoreSession session = SessionFactory.getSession(request);
+            DocumentModel doc = session.getDocument(new IdRef(uid));
+            applyPropertyValues(simpleDoc, doc);
+            return doc;
+        } else {
+            return simpleDoc;
+        }
+
+    }
+
+    /**
+     * @since 6.0 - HF11.
+     */
+    public static DocumentModel readJson(JsonParser jp, CoreSession session) throws Exception {
+
+        ReadDocumentJson readDocumentJson = new ReadDocumentJson(jp).invoke();
+        String uid = readDocumentJson.getUid();
+        SimpleDocumentModel simpleDoc = readDocumentJson.getSimpleDoc();
+
+        // If a uid is specified, we try to get the doc from
+        // the core session
+        if (uid != null) {
             DocumentModel doc = session.getDocument(new IdRef(uid));
             applyPropertyValues(simpleDoc, doc);
             return doc;
@@ -231,4 +208,78 @@ public class JSONDocumentModelReader implements
         }
     }
 
+    /**
+     * @since 6.0 - HF11.
+     */
+    private static class ReadDocumentJson {
+
+        private JsonParser jp;
+
+        private SimpleDocumentModel simpleDoc;
+
+        private String uid;
+
+        public ReadDocumentJson(JsonParser jp) {
+            this.jp = jp;
+        }
+
+        public SimpleDocumentModel getSimpleDoc() {
+            return simpleDoc;
+        }
+
+        public String getUid() {
+            return uid;
+        }
+
+        public ReadDocumentJson invoke() throws Exception {
+            JsonToken tok = jp.nextToken();
+
+            // skip {
+            if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
+                tok = jp.nextToken();
+            }
+            simpleDoc = new SimpleDocumentModel();
+            String type = null;
+            String name = null;
+            uid = null;
+            while (tok != null && tok != JsonToken.END_OBJECT) {
+                String key = jp.getCurrentName();
+                jp.nextToken();
+                if ("properties".equals(key)) {
+                    DocumentHelper.setJSONProperties(null, simpleDoc,
+                            readProperties(jp));
+                } else if ("name".equals(key)) {
+                    name = jp.readValueAs(String.class);
+                } else if ("type".equals(key)) {
+                    type = jp.readValueAs(String.class);
+                } else if ("uid".equals(key)) {
+                    uid = jp.readValueAs(String.class);
+                } else if ("entity-type".equals(key)) {
+                    String entityType = jp.readValueAs(String.class);
+                    if (!"document".equals(entityType)) {
+                        throw new WebApplicationException(
+                                Response.Status.BAD_REQUEST);
+                    }
+                } else {
+                    log.debug("Unknown key: " + key);
+                    jp.skipChildren();
+                }
+
+                tok = jp.nextToken();
+            }
+
+            if (tok == null) {
+                throw new IllegalArgumentException("Unexpected end of stream.");
+            }
+
+            if (StringUtils.isNotBlank(type)) {
+                simpleDoc.setType(type);
+            }
+
+            if (StringUtils.isNotBlank(name)) {
+                simpleDoc.setPathInfo(null, name);
+            }
+            return this;
+        }
+    }
 }

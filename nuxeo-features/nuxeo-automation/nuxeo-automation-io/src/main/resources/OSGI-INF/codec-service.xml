@@ -16,4 +16,9 @@
     <object class="org.nuxeo.ecm.automation.io.services.codec.CodecDescriptor" />
   </extension-point>
 
+  <extension target="org.nuxeo.ecm.automation.io.services.IOComponent"
+             point="codecs">
+    <codec class="org.nuxeo.ecm.automation.io.services.codec.DocumentModelCodec" />
+  </extension>
+
 </component>

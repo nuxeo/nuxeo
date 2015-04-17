@@ -10,6 +10,7 @@
       class="org.nuxeo.ecm.automation.test.helpers.TestOperation" />
     <operation
       class="org.nuxeo.ecm.automation.server.test.business.client.TestBusinessArray" />
+    <operation class="org.nuxeo.ecm.automation.server.test.TestContextReaderOperation" />
 
   </extension>
 

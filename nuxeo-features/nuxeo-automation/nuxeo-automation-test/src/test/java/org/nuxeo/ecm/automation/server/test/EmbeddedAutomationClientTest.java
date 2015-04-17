@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -328,7 +329,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             // do nothing
         }
 
-        // 3. create a note and exit with error (+rollback)
+        // 3. create a note and exit with error (rollback)
         try {
             doc = (Document) session.newRequest("exitError").setInput(root).execute();
             fail("expected error");
@@ -862,6 +863,24 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         } catch (Exception e) {
             fail();
         }
+    }
+
+    /**
+      * @since 7.3
+      */
+    @Test
+    public void shouldWriteAutomationContextWithDocuments() throws Exception {
+        Document root = (Document) super.session.newRequest(FetchDocument.ID)
+                .set("value", "/").execute();
+        OperationRequest request = session.newRequest("Context.RunOperationOnList");
+        // Set document array list to inject into the context through
+        // automation client
+        List<Document> list = new ArrayList<>();
+        list.add(root);
+        request.setContextProperty("users", list).set("isolate", "true").set
+                ("id", "TestContext").set("list", "users").set("item",
+                "document");
+        request.execute();
     }
 
 }
