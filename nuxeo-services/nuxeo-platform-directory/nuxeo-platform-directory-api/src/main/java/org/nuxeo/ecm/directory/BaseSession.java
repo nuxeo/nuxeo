@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.directory;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -125,14 +126,15 @@ public abstract class BaseSession implements Session {
 
     private boolean checkPermission(PermissionDescriptor permDescriptors[], String permToChek, String username,
             List<String> userGroups) {
-    	userGroups.add(SecurityConstants.EVERYONE);
+    	List<String> groups = new ArrayList<String>(userGroups);
+    	groups.add(SecurityConstants.EVERYONE);
         for (int i = 0; i < permDescriptors.length; i++) {
             PermissionDescriptor currentDesc = permDescriptors[i];
             if (currentDesc.name.equalsIgnoreCase(permToChek)) {
                 if (currentDesc.groups != null) {
                     for (int j = 0; j < currentDesc.groups.length; j++) {
                         String groupName = currentDesc.groups[j];
-                        if (userGroups.contains(groupName)) {
+                        if (groups.contains(groupName)) {
                             return true;
                         }
                     }
