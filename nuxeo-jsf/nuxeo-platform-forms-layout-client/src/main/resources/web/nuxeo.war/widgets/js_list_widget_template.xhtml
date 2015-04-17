@@ -79,6 +79,7 @@
                 template="#{templateValue}"
                 required="#{widgetProperty_required}"
                 removeEmpty="#{widgetProperty_removeEmpty}"
+                number="#{widgetProperty_number}"
                 diff="#{widgetProperty_diff}"
                 rendered="#{isEditMode or not empty fieldOrValue}">
                 <tr class="#{model.rowIndex % 2 == 0 ? 'dataRowEven': 'dataRowOdd'} listItem">
@@ -124,6 +125,7 @@
                 template="#{templateValue}"
                 required="#{widgetProperty_required}"
                 removeEmpty="#{widgetProperty_removeEmpty}"
+                number="#{widgetProperty_number}"
                 diff="#{widgetProperty_diff}"
                 rendered="#{isEditMode or not empty fieldOrValue}">
                 <tr>
@@ -170,6 +172,7 @@
             template="#{templateValue}"
             required="#{widgetProperty_required}"
             removeEmpty="#{widgetProperty_removeEmpty}"
+            number="#{widgetProperty_number}"
             diff="#{widgetProperty_diff}"
             rendered="#{isEditMode or not empty fieldOrValue}">
             <h:panelGrid columns="#{isEditMode and showActions?2:1}">
@@ -225,6 +228,7 @@
             template="#{templateValue}"
             required="#{widgetProperty_required}"
             removeEmpty="#{widgetProperty_removeEmpty}"
+            number="#{widgetProperty_number}"
             diff="#{widgetProperty_diff}"
             rendered="#{isEditMode or not empty fieldOrValue}">
             <h:panelGrid columns="#{isEditMode and showActions?2:1}" styleClass="listItem">

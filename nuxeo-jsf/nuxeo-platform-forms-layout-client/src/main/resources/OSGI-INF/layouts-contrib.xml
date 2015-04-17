@@ -1009,6 +1009,25 @@
       </fields>
     </widget>
 
+    <widget name="list_number" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Number of open item(s)</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This integer attribute allows to set the number of new items that should
+          be opened when displaying the list widget.
+          Available since 7.3.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>number</field>
+      </fields>
+    </widget>
+
     <widget name="container_subwidgets_display" type="selectOneListbox">
       <categories>
         <category>widgetTypeConf</category>
@@ -2817,6 +2836,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">list_removeEmpty</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">list_number</widget>
                 </row>
               </rows>
             </layout>

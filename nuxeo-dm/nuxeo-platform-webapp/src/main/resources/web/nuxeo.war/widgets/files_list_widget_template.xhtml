@@ -45,6 +45,7 @@
         id="#{widget.id}_panel" styleClass="jsContextKeeper_#{widget.id}">
         <nxu:inputList value="#{field}" id="#{widget.id}_input" model="model"
           removeEmpty="#{widgetProperty_removeEmpty}"
+          number="#{widgetProperty_number}"
           template="#{nxd:propertyDefaultValue(widget.fieldDefinitions[0].propertyName)}"
           required="#{widgetProperty_required}" diff="#{widget.properties['diff']}">
 
