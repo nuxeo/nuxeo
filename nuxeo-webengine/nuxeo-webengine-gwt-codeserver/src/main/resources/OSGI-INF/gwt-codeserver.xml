@@ -4,8 +4,9 @@
   
   <implementation class="org.nuxeo.webengine.gwt.codeserver.CodeServerComponent"/>
     
-  <extension-point name="options">
-    <object class="org.nuxeo.webengine.gwt.codeserver.CodeServerOption"/>
+  <extension-point name="install">
+    <object class="org.nuxeo.webengine.gwt.codeserver.CodeServerConfig"/>
+  	<object class="org.nuxeo.webengine.gwt.codeserver.CodeServerOption"/>  
   </extension-point>
   
 </component>

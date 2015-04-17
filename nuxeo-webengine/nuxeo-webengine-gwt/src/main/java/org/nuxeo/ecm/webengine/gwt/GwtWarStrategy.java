@@ -1,22 +1,16 @@
 package org.nuxeo.ecm.webengine.gwt;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.URI;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.webengine.gwt.GwtResolver.Strategy;
 
-@XObject("resolver")
-public class GwtAppResolver {
-
-    @XNode("@application")
-    public String name;
+@XObject("strategy")
+public class GwtWarStrategy extends GwtWarLocation {
 
     public Strategy strategy = GwtResolver.ROOT_RESOLVER_STRATEGY;
 
-    @XNode("strategy")
+    @XNode()
     void setResolver(Class<? extends Strategy> type) {
         try {
             strategy = type.newInstance();
@@ -25,16 +19,9 @@ public class GwtAppResolver {
         }
     }
 
-    public interface Strategy {
-
-        URI source();
-
-        File resolve(String path) throws FileNotFoundException;
-    }
-
     @Override
     public String toString() {
-        return "GWT resolver [" + name + "," + strategy.source() + "]";
+        return "GWT War Strategy Resolver [" + name + "," + strategy.source() + "]";
     }
 
 }

@@ -3,17 +3,14 @@ package org.nuxeo.ecm.webengine.gwt;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
-@XObject("bundleLocation")
-public class GwtAppBundleLocation {
+@XObject("bundle")
+public class GwtWarBundle extends GwtWarLocation {
 
-    @XNode("@application")
-    public String name = "unknown";
-
-    @XNode("pathname")
+    @XNode
     public String pathname = "gwt-war";
 
     @Override
     public String toString() {
-        return "GWT Bundle location [" + name + "," + pathname + "]";
+        return "GWT War Bundle Location [" + name + "," + pathname + "]";
     }
 }

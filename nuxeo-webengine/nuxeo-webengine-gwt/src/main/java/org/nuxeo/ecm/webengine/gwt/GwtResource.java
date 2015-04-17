@@ -53,7 +53,7 @@ public abstract class GwtResource extends ModuleRoot {
     public Response getResource(@PathParam("path") String path) throws FileNotFoundException {
         ctx.getRequest().setAttribute("org.nuxeo.webengine.DisableAutoHeaders", "true");
         File file = Framework.getService(GwtResolver.class).resolve(path);
-        if (file.isFile()) {
+        if (file != null && file.isFile()) {
             ResponseBuilder resp = Response.ok(file);
             String fpath = file.getPath();
             int p = fpath.lastIndexOf('.');
