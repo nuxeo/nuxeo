@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 
 <component name="org.nuxeo.ecm.platform.WebResources">
+  <documentation>
+    The WebResourceManager service provides extension points for pluggable
+    resources, resource bundles and resource processors.
+  </documentation>
 
   <service>
     <provide interface="org.nuxeo.ecm.web.resources.api.service.WebResourceManager" />
@@ -8,14 +12,182 @@
   <implementation class="org.nuxeo.ecm.web.resources.core.service.WebResourceManagerImpl" />
 
   <extension-point name="resources">
+    <documentation>
+
+      The resources extension point allows to declare typed resources, with dependencies.
+
+      Example:
+
+      <code>
+        <resource name="foldable-box.js">
+          <path>scripts/foldable-box.js</path>
+          <require>effects</require>
+        </resource>
+      </code>
+
+      There are several ways to declare the resource type. It can be retrieved
+      from the resource name ('js' for above example) or declared explicitely,
+      for instance the following declaration is almost equivalent
+      (the resource name changes).
+
+      <code>
+        <resource name="foldable-box" type="js">
+          <path>scripts/foldable-box.js</path>
+          <require>effects</require>
+        </resource>
+      </code>
+
+      The above example also specifies a dependency on a resource named "effects",
+      any number of dependencies can be piled up on the declaration:
+
+      <code>
+        <resource name="foldable-box" type="js">
+          <path>scripts/foldable-box.js</path>
+          <require>effects</require>
+          <require>jquery</require>
+        </resource>
+      </code>
+
+      When aggregating resources with dependencies, order will be respected:
+      for instance, the effects and jquery resources will be declared *before*
+      the foldable-box resource in above example.
+
+      The "path" element resolves the resource inside the jar that holds the
+      extension point contribution declaration. An alternative way can be used
+      to reference the resource path in the nuxeo.war directory:
+
+      <code>
+        <resource name="foldable-box.js">
+          <uri>/scripts/foldable-box.js</uri>
+        </resource>
+      </code>
+
+      Notice the "uri" element instead of the "path", and leading slash
+      (making the resource lookup from the war directory root).
+
+      When only the path is filled, the resource uri is filled automatically
+      with the resource classpath uri in the corresponding runtime bundle context.
+
+      When using the uri element, wildcard are supported, for instance:
+
+      <code>
+        <resource name="scripts.js">
+          <uri>/scripts/*.js</uri>
+        </resource>
+      </code>
+
+      Alternatively, classpath, file URL and external URLs are allowed:
+      <code>
+        <uri>classpath:com/mycompany/resources/script.js</uri>
+        <uri>file:c:/temp/file.css</uri>
+        <uri>http://www.site.com/static/style.css</uri>
+      </code>
+
+      Minimization, URL rewriting, etc... processing of resources can be applied
+      implicitly to all resources of a given type.
+      Resources definition can also explicitly reference processors that
+      should to be applied to them, see the "processors" extension point documentation.
+
+      <code>
+        <resource name="foldable-box.css">
+          <path>css/foldable-box.css</path>
+          <processors>
+            <processor>flavor</processor>
+          </processors>
+        </resource>
+      </code>
+
+    </documentation>
     <object class="org.nuxeo.ecm.web.resources.core.ResourceDescriptor" />
   </extension-point>
 
   <extension-point name="resourceBundles">
+    <documentation>
+
+      The resourceBundles extension point allows to group resources by name.
+
+      Example:
+
+      <code>
+        <resourceBundle name="myapp">
+          <resources>
+            <resource>jquery.js</resource>
+            <resource>foldable-box.js</resource>
+            <resource>foldable-box.css</resource>
+          </resources>
+        </resourceBundle>
+      </code>
+
+      Bundles support override and merging logics: another module can contribute
+      to the same bundle:
+
+      <code>
+        <resourceBundle name="myapp">
+          <resources append="true">
+            <resource>my.css</resource>
+          </resources>
+        </resourceBundle>
+      </code>
+
+      If the attribute append is not set, or set to false, resources will be overridden.
+
+      Pages and page elements should refer to resource bundle to allow pluggability.
+
+    </documentation>
     <object class="org.nuxeo.ecm.web.resources.core.ResourceBundleDescriptor" />
   </extension-point>
 
   <extension-point name="processors">
+    <documentation>
+
+      The processors extension point allows to define what processors should
+      apply to resources. Some builtin processors apply to all resources,
+      implicitly, this is the case for all processors coming with wro4j.
+
+      Other processors require the resource to reference them explicitly
+      in the resource definition (like the "flavor" Nuxeo-specific processor).
+
+      Example:
+
+      <code>
+        <processor name="myProc" type="wroPost" order="10">
+          <class>org.nuxeo.ecm.web.resources.tests.MockProcessor</class>
+        </processor>
+      </code>
+
+      The processor type is a marker that allows to group and order processors
+      for a given usage (here, as a wro4j post processor).
+
+      Multiple types are also supported:
+
+      <code>
+        <processor name="myProc" order="10">
+          <types>
+            <type>wropPre</type>
+            <type>wropPost</type>
+          </types>
+          <class>org.nuxeo.ecm.web.resources.tests.MockProcessor</class>
+        </processor>
+      </code>
+
+      The processor class usually needs to follow a given interface depending on
+      its type, but this check is only done at runtime.
+      For instance, processors with the "wroPre" type have to extend
+      ro.isdc.wro.model.resource.processor.ResourcePreProcessor and processors
+      with the "wroPost" type have to extend
+      ro.isdc.wro.model.resource.processor.ResourcePostProcessor.
+
+      Builtin wro processors can also be registered without mentioning a class,
+      using their wro alias:
+
+      <code>
+        <processor name="cssMin" type="wroPre" order="30" />
+      </code>
+
+      Some default processors (like cssMin above) are already registered by default
+      in Nuxeo.
+
+    </documentation>
     <object class="org.nuxeo.ecm.web.resources.core.ProcessorDescriptor" />
   </extension-point>
 
