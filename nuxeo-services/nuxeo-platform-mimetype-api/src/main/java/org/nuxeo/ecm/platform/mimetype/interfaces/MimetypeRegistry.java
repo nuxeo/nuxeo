@@ -136,4 +136,11 @@ public interface MimetypeRegistry {
      */
     Blob updateMimetype(Blob blob) throws MimetypeDetectionException;
 
+    /**
+     * Returns the mime type from a given extension.
+     *
+     * @since 7.3
+     */
+    String getMimetypeFromExtension(String extension) throws MimetypeNotFoundException;
+
 }
