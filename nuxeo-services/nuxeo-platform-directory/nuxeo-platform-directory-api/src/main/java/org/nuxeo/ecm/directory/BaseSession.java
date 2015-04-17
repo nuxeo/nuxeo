@@ -79,7 +79,7 @@ public abstract class BaseSession implements Session {
         }
         String username = currentUser.getName();
         List<String> userGroups = currentUser.getAllGroups();
-        userGroups.add(SecurityConstants.EVERYONE);
+        
         if (username.equalsIgnoreCase(LoginComponent.SYSTEM_USERNAME)) {
             return true;
         }
@@ -125,6 +125,7 @@ public abstract class BaseSession implements Session {
 
     private boolean checkPermission(PermissionDescriptor permDescriptors[], String permToChek, String username,
             List<String> userGroups) {
+    	userGroups.add(SecurityConstants.EVERYONE);
         for (int i = 0; i < permDescriptors.length; i++) {
             PermissionDescriptor currentDesc = permDescriptors[i];
             if (currentDesc.name.equalsIgnoreCase(permToChek)) {
