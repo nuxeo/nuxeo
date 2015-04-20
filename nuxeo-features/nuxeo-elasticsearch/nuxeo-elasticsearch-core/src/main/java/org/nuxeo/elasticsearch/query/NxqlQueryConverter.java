@@ -439,6 +439,7 @@ final public class NxqlQueryConverter {
      * Translates from Nuxeo syntax to Elasticsearch simple_query_string syntax.
      */
     public static String translateFulltextQuery(String query) {
+        // The AND operator does not exist in NXQL it is the default operator
         return query.replace(" OR ", " | ").replace(" or ", " | ");
     }
 
