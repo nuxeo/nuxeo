@@ -80,7 +80,7 @@ public class BinaryBlob extends AbstractBlob implements ManagedBlob, Serializabl
 
     @Override
     public URI getURI(UsageHint hint) throws IOException {
-        return getFile().toURI();
+        return (hint == UsageHint.STREAM) ? getFile().toURI() : null;
     }
 
     @Override
