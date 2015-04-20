@@ -48,6 +48,8 @@ public class NuxeoOAuth2Token {
 
     private Long expirationTimeMilliseconds;
 
+    private boolean isShared;
+
     public NuxeoOAuth2Token(long expirationTimeMilliseconds, String clientId) {
         this("", "", expirationTimeMilliseconds);
         this.clientId = clientId;
@@ -59,6 +61,7 @@ public class NuxeoOAuth2Token {
         this.refreshToken = refreshToken;
         this.expirationTimeMilliseconds = expirationTimeMilliseconds;
         this.creationDate = Calendar.getInstance();
+        this.isShared = false;
     }
 
     public NuxeoOAuth2Token(Credential credential) {
@@ -74,6 +77,7 @@ public class NuxeoOAuth2Token {
         this.nuxeoLogin = (String) entry.getProperty(SCHEMA, "nuxeoLogin");
         this.clientId = (String) entry.getProperty(SCHEMA, "clientId");
         this.creationDate = (Calendar) entry.getProperty(SCHEMA, "creationDate");
+        this.isShared = (boolean) entry.getProperty(SCHEMA, "isShared");
     }
 
     public Map<String, Object> toMap() {
@@ -85,6 +89,7 @@ public class NuxeoOAuth2Token {
         map.put("expirationTimeMilliseconds", expirationTimeMilliseconds);
         map.put("clientId", clientId);
         map.put("creationDate", creationDate);
+        map.put("isShared", isShared);
         return map;
     }
 
@@ -105,6 +110,7 @@ public class NuxeoOAuth2Token {
         entry.setProperty(SCHEMA, "refreshToken", this.refreshToken);
         entry.setProperty(SCHEMA, "expirationTimeMilliseconds", this.expirationTimeMilliseconds);
         entry.setProperty(SCHEMA, "clientId", this.clientId);
+        entry.setProperty(SCHEMA, "isShared", this.isShared);
     }
 
     public void refresh() {
@@ -164,5 +170,13 @@ public class NuxeoOAuth2Token {
 
     public void setClientId(String clientId) {
         this.clientId = clientId;
+    }
+
+    public boolean isShared() {
+        return isShared;
+    }
+
+    public void setIsShared(boolean isShared) {
+        this.isShared = isShared;
     }
 }

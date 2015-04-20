@@ -9,6 +9,8 @@
   <xs:element name="refreshToken" type="xs:string"/>
   <xs:element name="nuxeoLogin" type="xs:string"/>
   <xs:element name="clientId" type="xs:string"/>
+  <xs:element name="isShared" type="xs:boolean"/>
+  <xs:element name="sharedWith" type="xs:string"/>
 
   <xs:element name="expirationTimeMilliseconds" type="xs:integer"/>
   <xs:element name="creationDate" type="xs:date"/>

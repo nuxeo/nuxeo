@@ -1,9 +1,13 @@
 package org.nuxeo.ecm.admin.oauth2;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -17,13 +21,6 @@ public class OAuth2ProvidersTokensActionBean extends DirectoryBasedEditor {
     private static final long serialVersionUID = 1L;
 
     @Override
-    protected Map<String, Serializable> getQueryFilter() {
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
-        // filter.put("clientToken", 1);
-        return filter;
-    }
-
-    @Override
     protected String getDirectoryName() {
         return OAuth2TokenStore.DIRECTORY_NAME;
     }
@@ -33,4 +30,17 @@ public class OAuth2ProvidersTokensActionBean extends DirectoryBasedEditor {
         return "oauth2Token";
     }
 
+    public List<String> getSharedWith() {
+        List<String> sharedWith = new ArrayList<>();
+        String sharedWithProperty = (String) editableEntry.getProperty(getSchemaName(), "sharedWith");
+        if (sharedWithProperty != null) {
+            sharedWith = Arrays.asList(sharedWithProperty.split(","));
+        }
+        return sharedWith;
+    }
+
+    public void setSharedWith(List<String> sharedWith) {
+        String list = StringUtils.join(sharedWith, ",");
+        editableEntry.setProperty(getSchemaName(), "sharedWith", list);
+    }
 }
