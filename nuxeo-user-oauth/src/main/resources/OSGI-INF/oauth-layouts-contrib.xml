@@ -89,6 +89,12 @@
         <row>
           <widget>creationDate</widget>
         </row>
+        <row>
+          <widget>isShared</widget>
+        </row>
+        <row>
+          <widget>sharedWith</widget>
+        </row>
       </rows>
 
       <widget name="id" type="text">
@@ -138,6 +144,32 @@
         <fields>
           <field>oauth2Token.creationDate</field>
         </fields>
+      </widget>
+      <widget name="isShared" type="checkbox">
+        <labels>
+          <label mode="any">Shared Token</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Token.isShared</field>
+        </fields>
+      </widget>
+      <widget name="sharedWith" type="multipleUsersSuggestion">
+        <labels>
+          <label mode="any">User/Groups allowed</label>
+        </labels>
+        <fields>
+          <field>#{oauthUserTokens.sharedWith}</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="prefixed">true</property>
+          <property name="minChars">3</property>
+          <property name="hideHelpLabel">false</property>
+        </properties>
+        <widgetModes>
+          <mode value="view_list">hidden</mode>
+          <mode value="view_list_and_header">hidden</mode>
+        </widgetModes>
       </widget>
     </layout>
   </extension>
