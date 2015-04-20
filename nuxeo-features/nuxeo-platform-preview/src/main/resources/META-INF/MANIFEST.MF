@@ -17,4 +17,5 @@ Nuxeo-Component: OSGI-INF/restAPI-contrib.xml,
  OSGI-INF/theme-contrib.xml,
  OSGI-INF/seamremotingjsbuilder-contrib.xml,
  OSGI-INF/widgets-contrib.xml,
- OSGI-INF/marshallers-contrib.xml
+ OSGI-INF/marshallers-contrib.xml,
+ OSGI-INF/auth-contrib.xml

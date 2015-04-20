@@ -1,0 +1,14 @@
+<component name="org.nuxeo.ecm.platform.preview.authentication">
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="startURL">
+
+    <startURLPattern>
+      <patterns>
+        <pattern>viewer/</pattern>
+      </patterns>
+    </startURLPattern>
+
+  </extension>
+
+</component>
