@@ -310,6 +310,7 @@ public class DownloadServlet extends HttpServlet {
 
                 long fileSize = blob.getLength();
                 if (fileSize > 0) {
+                    resp.setHeader("Accept-Ranges", "bytes");
                     String range = req.getHeader("Range");
                     ByteRange byteRange = null;
                     if (range != null) {
@@ -320,7 +321,6 @@ public class DownloadServlet extends HttpServlet {
                         }
                     }
                     if (byteRange != null) {
-                        resp.setHeader("Accept-Ranges", "bytes");
                         resp.setHeader("Content-Range", "bytes " + byteRange.getStart() + "-" + byteRange.getEnd()
                                 + "/" + fileSize);
                         long length = byteRange.getLength();
