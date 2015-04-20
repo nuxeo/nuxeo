@@ -191,7 +191,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         checkHasCorrectMultiValues(note);
 
         PaginableDocuments docs = (PaginableDocuments) session.newRequest(DocumentPageProviderOperation.ID).setHeader(
-                Constants.HEADER_NX_SCHEMAS, "*").set("query", "SELECT * from MV").set("pageSize", 2).execute();
+                Constants.HEADER_NX_SCHEMAS, "*").set("query", "SELECT * from MV").set("queryParams",new String[]{}).set("pageSize", 2).execute();
 
         assertThat(docs, notNullValue());
         assertThat(docs.size(), is(1));
