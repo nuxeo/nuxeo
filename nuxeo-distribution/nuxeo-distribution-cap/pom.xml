@@ -471,12 +471,6 @@
       <artifactId>nuxeo-elasticsearch-web</artifactId>
     </dependency>
 
-    <!-- Google Client -->
-    <dependency>
-      <groupId>org.nuxeo.ecm</groupId>
-      <artifactId>nuxeo-google-client</artifactId>
-    </dependency>
-
     <!-- Nuxeo Web Resources -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
