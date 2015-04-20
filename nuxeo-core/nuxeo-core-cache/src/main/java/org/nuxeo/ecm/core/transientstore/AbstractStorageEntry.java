@@ -52,8 +52,10 @@ public abstract class AbstractStorageEntry implements StorageEntry {
 
     protected long lastStorageSize;
 
+    protected boolean completed;
+
     protected AbstractStorageEntry(String id) {
-        this.id=id;
+        this.id = id;
     }
 
     @Override
@@ -63,17 +65,17 @@ public abstract class AbstractStorageEntry implements StorageEntry {
 
     @Override
     public void setBlobs(List<Blob> blobs) {
-        this.blobs=blobs;
-        hasBlobs = blobs!=null;
+        this.blobs = blobs;
+        hasBlobs = blobs != null;
     }
 
     @Override
-    public List<Blob> addBlob(Blob blob)  {
+    public List<Blob> addBlob(Blob blob) {
         if (blobs == null) {
             blobs = new ArrayList<Blob>();
         }
         blobs.add(blob);
-        hasBlobs=true;
+        hasBlobs = true;
         return blobs;
     }
 
@@ -84,15 +86,24 @@ public abstract class AbstractStorageEntry implements StorageEntry {
 
     @Override
     public void put(String key, Serializable value) {
-        if (params==null) {
+        if (params == null) {
             params = new HashMap<String, Serializable>();
         }
         params.put(key, value);
     }
 
     @Override
+    public void put(Map<String, Serializable> p) {
+        if (params == null) {
+            params = new HashMap<String, Serializable>();
+        }
+        params.putAll(p);
+
+    }
+
+    @Override
     public Serializable get(String key) {
-        if (params!=null) {
+        if (params != null) {
             return params.get(key);
         }
         return null;
@@ -102,10 +113,11 @@ public abstract class AbstractStorageEntry implements StorageEntry {
     public void persist(File directory) throws IOException {
         lastStorageSize = getSize();
         if (hasBlobs) {
-            cachedBlobs = new ArrayList<Map<String,String>>();
+            cachedBlobs = new ArrayList<Map<String, String>>();
             for (Blob blob : blobs) {
                 Map<String, String> cached = new HashMap<String, String>();
-                File cachedFile = new File (directory,UUID.randomUUID().toString());
+                File cachedFile = new File(directory,
+                        UUID.randomUUID().toString());
                 blob.transferTo(cachedFile);
                 cachedFile.deleteOnExit();
                 cached.put("file", cachedFile.getAbsolutePath());
@@ -120,12 +132,12 @@ public abstract class AbstractStorageEntry implements StorageEntry {
 
     @Override
     public void load(File directory) {
-        if (!hasBlobs || blobs!=null) {
+        if (!hasBlobs || blobs != null) {
             return;
         }
         blobs = new ArrayList<Blob>();
         for (Map<String, String> info : cachedBlobs) {
-            File cachedFile = new File (info.get("file"));
+            File cachedFile = new File(info.get("file"));
             Blob blob = new FileBlob(cachedFile);
             blob.setEncoding(info.get("encoding"));
             blob.setMimeType(info.get("mimetype"));
@@ -138,20 +150,31 @@ public abstract class AbstractStorageEntry implements StorageEntry {
     @Override
     public long getSize() {
         int size = 0;
-        if (blobs!= null) {
+        if (blobs != null) {
             for (Blob blob : blobs) {
-                size+= blob.getLength();
+                size += blob.getLength();
             }
         }
         return size;
     }
 
+    @Override
     public long getLastStorageSize() {
         return lastStorageSize;
     }
 
     public void setLastStorageSize(long lastStorageSize) {
         this.lastStorageSize = lastStorageSize;
+    }
+
+    @Override
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    @Override
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 
 }

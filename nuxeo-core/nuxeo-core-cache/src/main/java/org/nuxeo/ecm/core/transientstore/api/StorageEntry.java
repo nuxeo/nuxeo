@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.common.annotation.Experimental;
 import org.nuxeo.ecm.core.api.Blob;
@@ -70,6 +71,14 @@ public interface StorageEntry extends Serializable {
      */
     void put(String key, Serializable value);
 
+
+    /**
+     * Put multiple named parameters
+     *
+     * @param params
+     */
+    void put(Map<String, Serializable> params);
+
     /**
      * Reads the value of named parameters
      *
@@ -114,5 +123,21 @@ public interface StorageEntry extends Serializable {
      * @return
      */
     long getLastStorageSize();
+
+    /**
+     * flag to indicate if result is ready
+     * @since 7.3
+     *
+     * @return
+     */
+    boolean isCompleted();
+
+    /**
+     * Mark the storage entry as ready
+     *
+     * @param completed
+     * @since 7.3
+     */
+    void setCompleted(boolean completed);
 
 }
