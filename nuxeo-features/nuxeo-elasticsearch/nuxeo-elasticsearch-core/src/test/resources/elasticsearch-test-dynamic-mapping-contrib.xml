@@ -26,7 +26,11 @@
                "_english_"
             ],
             "type" : "stop"
-         }
+         },
+        "word_delimiter_filter" : {
+          "type" : "word_delimiter",
+          "preserve_original" : true
+        }
       },
       "tokenizer" : {
          "path_tokenizer" : {
@@ -38,6 +42,7 @@
          "en_analyzer" : {
             "alias" : "fulltext",
             "filter" : [
+               "word_delimiter_filter",
                "lowercase",
                "en_stop_filter",
                "en_stem_filter",
@@ -92,7 +97,7 @@
                           "index" : "not_analyzed"
                       }
                   }
-              }               
+              }
           ],
    "_size" : {
       "enabled" : true
