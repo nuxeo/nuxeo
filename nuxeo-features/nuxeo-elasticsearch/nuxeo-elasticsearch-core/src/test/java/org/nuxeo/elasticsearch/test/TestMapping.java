@@ -122,4 +122,48 @@ public class TestMapping {
 
     }
 
+    @Test
+    public void testFulltextAnalyzer() throws Exception {
+        startTransaction();
+        DocumentModel doc = session.createDocumentModel("/", "testDoc1", "File");
+        doc.setPropertyValue("dc:title", "new-york.jpg");
+        doc = session.createDocument(doc);
+
+        doc = session.createDocumentModel("/", "testDoc2", "File");
+        doc.setPropertyValue("dc:title", "York.jpg");
+        doc = session.createDocument(doc);
+
+        doc = session.createDocumentModel("/", "testDoc3", "File");
+        doc.setPropertyValue("dc:title", "foo_jpg");
+        doc = session.createDocument(doc);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
+
+        startTransaction();
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'new-york.jpg'"));
+        Assert.assertEquals(1, ret.totalSize());
+
+        // The standard tokenizer first split new-york.jpg in "new" "york.jpg"
+        // then the word delimiter gives: "new" york" "jpg" "york.jpg"
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'new york jpg'"));
+        Assert.assertEquals(1, ret.totalSize());
+
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'new-york'"));
+        Assert.assertEquals(1, ret.totalSize());
+
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'york new'"));
+        Assert.assertEquals(1, ret.totalSize());
+
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'york -new-york'"));
+        Assert.assertEquals(1, ret.totalSize());
+        Assert.assertEquals("testDoc2", ret.get(0).getName());
+
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'NewYork'"));
+        Assert.assertEquals(1, ret.totalSize());
+
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'jpg'"));
+        Assert.assertEquals(3, ret.totalSize());
+
+    }
 }

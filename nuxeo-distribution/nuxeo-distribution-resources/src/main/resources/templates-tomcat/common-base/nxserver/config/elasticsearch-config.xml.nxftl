@@ -47,6 +47,10 @@
             "length" : 256,
             "type" : "truncate"
          },
+         "word_delimiter_filter" : {
+           "type" : "word_delimiter",
+           "preserve_original" : true
+         },
          "en_stem_filter" : {
             "name" : "minimal_english",
             "type" : "stemmer"
@@ -91,6 +95,7 @@
          "en_analyzer" : {
             "alias" : "fulltext",
             "filter" : [
+               "word_delimiter_filter",
                "lowercase",
                "en_stop_filter",
                "en_stem_filter",
@@ -101,6 +106,7 @@
          },
          "fr_analyzer" : {
             "filter" : [
+               "word_delimiter_filter",
                "lowercase",
                "fr_stop_filter",
                "fr_stem_filter",
