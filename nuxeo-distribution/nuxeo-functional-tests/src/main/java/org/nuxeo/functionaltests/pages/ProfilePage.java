@@ -16,27 +16,23 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 
 /**
  * @since 7.3
  */
 public class ProfilePage extends AbstractPage {
 
-	@FindBy(id = "userProfileDropDownMenu")
-	WebElement actionsLink;
-	
-	@FindBy(id = "userProfileButtons:changePasswordButton")
-	WebElement changePasswordLink;
-
 	public ProfilePage(final WebDriver driver) {
 		super(driver);
 	}
 
 	public OwnUserChangePasswordFormPage getChangePasswordUserTab() {
+		WebElement actionsLink = findElementWithTimeout(By.id("userProfileDropDownMenu"));
 		actionsLink.click();
+		WebElement changePasswordLink = findElementWithTimeout(By.id("userProfileButtons:changePasswordButton"));
 		changePasswordLink.click();
 		return asPage(OwnUserChangePasswordFormPage.class);
 	}
