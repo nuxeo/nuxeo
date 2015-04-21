@@ -38,6 +38,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Adapter allowing to convert a Blob using a named converter or a destination mime type.
@@ -66,14 +67,26 @@ public class ConvertAdapter extends DefaultAdapter {
             throw new IllegalParameterException("No Blob found");
         }
 
-        if (StringUtils.isNotBlank(converter)) {
-            return convertWithConverter(blob, converter, uriInfo);
-        } else if (StringUtils.isNotBlank(type)) {
-            return convertWithMimeType(blob, type, uriInfo);
-        } else if (StringUtils.isNotBlank(format)) {
-            return convertWithFormat(blob, format, uriInfo);
-        } else {
-            throw new IllegalParameterException("No converter, type or format parameter specified");
+        boolean txWasActive = false;
+        try {
+            if (TransactionHelper.isTransactionActive()) {
+                txWasActive = true;
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+
+            if (StringUtils.isNotBlank(converter)) {
+                return convertWithConverter(blob, converter, uriInfo);
+            } else if (StringUtils.isNotBlank(type)) {
+                return convertWithMimeType(blob, type, uriInfo);
+            } else if (StringUtils.isNotBlank(format)) {
+                return convertWithFormat(blob, format, uriInfo);
+            } else {
+                throw new IllegalParameterException("No converter, type or format parameter specified");
+            }
+        } finally {
+            if (txWasActive && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+                TransactionHelper.startTransaction();
+            }
         }
     }
 
