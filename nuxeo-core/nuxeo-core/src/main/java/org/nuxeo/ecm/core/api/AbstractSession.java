@@ -2528,12 +2528,19 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             DocumentModel proxy = null;
             Document target;
             if (docModel.isProxy() || docModel.isVersion()) {
-                if (overwriteExistingProxy) {
-                    // remove previous
-                    List<String> removedProxyIds = removeExistingProxies(doc, sec);
-                    options.put(CoreEventConstants.REPLACED_PROXY_IDS, (Serializable) removedProxyIds);
-                }
                 target = doc;
+                if (overwriteExistingProxy) {
+                    if (docModel.isVersion()){
+                        Document base = resolveReference(new IdRef(doc.getVersionSeriesId()));
+                        proxy = updateExistingProxies(base, sec, target);
+                    }
+                    if (proxy==null) {
+                        // remove previous
+                        List<String> removedProxyIds = removeExistingProxies(doc, sec);
+                        options.put(CoreEventConstants.REPLACED_PROXY_IDS, (Serializable) removedProxyIds);
+                    }
+                }
+
             } else {
                 String checkinComment = (String) docModel.getContextData(VersioningService.CHECKIN_COMMENT);
                 docModel.putContextData(VersioningService.CHECKIN_COMMENT, null);

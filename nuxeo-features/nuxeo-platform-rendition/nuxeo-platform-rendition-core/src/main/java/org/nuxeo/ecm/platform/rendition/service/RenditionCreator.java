@@ -32,7 +32,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -73,8 +75,8 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
     public RenditionCreator(CoreSession session, DocumentModel liveDocument, DocumentModel versionDocument,
             Blob renditionBlob, String renditionName) {
         super(session);
-        this.liveDocumentId = liveDocument.getId();
-        this.versionDocumentRef = versionDocument.getRef();
+        liveDocumentId = liveDocument.getId();
+        versionDocumentRef = versionDocument.getRef();
         this.renditionBlob = renditionBlob;
         this.renditionName = renditionName;
     }
@@ -96,7 +98,9 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         updateIconAndSizeFields(rendition);
 
         // create a copy of the doc
-        rendition = session.createDocument(rendition);
+        if(rendition.getId()==null) {
+            rendition = session.createDocument(rendition);
+        }
         // be sure to have the same version info
         setCorrectVersion(rendition, versionDocument);
         // set ACL
@@ -106,9 +110,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         rendition = session.saveDocument(rendition);
 
         // rendition is checkout : make it checkin
-        DocumentRef renditionCheckoutRef = rendition.getRef();
         renditionRef = rendition.checkIn(VersioningOption.NONE, null);
-        session.removeDocument(renditionCheckoutRef);
         rendition = session.getDocument(renditionRef);
         session.save();
 
@@ -125,7 +127,21 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
             // MIME type. We'll have to create a File instead to hold it.
             doctype = FILE;
         }
-        DocumentModel rendition = session.createDocumentModel(null, versionDocument.getName(), doctype);
+
+        DocumentModel rendition=null;
+        DocumentModelList existingRenditions = session.query("select * from  " + doctype + " where ecm:isProxy = 0 AND ecm:mixinType ='"
+                + RENDITION_FACET + "' AND " + RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY + "='" + liveDocumentId
+                + "' and " + RENDITION_NAME_PROPERTY + "='" + renditionName + "'");
+        if (existingRenditions.size() > 0) {
+            rendition = existingRenditions.get(0);
+            if (rendition.isVersion()) {
+                String sid = rendition.getVersionSeriesId();
+                rendition = session.getDocument(new IdRef(sid));
+            }
+        } else {
+            rendition = session.createDocumentModel(null, versionDocument.getName(), doctype);
+        }
+
         rendition.copyContent(versionDocument);
         rendition.getContextData().putScopedValue(LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME,
                 versionDocument.getCurrentLifeCycleState());
@@ -134,6 +150,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         rendition.setPropertyValue(RENDITION_SOURCE_ID_PROPERTY, versionDocument.getId());
         rendition.setPropertyValue(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY, liveDocumentId);
         rendition.setPropertyValue(RENDITION_NAME_PROPERTY, renditionName);
+
         return rendition;
     }
 
