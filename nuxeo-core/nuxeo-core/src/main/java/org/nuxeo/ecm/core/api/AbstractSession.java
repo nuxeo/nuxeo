@@ -639,16 +639,16 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
             Map<String, Serializable> options = new HashMap<String, Serializable>();
             options.put(CoreEventConstants.OLD_ACP,
-                    (Serializable) docModel.getACP().clone());
+                    docModel.getACP().clone());
             options.put(CoreEventConstants.NEW_ACP,
-                    (Serializable) newAcp);
+                    newAcp);
 
             notifyEvent(DocumentEventTypes.BEFORE_DOC_SECU_UPDATE, docModel,
                     options, null, null, true, true);
             getSession().setACP(doc, newAcp, overwrite);
             docModel = readModel(doc);
             options.put(CoreEventConstants.NEW_ACP,
-                    (Serializable) newAcp.clone());
+                    newAcp.clone());
             notifyEvent(DocumentEventTypes.DOCUMENT_SECURITY_UPDATED, docModel,
                     options, null, null, true, false);
         } catch (DocumentException e) {
@@ -2745,14 +2745,18 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             DocumentModel proxy = null;
             Document target;
             if (docModel.isProxy() || docModel.isVersion()) {
-                if (overwriteExistingProxy) {
-                    // remove previous
-                    List<String> removedProxyIds = removeExistingProxies(doc,
-                            sec);
-                    options.put(CoreEventConstants.REPLACED_PROXY_IDS,
-                            (Serializable) removedProxyIds);
-                }
                 target = doc;
+                if (overwriteExistingProxy) {
+                    if (docModel.isVersion()){
+                        Document base = resolveReference(new IdRef(doc.getVersionSeriesId()));
+                        proxy = updateExistingProxies(base, sec, target);
+                    }
+                    if (proxy == null) {
+                        // remove previous
+                        List<String> removedProxyIds = removeExistingProxies(doc, sec);
+                        options.put(CoreEventConstants.REPLACED_PROXY_IDS, (Serializable) removedProxyIds);
+                    }
+                }
             } else {
                 String checkinComment = (String) docModel.getContextData(VersioningService.CHECKIN_COMMENT);
                 docModel.putContextData(VersioningService.CHECKIN_COMMENT, null);

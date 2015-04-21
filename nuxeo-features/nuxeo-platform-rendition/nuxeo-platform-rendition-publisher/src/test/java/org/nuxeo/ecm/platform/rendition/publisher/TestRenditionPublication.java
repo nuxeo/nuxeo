@@ -17,9 +17,11 @@
 package org.nuxeo.ecm.platform.rendition.publisher;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SCHEMA;
 import static org.nuxeo.ecm.platform.rendition.publisher.RenditionPublicationFactory.RENDITION_NAME_PARAMETER_KEY;
@@ -33,9 +35,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -162,10 +162,15 @@ public class TestRenditionPublication {
         versions = session.getVersions(file.getRef());
         assertEquals(2, versions.size());
 
-        // check that the previous proxy was deleted
-        assertFalse(session.exists(new IdRef(proxyId)));
-
+        // verify that the proxy has been updqted
         proxy = publishedDocument.getProxy();
+        assertEquals(proxyId, proxy.getId());
+
+        rendition = renditionService.getRendition(file, "pdf");
+        renditionDoc = rendition.getHostDocument();
+
+        assertEquals(renditionDoc.getId(), proxy.getSourceId());
+        assertNotEquals(renditionDoc.getId(),renditionUUID);
 
     }
 
