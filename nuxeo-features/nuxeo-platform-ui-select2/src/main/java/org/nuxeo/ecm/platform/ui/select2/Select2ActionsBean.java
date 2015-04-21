@@ -716,6 +716,7 @@ public class Select2ActionsBean implements Serializable {
                 processDocumentNotFound(ref, jg);
             } else {
                 writer.write(doc, jg);
+                jg.flush();
             }
         }
 
