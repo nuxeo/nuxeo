@@ -28,7 +28,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +50,6 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -300,9 +298,9 @@ public class DBSDocument implements Document {
     }
 
     @Override
-    public Iterator<Document> getChildren() throws DocumentException {
+    public List<Document> getChildren() throws DocumentException {
         if (!isFolder()) {
-            return EmptyDocumentIterator.INSTANCE;
+            return Collections.emptyList();
         }
         return session.getChildren(id);
     }

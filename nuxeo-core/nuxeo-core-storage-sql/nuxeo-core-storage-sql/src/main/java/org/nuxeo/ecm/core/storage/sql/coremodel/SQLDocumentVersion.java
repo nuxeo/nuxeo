@@ -13,12 +13,10 @@ package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -157,8 +155,8 @@ public class SQLDocumentVersion extends SQLDocumentLive {
     }
 
     @Override
-    public Iterator<Document> getChildren() throws DocumentException {
-        return EmptyDocumentIterator.INSTANCE;
+    public List<Document> getChildren() throws DocumentException {
+        return Collections.emptyList();
     }
 
     @Override

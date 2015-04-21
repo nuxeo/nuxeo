@@ -134,10 +134,6 @@ public class XSDLoader {
         this.collectReferencedXSD = collectReferencedXSD;
     }
 
-    protected Schema getSchema(String name) {
-        return schemaManager.getSchemaInternal(name);
-    }
-
     protected void registerSchema(Schema schema) {
         schemaManager.registerSchema(schema);
     }
@@ -212,14 +208,13 @@ public class XSDLoader {
     }
 
     // called by SchemaManagerImpl
-    public Schema loadSchema(String name, String prefix, File file, boolean override) throws SAXException, IOException,
-            TypeException {
-        return loadSchema(name, prefix, file, override, null);
+    public Schema loadSchema(String name, String prefix, File file) throws SAXException, IOException, TypeException {
+        return loadSchema(name, prefix, file, null);
     }
 
     // called by SchemaManagerImpl
     // @since 5.7
-    public Schema loadSchema(String name, String prefix, File file, boolean override, String xsdElement)
+    public Schema loadSchema(String name, String prefix, File file, String xsdElement)
             throws SAXException, IOException, TypeException {
         XSOMParser parser = getParser();
         String systemId = file.toURI().toURL().toExternalForm();
@@ -231,13 +226,17 @@ public class XSDLoader {
             // a File object inside Xerces)
             systemId = systemId.replace("file://", "file:////");
         }
-        parser.parse(systemId);
+        try {
+            parser.parse(systemId);
+        } catch (SAXParseException e) {
+            throw new SAXException("Error parsing schema: " + systemId, e);
+        }
 
         XSSchemaSet xsSchemas = parser.getResult();
         if (collectReferencedXSD) {
             collectReferencedXSD(xsSchemas);
         }
-        return loadSchema(name, prefix, xsSchemas, override, xsdElement);
+        return loadSchema(name, prefix, xsSchemas, xsdElement);
     }
 
     protected void collectReferencedXSD(XSSchemaSet xsSchemas) {
@@ -279,7 +278,7 @@ public class XSDLoader {
         XSOMParser parser = getParser();
         parser.parse(url);
         XSSchemaSet xsSchemas = parser.getResult();
-        return loadSchema(name, prefix, xsSchemas, false, xsdElement);
+        return loadSchema(name, prefix, xsSchemas, xsdElement);
     }
 
     // called by tests
@@ -287,7 +286,7 @@ public class XSDLoader {
         return loadSchema(name, prefix, url, null);
     }
 
-    protected Schema loadSchema(String name, String prefix, XSSchemaSet schemaSet, boolean override, String xsdElement)
+    protected Schema loadSchema(String name, String prefix, XSSchemaSet schemaSet, String xsdElement)
             throws SAXException, TypeException {
         if (schemaSet == null) {
             return null;
@@ -305,16 +304,7 @@ public class XSDLoader {
         if (schema == null) {
             return null;
         }
-        Schema ecmSchema = getSchema(name);
-        if (ecmSchema != null) {
-            // schema already defined
-            log.info("Schema " + ns + " is already registered");
-            if (!override) {
-                log.debug("Schema " + ns + " will not be overridden");
-                return ecmSchema;
-            }
-        }
-        ecmSchema = new SchemaImpl(name, new Namespace(ns, prefix));
+        Schema ecmSchema = new SchemaImpl(name, new Namespace(ns, prefix));
 
         // load elements
         Collection<XSElementDecl> elements = schema.getElementDecls().values();

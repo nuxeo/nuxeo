@@ -18,7 +18,6 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -219,7 +218,7 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public Iterator<Document> getChildren() throws DocumentException {
+    public List<Document> getChildren() throws DocumentException {
         return null;
     }
 

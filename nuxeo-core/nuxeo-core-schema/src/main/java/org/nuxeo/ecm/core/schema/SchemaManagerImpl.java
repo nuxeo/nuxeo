@@ -121,7 +121,16 @@ public class SchemaManagerImpl implements SchemaManager {
         if (!schemaDir.isDirectory()) {
             schemaDir.mkdirs();
         }
+        clearSchemaDir();
         registerBuiltinTypes();
+    }
+
+    protected void clearSchemaDir() {
+        try {
+            org.apache.commons.io.FileUtils.cleanDirectory(schemaDir);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public File getSchemasDir() {
@@ -288,14 +297,31 @@ public class SchemaManagerImpl implements SchemaManager {
         uriToSchema.clear();
         prefixToSchema.clear();
         RuntimeException errors = new RuntimeException("Cannot load schemas");
+        // on reload, don't take confuse already-copied schemas with those contributed
+        clearSchemaDir();
+        // resolve which schemas to actually load depending on overrides
+        Map<String, SchemaBindingDescriptor> resolvedSchemas = new LinkedHashMap<>();
         for (SchemaBindingDescriptor sd : allSchemas) {
+            String name = sd.name;
+            if (resolvedSchemas.containsKey(name)) {
+                if (!sd.override) {
+                    log.debug("Schema " + name + " will not be overridden");
+                    continue;
+                }
+                log.debug("Reregistering schema: " + name + " from " + sd.file);
+            } else {
+                log.debug("Registering schema: " + name + " from " + sd.file);
+            }
+            resolvedSchemas.put(name, sd);
+        }
+        for (SchemaBindingDescriptor sd : resolvedSchemas.values()) {
             try {
                 copySchema(sd);
             } catch (IOException | SAXException | TypeException error) {
                 errors.addSuppressed(error);
             }
         }
-        for (SchemaBindingDescriptor sd : allSchemas) {
+        for (SchemaBindingDescriptor sd : resolvedSchemas.values()) {
             try {
                 loadSchema(sd);
             } catch (IOException | SAXException | TypeException error) {
@@ -337,19 +363,8 @@ public class SchemaManagerImpl implements SchemaManager {
         }
         // loadSchema calls this.registerSchema
         XSDLoader schemaLoader = new XSDLoader(this, sd);
-        Schema oldschema = schemas.get(sd.name);
-        schemaLoader.loadSchema(sd.name, sd.prefix, sd.file, sd.override, sd.xsdRootElement);
-        if (oldschema == null) {
-            log.info("Registered schema: " + sd.name + " from " + sd.file);
-        } else {
-            log.info("Reregistered schema: " + sd.name);
-        }
-
-    }
-
-    // called from XSDLoader, does not do the checkDirty call
-    protected Schema getSchemaInternal(String name) {
-        return schemas.get(name);
+        schemaLoader.loadSchema(sd.name, sd.prefix, sd.file, sd.xsdRootElement);
+        log.info("Registered schema: " + sd.name + " from " + sd.file);
     }
 
     // called from XSDLoader

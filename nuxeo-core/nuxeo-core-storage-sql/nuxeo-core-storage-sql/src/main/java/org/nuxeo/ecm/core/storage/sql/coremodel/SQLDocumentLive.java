@@ -17,7 +17,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,8 +32,6 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.DocumentIterator;
-import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -450,12 +447,11 @@ public class SQLDocumentLive implements SQLDocument {
     }
 
     @Override
-    public Iterator<Document> getChildren() throws DocumentException {
+    public List<Document> getChildren() throws DocumentException {
         if (!isFolder()) {
-            return EmptyDocumentIterator.INSTANCE;
+            return Collections.emptyList();
         }
-        List<Document> children = session.getChildren(getNode());
-        return new SQLDocumentListIterator(children);
+        return session.getChildren(getNode()); // newly allocated
     }
 
     @Override
@@ -587,35 +583,3 @@ public class SQLDocumentLive implements SQLDocument {
 
 }
 
-class SQLDocumentListIterator implements DocumentIterator {
-
-    private final int size;
-
-    private final Iterator<Document> iterator;
-
-    public SQLDocumentListIterator(List<Document> list) {
-        size = list.size();
-        iterator = list.iterator();
-    }
-
-    @Override
-    public long getSize() {
-        return size;
-    }
-
-    @Override
-    public boolean hasNext() {
-        return iterator.hasNext();
-    }
-
-    @Override
-    public Document next() {
-        return iterator.next();
-    }
-
-    @Override
-    public void remove() {
-        throw new UnsupportedOperationException();
-    }
-
-}

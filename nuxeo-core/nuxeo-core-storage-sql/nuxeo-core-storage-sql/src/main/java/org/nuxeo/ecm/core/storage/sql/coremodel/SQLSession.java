@@ -693,7 +693,6 @@ public class SQLSession implements Session {
         return childNode;
     }
 
-    // XXX change to iterator?
     protected List<Document> getChildren(Node node) throws DocumentException {
         List<Node> nodes;
         try {

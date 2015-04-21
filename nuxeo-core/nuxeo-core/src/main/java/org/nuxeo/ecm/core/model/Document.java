@@ -302,13 +302,13 @@ public interface Document {
     Document getChild(String name) throws DocumentException;
 
     /**
-     * Gets an iterator over the children of the document.
+     * Gets the children of the document.
      * <p>
-     * Returns an empty iterator for non-folder documents.
+     * Returns an empty list for non-folder documents.
      *
-     * @return the children iterator
+     * @return the children
      */
-    Iterator<Document> getChildren() throws DocumentException;
+    List<Document> getChildren() throws DocumentException;
 
     /**
      * Gets a list of the children ids.

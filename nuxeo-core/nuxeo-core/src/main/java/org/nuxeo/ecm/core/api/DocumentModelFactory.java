@@ -360,6 +360,9 @@ public class DocumentModelFactory {
                     schemaXpaths.add(xpath);
                 }
             }
+            if (schemaXpaths.isEmpty()) {
+                continue;
+            }
             Map<String, Serializable> map;
             try {
                 map = doc.readPrefetch(schema, schemaXpaths);

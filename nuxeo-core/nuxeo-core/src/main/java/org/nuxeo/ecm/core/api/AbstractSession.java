@@ -43,7 +43,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -904,10 +903,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             }
             Document doc = resolveReference(parent);
             checkPermission(doc, READ_CHILDREN);
-            Iterator<Document> children = doc.getChildren();
             DocumentModelList docs = new DocumentModelListImpl();
-            while (children.hasNext()) {
-                Document child = children.next();
+            for (Document child : doc.getChildren()) {
                 if (hasPermission(child, perm)) {
                     if (child.getType() != null && (type == null || type.equals(child.getType().getName()))) {
                         DocumentModel childModel = readModel(child);
@@ -996,10 +993,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         try {
             Document doc = resolveReference(parent);
             checkPermission(doc, READ_CHILDREN);
-            Iterator<Document> children = doc.getChildren();
             DocumentModelList docs = new DocumentModelListImpl();
-            while (children.hasNext()) {
-                Document child = children.next();
+            for (Document child : doc.getChildren()) {
                 if (!child.isFolder() && hasPermission(child, READ)) {
                     docs.add(readModel(child));
                 }
@@ -1015,10 +1010,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         try {
             Document doc = resolveReference(parent);
             checkPermission(doc, READ_CHILDREN);
-            Iterator<Document> children = doc.getChildren();
             DocumentModelList docs = new DocumentModelListImpl();
-            while (children.hasNext()) {
-                Document child = children.next();
+            for (Document child : doc.getChildren()) {
                 if (!child.isFolder() && hasPermission(child, READ)) {
                     DocumentModel docModel = readModel(doc);
                     if (filter == null || filter.accept(docModel)) {
@@ -1040,10 +1033,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         try {
             Document doc = resolveReference(parent);
             checkPermission(doc, READ_CHILDREN);
-            Iterator<Document> children = doc.getChildren();
             DocumentModelList docs = new DocumentModelListImpl();
-            while (children.hasNext()) {
-                Document child = children.next();
+            for (Document child : doc.getChildren()) {
                 if (child.isFolder() && hasPermission(child, READ)) {
                     docs.add(readModel(child));
                 }
@@ -1059,10 +1050,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         try {
             Document doc = resolveReference(parent);
             checkPermission(doc, READ_CHILDREN);
-            Iterator<Document> children = doc.getChildren();
             DocumentModelList docs = new DocumentModelListImpl();
-            while (children.hasNext()) {
-                Document child = children.next();
+            for (Document child : doc.getChildren()) {
                 if (child.isFolder() && hasPermission(child, READ)) {
                     DocumentModel childModel = readModel(child);
                     if (filter == null || filter.accept(childModel)) {
@@ -1340,12 +1329,21 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         try {
             Document doc = resolveReference(docRef);
             checkPermission(doc, REMOVE_CHILDREN);
-            Iterator<Document> children = doc.getChildren();
-            while (children.hasNext()) {
-                // iterator remove method is not supported by jcr
-                Document child = children.next();
-                if (hasPermission(child, REMOVE)) {
-                    removeNotifyOneDoc(child);
+            List<Document> children = doc.getChildren();
+            // remove proxies first, otherwise they could become dangling
+            for (Document child : children) {
+                if (child.isProxy()) {
+                    if (hasPermission(child, REMOVE)) {
+                        removeNotifyOneDoc(child);
+                    }
+                }
+            }
+            // then remove regular docs or versions, both of which could be proxies targets
+            for (Document child : children) {
+                if (!child.isProxy()) {
+                    if (hasPermission(child, REMOVE)) {
+                        removeNotifyOneDoc(child);
+                    }
                 }
             }
         } catch (DocumentException e) {
@@ -1364,6 +1362,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     protected boolean canRemoveDocument(Document doc) throws ClientException, DocumentException {
+        // TODO must also check for proxies on live docs
         if (doc.isVersion()) {
             // TODO a hasProxies method would be more efficient
             Collection<Document> proxies = getSession().getProxies(doc, null);

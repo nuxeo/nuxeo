@@ -100,7 +100,6 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.QueryException;
@@ -288,7 +287,7 @@ public class DBSSession implements Session {
         return getDocument(docState);
     }
 
-    protected Iterator<Document> getChildren(String parentId) throws DocumentException {
+    protected List<Document> getChildren(String parentId) throws DocumentException {
         List<DBSDocumentState> docStates = transaction.getChildrenStates(parentId);
         if (isOrderable(parentId)) {
             // sort children in order
@@ -304,7 +303,7 @@ public class DBSSession implements Session {
                 continue;
             }
         }
-        return new DBSDocumentListIterator(children);
+        return children;
     }
 
     protected List<String> getChildrenIds(String parentId) {
@@ -325,39 +324,6 @@ public class DBSSession implements Session {
 
     protected boolean hasChildren(String parentId) {
         return transaction.hasChildren(parentId);
-
-    }
-
-    public static class DBSDocumentListIterator implements DocumentIterator {
-
-        private final int size;
-
-        private final Iterator<Document> iterator;
-
-        public DBSDocumentListIterator(List<Document> list) {
-            size = list.size();
-            iterator = list.iterator();
-        }
-
-        @Override
-        public long getSize() {
-            return size;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return iterator.hasNext();
-        }
-
-        @Override
-        public Document next() {
-            return iterator.next();
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
 
     }
 

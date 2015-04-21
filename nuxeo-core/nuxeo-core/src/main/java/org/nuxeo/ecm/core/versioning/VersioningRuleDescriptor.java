@@ -31,7 +31,7 @@ public class VersioningRuleDescriptor implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @XNode("@enabled")
-    protected boolean enabled = true;
+    protected Boolean enabled;
 
     @XNodeMap(value = "options", key = "@lifeCycleState", type = HashMap.class, componentType = SaveOptionsDescriptor.class)
     public Map<String, SaveOptionsDescriptor> options = new HashMap<String, SaveOptionsDescriptor>();
@@ -42,8 +42,13 @@ public class VersioningRuleDescriptor implements Serializable {
     @XNode("@typeName")
     protected String typeName;
 
+    /** True if the boolean is null or TRUE, false otherwise. */
+    private static boolean defaultTrue(Boolean bool) {
+        return !Boolean.FALSE.equals(bool);
+    }
+
     public boolean isEnabled() {
-        return enabled;
+        return defaultTrue(enabled);
     }
 
     public String getTypeName() {
@@ -56,6 +61,31 @@ public class VersioningRuleDescriptor implements Serializable {
 
     public InitialStateDescriptor getInitialState() {
         return initialState;
+    }
+
+    /** Empty constructor. */
+    public VersioningRuleDescriptor() {
+    }
+
+    /** Copy constructor. */
+    public VersioningRuleDescriptor(VersioningRuleDescriptor other) {
+        this.enabled = other.enabled;
+        this.typeName = other.typeName;
+        this.options = other.options;
+        this.initialState = other.initialState;
+    }
+
+    public void merge(VersioningRuleDescriptor other) {
+        if (other.enabled != null) {
+            enabled = other.enabled;
+        }
+        if (other.typeName != null) {
+            typeName = other.typeName;
+        }
+        options.putAll(other.options); // always merge options TODO override flag
+        if (other.initialState != null) {
+            initialState = other.initialState;
+        }
     }
 
 }

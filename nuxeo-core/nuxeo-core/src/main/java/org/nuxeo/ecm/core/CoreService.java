@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,41 +13,33 @@
  */
 package org.nuxeo.ecm.core;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.versioning.DefaultVersionRemovalPolicy;
 import org.nuxeo.ecm.core.versioning.OrphanVersionRemovalFilter;
 import org.nuxeo.ecm.core.versioning.VersionRemovalPolicy;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Extension;
 
 /**
  * Service used to register version removal policies.
  */
 public class CoreService extends DefaultComponent {
 
-    private static final Log log = LogFactory.getLog(CoreService.class);
+    private static final String VERSION_REMOVAL_POLICY_XP = "versionRemovalPolicy";
 
-    private ComponentContext context;
+    private static final String ORPHAN_VERSION_REMOVAL_FILTER_XP = "orphanVersionRemovalFilter";
 
-    private VersionRemovalPolicy versionRemovalPolicy;
+    protected static final DefaultVersionRemovalPolicy DEFAULT_VERSION_REMOVAL_POLICY = new DefaultVersionRemovalPolicy();
 
-    private List<OrphanVersionRemovalFilter> orphanVersionRemovalFilters = new ArrayList<OrphanVersionRemovalFilter>();
+    protected Map<CoreServicePolicyDescriptor, VersionRemovalPolicy> versionRemovalPolicies = new LinkedHashMap<>();
 
-    public List<OrphanVersionRemovalFilter> getOrphanVersionRemovalFilters() {
-        return orphanVersionRemovalFilters;
-    }
+    protected Map<CoreServiceOrphanVersionRemovalFilterDescriptor, OrphanVersionRemovalFilter> orphanVersionRemovalFilters = new LinkedHashMap<>();
 
-    public VersionRemovalPolicy getVersionRemovalPolicy() {
-        if (versionRemovalPolicy == null) {
-            versionRemovalPolicy = new DefaultVersionRemovalPolicy();
-        }
-        return versionRemovalPolicy;
-    }
+    protected ComponentContext context;
 
     @Override
     public void activate(ComponentContext context) {
@@ -60,51 +52,70 @@ public class CoreService extends DefaultComponent {
     }
 
     @Override
-    public void registerExtension(Extension extension) {
-        String point = extension.getExtensionPoint();
-        if ("versionRemovalPolicy".equals(point)) {
-            for (Object contrib : extension.getContributions()) {
-                if (contrib instanceof CoreServicePolicyDescriptor) {
-                    registerVersionRemovalPolicy((CoreServicePolicyDescriptor) contrib);
-                } else {
-                    log.error("Invalid contribution to extension point 'versionRemovalPolicy': "
-                            + contrib.getClass().getName());
-                }
-            }
-        } else if ("orphanVersionRemovalFilter".equals(point)) {
-            for (Object contrib : extension.getContributions()) {
-                if (contrib instanceof CoreServiceOrphanVersionRemovalFilterDescriptor) {
-                    registerOrphanVersionRemovalFilter((CoreServiceOrphanVersionRemovalFilterDescriptor) contrib);
-                } else {
-                    log.error("Invalid contribution to extension point 'orphanVersionRemovalFilter': "
-                            + contrib.getClass().getName());
-                }
-            }
+    public void registerContribution(Object contrib, String point, ComponentInstance contributor) {
+        if (VERSION_REMOVAL_POLICY_XP.equals(point)) {
+            registerVersionRemovalPolicy((CoreServicePolicyDescriptor) contrib);
+        } else if (ORPHAN_VERSION_REMOVAL_FILTER_XP.equals(point)) {
+            registerOrphanVersionRemovalFilter((CoreServiceOrphanVersionRemovalFilterDescriptor) contrib);
         } else {
-            log.error("Unknown extension point: " + point);
+            throw new RuntimeException("Unknown extension point: " + point);
         }
     }
 
     @Override
-    public void unregisterExtension(Extension extension) {
-    }
-
-    private void registerVersionRemovalPolicy(CoreServicePolicyDescriptor desc) {
-        String klass = desc.getKlass();
-        try {
-            versionRemovalPolicy = (VersionRemovalPolicy) context.getRuntimeContext().loadClass(klass).newInstance();
-        } catch (ReflectiveOperationException e) {
-            log.error("Failed to instantiate versionRemovalPolicy: " + klass, e);
+    public void unregisterContribution(Object contrib, String point, ComponentInstance contributor) {
+        if (VERSION_REMOVAL_POLICY_XP.equals(point)) {
+            unregisterVersionRemovalPolicy((CoreServicePolicyDescriptor) contrib);
+        } else if (ORPHAN_VERSION_REMOVAL_FILTER_XP.equals(point)) {
+            unregisterOrphanVersionRemovalFilter((CoreServiceOrphanVersionRemovalFilterDescriptor) contrib);
         }
     }
 
-    private void registerOrphanVersionRemovalFilter(CoreServiceOrphanVersionRemovalFilterDescriptor desc) {
-        String klass = desc.getKlass();
+    protected void registerVersionRemovalPolicy(CoreServicePolicyDescriptor contrib) {
+        String klass = contrib.getKlass();
         try {
-            orphanVersionRemovalFilters.add((OrphanVersionRemovalFilter) context.getRuntimeContext().loadClass(klass).newInstance());
+            VersionRemovalPolicy policy = (VersionRemovalPolicy) context.getRuntimeContext().loadClass(klass).newInstance();
+            versionRemovalPolicies.put(contrib, policy);
         } catch (ReflectiveOperationException e) {
-            log.error("Failed to instantiate versionRemovalPolicy: " + klass, e);
+            throw new RuntimeException("Failed to instantiate " + VERSION_REMOVAL_POLICY_XP + ": " + klass, e);
         }
+    }
+
+    protected void unregisterVersionRemovalPolicy(CoreServicePolicyDescriptor contrib) {
+        versionRemovalPolicies.remove(contrib);
+    }
+
+    protected void registerOrphanVersionRemovalFilter(CoreServiceOrphanVersionRemovalFilterDescriptor contrib) {
+        String klass = contrib.getKlass();
+        try {
+            OrphanVersionRemovalFilter filter = (OrphanVersionRemovalFilter) context.getRuntimeContext().loadClass(
+                    klass).newInstance();
+            orphanVersionRemovalFilters.put(contrib, filter);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Failed to instantiate " + ORPHAN_VERSION_REMOVAL_FILTER_XP + ": " + klass, e);
+        }
+    }
+
+    protected void unregisterOrphanVersionRemovalFilter(CoreServiceOrphanVersionRemovalFilterDescriptor contrib) {
+        orphanVersionRemovalFilters.remove(contrib);
+    }
+
+    /** Gets the last version removal policy registered. */
+    public VersionRemovalPolicy getVersionRemovalPolicy() {
+        if (versionRemovalPolicies.isEmpty()) {
+            return DEFAULT_VERSION_REMOVAL_POLICY;
+        } else {
+            VersionRemovalPolicy versionRemovalPolicy = null;
+            for (VersionRemovalPolicy policy : versionRemovalPolicies.values()) {
+                versionRemovalPolicy = policy;
+            }
+            return versionRemovalPolicy;
+        }
+    }
+
+    /** Gets all the orphan version removal filters registered. */
+    public Collection<OrphanVersionRemovalFilter> getOrphanVersionRemovalFilters() {
+        return orphanVersionRemovalFilters.values();
     }
 
 }

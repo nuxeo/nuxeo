@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -56,7 +57,7 @@ public class OrphanVersionRemoverListener implements PostCommitEventListener {
         }
     }
 
-    protected List<OrphanVersionRemovalFilter> getFilters() {
+    protected Collection<OrphanVersionRemovalFilter> getFilters() {
         return Framework.getLocalService(CoreService.class).getOrphanVersionRemovalFilters();
     }
 

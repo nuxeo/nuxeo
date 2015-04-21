@@ -13,8 +13,9 @@
 package org.nuxeo.ecm.core.versioning;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * Versioning service component and implementation.
@@ -36,190 +38,212 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
 
     private static final Log log = LogFactory.getLog(VersioningComponent.class);
 
-    public static final String XP = "versioningService";
+    public static final String VERSIONING_SERVICE_XP = "versioningService";
 
     public static final String VERSIONING_RULE_XP = "versioningRules";
 
-    public VersioningService service;
+    protected static final StandardVersioningService STANDARD_VERSIONING_SERVICE = new StandardVersioningService();
 
-    protected LinkedList<Class<? extends VersioningService>> contribs;
+    protected Map<VersioningServiceDescriptor, VersioningService> versioningServices = new LinkedHashMap<>();
 
-    protected Map<String, VersioningRuleDescriptor> versioningRules;
+    protected VersioningRuleRegistry versioningRulesRegistry = new VersioningRuleRegistry();
 
-    protected LinkedList<DefaultVersioningRuleDescriptor> defaultVersioningRuleList;
+    protected static class VersioningRuleRegistry extends SimpleContributionRegistry<VersioningRuleDescriptor> {
 
-    protected boolean recompute;
+        @Override
+        public String getContributionId(VersioningRuleDescriptor contrib) {
+            return contrib.getTypeName();
+        }
+
+        @Override
+        public VersioningRuleDescriptor clone(VersioningRuleDescriptor orig) {
+            return new VersioningRuleDescriptor(orig);
+        }
+
+        @Override
+        public void merge(VersioningRuleDescriptor src, VersioningRuleDescriptor dst) {
+            dst.merge(src);
+        }
+
+        @Override
+        public boolean isSupportingMerge() {
+            return true;
+        }
+
+        @Override
+        public void contributionUpdated(String id, VersioningRuleDescriptor contrib,
+                VersioningRuleDescriptor newOrigContrib) {
+            if (contrib.isEnabled()) {
+                currentContribs.put(id, contrib);
+            } else {
+                currentContribs.remove(id);
+            }
+        }
+
+        public void clear() {
+            currentContribs.clear();
+        }
+
+        public Map<String, VersioningRuleDescriptor> getVersioningRuleDescriptors() {
+            return currentContribs;
+        }
+    }
+
+    protected Deque<DefaultVersioningRuleDescriptor> defaultVersioningRuleList = new ArrayDeque<>();
+
+    // public for tests
+    public VersioningService service = STANDARD_VERSIONING_SERVICE;
+
+    protected ComponentContext context;
 
     @Override
     public void activate(ComponentContext context) {
-        contribs = new LinkedList<Class<? extends VersioningService>>();
-        versioningRules = new HashMap<String, VersioningRuleDescriptor>();
-        defaultVersioningRuleList = new LinkedList<DefaultVersioningRuleDescriptor>();
-        recompute = true;
-        service = null;
+        this.context = context;
     }
 
     @Override
     public void deactivate(ComponentContext context) {
-        contribs.clear();
-        versioningRules.clear();
-        defaultVersioningRuleList.clear();
-        service = null;
+        this.context = null;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void registerContribution(Object contrib, String xp, ComponentInstance contributor) {
-        if (XP.equals(xp)) {
-            if (!(contrib instanceof VersioningServiceDescriptor)) {
-                log.error("Invalid contribution: " + contrib.getClass().getName());
-                return;
-            }
-            VersioningServiceDescriptor desc = (VersioningServiceDescriptor) contrib;
-            Class<?> klass;
-            try {
-                klass = Class.forName(desc.className);
-            } catch (ClassNotFoundException e) {
-                log.error("Invalid contribution class: " + desc.className);
-                return;
-            }
-            if (!(VersioningService.class.isAssignableFrom(klass))) {
-                log.error("Invalid contribution class: " + desc.className);
-                return;
-            }
-            contribs.add((Class<VersioningService>) klass);
-            log.info("Registered versioning service: " + desc.className);
-            recompute = true;
-        } else if (VERSIONING_RULE_XP.equals(xp)) {
+    public void registerContribution(Object contrib, String point, ComponentInstance contributor) {
+        if (VERSIONING_SERVICE_XP.equals(point)) {
+            registerVersioningService((VersioningServiceDescriptor) contrib);
+        } else if (VERSIONING_RULE_XP.equals(point)) {
             if (contrib instanceof VersioningRuleDescriptor) {
-                VersioningRuleDescriptor typeSaveOptDescriptor = (VersioningRuleDescriptor) contrib;
-                if (typeSaveOptDescriptor.isEnabled()) {
-                    versioningRules.put(typeSaveOptDescriptor.getTypeName(), typeSaveOptDescriptor);
-                } else {
-                    versioningRules.remove(typeSaveOptDescriptor.getTypeName());
-                }
-                recompute = true;
+                registerVersioningRule((VersioningRuleDescriptor) contrib);
             } else if (contrib instanceof DefaultVersioningRuleDescriptor) {
-                defaultVersioningRuleList.add((DefaultVersioningRuleDescriptor) contrib);
-                recompute = true;
+                registerDefaultVersioningRule((DefaultVersioningRuleDescriptor) contrib);
+            } else {
+                throw new RuntimeException("Unknown contribution to " + point + ": " + contrib.getClass());
             }
         } else {
-            log.error("Unknown extension point " + xp);
+            throw new RuntimeException("Unknown extension point: " + point);
         }
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void unregisterContribution(Object contrib, String xp, ComponentInstance contributor) {
-        if (XP.equals(xp)) {
-            if (!(contrib instanceof VersioningServiceDescriptor)) {
-                return;
-            }
-            VersioningServiceDescriptor desc = (VersioningServiceDescriptor) contrib;
-            Class<?> klass;
-            try {
-                klass = Class.forName(desc.className);
-            } catch (ClassNotFoundException e) {
-                return;
-            }
-            if (!(klass.isAssignableFrom(VersioningService.class))) {
-                return;
-            }
-            contribs.remove((Class<VersioningService>) klass);
-            log.info("Unregistered versioning service: " + desc.className);
-        } else if (VERSIONING_RULE_XP.equals(xp)) {
+    public void unregisterContribution(Object contrib, String point, ComponentInstance contributor) {
+        if (VERSIONING_SERVICE_XP.equals(point)) {
+            unregisterVersioningService((VersioningServiceDescriptor) contrib);
+        } else if (VERSIONING_RULE_XP.equals(point)) {
             if (contrib instanceof VersioningRuleDescriptor) {
-                VersioningRuleDescriptor typeSaveOptDescriptor = (VersioningRuleDescriptor) contrib;
-                String typeName = typeSaveOptDescriptor.getTypeName();
-                if (versioningRules.containsKey(typeName)) {
-                    versioningRules.remove(typeName);
-                }
+                unregisterVersioningRule((VersioningRuleDescriptor) contrib);
             } else if (contrib instanceof DefaultVersioningRuleDescriptor) {
-                defaultVersioningRuleList.remove((DefaultVersioningRuleDescriptor) contrib);
+                unregisterDefaultVersioningRule((DefaultVersioningRuleDescriptor) contrib);
             }
-            log.info("Unregistered versioning rule: " + contributor.getName());
         }
-        recompute = true;
+    }
+
+    protected void registerVersioningService(VersioningServiceDescriptor contrib) {
+        String klass = contrib.className;
+        try {
+            VersioningService vs = (VersioningService) context.getRuntimeContext().loadClass(klass).newInstance();
+            versioningServices.put(contrib, vs);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Failed to instantiate: " + klass, e);
+        }
+        log.info("Registered versioning service: " + klass);
+        recompute();
+    }
+
+    protected void unregisterVersioningService(VersioningServiceDescriptor contrib) {
+        versioningServices.remove(contrib);
+        log.info("Unregistered versioning service: " + contrib.className);
+        recompute();
+    }
+
+    protected void registerVersioningRule(VersioningRuleDescriptor contrib) {
+        versioningRulesRegistry.addContribution(contrib);
+        log.info("Registered versioning rule: " + contrib.getTypeName());
+        recompute();
+    }
+
+    protected void unregisterVersioningRule(VersioningRuleDescriptor contrib) {
+        versioningRulesRegistry.removeContribution(contrib);
+        log.info("Unregistered versioning rule: " + contrib.getTypeName());
+        recompute();
+    }
+
+    protected void registerDefaultVersioningRule(DefaultVersioningRuleDescriptor contrib) {
+        // could use a linked set instead, but given the size a linked list is enough
+        defaultVersioningRuleList.add(contrib);
+        recompute();
+    }
+
+    protected void unregisterDefaultVersioningRule(DefaultVersioningRuleDescriptor contrib) {
+        defaultVersioningRuleList.remove(contrib);
+        recompute();
     }
 
     protected void recompute() {
-        Class<? extends VersioningService> klass;
-        if (contribs.size() == 0) {
-            klass = StandardVersioningService.class;
-        } else {
-            klass = contribs.getLast();
+        VersioningService versioningService = STANDARD_VERSIONING_SERVICE;
+        for (VersioningService vs : versioningServices.values()) {
+            versioningService = vs;
         }
-        if (service == null || klass != service.getClass()) {
-            try {
-                service = klass.newInstance();
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException(e);
-            }
-        } // else keep old service instance
-
-        if (service != null && service instanceof ExtendableVersioningService) {
-            ExtendableVersioningService extendableService = (ExtendableVersioningService) service;
-            extendableService.setVersioningRules(versioningRules);
-            if (!defaultVersioningRuleList.isEmpty()) {
-                extendableService.setDefaultVersioningRule(defaultVersioningRuleList.getLast());
-            }
+        if (versioningService instanceof ExtendableVersioningService) {
+            ExtendableVersioningService vs = (ExtendableVersioningService) versioningService;
+            vs.setVersioningRules(getVersioningRules());
+            vs.setDefaultVersioningRule(getDefaultVersioningRule());
         }
+        this.service = versioningService;
     }
 
-    public VersioningService getService() {
-        if (recompute) {
-            recompute();
-            recompute = false;
-        }
-        return service;
+    protected Map<String, VersioningRuleDescriptor> getVersioningRules() {
+        return versioningRulesRegistry.getVersioningRuleDescriptors();
+    }
+
+    protected DefaultVersioningRuleDescriptor getDefaultVersioningRule() {
+        return defaultVersioningRuleList.peekLast();
     }
 
     @Override
     public String getVersionLabel(DocumentModel doc) {
-        return getService().getVersionLabel(doc);
+        return service.getVersionLabel(doc);
     }
 
     @Override
     public void doPostCreate(Document doc, Map<String, Serializable> options) throws DocumentException {
-        getService().doPostCreate(doc, options);
+        service.doPostCreate(doc, options);
     }
 
     @Override
     public List<VersioningOption> getSaveOptions(DocumentModel docModel) throws ClientException {
-        return getService().getSaveOptions(docModel);
+        return service.getSaveOptions(docModel);
     }
 
     @Override
     public boolean isPreSaveDoingCheckOut(Document doc, boolean isDirty, VersioningOption option,
             Map<String, Serializable> options) throws DocumentException {
-        return getService().isPreSaveDoingCheckOut(doc, isDirty, option, options);
+        return service.isPreSaveDoingCheckOut(doc, isDirty, option, options);
     }
 
     @Override
     public VersioningOption doPreSave(Document doc, boolean isDirty, VersioningOption option, String checkinComment,
             Map<String, Serializable> options) throws DocumentException {
-        return getService().doPreSave(doc, isDirty, option, checkinComment, options);
+        return service.doPreSave(doc, isDirty, option, checkinComment, options);
     }
 
     @Override
     public boolean isPostSaveDoingCheckIn(Document doc, VersioningOption option, Map<String, Serializable> options)
             throws DocumentException {
-        return getService().isPostSaveDoingCheckIn(doc, option, options);
+        return service.isPostSaveDoingCheckIn(doc, option, options);
     }
 
     @Override
     public Document doPostSave(Document doc, VersioningOption option, String checkinComment,
             Map<String, Serializable> options) throws DocumentException {
-        return getService().doPostSave(doc, option, checkinComment, options);
+        return service.doPostSave(doc, option, checkinComment, options);
     }
 
     @Override
     public Document doCheckIn(Document doc, VersioningOption option, String checkinComment) throws DocumentException {
-        return getService().doCheckIn(doc, option, checkinComment);
+        return service.doCheckIn(doc, option, checkinComment);
     }
 
     @Override
     public void doCheckOut(Document doc) throws DocumentException {
-        getService().doCheckOut(doc);
+        service.doCheckOut(doc);
     }
 }
