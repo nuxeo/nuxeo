@@ -16,11 +16,14 @@
  */
 package org.nuxeo.functionaltests.pages.search;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.search.aggregates.CheckBoxAggregateElements;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -34,6 +37,8 @@ import com.google.common.base.Function;
  * @since 6.0
  */
 public class DefaultSearchSubPage extends AbstractSearchSubPage {
+
+    private static final String S2_COLLECTION_XPATH = "//*[@id='s2id_nxl_gridSearchLayout:nxw_searchLayout_form:nxl_default_search_layout:nxw_visible_collection_select2']";
 
     public static final String TREE_PATH_ID = "nxl_gridSearchLayout:nxw_searchLayout_form:nxl_default_search_layout:nxw_ecm_path_treeId";
 
@@ -196,5 +201,31 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
         a.watchAjaxRequests();
         e.click();
         a.waitForAjaxRequests();
+    }
+
+    /**
+     * @since 7.3
+     */
+    public void selectCollections(final String[] collections) {
+        Select2WidgetElement collectionsWidget = new Select2WidgetElement(
+                driver,
+                driver.findElement(By.xpath(S2_COLLECTION_XPATH)),
+                true);
+        collectionsWidget.selectValues(collections);
+    }
+
+    /**
+     * @since 7.3
+     */
+    public List<String> getSelectedCollections() {
+        Select2WidgetElement collectionsWidget = new Select2WidgetElement(
+                driver,
+                driver.findElement(By.xpath(S2_COLLECTION_XPATH)),
+                true);
+        List<String> result = new ArrayList<String>();
+        for (WebElement el : collectionsWidget.getSelectedValues()) {
+            result.add(el.getText());
+        }
+        return result;
     }
 }

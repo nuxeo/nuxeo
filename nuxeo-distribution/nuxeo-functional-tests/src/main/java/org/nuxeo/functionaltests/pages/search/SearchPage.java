@@ -77,6 +77,12 @@ public class SearchPage extends DocumentBasePage {
         return asPage(SearchResultsSubPage.class);
     }
 
+    public String getSelectedSearch() {
+        Select2WidgetElement s2 = new Select2WidgetElement(driver,
+                searchFormPanel.findElement(By.id(S2_SEARCH_TYPE_ID)));
+        return s2.getSelectedValue().getText();
+    }
+
     public boolean isDefaultSearch() {
         return isSearchSelected(DEFAULT_SEARCH);
     }
@@ -89,6 +95,11 @@ public class SearchPage extends DocumentBasePage {
         return isSearchSelected(QUICK_SEARCH);
     }
 
+    protected boolean isSearchSelected(final String searchType) {
+        String selected = getSelectedSearch();
+        return selected != null && selected.equals(searchType);
+    }
+
     public void selectSearch(String searchLabel) {
         Select2WidgetElement s2 = new Select2WidgetElement(driver,
                 searchFormPanel.findElement(By.id(S2_SEARCH_TYPE_ID)));
@@ -96,17 +107,6 @@ public class SearchPage extends DocumentBasePage {
         am.watchAjaxRequests();
         s2.selectValue(searchLabel);
         am.waitForAjaxRequests();
-    }
-
-    public String getSelectedSearch() {
-        Select2WidgetElement s2 = new Select2WidgetElement(driver,
-                searchFormPanel.findElement(By.id(S2_SEARCH_TYPE_ID)));
-        return s2.getSelectedValue().getText();
-    }
-
-    protected boolean isSearchSelected(final String searchType) {
-        String selected = getSelectedSearch();
-        return selected != null && selected.equals(searchType);
     }
 
 }

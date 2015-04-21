@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -50,6 +51,8 @@ public class ITSearchTabTest extends AbstractTest {
     private final static String WORKSPACE2_TITLE = "WorkspaceTitle2_" + new Date().getTime();
 
     private static final String SEARCH_PATH = "/Default domain/Workspaces/" + WORKSPACE2_TITLE;
+
+    private static final String MY_FAVORITES_COLLECTION = "My Favorites";
 
     public final static String[] SUBJECTS = { "Comics", "Religion", "Education" };
 
@@ -147,6 +150,18 @@ public class ITSearchTabTest extends AbstractTest {
         searchPage = searchLayoutSubPage.filter();
         resultPanelSubPage = searchPage.getSearchResultsSubPage();
         assertEquals(nbCurrentDoc, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
+
+        // Test Collections Widget
+        resultPanelSubPage = searchPage.getSearchResultsSubPage();
+        searchLayoutSubPage = searchPage.getDefaultSearch();
+        searchLayoutSubPage.selectCollections(new String[] {MY_FAVORITES_COLLECTION});
+        searchPage = searchLayoutSubPage.filter();
+        searchLayoutSubPage = searchPage.getDefaultSearch();
+        resultPanelSubPage = searchPage.getSearchResultsSubPage();
+        assertEquals(0, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
+        List<String> selectedCollections = searchLayoutSubPage.getSelectedCollections();
+        assertEquals(1, selectedCollections.size());
+        assertEquals(MY_FAVORITES_COLLECTION, selectedCollections.get(0));
 
         logout();
     }
