@@ -301,18 +301,10 @@
       <artifactId>nuxeo-opencmis-bindings</artifactId>
     </dependency>
 
-    <!-- WebDAV / WSS -->
+    <!-- WebDAV -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-webdav</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.lib.wss</groupId>
-      <artifactId>nuxeo-wss-front</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-wss</artifactId>
     </dependency>
 
     <!-- Rest API -->
