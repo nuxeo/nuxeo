@@ -201,7 +201,6 @@ public class TestCompareCoreWithES {
                 "SELECT * from Document WHERE dc:title NOT LIKE '%i%e%' ORDER BY dc:title", });
     }
 
-
     @Test
     public void testSearchWithStartsWith() throws Exception {
         testQueries(new String[] {
