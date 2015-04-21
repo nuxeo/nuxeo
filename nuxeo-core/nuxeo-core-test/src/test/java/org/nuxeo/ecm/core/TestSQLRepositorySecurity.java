@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,9 +10,14 @@
  *     Florent Guillaume
  *     Benoit Delbosc
  */
-
 package org.nuxeo.ecm.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.core.api.security.Access.DENY;
 import static org.nuxeo.ecm.core.api.security.Access.GRANT;
 import static org.nuxeo.ecm.core.api.security.Access.UNKNOWN;
@@ -31,15 +36,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.After;
-import org.junit.Test;
+import org.junit.Before;
 import org.junit.Ignore;
-
-import static org.junit.Assert.*;
-
-import org.nuxeo.ecm.core.NXCore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -56,48 +61,46 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.core.security.SecurityService;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSession;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-/**
- * @author Florent Guillaume
- */
-public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml",
+        "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-permissions-contrib.xml" })
+public class TestSQLRepositorySecurity {
 
-    @Override
+    @Inject
+    protected CoreSession session;
+
     @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-core-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-permissions-contrib.xml");
+    public void setUp() {
         if (allowNegativeAcl()) {
             Framework.getProperties().put(SQLSession.ALLOW_NEGATIVE_ACL_PROPERTY, "true");
         }
-        openSession();
     }
 
-    @Override
     @After
-    public void tearDown() throws Exception {
-        // session.cancel();
-        closeSession();
+    public void tearDown() {
         Framework.getProperties().remove(SQLSession.ALLOW_NEGATIVE_ACL_PROPERTY);
-        super.tearDown();
+    }
+
+    protected CoreSession openSessionAs(String username) {
+        return CoreInstance.openCoreSession(session.getRepositoryName(), username);
     }
 
     // overridden to test with allowed negative properties
     protected boolean allowNegativeAcl() {
         return false; // default in Nuxeo
     }
-
-    //
-    //
-    // ---------------------------------------------------------
-    // ----- copied from TestSecurity in nuxeo-core-facade -----
-    // ---------------------------------------------------------
-    //
-    //
 
     // assumes that the global "session" belongs to an Administrator
     protected void setPermissionToAnonymous(String perm) throws ClientException {
@@ -150,8 +153,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         // so that we can create a folder
         setPermissionToAnonymous(EVERYTHING);
 
-        CoreSession anonSession = openSessionAs("anonymous");
-        try {
+        try (CoreSession anonSession = openSessionAs("anonymous")) {
             DocumentModel root = anonSession.getRootDocument();
 
             DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "folder#1", "Folder");
@@ -261,8 +263,6 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
             } catch (Exception e) {
 
             }
-        } finally {
-            closeSession(anonSession);
         }
     }
 
@@ -336,11 +336,11 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         assertTrue("list parents for" + ws2.getName() + "under " + session.getPrincipal().getName() + " is not empty:",
                 !ws2ParentsUnderAdministrator.isEmpty());
 
-        CoreSession testSession = openSessionAs("test");
-        List<DocumentModel> ws2ParentsUnderTest = testSession.getParentDocuments(ws2.getRef());
-        assertTrue("list parents for" + ws2.getName() + "under " + testSession.getPrincipal().getName() + " is empty:",
-                ws2ParentsUnderTest.isEmpty());
-        closeSession(testSession);
+        try (CoreSession testSession = openSessionAs("test")) {
+            List<DocumentModel> ws2ParentsUnderTest = testSession.getParentDocuments(ws2.getRef());
+            assertTrue("list parents for" + ws2.getName() + "under " + testSession.getPrincipal().getName()
+                    + " is empty:", ws2ParentsUnderTest.isEmpty());
+        }
     }
 
     @Test
@@ -380,19 +380,12 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         assertNull(acl);
     }
 
-    // copied from TestAPI in nuxeo-core-facade
     @Test
     public void testPermissionChecks() throws Throwable {
-
-        CoreSession joeReaderSession = null;
-        CoreSession joeContributorSession = null;
-        CoreSession joeLocalManagerSession = null;
-
         DocumentRef ref = createDocumentModelWithSamplePermissions("docWithPerms");
 
-        try {
+        try (CoreSession joeReaderSession = openSessionAs("joe_reader")) {
             // reader only has the right to consult the document
-            joeReaderSession = openSessionAs("joe_reader");
             DocumentModel joeReaderDoc = joeReaderSession.getDocument(ref);
             try {
                 joeReaderSession.saveDocument(joeReaderDoc);
@@ -412,10 +405,11 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
             } catch (DocumentSecurityException e) {
             }
             joeReaderSession.save();
+        }
 
-            // contributor only has the right to write the properties of
-            // document
-            joeContributorSession = openSessionAs("joe_contributor");
+        // contributor only has the right to write the properties of
+        // document
+        try (CoreSession joeContributorSession = openSessionAs("joe_contributor")) {
             DocumentModel joeContributorDoc = joeContributorSession.getDocument(ref);
 
             joeContributorSession.saveDocument(joeContributorDoc);
@@ -440,16 +434,16 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
                 fail("should have raised a security exception");
             } catch (DocumentSecurityException e) {
             }
-
             joeContributorSession.save();
+        }
 
-            // local manager can read, write, create and remove
-            joeLocalManagerSession = openSessionAs("joe_localmanager");
+        // local manager can read, write, create and remove
+        try (CoreSession joeLocalManagerSession = openSessionAs("joe_localmanager")) {
             DocumentModel joeLocalManagerDoc = joeLocalManagerSession.getDocument(ref);
 
             joeLocalManagerSession.saveDocument(joeLocalManagerDoc);
 
-            childRef = joeLocalManagerSession.createDocument(
+            DocumentRef childRef = joeLocalManagerSession.createDocument(
                     new DocumentModelImpl(joeLocalManagerDoc.getPathAsString(), "child2", "File")).getRef();
             joeLocalManagerSession.save();
 
@@ -461,38 +455,8 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
 
             joeLocalManagerSession.removeDocument(ref);
             joeLocalManagerSession.save();
-
-        } finally {
-            Throwable rethrow = null;
-            if (joeReaderSession != null) {
-                try {
-                    closeSession(joeReaderSession);
-                } catch (Throwable t) {
-                    rethrow = t;
-                }
-            }
-            if (joeContributorSession != null) {
-                try {
-                    closeSession(joeContributorSession);
-                } catch (Throwable t) {
-                    if (rethrow == null) {
-                        rethrow = t;
-                    }
-                }
-            }
-            if (joeLocalManagerSession != null) {
-                try {
-                    closeSession(joeLocalManagerSession);
-                } catch (Throwable t) {
-                    if (rethrow == null) {
-                        rethrow = t;
-                    }
-                }
-            }
-            if (rethrow != null) {
-                throw rethrow;
-            }
         }
+
     }
 
     protected DocumentRef createDocumentModelWithSamplePermissions(String name) throws ClientException {
@@ -562,8 +526,8 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
             folder.setACP(acp, true);
         }
         session.save();
-        CoreSession joeSession = openSessionAs("joe");
-        try {
+
+        try (CoreSession joeSession = openSessionAs("joe")) {
             DocumentModelList list;
             list = joeSession.query("SELECT * FROM Folder");
             List<String> names = new ArrayList<String>();
@@ -594,11 +558,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
 
             list = joeSession.query("SELECT * FROM Folder");
             assertEquals(browsePermissions.length + 1, list.size());
-
-        } finally {
-            closeSession(joeSession);
         }
-
     }
 
     @Test
@@ -618,8 +578,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         doc.setACP(acp, true);
         session.save();
 
-        CoreSession joeSession = openSessionAs("joe");
-        try {
+        try (CoreSession joeSession = openSessionAs("joe")) {
             DocumentModelList list;
             list = joeSession.query("SELECT * FROM Folder");
             assertEquals(1, list.size());
@@ -628,12 +587,9 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
             session.save();
             list = joeSession.query("SELECT * FROM Folder");
             assertEquals(0, list.size());
-        } finally {
-            closeSession(joeSession);
         }
 
-        CoreSession bobSession = openSessionAs("bob");
-        try {
+        try (CoreSession bobSession = openSessionAs("bob")) {
             DocumentModelList list;
             // Perform a query to init the ACLR cache
             list = bobSession.query("SELECT * FROM Folder");
@@ -646,8 +602,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
             // Check that the ACLR has been added to the user cache
             list = bobSession.query("SELECT * FROM Folder");
             assertEquals(1, list.size());
-        } finally {
-            closeSession(bobSession);
         }
     }
+
 }

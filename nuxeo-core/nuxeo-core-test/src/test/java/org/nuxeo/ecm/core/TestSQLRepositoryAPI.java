@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
@@ -38,10 +37,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.FileUtils;
@@ -50,6 +51,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -60,6 +62,7 @@ import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.ListDiff;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -80,42 +83,78 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.schema.DocumentTypeDescriptor;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyBeforeModificationListener;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
-/**
- * NOTE: to run these tests in Eclipse, make sure your test runner allocates at least -Xmx200M to the JVM.
- *
- * @author Florent Guillaume
- */
-public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.core.convert", //
+        "org.nuxeo.ecm.core.convert.plugins", //
+})
+@LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
+public class TestSQLRepositoryAPI {
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-core-types-contrib.xml");
-        fireFrameworkStarted();
-        openSession();
+    @Inject
+    protected RepositorySettings repositorySettings;
+
+    @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
+    protected EventService eventService;
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected SchemaManager schemaManager;
+
+    @After
+    public void clearDummyTestListener() {
+        DummyTestListener.clear();
     }
 
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        session.save();
-        waitForAsyncCompletion();
-        closeSession();
-        DummyTestListener.clear();
-        super.tearDown();
+    protected CoreSession openSessionAs(String username) {
+        return CoreInstance.openCoreSession(session.getRepositoryName(), username);
+    }
+
+    protected CoreSession openSessionAs(NuxeoPrincipal principal) {
+        return CoreInstance.openCoreSession(session.getRepositoryName(), principal);
+    }
+
+    protected void reopenSession() {
+        session = repositorySettings.reopenSession();
+    }
+
+    protected void waitForAsyncCompletion() {
+        nextTransaction();
+        eventService.waitForAsyncCompletion();
+    }
+
+    protected void nextTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
     }
 
     @Test
@@ -131,10 +170,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         child.setProperty("dublincore", "modified", cal);
         session.saveDocument(child);
         session.save();
-        closeSession();
 
         // ----- new session -----
-        openSession();
+        reopenSession();
         // root = session.getRootDocument();
         child = session.getChild(root.getRef(), "domain");
 
@@ -163,10 +201,15 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         child.setProperty("testList", "participants", new ArrayList<String>(Arrays.asList("c", "d")));
         session.saveDocument(child);
         session.save();
-        closeSession();
+
+        child = session.getDocument(child.getRef());
+        Object s = child.getProperty("testList", "strings");
+        assertTrue(s.getClass().isArray());
+        // Objet[] has been normalized to Serializable[] when re-fetched from mapper cache
+        assertEquals(Serializable.class, s.getClass().getComponentType());
 
         // ----- new session -----
-        openSession();
+        reopenSession();
         root = session.getRootDocument();
         child = session.getChild(root.getRef(), "domain");
 
@@ -177,11 +220,15 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(contributors instanceof String[]);
         assertEquals(Arrays.asList("c", "d"), Arrays.asList((String[]) contributors));
         Object strings = child.getProperty("testList", "strings");
-        assertTrue(strings instanceof String[]);
-        assertEquals(Arrays.asList("e", "f"), Arrays.asList((String[]) strings));
+        assertTrue(strings.getClass().isArray());
+        // Objet[] has been normalized to String[] when re-read from database
+        assertEquals(String.class, strings.getClass().getComponentType());
+        assertEquals(Arrays.asList("e", "f"), Arrays.asList((Serializable[]) strings));
         Object participants = child.getProperty("testList", "participants");
-        assertTrue(participants instanceof String[]);
-        assertEquals(Arrays.asList("c", "d"), Arrays.asList((String[]) participants));
+        assertTrue(participants.getClass().isArray());
+        // List<> has been normalized to String[] when re-read from database
+        assertEquals(String.class, participants.getClass().getComponentType());
+        assertEquals(Arrays.asList("c", "d"), Arrays.asList((Serializable[]) participants));
     }
 
     @Test
@@ -201,8 +248,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     public void testComplexType() throws Exception {
         // boiler plate to handle the asynchronous full-text indexing of blob
         // content in a deterministic way
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.core.convert.plugins");
 
         DocumentModel doc = new DocumentModelImpl("/", "complex-doc", "ComplexDoc");
         doc = session.createDocument(doc);
@@ -211,8 +256,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         waitForAsyncCompletion();
 
         // test setting and reading a map with an empty list
-        closeSession();
-        openSession();
+        reopenSession();
         doc = session.getDocument(docRef);
         Map<String, Object> attachedFile = new HashMap<String, Object>();
         List<Map<String, Object>> vignettes = new ArrayList<Map<String, Object>>();
@@ -269,7 +313,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         // It seems to have something to do with how closed sessions are not immediately accounted for by Oracle's PMON
         // (process monitor).
         // So don't run this test with Oracle.
-        assumeTrue("Test does too many open/close for Oracle", !database.isVCSOracle());
+        assumeTrue("Test does too many open/close for Oracle", !coreFeature.getStorageConfiguration().isVCSOracle());
 
         // test case to reproduce an ordering content related Heisenbug on
         // postgresql: NXP-2810: Preserve creation order of children of a
@@ -310,8 +354,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
             doc = session.createDocument(doc);
 
             session.save();
-            closeSession();
-            openSession();
         }
     }
 
@@ -326,9 +368,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 assertEquals(String.format("document %d, vignette %d", i, j),
                         doc.getProperty(propertyPath + "content").getValue(Blob.class).getString());
             }
-
-            closeSession();
-            openSession();
         }
     }
 
@@ -349,14 +388,13 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
 
         // ----- new session -----
-        closeSession();
-        openSession();
+        reopenSession();
         // root = session.getRootDocument();
         doc = session.getDocument(new PathRef("/doc"));
         String title = (String) doc.getProperty("dublincore", "title");
         assertEquals("title2", title);
         Object participants = doc.getProperty("testList", "participants");
-        assertEquals(Arrays.asList("c", "d"), Arrays.asList((String[]) participants));
+        assertEquals(Arrays.asList("c", "d"), Arrays.asList((Serializable[]) participants));
     }
 
     @Test
@@ -381,8 +419,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
 
         // ----- new session -----
-        closeSession();
-        openSession();
+        reopenSession();
         doc = session.getDocument(new PathRef("/doc"));
         assertEquals(333L, doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").getValue());
     }
@@ -1110,14 +1147,14 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         // relation, check as admin
 
-        closeSession();
-        session = openSessionAs(new UserPrincipal("adm", null, false, true));
-        DocumentModel rel = session.createDocumentModel(null, "myrel", "Relation");
-        rel = session.createDocument(rel);
-        session.save();
-        docs = session.getParentDocuments(rel.getRef());
-        assertEquals(1, docs.size());
-        assertEquals("myrel", docs.get(0).getName());
+        try (CoreSession admSession = openSessionAs(new UserPrincipal("adm", null, false, true))) {
+            DocumentModel rel = admSession.createDocumentModel(null, "myrel", "Relation");
+            rel = admSession.createDocument(rel);
+            admSession.save();
+            docs = admSession.getParentDocuments(rel.getRef());
+            assertEquals(1, docs.size());
+            assertEquals("myrel", docs.get(0).getName());
+        }
     }
 
     @Test
@@ -1513,22 +1550,21 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(2, dml.size());
 
         // as bob
-        closeSession();
-        session = openSessionAs("bob");
+        try (CoreSession bobSession = openSessionAs("bob")) {
+            // check bob doesn't see doc1
+            dml = bobSession.query("SELECT * FROM Document WHERE ecm:path STARTSWITH '/f1'");
+            assertEquals(1, dml.size());
 
-        // check bob doesn't see doc1
-        dml = session.query("SELECT * FROM Document WHERE ecm:path STARTSWITH '/f1'");
-        assertEquals(1, dml.size());
+            // do copy
+            bobSession.copy(f1.getRef(), root.getRef(), "f2");
 
-        // do copy
-        session.copy(f1.getRef(), root.getRef(), "f2");
+            // save is mandatory to propagate read acls after a copy
+            bobSession.save();
 
-        // save is mandatory to propagate read acls after a copy
-        session.save();
-
-        // check bob doesn't see doc1's copy
-        dml = session.query("SELECT * FROM Document WHERE ecm:path STARTSWITH '/f2'");
-        assertEquals(1, dml.size());
+            // check bob doesn't see doc1's copy
+            dml = bobSession.query("SELECT * FROM Document WHERE ecm:path STARTSWITH '/f2'");
+            assertEquals(1, dml.size());
+        }
     }
 
     @Test
@@ -1782,8 +1818,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(baseFacets.size() + 1, doc.getFacets().size());
         assertEquals("123", doc.getPropertyValue("age:age"));
         session.save();
-        closeSession();
-        openSession();
+
+        reopenSession();
         doc = session.getDocument(doc.getRef());
         assertTrue(doc.hasFacet("Aged"));
         assertEquals(baseFacets.size() + 1, doc.getFacets().size());
@@ -1825,8 +1861,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
             // ok
         }
         session.save();
-        closeSession();
-        openSession();
+
+        reopenSession();
         doc = session.getDocument(doc.getRef());
         assertFalse(doc.hasFacet("Aged"));
         assertTrue(doc.hasFacet(FacetNames.HIDDEN_IN_NAVIGATION));
@@ -1861,8 +1897,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
 
         // new session
-        closeSession();
-        openSession();
+        reopenSession();
         doc = session.getDocument(doc.getRef());
         assertEquals("123", doc.getPropertyValue("age:age"));
 
@@ -3120,10 +3155,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         proxy.setPropertyValue("info:info", "proxyinfo");
         proxy = session.saveDocument(proxy);
         session.save();
-        closeSession();
 
         // new session
-        openSession();
+        reopenSession();
         DocumentModel root = session.getRootDocument();
         proxy = session.getDocument(proxy.getRef());
         assertEquals("proxyinfo", proxy.getPropertyValue("info:info"));
@@ -3236,8 +3270,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         ver.setProperty("dublincore", "modified", mod);
         session.importDocuments(Collections.singletonList(ver));
         session.save();
-        closeSession();
-        openSession();
+
+        reopenSession();
         ver = session.getDocument(new IdRef(vid));
         // assertEquals(name, doc.getName()); // no path -> no name...
         assertEquals("Ver title", ver.getProperty("dublincore", "title"));
@@ -3267,8 +3301,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         proxy.putContextData(CoreSession.IMPORT_PROXY_VERSIONABLE_ID, id);
         session.importDocuments(Collections.singletonList(proxy));
         session.save();
-        closeSession();
-        openSession();
+
+        reopenSession();
         proxy = session.getDocument(new IdRef(pid));
         assertEquals(name, proxy.getName());
         assertEquals("Ver title", proxy.getProperty("dublincore", "title"));
@@ -3296,8 +3330,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc.setProperty("dublincore", "title", "Live title");
         session.importDocuments(Collections.singletonList(doc));
         session.save();
-        closeSession();
-        openSession();
+
+        reopenSession();
         doc = session.getDocument(new IdRef(id));
         assertEquals(name, doc.getName());
         assertEquals("Live title", doc.getProperty("dublincore", "title"));
@@ -3351,8 +3385,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.saveDocument(ver);
         session.save();
 
-        closeSession();
-        openSession();
+        reopenSession();
         doc = session.getDocument(new PathRef("/doc"));
         ver = session.getLastDocumentVersion(doc.getRef());
         assertEquals("t1", ver.getProperty("dublincore", "title"));
@@ -3365,9 +3398,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
      * {@code true}.
      */
     @Test
+    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listeners-contrib.xml")
     public void testDoNotFireIncrementBeforeUpdateEventsOnVersion() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-listeners-contrib.xml");
-
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "doc", "File");
 
@@ -3429,9 +3461,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listeners-all-contrib.xml")
     public void testVersioningEvents() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-listeners-all-contrib.xml");
-
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
         doc = session.createDocument(doc);
         DocumentModel folder = new DocumentModelImpl("/", "fold", "Folder");
@@ -3518,9 +3549,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertNull(doc2.getParentRef()); // placeless
         session.save();
 
-        closeSession();
         // ----- new session -----
-        openSession();
+        reopenSession();
         doc = session.getDocument(new IdRef(doc.getId()));
         assertNull(doc.getParentRef());
 
@@ -3566,9 +3596,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
      * PREVIOUS_DOCUMENT_MODEL received by the event holds the correct info.
      */
     @Test
+    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listener-beforemod-contrib.xml")
     public void testBeforeModificationListenerRename() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-listener-beforemod-contrib.xml");
-
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc.setProperty("dublincore", "title", "t1");
         doc = session.createDocument(doc);
@@ -3594,14 +3623,12 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(1, session.getChildren(rootRef).size());
         assertNotNull(session.getDocument(docRef));
         assertNotNull(session.getChild(rootRef, "doc"));
-        closeSession();
-        openSession();
 
         // remove MyDocType from known types
-        SchemaManagerImpl schemaManager = (SchemaManagerImpl) Framework.getService(SchemaManager.class);
-        DocumentTypeDescriptor dtd = schemaManager.getDocumentTypeDescriptor("MyDocType");
-        schemaManager.unregisterDocumentType(dtd);
+        DocumentTypeDescriptor dtd = ((SchemaManagerImpl) schemaManager).getDocumentTypeDescriptor("MyDocType");
+        ((SchemaManagerImpl) schemaManager).unregisterDocumentType(dtd);
 
+        reopenSession();
         assertEquals(0, session.getChildren(rootRef).size());
         try {
             session.getDocument(docRef);

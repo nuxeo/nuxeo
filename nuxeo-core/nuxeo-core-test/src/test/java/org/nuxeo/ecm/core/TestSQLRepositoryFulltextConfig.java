@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,22 +18,79 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.junit.After;
+import javax.inject.Inject;
+
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.reload.ReloadService;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
-public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.runtime.reload")
+public class TestSQLRepositoryFulltextConfig {
 
-    @After
-    @Override
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
+    @Inject
+    protected RepositorySettings repositorySettings;
+
+    @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
+    protected EventService eventService;
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected ReloadService reloadService;
+
+    @Before
+    public void setUp() {
+        assumeTrue(coreFeature.getStorageConfiguration().isVCSH2());
+    }
+
+    protected void newRepository() {
+        waitForAsyncCompletion();
+        repositorySettings.releaseSession();
+        // reload repo with new config
+        reloadService.reloadRepository();
+        session = repositorySettings.createSession();
+    }
+
+    protected void waitForAsyncCompletion() {
+        nextTransaction();
+        eventService.waitForAsyncCompletion();
+    }
+
+    protected void waitForFulltextIndexing() {
+        nextTransaction();
+        coreFeature.getStorageConfiguration().waitForFulltextIndexing();
+    }
+
+    protected void nextTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
     }
 
     protected Calendar getCalendar(int year, int month, int day, int hours, int minutes, int seconds) {
@@ -103,16 +160,13 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
     }
 
     @Test
+    // deploy contrib where only Note and File documents are fulltext indexed
+    @LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-fulltext-note-file-only-contrib.xml",
+            "org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml",
+            "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml" })
     public void testFulltextOnlyNoteFile() throws Exception {
-        assumeTrue(database.isVCSH2());
+        newRepository();
 
-        // deploy contrib where only Note and File documents are fulltext
-        // indexed
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-fulltext-note-file-only-contrib.xml");
-
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/testquery-core-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-core-types-contrib-2.xml");
-        openSession();
         DocumentModelList dml;
         createDocs();
 
@@ -135,19 +189,16 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
         query = "SELECT * FROM Folder WHERE ecm:fulltext = 'test'";
         dml = session.query(query);
         assertEquals(0, dml.size());
-
     }
 
     @Test
+    // deploy contrib where only Note and File are not fulltext indexed
+    @LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-fulltext-note-file-excluded-contrib.xml",
+            "org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml",
+            "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml" })
     public void testFulltextNoteFileExcluded() throws Exception {
-        assumeTrue(database.isVCSH2());
+        newRepository();
 
-        // deploy contrib where only Note and File are not fulltext indexed
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-fulltext-note-file-excluded-contrib.xml");
-
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/testquery-core-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-core-types-contrib-2.xml");
-        openSession();
         DocumentModelList dml;
         createDocs();
 
@@ -174,16 +225,13 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
     }
 
     @Test
+    // deploy contrib where fulltext configuration is mixed include types should have the priority
+    @LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-fulltext-mixed-contrib.xml",
+            "org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml",
+            "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml" })
     public void testFulltextMixedConfig() throws Exception {
-        assumeTrue(database.isVCSH2());
+        newRepository();
 
-        // deploy contrib where fulltext configuration is mixed
-        // include types should have the priority
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-fulltext-mixed-contrib.xml");
-
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/testquery-core-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-core-types-contrib-2.xml");
-        openSession();
         DocumentModelList dml;
         createDocs();
 
@@ -210,13 +258,12 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
     }
 
     @Test
+    // deploy contrib where only Note and File are not fulltext indexed
+    @LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-repository-h2-contrib.xml",
+            "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-note-not-indexable-contrib.xml" })
     public void testNotFulltextIndexableFacet() throws Exception {
-        assumeTrue(database.isVCSH2());
+        newRepository();
 
-        // deploy contrib where only Note and File are not fulltext indexed
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-repository-h2-contrib.xml");
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-core-types-note-not-indexable-contrib.xml");
-        openSession();
         DocumentModelList dml;
         createDocs();
 

@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
@@ -33,6 +34,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.model.persistence.Contribution;
 import org.nuxeo.runtime.model.persistence.fs.ContributionLocation;
 import org.nuxeo.runtime.test.runner.Defaults;
@@ -40,6 +42,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.ServiceProvider;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.osgi.framework.Bundle;
 
 import com.google.inject.Scope;
@@ -230,6 +233,31 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
 
     public CoreSession getSession() {
         return session;
+    }
+
+    /**
+     * Reopens the session.
+     * <p>
+     * The returned new session should usually be re-assigned by the caller to the injected {@link CoreSession} for
+     * further code to keep working with the new session.
+     *
+     * @return the new session
+     * @since 7.3
+     */
+    public CoreSession reopenSession() {
+        releaseSession();
+        waitForAsyncCompletion();
+        // flush JCA cache to acquire a new low-level session
+        NuxeoContainer.resetConnectionManager();
+        return createSession();
+    }
+
+    protected void waitForAsyncCompletion() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+        Framework.getService(EventService.class).waitForAsyncCompletion();
     }
 
     /**

@@ -7,30 +7,47 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
-public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+public class TestVersioningRemovalPolicy {
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        openSession();
+    @Inject
+    protected EventService eventService;
+
+    @Inject
+    protected CoreSession session;
+
+    protected void waitForAsyncCompletion() {
+        nextTransaction();
+        eventService.waitForAsyncCompletion();
     }
 
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
+    protected void nextTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
     }
 
     protected DocumentModelList getVersion() throws Exception {
@@ -65,8 +82,7 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
         session.removeDocument(doc.getRef());
         session.save();
 
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        session.save();
+        waitForAsyncCompletion();
 
         vs = getVersion();
         assertEquals(0, vs.size());
@@ -82,16 +98,18 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
         // remove the doc first
         session.removeDocument(doc.getRef());
         session.save();
+
         waitForAsyncCompletion();
-        session.save();
+
         DocumentModelList vs = getVersion();
         assertEquals(1, vs.size()); // 1 version remains due to proxu
 
         // remove proxy second
         session.removeDocument(proxy.getRef());
         session.save();
+
         waitForAsyncCompletion();
-        session.save();
+
         vs = getVersion();
         assertEquals(0, vs.size()); // version deleted through last proxy
     }
@@ -106,17 +124,16 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
         // remove last proxy, but live doc still remains
         session.removeDocument(proxy.getRef());
         session.save();
+
         waitForAsyncCompletion();
-        session.save();
+
         DocumentModelList vs = getVersion();
         assertEquals(1, vs.size()); // version not deleted
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-versioning-removal-nullcontrib.xml")
     public void shouldNotRemoveOrphanVersions() throws Exception {
-
-        deployContrib("org.nuxeo.ecm.core.test.tests", "test-versioning-removal-nullcontrib.xml");
-
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
         doc = session.createDocument(doc);
         VersioningDocument vdoc = doc.getAdapter(VersioningDocument.class);
@@ -142,18 +159,15 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
         session.removeDocument(doc.getRef());
         session.save();
 
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        session.save();
+        waitForAsyncCompletion();
 
         vs = getVersion();
         assertEquals(1, vs.size());
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-versioning-removal-filtercontrib.xml")
     public void shouldRemoveOrphanFileVersionsOnly() throws Exception {
-
-        deployContrib("org.nuxeo.ecm.core.test.tests", "test-versioning-removal-filtercontrib.xml");
-
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
         doc = session.createDocument(doc);
         VersioningDocument vdoc = doc.getAdapter(VersioningDocument.class);
@@ -195,8 +209,7 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
         session.removeDocument(note.getRef());
         session.save();
 
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        session.save();
+        waitForAsyncCompletion();
 
         vs = getVersion();
         assertEquals(1, vs.size());

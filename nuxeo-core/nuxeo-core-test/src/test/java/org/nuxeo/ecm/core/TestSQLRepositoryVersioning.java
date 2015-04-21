@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
@@ -24,12 +23,18 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import org.junit.After;
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -46,33 +51,50 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
-public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml" })
+public class TestSQLRepositoryVersioning {
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-core-types-contrib.xml");
-        openSession();
-    }
+    @Inject
+    protected CoreFeature coreFeature;
 
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        session.cancel();
-        closeSession();
-        super.tearDown();
+    @Inject
+    protected CoreSession session;
+
+    protected CoreSession openSessionAs(String username) {
+        return CoreInstance.openCoreSession(session.getRepositoryName(), username);
     }
 
     /**
      * Sleep 1s, useful for stupid databases (like MySQL) that don't have subsecond resolution in TIMESTAMP fields.
      */
-    public void maybeSleepToNextSecond() {
-        database.maybeSleepToNextSecond();
+    protected void maybeSleepToNextSecond() {
+        coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
+    }
+
+    protected void waitForFulltextIndexing() {
+        nextTransaction();
+        coreFeature.getStorageConfiguration().waitForFulltextIndexing();
+    }
+
+    protected void nextTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
     }
 
     @Test
@@ -332,44 +354,86 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
     @Test
     public void testRestoreInvalidations() throws Exception {
-        // open second session to receive invalidations
-        CoreSession session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);
-
         DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
         doc.setPropertyValue("dc:title", "t1");
         doc = session.createDocument(doc);
-        DocumentRef docRef = doc.getRef();
+        final DocumentRef docRef = doc.getRef();
         DocumentRef v1 = session.checkIn(docRef, null, null);
         session.checkOut(docRef);
         doc.setPropertyValue("dc:title", "t2");
         session.saveDocument(doc);
-        DocumentRef v2 = session.checkIn(docRef, null, null);
         session.save();
-        session2.save(); // process invalidations
 
-        assertEquals("t2", doc.getPropertyValue("dc:title"));
-        DocumentModel doc2 = session2.getDocument(docRef);
-        assertEquals("t2", doc2.getPropertyValue("dc:title"));
-
-        // restore v1
         waitForFulltextIndexing();
-        DocumentModel restored = session.restoreToVersion(docRef, v1);
-        assertEquals("t1", restored.getPropertyValue("dc:title"));
-        session.save();
-        session2.save();
-        DocumentModel restored2 = session2.getDocument(docRef);
-        assertEquals("t1", restored2.getPropertyValue("dc:title"));
 
-        // restore v2
-        waitForFulltextIndexing();
-        restored = session.restoreToVersion(docRef, v2);
-        assertEquals("t2", restored.getPropertyValue("dc:title"));
-        session.save();
-        session2.save();
-        restored2 = session2.getDocument(docRef);
-        assertEquals("t2", restored2.getPropertyValue("dc:title"));
-
-        closeSession(session2);
+        // we need 2 threads to get 2 different sessions that send each other invalidations
+        final CyclicBarrier barrier = new CyclicBarrier(2);
+        Throwable[] throwables = new Throwable[2];
+        Thread t1 = new Thread() {
+            @Override
+            public void run() {
+                TransactionHelper.startTransaction();
+                try (CoreSession session = openSessionAs(SecurityConstants.ADMINISTRATOR)) {
+                    DocumentModel doc = session.getDocument(docRef);
+                    assertEquals("t2", doc.getPropertyValue("dc:title"));
+                    // 1. sync
+                    barrier.await(30, TimeUnit.SECONDS); // (throws on timeout)
+                    // 2. restore and next tx to send invalidations
+                    DocumentModel restored = session.restoreToVersion(docRef, v1);
+                    assertEquals("t1", restored.getPropertyValue("dc:title"));
+                    session.save();
+                    nextTransaction();
+                    // 3. sync
+                    barrier.await(30, TimeUnit.SECONDS); // (throws on timeout)
+                    // 4. wait
+                } catch (InterruptedException | BrokenBarrierException | TimeoutException | RuntimeException
+                        | AssertionError t) {
+                    throwables[0] = t;
+                } finally {
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
+            }
+        };
+        Thread t2 = new Thread() {
+            @Override
+            public void run() {
+                TransactionHelper.startTransaction();
+                try (CoreSession session = openSessionAs(SecurityConstants.ADMINISTRATOR)) {
+                    DocumentModel doc = session.getDocument(docRef);
+                    assertEquals("t2", doc.getPropertyValue("dc:title"));
+                    // 1. sync
+                    barrier.await(30, TimeUnit.SECONDS); // (throws on timeout)
+                    // 2. nop
+                    // 3. sync
+                    barrier.await(30, TimeUnit.SECONDS); // (throws on timeout)
+                    // 4. next tx to get invalidations and check
+                    nextTransaction();
+                    DocumentModel restored = session.getDocument(docRef);
+                    assertEquals("t1", restored.getPropertyValue("dc:title"));
+                } catch (InterruptedException | BrokenBarrierException | TimeoutException | RuntimeException
+                        | AssertionError t) {
+                    throwables[1] = t;
+                } finally {
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
+            }
+        };
+        t1.start();
+        t2.start();
+        t1.join();
+        t2.join();
+        AssertionError assertionError = null;
+        for (Throwable t : throwables) {
+            if (t != null) {
+                if (assertionError == null) {
+                    assertionError = new AssertionError("Exceptions in threads");
+                }
+                assertionError.addSuppressed(t);
+            }
+        }
+        if (assertionError != null) {
+            throw assertionError;
+        }
     }
 
     @Test
@@ -452,11 +516,8 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         acp = session.getACP(version.getRef());
         assertNull(acp);
         // check proxy still accessible (in another session)
-        CoreSession session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);
-        try {
+        try (CoreSession session2 = openSessionAs(SecurityConstants.ADMINISTRATOR)) {
             session2.getDocument(proxy.getRef());
-        } finally {
-            closeSession(session2);
         }
     }
 
@@ -506,8 +567,6 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         ver.followTransition("approve");
         session.save();
 
-        closeSession();
-        openSession();
         doc = session.getDocument(new PathRef("/doc"));
         ver = session.getLastDocumentVersion(doc.getRef());
         assertEquals("approved", ver.getCurrentLifeCycleState());

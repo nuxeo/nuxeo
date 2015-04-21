@@ -17,35 +17,37 @@
  */
 package org.nuxeo.ecm.core.version.test;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import javax.inject.Inject;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestVersioningDocumentAdapter extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+public class TestVersioningDocumentAdapter {
 
+    @Inject
     protected VersioningService service;
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        openSession();
-        service = Framework.getService(VersioningService.class);
-        assertNotNull(service);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
+    @Inject
+    protected CoreSession session;
 
     @Test
     public void testVersionLabel() throws Exception {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,6 +10,7 @@
  *     Dragos Mihalache
  *     Florent Guillaume
  *     Benoit Delbosc
+ *     Benjamin Jalon
  */
 package org.nuxeo.ecm.core;
 
@@ -33,12 +34,15 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.After;
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -48,38 +52,57 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.StorageConfiguration;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
-/**
- * @author Dragos Mihalache
- * @author Florent Guillaume
- * @author Benjamin Jalon
- */
-public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.core.convert.api", //
+        "org.nuxeo.ecm.core.convert", //
+        "org.nuxeo.ecm.core.convert.plugins", //
+})
+@LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml",
+        "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml",
+        "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml" })
+public class TestSQLRepositoryFulltextQuery {
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.convert.api");
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/testquery-core-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-core-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-core-types-contrib-2.xml");
-        openSession();
+    @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
+    protected EventService eventService;
+
+    @Inject
+    protected CoreSession session;
+
+    protected void waitForFulltextIndexing() {
+        nextTransaction();
+        coreFeature.getStorageConfiguration().waitForFulltextIndexing();
     }
 
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        session.save();
-        waitForAsyncCompletion();
-        closeSession();
-        super.tearDown();
+    protected void waitForAsyncCompletion() {
+        nextTransaction();
+        eventService.waitForAsyncCompletion();
+    }
+
+    protected void nextTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
     }
 
     protected static void assertIdSet(DocumentModelList dml, String... ids) {
@@ -439,7 +462,8 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         assertEquals(1, session.query(query).size());
 
         // BBB for direct PostgreSQL syntax
-        if (database.isVCSPostgreSQL()) {
+        StorageConfiguration storageConfiguration = coreFeature.getStorageConfiguration();
+        if (storageConfiguration.isVCSPostgreSQL()) {
             query = "SELECT * FROM File WHERE ecm:fulltext = 'wor:*'";
             assertEquals(1, session.query(query).size());
         }
@@ -448,21 +472,21 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         // not in H2 (with Lucene default parser)
         // not in MySQL
         // not in Derby
-        if (database.isVCSPostgreSQL() //
-                || database.isVCSOracle() //
-                || database.isVCSSQLServer()) {
+        if (storageConfiguration.isVCSPostgreSQL() //
+                || storageConfiguration.isVCSOracle() //
+                || storageConfiguration.isVCSSQLServer()) {
             query = "SELECT * FROM File WHERE ecm:fulltext = '\"hello wor*\"'";
             assertEquals(1, session.query(query).size());
         }
         // prefix wildcard in the middle of a phrase
         // really only in Oracle, and approximation in PostgreSQL
-        if (database.isVCSPostgreSQL() || database.isVCSOracle()) {
+        if (storageConfiguration.isVCSPostgreSQL() || storageConfiguration.isVCSOracle()) {
             query = "SELECT * FROM File WHERE ecm:fulltext = '\"hel* world\"'";
             assertEquals(1, session.query(query).size());
             query = "SELECT * FROM File WHERE ecm:fulltext = '\"hel* wor*\"'";
             assertEquals(1, session.query(query).size());
             // PostgreSQL mid-phrase wildcards are too greedy
-            if (database.isVCSOracle()) {
+            if (storageConfiguration.isVCSOracle()) {
                 // no match wanted here
                 query = "SELECT * FROM File WHERE ecm:fulltext = '\"hel* citizens\"'";
                 assertEquals(0, session.query(query).size());
@@ -542,7 +566,7 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
 
     @Test
     public void testFulltextExpressionSyntax() throws Exception {
-        assumeTrue(!database.isVCSDerby());
+        assumeTrue(!coreFeature.getStorageConfiguration().isVCSDerby());
 
         createDocs();
         waitForFulltextIndexing();
@@ -657,7 +681,7 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
     // don't use small words, they are eliminated by some fulltext engines
     @Test
     public void testFulltextExpressionPhrase() throws Exception {
-        assumeTrue(!database.isVCSDerby());
+        assumeTrue(!coreFeature.getStorageConfiguration().isVCSDerby());
 
         String query;
 
@@ -703,7 +727,8 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
 
     @Test
     public void testFulltextSecondary() throws Exception {
-        assumeTrue("Skipping multi-fulltext test for unsupported database", database.supportsMultipleFulltextIndexes());
+        assumeTrue("Skipping multi-fulltext test for unsupported database",
+                coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
 
         createDocs();
         String query;
@@ -807,8 +832,6 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         waitForAsyncCompletion();
 
         // test setting and reading a map with an empty list
-        closeSession();
-        openSession();
         doc = session.getDocument(docRef);
         Map<String, Object> attachedFile = new HashMap<String, Object>();
         List<Map<String, Object>> vignettes = new ArrayList<Map<String, Object>>();
@@ -817,10 +840,7 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
         session.saveDocument(doc);
         session.save();
-
-        closeSession();
         waitForFulltextIndexing();
-        openSession();
 
         // test fulltext indexing of complex property at level one
         DocumentModelList results = session.query("SELECT * FROM Document WHERE ecm:fulltext = 'somename'", 1);
@@ -837,10 +857,7 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
         session.saveDocument(doc);
         session.save();
-
-        closeSession();
         waitForFulltextIndexing();
-        openSession();
 
         // test fulltext indexing of complex property at level 3
         results = session.query("SELECT * FROM Document" + " WHERE ecm:fulltext = 'vignettelabel'", 2);
@@ -859,10 +876,7 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         doc.setPropertyValue("cmpf:attachedFile/vignettes", new ArrayList<Map<String, Object>>());
         session.saveDocument(doc);
         session.save();
-
-        closeSession();
         waitForFulltextIndexing();
-        openSession();
 
         results = session.query("SELECT * FROM Document" + " WHERE ecm:fulltext = 'vignettelabel'", 2);
         assertNotNull(results);
@@ -876,12 +890,12 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
     @Test
     public void testFulltextSecurity() throws Exception {
         createDocs();
-        closeSession();
-        session = openSessionAs("bob");
-        session.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ecm:fulltext = 'world'");
-        // this failed with ORA-00918 on Oracle (NXP-5410)
-        session.query("SELECT * FROM Document WHERE ecm:fulltext = 'world'");
-        // we don't care about the answer, just that the query executes
+        try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+            bobSession.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ecm:fulltext = 'world'");
+            // this failed with ORA-00918 on Oracle (NXP-5410)
+            bobSession.query("SELECT * FROM Document WHERE ecm:fulltext = 'world'");
+            // we don't care about the answer, just that the query executes
+        }
     }
 
     @Test
@@ -898,8 +912,8 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listeners-all-contrib.xml")
     public void testFulltextReindexOnCreateDelete() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-listeners-all-contrib.xml");
         waitForFulltextIndexing();
 
         // create

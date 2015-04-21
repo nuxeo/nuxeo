@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,6 +10,7 @@
  *     Dragos Mihalache
  *     Florent Guillaume
  *     Benoit Delbosc
+ *     Benjamin Jalon
  */
 package org.nuxeo.ecm.core;
 
@@ -19,6 +20,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -32,15 +34,19 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -58,38 +64,49 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import static org.junit.Assume.assumeTrue;
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.core.convert", //
+        "org.nuxeo.ecm.core.convert.plugins", //
+})
+@LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml",
+        "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml" })
+public class TestSQLRepositoryQuery {
 
-/**
- * @author Dragos Mihalache
- * @author Florent Guillaume
- * @author Benjamin Jalon
- */
-public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
+    @Inject
+    protected RuntimeHarness runtimeHarness;
+
+    @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
+    protected CoreSession session;
 
     protected boolean proxies;
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/testquery-core-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-core-types-contrib-2.xml");
-        openSession();
+    protected void waitForFulltextIndexing() {
+        nextTransaction();
+        coreFeature.getStorageConfiguration().waitForFulltextIndexing();
     }
 
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        session.save();
-        waitForAsyncCompletion();
-        closeSession();
-        super.tearDown();
+    protected void nextTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
     }
 
     // ---------------------------------------
@@ -277,7 +294,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     @Test
     public void testQueryBasic2() throws Exception {
         // ?
-        assumeTrue(!database.isVCSDerby());
+        assumeTrue(!coreFeature.getStorageConfiguration().isVCSDerby());
 
         createDocs();
         DocumentModelList dml;
@@ -481,7 +498,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     @Test
     public void testOrderBySameColumns() throws Exception {
         // SQL Server cannot ORDER BY foo, foo
-        assumeTrue("SQL Server cannot ORDER BY foo, foo", !database.isVCSSQLServer());
+        assumeTrue("SQL Server cannot ORDER BY foo, foo", !coreFeature.getStorageConfiguration().isVCSSQLServer());
 
         String sql;
         DocumentModelList dml;
@@ -735,14 +752,18 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         dml = session.query(sql, null, 5, 0, true);
         assertEquals(5, dml.size());
         assertEquals(7, dml.totalSize());
-        Framework.getProperties().setProperty(AbstractSession.LIMIT_RESULTS_PROPERTY, "true");
-        Framework.getProperties().setProperty(AbstractSession.MAX_RESULTS_PROPERTY, "5");
+        Properties properties = Framework.getProperties();
+        properties.setProperty(AbstractSession.LIMIT_RESULTS_PROPERTY, "true");
+        properties.setProperty(AbstractSession.MAX_RESULTS_PROPERTY, "5");
         // need to open a new session to refresh properties
-        closeSession(session);
-        session = openSessionAs("Administrator");
-        dml = session.query(sql, null, 5, 0, true);
-        assertEquals(5, dml.size());
-        assertTrue(dml.totalSize() < 0);
+        try (CoreSession admSession = CoreInstance.openCoreSession(session.getRepositoryName(), "Administrator")) {
+            dml = admSession.query(sql, null, 5, 0, true);
+            assertEquals(5, dml.size());
+            assertTrue(dml.totalSize() < 0);
+        } finally {
+            properties.remove(AbstractSession.LIMIT_RESULTS_PROPERTY);
+            properties.remove(AbstractSession.MAX_RESULTS_PROPERTY);
+        }
     }
 
     @Test
@@ -988,7 +1009,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         dml = session.query("SELECT * FROM Document WHERE dc:created BETWEEN DATE '2007-03-15' AND DATE '2008-01-01'");
         assertEquals(1, dml.size());
 
-        if (!database.isVCSDerby()) {
+        if (!coreFeature.getStorageConfiguration().isVCSDerby()) {
             // Derby 10.5.3.0 has bugs with LEFT JOIN and NOT BETWEEN
             // http://issues.apache.org/jira/browse/DERBY-4388
 
@@ -1155,11 +1176,11 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         acp.addACL(acl);
         folder1.setACP(acp, true);
         session.save();
-        closeSession();
-        session = openSessionAs("bob");
 
-        DocumentModelList dml = session.query("SELECT * FROM Document");
-        assertEquals(3, dml.size());
+        try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+            DocumentModelList dml = bobSession.query("SELECT * FROM Document");
+            assertEquals(3, dml.size());
+        }
     }
 
     // same with queryAndFetch
@@ -1181,25 +1202,16 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         acp.addACL(acl);
         folder1.setACP(acp, true);
         session.save();
-        closeSession();
-        session = openSessionAs("bob");
 
-        IterableQueryResult res = session.queryAndFetch("SELECT * FROM Document", "NXQL");
-        assertEquals(3, res.size());
-        res.close();
+        try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+            IterableQueryResult res = bobSession.queryAndFetch("SELECT * FROM Document", "NXQL");
+            assertEquals(3, res.size());
+            res.close();
+        }
     }
 
     @Test
-    public void testSecurityManagerBasic() throws Exception {
-        doTestSecurityManager("OSGI-INF/security-policy-contrib.xml");
-    }
-
-    @Test
-    public void testSecurityManagerWithTransformer() throws Exception {
-        doTestSecurityManager("OSGI-INF/security-policy2-contrib.xml");
-    }
-
-    public void doTestSecurityManager(String contrib) throws Exception {
+    public void testWithoutSecurityManager() throws Exception {
         createDocs();
         DocumentModelList dml;
 
@@ -1215,54 +1227,74 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         dml = session.query("SELECT * FROM Document", null, 2, 6, true);
         assertEquals(1, dml.size());
         assertEquals(7, dml.totalSize());
+    }
 
-        // now add a security policy hiding docs of type File
-        deployContrib("org.nuxeo.ecm.core.test.tests", contrib);
+    @Test
+    // NoFileSecurityPolicy
+    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/security-policy-contrib.xml")
+    public void testSecurityManagerBasic() throws Exception {
+        doTestSecurityManager();
+    }
 
-        dml = session.query("SELECT * FROM Document");
-        assertEquals(4, dml.size());
-        assertEquals(4, dml.totalSize());
-        dml = session.query("SELECT * FROM Document", null, 2, 0, true);
-        assertEquals(2, dml.size());
-        assertEquals(4, dml.totalSize());
-        dml = session.query("SELECT * FROM Document", null, 2, 2, true);
-        assertEquals(2, dml.size());
-        assertEquals(4, dml.totalSize());
-        dml = session.query("SELECT * FROM Document", null, 2, 3, true);
-        assertEquals(1, dml.size());
-        assertEquals(4, dml.totalSize());
+    @Test
+    // NoFile2SecurityPolicy
+    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/security-policy2-contrib.xml")
+    public void testSecurityManagerWithTransformer() throws Exception {
+        doTestSecurityManager();
+    }
 
-        // add an ACL as well
-        DocumentModel root = session.getRootDocument();
-        ACP acp = new ACPImpl();
-        ACL acl = new ACLImpl();
-        acl.add(new ACE("Administrator", "Everything", true));
-        acl.add(new ACE("bob", "Browse", true));
-        acp.addACL(acl);
-        root.setACP(acp, true);
-        DocumentModel folder1 = session.getDocument(new PathRef("/testfolder2/testfolder3"));
-        acp = new ACPImpl();
-        acl = new ACLImpl();
-        acl.add(new ACE("Administrator", "Everything", true));
-        acl.add(ACE.BLOCK);
-        acp.addACL(acl);
-        folder1.setACP(acp, true);
-        session.save();
-        closeSession();
-        session = openSessionAs("bob");
+    public void doTestSecurityManager() throws Exception {
+        createDocs();
+        DocumentModelList dml;
 
-        dml = session.query("SELECT * FROM Document");
-        assertEquals(3, dml.size());
-        assertEquals(3, dml.totalSize());
-        dml = session.query("SELECT * FROM Document", null, 2, 0, true);
-        assertEquals(2, dml.size());
-        assertEquals(3, dml.totalSize());
-        dml = session.query("SELECT * FROM Document", null, 2, 1, true);
-        assertEquals(2, dml.size());
-        assertEquals(3, dml.totalSize());
-        dml = session.query("SELECT * FROM Document", null, 2, 2, true);
-        assertEquals(1, dml.size());
-        assertEquals(3, dml.totalSize());
+        // needs a user who is not really an administrator
+        // otherwise security policies are bypassed
+        try (CoreSession admSession = CoreInstance.openCoreSession(session.getRepositoryName(), "Administrator")) {
+            dml = admSession.query("SELECT * FROM Document");
+            assertEquals(4, dml.size());
+            assertEquals(4, dml.totalSize());
+            dml = admSession.query("SELECT * FROM Document", null, 2, 0, true);
+            assertEquals(2, dml.size());
+            assertEquals(4, dml.totalSize());
+            dml = admSession.query("SELECT * FROM Document", null, 2, 2, true);
+            assertEquals(2, dml.size());
+            assertEquals(4, dml.totalSize());
+            dml = admSession.query("SELECT * FROM Document", null, 2, 3, true);
+            assertEquals(1, dml.size());
+            assertEquals(4, dml.totalSize());
+
+            // add an ACL as well
+            DocumentModel root = admSession.getRootDocument();
+            ACP acp = new ACPImpl();
+            ACL acl = new ACLImpl();
+            acl.add(new ACE("Administrator", "Everything", true));
+            acl.add(new ACE("bob", "Browse", true));
+            acp.addACL(acl);
+            root.setACP(acp, true);
+            DocumentModel folder1 = admSession.getDocument(new PathRef("/testfolder2/testfolder3"));
+            acp = new ACPImpl();
+            acl = new ACLImpl();
+            acl.add(new ACE("Administrator", "Everything", true));
+            acl.add(ACE.BLOCK);
+            acp.addACL(acl);
+            folder1.setACP(acp, true);
+            admSession.save();
+        }
+
+        try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+            dml = bobSession.query("SELECT * FROM Document");
+            assertEquals(3, dml.size());
+            assertEquals(3, dml.totalSize());
+            dml = bobSession.query("SELECT * FROM Document", null, 2, 0, true);
+            assertEquals(2, dml.size());
+            assertEquals(3, dml.totalSize());
+            dml = bobSession.query("SELECT * FROM Document", null, 2, 1, true);
+            assertEquals(2, dml.size());
+            assertEquals(3, dml.totalSize());
+            dml = bobSession.query("SELECT * FROM Document", null, 2, 2, true);
+            assertEquals(1, dml.size());
+            assertEquals(3, dml.totalSize());
+        }
     }
 
     private static void assertIdSet(DocumentModelList dml, String... ids) {
@@ -1843,19 +1875,14 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     }
 
     @Test
+    // NoFile2SecurityPolicy
+    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/security-policy2-contrib.xml")
     public void testQueryIterableWithTransformer() throws Exception {
         createDocs();
         IterableQueryResult res;
 
         res = session.queryAndFetch("SELECT * FROM Document", "NXQL");
-        assertEquals(7, res.size());
-        res.close();
-
-        // NoFile2SecurityPolicy
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/security-policy2-contrib.xml");
-
-        res = session.queryAndFetch("SELECT * FROM Document", "NXQL");
-        assertEquals(4, res.size());
+        assertEquals(4, res.size()); // instead of 7 without security policy
         res.close();
     }
 

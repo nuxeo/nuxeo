@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,7 +10,6 @@
  *     Anahide Tchertchian
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
@@ -34,12 +33,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -54,53 +56,93 @@ import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.primitives.ExternalBlobProperty;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
-@SuppressWarnings("unchecked")
-public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.core.convert", //
+        "org.nuxeo.ecm.core.convert.plugins", //
+        "org.nuxeo.runtime.reload", //
+})
+@LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml",
+        "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-restriction-contrib.xml",
+        // deploy specific adapter for testing external blobs: files are stored
+        // in temporary directory
+        "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-externalblob-adapters-contrib.xml", })
+public class TestSQLRepositoryProperties {
+
+    @Inject
+    protected RuntimeHarness runtimeHarness;
+
+    @Inject
+    protected RepositorySettings repositorySettings;
+
+    @Inject
+    protected EventService eventService;
+
+    @Inject
+    protected BlobHolderAdapterService blobHolderAdapterService;
+
+    @Inject
+    protected SchemaManager schemaManager;
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected ReloadService reloadService;
 
     DocumentModel doc;
 
-    @Override
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-core-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-restriction-contrib.xml");
-
-        // deploy specific adapter for testing external blobs: files are stored
-        // in temporary directory
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-externalblob-adapters-contrib.xml");
         // set container to temp directory here in case that depends on the OS
         // or machine configuration and add funny characters to avoid problems
         // due to xml parsing
-        BlobHolderAdapterService service = Framework.getService(BlobHolderAdapterService.class);
-        assertNotNull(service);
-        ExternalBlobAdapter adapter = service.getExternalBlobAdapterForPrefix("fs");
+        ExternalBlobAdapter adapter = blobHolderAdapterService.getExternalBlobAdapterForPrefix("fs");
         Map<String, String> props = new HashMap<String, String>();
         props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME, "\n" + System.getProperty("java.io.tmpdir")
                 + " ");
         adapter.setProperties(props);
 
-        openSession();
         doc = session.createDocumentModel("TestDocument");
         doc.setPathInfo("/", "doc");
         doc = session.createDocument(doc);
     }
 
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
+    protected CoreSession openSessionAs(String username) {
+        return CoreInstance.openCoreSession(session.getRepositoryName(), username);
+    }
+
+    protected void reopenSession() {
+        session = repositorySettings.reopenSession();
+    }
+
+    protected void waitForAsyncCompletion() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+        eventService.waitForAsyncCompletion();
     }
 
     protected File createTempFile() throws Exception {
@@ -244,8 +286,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc = session.saveDocument(doc);
 
         session.save();
-        closeSession();
-        openSession();
+
+        reopenSession();
         doc = session.getDocument(new PathRef("/doc"));
 
         actual = (List<?>) doc.getPropertyValue("tp:complexList");
@@ -264,8 +306,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc = session.saveDocument(doc);
 
         session.save();
-        closeSession();
-        openSession();
+
+        reopenSession();
         doc = session.getDocument(new PathRef("/doc"));
 
         actual = (List<?>) doc.getPropertyValue("tp:complexList");
@@ -283,8 +325,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc = session.saveDocument(doc);
 
         session.save();
-        closeSession();
-        openSession();
+
+        reopenSession();
         doc = session.getDocument(new PathRef("/doc"));
 
         actual = (List<?>) doc.getPropertyValue("tp:complexList");
@@ -301,8 +343,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc = session.saveDocument(doc);
 
         session.save();
-        closeSession();
-        openSession();
+
+        reopenSession();
         doc = session.getDocument(new PathRef("/doc"));
 
         actual = (List<?>) doc.getPropertyValue("tp:complexList");
@@ -321,15 +363,14 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     public void testNewBlob() throws Exception {
         // simple
         Object value = null;
-        SchemaManager tm = Framework.getService(SchemaManager.class);
-        Field field = tm.getField("tp:fileList");
+        Field field = schemaManager.getField("tp:fileList");
         Type type = field.getType();
         Type itemType = ((ListType) type).getFieldType();
         value = itemType.newInstance();
         assertNull(value);
 
         // complex
-        field = tm.getField("tp:fileComplexList");
+        field = schemaManager.getField("tp:fileComplexList");
         type = field.getType();
         itemType = ((ListType) type).getFieldType();
         Map<String, Serializable> map = (Map) itemType.newInstance();
@@ -396,24 +437,23 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         session.save();
         // has not created the complex properties at that point
 
-        CoreSession s1 = openSessionAs("Administrator");
-        CoreSession s2 = openSessionAs("Administrator");
-        DocumentModel d1 = s1.getDocument(new IdRef(doc2.getId()));
-        DocumentModel d2 = s2.getDocument(new IdRef(doc2.getId()));
-        // read the complex prop to trigger documentpart fetch
-        // and node creation (SQLSession.makeProperties)
-        d1.getProperty("tp:complex");
-        d2.getProperty("tp:complex");
-        // write an unrelated property, to trigger flush()
-        d1.setPropertyValue("dc:title", "d1");
-        d2.setPropertyValue("dc:title", "d2");
-        s1.saveDocument(d1);
-        s2.saveDocument(d2);
-        s1.save();
-        // without the fix the following save would cause a second insert
-        s2.save();
-        closeSession(s1);
-        closeSession(s2);
+        try (CoreSession s1 = openSessionAs("Administrator"); //
+                CoreSession s2 = openSessionAs("Administrator")) {
+            DocumentModel d1 = s1.getDocument(new IdRef(doc2.getId()));
+            DocumentModel d2 = s2.getDocument(new IdRef(doc2.getId()));
+            // read the complex prop to trigger documentpart fetch
+            // and node creation (SQLSession.makeProperties)
+            d1.getProperty("tp:complex");
+            d2.getProperty("tp:complex");
+            // write an unrelated property, to trigger flush()
+            d1.setPropertyValue("dc:title", "d1");
+            d2.setPropertyValue("dc:title", "d2");
+            s1.saveDocument(d1);
+            s2.saveDocument(d2);
+            s1.save();
+            // without the fix the following save would cause a second insert
+            s2.save();
+        }
     }
 
     @Test
@@ -501,26 +541,28 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
     @Test
     public void testComplexPropertySchemaUpdate() throws Exception {
-        deployBundle("org.nuxeo.runtime.reload");
-
         // create a doc
         doc.setPropertyValue("tp:complex/string", "test");
         doc = session.saveDocument(doc);
         session.save();
-        closeSession();
+
         waitForAsyncCompletion();
+        repositorySettings.releaseSession();
 
         // add complexschema to TestDocument
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-schema-update.xml");
+        runtimeHarness.deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-schema-update.xml");
+        try {
+            reloadService.reloadRepository();
+            // reload repo with new doctype
+            session = repositorySettings.createSession();
 
-        // reload repo with new doctype
-        Framework.getService(ReloadService.class).reloadRepository();
-        openSession();
-        doc = session.getDocument(new IdRef(doc.getId()));
-
-        // this property did not exist on document creation, after updating the
-        // doctype it should not fail
-        doc.getProperty("cmpf:attachedFile");
+            doc = session.getDocument(new IdRef(doc.getId()));
+            // this property did not exist on document creation, after updating the
+            // doctype it should not fail
+            doc.getProperty("cmpf:attachedFile");
+        } finally {
+            runtimeHarness.undeployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-schema-update.xml");
+        }
     }
 
     // NXP-2318: i don't get what's supposed to be answered to these questions
@@ -681,8 +723,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         testComplexList();
         testBlobListValue();
         session.save();
-        closeSession();
-        openSession();
+
+        reopenSession();
         // change just one of the collection properties
         doc.setPropertyValue("tp:stringArray", new String[] { "baz" });
         doc = session.saveDocument(doc);
@@ -931,8 +973,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc = session.saveDocument(doc);
         session.save();
 
-        closeSession();
-        openSession();
+        reopenSession();
 
         // after refetch it's a Long with the correct incremented value
         doc = session.getDocument(new IdRef(doc.getId()));
@@ -958,8 +999,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
         session.save();
 
-        closeSession();
-        openSession();
+        reopenSession();
 
         // after refetch it's a Long with the correct incremented value
         doc = session.getDocument(new IdRef(doc.getId()));
@@ -1006,8 +1046,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         session.save();
 
         // check result after re-reading from database
-        closeSession();
-        openSession();
+        reopenSession();
 
         for (int i = 0; i < n; i++) {
             DocumentModel doc = session.getDocument(new PathRef("/doc" + i));

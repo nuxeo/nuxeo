@@ -12,49 +12,101 @@
 package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.io.Serializable;
 import java.util.Calendar;
 
-import junit.framework.Assert;
+import javax.inject.Inject;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.reload.ReloadService;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Test path search without pathOptimizations
  */
-public class TestSQLRepositoryQueryNoPathOptim extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.runtime.reload")
+public class TestSQLRepositoryQueryNoPathOptim {
 
-    @Override
+    @Inject
+    protected RuntimeHarness runtimeHarness;
+
+    @Inject
+    protected RepositorySettings repositorySettings;
+
+    @Inject
+    protected EventService eventService;
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected SQLRepositoryService sqlRepositoryService;
+
+    @Inject
+    protected ReloadService reloadService;
+
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-no-pathoptimizations-contrib.xml");
-        openSession();
-        RepositoryDescriptor desc = Framework.getLocalService(SQLRepositoryService.class).getRepositoryDescriptor(
-                database.getRepositoryName());
-        Assert.assertFalse("Path optim should be disabled", desc.getPathOptimizationsEnabled());
+        // cannot be done through @LocalDeploy, because the framework variables
+        // about repository configuration aren't ready yet
+        runtimeHarness.deployContrib("org.nuxeo.ecm.core.test.tests",
+                "OSGI-INF/test-repo-no-pathoptimizations-contrib.xml");
+        newRepository(); // fully reread repo
+        RepositoryDescriptor desc = sqlRepositoryService.getRepositoryDescriptor(session.getRepositoryName());
+        assertFalse("Path optim should be disabled", desc.getPathOptimizationsEnabled());
     }
 
-    @Override
     @After
     public void tearDown() throws Exception {
-        session.save();
+        runtimeHarness.undeployContrib("org.nuxeo.ecm.core.test.tests",
+                "OSGI-INF/test-repo-no-pathoptimizations-contrib.xml");
+    }
+
+    protected void newRepository() {
         waitForAsyncCompletion();
-        closeSession();
-        super.tearDown();
+        repositorySettings.releaseSession();
+        // reload repo with new config
+        reloadService.reloadRepository();
+        session = repositorySettings.createSession();
+    }
+
+    protected void waitForAsyncCompletion() {
+        nextTransaction();
+        eventService.waitForAsyncCompletion();
+    }
+
+    protected void nextTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
     }
 
     protected Calendar getCalendar(int year, int month, int day, int hours, int minutes, int seconds) {
@@ -197,13 +249,13 @@ public class TestSQLRepositoryQueryNoPathOptim extends SQLRepositoryTestCase {
         createDocs();
         DocumentModel doc = session.getDocument(new PathRef("/testfolder2"));
         DocumentModelList children = session.getChildren(doc.getRef());
-        Assert.assertEquals(1, children.totalSize());
+        assertEquals(1, children.totalSize());
 
         // removeChildren use the Dialect getInTreeSql to invalidate VCS cache
         session.removeChildren(new PathRef("/testfolder2/"));
 
         children = session.getChildren(doc.getRef());
-        Assert.assertEquals(0, children.totalSize());
+        assertEquals(0, children.totalSize());
 
         sql = "SELECT * FROM document WHERE ecm:path STARTSWITH '/testfolder2/'";
         dml = session.query(sql);
