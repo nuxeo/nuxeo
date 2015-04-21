@@ -273,9 +273,24 @@ public class TestNxqlConversion {
     @Test
     public void testConverterSTARTSWITH() throws Exception {
         String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:path STARTSWITH '/the/path'").toString();
-        assertEqualsEvenUnderWindows("{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n"
-                + "      \"term\" : {\n" + "        \"ecm:path.children\" : \"/the/path\"\n" + "      }\n" + "    }\n"
-                + "  }\n" + "}", es);
+        assertEqualsEvenUnderWindows("{\n" //
+                + "  \"constant_score\" : {\n" //
+                + "    \"filter\" : {\n" //
+                + "      \"term\" : {\n" //
+                + "        \"ecm:path.children\" : \"/the/path\"\n" //
+                + "      }\n" + "    }\n" //
+                + "  }\n" //
+                + "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:path STARTSWITH '/'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"constant_score\" : {\n" + //
+                "    \"filter\" : {\n" + //
+                "      \"exists\" : {\n" + //
+                "        \"field\" : \"ecm:path.children\"\n" + //
+                "      }\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
     }
 
     @Test

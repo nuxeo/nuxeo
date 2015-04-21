@@ -201,4 +201,16 @@ public class TestCompareCoreWithES {
                 "SELECT * from Document WHERE dc:title NOT LIKE '%i%e%' ORDER BY dc:title", });
     }
 
+
+    @Test
+    public void testSearchWithStartsWith() throws Exception {
+        testQueries(new String[] {
+                // Note that there are differnces between ES and VCS:
+                // ES version document has a path and is searchable with startswith
+                // ES match the root document, VCS only the children
+                "SELECT * from Document WHERE ecm:path STARTSWITH '/nomatch' ORDER BY dc:title",
+                "SELECT * from Document WHERE ecm:path STARTSWITH '/folder' AND ecm:path != '/folder' ORDER BY dc:title",
+                "SELECT * FROM Document WHERE ecm:path STARTSWITH '/' AND ecm:isVersion = 0 ORDER BY dc:title",
+        });
+    }
 }

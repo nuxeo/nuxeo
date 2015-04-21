@@ -324,10 +324,13 @@ final public class NxqlQueryConverter {
 
     private static FilterBuilder makeStartsWithQuery(String name, Object value) {
         FilterBuilder filter;
-        if (name.equals(NXQL.ECM_PATH)) {
-            filter = FilterBuilders.termFilter(name + ".children", value);
-        } else {
+        if (! name.equals(NXQL.ECM_PATH)) {
             filter = FilterBuilders.prefixFilter(name, (String) value);
+        } else if ("/".equals(value)) {
+            // match all document with a path
+            filter = FilterBuilders.existsFilter(name + ".children");
+        } else {
+            filter = FilterBuilders.termFilter(name + ".children", value);
         }
         return filter;
     }
