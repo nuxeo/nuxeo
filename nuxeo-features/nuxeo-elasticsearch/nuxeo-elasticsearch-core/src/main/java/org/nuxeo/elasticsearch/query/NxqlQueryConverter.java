@@ -93,12 +93,6 @@ final public class NxqlQueryConverter {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void visitQuery(SQLQuery node) {
-                super.visitQuery(node);
-                // intentionally does not set limit or offset in the query
-            }
-
-            @Override
             public void visitFromClause(FromClause node) {
                 FromList elements = node.elements;
                 SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
@@ -200,133 +194,151 @@ final public class NxqlQueryConverter {
         return query;
     }
 
-    public static QueryAndFilter makeQueryFromSimpleExpression(String op, String name, Object value, Object[] values,
-                                                               EsHint hint) {
+    public static QueryAndFilter makeQueryFromSimpleExpression(String op, String nxqlName, Object value,
+            Object[] values, EsHint hint) {
         QueryBuilder query = null;
         FilterBuilder filter = null;
-        if (NXQL.ECM_ISVERSION_OLD.equals(name)) {
-            name = NXQL.ECM_ISVERSION;
-        }
-        name = getComplexFieldName(name);
+        String name = getFieldName(nxqlName, hint);
         if (hint != null && hint.operator != null) {
             query = makeHintQuery(name, value, hint);
-        } else if (name.startsWith(NXQL.ECM_FULLTEXT)
+        } else if (nxqlName.startsWith(NXQL.ECM_FULLTEXT)
                 && ("=".equals(op) || "!=".equals(op) || "<>".equals(op) || "LIKE".equals(op) || "NOT LIKE".equals(op))) {
-            query = makeFulltextQuery(name, (String) value, hint);
+            query = makeFulltextQuery(nxqlName, (String) value, hint);
             if ("!=".equals(op) || "<>".equals(op) || "NOT LIKE".equals(op)) {
                 filter = FilterBuilders.notFilter(FilterBuilders.queryFilter(query));
                 query = null;
             }
-        } else if ("=".equals(op)) {
-            filter = FilterBuilders.termFilter(name, value);
-        } else if ("<>".equals(op) || "!=".equals(op)) {
-            filter = FilterBuilders.notFilter(FilterBuilders.termFilter(name, value));
-        } else if ("LIKE".equals(op) || "ILIKE".equals(op) || "NOT LIKE".equals(op) || "NOT ILIKE".equals(op)) {
-            query = makeLikeQuery(op, name, (String) value, hint);
-            if (op.startsWith("NOT")) {
-                filter = FilterBuilders.notFilter(FilterBuilders.queryFilter(query));
-                query = null;
+        } else
+            switch (op) {
+            case "=":
+                filter = FilterBuilders.termFilter(name, value);
+                break;
+            case "<>":
+            case "!=":
+                filter = FilterBuilders.notFilter(FilterBuilders.termFilter(name, value));
+                break;
+            case ">":
+                filter = FilterBuilders.rangeFilter(name).gt(value);
+                break;
+            case "<":
+                filter = FilterBuilders.rangeFilter(name).lt(value);
+                break;
+            case ">=":
+                filter = FilterBuilders.rangeFilter(name).gte(value);
+                break;
+            case "<=":
+                filter = FilterBuilders.rangeFilter(name).lte(value);
+                break;
+            case "BETWEEN":
+            case "NOT BETWEEN":
+                filter = FilterBuilders.rangeFilter(name).from(values[0]).to(values[1]);
+                if (op.startsWith("NOT")) {
+                    filter = FilterBuilders.notFilter(filter);
+                }
+                break;
+            case "IN":
+            case "NOT IN":
+                filter = FilterBuilders.inFilter(name, values);
+                if (op.startsWith("NOT")) {
+                    filter = FilterBuilders.notFilter(filter);
+                }
+                break;
+            case "IS NULL":
+                filter = FilterBuilders.missingFilter(name).nullValue(true);
+                break;
+            case "IS NOT NULL":
+                filter = FilterBuilders.existsFilter(name);
+                break;
+            case "LIKE":
+            case "ILIKE":
+            case "NOT LIKE":
+            case "NOT ILIKE":
+                query = makeLikeQuery(op, name, (String) value, hint);
+                if (op.startsWith("NOT")) {
+                    filter = FilterBuilders.notFilter(FilterBuilders.queryFilter(query));
+                    query = null;
+                }
+                break;
+            case "STARTSWITH":
+                filter = makeStartsWithQuery(name, value);
+                break;
+            default:
+                throw new UnsupportedOperationException("Operator: '" + op + "' is unknown");
             }
-        } else if ("BETWEEN".equals(op) || "NOT BETWEEN".equals(op)) {
-            filter = FilterBuilders.rangeFilter(name).from(values[0]).to(values[1]);
-            if ("NOT BETWEEN".equals(op)) {
-                filter = FilterBuilders.notFilter(filter);
-            }
-        } else if ("IN".equals(op) || "NOT IN".equals(op)) {
-            filter = FilterBuilders.inFilter(name, values);
-            if ("NOT IN".equals(op)) {
-                filter = FilterBuilders.notFilter(filter);
-            }
-        } else if ("STARTSWITH".equals(op)) {
-            filter = makeStartsWithQuery(name, value);
-        } else if (">".equals(op)) {
-            filter = FilterBuilders.rangeFilter(name).gt(value);
-        } else if ("<".equals(op)) {
-            filter = FilterBuilders.rangeFilter(name).lt(value);
-        } else if (">=".equals(op)) {
-            filter = FilterBuilders.rangeFilter(name).gte(value);
-        } else if ("<=".equals(op)) {
-            filter = FilterBuilders.rangeFilter(name).lte(value);
-        } else if ("IS NULL".equals(op)) {
-            filter = FilterBuilders.missingFilter(name).nullValue(true);
-        } else if ("IS NOT NULL".equals(op)) {
-            filter = FilterBuilders.existsFilter(name);
-        }
         return new QueryAndFilter(query, filter);
     }
 
     private static QueryBuilder makeHintQuery(String name, Object value, EsHint hint) {
         QueryBuilder ret;
-        String fieldName = (hint.index != null) ? hint.index :  name;
         switch (hint.operator) {
-            case "match":
-                MatchQueryBuilder matchQuery = QueryBuilders.matchQuery(fieldName, value);
-                if (hint.analyzer != null) {
-                    matchQuery.analyzer(hint.analyzer);
+        case "match":
+            MatchQueryBuilder matchQuery = QueryBuilders.matchQuery(name, value);
+            if (hint.analyzer != null) {
+                matchQuery.analyzer(hint.analyzer);
+            }
+            ret = matchQuery;
+            break;
+        case "match_phrase":
+            matchQuery = QueryBuilders.matchPhraseQuery(name, value);
+            if (hint.analyzer != null) {
+                matchQuery.analyzer(hint.analyzer);
+            }
+            ret = matchQuery;
+            break;
+        case "match_phrase_prefix":
+            matchQuery = QueryBuilders.matchPhrasePrefixQuery(name, value);
+            if (hint.analyzer != null) {
+                matchQuery.analyzer(hint.analyzer);
+            }
+            ret = matchQuery;
+            break;
+        case "multi_match":
+            // hint.index must be set
+            MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(value, hint.getIndex());
+            if (hint.analyzer != null) {
+                multiMatchQuery.analyzer(hint.analyzer);
+            }
+            ret = multiMatchQuery;
+            break;
+        case "regex":
+            ret = QueryBuilders.regexpQuery(name, (String) value);
+            break;
+        case "fuzzy":
+            ret = QueryBuilders.fuzzyQuery(name, (String) value);
+            break;
+        case "wildcard":
+            ret = QueryBuilders.wildcardQuery(name, (String) value);
+            break;
+        case "common":
+            CommonTermsQueryBuilder commonQuery = QueryBuilders.commonTerms(name, value);
+            if (hint.analyzer != null) {
+                commonQuery.analyzer(hint.analyzer);
+            }
+            ret = commonQuery;
+            break;
+        case "query_string":
+            QueryStringQueryBuilder queryString = QueryBuilders.queryString((String) value);
+            if (hint.index != null) {
+                for (String index : hint.getIndex()) {
+                    queryString.field(index);
                 }
-                ret = matchQuery;
-                break;
-            case "match_phrase":
-                matchQuery = QueryBuilders.matchPhraseQuery(fieldName, value);
-                if (hint.analyzer != null) {
-                    matchQuery.analyzer(hint.analyzer);
-                }
-                ret = matchQuery;
-                break;
-            case "match_phrase_prefix":
-                matchQuery = QueryBuilders.matchPhrasePrefixQuery(fieldName, value);
-                if (hint.analyzer != null) {
-                    matchQuery.analyzer(hint.analyzer);
-                }
-                ret = matchQuery;
-                break;
-            case "multi_match":
-                // hint.index must be set
-                MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(value, hint.getIndex());
-                if (hint.analyzer != null) {
-                    multiMatchQuery.analyzer(hint.analyzer);
-                }
-                ret = multiMatchQuery;
-                break;
-            case "regex":
-                ret = QueryBuilders.regexpQuery(fieldName, (String) value);
-                break;
-            case "fuzzy":
-                ret = QueryBuilders.fuzzyQuery(fieldName, (String) value);
-                break;
-            case "wildcard":
-                ret = QueryBuilders.wildcardQuery(fieldName, (String) value);
-                break;
-            case "common":
-                CommonTermsQueryBuilder commonQuery = QueryBuilders.commonTerms(fieldName, value);
-                if (hint.analyzer != null) {
-                    commonQuery.analyzer(hint.analyzer);
-                }
-                ret = commonQuery;
-                break;
-            case "query_string":
-                QueryStringQueryBuilder queryString = QueryBuilders.queryString((String) value);
-                if (hint.index != null) {
-                    for (String index: hint.getIndex()) {
-                        queryString.field(index);
-                    }
-                } else {
-                    queryString.defaultField(fieldName);
-                }
-                if (hint.analyzer != null) {
-                    queryString.analyzer(hint.analyzer);
-                }
-                ret = queryString;
-                break;
-            default:
-                throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is unknown");
+            } else {
+                queryString.defaultField(name);
+            }
+            if (hint.analyzer != null) {
+                queryString.analyzer(hint.analyzer);
+            }
+            ret = queryString;
+            break;
+        default:
+            throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is unknown");
         }
         return ret;
     }
 
     private static FilterBuilder makeStartsWithQuery(String name, Object value) {
         FilterBuilder filter;
-        if (! name.equals(NXQL.ECM_PATH)) {
+        if (!name.equals(NXQL.ECM_PATH)) {
             filter = FilterBuilders.prefixFilter(name, (String) value);
         } else if ("/".equals(value)) {
             // match all document with a path
@@ -359,13 +371,13 @@ final public class NxqlQueryConverter {
         return QueryBuilders.wildcardQuery(fieldName, likeValue);
     }
 
-    private static QueryBuilder makeFulltextQuery(String name, String value, EsHint hint) {
-        String field = name.replace(NXQL.ECM_FULLTEXT, "");
-        if (field.startsWith(".")) {
-            field = field.substring(1) + ".fulltext";
+    private static QueryBuilder makeFulltextQuery(String nxqlName, String value, EsHint hint) {
+        String name = nxqlName.replace(NXQL.ECM_FULLTEXT, "");
+        if (name.startsWith(".")) {
+            name = name.substring(1) + ".fulltext";
         } else {
             // map ecm:fulltext_someindex to default
-            field = FULLTEXT_FIELD;
+            name = FULLTEXT_FIELD;
         }
         String queryString = value;
         SimpleQueryStringBuilder.Operator defaultOperator;
@@ -377,20 +389,28 @@ final public class NxqlQueryConverter {
             queryString = translateFulltextQuery(queryString);
             defaultOperator = SimpleQueryStringBuilder.Operator.AND;
         }
-        String analyzer = (hint != null && hint.analyzer != null) ? hint.analyzer: "fulltext";
-        SimpleQueryStringBuilder query = QueryBuilders.simpleQueryString(queryString).defaultOperator(defaultOperator)
-                .analyzer(analyzer);
+        String analyzer = (hint != null && hint.analyzer != null) ? hint.analyzer : "fulltext";
+        SimpleQueryStringBuilder query = QueryBuilders.simpleQueryString(queryString).defaultOperator(defaultOperator).analyzer(
+                analyzer);
         if (hint != null && hint.index != null) {
-            for (String index: hint.getIndex()) {
+            for (String index : hint.getIndex()) {
                 query.field(index);
             }
         } else {
-            query.field(field);
+            query.field(name);
         }
         return query;
     }
 
-    protected static String getComplexFieldName(String name) {
+    private static String getFieldName(String name, EsHint hint) {
+        if (hint != null && hint.index != null) {
+            return hint.index;
+        }
+        // compat
+        if (NXQL.ECM_ISVERSION_OLD.equals(name)) {
+            name = NXQL.ECM_ISVERSION;
+        }
+        // complex field
         name = name.replace("/*", "");
         name = name.replace("/", ".");
         return name;

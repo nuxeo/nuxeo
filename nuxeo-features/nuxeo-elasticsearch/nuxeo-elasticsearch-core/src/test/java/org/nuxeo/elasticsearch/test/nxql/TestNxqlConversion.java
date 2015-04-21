@@ -478,6 +478,35 @@ public class TestNxqlConversion {
     }
 
     @Test
+    public void testConvertHint() throws Exception {
+        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(some:field) */ dc:title = 'foo'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"constant_score\" : {\n" + //
+                "    \"filter\" : {\n" + //
+                "      \"term\" : {\n" + //
+                "        \"some:field\" : \"foo\"\n" + //
+                "      }\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(some:field) */ dc:title != 'foo'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"constant_score\" : {\n" + //
+                "    \"filter\" : {\n" + //
+                "      \"not\" : {\n" + //
+                "        \"filter\" : {\n" + //
+                "          \"term\" : {\n" + //
+                "            \"some:field\" : \"foo\"\n" + //
+                "          }\n" + //
+                "        }\n" + //
+                "      }\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+    }
+
+    @Test
     public void testConvertHintOperator() throws Exception {
         String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(some:field) ANALYZER(my_analyzer) OPERATOR(match) */ dc:subjects = 'foo'").toString();
         assertEqualsEvenUnderWindows("{\n" +
