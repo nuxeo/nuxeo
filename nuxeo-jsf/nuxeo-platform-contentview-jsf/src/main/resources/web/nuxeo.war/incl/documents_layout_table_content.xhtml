@@ -64,12 +64,12 @@
 
         <c:when test="#{display == 'block'}">
           <div>
-            <c:forEach var="row" items="#{documents.rows}"
+            <nxu:repeat var="row" items="#{documents.rows}"
               varStatus="layoutListingStatus">
               <c:set var="showListingHeader"
                 value="#{layoutListingStatus.index == 0}" />
               <nxl:layout layout="#{layout}" value="#{row}" />
-            </c:forEach>
+            </nxu:repeat>
           </div>
         </c:when>
 
@@ -78,24 +78,24 @@
             <tr>
               <td>
                 <table class="dataTableNoBorder">
-                  <c:forEach var="row" items="#{documents.rows}"
+                  <nxu:repeat var="row" items="#{documents.rows}"
                     varStatus="layoutListingStatus"
                     end="#{(documents.size-1)/2}">
                     <c:set var="showListingHeader"
                       value="#{layoutListingStatus.index == 0}" />
                     <nxl:layout layout="#{layout}" value="#{row}" />
-                  </c:forEach>
+                  </nxu:repeat>
                 </table>
               </td>
               <td>
                 <table class="dataTableNoBorder">
-                  <c:forEach var="row" items="#{documents.rows}"
+                  <nxu:repeat var="row" items="#{documents.rows}"
                     varStatus="layoutListingStatus"
                     begin="#{(documents.size-1)/2 + 1}">
                     <c:set var="showListingHeader"
                       value="#{layoutListingStatus.index == documents.size/2+1}" />
                     <nxl:layout layout="#{layout}" value="#{row}" />
-                  </c:forEach>
+                  </nxu:repeat>
                 </table>
               </td>
             </tr>
@@ -104,12 +104,12 @@
 
         <c:otherwise>
           <table class="dataOutput">
-            <c:forEach var="row" items="#{documents.rows}"
+            <nxu:repeat var="row" items="#{documents.rows}"
               varStatus="layoutListingStatus">
               <c:set var="showListingHeader"
                 value="#{layoutListingStatus.index == 0}" />
               <nxl:layout layout="#{layout}" value="#{row}" />
-            </c:forEach>
+            </nxu:repeat>
           </table>
         </c:otherwise>
 
