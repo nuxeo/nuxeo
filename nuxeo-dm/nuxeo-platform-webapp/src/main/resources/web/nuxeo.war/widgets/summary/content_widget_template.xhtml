@@ -80,6 +80,13 @@
             <nxu:set var="hasPDFCapabilities"
               value="#{conversionActions.isExportableToPDF(currentDocumentAsBlobHolder)}">
               <h:panelGroup rendered="#{hasPDFCapabilities}">
+                <!-- TODO: migrate to real action, see NXP-16986 -->
+                <h:outputLink value="#{baseURL}viewer/web/viewer.html" target="_blank">
+                  <f:param name="file" value="#{baseURL}api/v1/id/#{currentDocument.id}/@convert?format=pdf" />
+                  <h:graphicImage value="/icons/contextual_menu/preview.png"
+                    alt="#{messages['label.document.preview']}"
+                    title="#{messages['label.document.preview']}"/>
+                </h:outputLink>
                 <nxh:commandLink
                   action="#{conversionActions.generatePdfFileFromBlobHolder(currentDocumentAsBlobHolder)}">
                 <nxh:graphicImage
@@ -121,6 +128,13 @@
               <nxu:methodResult name="hasPDFCapabilities"
                 value="#{conversionActions.isExportableToPDF(currentDocument.files.files[model.rowIndex].file)}">
                 <h:panelGroup rendered="#{hasPDFCapabilities}">
+                  <!-- TODO: migrate to real action, see NXP-16986 -->
+                  <h:outputLink value="#{baseURL}viewer/web/viewer.html" target="_blank">
+                    <f:param name="file" value="#{baseURL}api/v1/id/#{currentDocument.id}/@blob/#{nxd:propertyPath('files:files', model.rowIndex, 'file')}/@convert?format=pdf" />
+                    <h:graphicImage value="/icons/contextual_menu/preview.png"
+                      alt="#{messages['label.document.preview']}"
+                      title="#{messages['label.document.preview']}"/>
+                  </h:outputLink>
                   <h:commandLink action="#{conversionActions.generatePdfFile}">
                     <f:param name="fileFieldFullName"
                       value="#{nxd:propertyPath('files:files', model.rowIndex, 'file')}" />
@@ -131,13 +145,6 @@
                   </h:commandLink>
                 </h:panelGroup>
               </nxu:methodResult>
-              <c:if test="#{previewActions != null}">
-                <nxh:outputLink value="javascript:openFancyBox('${previewActions.getPreviewURL(currentDocument, nxd:propertyPath('files:files', model.rowIndex, 'file'))}');">
-                  <nxh:graphicImage value="/icons/preview.png"
-                    title="#{messages['label.document.preview']}"
-                    alt="#{messages['label.document.preview']}"/>
-                </nxh:outputLink>
-              </c:if>
             </td>
           </tr>
         </nxu:inputList>
