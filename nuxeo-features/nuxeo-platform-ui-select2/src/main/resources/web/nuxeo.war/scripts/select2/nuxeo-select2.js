@@ -11,6 +11,10 @@
     }
     markup += entry.displayLabel;
     markup += "&nbsp;<span class='detail'>" + entry.id + "</span>";
+    if (entry.warn_message) {
+      markup += "<img src='" + window.nxContextPath
+          + "/icons/warning.gif' title='" + entry.warn_message + "'/>"
+    }
     return markup;
   }
 
