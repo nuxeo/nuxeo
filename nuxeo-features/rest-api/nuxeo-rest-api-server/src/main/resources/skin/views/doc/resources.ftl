@@ -67,8 +67,12 @@
             "description": "Browse and complete task"
         },
         {
-        "path": "/renditionAdapter.{format}",
-        "description": "Rendition on a document"
+            "path": "/renditionAdapter.{format}",
+            "description": "Rendition on a document"
+        },
+        {
+            "path": "/convertAdapter.{format}",
+            "description": "Convert Blobs"
         }
     ],
     "authorizations": {
