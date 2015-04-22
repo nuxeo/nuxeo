@@ -66,27 +66,17 @@ public class AutomationMapper {
                     params.put(k, extractProperties(jso));
                 }
             } else {
-                if (value != null) {
-                    params.put(k, value.toString());
-                } else {
-                    params.put(k, null);
-                }
+                params.put(k, value);
             }
         }
         return params;
     }
 
     protected void populateContext(OperationContext ctx, Object input) {
-        if (input instanceof String) {
-            ctx.setInput(input);
-        } else if (input instanceof DocumentModel) {
-            ctx.setInput(input);
-        } else if (input instanceof DocumentRef) {
-            ctx.setInput(input);
-        } else if (input instanceof Blob) {
-            ctx.setInput(input);
-        } else if (input instanceof ScriptObjectMirror) {
+        if (input instanceof ScriptObjectMirror) {
             ctx.setInput(extractProperties((ScriptObjectMirror) input));
+        }else{
+            ctx.setInput(input);
         }
     }
 

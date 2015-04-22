@@ -146,6 +146,39 @@
       ]]></script>
     </scriptedOperation>
 
+    <scriptedOperation id="Scripting.TestSetBlob">
+      <inputType>Document</inputType>
+      <outputType>Document</outputType>
+      <category>Scripting</category>
+      <param name="file" type="string"/>
+
+      <script><![CDATA[
+        function run(ctx, input, params) {
+
+            var root = Repository.GetDocument(null, {
+                "value" : "/"
+            });
+
+            var newDoc = Document.Create(root, {
+                "type" : "File",
+                "name" : "newDoc",
+                "properties" : {
+                    "dc:title" : "New Title",
+                    "dc:source" : "JavaScript",
+                    "dc:subjects" : [ "from", "javascript" ]
+                }
+            });
+
+            Document.SetBlob(newDoc, {
+              'file': input,
+              'save': true
+            });
+
+            return newDoc;
+        }
+      ]]></script>
+    </scriptedOperation>
+
   </extension>
 
   <extension point="chains"

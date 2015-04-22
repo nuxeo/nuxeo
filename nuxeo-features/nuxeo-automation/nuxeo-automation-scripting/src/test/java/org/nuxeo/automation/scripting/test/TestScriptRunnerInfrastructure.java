@@ -239,6 +239,21 @@ public class TestScriptRunnerInfrastructure {
     }
 
     @Test
+    public void testWithSetBlobOperation() throws IOException, OperationException {
+        // upload file blob
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
+        Blob fb = Blobs.createBlob(fieldAsJsonFile);
+        fb.setMimeType("image/jpeg");
+
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(fb);
+        Map<String, Object> params = new HashMap<>();
+        params.put("document", "/newDoc");
+        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestSetBlob", params);
+        assertEquals("creationFields.json", ((Blob) result.getPropertyValue("file:content")).getFilename());
+    }
+
+    @Test
     public void testComplexProperties() throws IOException, OperationException {
         // Fill the document properties
         Map<String, Object> creationProps = new HashMap<>();
