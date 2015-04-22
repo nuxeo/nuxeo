@@ -193,6 +193,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void initialize() throws Exception {
+        features.clear();
         for (Class<? extends RunnerFeature> fc : featureClasses) {
             RunnerFeature rf = fc.newInstance();
             features.add(rf);
