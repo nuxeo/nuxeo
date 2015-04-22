@@ -43,7 +43,6 @@
     <nuxeo.suggestbox.version>7.3-SNAPSHOT</nuxeo.suggestbox.version>
     <nuxeo.rssreader.version>7.3-SNAPSHOT</nuxeo.rssreader.version>
     <nuxeo.dam.version>7.3-SNAPSHOT</nuxeo.dam.version>
-    <nuxeo.cmf.version>7.3-SNAPSHOT</nuxeo.cmf.version>
     <nuxeo.poll.version>7.3-SNAPSHOT</nuxeo.poll.version>
     <nuxeo.quota.version>7.3-SNAPSHOT</nuxeo.quota.version>
     <nuxeo.binary.metadata.version>7.3-SNAPSHOT</nuxeo.binary.metadata.version>
@@ -702,55 +701,6 @@
         <groupId>org.nuxeo.dam</groupId>
         <artifactId>nuxeo-dam-theme</artifactId>
         <version>${nuxeo.dam.version}</version>
-      </dependency>
-
-      <!-- DEPRECATED Case Management Framework -->
-      <dependency>
-        <groupId>org.nuxeo.cm</groupId>
-        <artifactId>nuxeo-case-management-api</artifactId>
-        <version>${nuxeo.cmf.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.cm</groupId>
-        <artifactId>nuxeo-case-management-core</artifactId>
-        <version>${nuxeo.cmf.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.cm</groupId>
-        <artifactId>nuxeo-case-management-facade</artifactId>
-        <version>${nuxeo.cmf.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.cm</groupId>
-        <artifactId>nuxeo-case-management-web</artifactId>
-        <version>${nuxeo.cmf.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.cm</groupId>
-        <artifactId>nuxeo-case-management-lang</artifactId>
-        <version>${nuxeo.cmf.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.cm</groupId>
-        <artifactId>nuxeo-case-management-test</artifactId>
-        <version>${nuxeo.cmf.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <!-- DEPRECATED Case Management - Correspondence -->
-      <dependency>
-        <groupId>org.nuxeo.correspondence</groupId>
-        <artifactId>nuxeo-correspondence-api</artifactId>
-        <version>${nuxeo.cmf.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.correspondence</groupId>
-        <artifactId>nuxeo-correspondence-core</artifactId>
-        <version>${nuxeo.cmf.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.correspondence</groupId>
-        <artifactId>nuxeo-correspondence-web</artifactId>
-        <version>${nuxeo.cmf.version}</version>
       </dependency>
 
       <!-- Poll -->
