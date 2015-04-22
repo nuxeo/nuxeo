@@ -3,15 +3,15 @@
 
   <parent>
      <groupId>org.nuxeo</groupId>
-     <artifactId>nuxeo-addons-parent</artifactId>
-     <version>7.3-SNAPSHOT</version>
+     <artifactId>nuxeo-ecm</artifactId>
+     <version>6.0-HF11-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.platform</groupId>
+  <groupId>org.nuxeo.utils</groupId>
   <artifactId>nuxeo-target-platforms-parent</artifactId>
   <name>Nuxeo Target Platforms - Parent Pom</name>
   <packaging>pom</packaging>
-  <version>7.3-SNAPSHOT</version>
+  <version>1.0-SNAPSHOT</version>
 
   <modules>
     <module>nuxeo-target-platforms-api</module>
@@ -25,24 +25,24 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
+        <groupId>org.nuxeo.utils</groupId>
         <artifactId>nuxeo-target-platforms-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
+        <groupId>org.nuxeo.utils</groupId>
         <artifactId>nuxeo-target-platforms-core</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
+        <groupId>org.nuxeo.utils</groupId>
         <artifactId>nuxeo-target-platforms-core</artifactId>
         <version>${project.version}</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
+        <groupId>org.nuxeo.utils</groupId>
         <artifactId>nuxeo-target-platforms-io</artifactId>
         <version>${project.version}</version>
       </dependency>

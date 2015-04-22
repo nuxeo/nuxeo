@@ -2,9 +2,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.nuxeo.ecm.platform</groupId>
+    <groupId>org.nuxeo.utils</groupId>
     <artifactId>nuxeo-target-platforms-parent</artifactId>
-    <version>7.3-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-target-platforms-jaxrs</artifactId>
@@ -12,11 +12,11 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
+      <groupId>org.nuxeo.utils</groupId>
       <artifactId>nuxeo-target-platforms-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
+      <groupId>org.nuxeo.utils</groupId>
       <artifactId>nuxeo-target-platforms-io</artifactId>
     </dependency>
     <dependency>
