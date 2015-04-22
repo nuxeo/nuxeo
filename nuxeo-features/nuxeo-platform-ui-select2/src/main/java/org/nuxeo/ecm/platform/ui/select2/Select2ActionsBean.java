@@ -452,7 +452,7 @@ public class Select2ActionsBean implements Serializable {
                     group = userManager.getGroupModel(storedReference.substring(NuxeoGroup.PREFIX.length()));
                 } else {
                     log.warn("User reference is prefixed but prefix was not found on reference: " + storedReference);
-                    return null;
+                    return createNotFoundEntry(storedReference);
                 }
             } else {
                 user = userManager.getUserModel(storedReference);
@@ -495,7 +495,7 @@ public class Select2ActionsBean implements Serializable {
                 Select2Common.computeUserGroupIcon(obj, hideIcon);
             } else {
                 log.warn("Could not resolve user or group reference: " + storedReference);
-                return null;
+                return createNotFoundEntry(storedReference);
             }
         } catch (ClientException e) {
             log.error("An error occured while retrieving user or group reference: " + storedReference);
