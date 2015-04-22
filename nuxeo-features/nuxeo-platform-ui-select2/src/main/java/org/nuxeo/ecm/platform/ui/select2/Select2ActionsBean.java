@@ -507,7 +507,7 @@ public class Select2ActionsBean implements Serializable {
                 } else {
                     log.warn("User reference is prefixed but prefix was not found on reference: "
                             + storedReference);
-                    return null;
+                    return createNotFoundEntry(storedReference);
                 }
             } else {
                 user = userManager.getUserModel(storedReference);
@@ -556,7 +556,7 @@ public class Select2ActionsBean implements Serializable {
             } else {
                 log.warn("Could not resolve user or group reference: "
                         + storedReference);
-                return null;
+                return createNotFoundEntry(storedReference);
             }
         } catch (ClientException e) {
             log.error("An error occured while retrieving user or group reference: "
