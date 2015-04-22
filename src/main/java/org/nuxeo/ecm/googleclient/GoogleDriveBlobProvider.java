@@ -19,6 +19,7 @@ package org.nuxeo.ecm.googleclient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -27,12 +28,17 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import com.google.api.client.json.JsonObjectParser;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.ObjectParser;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.ExtendedBlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
+import org.nuxeo.ecm.core.cache.Cache;
+import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.googleclient.credential.CredentialFactory;
 
@@ -43,6 +49,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Provider for blobs getting information from Google Drive.
@@ -55,7 +62,12 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
 
     private static final String APPLICATION_NAME = "Nuxeo/0";
 
+    private static final String FILE_CACHE_NAME = "googleDrive";
+
     private final CredentialFactory credentialFactory;
+
+    /** {@link File} resource cache */
+    private Cache fileCache;
 
     public GoogleDriveBlobProvider(CredentialFactory credentialFactory) {
         this.credentialFactory = credentialFactory;
@@ -99,7 +111,7 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
             }
             break;
         }
-        return (url != null) ? asURI(url) : null;
+        return url != null ? asURI(url) : null;
     }
 
     protected InputStream getStream(String blobKey, URI uri) throws IOException {
@@ -220,8 +232,22 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
         return getFile(user, fileId);
     }
 
+    /**
+     * Retrieves a {@link File} resource and caches the unparsed response.
+     *
+     * @return a {@link File} resource.
+     */
     protected File getFile(String user, String fileId) throws IOException {
-        return getService(user).files().get(fileId).execute();
+        String fileResource = (String) getFileCache().get(fileId);
+        if (fileResource == null) {
+            HttpResponse response = getService(user).files().get(fileId).executeUnparsed();
+            if (!response.isSuccessStatusCode()) {
+                return null;
+            }
+            fileResource = response.parseAsString();
+            getFileCache().put(fileId, fileResource);
+        }
+        return parseFile(fileResource);
     }
 
     /**
@@ -245,4 +271,16 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
         }
     }
 
+    private Cache getFileCache() {
+        if (fileCache == null) {
+            fileCache = Framework.getService(CacheService.class).getCache(FILE_CACHE_NAME);
+        }
+        return fileCache;
+    }
+
+    private File parseFile(String json) throws IOException {
+        JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+        ObjectParser parser = new JsonObjectParser(jsonFactory);
+        return parser.parseAndClose(new StringReader(json), File.class);
+    }
 }
