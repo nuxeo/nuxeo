@@ -328,6 +328,20 @@ final public class NxqlQueryConverter {
             }
             ret = queryString;
             break;
+        case "simple_query_string":
+            SimpleQueryStringBuilder querySimpleString = QueryBuilders.simpleQueryString((String) value);
+            if (hint.index != null) {
+                for (String index : hint.getIndex()) {
+                    querySimpleString.field(index);
+                }
+            } else {
+                querySimpleString.field(name);
+            }
+            if (hint.analyzer != null) {
+                querySimpleString.analyzer(hint.analyzer);
+            }
+            ret = querySimpleString;
+            break;
         default:
             throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is unknown");
         }

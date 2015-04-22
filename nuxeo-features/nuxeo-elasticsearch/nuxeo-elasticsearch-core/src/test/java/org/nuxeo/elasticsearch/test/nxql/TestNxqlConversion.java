@@ -579,6 +579,14 @@ public class TestNxqlConversion {
                 "  }\n" + //
                 "}", es);
 
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(simple_query_string) */ dc:title = '\"fried eggs\" +(eggplant | potato) -frittata'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"simple_query_string\" : {\n" + //
+                "    \"query\" : \"\\\"fried eggs\\\" +(eggplant | potato) -frittata\",\n" + //
+                "    \"fields\" : [ \"dc:title\" ]\n" + //
+                "  }\n" + //
+                "}", es);
+
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(dc:title,dc:description) ANALYZER(fulltext) OPERATOR(query_string) */ dc:title = 'this AND that OR thus'").toString();
         // fields are not ordered
         assertIn(es,
