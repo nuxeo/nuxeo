@@ -17,10 +17,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.inject.Inject;
+
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -29,16 +30,41 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Tests read ACLs behavior in a transactional setting.
  */
-public class TestSQLRepositoryReadAcls extends TXSQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+public class TestSQLRepositoryReadAcls {
 
-    protected static final Log log = LogFactory.getLog(TestSQLRepositoryJTAJCA.class);
+    @Inject
+    protected EventService eventService;
+
+    @Inject
+    protected CoreSession session;
+
+    protected void waitForAsyncCompletion() {
+        nextTransaction();
+        eventService.waitForAsyncCompletion();
+    }
+
+    protected void nextTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+    }
 
     @Test
     public void testParallelPrepareUserReadAcls() throws Throwable {
@@ -50,12 +76,14 @@ public class TestSQLRepositoryReadAcls extends TXSQLRepositoryTestCase {
     @Test
     public void testParallelPrepareUserReadAclsMany() throws Throwable {
         for (int i = 0; i < 100; i++) {
-            log.debug("try " + i);
+            // log.debug("try " + i);
             doParallelPrepareUserReadAcls(i);
         }
     }
 
     protected void doParallelPrepareUserReadAcls(int i) throws Throwable {
+        String repositoryName = session.getRepositoryName();
+
         // set ACP on root
         ACPImpl acp = new ACPImpl();
         ACLImpl acl = new ACLImpl();
@@ -69,14 +97,12 @@ public class TestSQLRepositoryReadAcls extends TXSQLRepositoryTestCase {
         doc.setACP(acp, true);
         session.save();
 
-        closeSession();
-        TransactionHelper.commitOrRollbackTransaction();
+        waitForAsyncCompletion();
 
         CyclicBarrier barrier = new CyclicBarrier(2);
         CountDownLatch firstReady = new CountDownLatch(1);
-        PrepareUserReadAclsJob r1 = new PrepareUserReadAclsJob(name, username, database.getRepositoryName(), firstReady,
-                barrier);
-        PrepareUserReadAclsJob r2 = new PrepareUserReadAclsJob(name, username, database.getRepositoryName(), null, barrier);
+        PrepareUserReadAclsJob r1 = new PrepareUserReadAclsJob(name, username, repositoryName, firstReady, barrier);
+        PrepareUserReadAclsJob r2 = new PrepareUserReadAclsJob(name, username, repositoryName, null, barrier);
         Thread t1 = null;
         Thread t2 = null;
         try {
@@ -109,14 +135,9 @@ public class TestSQLRepositoryReadAcls extends TXSQLRepositoryTestCase {
 
         // after both threads have run, check that we don't see
         // duplicate documents
-        TransactionHelper.startTransaction();
-        session = openSessionAs(username);
-        checkOneDoc(session, name); // failed for PostgreSQL
-        closeSession();
-        TransactionHelper.commitOrRollbackTransaction();
-
-        TransactionHelper.startTransaction();
-        openSession();
+        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, username)) {
+            checkOneDoc(session, name); // failed for PostgreSQL
+        }
     }
 
     protected static void checkOneDoc(CoreSession session, String name) throws ClientException {

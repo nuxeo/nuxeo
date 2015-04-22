@@ -11,29 +11,49 @@
  */
 package org.nuxeo.ecm.core;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Tests fulltext extractor work and updater work.
  */
-public class TestSQLRepositoryFulltextWork extends TXSQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+public class TestSQLRepositoryFulltextWork {
 
-    protected static final Log log = LogFactory.getLog(TestSQLRepositoryFulltextWork.class);
+    @Inject
+    protected EventService eventService;
 
-    protected void nextTX() throws ClientException {
-        closeSession();
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
-        openSession();
+    @Inject
+    protected CoreSession session;
+
+    protected void nextTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+    }
+
+    protected void waitForAsyncCompletion() {
+        nextTransaction();
+        eventService.waitForAsyncCompletion();
     }
 
     private void createFolder() throws PropertyException, ClientException {
@@ -53,13 +73,12 @@ public class TestSQLRepositoryFulltextWork extends TXSQLRepositoryTestCase {
         file.setPropertyValue("dc:title", "testfile Title");
         file = session.createDocument(file);
         session.save();
-        nextTX();
+        nextTransaction();
 
         // at this point fulltext update is triggered async
 
         session.removeDocument(new IdRef(file.getId()));
         session.save();
-        nextTX();
 
         waitForAsyncCompletion();
     }

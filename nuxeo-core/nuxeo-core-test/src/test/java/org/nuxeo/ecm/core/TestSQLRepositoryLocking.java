@@ -11,74 +11,59 @@
  */
 package org.nuxeo.ecm.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.concurrent.CountDownLatch;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.Environment;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Tests locking behavior under transaction. Subclass tests with no transaction.
  */
-public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+public class TestSQLRepositoryLocking {
 
     protected static final Log log = LogFactory.getLog(TestSQLRepositoryJTAJCA.class);
 
-    protected static final String SYSTEM = SecurityConstants.SYSTEM_USERNAME;
-
     @SuppressWarnings("deprecation")
-    protected static final String ADMINISTRATOR = SecurityConstants.ADMINISTRATOR;
+    private static final String ADMINISTRATOR = SecurityConstants.ADMINISTRATOR;
 
-    // subclassed to disable transactions
-    protected boolean useTX() {
-        return true;
-    }
+    @Inject
+    protected CoreSession session;
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        if (!useTX()) {
-            Environment.getDefault().setHostApplicationName(null);
-            closeSession();
-            TransactionHelper.commitOrRollbackTransaction();
-            openSession();
-        }
-    }
-
-    @After
-    public void waitForWorkers() {
-        super.waitForAsyncCompletion();
-    }
-
-    protected void nextTX() throws Exception {
-        closeSession();
-        if (useTX()) {
+    protected void nextTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
         }
-        openSession();
     }
 
     @SuppressWarnings("deprecation")
     @Test
     public void testLocking() throws Exception {
-        if (!hasPoolingConfig()) {
-            return;
-        }
-
         DocumentModel root = session.getRootDocument();
 
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
@@ -88,7 +73,7 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
         assertFalse(doc.isLocked());
         session.save();
 
-        nextTX();
+        nextTransaction();
 
         doc = session.getChild(root.getRef(), "doc");
         doc.setLock();
@@ -98,7 +83,7 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
         assertTrue(doc.getLock().startsWith(ADMINISTRATOR + ':')); // old
         assertTrue(doc.isLocked());
 
-        nextTX();
+        nextTransaction();
 
         doc = session.getChild(root.getRef(), "doc");
 
@@ -107,7 +92,7 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
         assertTrue(doc.getLock().startsWith(ADMINISTRATOR + ':')); // old
         assertTrue(doc.isLocked());
 
-        nextTX();
+        nextTransaction();
 
         doc = session.getChild(root.getRef(), "doc");
         doc.removeLock();
@@ -115,7 +100,7 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
         assertNull(doc.getLockInfo());
         assertFalse(doc.isLocked());
 
-        nextTX();
+        nextTransaction();
 
         doc = session.getChild(root.getRef(), "doc");
 
@@ -124,17 +109,13 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
 
     @Test
     public void testLockingBeforeSave() throws Exception {
-        if (!hasPoolingConfig()) {
-            return;
-        }
-
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
         doc = session.createDocument(doc);
         doc.setLock();
         session.save();
 
-        nextTX();
+        nextTransaction();
 
         doc = session.getChild(root.getRef(), "doc");
         assertTrue(doc.isLocked());
@@ -145,10 +126,6 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
     // main connection
     @Test
     public void testGetLockAfterCreate() throws Exception {
-        if (!hasPoolingConfig()) {
-            return;
-        }
-
         DocumentModel doc1 = new DocumentModelImpl("/", "doc1", "File");
         doc1 = session.createDocument(doc1);
         session.save();
@@ -170,16 +147,13 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
 
     @Test
     public void testLockingWithMultipleThreads() throws Exception {
-        if (!hasPoolingConfig()) {
-            return;
-        }
-
+        final String repositoryName = session.getRepositoryName();
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
         doc = session.createDocument(doc);
         session.save();
 
-        nextTX();
+        nextTransaction();
 
         doc = session.getChild(root.getRef(), "doc");
         assertFalse(doc.isLocked());
@@ -190,24 +164,21 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
         Thread t = new Thread() {
             @Override
             public void run() {
-                CoreSession session2 = null;
                 TransactionHelper.startTransaction();
                 try {
-                    session2 = openSessionAs(ADMINISTRATOR);
-                    DocumentModel root2 = session2.getRootDocument();
-                    DocumentModel doc2 = session2.getChild(root2.getRef(), "doc");
-                    // let main thread continue
-                    threadStartLatch.countDown();
-                    // wait main thread trigger
-                    lockingLatch.await();
-                    locked = doc2.isLocked();
+                    try (CoreSession session2 = CoreInstance.openCoreSession(repositoryName, ADMINISTRATOR)) {
+                        DocumentModel root2 = session2.getRootDocument();
+                        DocumentModel doc2 = session2.getChild(root2.getRef(), "doc");
+                        // let main thread continue
+                        threadStartLatch.countDown();
+                        // wait main thread trigger
+                        lockingLatch.await();
+                        locked = doc2.isLocked();
+                    }
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 } finally {
                     threadStartLatch.countDown(); // error recovery
-                    if (session2 != null) {
-                        closeSession(session2);
-                    }
                     TransactionHelper.commitOrRollbackTransaction();
                 }
             }

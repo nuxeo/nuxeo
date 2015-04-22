@@ -16,42 +16,66 @@
  */
 package org.nuxeo.ecm.core.event.test;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import javax.inject.Inject;
+
 import org.apache.commons.logging.LogFactory;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.IgnoreNonPostgresql;
-import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
 @ConditionalIgnoreRule.Ignore(condition = IgnoreNonPostgresql.class)
-public class WorkTest extends TXSQLRepositoryTestCase {
+public class WorkTest {
 
-    @Before
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.event");
+    @Inject
+    protected EventService eventService;
+
+    @Inject
+    protected CoreSession session;
+
+    protected void waitForAsyncCompletion() {
+        nextTransaction();
+        eventService.waitForAsyncCompletion();
+    }
+
+    protected void nextTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
     }
 
     public void doTestWorkConcurrencyException(boolean explicitSave) throws Exception {
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
+        session.save();
+
         waitForAsyncCompletion();
 
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
@@ -69,7 +93,7 @@ public class WorkTest extends TXSQLRepositoryTestCase {
         workManager.schedule(addChildWork);
 
         waitForAsyncCompletion();
-        Assert.assertEquals(Arrays.asList(Boolean.TRUE, Boolean.FALSE), addChildWork.existList);
+        assertEquals(Arrays.asList(Boolean.TRUE, Boolean.FALSE), addChildWork.existList);
     }
 
     @Test

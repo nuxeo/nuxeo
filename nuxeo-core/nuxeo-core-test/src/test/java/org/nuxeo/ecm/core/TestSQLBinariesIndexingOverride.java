@@ -16,22 +16,94 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.StorageConfiguration;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.reload.ReloadService;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-public class TestSQLBinariesIndexingOverride extends TXSQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.core.convert", //
+        "org.nuxeo.ecm.core.convert.plugins", //
+        "org.nuxeo.runtime.reload", //
+})
+public class TestSQLBinariesIndexingOverride {
 
-    @Override
-    protected void deployRepositoryContrib() throws Exception {
-        super.deployRepositoryContrib();
-        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-override-indexing-contrib.xml");
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.core.convert.plugins");
+    @Inject
+    protected RuntimeHarness runtimeHarness;
+
+    @Inject
+    protected RepositorySettings repositorySettings;
+
+    @Inject
+    protected EventService eventService;
+
+    @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected ReloadService reloadService;
+
+    @Before
+    public void setUp() throws Exception {
+        // cannot be done through @LocalDeploy, because the framework variables
+        // about repository configuration aren't ready yet
+        runtimeHarness.deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-override-indexing-contrib.xml");
+        newRepository(); // fully reread repo and its indexing config
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        runtimeHarness.undeployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-override-indexing-contrib.xml");
+    }
+
+    protected void newRepository() {
+        waitForAsyncCompletion();
+        repositorySettings.releaseSession();
+        // reload repo with new config
+        reloadService.reloadRepository();
+        session = repositorySettings.createSession();
+    }
+
+    protected void waitForAsyncCompletion() {
+        nextTransaction();
+        eventService.waitForAsyncCompletion();
+    }
+
+    protected void waitForFulltextIndexing() {
+        nextTransaction();
+        coreFeature.getStorageConfiguration().waitForFulltextIndexing();
+    }
+
+    protected void nextTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
     }
 
     @Test
@@ -42,11 +114,8 @@ public class TestSQLBinariesIndexingOverride extends TXSQLRepositoryTestCase {
         holder.setBlob(Blobs.createBlob("test"));
         doc = session.createDocument(doc);
         session.save();
-        closeSession();
-        TransactionHelper.commitOrRollbackTransaction();
+
         waitForFulltextIndexing();
-        TransactionHelper.startTransaction();
-        openSession();
 
         // main index
         res = session.query("SELECT * FROM Document WHERE ecm:fulltext = 'test'");
@@ -65,16 +134,15 @@ public class TestSQLBinariesIndexingOverride extends TXSQLRepositoryTestCase {
         holder.setBlob(Blobs.createBlob("test"));
         doc = session.createDocument(doc);
         session.save();
-        closeSession();
-        TransactionHelper.commitOrRollbackTransaction();
+
         waitForFulltextIndexing();
-        TransactionHelper.startTransaction();
-        openSession();
+
         // main index
         res = session.query("SELECT * FROM Document WHERE ecm:fulltext = 'test'");
         assertEquals(1, res.size());
         Map<String, String> map = session.getBinaryFulltext(res.get(0).getRef());
         assertTrue(map.containsValue("test"));
+        StorageConfiguration database = coreFeature.getStorageConfiguration();
         if (!(database.isVCSMySQL() || database.isVCSSQLServer())) {
             // we have 2 binaries field
             assertTrue(map.containsKey("binarytext"));

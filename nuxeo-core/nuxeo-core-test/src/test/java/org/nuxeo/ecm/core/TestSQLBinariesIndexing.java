@@ -16,26 +16,42 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.concurrent.CountDownLatch;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.core.convert", //
+        "org.nuxeo.ecm.core.convert.plugins" })
+public class TestSQLBinariesIndexing {
 
-    protected static final Log log = LogFactory.getLog(TestSQLBinariesIndexing.class);
+    @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
+    protected CoreSession session;
 
     protected String docId;
 
@@ -43,18 +59,16 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
 
     protected BlockingWork blockingWork;
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        waitForFulltextIndexing();
+    protected void waitForFulltextIndexing() {
+        nextTransaction();
+        coreFeature.getStorageConfiguration().waitForFulltextIndexing();
     }
 
-    @Override
-    protected void deployRepositoryContrib() throws Exception {
-        super.deployRepositoryContrib();
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.core.convert.plugins");
+    protected void nextTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
     }
 
     /** Creates doc, doesn't do a session save. */
@@ -73,9 +87,11 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
      */
     public static class BlockingWork extends AbstractWork {
 
-        protected CountDownLatch readyLatch = new CountDownLatch(1);
+        private static final long serialVersionUID = 1L;
 
-        protected CountDownLatch startLatch = new CountDownLatch(1);
+        protected transient CountDownLatch readyLatch = new CountDownLatch(1);
+
+        protected transient CountDownLatch startLatch = new CountDownLatch(1);
 
         @Override
         public String getCategory() {
@@ -114,14 +130,6 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         waitForFulltextIndexing();
     }
 
-    protected void flush() throws ClientException {
-        session.save();
-        closeSession();
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
-        openSession();
-    }
-
     protected int indexedDocs() throws ClientException {
         DocumentModelList res = session.query("SELECT * FROM Document WHERE ecm:fulltext = 'test'");
         return res.size();
@@ -132,29 +140,19 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         return session.query(request).size();
     }
 
-    @Override
-    public void waitForFulltextIndexing() {
-        try {
-            flush(); // also starts a new tx, which will allow progress
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
-        super.waitForFulltextIndexing();
-    }
-
     @Test
     public void testBinariesAreIndexed() throws Exception {
         createDocument();
         blockFulltextUpdating();
         try {
-            flush();
+            session.save();
             assertEquals(1, jobDocs());
             assertEquals(0, indexedDocs());
         } finally {
             allowFulltextUpdating();
         }
 
-        flush();
+        waitForFulltextIndexing();
         assertEquals(0, jobDocs());
         assertEquals(1, indexedDocs());
     }
@@ -164,21 +162,21 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         createDocument();
         blockFulltextUpdating();
         try {
-            flush();
+            session.save();
             assertEquals(1, jobDocs());
             assertEquals(0, indexedDocs());
 
             session.copy(docRef, session.getRootDocument().getRef(), "copy").getRef();
 
             // check copy is part of requested
-            flush();
+            session.save();
             assertEquals(2, jobDocs());
         } finally {
             allowFulltextUpdating();
         }
 
         // check copy is indexed also
-        flush();
+        waitForFulltextIndexing();
         assertEquals(0, jobDocs());
         assertEquals(2, indexedDocs());
 
@@ -197,16 +195,17 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         createDocument();
         blockFulltextUpdating();
         try {
-            flush();
+            session.save();
             assertEquals(1, jobDocs());
             assertEquals(0, indexedDocs());
 
             session.checkIn(docRef, null, null);
-            flush();
+            session.save();
         } finally {
             allowFulltextUpdating();
         }
 
+        waitForFulltextIndexing();
         assertEquals(2, indexedDocs());
     }
 
