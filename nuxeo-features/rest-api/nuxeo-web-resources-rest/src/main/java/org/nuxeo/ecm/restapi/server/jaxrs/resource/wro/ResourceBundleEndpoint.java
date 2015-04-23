@@ -16,40 +16,30 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.resource.wro;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
 /**
- * Hook on REST API URLs (just redirects to the Wro servlet for now).
+ * Hook on REST API URLs (just forwards to the Wro servlet).
  *
  * @since 7.3
  */
 @WebObject(type = "resource")
 public class ResourceBundleEndpoint extends DefaultObject {
 
-    private static final Log log = LogFactory.getLog(ResourceBundleEndpoint.class);
-
     @GET
     @Path("bundle/{var:.*}")
-    public Object redirect(@Context UriInfo ui) {
-        URI uri = ui.getRequestUri();
-        try {
-            URI other = new URI(uri.toString().replaceFirst("/site/api/", "/wapi/"));
-            return Response.seeOther(other).build();
-        } catch (URISyntaxException e) {
-            log.error("Failed to redirect", e);
-            return null;
-        }
+    public Object redirect() {
+        return new ResourceBundleDispatcher();
     }
+
+    /**
+     * Phony class to handle forward to servlet.
+     */
+    public class ResourceBundleDispatcher {
+    }
+
 }
