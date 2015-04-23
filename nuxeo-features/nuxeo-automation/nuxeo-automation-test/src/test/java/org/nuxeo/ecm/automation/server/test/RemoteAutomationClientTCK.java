@@ -128,7 +128,7 @@ public class RemoteAutomationClientTCK {
     public void testUpdateChild2() throws Exception {
         Document file = (Document) session.newRequest("Document.Update").setHeader(Constants.HEADER_NX_SCHEMAS, "*").setInput(
                 "/TestFolder1/TestFile2").set("save", "true").set("properties",
-                "dc:description=Simple File\ndc:subjects=subject1,subject2").execute();
+                "dc:description=Simple File\ndc:subjects=art,sciences").execute();
         assertNotNull(file);
         assertEquals("Simple File", file.getProperties().get("dc:description"));
         assertEquals(2, ((PropertyList) file.getProperties().get("dc:subjects")).size());

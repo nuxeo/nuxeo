@@ -498,7 +498,7 @@ public abstract class AbstractAutomationClientTest {
         PropertyMap props = new PropertyMap();
         props.set("dc:title", "My Test Folder");
         props.set("dc:description", "test");
-        props.set("dc:subjects", "a,b,c\\,d");
+        props.set("dc:subjects", "art,sciences,biology");
         Document folder = (Document) session.newRequest(CreateDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").setInput(
                 automationTestFolder).set("type", "Folder").set("name", "myfolder2").set("properties", props).execute();
 
@@ -506,9 +506,9 @@ public abstract class AbstractAutomationClientTest {
         assertEquals("test", folder.getString("dc:description"));
         PropertyList ar = (PropertyList) folder.getProperties().get("dc:subjects");
         assertEquals(3, ar.size());
-        assertEquals("a", ar.getString(0));
-        assertEquals("b", ar.getString(1));
-        assertEquals("c,d", ar.getString(2));
+        assertEquals("art", ar.getString(0));
+        assertEquals("sciences", ar.getString(1));
+        assertEquals("biology", ar.getString(2));
     }
 
     @Test
