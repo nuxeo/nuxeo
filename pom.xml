@@ -50,7 +50,6 @@
     <nuxeo.templates.version>7.3-SNAPSHOT</nuxeo.templates.version>
     <nuxeo.csv.version>7.3-SNAPSHOT</nuxeo.csv.version>
     <nuxeo.drive.version>7.3-SNAPSHOT</nuxeo.drive.version>
-    <nuxeo.dam.pdf.export.version>7.3-SNAPSHOT</nuxeo.dam.pdf.export.version>
     <nuxeo.resources.compat.version>7.3-SNAPSHOT</nuxeo.resources.compat.version>
     <nuxeo.dmk.version>7.3-SNAPSHOT</nuxeo.dmk.version>
     <nuxeo.webengine.sites.version>7.3-SNAPSHOT</nuxeo.webengine.sites.version>
@@ -109,7 +108,6 @@
     <module>nuxeo-tree-snapshot</module>
     <module>nuxeo-groups-rights-audit</module>
     <module>nuxeo-drive-server</module>
-    <module>nuxeo-dam-pdf-export</module>
     <module>nuxeo-resources-compat</module>
     <module>nuxeo-dmk-adaptor</module>
     <module>nuxeo-webengine-sites</module>
@@ -550,16 +548,6 @@
         <artifactId>nuxeo-dam</artifactId>
         <version>${nuxeo.dam.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-jsf</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-theme</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
 
       <!-- Quota -->
       <dependency>
@@ -785,13 +773,6 @@
         <groupId>org.nuxeo.ecm</groupId>
         <artifactId>nuxeo-drive-operations</artifactId>
         <version>${nuxeo.drive.version}</version>
-      </dependency>
-
-      <!-- DAM PDF Export -->
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-pdf-export</artifactId>
-        <version>${nuxeo.dam.pdf.export.version}</version>
       </dependency>
 
       <!-- Nuxeo Resources Compat -->
