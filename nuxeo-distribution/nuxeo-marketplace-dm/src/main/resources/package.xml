@@ -8,7 +8,6 @@
       <ul>
         <li>nuxeo-dam,</li>
         <li>nuxeo-virtualnavigation,</li>
-        <li>nuxeo-faceted-search,</li>
         <li>nuxeo-imap-connector,</li>
         <li>nuxeo-diff</li>
       </ul>
@@ -30,7 +29,6 @@
   <dependencies>
     <package>nuxeo-dam</package>
     <package>nuxeo-virtualnavigation</package>
-    <package>nuxeo-faceted-search</package>
     <package>nuxeo-imap-connector</package>
     <package>nuxeo-diff</package>
   </dependencies>
