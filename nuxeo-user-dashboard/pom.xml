@@ -15,7 +15,6 @@
   <modules>
     <module>nuxeo-user-dashboard</module>
     <module>nuxeo-user-dashboard-jsf</module>
-    <module>nuxeo-user-dashboard-opensocial</module>
   </modules>
 
 </project>
