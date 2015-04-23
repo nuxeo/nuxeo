@@ -56,12 +56,6 @@
         <artifactId>nuxeo-target-platforms-io</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <!-- to remove when dep > Nuxeo 5.9.5 -->
-      <dependency>
-        <groupId>org.skyscreamer</groupId>
-        <artifactId>jsonassert</artifactId>
-        <version>1.2.3</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
