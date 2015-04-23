@@ -72,7 +72,8 @@ public class RemoteAutomationClientTCK {
         testCRUDSuite();
         testBlobSuite();
         testPaginationSuite();
-        testComplexPropertiesWithJSON();
+        // TODO: NXP-17000 (reactivate when NXBT-902 is resolved)
+        //testComplexPropertiesWithJSON();
         testAutomationBusinessObjects();
     }
 
@@ -251,7 +252,6 @@ public class RemoteAutomationClientTCK {
     /**
      * Managing Complex Properties
      */
-
     public void testComplexPropertiesWithJSON() throws Exception {
         // get the root
         Document root = (Document) session.newRequest("Document.Fetch").set("value", "/").execute();

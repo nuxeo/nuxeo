@@ -250,14 +250,12 @@
   <profiles>
     <profile>
       <id>withIT</id>
-      <!-- Comment activation when tests are not skipped NXBT-586
+        <!-- Skip exec if skipTests is defined. Using NXBT-568 would be better. -->
         <activation>
-        <property>
-        &lt;!&ndash; Skip exec if skipTests is defined. Using NXBT-568 would be better.
-        &ndash;&gt;
-        <name>!skipTests</name>
-        </property>
-        </activation> -->
+          <property>
+            <name>!skipTests</name>
+          </property>
+        </activation>
       <build>
         <plugins>
           <plugin>
