@@ -26,7 +26,6 @@
     <nuxeo.facetedsearch.version>7.3-SNAPSHOT</nuxeo.facetedsearch.version>
     <nuxeo.shell.version>7.3-SNAPSHOT</nuxeo.shell.version>
     <nuxeo.webembedded.version>7.3-SNAPSHOT</nuxeo.webembedded.version>
-    <nuxeo.opensocial.version>7.3-SNAPSHOT</nuxeo.opensocial.version>
     <nuxeo.usercenter.version>7.3-SNAPSHOT</nuxeo.usercenter.version>
     <nuxeo.fsconnectors.version>7.3-SNAPSHOT</nuxeo.fsconnectors.version>
     <nuxeo.classification.version>7.3-SNAPSHOT</nuxeo.classification.version>
@@ -38,12 +37,9 @@
     <nuxeo.categorization.version>7.3-SNAPSHOT</nuxeo.categorization.version>
     <nuxeo.replication.version>7.3-SNAPSHOT</nuxeo.replication.version>
     <nuxeo.activity.version>7.3-SNAPSHOT</nuxeo.activity.version>
-    <nuxeo.sc.version>7.3-SNAPSHOT</nuxeo.sc.version>
     <nuxeo.birt.version>7.3-SNAPSHOT</nuxeo.birt.version>
     <nuxeo.suggestbox.version>7.3-SNAPSHOT</nuxeo.suggestbox.version>
-    <nuxeo.rssreader.version>7.3-SNAPSHOT</nuxeo.rssreader.version>
     <nuxeo.dam.version>7.3-SNAPSHOT</nuxeo.dam.version>
-    <nuxeo.poll.version>7.3-SNAPSHOT</nuxeo.poll.version>
     <nuxeo.quota.version>7.3-SNAPSHOT</nuxeo.quota.version>
     <nuxeo.binary.metadata.version>7.3-SNAPSHOT</nuxeo.binary.metadata.version>
     <nuxeo.web.mobile.version>7.3-SNAPSHOT</nuxeo.web.mobile.version>
@@ -92,13 +88,11 @@
     <module>nuxeo-platform-user-registration</module>
     <module>nuxeo-shell</module>
     <module>nuxeo-filesystem-connectors</module>
-    <module>nuxeo-opensocial</module>
     <module>nuxeo-user-center</module>
     <module>nuxeo-platform-shibboleth-groups-web</module>
     <module>nuxeo-apidoc-server</module>
     <module>nuxeo-birt</module>
     <module>nuxeo-activity</module>
-    <module>nuxeo-social-collaboration</module>
     <module>nuxeo-platform-suggestbox</module>
     <module>nuxeo-dam</module>
     <module>nuxeo-quota</module>
@@ -285,59 +279,6 @@
         <version>${nuxeo.webembedded.version}</version>
       </dependency>
 
-      <!-- OpenSocial -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-gwt-richtexteditor</artifactId>
-        <version>${nuxeo.opensocial.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-container</artifactId>
-        <version>${nuxeo.opensocial.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.nuxeo.build</groupId>
-            <artifactId>ant-assembly-maven-plugin</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-container-webapp</artifactId>
-        <version>${nuxeo.opensocial.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-features</artifactId>
-        <version>${nuxeo.opensocial.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-gadgets</artifactId>
-        <version>${nuxeo.opensocial.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-gadgets-core</artifactId>
-        <version>${nuxeo.opensocial.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-server</artifactId>
-        <version>${nuxeo.opensocial.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-spaces</artifactId>
-        <version>${nuxeo.opensocial.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-webengine-gadgets</artifactId>
-        <version>${nuxeo.opensocial.version}</version>
-      </dependency>
-
       <!-- User Registration -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -364,11 +305,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-user-dashboard-jsf</artifactId>
-        <version>${nuxeo.usercenter.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-user-dashboard-opensocial</artifactId>
         <version>${nuxeo.usercenter.version}</version>
       </dependency>
       <dependency>
@@ -603,53 +539,6 @@
         <version>${nuxeo.activity.version}</version>
       </dependency>
 
-      <!-- Social Collaboration -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.social</groupId>
-        <artifactId>nuxeo-social-workspace-core</artifactId>
-        <version>${nuxeo.sc.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.social</groupId>
-        <artifactId>nuxeo-social-workspace-web</artifactId>
-        <version>${nuxeo.sc.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.social</groupId>
-        <artifactId>nuxeo-social-workspace-gadgets</artifactId>
-        <version>${nuxeo.sc.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.social</groupId>
-        <artifactId>nuxeo-social-workspace-gadgets-library</artifactId>
-        <version>${nuxeo.sc.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.social</groupId>
-        <artifactId>nuxeo-relationship</artifactId>
-        <version>${nuxeo.sc.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.social</groupId>
-        <artifactId>nuxeo-user-relationship</artifactId>
-        <version>${nuxeo.sc.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.social</groupId>
-        <artifactId>nuxeo-mini-message</artifactId>
-        <version>${nuxeo.sc.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.social</groupId>
-        <artifactId>nuxeo-user-activity-stream</artifactId>
-        <version>${nuxeo.sc.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.social</groupId>
-        <artifactId>nuxeo-wall</artifactId>
-        <version>${nuxeo.sc.version}</version>
-      </dependency>
-
       <!-- BIRT reporting -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -674,18 +563,6 @@
         <version>${nuxeo.suggestbox.version}</version>
       </dependency>
 
-      <!-- RSS Reader -->
-      <dependency>
-        <groupId>org.nuxeo.rss.reader</groupId>
-        <artifactId>nuxeo-rss-reader</artifactId>
-        <version>${nuxeo.rssreader.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.rss.reader</groupId>
-        <artifactId>nuxeo-rss-reader-ui</artifactId>
-        <version>${nuxeo.rssreader.version}</version>
-      </dependency>
-
       <!-- Digital Asset Management -->
       <dependency>
         <groupId>org.nuxeo.dam</groupId>
@@ -701,23 +578,6 @@
         <groupId>org.nuxeo.dam</groupId>
         <artifactId>nuxeo-dam-theme</artifactId>
         <version>${nuxeo.dam.version}</version>
-      </dependency>
-
-      <!-- Poll -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-poll-core</artifactId>
-        <version>${nuxeo.poll.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-poll-gadget</artifactId>
-        <version>${nuxeo.poll.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-poll-web</artifactId>
-        <version>${nuxeo.poll.version}</version>
       </dependency>
 
       <!-- Quota -->
@@ -753,11 +613,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.mobile</groupId>
         <artifactId>nuxeo-web-mobile-cap</artifactId>
-        <version>${nuxeo.web.mobile.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.mobile</groupId>
-        <artifactId>nuxeo-web-mobile-sc</artifactId>
         <version>${nuxeo.web.mobile.version}</version>
       </dependency>
 
@@ -813,11 +668,6 @@
       <dependency>
         <groupId>org.nuxeo.rating</groupId>
         <artifactId>nuxeo-rating-core</artifactId>
-        <version>${nuxeo.rating.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.rating</groupId>
-        <artifactId>nuxeo-rating-gadget</artifactId>
         <version>${nuxeo.rating.version}</version>
       </dependency>
       <dependency>
@@ -1139,7 +989,7 @@
         <artifactId>nuxeo-platform-spreadsheet</artifactId>
         <version>${nuxeo.spreadsheet.version}</version>
       </dependency>
-      
+
       <!-- Github Segment IO -->
       <dependency>
         <groupId>org.nuxeo</groupId>
