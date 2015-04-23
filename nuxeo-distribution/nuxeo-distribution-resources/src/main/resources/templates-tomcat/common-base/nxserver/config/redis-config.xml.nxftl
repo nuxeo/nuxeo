@@ -6,7 +6,6 @@
   <extension target="org.nuxeo.ecm.core.redis"
     point="configuration">
     <server>
-      <prefix>${nuxeo.redis.prefix}</prefix>
       <host>${nuxeo.redis.host}</host>
       <port>${nuxeo.redis.port}</port>
       <password>${nuxeo.redis.password}</password>

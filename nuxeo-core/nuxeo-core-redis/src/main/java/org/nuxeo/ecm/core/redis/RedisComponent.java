@@ -25,7 +25,6 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.work.WorkManagerImpl;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
@@ -46,11 +45,11 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
 
     protected volatile RedisExecutor executor = RedisExecutor.NOOP;
 
-    protected RedisPoolDescriptor config;
+    protected RedisPoolDescriptorRegistry registry = new RedisPoolDescriptorRegistry();
 
-    protected SimpleContributionRegistry<RedisPoolDescriptor> registry =
+    public static class RedisPoolDescriptorRegistry extends SimpleContributionRegistry<RedisPoolDescriptor> {
 
-    new SimpleContributionRegistry<RedisPoolDescriptor>() {
+        protected RedisPoolDescriptor config;
 
         @Override
         public String getContributionId(RedisPoolDescriptor contrib) {
@@ -66,21 +65,55 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         public void contributionRemoved(String id, RedisPoolDescriptor origContrib) {
             config = null;
         }
+
+        public RedisPoolDescriptor getConfig() {
+            return config;
+        }
+
+        public void clear() {
+            config = null;
+        }
     };
 
     protected String delsha;
 
     @Override
+    public void activate(ComponentContext context) {
+        super.activate(context);
+        registry.clear();
+    }
+
+    @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof RedisPoolDescriptor) {
-            registry.addContribution((RedisPoolDescriptor) contribution);
+            registerRedisPoolDescriptor((RedisPoolDescriptor) contribution);
         } else {
-            super.registerContribution(contribution, extensionPoint, contributor);
+            throw new NuxeoException("Unknown contribution class: " + contribution);
         }
     }
 
     @Override
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        if (contribution instanceof RedisPoolDescriptor) {
+            unregisterRedisPoolDescriptor((RedisPoolDescriptor) contribution);
+        }
+    }
+
+    public void registerRedisPoolDescriptor(RedisPoolDescriptor contrib) {
+        registry.addContribution(contrib);
+    }
+
+    public void unregisterRedisPoolDescriptor(RedisPoolDescriptor contrib) {
+        registry.removeContribution(contrib);
+    }
+
+    public RedisPoolDescriptor getConfig() {
+        return registry.getConfig();
+    }
+
+    @Override
     public void applicationStarted(ComponentContext context) {
+        RedisPoolDescriptor config = getConfig();
         if (config == null || config.disabled) {
             return;
         }

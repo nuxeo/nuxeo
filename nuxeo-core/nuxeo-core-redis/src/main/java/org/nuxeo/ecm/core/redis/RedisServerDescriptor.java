@@ -39,35 +39,11 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
 
     private static final Log log = LogFactory.getLog(RedisServerDescriptor.class);
 
-    @XNode("hosts")
-    public RedisHostDescriptor[] hosts = new RedisHostDescriptor[0];
-
     @XNode("host")
-    public void setHost(String name) {
-        if (hosts.length == 0) {
-            hosts = new RedisHostDescriptor[] { new RedisHostDescriptor(name, Protocol.DEFAULT_PORT) };
-        } else {
-            hosts[0].name = name;
-        }
-    }
+    public String host;
 
     @XNode("port")
-    public void setHost(int port) {
-        if (hosts.length == 0) {
-            hosts = new RedisHostDescriptor[] { new RedisHostDescriptor("localhost", port) };
-        } else {
-            hosts[0].port = port;
-        }
-    }
-
-    public RedisHostDescriptor selectHost() {
-        for (RedisHostDescriptor host : hosts) {
-            if (canConnect(host.name, host.port)) {
-                return host;
-            }
-        }
-        throw new NuxeoException("Cannot connect to jedis hosts");
-    }
+    public int port = Protocol.DEFAULT_PORT;
 
     protected boolean canConnect(String name, int port) {
         try (Jedis jedis = new Jedis(name, port)) {
@@ -90,15 +66,11 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
 
     @Override
     public RedisExecutor newExecutor() {
-        if (hosts.length == 0) {
-            throw new RuntimeException("Missing Redis host");
+        if (!canConnect(host, port)) {
+            throw new NuxeoException("Cannot connect to Jedis host: " + host + ":" + port);
         }
-        if (hosts.length > 1) {
-            throw new RuntimeException("Only one host supported");
-        }
-        RedisHostDescriptor host = selectHost();
-        return new RedisPoolExecutor(new JedisPool(new JedisPoolConfig(), host.name, host.port, timeout,
+        return new RedisPoolExecutor(new JedisPool(new JedisPoolConfig(), host, port, timeout,
                 StringUtils.defaultIfBlank(password, null), database));
-
     }
+
 }
