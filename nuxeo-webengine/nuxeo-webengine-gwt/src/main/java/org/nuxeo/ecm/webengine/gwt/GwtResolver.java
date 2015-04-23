@@ -7,6 +7,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.FileSystemAlreadyExistsException;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
@@ -21,9 +22,13 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 
 public class GwtResolver {
+
+    private static final Log log = LogFactory.getLog(GwtResolver.class);
 
     public interface Strategy {
 
@@ -32,7 +37,7 @@ public class GwtResolver {
         File resolve(String path);
     }
     
-    public static final File GWT_ROOT = locateRoot();
+    public static File GWT_ROOT = null;
 
     private static File locateRoot() {
 		File dir = new File(Environment.getDefault().getWeb(), "root.war/gwt");
@@ -85,6 +90,10 @@ public class GwtResolver {
         }
     }
 
+    public GwtResolver() {
+        GWT_ROOT = locateRoot();
+    }
+
     public Strategy newStrategy(final URI location) throws IOException {
         final File root = install(location);
         return new Strategy() {
@@ -105,15 +114,19 @@ public class GwtResolver {
     protected File install(URI location) throws IOException {
         if ("jar".equals(location.getScheme())) {
             Map<String,Object> env = Collections.emptyMap();
-            FileSystems.newFileSystem(location, env);
+            try {
+                FileSystems.newFileSystem(location, env, this.getClass().getClassLoader());
+            } catch (FileSystemAlreadyExistsException e) {
+                 log.debug(location + " already exists");
+            }
+            Path path = Paths.get(location);
+            try {
+                return path.toFile();
+            } catch (UnsupportedOperationException cause) {
+                ;
+            }
+            Files.walkFileTree(path, new TreeImporter(path, GWT_ROOT.toPath()));
         }
-        Path path = Paths.get(location);
-        try {
-            return path.toFile();
-        } catch (UnsupportedOperationException cause) {
-            ;
-        }
-        Files.walkFileTree(path, new TreeImporter(path, GWT_ROOT.toPath()));
         return GWT_ROOT;
     }
 
