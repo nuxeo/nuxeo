@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -427,62 +428,33 @@ public class ChainSelect extends UIInput implements ResettableComponent {
         // }
     }
 
-    private void rebuildOptions(int index) {
-        ChainSelectListboxComponent component = getComponent(index);
-
-        if (component == null) {
-            return;
+    public ChainSelectListboxComponent getComponent(UIComponent parent, int i) {
+        ChainSelectListboxComponent c = null;
+        Iterator<UIComponent> children = parent.getFacetsAndChildren();
+        if (children != null) {
+            UIComponent child = null;
+            while (children.hasNext()) {
+                child = (UIComponent) children.next();
+                if (child instanceof ChainSelectListboxComponent) {
+                    Integer index = ((ChainSelectListboxComponent) child).getIndex();
+                    if (i == index) {
+                        c = (ChainSelectListboxComponent) child;
+                        break;
+                    }
+                } else {
+                    // explore subcomps
+                    c = getComponent(child, i);
+                    if (c != null) {
+                        break;
+                    }
+                }
+            }
         }
-
-        // LinkedHashMap<String, DirectorySelectItem> options =
-        // component.rebuildOptions();
-
-        // optionList[index] = options;
+        return c;
     }
 
     public ChainSelectListboxComponent getComponent(int i) {
-        List<UIComponent> children = getChildren();
-        for (UIComponent child : children) {
-            if (!(child instanceof ChainSelectListboxComponent)) {
-                continue;
-            }
-            ChainSelectListboxComponent component = (ChainSelectListboxComponent) child;
-            Integer index = component.getIndex();
-            if (i == index) {
-                return component;
-            }
-        }
-
-        // try with multiListbox
-        for (UIComponent child : children) {
-            if (child instanceof ChainSelectMultiListboxComponent) {
-                ChainSelectMultiListboxComponent mcomp = (ChainSelectMultiListboxComponent) child;
-
-                ChainSelectListboxComponent[] sComps = mcomp.createSingleComponents();
-                if (i < sComps.length) {
-                    return sComps[i];
-                } else {
-                    log.error("xXXXXXXXXXXXXXXXXXXXX " + i);
-                }
-            }
-
-            // XXX : remove this section
-            if (child instanceof UIRepeat) {
-                List<UIComponent> children2 = child.getChildren();
-                for (UIComponent child2 : children2) {
-                    if (!(child2 instanceof ChainSelectListboxComponent)) {
-                        continue;
-                    }
-                    ChainSelectListboxComponent component = (ChainSelectListboxComponent) child2;
-                    Integer index = component.getIndex();
-                    if (i == index) {
-                        return component;
-                    }
-                }
-            }
-        }
-
-        return null;
+        return getComponent(this, i);
     }
 
     public boolean isMultiSelect() {
@@ -608,9 +580,9 @@ public class ChainSelect extends UIInput implements ResettableComponent {
         for (int i = 0; i < columns.length; i++) {
             String id = columns[i];
 
-            String directoryName;
-            VocabularyEntryList directoryValues;
-            boolean displayObsoleteEntries;
+            String directoryName = null;
+            VocabularyEntryList directoryValues = null;
+            boolean displayObsoleteEntries = false;
 
             NestedChainSelectComponentInfo compInfo = compInfos.get(i);
             if (compInfo != null) {
@@ -620,10 +592,11 @@ public class ChainSelect extends UIInput implements ResettableComponent {
             } else {
                 // fallback to the old solution
                 ChainSelectListboxComponent comp = getComponent(i);
-
-                directoryName = comp.getStringProperty("directoryName", null);
-                directoryValues = comp.getDirectoryValues();
-                displayObsoleteEntries = comp.getBooleanProperty("displayObsoleteEntries", false);
+                if (comp != null) {
+                    directoryName = comp.getStringProperty("directoryName", null);
+                    directoryValues = comp.getDirectoryValues();
+                    displayObsoleteEntries = comp.getBooleanProperty("displayObsoleteEntries", false);
+                }
             }
 
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
