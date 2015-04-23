@@ -10,8 +10,7 @@
         <li>nuxeo-virtualnavigation,</li>
         <li>nuxeo-faceted-search,</li>
         <li>nuxeo-imap-connector,</li>
-        <li>nuxeo-diff,</li>
-        <li>nuxeo-opensocial</li>
+        <li>nuxeo-diff</li>
       </ul>
     </p>
   </description>
@@ -34,7 +33,6 @@
     <package>nuxeo-faceted-search</package>
     <package>nuxeo-imap-connector</package>
     <package>nuxeo-diff</package>
-    <package>nuxeo-opensocial</package>
   </dependencies>
   <provides>
     <package>nuxeo-content-browser:1.0.0:1.0.0</package>
