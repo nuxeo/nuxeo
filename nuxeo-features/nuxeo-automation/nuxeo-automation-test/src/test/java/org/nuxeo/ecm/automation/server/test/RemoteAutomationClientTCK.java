@@ -184,10 +184,8 @@ public class RemoteAutomationClientTCK {
     /**
      * Managing Blobs
      */
-
     protected File newFile(String content) throws IOException {
         File file = File.createTempFile("automation-test-", ".xml");
-        Framework.trackFile(file, this);
         FileUtils.writeFile(file, content);
         return file;
     }
