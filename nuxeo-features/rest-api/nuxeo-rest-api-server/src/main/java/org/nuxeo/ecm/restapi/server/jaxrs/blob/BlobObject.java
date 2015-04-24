@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.blob;
 
+import java.io.Serializable;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -29,8 +31,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.webengine.WebException;
@@ -76,27 +76,10 @@ public class BlobObject extends DefaultObject {
 
     @GET
     public Object doGet(@Context Request request) throws ClientException {
-
-        if (xpath == null) {
-            xpath = getXpathFromRequest();
-        }
-
         try {
-            Property p = doc.getProperty(xpath);
-            Blob blob = (Blob) p.getValue();
+            Blob blob = blob(xpath);
             if (blob == null) {
                 throw new WebResourceNotFoundException("No attached file at " + xpath);
-            }
-            if (blob.getFilename() == null) {
-                p = p.getParent();
-                if (p.isComplex()) { // special handling for file and files
-                    // schema
-                    try {
-                        blob.setFilename((String) p.getValue("filename"));
-                    } catch (PropertyException e) {
-                        blob.setFilename("Unknown");
-                    }
-                }
             }
             return blob;
         } catch (ClientException e) {
@@ -132,20 +115,6 @@ public class BlobObject extends DefaultObject {
         return builder.build();
     }
 
-    /**
-     * @param request
-     * @return
-     * @since 5.8
-     */
-    private String getXpathFromRequest() {
-        FormData form = ctx.getForm();
-        String propertyXpath = form.getString(FormData.PROPERTY);
-        if (propertyXpath == null && doc.hasSchema("file")) {
-            propertyXpath = "file:content";
-        }
-        return propertyXpath;
-    }
-
     @DELETE
     public Response doDelete() {
         try {
@@ -153,8 +122,6 @@ public class BlobObject extends DefaultObject {
             CoreSession session = ctx.getCoreSession();
             session.saveDocument(doc);
             session.save();
-        } catch (PropertyException e) {
-            throw WebException.wrap("Failed to delete attached file into property: " + xpath, e);
         } catch (ClientException e) {
             throw WebException.wrap("Failed to delete attached file into property: " + xpath, e);
         }
@@ -163,7 +130,6 @@ public class BlobObject extends DefaultObject {
 
     @PUT
     public Response doPut() {
-
         FormData form = ctx.getForm();
         Blob blob = form.getFirstBlob();
         if (blob == null) {
@@ -171,15 +137,7 @@ public class BlobObject extends DefaultObject {
         }
 
         try {
-            Property p = doc.getProperty(xpath);
-            if (p.isList()) { // add the file to the list
-                throw new ClientException("Can't update blob on list property");
-            } else {
-                if ("file".equals(p.getSchema().getName())) {
-                    p.getParent().get("filename").setValue(blob.getFilename());
-                }
-                p.setValue(blob);
-            }
+            doc.setPropertyValue(xpath, (Serializable) blob);
             // make snapshot
             doc.putContextData(VersioningService.VERSIONING_OPTION, form.getVersioningOption());
             CoreSession session = ctx.getCoreSession();

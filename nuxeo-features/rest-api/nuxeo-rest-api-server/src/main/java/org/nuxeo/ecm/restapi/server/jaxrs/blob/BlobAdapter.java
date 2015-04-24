@@ -25,14 +25,14 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
 /**
- * @since 5.7.3 - REST API Blob Manager
+ * REST API Blob Manager
+ *
+ * @since 5.7.3
  */
 @WebAdapter(name = BlobAdapter.NAME, type = "blobAdapter")
 public class BlobAdapter extends DefaultAdapter {
 
     public static final String NAME = "blob";
-
-    protected String xpath;
 
     protected DocumentModel doc;
 
