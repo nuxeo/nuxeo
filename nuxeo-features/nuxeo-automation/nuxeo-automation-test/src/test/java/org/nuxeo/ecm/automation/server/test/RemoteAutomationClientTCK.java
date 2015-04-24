@@ -197,7 +197,7 @@ public class RemoteAutomationClientTCK {
         assertNotNull(folder);
         assertEquals("/FolderBlob", folder.getPath());
         File file = newFile("<doc>mydoc</doc>");
-        Blob blob = Blobs.createBlob(file);
+        FileBlob blob = new FileBlob(file);
         blob.setMimeType("text/xml");
         session.newRequest("FileManager.Import").setInput(blob).setContextProperty("currentDocument", folder.getPath()).execute();
         Documents docs = (Documents) session.newRequest(DocumentPaginatedQuery.ID).setHeader(
@@ -210,7 +210,7 @@ public class RemoteAutomationClientTCK {
         // get the data URL
         String path = map.getString("data");
         // download the file from its remote location
-        blob = (Blob) session.getFile(path);
+        blob = (FileBlob) session.getFile(path);
         assertNotNull(blob);
         assertEquals("text/xml", blob.getMimeType());
         assertEquals("<doc>mydoc</doc>", IOUtils.toString(blob.getStream(), "utf-8"));
@@ -225,7 +225,7 @@ public class RemoteAutomationClientTCK {
                 "properties", "dc:title=My File").execute();
         // upload file blob
         File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
-        Blob fb = Blobs.createBlob(fieldAsJsonFile);
+        FileBlob fb = new FileBlob(fieldAsJsonFile);
         fb.setMimeType("image/jpeg");
         session.newRequest("Blob.Attach").setHeader("X-NXVoidOperation", "true").setInput(fb).set("document", "/myfile").execute();
     }
