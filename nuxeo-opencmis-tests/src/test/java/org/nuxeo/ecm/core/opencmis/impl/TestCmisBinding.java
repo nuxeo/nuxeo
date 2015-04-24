@@ -155,6 +155,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -1662,6 +1663,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, res.getObjects().get(0));
     }
 
+    @RandomBug.Repeat(issue="NXP-16977")
     @Test
     public void testQueryLatestsVersions() throws Exception {
         String statement;
@@ -1674,6 +1676,9 @@ public class TestCmisBinding extends TestCmisBindingBase {
         // 'testfile1_Title' (for reference)
         statement = "SELECT * FROM File WHERE cmis:name = 'testfile1_Title'";
         res = query(statement);
+        if (res.getNumItems().intValue() == 2) {
+            System.out.println("NXP-16977 happens");
+        }
         assertEquals(1, res.getNumItems().intValue());
 
         // checkin testfile1 as an archived version
