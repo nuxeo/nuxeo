@@ -195,6 +195,22 @@
       </aggregates>
     </genericPageProvider>
 
+    <genericPageProvider name="NXQL_WITH_HINT"
+      class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <property name="coreSession">#{documentManager}</property>
+      <whereClause docType="AdvancedSearch">
+        <predicate parameter="/*+ES: INDEX(dc:title.fulltext) */ dc:title" operator="=">
+          <field schema="advanced_search" name="fulltext_all"/>
+        </predicate>
+        <predicate parameter="/*+ES: INDEX(my_field) ANALYZER(my_analyzer) OPERATOR(fuzzy) */ dc:description" operator="=">
+          <field schema="advanced_search" name="description"/>
+        </predicate>
+        <fixedPart>
+          /*+ES: INDEX(my_subject) */ dc:subject IN ('foo', 'bar')
+        </fixedPart>
+      </whereClause>
+    </genericPageProvider>
+
     <genericPageProvider name="aggregates_2"
                          class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <property name="coreSession">#{documentManager}</property>
