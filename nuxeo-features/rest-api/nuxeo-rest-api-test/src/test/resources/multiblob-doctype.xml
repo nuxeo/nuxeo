@@ -11,6 +11,7 @@
     point="doctype">
 
     <doctype name="MultiBlobDoc" extends="Document">
+      <schema name="file" />
       <schema name="multiblob" />
       <schema name="dublincore" />
       <schema name="common" />

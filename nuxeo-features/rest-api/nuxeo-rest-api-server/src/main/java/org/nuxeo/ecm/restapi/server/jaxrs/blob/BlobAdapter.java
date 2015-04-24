@@ -36,10 +36,10 @@ public class BlobAdapter extends DefaultAdapter {
 
     protected DocumentModel doc;
 
-    @Path("{xpath:((?:(?!/@).)*)}")
-    public Resource doGet(@PathParam("xpath") String xpath) {
+    @Path("{fieldPath:((?:(?!/@).)*)}")
+    public Resource doGet(@PathParam("fieldPath") String fieldPath) {
         doc = getTarget().getAdapter(DocumentModel.class);
-        return newObject("blob", xpath, doc);
+        return newObject("blob", fieldPath, doc);
     }
 
 }

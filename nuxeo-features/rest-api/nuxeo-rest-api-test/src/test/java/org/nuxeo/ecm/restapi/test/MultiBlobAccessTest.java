@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
@@ -79,7 +80,6 @@ public class MultiBlobAccessTest extends BaseTest {
 
     @Test
     public void itCanAccessBlobs() throws Exception {
-
         // When i call the rest api
         ClientResponse response = getResponse(RequestType.GET, "path" + doc.getPathAsString()
                 + "/@blob/mb:blobs/0/content");
@@ -110,7 +110,7 @@ public class MultiBlobAccessTest extends BaseTest {
         fetchInvalidations();
         doc = getTestBlob();
         Blob blob = (Blob) doc.getPropertyValue("mb:blobs/0/content");
-
+        assertEquals("modifiedData", blob.getString());
     }
 
     @Test
@@ -131,11 +131,6 @@ public class MultiBlobAccessTest extends BaseTest {
         return session.getDocument(new PathRef("/testBlob"));
     }
 
-    /**
-     * @param doc
-     * @param stringBlob
-     * @throws ClientException
-     */
     private void addBlob(DocumentModel doc, Blob blob) throws ClientException {
         Map<String, Serializable> blobProp = new HashMap<>();
         blobProp.put("content", (Serializable) blob);
@@ -143,4 +138,32 @@ public class MultiBlobAccessTest extends BaseTest {
         blobs.add(blobProp);
         doc.setPropertyValue("mb:blobs", (Serializable) blobs);
     }
+
+    @Test
+    public void itCanAccessBlobsThroughBlobHolder() throws Exception {
+        DocumentModel doc = getTestBlob();
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        bh.setBlob(Blobs.createBlob("main"));
+        doc = session.saveDocument(doc);
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        // When i call the rest api
+        ClientResponse response = getResponse(RequestType.GET, "path" + doc.getPathAsString() + "/@blob/blobholder:0");
+
+        // Then i receive the content of the blob
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        assertEquals("main", response.getEntity(String.class));
+
+        response = getResponse(RequestType.GET, "path" + doc.getPathAsString() + "/@blob/blobholder:1");
+
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        assertEquals("one", response.getEntity(String.class));
+
+        response = getResponse(RequestType.GET, "path" + doc.getPathAsString() + "/@blob/blobholder:2");
+
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        assertEquals("two", response.getEntity(String.class));
+    }
+
 }
