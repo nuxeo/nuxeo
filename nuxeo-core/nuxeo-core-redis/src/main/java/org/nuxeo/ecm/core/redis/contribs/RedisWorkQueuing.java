@@ -23,8 +23,11 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,6 +46,10 @@ import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.runtime.api.Framework;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Protocol;
+import redis.clients.jedis.ScanParams;
+import redis.clients.jedis.ScanResult;
+import redis.clients.util.SafeEncoder;
 
 /**
  * Implementation of a {@link WorkQueuing} storing {@link Work} instances in Redis.
@@ -109,7 +116,11 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     protected RedisExecutor redisExecutor;
 
+    protected RedisAdmin redisAdmin;
+
     protected String redisNamespace;
+
+    protected String delCompletedSha;
 
     public RedisWorkQueuing(WorkManagerImpl mgr, WorkQueueDescriptorRegistry workQueueDescriptors) {
         this.mgr = mgr;
@@ -118,12 +129,18 @@ public class RedisWorkQueuing implements WorkQueuing {
     @Override
     public void init() {
         redisExecutor = Framework.getLocalService(RedisExecutor.class);
-        redisNamespace = Framework.getService(RedisAdmin.class).namespace("work");
+        redisAdmin = Framework.getService(RedisAdmin.class);
+        redisNamespace = redisAdmin.namespace("work");
         try {
             for (String queueId : getSuspendedQueueIds()) {
                 int n = scheduleSuspendedWork(queueId);
                 log.info("Re-scheduling " + n + " work instances suspended from queue: " + queueId);
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            delCompletedSha = redisAdmin.load("org.nuxeo.ecm.core.redis", "del-completed");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -396,12 +413,24 @@ public class RedisWorkQueuing implements WorkQueuing {
         return keyBytes(KEY_COMPLETED_PREFIX, queueId);
     }
 
+    protected String completedKeyString(String queueId) {
+        return redisNamespace + KEY_COMPLETED_PREFIX + queueId;
+    }
+
     protected byte[] stateKey() {
         return keyBytes(KEY_STATE);
     }
 
+    protected String stateKeyString() {
+        return redisNamespace + KEY_STATE;
+    }
+
     protected byte[] dataKey() {
         return keyBytes(KEY_DATA);
+    }
+
+    protected String dataKeyString() {
+        return redisNamespace + KEY_DATA;
     }
 
     protected byte[] serializeWork(Work work) throws IOException {
@@ -812,38 +841,61 @@ public class RedisWorkQueuing implements WorkQueuing {
         });
     }
 
+    /**
+     * Helper to call SSCAN but fall back on a custom implementation based on SMEMBERS if the backend (embedded) does
+     * not support SSCAN.
+     *
+     * @since 7.3
+     */
+    public static class SScanner {
+
+        // results of SMEMBERS for last key, in embedded mode
+        protected List<String> smembers;
+
+        protected ScanResult<String> sscan(Jedis jedis, String key, String cursor, ScanParams params) {
+            ScanResult<String> scanResult;
+            try {
+                scanResult = jedis.sscan(key, cursor, params);
+            } catch (Exception e) {
+                // when testing with embedded fake redis, we may get an un-declared exception
+                if (!(e.getCause() instanceof NoSuchMethodException)) {
+                    throw e;
+                }
+                // no SSCAN available in embedded, do a full SMEMBERS
+                if (smembers == null) {
+                    Set<String> set = jedis.smembers(key);
+                    smembers = new ArrayList<>(set);
+                }
+                Collection<byte[]> bparams = params.getParams();
+                int count = 1000;
+                for (Iterator<byte[]> it = bparams.iterator(); it.hasNext();) {
+                    byte[] param = it.next();
+                    if (param.equals(Protocol.Keyword.MATCH.raw)) {
+                        throw new UnsupportedOperationException("MATCH not supported");
+                    }
+                    if (param.equals(Protocol.Keyword.COUNT.raw)) {
+                        count = Integer.parseInt(SafeEncoder.encode(it.next()));
+                    }
+                }
+                int pos = Integer.parseInt(cursor); // don't check range, callers are cool
+                int end = Math.min(pos + count, smembers.size());
+                int nextPos = end == smembers.size() ? 0 : end;
+                scanResult = new ScanResult<>(String.valueOf(nextPos), smembers.subList(pos, end));
+                if (nextPos == 0) {
+                    smembers = null;
+                }
+            }
+            return scanResult;
+        }
+    }
+
+    /**
+     * Don't pass more than approx. this number of parameters to Lua calls.
+     */
+    private static final int BATCH_SIZE = 5000;
+
     protected void removeAllCompletedWork(final String queueId) throws IOException {
-        redisExecutor.execute(new RedisCallable<Void>() {
-
-            @Override
-            public Void call(Jedis jedis) throws IOException {
-                for (;;) {
-                    byte[] workIdBytes = jedis.spop(completedKey(queueId));
-                    if (workIdBytes == null) {
-                        return null;
-                    }
-                    jedis.hdel(stateKey(), workIdBytes);
-                    jedis.hdel(dataKey(), workIdBytes);
-                }
-            }
-
-        });
-
-        redisExecutor.execute(new RedisCallable<Void>() {
-
-            @Override
-            public Void call(Jedis jedis) throws IOException {
-                for (;;) {
-                    byte[] workIdBytes = jedis.spop(completedKey(queueId));
-                    if (workIdBytes == null) {
-                        return null;
-                    }
-                    jedis.hdel(stateKey(), workIdBytes);
-                    jedis.hdel(dataKey(), workIdBytes);
-                }
-            }
-
-        });
+        removeCompletedWork(queueId, 0);
     }
 
     protected void removeCompletedWork(final String queueId, final long completionTime) throws IOException {
@@ -851,20 +903,25 @@ public class RedisWorkQueuing implements WorkQueuing {
 
             @Override
             public Void call(Jedis jedis) throws IOException {
-                Set<byte[]> keys = jedis.smembers(completedKey(queueId));
-                for (byte[] workIdBytes : keys) {
-                    // state is a completion time
-                    byte[] bytes = jedis.hget(stateKey(), workIdBytes);
-                    if (bytes == null || bytes.length == 0 || bytes[0] != STATE_COMPLETED_B) {
-                        continue;
+                String completedKey = completedKeyString(queueId);
+                String stateKey = stateKeyString();
+                String dataKey = dataKeyString();
+                SScanner sscanner = new SScanner();
+                ScanParams scanParams = new ScanParams().count(BATCH_SIZE);
+                String cursor = "0";
+                do {
+                    ScanResult<String> scanResult = sscanner.sscan(jedis, completedKey, cursor, scanParams);
+                    cursor = scanResult.getStringCursor();
+                    List<String> workIds = scanResult.getResult();
+                    if (!workIds.isEmpty()) {
+                        // delete these works if before the completion time
+                        List<String> keys = Arrays.asList(completedKey, stateKey, dataKey);
+                        List<String> args = new ArrayList<String>(1 + workIds.size());
+                        args.add(String.valueOf(completionTime));
+                        args.addAll(workIds);
+                        jedis.evalsha(delCompletedSha, keys, args);
                     }
-                    long t = Long.parseLong(new String(bytes, 1, bytes.length - 1, UTF_8));
-                    if (t < completionTime) {
-                        jedis.srem(completedKey(queueId), workIdBytes);
-                        jedis.hdel(stateKey(), workIdBytes);
-                        jedis.hdel(dataKey(), workIdBytes);
-                    }
-                }
+                } while (!"0".equals(cursor));
                 return null;
             }
         });
