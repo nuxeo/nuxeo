@@ -32,11 +32,14 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.DocumentStringBlobHolder;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -70,8 +73,8 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
     public RenditionCreator(CoreSession session, DocumentModel liveDocument, DocumentModel versionDocument,
             Blob renditionBlob, String renditionName) {
         super(session);
-        this.liveDocumentId = liveDocument.getId();
-        this.versionDocumentRef = versionDocument.getRef();
+        liveDocumentId = liveDocument.getId();
+        versionDocumentRef = versionDocument.getRef();
         this.renditionBlob = renditionBlob;
         this.renditionName = renditionName;
     }
@@ -93,7 +96,9 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         updateIconAndSizeFields(rendition);
 
         // create a copy of the doc
-        rendition = session.createDocument(rendition);
+        if (rendition.getId() == null) {
+            rendition = session.createDocument(rendition);
+        }
         // be sure to have the same version info
         setCorrectVersion(rendition, versionDocument);
         // set ACL
@@ -103,9 +108,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         rendition = session.saveDocument(rendition);
 
         // rendition is checkout : make it checkin
-        DocumentRef renditionCheckoutRef = rendition.getRef();
         renditionRef = rendition.checkIn(VersioningOption.NONE, null);
-        session.removeDocument(renditionCheckoutRef);
         rendition = session.getDocument(renditionRef);
         session.save();
 
@@ -114,8 +117,31 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
     }
 
     protected DocumentModel createRenditionDocument(DocumentModel versionDocument) throws ClientException {
-        DocumentModel rendition = session.createDocumentModel(null, versionDocument.getName(),
-                versionDocument.getType());
+
+        String doctype = versionDocument.getType();
+        String renditionMimeType = renditionBlob.getMimeType();
+        if (versionDocument.getAdapter(BlobHolder.class) instanceof DocumentStringBlobHolder
+                && !(renditionMimeType.startsWith("text/") || renditionMimeType.startsWith("application/xhtml"))) {
+            // We have a Note or other blob holder that can only hold strings, but the rendition is not a string-related
+            // MIME type. We'll have to create a File instead to hold it.
+            doctype = "File";
+        }
+
+        DocumentModel rendition=null;
+        DocumentModelList existingRenditions = session.query("select * from  " + doctype
+                + " where ecm:isProxy = 0 AND ecm:mixinType ='" + RENDITION_FACET + "' AND "
+                + RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY + "='" + liveDocumentId + "' and " + RENDITION_NAME_PROPERTY
+                + "='" + renditionName + "'");
+        if (existingRenditions.size() > 0) {
+            rendition = existingRenditions.get(0);
+            if (rendition.isVersion()) {
+                String sid = rendition.getVersionSeriesId();
+                rendition = session.getDocument(new IdRef(sid));
+            }
+        } else {
+            rendition = session.createDocumentModel(null, versionDocument.getName(), doctype);
+        }
+
         rendition.copyContent(versionDocument);
         rendition.getContextData().putScopedValue(LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME,
                 versionDocument.getCurrentLifeCycleState());

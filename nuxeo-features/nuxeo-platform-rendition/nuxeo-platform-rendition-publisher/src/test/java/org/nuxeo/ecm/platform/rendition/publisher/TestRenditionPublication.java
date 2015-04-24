@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -163,11 +162,15 @@ public class TestRenditionPublication {
         versions = session.getVersions(file.getRef());
         assertEquals(2, versions.size());
 
-        // check that the previous proxy was deleted
-        assertFalse(session.exists(new IdRef(proxyId)));
-
+        // verify that the proxy has been updqted
         proxy = publishedDocument.getProxy();
+        assertEquals(proxyId, proxy.getId());
 
+        rendition = renditionService.getRendition(file, "pdf");
+        renditionDoc = rendition.getHostDocument();
+
+        assertEquals(renditionDoc.getId(), proxy.getSourceId());
+        assertFalse(renditionDoc.getId().equals(renditionUUID));
     }
 
     protected Blob createTextBlob(String content, String filename) {
