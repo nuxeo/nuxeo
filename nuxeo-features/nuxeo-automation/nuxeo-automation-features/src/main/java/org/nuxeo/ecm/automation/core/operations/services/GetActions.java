@@ -26,6 +26,7 @@ import java.util.Map;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.LocaleUtils;
 import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -106,7 +107,7 @@ public class GetActions {
         if (lang == null) {
             lang = "en";
         }
-        return new Locale(lang);
+        return LocaleUtils.toLocale(lang);
     }
 
     protected String translate(String key) {
