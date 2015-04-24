@@ -67,6 +67,8 @@ public class ConversionActionBean implements ConversionAction {
 
     protected static final String PDF_MIMETYPE = "application/pdf";
 
+    protected static final String PDF_EXTENSION = ".pdf";
+
     @In(create = true, required = false)
     CoreSession documentManager;
 
@@ -269,6 +271,34 @@ public class ConversionActionBean implements ConversionAction {
             log.error("PDF generation error for file " + filename, e);
         }
         return "pdf_generation_error";
+    }
+
+    /**
+     * @since 7.3
+     */
+    public boolean isPDF(BlobHolder bh) {
+        if (bh == null) {
+            return false;
+        }
+        Blob blob = bh.getBlob();
+        return blob != null && isPDF(blob);
+    }
+
+    /**
+     * @since 7.3
+     */
+    public boolean isPDF(Blob blob) {
+        String mimeType = blob.getMimeType();
+        if (StringUtils.isNotBlank(mimeType) && PDF_MIMETYPE.equals(mimeType)) {
+            return true;
+        } else {
+            String filename = blob.getFilename();
+            if (StringUtils.isNotBlank(filename) && filename.endsWith(PDF_EXTENSION)) {
+                // assume it's a pdf file
+                return true;
+            }
+        }
+        return false;
     }
 
     public void initialize() {

@@ -79,22 +79,29 @@
             </nxu:methodResult>
             <nxu:set var="hasPDFCapabilities"
               value="#{conversionActions.isExportableToPDF(currentDocumentAsBlobHolder)}">
-              <h:panelGroup rendered="#{hasPDFCapabilities}">
-                <!-- TODO: migrate to real action, see NXP-16986 -->
-                <h:outputLink value="#{baseURL}viewer/web/viewer.html" target="_blank">
-                  <f:param name="file" value="#{baseURL}api/v1/id/#{currentDocument.id}/@convert?format=pdf" />
-                  <h:graphicImage value="/icons/contextual_menu/preview.png"
-                    alt="#{messages['label.document.preview']}"
-                    title="#{messages['label.document.preview']}"/>
-                </h:outputLink>
-                <nxh:commandLink
-                  action="#{conversionActions.generatePdfFileFromBlobHolder(currentDocumentAsBlobHolder)}">
-                <nxh:graphicImage
-                  value="/icons/pdf.png"
-                  title="#{messages['label.document.generatePdf']}"
-                  alt="#{messages['label.document.generatePdf']}"/>
-              </nxh:commandLink>
-              </h:panelGroup>
+              <nxu:set var="isPDF"
+                value="#{conversionActions.isPDF(currentDocumentAsBlobHolder)}">
+                <h:panelGroup rendered="#{hasPDFCapabilities or isPDF}">
+                  <!-- TODO: migrate to real action, see NXP-16986 -->
+                  <nxu:set var="urlConvertPart" value="#{nxu:test(isPDF, '', '/@convert?format=pdf')}">
+                    <h:outputLink value="#{baseURL}viewer/web/viewer.html" target="_blank">
+                      <f:param name="file" value="#{baseURL}api/v1/id/#{currentDocument.id}/@blob/blobholder:0#{urlConvertPart}" />
+                      <h:graphicImage value="/icons/contextual_menu/preview.png"
+                        alt="#{messages['label.document.preview']}"
+                        title="#{messages['label.document.preview']}"/>
+                    </h:outputLink>
+                  </nxu:set>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{hasPDFCapabilities}">
+                  <nxh:commandLink
+                    action="#{conversionActions.generatePdfFileFromBlobHolder(currentDocumentAsBlobHolder)}">
+                    <nxh:graphicImage
+                      value="/icons/pdf.png"
+                      title="#{messages['label.document.generatePdf']}"
+                      alt="#{messages['label.document.generatePdf']}"/>
+                  </nxh:commandLink>
+                </h:panelGroup>
+              </nxu:set>
             </nxu:set>
           </td>
         </tr>
@@ -125,26 +132,33 @@
                 value=" #{nxu:printFileSize(currentDocument.files.files[model.rowIndex].file.length)}"/>
             </td>
             <td class="actionsColumn">
-              <nxu:methodResult name="hasPDFCapabilities"
+              <nxu:set var="hasPDFCapabilities"
                 value="#{conversionActions.isExportableToPDF(currentDocument.files.files[model.rowIndex].file)}">
-                <h:panelGroup rendered="#{hasPDFCapabilities}">
-                  <!-- TODO: migrate to real action, see NXP-16986 -->
-                  <h:outputLink value="#{baseURL}viewer/web/viewer.html" target="_blank">
-                    <f:param name="file" value="#{baseURL}api/v1/id/#{currentDocument.id}/@blob/#{nxd:propertyPath('files:files', model.rowIndex, 'file')}/@convert?format=pdf" />
-                    <h:graphicImage value="/icons/contextual_menu/preview.png"
-                      alt="#{messages['label.document.preview']}"
-                      title="#{messages['label.document.preview']}"/>
-                  </h:outputLink>
-                  <h:commandLink action="#{conversionActions.generatePdfFile}">
-                    <f:param name="fileFieldFullName"
-                      value="#{nxd:propertyPath('files:files', model.rowIndex, 'file')}" />
-                    <f:param name="filename" value="#{currentDocument.files.files[model.rowIndex].filename}" />
-                    <nxh:graphicImage value="/icons/pdf.png"
-                      title="#{messages['label.document.generatePdf']}"
-                      alt="#{messages['label.document.generatePdf']}"/>
-                  </h:commandLink>
-                </h:panelGroup>
-              </nxu:methodResult>
+                <nxu:set var="isPDF"
+                  value="#{conversionActions.isPDF(currentDocument.files.files[model.rowIndex].file)}">
+                  <h:panelGroup rendered="#{hasPDFCapabilities or isPDF}">
+                    <!-- TODO: migrate to real action, see NXP-16986 -->
+                    <nxu:set var="urlConvertPart" value="#{nxu:test(isPDF, '', '/@convert?format=pdf')}">
+                      <h:outputLink value="#{baseURL}viewer/web/viewer.html" target="_blank">
+                        <f:param name="file" value="#{baseURL}api/v1/id/#{currentDocument.id}/@blob/#{nxd:propertyPath('files:files', model.rowIndex, 'file')}#{urlConvertPart}" />
+                        <h:graphicImage value="/icons/contextual_menu/preview.png"
+                          alt="#{messages['label.document.preview']}"
+                          title="#{messages['label.document.preview']}"/>
+                      </h:outputLink>
+                    </nxu:set>
+                  </h:panelGroup>
+                  <h:panelGroup rendered="#{hasPDFCapabilities}">
+                    <h:commandLink action="#{conversionActions.generatePdfFile}">
+                      <f:param name="fileFieldFullName"
+                        value="#{nxd:propertyPath('files:files', model.rowIndex, 'file')}" />
+                      <f:param name="filename" value="#{currentDocument.files.files[model.rowIndex].filename}" />
+                      <nxh:graphicImage value="/icons/pdf.png"
+                        title="#{messages['label.document.generatePdf']}"
+                        alt="#{messages['label.document.generatePdf']}"/>
+                    </h:commandLink>
+                  </h:panelGroup>
+                </nxu:set>
+              </nxu:set>
             </td>
           </tr>
         </nxu:inputList>
