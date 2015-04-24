@@ -74,7 +74,7 @@ public class RemoteAutomationClientTCK {
         testPaginationSuite();
         // TODO: NXP-17000 (reactivate when NXBT-902 is resolved)
         //testComplexPropertiesWithJSON();
-        testAutomationBusinessObjects();
+        //testAutomationBusinessObjects();
     }
 
     public void testCRUDSuite() throws Exception {
@@ -294,7 +294,6 @@ public class RemoteAutomationClientTCK {
     /**
      * Managing Business Objects
      */
-
     public void testAutomationBusinessObjects() throws Exception {
         // Test for pojo <-> adapter automation creation
         BusinessBean note = new BusinessBean("Note", "File description", "Note Content", "Note", new String("object"));
