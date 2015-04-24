@@ -91,6 +91,15 @@ public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
             case "set": {
                 return valueOfOrFalse(connection.set(key, arg));
             }
+            case "srem": {
+                return valueOfOrFalse(connection.srem(key, arg));
+            }
+            case "hdel": {
+                return valueOfOrFalse(connection.hdel(key, arg));
+            }
+            case "hget": {
+                return valueOfOrFalse(connection.hget(key, arg));
+            }
             }
             throw new UnsupportedOperationException(opcode);
         }

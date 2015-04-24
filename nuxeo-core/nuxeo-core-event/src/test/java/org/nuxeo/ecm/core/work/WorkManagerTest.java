@@ -348,4 +348,36 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         service.awaitCompletion(5, TimeUnit.SECONDS);
     }
 
+    @Test
+    public void testClearCompleted() throws Exception {
+        int N = 20;
+        int duration = 100; // ms
+        for (int i = 0; i < N; i++) {
+            SleepWork work = new SleepWork(duration, false);
+            service.schedule(work);
+        }
+        Thread.sleep(duration * 2 * N);
+        assertEquals(N, service.getQueueSize(QUEUE, COMPLETED));
+
+        service.clearCompletedWork(0); // all
+        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
+    }
+
+    @Test
+    public void testClearCompletedBefore() throws Exception {
+        int duration = 1000; // ms
+        SleepWork work = new SleepWork(duration, false);
+        service.schedule(work);
+        Thread.sleep(duration * 2);
+        long cutoff = System.currentTimeMillis();
+        Thread.sleep(duration);
+        work = new SleepWork(duration, false);
+        service.schedule(work);
+        Thread.sleep(duration * 2);
+        assertEquals(2, service.getQueueSize(QUEUE, COMPLETED));
+
+        service.clearCompletedWork(cutoff);
+        assertEquals(1, service.getQueueSize(QUEUE, COMPLETED));
+    }
+
 }

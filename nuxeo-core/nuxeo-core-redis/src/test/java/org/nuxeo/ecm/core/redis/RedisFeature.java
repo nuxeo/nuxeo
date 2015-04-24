@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.protocols.inline.InlineURLFactory;
 import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -140,7 +139,6 @@ public class RedisFeature extends SimpleFeature {
     public void initialize(FeaturesRunner runner) throws Exception {
         config = runner.getConfig(Config.class);
         runner.getFeature(CacheFeature.class).enable();
-        InlineURLFactory.install();
     }
 
     @Override
