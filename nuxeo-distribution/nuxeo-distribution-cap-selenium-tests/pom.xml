@@ -90,6 +90,9 @@
       <id>oracle11g</id>
     </profile>
     <profile>
+      <id>oracle12c</id>
+    </profile>
+    <profile>
       <id>mysql</id>
     </profile>
   </profiles>
