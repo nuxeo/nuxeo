@@ -55,8 +55,9 @@ public class ScriptingOperationImpl {
     public Object run(Object input) throws Exception {
         try {
             AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
+            scriptingService.setOperationContext(ctx);
             ScriptingOperationInterface itf = scriptingService.getInterface(ScriptingOperationInterface.class, source, ctx.getCoreSession());
-            return wrapResult(itf.run(ctx.getVars(), input, args));
+            return wrapResult(itf.run(input, args));
         } catch (ScriptException e) {
             throw new OperationException(e);
         }

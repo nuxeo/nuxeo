@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.automation.scripting.testContrib" version="1.0">
 
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+             point="operations">
+  <operation
+          class="org.nuxeo.automation.scripting.test.operations.ContextModificationTest" />
+  </extension>
+
   <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="operation">
 
     <scriptedOperation id="Scripting.HelloWorld">
@@ -10,7 +16,7 @@
        <param name="lang" type="string"/>
 
        <script>
-         function run(ctx, input, params) {
+         function run(input, params) {
            if (params.lang === "fr") {
              return "Bonjour " + input;
            } else if (params.lang == "en") {
@@ -28,7 +34,7 @@
        <param name="type" type="string"/>
 
        <script><![CDATA[
-         function run(ctx, input, params) {
+         function run(input, params) {
 
             var query = "select * from " + params.type + " where ecm:path startswith '";
             query = query + input.getPathAsString();
@@ -58,7 +64,7 @@
        <outputType>Document</outputType>
        <category>Scripting</category>
        <script><![CDATA[
-        function run(ctx, input, params) {
+        function run(input, params) {
 
             var root = Repository.GetDocument(null, {
                 "value" : "/"
@@ -73,9 +79,23 @@
                     "dc:subjects" : [ "from", "javascript" ]
                 }
             });
+
+            // Test the first Context entry injection
             newDoc = Document.Update(newDoc, {
                 "properties" : {
                     "dc:nature" : ctx.test
+                }
+            });
+
+            // Context modification
+            Testing.ContextModificationTest(null, {});
+
+            // Update doc values with new Context values
+            newDoc = Document.Update(newDoc, {
+                "properties" : {
+                    "dc:description" : ctx.test,
+                    "dc:title" : ctx.new,
+                    "dc:creator" : ctx.currentUser.name
                 }
             });
 
@@ -91,7 +111,7 @@
       <param name="document" type="string"/>
 
       <script><![CDATA[
-        function run(ctx, input, params) {
+        function run(input, params) {
 
             var root = Repository.GetDocument(null, {
                 "value" : "/"
@@ -130,7 +150,7 @@
       <param name="document" type="string"/>
 
       <script><![CDATA[
-        function run(ctx, input, params) {
+        function run(input, params) {
 
             var root = Repository.GetDocument(null, {
                 "value" : "/"
@@ -153,7 +173,7 @@
       <param name="file" type="string"/>
 
       <script><![CDATA[
-        function run(ctx, input, params) {
+        function run(input, params) {
 
             var root = Repository.GetDocument(null, {
                 "value" : "/"

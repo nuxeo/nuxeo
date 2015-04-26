@@ -20,6 +20,7 @@ import java.io.InputStream;
 
 import javax.script.ScriptException;
 
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
@@ -27,6 +28,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * @since 7.2
  */
 public interface AutomationScriptingService {
+
+    /**
+     * @since 7.3
+     */
+    void setOperationContext(OperationContext ctx);
 
     /**
      * @return The default JS binding wrapper injected into Nashorn.

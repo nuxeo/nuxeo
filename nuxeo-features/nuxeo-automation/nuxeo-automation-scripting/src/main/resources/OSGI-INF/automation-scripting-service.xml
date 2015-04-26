@@ -17,7 +17,7 @@
         <outputType>string</outputType>
         <param name="lang" type="string"/>
         <script>
-          function run(ctx, input, params) {
+          function run(input, params) {
           if (params.lang === "fr") {
           return "Bonjour " + input;
           } else {

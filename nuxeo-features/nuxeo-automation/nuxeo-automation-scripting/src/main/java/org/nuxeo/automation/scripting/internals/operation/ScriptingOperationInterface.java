@@ -23,6 +23,6 @@ import java.util.Map;
  */
 public interface ScriptingOperationInterface {
 
-    Object run(Map<String, Object> ctx, Object input, Map<String, Object> parameters);
+    Object run(Object input, Map<String, Object> parameters);
 
 }

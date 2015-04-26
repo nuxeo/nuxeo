@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Thierry Delprat <tdelprat@nuxeo.com>
+ *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
 package org.nuxeo.automation.scripting.internals;
 
@@ -40,11 +41,11 @@ import org.nuxeo.runtime.api.Framework;
 public class AutomationMapper {
 
     protected final CoreSession session;
-    protected final OperationContext ctx;
+    public OperationContext ctx;
 
-    public AutomationMapper(CoreSession session) {
+    public AutomationMapper(CoreSession session, OperationContext operationContext) {
         this.session = session;
-        ctx = new OperationContext(session);
+        ctx = operationContext;
     }
 
     public Object executeOperation(String opId, Object input, ScriptObjectMirror parameters) throws Exception {

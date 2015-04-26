@@ -36,8 +36,10 @@ import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
 import org.nuxeo.automation.scripting.api.AutomationScriptingException;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.features.PlatformFunctions;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
@@ -48,6 +50,8 @@ import org.nuxeo.runtime.api.Framework;
 public class AutomationScriptingServiceImpl implements AutomationScriptingService {
 
     protected String jsWrapper = null;
+
+    protected OperationContext operationContext;
 
     protected String getJSWrapper(boolean refresh) throws OperationException {
         if (jsWrapper == null || refresh) {
@@ -82,6 +86,12 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     }
 
     @Override
+    public void setOperationContext(OperationContext ctx){
+        this.operationContext = operationContexts.get();
+        this.operationContext = ctx;
+    }
+
+    @Override
     public String getJSWrapper() throws OperationException {
         return getJSWrapper(false);
     }
@@ -90,6 +100,13 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         @Override
         protected ScriptEngine initialValue() {
             return Framework.getService(ScriptEngineManager.class).getEngineByName(AutomationScriptingConstants.NX_NASHORN);
+        }
+    };
+
+    protected final ThreadLocal<OperationContext> operationContexts = new ThreadLocal<OperationContext>() {
+        @Override
+        protected OperationContext initialValue() {
+            return new OperationContext();
         }
     };
 
@@ -107,7 +124,14 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         ScriptEngine engine = engines.get();
         engine.setContext(new SimpleScriptContext());
         engine.eval(getJSWrapper());
-        engine.put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY, new AutomationMapper(session));
+        if(operationContext==null){
+            operationContext = operationContexts.get();
+            operationContext.setCoreSession(session);
+        }
+        operationContext.putAll(Scripting.initBindings(operationContext));
+        AutomationMapper automationMapper = new AutomationMapper(session, operationContext);
+        engine.put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY, automationMapper);
+        engine.put(AutomationScriptingConstants.AUTOMATION_CTX_KEY, automationMapper.ctx.getVars());
         engine.put(AutomationScriptingConstants.PLATFORM_FUNCTIONS_KEY, new PlatformFunctions());
         engine.eval(script);
     }
