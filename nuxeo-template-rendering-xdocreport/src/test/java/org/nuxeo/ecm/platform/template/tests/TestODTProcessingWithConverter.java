@@ -46,8 +46,7 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.core.convert.api", //
     "org.nuxeo.ecm.automation.core", //
-    "org.nuxeo.ecm.platform.mimetype.api", //
-    "org.nuxeo.ecm.platform.mimetype.core", //
+    "org.nuxeo.ecm.core.mimetype", //
     "org.nuxeo.ecm.core.convert", //
     "org.nuxeo.ecm.core.convert.plugins", //
     "org.nuxeo.ecm.platform.convert", //

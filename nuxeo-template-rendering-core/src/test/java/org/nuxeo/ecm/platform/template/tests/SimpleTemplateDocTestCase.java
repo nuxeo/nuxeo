@@ -38,8 +38,7 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 @Deploy({ "org.nuxeo.ecm.platform.dublincore", //
         "org.nuxeo.template.manager.api", //
         "org.nuxeo.template.manager", //
-        "org.nuxeo.ecm.platform.mimetype.api", //
-        "org.nuxeo.ecm.platform.mimetype.core", //
+        "org.nuxeo.ecm.core.mimetype", //
 })
 public abstract class SimpleTemplateDocTestCase {
 

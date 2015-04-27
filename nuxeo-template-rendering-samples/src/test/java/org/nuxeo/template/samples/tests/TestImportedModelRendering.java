@@ -50,11 +50,10 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.core.event",
-        "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.platform.mimetype.api",
-        "org.nuxeo.ecm.platform.mimetype.core", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
-        "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.preview", "org.nuxeo.ecm.platform.dublincore",
-        "org.nuxeo.template.manager.api", "org.nuxeo.template.manager", "org.nuxeo.template.manager.jaxrs",
-        "org.nuxeo.template.manager.xdocreport", "org.nuxeo.template.manager.jxls",
+        "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.mimetype", "org.nuxeo.ecm.core.convert",
+        "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.preview",
+        "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.template.manager.api", "org.nuxeo.template.manager",
+        "org.nuxeo.template.manager.jaxrs", "org.nuxeo.template.manager.xdocreport", "org.nuxeo.template.manager.jxls",
         "org.nuxeo.template.manager.samples" })
 public class TestImportedModelRendering {
 
