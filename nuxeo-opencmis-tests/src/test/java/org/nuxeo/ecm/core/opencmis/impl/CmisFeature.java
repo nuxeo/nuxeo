@@ -41,8 +41,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
         // MyDocType
         "org.nuxeo.ecm.core.opencmis.tests", //
         // MIME Type Icon Updater for renditions
-        "org.nuxeo.ecm.platform.mimetype.api", //
-        "org.nuxeo.ecm.platform.mimetype.core", //
+        "org.nuxeo.ecm.core.mimetype", //
         "org.nuxeo.ecm.platform.filemanager.api", //
         "org.nuxeo.ecm.platform.filemanager.core", //
         "org.nuxeo.ecm.platform.filemanager.core.listener", //
