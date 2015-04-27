@@ -46,13 +46,8 @@
       <artifactId>nuxeo-platform-video-convert-test-data</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-mimetype-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-mimetype-core</artifactId>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-mimetype</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
