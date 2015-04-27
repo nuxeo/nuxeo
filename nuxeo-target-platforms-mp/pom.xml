@@ -10,7 +10,7 @@
 
   <artifactId>nuxeo-target-platforms-mp</artifactId>
   <packaging>zip</packaging>
-  <name>Nuxeo Target Platforms Marketplace Package</name>
+  <name>Nuxeo Target Platforms - Marketplace Package</name>
 
   <dependencies>
     <dependency>
