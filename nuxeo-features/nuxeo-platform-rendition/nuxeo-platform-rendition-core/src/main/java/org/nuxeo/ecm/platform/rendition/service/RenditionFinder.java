@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
  * Retrives stored Rendition associated to a DocumentModel.
  * <p>
  * Can run Unrestricted or not.
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class RenditionFinder extends UnrestrictedSessionRunner {
@@ -48,7 +48,7 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
     @Override
     public void run() throws ClientException {
 
-        String query = "select * from Document where ecm:isProxy = 0 AND ";
+        String query = "select * from Document where ecm:isProxy = 0 AND  ecm:isCheckedInVersion = 1 AND ";
         query = query + RENDITION_NAME_PROPERTY + "='" + definitionName + "' AND ";
         String versionUUUID = source.getId();
         if (!source.isVersion() && !source.isCheckedOut()) {
