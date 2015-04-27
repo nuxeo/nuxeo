@@ -10,10 +10,6 @@
   <name>Nuxeo Automation Tests</name>
   <description>Automation Tests</description>
 
-  <properties>
-    <nuxeo.tested.version>7.3-SNAPSHOT</nuxeo.tested.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
@@ -221,114 +217,26 @@
         <configuration>
           <excludes>
             <exclude>**/UploadBigFileTest.java</exclude>
-            <exclude>**/RemoteAutomationClientTest.java</exclude>
-            <exclude>**/RemoteAutomationClientTCK.java</exclude>
           </excludes>
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.nuxeo.build</groupId>
-        <artifactId>ant-assembly-maven-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
         <executions>
           <execution>
-            <id>build-marketplace</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>build</goal>
-            </goals>
             <configuration>
-              <buildFiles>
-                <buildFile>${basedir}/src/main/marketplace/assemble/assembly.xml</buildFile>
-              </buildFiles>
+              <archive>
+                <manifestFile>src/test/resources/META-INF/MANIFEST.MF</manifestFile>
+              </archive>
             </configuration>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>withIT</id>
-        <!-- Skip exec if skipTests is defined. Using NXBT-568 would be better
-        <activation>
-          <property>
-            <name>!skipTests</name>
-          </property>
-        </activation> -->
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-failsafe-plugin</artifactId>
-            <configuration>
-              <includes>
-                <include>**/RemoteAutomationClientTest.java</include>
-                <include>**/RemoteAutomationClientTCK.java</include>
-              </includes>
-              <argLine>-Dlog4j.configuration=${file.uri.prefix}${basedir}/src/test/resources/log4j.properties
-                -Dnuxeo.log.dir=${project.build.directory}
-              </argLine>
-            </configuration>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>integration-test</goal>
-                  <goal>verify</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.nuxeo.build</groupId>
-            <artifactId>ant-assembly-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>build-marketplace</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>build</goal>
-                </goals>
-                <configuration>
-                  <buildFiles>
-                    <buildFile>${basedir}/src/main/marketplace/assemble/assembly.xml</buildFile>
-                  </buildFiles>
-                </configuration>
-              </execution>
-              <execution>
-                <id>start-tomcat</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>build</goal>
-                </goals>
-                <configuration>
-                  <buildFiles>
-                    <buildFile>${basedir}/itests.xml</buildFile>
-                  </buildFiles>
-                  <targets>
-                    <target>prepare-environment</target>
-                    <target>start</target>
-                  </targets>
-                </configuration>
-              </execution>
-              <execution>
-                <id>stop-tomcat</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>build</goal>
-                </goals>
-                <configuration>
-                  <buildFiles>
-                    <buildFile>${basedir}/itests.xml</buildFile>
-                  </buildFiles>
-                  <target>stop</target>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 
 </project>

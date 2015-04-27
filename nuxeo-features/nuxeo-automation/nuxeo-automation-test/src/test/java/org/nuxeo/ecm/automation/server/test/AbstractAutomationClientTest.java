@@ -100,9 +100,6 @@ public abstract class AbstractAutomationClientTest {
 
     protected File newFile(String content) throws IOException {
         File file = File.createTempFile("automation-test-", ".xml");
-        if(!(this instanceof RemoteAutomationClientTest)) {
-            Framework.trackFile(file, this);
-        }
         FileUtils.writeFile(file, content);
         return file;
     }
