@@ -37,6 +37,7 @@
     <module>nuxeo-core-management</module>
     <module>nuxeo-core-management-jtajca</module>
     <module>nuxeo-core-management-test</module>
+    <module>nuxeo-core-mimetype</module>
     <module>nuxeo-core-test</module>
     <module>nuxeo-core-storage-dbs</module>
     <module>nuxeo-core-storage-mem</module>

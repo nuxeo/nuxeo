@@ -59,8 +59,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = RepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.mimetype.api", "org.nuxeo.ecm.platform.mimetype.core",
-        "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core",
+@Deploy({ "org.nuxeo.ecm.core.mimetype", "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.platform.filemanager.core" })
 public class TestExportedZipImporterPlugin {
 

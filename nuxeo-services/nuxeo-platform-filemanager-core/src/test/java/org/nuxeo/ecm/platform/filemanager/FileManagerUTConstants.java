@@ -28,7 +28,7 @@ public class FileManagerUTConstants {
 
     public static final String FILEMANAGER_TEST_BUNDLE = "org.nuxeo.ecm.platform.filemanager.core.tests";
 
-    public static final String MIMETYPE_BUNDLE = "org.nuxeo.ecm.platform.mimetype.core";
+    public static final String MIMETYPE_BUNDLE = "org.nuxeo.ecm.core.mimetype";
 
     public static final String TYPESERVICE_BUNDLE = "org.nuxeo.ecm.platform.types.core";
 

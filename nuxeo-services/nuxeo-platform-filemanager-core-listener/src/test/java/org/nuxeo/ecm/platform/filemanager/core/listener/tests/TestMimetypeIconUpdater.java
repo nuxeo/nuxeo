@@ -52,8 +52,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.filemanager.api", //
         "org.nuxeo.ecm.platform.filemanager.core", //
-        "org.nuxeo.ecm.platform.mimetype.api", //
-        "org.nuxeo.ecm.platform.mimetype.core", //
+        "org.nuxeo.ecm.core.mimetype", //
         "org.nuxeo.ecm.platform.types.api", //
         "org.nuxeo.ecm.platform.types.core", //
 })

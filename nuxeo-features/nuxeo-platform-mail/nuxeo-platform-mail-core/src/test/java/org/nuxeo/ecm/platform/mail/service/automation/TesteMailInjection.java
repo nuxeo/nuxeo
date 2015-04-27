@@ -68,8 +68,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.mail", //
         "org.nuxeo.ecm.platform.mail.types", //
-        "org.nuxeo.ecm.platform.mimetype.api", //
-        "org.nuxeo.ecm.platform.mimetype.core", //
+        "org.nuxeo.ecm.core.mimetype", //
         "org.nuxeo.ecm.automation.core", //
         "org.nuxeo.ecm.core.convert", //
         "org.nuxeo.ecm.core.convert.api", //

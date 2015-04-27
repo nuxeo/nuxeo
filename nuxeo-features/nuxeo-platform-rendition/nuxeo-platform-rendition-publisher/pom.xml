@@ -33,8 +33,8 @@
       <artifactId>nuxeo-platform-commandline-executor</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-mimetype-core</artifactId>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-mimetype</artifactId>
       <scope>test</scope>
     </dependency>
 

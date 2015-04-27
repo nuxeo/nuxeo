@@ -27,8 +27,6 @@
     <module>nuxeo-platform-filemanager-api</module>
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-management</module>
-    <module>nuxeo-platform-mimetype-api</module>
-    <module>nuxeo-platform-mimetype-core</module>
     <module>nuxeo-platform-types-api</module>
     <module>nuxeo-platform-types-core</module>
     <module>nuxeo-platform-usermanager-core</module>
