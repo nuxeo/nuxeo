@@ -54,7 +54,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 @Deploy({ "org.nuxeo.ecm.platform.filemanager.core", //
-        "org.nuxeo.ecm.platform.mimetype.core", //
+        "org.nuxeo.ecm.core.mimetype", //
         "org.nuxeo.ecm.platform.query.api", //
         "org.nuxeo.ecm.platform.task.core", //
         "org.nuxeo.ecm.platform.routing.core.test", //

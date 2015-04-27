@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
@@ -67,7 +68,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
         "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.platform.restapi.io", "org.nuxeo.ecm.platform.restapi.test",
         "org.nuxeo.ecm.platform.restapi.server", "org.nuxeo.ecm.platform.routing.default",
         "org.nuxeo.ecm.platform.filemanager.api", "org.nuxeo.ecm.platform.filemanager.core",
-        "org.nuxeo.ecm.platform.mimetype.api", "org.nuxeo.ecm.platform.mimetype.core", "org.nuxeo.ecm.actions" })
+        "org.nuxeo.ecm.core.mimetype", "org.nuxeo.ecm.actions" })
 public class WorkflowEndpointTest extends BaseTest {
 
     protected String assertActorIsAdministrator(ClientResponse response) throws JsonProcessingException, IOException {
@@ -90,8 +91,7 @@ public class WorkflowEndpointTest extends BaseTest {
                 + "\"entity-type\": \"task\"," + "\"variables\": {" + "\"end_date\": \""
                 + DateParser.formatW3CDateTime(calendar.getTime()) + "\","
                 + "\"participants\": \"[\\\"user:Administrator\\\"]\","
-                + "\"assignees\": \"[\\\"user:Administrator\\\"]\""
-                + "}" + "}";
+                + "\"assignees\": \"[\\\"user:Administrator\\\"]\"" + "}" + "}";
         return jsonBody;
     }
 

@@ -39,7 +39,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
         "org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-operations-contrib.xml",
         "org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-task-service.xml",
         "org.nuxeo.ecm.platform.filemanager.core",
-        "org.nuxeo.ecm.platform.mimetype.core:OSGI-INF/nxmimetype-service.xml" })
+        "org.nuxeo.ecm.core.mimetype:OSGI-INF/nxmimetype-service.xml" })
 public class DocumentRoutingFeature extends SimpleFeature {
 
 }
