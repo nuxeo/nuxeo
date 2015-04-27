@@ -2,27 +2,32 @@
      xmlns:nxu="http://nuxeo.org/nxweb/util"
      xmlns:ui="http://java.sun.com/jsf/facelets"
      xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:a4j="http://richfaces.org/a4j"
      class="tabsContent">
 
-    <h3>
-        #{messages['user.center.oauthtokens']}
-    </h3>
+  <h3>
+    #{messages['user.center.oauthtokens']}
+  </h3>
 
-    <ui:include src="user_tokens_directory.xhtml">
-        <ui:param name="bean" value="#{oauthUserTokens}"/>
-        <ui:param name="entryLayoutName" value="oauth2ProviderTokenLayoutUserDashboard"/>
-        <ui:param name="detailMode" value="edit"/>
-    </ui:include>
+  <ui:include src="user_tokens_directory.xhtml">
+    <ui:param name="bean" value="#{oauthUserTokens}"/><ui:param name="entryLayoutName" value="oauth2ProviderTokenLayoutUserDashboard"/>
+    <ui:param name="detailMode" value="edit"/>
+  </ui:include>
 
-    <c:if test="#{oauthUserTokens.editableEntry == null}">
-        <div style="margin-top: 10px">
-            <nxu:repeat var="entry" value="#{oauth2ServiceProvidersActions.entries}">
-                <h:outputLink value="#{oauth2ServiceProvidersActions.getAuthorizationURL(entry.oauth2ServiceProvider.serviceName)}"
-                              target="_blank"
-                              styleClass="button smallButton">
-                    Add a new #{entry.oauth2ServiceProvider.serviceName} token
-                </h:outputLink>
-            </nxu:repeat>
-        </div>
-    </c:if>
+  <c:if test="#{oauthUserTokens.editableEntry == null}">
+    <div style="margin-top: 10px">
+      <nxu:repeat var="entry" value="#{oauth2ServiceProvidersActions.entries}">
+        <h:outputLink value="#"
+                      styleClass="button smallButton"
+                      onclick="openPopup('#{oauth2ServiceProvidersActions.getAuthorizationURL(entry.oauth2ServiceProvider.serviceName)}', reRenderDirectory);
+                                   return false;">
+          Add a new #{entry.oauth2ServiceProvider.serviceName} token
+        </h:outputLink>
+      </nxu:repeat>
+    </div>
+  </c:if>
+
+  <a4j:jsFunction name="reRenderDirectory"
+                  render="directoryEditor">
+  </a4j:jsFunction>
 </div>

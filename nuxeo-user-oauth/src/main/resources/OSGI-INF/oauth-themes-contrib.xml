@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.user.center.oauth.themes">
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+    <view name="nuxeo5 includes" template-engine="jsf-facelets" merge="true">
+      <format-type>widget</format-type>
+      <resource>popup-utils.js</resource>
+    </view>
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+    <resource name="popup-utils.js">
+      <path>scripts/popup-utils.js</path>
+    </resource>
+  </extension>
+</component>

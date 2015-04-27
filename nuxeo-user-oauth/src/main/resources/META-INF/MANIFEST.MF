@@ -5,4 +5,5 @@ Bundle-SymbolicName: org.nuxeo.ecm.user.center.oauth;singleton:=true
 Bundle-Version: 0.0.1
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/oauth-actions-contrib.xml,
- OSGI-INF/oauth-layouts-contrib.xml
+ OSGI-INF/oauth-layouts-contrib.xml,
+ OSGI-INF/oauth-themes-contrib.xml
