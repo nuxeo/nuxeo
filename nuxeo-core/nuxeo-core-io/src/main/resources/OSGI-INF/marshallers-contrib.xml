@@ -17,6 +17,8 @@
     <register class="org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelListJsonWriter" enable="true" />
     <register class="org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelListJsonReader" enable="true" />
     <register class="org.nuxeo.ecm.core.io.marshallers.json.document.ACPJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.csv.document.DocumentModelCsvWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.csv.document.DocumentModelListCsvWriter" enable="true" />
     <!-- document type -->
     <register class="org.nuxeo.ecm.core.io.marshallers.json.types.DocumentTypeJsonWriter" enable="true" />
     <register class="org.nuxeo.ecm.core.io.marshallers.json.types.DocumentTypeListJsonWriter" enable="true" />
