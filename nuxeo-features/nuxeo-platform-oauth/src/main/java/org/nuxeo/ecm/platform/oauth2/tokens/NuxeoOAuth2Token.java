@@ -50,6 +50,8 @@ public class NuxeoOAuth2Token {
 
     private boolean isShared;
 
+    protected String serviceLogin;
+
     public NuxeoOAuth2Token(long expirationTimeMilliseconds, String clientId) {
         this("", "", expirationTimeMilliseconds);
         this.clientId = clientId;
@@ -78,6 +80,7 @@ public class NuxeoOAuth2Token {
         this.clientId = (String) entry.getProperty(SCHEMA, "clientId");
         this.creationDate = (Calendar) entry.getProperty(SCHEMA, "creationDate");
         this.isShared = (boolean) entry.getProperty(SCHEMA, "isShared");
+        this.serviceLogin = (String) entry.getProperty(SCHEMA, "serviceLogin");
     }
 
     public Map<String, Object> toMap() {
@@ -90,6 +93,7 @@ public class NuxeoOAuth2Token {
         map.put("clientId", clientId);
         map.put("creationDate", creationDate);
         map.put("isShared", isShared);
+        map.put("serviceLogin", serviceLogin);
         return map;
     }
 
@@ -111,6 +115,7 @@ public class NuxeoOAuth2Token {
         entry.setProperty(SCHEMA, "expirationTimeMilliseconds", this.expirationTimeMilliseconds);
         entry.setProperty(SCHEMA, "clientId", this.clientId);
         entry.setProperty(SCHEMA, "isShared", this.isShared);
+        entry.setProperty(SCHEMA, "serviceLogin", this.serviceLogin);
     }
 
     public void refresh() {
@@ -178,5 +183,13 @@ public class NuxeoOAuth2Token {
 
     public void setIsShared(boolean isShared) {
         this.isShared = isShared;
+    }
+
+    public String getServiceLogin() {
+        return serviceLogin;
+    }
+
+    public void setServiceLogin(String serviceLogin) {
+        this.serviceLogin = serviceLogin;
     }
 }

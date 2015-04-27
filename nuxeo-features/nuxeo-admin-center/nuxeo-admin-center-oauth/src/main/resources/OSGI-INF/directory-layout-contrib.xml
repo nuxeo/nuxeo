@@ -981,6 +981,9 @@
           <widget>nuxeoLogin</widget>
         </row>
         <row>
+          <widget>serviceLogin</widget>
+        </row>
+        <row>
           <widget>creationDate</widget>
         </row>
         <row>
@@ -1019,6 +1022,15 @@
         <translated>true</translated>
         <fields>
           <field>oauth2Token.nuxeoLogin</field>
+        </fields>
+      </widget>
+      <widget name="serviceLogin" type="text">
+        <labels>
+          <label mode="any">Service Login</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Token.serviceLogin</field>
         </fields>
       </widget>
       <widget name="creationDate" type="datetime">

@@ -8,6 +8,7 @@
   <xs:element name="accessToken" type="xs:string"/>
   <xs:element name="refreshToken" type="xs:string"/>
   <xs:element name="nuxeoLogin" type="xs:string"/>
+  <xs:element name="serviceLogin" type="xs:string"/>
   <xs:element name="clientId" type="xs:string"/>
   <xs:element name="isShared" type="xs:boolean"/>
   <xs:element name="sharedWith" type="xs:string"/>

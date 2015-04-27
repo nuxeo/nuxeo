@@ -102,8 +102,8 @@ public class OAuth2TokenStore implements CredentialStore {
     }
 
     @Override
-    public boolean load(String userName, Credential credential) {
-        NuxeoOAuth2Token token = getToken(serviceName, userName);
+    public boolean load(String serviceLogin, Credential credential) {
+        NuxeoOAuth2Token token = getToken(serviceName, serviceLogin);
         if (token == null) {
             return false;
         }
@@ -115,26 +115,11 @@ public class OAuth2TokenStore implements CredentialStore {
     }
 
     public NuxeoOAuth2Token getToken(String token) throws ClientException {
-        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            filter.put("serviceName", serviceName);
-            filter.put("accessToken", token);
-            DocumentModelList entries = session.query(filter);
-            if (entries.size() == 0) {
-                return null;
-            }
-            if (entries.size() > 1) {
-                log.error("Found several tokens");
-            }
-            return getTokenFromDirectoryEntry(entries.get(0));
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
+        Map<String, Serializable> filter = new HashMap<String, Serializable>();
+        filter.put("serviceName", serviceName);
+        filter.put("accessToken", token);
+
+        return getToken(filter);
     }
 
     protected NuxeoOAuth2Token getToken(Map<String, Serializable> filter) throws ClientException {
@@ -157,12 +142,19 @@ public class OAuth2TokenStore implements CredentialStore {
         }
     }
 
-    public NuxeoOAuth2Token getToken(String serviceName, String nuxeoLogin) throws ClientException {
+    public NuxeoOAuth2Token getToken(String serviceName, String serviceLogin) throws ClientException {
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         filter.put("serviceName", serviceName);
-        filter.put("nuxeoLogin", nuxeoLogin);
+        filter.put("serviceLogin", serviceLogin);
 
-        return getToken(filter);
+        NuxeoOAuth2Token token = getToken(filter);
+        if (token == null) {
+            // fallback to get a token using nuxeoLogin when serviceLogin is not set
+            filter.replace("serviceLogin", null);
+            filter.put("nuxeoLogin", serviceLogin);
+            token = getToken(filter);
+        }
+        return token;
     }
 
     protected NuxeoOAuth2Token getTokenFromDirectoryEntry(DocumentModel entry) throws ClientException {
@@ -175,19 +167,23 @@ public class OAuth2TokenStore implements CredentialStore {
         try {
             session = ds.open(DIRECTORY_NAME);
 
-            // clear old tokens
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             Map<String, Object> aTokenMap = aToken.toMap();
             filter.put("refreshToken", (String) aTokenMap.get("refreshToken"));
             DocumentModelList entries = session.query(filter);
-            for (DocumentModel entry : entries) {
-                session.deleteEntry(entry);
+            DocumentModel entry;
+
+            if (entries.isEmpty()) {
+                // add new token
+                entry = session.createEntry(aTokenMap);
+            } else {
+                // update existing token
+                entry = entries.get(0);
+                entry.setProperty("oauth2Token", "accessToken", aTokenMap.get("accessToken"));
+                entry.setProperty("oauth2Token", "creationDate", aTokenMap.get("creationDate"));
             }
 
-            // add new token
-            DocumentModel entry = session.createEntry(aTokenMap);
             session.updateEntry(entry);
-
             return getTokenFromDirectoryEntry(entry);
         } finally {
             if (session != null) {
@@ -195,5 +191,4 @@ public class OAuth2TokenStore implements CredentialStore {
             }
         }
     }
-
 }
