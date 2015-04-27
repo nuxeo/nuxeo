@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,10 +12,10 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Vladimir Pasquier
+ *     Vladimir Pasquier <vpasquier@nuxeo.com>
  *
  */
-package org.nuxeo.ecm.automation.server.test;
+package org.nuxeo.ftest.cap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -25,10 +25,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.Session;
@@ -41,14 +42,12 @@ import org.nuxeo.ecm.automation.client.model.PathRef;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
+import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
 import org.nuxeo.ecm.automation.test.RemoteAutomationServerFeature;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 
 /**
  * @since 5.7.2 Automation TCK Tests Suite
