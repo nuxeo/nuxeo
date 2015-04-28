@@ -31,6 +31,7 @@ import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
@@ -87,9 +88,13 @@ public class DirectorySelectOneListboxHandler extends MetaTagHandler {
     protected void initAttributes(TagAttribute[] attrs) {
         select = new ArrayList<>();
         options = new ArrayList<>();
+        boolean orderingFound = false;
         if (attrs != null) {
             for (TagAttribute attr : attrs) {
                 String name = attr.getLocalName();
+                if (StringUtils.equals(name, OptionPropertyKeys.ordering.name())) {
+                    orderingFound = true;
+                }
                 if (optionProps.contains(name)) {
                     options.add(attr);
                 } else {
@@ -104,6 +109,10 @@ public class DirectorySelectOneListboxHandler extends MetaTagHandler {
         // add default needed values for lookup to work ok
         options.add(getTagAttribute("var", "item"));
         options.add(getTagAttribute("itemValue", "#{item.id}"));
+        // Check if the attribute "ordering" has been defined, otherwise, the default value is added
+        if (!orderingFound) {
+            options.add(getTagAttribute(OptionPropertyKeys.ordering.name(), "label"));
+        }
     }
 
     protected TagAttribute getTagAttribute(String name, String value) {
