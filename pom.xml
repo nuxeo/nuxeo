@@ -10,6 +10,7 @@
     <nuxeo.targetplatforms.version>${project.version}</nuxeo.targetplatforms.version>
     <nuxeo.distribution.version>6.0-HF11</nuxeo.distribution.version>
   </properties>
+
   <modules>
     <module>nuxeo-target-platforms-api</module>
     <module>nuxeo-target-platforms-core</module>
@@ -19,6 +20,7 @@
     <module>nuxeo-target-platforms-sample</module>
     <module>nuxeo-target-platforms-mp</module>
   </modules>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -124,48 +126,6 @@
 
   <repositories>
     <repository>
-      <id>internal-releases</id>
-      <url>http://maven.in.nuxeo.com/nexus/content/groups/internal-releases</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>internal-snapshots</id>
-      <url>http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>releases</id>
-      <url>http://mavenpriv.in.nuxeo.com/nexus/content/repositories/releases</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>snapshots</id>
-      <url>http://mavenpriv.in.nuxeo.com/nexus/content/repositories/snapshots</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
-      </snapshots>
-    </repository>
-    <repository>
       <id>public</id>
       <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
       <releases>
@@ -182,35 +142,13 @@
         <enabled>false</enabled>
       </releases>
       <snapshots>
-        <enabled>true</enabled>
         <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>
+
   <pluginRepositories>
-    <pluginRepository>
-      <id>internal-releases</id>
-      <url>http://maven.in.nuxeo.com/nexus/content/groups/internal-releases</url>
-      <name>Nuxeo virtual release repository</name>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
-    <pluginRepository>
-      <id>internal-snapshots</id>
-      <url>http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots</url>
-      <name>Nuxeo virtual snapshot repository</name>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <updatePolicy>always</updatePolicy>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
     <pluginRepository>
       <id>public</id>
       <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
@@ -235,14 +173,19 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+
   <distributionManagement>
+    <site>
+      <id>maven-website</id>
+      <url>scpexe://gironde.nuxeo.com/home/mavenweb/site/</url>
+    </site>
     <repository>
-      <id>releases</id>
-      <url>http://mavenpriv.in.nuxeo.com/nexus/content/repositories/releases</url>
+      <id>public-releases</id>
+      <url>http://maven.in.nuxeo.com/nexus/content/repositories/public-releases</url>
     </repository>
     <snapshotRepository>
-      <id>snapshots</id>
-      <url>http://mavenpriv.in.nuxeo.com/nexus/content/repositories/snapshots</url>
+      <id>public-snapshots</id>
+      <url>http://maven.in.nuxeo.com/nexus/content/repositories/public-snapshots</url>
       <uniqueVersion>true</uniqueVersion>
     </snapshotRepository>
   </distributionManagement>
