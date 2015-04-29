@@ -34,14 +34,10 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
         "org.nuxeo.ecm.platform.ws", //
         // deployed for fulltext indexing
         "org.nuxeo.ecm.platform.commandline.executor", //
-        "org.nuxeo.ecm.core.convert.api", //
-        "org.nuxeo.ecm.core.convert", //
-        "org.nuxeo.ecm.core.convert.plugins", //
         "org.nuxeo.ecm.platform.convert", //
         // MyDocType
         "org.nuxeo.ecm.core.opencmis.tests", //
         // MIME Type Icon Updater for renditions
-        "org.nuxeo.ecm.core.mimetype", //
         "org.nuxeo.ecm.platform.filemanager.api", //
         "org.nuxeo.ecm.platform.filemanager.core", //
         "org.nuxeo.ecm.platform.filemanager.core.listener", //
