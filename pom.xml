@@ -9,7 +9,6 @@
   <properties>
     <nuxeo.targetplatforms.version>${project.version}</nuxeo.targetplatforms.version>
     <nuxeo.distribution.version>6.0-HF11</nuxeo.distribution.version>
-    <nuxeo.stock.distribution.version>6.0</nuxeo.stock.distribution.version>
   </properties>
 
   <modules>
