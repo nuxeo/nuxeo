@@ -67,8 +67,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @Deploy({ "org.nuxeo.ecm.platform.restapi.server.routing", "org.nuxeo.ecm.automation.test",
         "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.platform.restapi.io", "org.nuxeo.ecm.platform.restapi.test",
         "org.nuxeo.ecm.platform.restapi.server", "org.nuxeo.ecm.platform.routing.default",
-        "org.nuxeo.ecm.platform.filemanager.api", "org.nuxeo.ecm.platform.filemanager.core",
-        "org.nuxeo.ecm.core.mimetype", "org.nuxeo.ecm.actions" })
+        "org.nuxeo.ecm.platform.filemanager.api", "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.actions" })
 public class WorkflowEndpointTest extends BaseTest {
 
     protected String assertActorIsAdministrator(ClientResponse response) throws JsonProcessingException, IOException {
