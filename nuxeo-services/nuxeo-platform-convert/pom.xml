@@ -81,6 +81,10 @@
 
     <!-- scope test -->
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-mimetype</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
       <scope>test</scope>

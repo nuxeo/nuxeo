@@ -52,7 +52,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 @RepositoryConfig(init = RepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.dublincore",
-        "org.nuxeo.ecm.platform.versioning.api", "org.nuxeo.ecm.platform.versioning", "org.nuxeo.ecm.core.mimetype" })
+        "org.nuxeo.ecm.platform.versioning.api", "org.nuxeo.ecm.platform.versioning" })
 @LocalDeploy("org.nuxeo.ecm.platform.types.core:ecm-types-test-contrib.xml")
 public class TestFileManagerVersioning {
 

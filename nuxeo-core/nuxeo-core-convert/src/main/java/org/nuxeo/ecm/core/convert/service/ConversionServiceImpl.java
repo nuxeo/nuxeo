@@ -18,8 +18,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -35,6 +38,9 @@ import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
 import org.nuxeo.ecm.core.convert.extension.GlobalConfigDescriptor;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -177,19 +183,56 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
 
         String cacheKey = CacheKeyGenerator.computeKey(converterName, blobHolder, parameters);
 
-        BlobHolder cachedResult = ConversionCacheHolder.getFromCache(cacheKey);
+        BlobHolder result = ConversionCacheHolder.getFromCache(cacheKey);
 
-        if (cachedResult != null) {
-            return cachedResult;
-        } else {
+        if (result == null) {
             Converter converter = desc.getConverterInstance();
-
-            BlobHolder result = converter.convert(blobHolder, parameters);
+            result = converter.convert(blobHolder, parameters);
 
             if (config.isCacheEnabled()) {
                 ConversionCacheHolder.addToCache(cacheKey, result);
             }
-            return result;
+        }
+
+        if (result != null) {
+            updateResultBlobMimeType(result, desc);
+            updateResultBlobFileName(blobHolder, result);
+        }
+
+        return result;
+    }
+
+    protected void updateResultBlobMimeType(BlobHolder resultBh, ConverterDescriptor desc) {
+        Blob mainBlob = resultBh.getBlob();
+        String mimeType = mainBlob.getMimeType();
+        if (StringUtils.isBlank(mimeType) || mimeType.equals("application/octet-stream")) {
+            mainBlob.setMimeType(desc.getDestinationMimeType());
+        }
+    }
+
+    protected void updateResultBlobFileName(BlobHolder srcBh, BlobHolder resultBh) {
+        Blob mainBlob = resultBh.getBlob();
+        String filename = mainBlob.getFilename();
+        if (StringUtils.isBlank(filename) || filename.startsWith("nxblob-")) {
+            Blob srcBlob = srcBh.getBlob();
+            if (srcBlob != null && StringUtils.isNotBlank(srcBlob.getFilename())) {
+                String baseName = FilenameUtils.getBaseName(srcBlob.getFilename());
+
+                MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
+                MimetypeEntry mimeTypeEntry = mimetypeRegistry.getMimetypeEntryByMimeType(mainBlob.getMimeType());
+                List<String> extensions = mimeTypeEntry.getExtensions();
+                String extension;
+                if (!extensions.isEmpty()) {
+                    extension = extensions.get(0);
+                } else {
+                    extension = FilenameUtils.getExtension(filename);
+                    if (extension == null) {
+                        extension = "bin";
+                    }
+                }
+                mainBlob.setFilename(baseName + "." + extension);
+            }
+
         }
     }
 
@@ -234,7 +277,8 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     protected final Map<String, ConverterCheckResult> checkResultCache = new HashMap<>();
 
     @Override
-    public ConverterCheckResult isConverterAvailable(String converterName, boolean refresh) throws ConverterNotRegistered {
+    public ConverterCheckResult isConverterAvailable(String converterName, boolean refresh)
+            throws ConverterNotRegistered {
 
         if (!refresh) {
             if (checkResultCache.containsKey(converterName)) {

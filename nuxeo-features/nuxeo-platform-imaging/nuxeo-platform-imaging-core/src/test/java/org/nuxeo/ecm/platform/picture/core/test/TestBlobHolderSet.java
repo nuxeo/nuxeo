@@ -54,7 +54,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.mimetype", "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.core.convert",
+@Deploy({ "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.core.convert",
         "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.picture.convert" })
 @LocalDeploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")

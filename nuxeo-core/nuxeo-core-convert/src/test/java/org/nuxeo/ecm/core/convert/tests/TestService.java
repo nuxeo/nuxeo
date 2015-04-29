@@ -19,14 +19,21 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serializable;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
@@ -39,14 +46,20 @@ import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(ConvertFeature.class)
+@Deploy("org.nuxeo.ecm.core.mimetype")
 public class TestService {
 
     RuntimeContext rc;
+
+    @Inject
+    protected ConversionService cs;
 
     @Before
     public void init() {
@@ -66,14 +79,13 @@ public class TestService {
 
     @Test
     public void testServiceRegistration() {
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
         assertNotNull(cs);
     }
 
     @Test
     public void testServiceContrib() throws Exception {
         deploy("OSGI-INF/converters-test-contrib1.xml");
-        assertNotNull(Framework.getLocalService(ConversionService.class));
+        assertNotNull(cs);
 
         Converter cv1 = ConversionServiceImpl.getConverter("dummy1");
         assertNotNull(cv1);
@@ -90,7 +102,6 @@ public class TestService {
     @Test
     public void testConverterLookup() throws Exception {
         deploy("OSGI-INF/converters-test-contrib1.xml");
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
 
         String converterName = cs.getConverterName("text/plain", "test/me");
         assertEquals("dummy1", converterName);
@@ -147,7 +158,6 @@ public class TestService {
         deploy("OSGI-INF/converters-test-contrib1.xml");
         deploy("OSGI-INF/converters-test-contrib2.xml");
         deploy("OSGI-INF/converters-test-contrib4.xml");
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
 
         ConverterCheckResult result = null;
 
@@ -226,7 +236,6 @@ public class TestService {
         deploy("OSGI-INF/converters-test-contrib3.xml");
         deploy("OSGI-INF/converters-test-contrib4.xml");
         deploy("OSGI-INF/converters-test-contrib5.xml");
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
 
         ConverterCheckResult result = cs.isConverterAvailable("chainAvailable");
         assertNotNull(result);
@@ -242,7 +251,7 @@ public class TestService {
     @Test
     public void testServiceConfig() throws Exception {
         deploy("OSGI-INF/convert-service-config-test.xml");
-        assertNotNull(Framework.getLocalService(ConversionService.class));
+        assertNotNull(cs);
 
         assertEquals(12, ConversionServiceImpl.getGCIntervalInMinutes());
         assertEquals(132, ConversionServiceImpl.getMaxCacheSizeInKB());
@@ -253,10 +262,44 @@ public class TestService {
     public void testSupportedSourceMimeType() throws Exception {
         deploy("OSGI-INF/converters-test-contrib1.xml");
 
-        ConversionService conversionService = Framework.getLocalService(ConversionService.class);
-        assertTrue(conversionService.isSourceMimeTypeSupported("dummy1", "text/plain"));
-        assertTrue(conversionService.isSourceMimeTypeSupported("dummy1", "text/xml"));
-        assertFalse(conversionService.isSourceMimeTypeSupported("dummy1", "application/pdf"));
+        assertTrue(cs.isSourceMimeTypeSupported("dummy1", "text/plain"));
+        assertTrue(cs.isSourceMimeTypeSupported("dummy1", "text/xml"));
+        assertFalse(cs.isSourceMimeTypeSupported("dummy1", "application/pdf"));
+    }
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-pdf-contrib.xml")
+    public void testUpdateMimeTypeAndFileName() {
+        Map<String, Serializable> parameters = new HashMap<>();
+        Blob blob = Blobs.createBlob("dummy text", "text/plain");
+        BlobHolder result = cs.convert("dummyPdf", new SimpleBlobHolder(blob), parameters);
+        Blob resultBlob = result.getBlob();
+        assertNotNull(resultBlob);
+        assertEquals("application/pdf", resultBlob.getMimeType());
+        // cannot compute any filename
+        assertNull(resultBlob.getFilename());
+
+        blob.setFilename("dummy.txt");
+        result = cs.convert("dummyPdf", new SimpleBlobHolder(blob), parameters);
+        resultBlob = result.getBlob();
+        assertNotNull(resultBlob);
+        assertEquals("application/pdf", resultBlob.getMimeType());
+        assertEquals("dummy.pdf", resultBlob.getFilename());
+
+        parameters.put("setMimeType", false);
+        result = cs.convert("dummyPdf", new SimpleBlobHolder(blob), parameters);
+        resultBlob = result.getBlob();
+        assertNotNull(resultBlob);
+        assertEquals("application/pdf", resultBlob.getMimeType());
+        assertEquals("dummy.pdf", resultBlob.getFilename());
+
+        parameters = new HashMap<>();
+        parameters.put("tempFilename", true);
+        result = cs.convert("dummyPdf", new SimpleBlobHolder(blob), parameters);
+        resultBlob = result.getBlob();
+        assertNotNull(resultBlob);
+        assertEquals("application/pdf", resultBlob.getMimeType());
+        assertEquals("dummy.pdf", resultBlob.getFilename());
     }
 
 }

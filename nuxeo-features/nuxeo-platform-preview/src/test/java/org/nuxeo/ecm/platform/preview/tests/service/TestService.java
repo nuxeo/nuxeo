@@ -53,7 +53,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.convert",
-        "org.nuxeo.ecm.core.mimetype", "org.nuxeo.ecm.platform.preview", "org.nuxeo.ecm.platform.dublincore" })
+        "org.nuxeo.ecm.platform.preview", "org.nuxeo.ecm.platform.dublincore" })
 public class TestService {
 
     @Test

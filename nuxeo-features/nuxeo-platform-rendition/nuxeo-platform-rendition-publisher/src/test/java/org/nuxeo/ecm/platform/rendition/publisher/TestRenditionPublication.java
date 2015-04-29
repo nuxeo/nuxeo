@@ -68,7 +68,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.relations.jena", "org.nuxeo.ecm.platform.publisher.core.contrib",
         "org.nuxeo.ecm.platform.publisher.core", "org.nuxeo.ecm.platform.publisher.task",
         TaskUTConstants.CORE_BUNDLE_NAME, TaskUTConstants.TESTING_BUNDLE_NAME,
-        "org.nuxeo.ecm.platform.rendition.publisher", "org.nuxeo.ecm.core.mimetype" })
+        "org.nuxeo.ecm.platform.rendition.publisher" })
 @LocalDeploy("org.nuxeo.ecm.platform.rendition.publisher:relations-default-jena-contrib.xml")
 public class TestRenditionPublication {
 

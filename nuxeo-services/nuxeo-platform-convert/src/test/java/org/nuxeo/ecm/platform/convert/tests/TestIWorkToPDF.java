@@ -56,6 +56,7 @@ public class TestIWorkToPDF extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core.mimetype");
         deployBundle("org.nuxeo.ecm.core.convert.api");
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
