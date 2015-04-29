@@ -69,61 +69,75 @@ public class FileSystemItemChangeImpl implements FileSystemItemChange {
     public FileSystemItemChangeImpl(String eventId, long eventDate, String repositoryId, String docUuid,
             FileSystemItem fsItem) {
         this(eventId, eventDate, repositoryId, docUuid, fsItem.getId(), fsItem.getName());
-        this.fileSystemItem = fsItem;
+        fileSystemItem = fsItem;
     }
 
+    @Override
     public String getFileSystemItemId() {
         return fileSystemItemId;
     }
 
+    @Override
     public void setFileSystemItemId(String fileSystemItemId) {
         this.fileSystemItemId = fileSystemItemId;
     }
 
+    @Override
     public String getFileSystemItemName() {
         return fileSystemItemName;
     }
 
+    @Override
     public void setFileSystemItemName(String fileSystemItemName) {
         this.fileSystemItemName = fileSystemItemName;
     }
 
+    @Override
     public String getRepositoryId() {
         return repositoryId;
     }
 
+    @Override
     public void setRepositoryId(String repositoryId) {
         this.repositoryId = repositoryId;
     }
 
+    @Override
     public String getEventId() {
         return eventId;
     }
 
+    @Override
     public void setEventId(String eventId) {
         this.eventId = eventId;
     }
 
+    @Override
     public Long getEventDate() {
         return eventDate;
     }
 
+    @Override
     public void setEventDate(Long eventDate) {
         this.eventDate = eventDate;
     }
 
+    @Override
     public String getDocUuid() {
         return docUuid;
     }
 
+    @Override
     public void setDocUuid(String docUuid) {
         this.docUuid = docUuid;
     }
 
+    @Override
     public FileSystemItem getFileSystemItem() {
         return fileSystemItem;
     }
 
+    @Override
     @JsonIgnore
     public void setFileSystemItem(FileSystemItem fileSystemItem) {
         this.fileSystemItem = fileSystemItem;
@@ -138,4 +152,5 @@ public class FileSystemItemChangeImpl implements FileSystemItemChange {
             return String.format("%s(eventId=\"%s\", eventDate=%d)", getClass().getSimpleName(), eventId, eventDate);
         }
     }
+
 }
