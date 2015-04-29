@@ -820,7 +820,7 @@ public class DBSDocument implements Document {
         blobInfo.length = (Long) state.get(KEY_BLOB_LENGTH);
         blobInfo.key = (String) state.get(KEY_BLOB_DATA);
         try {
-            return session.getBlobManager().getBlob(getRepositoryName(), blobInfo, this);
+            return session.getBlobManager().readBlob(blobInfo, this);
         } catch (IOException e) {
             throw new PropertyException("Cannot read property", e);
         }
@@ -833,7 +833,7 @@ public class DBSDocument implements Document {
             blobInfo = new BlobInfo();
         } else if (value instanceof Blob) {
             try {
-                blobInfo = session.getBlobManager().getBlobInfo(getRepositoryName(), (Blob) value, this);
+                blobInfo = session.getBlobManager().writeBlob((Blob) value, this);
             } catch (IOException e) {
                 throw new PropertyException("Cannot get blob info for: " + value, e);
             }

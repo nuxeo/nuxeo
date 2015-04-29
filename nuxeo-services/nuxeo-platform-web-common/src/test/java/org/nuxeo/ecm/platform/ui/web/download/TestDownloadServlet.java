@@ -23,8 +23,9 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ui.web.download.DownloadServlet.ByteRange;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public class TestDownloadServlet {
+public class TestDownloadServlet extends NXRuntimeTestCase {
 
     @Test
     public void testParseByteRange() throws Exception {

@@ -16,20 +16,22 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
+import org.nuxeo.ecm.core.model.Document;
 
-/**
- * Interface for {@link Blob}s created and managed by the {@link BlobManager}.
- *
- * @since 7.2
- */
-public interface ManagedBlob extends Blob {
+public class FakeBlobProviderImpl implements BlobProvider {
 
-    /**
-     * Gets the stored representation of this blob.
-     *
-     * @return the stored representation
-     */
-    String getKey();
+    @Override
+    public Blob readBlob(BlobInfo blobInfo, Document doc) {
+        return new SimpleManagedBlob(blobInfo);
+    }
+
+    @Override
+    public BlobInfo writeBlob(Blob blob, Document doc) throws IOException {
+        throw new UnsupportedOperationException("Storing a standard blob is not supported");
+    }
 
 }

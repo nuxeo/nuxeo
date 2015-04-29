@@ -17,6 +17,9 @@
 package org.nuxeo.ecm.core.blob;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.model.Document;
@@ -48,6 +51,24 @@ public interface BlobManager {
     }
 
     /**
+     * Hints for returning {@link URI}s appropriate for the expected usage.
+     *
+     * @since 7.3
+     */
+    enum UsageHint {
+        /** Obtaining an {@link InputStream}. */
+        STREAM,
+        /** Downloading. */
+        DOWNLOAD,
+        /** Viewing. */
+        VIEW,
+        /** Editing. */
+        EDIT,
+        /** Embedding / previewing. */
+        EMBED
+    }
+
+    /**
      * INTERNAL - Registers a blob provider.
      *
      * @param prefix the blob provider prefix, or {@code null} for the default
@@ -63,31 +84,75 @@ public interface BlobManager {
     void unregisterBlobProvider(String prefix);
 
     /**
-     * Gets the blob provider for a give managed blob key.
+     * Gets the blob provider for a given blob key.
      *
-     * @param key the managed blob key
+     * @param key the blob key
      * @return the blob provider
      */
     BlobProvider getBlobProvider(String key);
 
     /**
-     * Creates a blob from the given blob info.
+     * Reads a {@link Blob} from storage.
      *
-     * @param repositoryName the repository name
      * @param blobInfo the blob information
      * @param doc the document to which this blob belongs
      * @return a managed blob
      */
-    ManagedBlob getBlob(String repositoryName, BlobInfo blobInfo, Document doc) throws IOException;
+    Blob readBlob(BlobInfo blobInfo, Document doc) throws IOException;
 
     /**
-     * Gets the blob info from a blob.
+     * Writes a {@link Blob} to storage and returns information about it.
      *
-     * @param repositoryName the repository name
      * @param blob the blob
      * @param doc the document to which this blob belongs
      * @return the blob information
      */
-    BlobInfo getBlobInfo(String repositoryName, Blob blob, Document doc) throws IOException;
+    BlobInfo writeBlob(Blob blob, Document doc) throws IOException;
+
+    /**
+     * INTERNAL - Gets an {@link InputStream} for the data of a managed blob. Used by internal implementations, regular
+     * callers should call {@link Blob#getStream}.
+     *
+     * @param blob the blob
+     * @return the stream
+     */
+    InputStream getStream(Blob blob) throws IOException;
+
+    /**
+     * Gets an {@link InputStream} for a thumbnail of a blob.
+     * <p>
+     * Like all {@link InputStream}, the result must be closed when done with it to avoid resource leaks.
+     *
+     * @param blob the blob
+     * @return the thumbnail stream
+     */
+    InputStream getThumbnail(Blob blob) throws IOException;
+
+    /**
+     * Gets an {@link URI} for the content of a blob.
+     *
+     * @param blob the blob
+     * @param hint {@link UsageHint}
+     * @return the {@link URI}, or {@code null} if none available
+     */
+    URI getURI(Blob blob, UsageHint hint) throws IOException;
+
+    /**
+     * Gets a map of available MIME type conversions and corresponding {@link URI} for a blob.
+     *
+     * @return a map of MIME types and {@link URI}, which may be empty
+     */
+    Map<String, URI> getAvailableConversions(Blob blob, UsageHint hint) throws IOException;
+
+    /**
+     * Gets an {@link InputStream} for a conversion to the given MIME type.
+     * <p>
+     * Like all {@link InputStream}, the result must be closed when done with it to avoid resource leaks.
+     *
+     * @param blob the blob
+     * @param mimeType the MIME type to convert to
+     * @return the stream, or {@code null} if no conversion is available for the given MIME type
+     */
+    InputStream getConvertedStream(Blob blob, String mimeType) throws IOException;
 
 }

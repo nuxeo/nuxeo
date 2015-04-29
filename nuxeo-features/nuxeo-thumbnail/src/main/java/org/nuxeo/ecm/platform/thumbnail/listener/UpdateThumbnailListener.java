@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
-import org.nuxeo.ecm.core.blob.ManagedBlob;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Thumbnail listener handling creation and update document event to store doc thumbnail preview (only for DocType File)
@@ -89,11 +90,12 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
             return null;
         }
         Blob blob = bh.getBlob();
-        if (blob == null || !(blob instanceof ManagedBlob)) {
+        if (blob == null) {
             return null;
         }
+        BlobManager blobManager = Framework.getService(BlobManager.class);
         try {
-            InputStream is = ((ManagedBlob) blob).getThumbnail();
+            InputStream is = blobManager.getThumbnail(blob);
             if (is == null) {
                 return null;
             }

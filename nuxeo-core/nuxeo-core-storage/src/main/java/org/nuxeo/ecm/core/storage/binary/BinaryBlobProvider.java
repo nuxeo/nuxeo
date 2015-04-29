@@ -18,16 +18,11 @@
 package org.nuxeo.ecm.core.storage.binary;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Collections;
-import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager;
-import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
-import org.nuxeo.ecm.core.blob.ManagedBlob;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.model.Document;
 
 /**
@@ -44,7 +39,8 @@ public class BinaryBlobProvider implements BlobProvider {
     }
 
     @Override
-    public BinaryBlob createManagedBlob(String repositoryName, BlobInfo blobInfo, Document doc) throws IOException {
+    public Blob readBlob(BlobInfo blobInfo, Document doc) throws IOException {
+        String repositoryName = doc.getRepositoryName();
         Binary binary = binaryManagerService.getBinaryManager(repositoryName).getBinary(blobInfo.key);
         if (binary == null) {
             throw new IOException("Unknown binary: " + blobInfo.key);
@@ -54,7 +50,8 @@ public class BinaryBlobProvider implements BlobProvider {
     }
 
     @Override
-    public BlobInfo getBlobInfo(String repositoryName, Blob blob, Document doc) throws IOException {
+    public BlobInfo writeBlob(Blob blob, Document doc) throws IOException {
+        String repositoryName = doc.getRepositoryName();
         Binary binary = binaryManagerService.getBinaryManager(repositoryName).getBinary(blob);
         BlobInfo blobInfo = new BlobInfo();
         blobInfo.key = binary.getDigest();
@@ -64,26 +61,6 @@ public class BinaryBlobProvider implements BlobProvider {
         blobInfo.filename = blob.getFilename();
         blobInfo.digest = blob.getDigest();
         return blobInfo;
-    }
-
-    @Override
-    public InputStream getStream(String blobKey, URI uri) throws IOException {
-        return null;
-    }
-
-    @Override
-    public URI getURI(ManagedBlob blob, ManagedBlob.UsageHint hint) throws IOException {
-        return null;
-    }
-
-    @Override
-    public Map<String, URI> getAvailableConversions(ManagedBlob blob, ManagedBlob.UsageHint hint) throws IOException {
-        return Collections.emptyMap();
-    }
-
-    @Override
-    public URI getThumbnail(ManagedBlob blob, ManagedBlob.UsageHint hint) throws IOException {
-        return null;
     }
 
 }

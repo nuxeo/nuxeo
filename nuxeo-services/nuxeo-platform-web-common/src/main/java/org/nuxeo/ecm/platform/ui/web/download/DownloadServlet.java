@@ -44,11 +44,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.core.blob.ManagedBlob;
+import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -279,13 +281,11 @@ public class DownloadServlet extends HttpServlet {
     public static void downloadBlob(HttpServletRequest req, HttpServletResponse resp, Blob blob, String fileName)
             throws IOException, ServletException {
 
-        if (blob instanceof ManagedBlob) {
-            ManagedBlob managedBlob = (ManagedBlob) blob;
-            URI uri = managedBlob.getURI(ManagedBlob.UsageHint.DOWNLOAD);
-            if (uri != null) {
-                resp.sendRedirect(uri.toString());
-                return;
-            }
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        URI uri = blobManager == null ? null : blobManager.getURI(blob, UsageHint.DOWNLOAD);
+        if (uri != null) {
+            resp.sendRedirect(uri.toString());
+            return;
         }
 
         InputStream in = blob.getStream();

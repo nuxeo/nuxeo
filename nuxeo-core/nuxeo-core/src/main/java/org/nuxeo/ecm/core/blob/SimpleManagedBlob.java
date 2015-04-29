@@ -18,8 +18,6 @@ package org.nuxeo.ecm.core.blob;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.util.Map;
 
 import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
@@ -38,11 +36,8 @@ public class SimpleManagedBlob extends AbstractBlob implements ManagedBlob {
 
     public Long length;
 
-    public transient BlobProvider blobProvider;
-
-    public SimpleManagedBlob(BlobInfo blobInfo, BlobProvider blobProvider) {
+    public SimpleManagedBlob(BlobInfo blobInfo) {
         this.key = blobInfo.key;
-        this.blobProvider = blobProvider;
         setMimeType(blobInfo.mimeType);
         setEncoding(blobInfo.encoding);
         setFilename(blobInfo.filename);
@@ -57,42 +52,7 @@ public class SimpleManagedBlob extends AbstractBlob implements ManagedBlob {
 
     @Override
     public InputStream getStream() throws IOException {
-        URI uri = getURI(UsageHint.STREAM);
-        return getBlobProvider().getStream(key, uri);
-    }
-
-    @Override
-    public URI getURI(UsageHint hint) throws IOException {
-        return getBlobProvider().getURI(this, hint);
-    }
-
-    @Override
-    public InputStream getConvertedStream(String mimeType) throws IOException {
-        Map<String, URI> conversions = getAvailableConversions(UsageHint.STREAM);
-        URI uri = conversions.get(mimeType);
-        if (uri == null) {
-            return null;
-        }
-        return getBlobProvider().getStream(key, uri);
-    }
-
-    @Override
-    public Map<String, URI> getAvailableConversions(UsageHint hint) throws IOException {
-        return getBlobProvider().getAvailableConversions(this, hint);
-    }
-
-    @Override
-    public InputStream getThumbnail() throws IOException {
-        URI uri = getBlobProvider().getThumbnail(this, UsageHint.STREAM);
-        return getBlobProvider().getStream(key, uri);
-    }
-
-    public BlobProvider getBlobProvider() {
-        if (blobProvider == null) {
-            // after deserialization the transient will be null
-            blobProvider = Framework.getService(BlobManager.class).getBlobProvider(key);
-        }
-        return blobProvider;
+        return Framework.getService(BlobManager.class).getStream(this);
     }
 
     @Override

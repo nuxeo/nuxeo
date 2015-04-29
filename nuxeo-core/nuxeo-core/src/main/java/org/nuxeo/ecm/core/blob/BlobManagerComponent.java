@@ -17,13 +17,16 @@
 package org.nuxeo.ecm.core.blob;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -34,11 +37,26 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class BlobManagerComponent extends DefaultComponent implements BlobManager {
 
-    /** The default blob provider, for a null prefix. */
+    /** The default blob provider, for a null prefix. Used to write non-managed blobs to the repository. */
     protected BlobProvider defaultBlobProvider;
 
     /** Blob providers by prefix, except for the default which is stored separately. */
     protected final Map<String, BlobProvider> blobProviders = new ConcurrentHashMap<>();
+
+    @Override
+    public void activate(ComponentContext context) {
+        clearRegistrations();
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) {
+        clearRegistrations();
+    }
+
+    protected void clearRegistrations() {
+        defaultBlobProvider = null;
+        blobProviders.clear();
+    }
 
     @Override
     public void registerBlobProvider(String prefix, BlobProvider blobProvider) {
@@ -72,8 +90,10 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
 
     @Override
     public BlobProvider getBlobProvider(String key) {
-        Objects.requireNonNull(key, "The key must not be null");
         // key exact match
+        if (key == null) {
+            return defaultBlobProvider;
+        }
         BlobProvider blobProvider = blobProviders.get(key);
         if (blobProvider != null) {
             return blobProvider;
@@ -93,15 +113,15 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
     }
 
     @Override
-    public ManagedBlob getBlob(String repositoryName, BlobInfo blobInfo, Document doc) throws IOException {
+    public Blob readBlob(BlobInfo blobInfo, Document doc) throws IOException {
         if (blobInfo.key == null) {
             return null;
         }
-        return getBlobProvider(blobInfo.key).createManagedBlob(repositoryName, blobInfo, doc);
+        return getBlobProvider(blobInfo.key).readBlob(blobInfo, doc);
     }
 
     @Override
-    public BlobInfo getBlobInfo(String repositoryName, Blob blob, Document doc) throws IOException {
+    public BlobInfo writeBlob(Blob blob, Document doc) throws IOException {
         if (blob instanceof ManagedBlob) {
             BlobInfo blobInfo = new BlobInfo();
             blobInfo.key = ((ManagedBlob) blob).getKey();
@@ -112,8 +132,73 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
             blobInfo.length = Long.valueOf(blob.getLength());
             return blobInfo;
         } else {
-            return defaultBlobProvider.getBlobInfo(repositoryName, blob, doc);
+            return defaultBlobProvider.writeBlob(blob, doc);
         }
+    }
+
+    @Override
+    public InputStream getStream(Blob blob) throws IOException {
+        if (!(blob instanceof ManagedBlob)) {
+            return null;
+        }
+        ManagedBlob managedBlob = (ManagedBlob) blob;
+        BlobProvider blobProvider = getBlobProvider(managedBlob.getKey());
+        if (!(blobProvider instanceof ExtendedBlobProvider)) {
+            return null;
+        }
+        return ((ExtendedBlobProvider) blobProvider).getStream(managedBlob);
+    }
+
+    @Override
+    public InputStream getThumbnail(Blob blob) throws IOException {
+        if (!(blob instanceof ManagedBlob)) {
+            return null;
+        }
+        ManagedBlob managedBlob = (ManagedBlob) blob;
+        BlobProvider blobProvider = getBlobProvider(managedBlob.getKey());
+        if (!(blobProvider instanceof ExtendedBlobProvider)) {
+            return null;
+        }
+        return ((ExtendedBlobProvider) blobProvider).getThumbnail(managedBlob);
+    }
+
+    @Override
+    public URI getURI(Blob blob, UsageHint hint) throws IOException {
+        if (!(blob instanceof ManagedBlob)) {
+            return null;
+        }
+        ManagedBlob managedBlob = (ManagedBlob) blob;
+        BlobProvider blobProvider = getBlobProvider(managedBlob.getKey());
+        if (!(blobProvider instanceof ExtendedBlobProvider)) {
+            return null;
+        }
+        return ((ExtendedBlobProvider) blobProvider).getURI(managedBlob, hint);
+    }
+
+    @Override
+    public Map<String, URI> getAvailableConversions(Blob blob, UsageHint hint) throws IOException {
+        if (!(blob instanceof ManagedBlob)) {
+            return Collections.emptyMap();
+        }
+        ManagedBlob managedBlob = (ManagedBlob) blob;
+        BlobProvider blobProvider = getBlobProvider(managedBlob.getKey());
+        if (!(blobProvider instanceof ExtendedBlobProvider)) {
+            return Collections.emptyMap();
+        }
+        return ((ExtendedBlobProvider) blobProvider).getAvailableConversions(managedBlob, hint);
+    }
+
+    @Override
+    public InputStream getConvertedStream(Blob blob, String mimeType) throws IOException {
+        if (!(blob instanceof ManagedBlob)) {
+            return null;
+        }
+        ManagedBlob managedBlob = (ManagedBlob) blob;
+        BlobProvider blobProvider = getBlobProvider(managedBlob.getKey());
+        if (!(blobProvider instanceof ExtendedBlobProvider)) {
+            return null;
+        }
+        return ((ExtendedBlobProvider) blobProvider).getConvertedStream(managedBlob, mimeType);
     }
 
 }

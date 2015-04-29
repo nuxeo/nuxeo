@@ -43,7 +43,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
-import org.nuxeo.ecm.core.blob.ManagedBlob;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.api.NothingToPreviewException;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
@@ -135,16 +136,15 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
 
         // if it's a managed blob try to use the embed uri
         Blob blobToPreview = getBlobToPreview(xpath);
-        if (blobToPreview instanceof ManagedBlob) {
-            try {
-                URI uri = ((ManagedBlob) blobToPreview).getURI(ManagedBlob.UsageHint.EMBED);
-                if (uri != null) {
-                    res.redirectSeeOther(uri.toString());
-                    return;
-                }
-            } catch (IOException e) {
-                handleError(res, e);
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        try {
+            URI uri = blobManager.getURI(blobToPreview, UsageHint.EMBED);
+            if (uri != null) {
+                res.redirectSeeOther(uri.toString());
+                return;
             }
+        } catch (IOException e) {
+            handleError(res, e);
         }
 
         localeSetup(req);

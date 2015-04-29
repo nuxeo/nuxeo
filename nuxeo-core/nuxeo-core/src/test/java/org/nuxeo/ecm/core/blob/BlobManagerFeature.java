@@ -16,20 +16,13 @@
  */
 package org.nuxeo.ecm.core.blob;
 
-import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-/**
- * Interface for {@link Blob}s created and managed by the {@link BlobManager}.
- *
- * @since 7.2
- */
-public interface ManagedBlob extends Blob {
-
-    /**
-     * Gets the stored representation of this blob.
-     *
-     * @return the stored representation
-     */
-    String getKey();
+@Features(RuntimeFeature.class)
+@LocalDeploy("org.nuxeo.ecm.core:OSGI-INF/blobmanager-service.xml")
+public class BlobManagerFeature extends SimpleFeature {
 
 }

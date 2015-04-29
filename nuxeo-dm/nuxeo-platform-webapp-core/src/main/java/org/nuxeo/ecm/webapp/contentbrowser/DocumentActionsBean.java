@@ -54,7 +54,8 @@ import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
-import org.nuxeo.ecm.core.blob.ManagedBlob;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.types.Type;
@@ -241,18 +242,16 @@ public class DocumentActionsBean extends InputController implements DocumentActi
                 // download
                 FacesContext context = FacesContext.getCurrentInstance();
 
-                if (blob instanceof ManagedBlob) {
-                    ManagedBlob managedBlob = (ManagedBlob) blob;
-                    HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
-                    try {
-                        URI uri = managedBlob.getURI(ManagedBlob.UsageHint.DOWNLOAD);
-                        if (uri != null) {
-                            response.sendRedirect(uri.toString());
-                            return;
-                        }
-                    } catch (IOException e) {
-                        log.error("Error while redirecting to blob provider's uri", e);
+                BlobManager blobManager = Framework.getService(BlobManager.class);
+                try {
+                    URI uri = blobManager.getURI(blob, UsageHint.DOWNLOAD);
+                    if (uri != null) {
+                        HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
+                        response.sendRedirect(uri.toString());
+                        return;
                     }
+                } catch (IOException e) {
+                    log.error("Error while redirecting to blob provider's uri", e);
                 }
 
                 if (blob.getLength() > Functions.getBigFileSizeLimit()) {

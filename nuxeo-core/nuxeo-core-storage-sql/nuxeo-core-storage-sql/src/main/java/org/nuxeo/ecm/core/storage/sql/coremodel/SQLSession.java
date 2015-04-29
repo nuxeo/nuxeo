@@ -1128,7 +1128,7 @@ public class SQLSession implements Session {
         blobInfo.digest = node.getSimpleProperty(BLOB_DIGEST).getString();
         blobInfo.length = node.getSimpleProperty(BLOB_LENGTH).getLong();
         blobInfo.key = node.getSimpleProperty(BLOB_DATA).getString();
-        return blobManager.getBlob(getRepositoryName(), blobInfo, doc);
+        return blobManager.readBlob(blobInfo, doc);
     }
 
     protected void writeBlobProperty(BlobProperty blobProperty, Node node, SQLDocument doc) throws StorageException,
@@ -1139,7 +1139,7 @@ public class SQLSession implements Session {
             blobInfo = new BlobInfo();
         } else if (value instanceof Blob) {
             try {
-                blobInfo = blobManager.getBlobInfo(getRepositoryName(), (Blob) value, doc);
+                blobInfo = blobManager.writeBlob((Blob) value, doc);
             } catch (IOException e) {
                 throw new PropertyException("Cannot get blob info for: " + value, e);
             }
