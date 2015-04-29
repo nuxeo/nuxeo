@@ -42,10 +42,7 @@ import org.nuxeo.template.processors.xdocreport.ZipXmlHelper;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.convert.api", //
-        "org.nuxeo.ecm.core.mimetype", //
-        "org.nuxeo.ecm.core.convert", //
-        "org.nuxeo.ecm.platform.convert", //
+@Deploy({ "org.nuxeo.ecm.platform.convert", //
         "org.nuxeo.ecm.platform.preview", //
         "org.nuxeo.ecm.platform.dublincore", //
         "org.nuxeo.template.manager.api", //

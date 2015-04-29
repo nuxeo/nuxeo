@@ -65,6 +65,7 @@ public abstract class BaseConverterTest extends Assert {
         tc.setUp();
         tc.deployBundle("org.nuxeo.ecm.core.api");
         tc.deployBundle("org.nuxeo.ecm.core.convert.api");
+        tc.deployBundle("org.nuxeo.ecm.core.mimetype");
         tc.deployBundle("org.nuxeo.ecm.core.convert");
         tc.deployBundle("org.nuxeo.ecm.platform.convert");
         tc.deployContrib("org.nuxeo.template.manager", "OSGI-INF/convert-service-contrib.xml");

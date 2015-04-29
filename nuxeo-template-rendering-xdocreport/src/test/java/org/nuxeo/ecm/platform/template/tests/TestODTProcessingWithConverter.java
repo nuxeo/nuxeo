@@ -44,17 +44,13 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.convert.api", //
-    "org.nuxeo.ecm.automation.core", //
-    "org.nuxeo.ecm.core.mimetype", //
-    "org.nuxeo.ecm.core.convert", //
-    "org.nuxeo.ecm.core.convert.plugins", //
-    "org.nuxeo.ecm.platform.convert", //
-    "org.nuxeo.ecm.platform.preview", //
-    "org.nuxeo.ecm.platform.dublincore", //
-    "org.nuxeo.template.manager.api", //
-    "org.nuxeo.template.manager", //
-    "org.nuxeo.template.manager.xdocreport", //
+@Deploy({ "org.nuxeo.ecm.automation.core", //
+        "org.nuxeo.ecm.platform.convert", //
+        "org.nuxeo.ecm.platform.preview", //
+        "org.nuxeo.ecm.platform.dublincore", //
+        "org.nuxeo.template.manager.api", //
+        "org.nuxeo.template.manager", //
+        "org.nuxeo.template.manager.xdocreport", //
 })
 public class TestODTProcessingWithConverter {
 
@@ -75,7 +71,7 @@ public class TestODTProcessingWithConverter {
 
     protected static final String TEMPLATE_NAME = "mytestTemplate";
 
-   // @Before
+    // @Before
     public void setUp() throws Exception {
         try {
             oooManagerService.startOOoManager();
@@ -85,7 +81,7 @@ public class TestODTProcessingWithConverter {
 
     }
 
- //   @After
+    // @After
     public void tearDown() throws Exception {
         if (oooManagerService.isOOoManagerStarted()) {
             oooManagerService.stopOOoManager();
