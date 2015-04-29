@@ -28,6 +28,7 @@ import java.lang.reflect.Proxy;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +47,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -178,7 +181,6 @@ public class TestAuditFileSystemChangeFinder {
     @Test
     public void testFindChanges() throws Exception {
         List<FileSystemItemChange> changes;
-        FileSystemItemChange change;
         DocumentModel doc1;
         DocumentModel doc2;
         DocumentModel doc3;
@@ -225,14 +227,10 @@ public class TestAuditFileSystemChangeFinder {
         try {
             changes = getChanges();
             assertEquals(2, changes.size());
-            change = changes.get(0);
-            assertEquals("test", change.getRepositoryId());
-            assertEquals("documentCreated", change.getEventId());
-            assertEquals(doc2.getId(), change.getDocUuid());
-            change = changes.get(1);
-            assertEquals("test", change.getRepositoryId());
-            assertEquals("documentCreated", change.getEventId());
-            assertEquals(doc1.getId(), change.getDocUuid());
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            expectedChanges.add(new SimpleFileSystemItemChange(doc2.getId(), "documentCreated", "test"));
+            expectedChanges.add(new SimpleFileSystemItemChange(doc1.getId(), "documentCreated", "test"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
 
             // No changes since last successful sync
             changes = getChanges();
@@ -254,15 +252,10 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals(2, changes.size());
             // The root unregistration is mapped to a fake deletion from the
             // client's point of view
-            change = changes.get(0);
-            assertEquals("test", change.getRepositoryId());
-            assertEquals("deleted", change.getEventId());
-            assertEquals(folder2.getId(), change.getDocUuid());
-
-            change = changes.get(1);
-            assertEquals("test", change.getRepositoryId());
-            assertEquals("documentModified", change.getEventId());
-            assertEquals(doc1.getId(), change.getDocUuid());
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            expectedChanges.add(new SimpleFileSystemItemChange(folder2.getId(), "deleted", "test"));
+            expectedChanges.add(new SimpleFileSystemItemChange(doc1.getId(), "documentModified", "test"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
 
             // Delete a document with a lifecycle transition (trash)
             session.followTransition(doc1.getRef(), "delete");
@@ -274,11 +267,8 @@ public class TestAuditFileSystemChangeFinder {
         try {
             changes = getChanges();
             assertEquals(1, changes.size());
-            change = changes.get(0);
-            assertEquals("test", change.getRepositoryId());
-            assertEquals("deleted", change.getEventId());
-            assertEquals(doc1.getId(), change.getDocUuid());
-            assertEquals("test#" + doc1.getId(), change.getFileSystemItemId());
+            assertEquals(new SimpleFileSystemItemChange(doc1.getId(), "deleted", "test", "test#" + doc1.getId()),
+                    toSimpleFileSystemItemChange(changes.get(0)));
 
             // Restore a deleted document and move a document in a newly
             // synchronized root
@@ -293,19 +283,12 @@ public class TestAuditFileSystemChangeFinder {
         try {
             changes = getChanges();
             assertEquals(3, changes.size());
-            change = changes.get(0);
-            assertEquals("test", change.getRepositoryId());
-            assertEquals("rootRegistered", change.getEventId());
-            assertEquals(folder2.getId(), change.getDocUuid());
-            assertEquals("defaultSyncRootFolderItemFactory#test#" + folder2.getId(), change.getFileSystemItemId());
-            change = changes.get(1);
-            assertEquals("test", change.getRepositoryId());
-            assertEquals("documentMoved", change.getEventId());
-            assertEquals(doc3.getId(), change.getDocUuid());
-            change = changes.get(2);
-            assertEquals("test", change.getRepositoryId());
-            assertEquals("lifecycle_transition_event", change.getEventId());
-            assertEquals(doc1.getId(), change.getDocUuid());
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            expectedChanges.add(new SimpleFileSystemItemChange(folder2.getId(), "rootRegistered", "test",
+                    "defaultSyncRootFolderItemFactory#test#" + folder2.getId()));
+            expectedChanges.add(new SimpleFileSystemItemChange(doc3.getId(), "documentMoved", "test"));
+            expectedChanges.add(new SimpleFileSystemItemChange(doc1.getId(), "lifecycle_transition_event", "test"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
 
             // Physical deletion without triggering the delete transition first
             session.removeDocument(doc3.getRef());
@@ -317,11 +300,8 @@ public class TestAuditFileSystemChangeFinder {
         try {
             changes = getChanges();
             assertEquals(1, changes.size());
-            change = changes.get(0);
-            assertEquals("test", change.getRepositoryId());
-            assertEquals("deleted", change.getEventId());
-            assertEquals(doc3.getId(), change.getDocUuid());
-            assertEquals("test#" + doc3.getId(), change.getFileSystemItemId());
+            assertEquals(new SimpleFileSystemItemChange(doc3.getId(), "deleted", "test", "test#" + doc3.getId()),
+                    toSimpleFileSystemItemChange(changes.get(0)));
 
             // Create a doc and copy it from a sync root to another one
             docToCopy = session.createDocumentModel("/folder1", "docToCopy", "File");
@@ -336,19 +316,12 @@ public class TestAuditFileSystemChangeFinder {
         try {
             changes = getChanges();
             assertEquals(2, changes.size());
-            change = changes.get(0);
-            assertEquals("test", change.getRepositoryId());
-            assertEquals("documentCreatedByCopy", change.getEventId());
-            assertEquals(copiedDoc.getId(), change.getDocUuid());
-            assertEquals("defaultFileSystemItemFactory#test#" + copiedDoc.getId(), change.getFileSystemItemId());
-            assertEquals("docToCopy", change.getFileSystemItemName());
-
-            change = changes.get(1);
-            assertEquals("test", change.getRepositoryId());
-            assertEquals("documentCreated", change.getEventId());
-            assertEquals(docToCopy.getId(), change.getDocUuid());
-            assertEquals("defaultFileSystemItemFactory#test#" + docToCopy.getId(), change.getFileSystemItemId());
-            assertEquals("docToCopy", change.getFileSystemItemName());
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            expectedChanges.add(new SimpleFileSystemItemChange(copiedDoc.getId(), "documentCreatedByCopy", "test",
+                    "defaultFileSystemItemFactory#test#" + copiedDoc.getId(), "docToCopy"));
+            expectedChanges.add(new SimpleFileSystemItemChange(docToCopy.getId(), "documentCreated", "test",
+                    "defaultFileSystemItemFactory#test#" + docToCopy.getId(), "docToCopy"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
 
             // Remove file from a document, mapped to a fake deletion from the
             // client's point of view
@@ -362,10 +335,8 @@ public class TestAuditFileSystemChangeFinder {
         try {
             changes = getChanges();
             assertEquals(1, changes.size());
-            change = changes.get(0);
-            assertEquals("test", change.getRepositoryId());
-            assertEquals("deleted", change.getEventId());
-            assertEquals(doc1.getId(), change.getDocUuid());
+            assertEquals(new SimpleFileSystemItemChange(doc1.getId(), "deleted", "test"),
+                    toSimpleFileSystemItemChange(changes.get(0)));
 
             // Move a doc from a sync root to a non synchronized folder
             session.move(copiedDoc.getRef(), folder3.getRef(), null);
@@ -377,10 +348,8 @@ public class TestAuditFileSystemChangeFinder {
         try {
             changes = getChanges();
             assertEquals(1, changes.size());
-            change = changes.get(0);
-            assertEquals("test", change.getRepositoryId());
-            assertEquals("deleted", change.getEventId());
-            assertEquals(copiedDoc.getId(), change.getDocUuid());
+            assertEquals(new SimpleFileSystemItemChange(copiedDoc.getId(), "deleted", "test"),
+                    toSimpleFileSystemItemChange(changes.get(0)));
 
             // Create a doc, create a version of it, update doc and restore the
             // version
@@ -402,23 +371,16 @@ public class TestAuditFileSystemChangeFinder {
         TransactionHelper.startTransaction();
         try {
             changes = getChanges();
+            // Expecting 4 (among which 3 distinct) changes:
+            // - documentRestored for docToVersion
+            // - documentModified for docToVersion (2 occurrences)
+            // - documentCreated for docToVersion
             assertEquals(4, changes.size());
-
-            change = changes.get(0);
-            assertEquals("documentRestored", change.getEventId());
-            assertEquals(docToVersion.getId(), change.getDocUuid());
-
-            change = changes.get(1);
-            assertEquals("documentModified", change.getEventId());
-            assertEquals(docToVersion.getId(), change.getDocUuid());
-
-            change = changes.get(2);
-            assertEquals("documentModified", change.getEventId());
-            assertEquals(docToVersion.getId(), change.getDocUuid());
-
-            change = changes.get(3);
-            assertEquals("documentCreated", change.getEventId());
-            assertEquals(docToVersion.getId(), change.getDocUuid());
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            expectedChanges.add(new SimpleFileSystemItemChange(docToVersion.getId(), "documentRestored"));
+            expectedChanges.add(new SimpleFileSystemItemChange(docToVersion.getId(), "documentModified"));
+            expectedChanges.add(new SimpleFileSystemItemChange(docToVersion.getId(), "documentCreated"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
 
             // Too many changes
             session.followTransition(doc1.getRef(), "delete");
@@ -440,7 +402,6 @@ public class TestAuditFileSystemChangeFinder {
     @Test
     public void testFindSecurityChanges() throws Exception {
         List<FileSystemItemChange> changes;
-        FileSystemItemChange change;
         DocumentModel subFolder;
 
         TransactionHelper.startTransaction();
@@ -484,21 +445,16 @@ public class TestAuditFileSystemChangeFinder {
             changes = getChanges(user1Session.getPrincipal());
             assertEquals(2, changes.size());
 
-            change = changes.get(0);
-            assertEquals("securityUpdated", change.getEventId());
-            assertEquals(folder2.getId(), change.getDocUuid());
-            assertEquals("test#" + folder2.getId(), change.getFileSystemItemId());
-            assertEquals("folder2", change.getFileSystemItemName());
-            // Not adaptable as a FileSystemItem since no Read permission
-            assertNull(change.getFileSystemItem());
-
-            change = changes.get(1);
-            assertEquals("securityUpdated", change.getEventId());
-            assertEquals(subFolder.getId(), change.getDocUuid());
-            assertEquals("test#" + subFolder.getId(), change.getFileSystemItemId());
-            assertEquals("subFolder", change.getFileSystemItemName());
-            // Not adaptable as a FileSystemItem since no Read permission
-            assertNull(change.getFileSystemItem());
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            expectedChanges.add(new SimpleFileSystemItemChange(folder2.getId(), "securityUpdated", "test", "test#"
+                    + folder2.getId(), "folder2"));
+            expectedChanges.add(new SimpleFileSystemItemChange(subFolder.getId(), "securityUpdated", "test", "test#"
+                    + subFolder.getId(), "subFolder"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
+            // Changed documents are not adaptable as a FileSystemItem since no Read permission
+            for (FileSystemItemChange change : changes) {
+                assertNull(change.getFileSystemItem());
+            }
 
             // Permission changes: grant Read
             // Grant Read to user1 on a regular doc
@@ -515,22 +471,16 @@ public class TestAuditFileSystemChangeFinder {
         try {
             changes = getChanges(user1Session.getPrincipal());
             assertEquals(2, changes.size());
-
-            change = changes.get(0);
-            assertEquals("securityUpdated", change.getEventId());
-            assertEquals(folder2.getId(), change.getDocUuid());
-            assertEquals("defaultSyncRootFolderItemFactory#test#" + folder2.getId(), change.getFileSystemItemId());
-            assertEquals("folder2", change.getFileSystemItemName());
-            // Adaptable as a FileSystemItem since Read permission
-            assertNotNull(change.getFileSystemItem());
-
-            change = changes.get(1);
-            assertEquals("securityUpdated", change.getEventId());
-            assertEquals(subFolder.getId(), change.getDocUuid());
-            assertEquals("defaultFileSystemItemFactory#test#" + subFolder.getId(), change.getFileSystemItemId());
-            assertEquals("subFolder", change.getFileSystemItemName());
-            // Adaptable as a FileSystemItem since Read permission
-            assertNotNull(change.getFileSystemItem());
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            expectedChanges.add(new SimpleFileSystemItemChange(folder2.getId(), "securityUpdated", "test",
+                    "defaultSyncRootFolderItemFactory#test#" + folder2.getId(), "folder2"));
+            expectedChanges.add(new SimpleFileSystemItemChange(subFolder.getId(), "securityUpdated", "test",
+                    "defaultFileSystemItemFactory#test#" + subFolder.getId(), "subFolder"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
+            // Changed documents are adaptable as a FileSystemItem since Read permission
+            for (FileSystemItemChange change : changes) {
+                assertNotNull(change.getFileSystemItem());
+            }
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
@@ -590,16 +540,15 @@ public class TestAuditFileSystemChangeFinder {
 
             List<FileSystemItemChange> changes = changeSummary.getFileSystemChanges();
             assertEquals(2, changes.size());
-            FileSystemItemChange docChange = changes.get(0);
-            assertEquals("test", docChange.getRepositoryId());
-            assertEquals("documentCreated", docChange.getEventId());
-            assertEquals("project", session.getDocument(new IdRef(docChange.getDocUuid())).getCurrentLifeCycleState());
-            assertEquals(doc2.getId(), docChange.getDocUuid());
-            docChange = changes.get(1);
-            assertEquals("test", docChange.getRepositoryId());
-            assertEquals("documentCreated", docChange.getEventId());
-            assertEquals("project", session.getDocument(new IdRef(docChange.getDocUuid())).getCurrentLifeCycleState());
-            assertEquals(doc1.getId(), docChange.getDocUuid());
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            SimpleFileSystemItemChange simpleChange = new SimpleFileSystemItemChange(doc2.getId(), "documentCreated",
+                    "test");
+            simpleChange.setLifeCycleState("project");
+            expectedChanges.add(simpleChange);
+            simpleChange = new SimpleFileSystemItemChange(doc1.getId(), "documentCreated", "test");
+            simpleChange.setLifeCycleState("project");
+            expectedChanges.add(simpleChange);
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
 
             assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
@@ -618,9 +567,8 @@ public class TestAuditFileSystemChangeFinder {
             assertTrue(changeSummary.getFileSystemChanges().isEmpty());
             assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
-            // Create 2 documents in the same sync root: "/folder1" and 1
-            // document
-            // in another sync root => should find 2 changes for "/folder1"
+            // Create 2 documents in the same sync root: "/folder1" and 1 document in another sync root => should find 2
+            // changes for "/folder1"
             DocumentModel doc3 = session.createDocumentModel("/folder1", "doc3", "File");
             doc3.setPropertyValue("file:content", new StringBlob("The content of file 3."));
             doc3 = session.createDocument(doc3);
@@ -670,7 +618,6 @@ public class TestAuditFileSystemChangeFinder {
         Set<IdRef> activeRootRefs;
         FileSystemChangeSummary changeSummary;
         List<FileSystemItemChange> changes;
-        FileSystemItemChange fsItemChange;
 
         TransactionHelper.startTransaction();
         try {
@@ -718,13 +665,11 @@ public class TestAuditFileSystemChangeFinder {
             // The new sync root is detected in the change summary
             changeSummary = getChangeSummary(admin);
             assertNotNull(changeSummary);
-
             changes = changeSummary.getFileSystemChanges();
             assertEquals(1, changes.size());
-            fsItemChange = changes.get(0);
-            assertEquals("rootRegistered", fsItemChange.getEventId());
-            assertEquals("defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
-                    fsItemChange.getFileSystemItem().getId());
+            assertEquals(new SimpleFileSystemItemChange(folder1.getId(), "rootRegistered", "test",
+                    "defaultSyncRootFolderItemFactory#test#" + folder1.getId()),
+                    toSimpleFileSystemItemChange(changes.get(0)));
 
             // Check that root unregistration is detected as a deletion
             nuxeoDriveManager.unregisterSynchronizationRoot(admin, folder1, session);
@@ -740,9 +685,8 @@ public class TestAuditFileSystemChangeFinder {
             changeSummary = getChangeSummary(admin);
             changes = changeSummary.getFileSystemChanges();
             assertEquals(1, changes.size());
-            fsItemChange = changes.get(0);
-            assertEquals("deleted", fsItemChange.getEventId());
-            assertEquals("test#" + folder1.getId(), fsItemChange.getFileSystemItemId());
+            assertEquals(new SimpleFileSystemItemChange(folder1.getId(), "deleted", "test", "test#" + folder1.getId()),
+                    toSimpleFileSystemItemChange(changes.get(0)));
 
             // Register back the root, it's activity is again detected by the
             // client
@@ -760,10 +704,9 @@ public class TestAuditFileSystemChangeFinder {
             changeSummary = getChangeSummary(admin);
             changes = changeSummary.getFileSystemChanges();
             assertEquals(1, changes.size());
-            fsItemChange = changes.get(0);
-            assertEquals("rootRegistered", fsItemChange.getEventId());
-            assertEquals("defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
-                    fsItemChange.getFileSystemItem().getId());
+            assertEquals(new SimpleFileSystemItemChange(folder1.getId(), "rootRegistered", "test",
+                    "defaultSyncRootFolderItemFactory#test#" + folder1.getId()),
+                    toSimpleFileSystemItemChange(changes.get(0)));
 
             // Test deletion of a root
             session.followTransition(folder1.getRef(), "delete");
@@ -787,10 +730,8 @@ public class TestAuditFileSystemChangeFinder {
             changeSummary = getChangeSummary(admin);
             changes = changeSummary.getFileSystemChanges();
             assertEquals(1, changes.size());
-            fsItemChange = changes.get(0);
-            assertEquals("deleted", fsItemChange.getEventId());
-            assertEquals("test#" + folder1.getId(), fsItemChange.getFileSystemItemId());
-
+            assertEquals(new SimpleFileSystemItemChange(folder1.getId(), "deleted", "test", "test#" + folder1.getId()),
+                    toSimpleFileSystemItemChange(changes.get(0)));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -800,7 +741,6 @@ public class TestAuditFileSystemChangeFinder {
     public void testSyncUnsyncRootsAsAnotherUser() throws Exception {
         Principal user1Principal = user1Session.getPrincipal();
         List<FileSystemItemChange> changes;
-        FileSystemItemChange change;
 
         TransactionHelper.startTransaction();
         try {
@@ -828,20 +768,15 @@ public class TestAuditFileSystemChangeFinder {
             // There should be 2 changes detected in the audit
             changes = getChanges(user1Principal);
             assertEquals(2, changes.size());
-
-            change = changes.get(0);
-            assertEquals("rootRegistered", change.getEventId());
-            assertEquals(folder2.getId(), change.getDocUuid());
-            assertEquals("defaultSyncRootFolderItemFactory#test#" + folder2.getId(), change.getFileSystemItemId());
-            assertEquals("folder2", change.getFileSystemItemName());
-            assertNotNull(change.getFileSystemItem());
-
-            change = changes.get(1);
-            assertEquals("rootRegistered", change.getEventId());
-            assertEquals(folder1.getId(), change.getDocUuid());
-            assertEquals("defaultSyncRootFolderItemFactory#test#" + folder1.getId(), change.getFileSystemItemId());
-            assertEquals("folder1", change.getFileSystemItemName());
-            assertNotNull(change.getFileSystemItem());
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            expectedChanges.add(new SimpleFileSystemItemChange(folder2.getId(), "rootRegistered", "test",
+                    "defaultSyncRootFolderItemFactory#test#" + folder2.getId(), "folder2"));
+            expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "rootRegistered", "test",
+                    "defaultSyncRootFolderItemFactory#test#" + folder1.getId(), "folder1"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
+            for (FileSystemItemChange change : changes) {
+                assertNotNull(change.getFileSystemItem());
+            }
 
             // Unregister sync roots for user1 as Administrator
             nuxeoDriveManager.unregisterSynchronizationRoot(user1Principal, folder1, session);
@@ -860,22 +795,16 @@ public class TestAuditFileSystemChangeFinder {
             // There should be 2 changes detected in the audit
             changes = getChanges(user1Principal);
             assertEquals(2, changes.size());
-
-            change = changes.get(0);
-            assertEquals("deleted", change.getEventId());
-            assertEquals(folder2.getId(), change.getDocUuid());
-            assertEquals("test#" + folder2.getId(), change.getFileSystemItemId());
-            assertEquals("folder2", change.getFileSystemItemName());
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            expectedChanges.add(new SimpleFileSystemItemChange(folder2.getId(), "deleted", "test", "test#"
+                    + folder2.getId(), "folder2"));
+            expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "deleted", "test", "test#"
+                    + folder1.getId(), "folder1"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
             // Not adaptable as a FileSystemItem since unregistered
-            assertNull(change.getFileSystemItem());
-
-            change = changes.get(1);
-            assertEquals("deleted", change.getEventId());
-            assertEquals(folder1.getId(), change.getDocUuid());
-            assertEquals("test#" + folder1.getId(), change.getFileSystemItemId());
-            assertEquals("folder1", change.getFileSystemItemName());
-            // Not adaptable as a FileSystemItem since unregistered
-            assertNull(change.getFileSystemItem());
+            for (FileSystemItemChange change : changes) {
+                assertNull(change.getFileSystemItem());
+            }
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -904,12 +833,11 @@ public class TestAuditFileSystemChangeFinder {
             // - documentCreated (at init)
             List<FileSystemItemChange> changes = getChanges();
             assertEquals(3, changes.size());
-            FileSystemItemChange change = changes.get(0);
-            assertEquals("documentModified", change.getEventId());
-            change = changes.get(1);
-            assertEquals("rootRegistered", change.getEventId());
-            change = changes.get(2);
-            assertEquals("documentCreated", change.getEventId());
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "documentModified"));
+            expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "rootRegistered"));
+            expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "documentCreated"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
 
             // Unregister folder1 as a sync root for Administrator
             nuxeoDriveManager.unregisterSynchronizationRoot(session.getPrincipal(), folder1, session);
@@ -926,8 +854,8 @@ public class TestAuditFileSystemChangeFinder {
             // Check changes, expecting 1: deleted
             List<FileSystemItemChange> changes = getChanges();
             assertEquals(1, changes.size());
-            FileSystemItemChange change = changes.get(0);
-            assertEquals("deleted", change.getEventId());
+            assertEquals(new SimpleFileSystemItemChange(folder1.getId(), "deleted"),
+                    toSimpleFileSystemItemChange(changes.get(0)));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -937,7 +865,6 @@ public class TestAuditFileSystemChangeFinder {
     public void testMoveToOtherUsersSyncRoot() throws Exception {
         DocumentModel subFolder;
         List<FileSystemItemChange> changes;
-        FileSystemItemChange change;
 
         TransactionHelper.startTransaction();
         try {
@@ -960,15 +887,11 @@ public class TestAuditFileSystemChangeFinder {
             // - documentCreated for folder1 at init
             changes = getChanges(user1Session.getPrincipal());
             assertEquals(3, changes.size());
-            change = changes.get(0);
-            assertEquals("rootRegistered", change.getEventId());
-            assertEquals(folder1.getId(), change.getDocUuid());
-            change = changes.get(1);
-            assertEquals("documentCreated", change.getEventId());
-            assertEquals(subFolder.getId(), change.getDocUuid());
-            change = changes.get(2);
-            assertEquals("documentCreated", change.getEventId());
-            assertEquals(folder1.getId(), change.getDocUuid());
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "rootRegistered"));
+            expectedChanges.add(new SimpleFileSystemItemChange(subFolder.getId(), "documentCreated"));
+            expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "documentCreated"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
 
             // As Administrator, move subfolder from folder1 (sync root for
             // user1) to folder2 (sync root for Administrator but not for
@@ -983,9 +906,8 @@ public class TestAuditFileSystemChangeFinder {
             // Check changes for user1, expecting 1: deleted for subFolder
             changes = getChanges(user1Session.getPrincipal());
             assertEquals(1, changes.size());
-            change = changes.get(0);
-            assertEquals("deleted", change.getEventId());
-            assertEquals(subFolder.getId(), change.getDocUuid());
+            assertEquals(new SimpleFileSystemItemChange(subFolder.getId(), "deleted"),
+                    toSimpleFileSystemItemChange(changes.get(0)));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -994,7 +916,7 @@ public class TestAuditFileSystemChangeFinder {
     /**
      * Gets the document changes for the given user's synchronization roots using the {@link AuditChangeFinder} and
      * updates {@link #lastEventLogId}.
-     * 
+     *
      * @throws ClientException
      */
     protected List<FileSystemItemChange> getChanges(Principal principal) throws InterruptedException, ClientException {
@@ -1085,6 +1007,137 @@ public class TestAuditFileSystemChangeFinder {
             }
         });
         TransactionHelper.commitOrRollbackTransaction();
+    }
+
+    protected Set<SimpleFileSystemItemChange> toSimpleFileSystemItemChanges(List<FileSystemItemChange> changes) throws ClientException {
+        Set<SimpleFileSystemItemChange> simpleChanges = new HashSet<SimpleFileSystemItemChange>();
+        for (FileSystemItemChange change : changes) {
+            simpleChanges.add(toSimpleFileSystemItemChange(change));
+        }
+        return simpleChanges;
+    }
+
+    protected SimpleFileSystemItemChange toSimpleFileSystemItemChange(FileSystemItemChange change) throws ClientException {
+        SimpleFileSystemItemChange simpleChange = new SimpleFileSystemItemChange(change.getDocUuid(),
+                change.getEventId(), change.getRepositoryId(), change.getFileSystemItemId(),
+                change.getFileSystemItemName());
+        DocumentRef changeDocRef = new IdRef(change.getDocUuid());
+        if (session.exists(changeDocRef)) {
+            simpleChange.setLifeCycleState(session.getDocument(changeDocRef).getCurrentLifeCycleState());
+        }
+        return simpleChange;
+    }
+
+    protected final class SimpleFileSystemItemChange {
+
+        protected String docId;
+
+        protected String eventName;
+
+        protected String repositoryId;
+
+        protected String lifeCycleState;
+
+        protected String fileSystemItemId;
+
+        protected String fileSystemItemName;
+
+        public SimpleFileSystemItemChange(String docId, String eventName) {
+            this(docId, eventName, null);
+        }
+
+        public SimpleFileSystemItemChange(String docId, String eventName, String repositoryId) {
+            this(docId, eventName, repositoryId, null);
+        }
+
+        public SimpleFileSystemItemChange(String docId, String eventName, String repositoryId, String fileSystemItemId) {
+            this(docId, eventName, repositoryId, fileSystemItemId, null);
+        }
+
+        public SimpleFileSystemItemChange(String docId, String eventName, String repositoryId, String fileSystemItemId,
+                String fileSystemItemName) {
+            this.docId = docId;
+            this.eventName = eventName;
+            this.repositoryId = repositoryId;
+            this.fileSystemItemId = fileSystemItemId;
+            this.fileSystemItemName = fileSystemItemName;
+        }
+
+        public String getDocId() {
+            return docId;
+        }
+
+        public String getEventName() {
+            return eventName;
+        }
+
+        public String getRepositoryId() {
+            return repositoryId;
+        }
+
+        public String getLifeCycleState() {
+            return lifeCycleState;
+        }
+
+        public String getFileSystemItemId() {
+            return fileSystemItemId;
+        }
+
+        public String getFileSystemItemName() {
+            return fileSystemItemName;
+        }
+
+        public void setLifeCycleState(String lifeCycleState) {
+            this.lifeCycleState = lifeCycleState;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 17;
+            hash = hash * 37 + docId.hashCode();
+            return hash * 37 + eventName.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof SimpleFileSystemItemChange)) {
+                return false;
+            }
+            SimpleFileSystemItemChange other = (SimpleFileSystemItemChange) obj;
+            boolean isEqual = docId.equals(other.getDocId()) && eventName.equals(other.getEventName());
+            return isEqual
+                    && (repositoryId == null || other.getRepositoryId() == null || repositoryId.equals(other.getRepositoryId()))
+                    && (lifeCycleState == null || other.getLifeCycleState() == null || lifeCycleState.equals(other.getLifeCycleState()))
+                    && (fileSystemItemId == null || other.getFileSystemItemId() == null || fileSystemItemId.equals(other.getFileSystemItemId()))
+                    && (fileSystemItemName == null || other.getFileSystemItemName() == null || fileSystemItemName.equals(other.getFileSystemItemName()));
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("(");
+            sb.append(docId);
+            sb.append(", ");
+            sb.append(eventName);
+            if (repositoryId != null) {
+                sb.append(", ");
+                sb.append(repositoryId);
+            }
+            if (lifeCycleState != null) {
+                sb.append(", ");
+                sb.append(lifeCycleState);
+            }
+            if (fileSystemItemId != null) {
+                sb.append(", ");
+                sb.append(fileSystemItemId);
+            }
+            if (fileSystemItemName != null) {
+                sb.append(", ");
+                sb.append(fileSystemItemName);
+            }
+            sb.append(")");
+            return sb.toString();
+        }
     }
 
 }
