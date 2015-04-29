@@ -58,7 +58,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.actions", "org.nuxeo.ecm.platform.picture.api",
-        "org.nuxeo.ecm.core.mimetype", "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.picture.convert",
+        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.picture.convert",
         "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.rendition.api",
         "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.platform.video.convert",
         "org.nuxeo.ecm.platform.video.core" })
