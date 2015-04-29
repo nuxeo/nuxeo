@@ -59,6 +59,10 @@ public class UserRegistrationConfiguration {
     @XNode("userInfo/companyField")
     private String userInfoCompanyField = "userinfo:company";
 
+    /**
+     * @deprecated since 7.3. Not used anymore, the password is not stored.
+     */
+    @Deprecated
     @XNode("userInfo/passwordField")
     private String userInfoPasswordField = "userinfo:password";
 

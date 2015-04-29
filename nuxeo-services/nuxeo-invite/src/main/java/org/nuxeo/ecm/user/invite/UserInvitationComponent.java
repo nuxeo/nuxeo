@@ -338,7 +338,13 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             // additionnal infos
             for (String key : additionnalInfo.keySet()) {
                 try {
-                    registrationDoc.setPropertyValue(key, additionnalInfo.get(key));
+                    if (DefaultInvitationUserFactory.PASSWORD_KEY.equals(key)) {
+                        // add the password as a transient context data
+                        registrationDoc.putContextData(DefaultInvitationUserFactory.PASSWORD_KEY,
+                                additionnalInfo.get(key));
+                    } else {
+                        registrationDoc.setPropertyValue(key, additionnalInfo.get(key));
+                    }
                 } catch (PropertyException e) {
                     // skip silently
                 }
