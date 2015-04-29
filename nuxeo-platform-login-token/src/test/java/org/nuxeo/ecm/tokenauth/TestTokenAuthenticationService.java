@@ -22,6 +22,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
@@ -179,46 +183,130 @@ public class TestTokenAuthenticationService {
         log.debug("token3 = " + token3);
 
         DocumentModelList tokenBindings = tokenAuthenticationService.getTokenBindings("joe");
-        assertEquals(3, tokenAuthenticationService.getTokenBindings("joe").size());
-
-        // Bindings should be sorted by descendant creation date
-        if (!(DatabaseHelper.DATABASE instanceof DatabaseMySQL)) {
-            DocumentModel tokenBinding = tokenBindings.get(0);
-            String binding1Token = (String) tokenBinding.getPropertyValue("authtoken:token");
-            log.debug("binding1Token = " + binding1Token);
-            assertEquals(token3, binding1Token);
-            assertEquals("joe", tokenBinding.getPropertyValue("authtoken:userName"));
-            assertEquals("nuxeoDrive", tokenBinding.getPropertyValue("authtoken:applicationName"));
-            assertEquals("Mac OSX VM", tokenBinding.getPropertyValue("authtoken:deviceId"));
-            assertEquals("This is my personal Mac box", tokenBinding.getPropertyValue("authtoken:deviceDescription"));
-            assertEquals("rw", tokenBinding.getPropertyValue("authtoken:permission"));
+        assertEquals(3, tokenBindings.size());
+        Set<TokenBindingMock> expectedTokenBindings = new HashSet<TokenBindingMock>();
+        expectedTokenBindings.add(new TokenBindingMock(token1, "joe", "myFavoriteApp", "Ubuntu box 64 bits",
+                "This is my personal Linux box", "rw"));
+        expectedTokenBindings.add(new TokenBindingMock(token2, "joe", "myFavoriteApp", "Windows box 32 bits",
+                "This is my personal Windows box", "rw"));
+        expectedTokenBindings.add(new TokenBindingMock(token3, "joe", "nuxeoDrive", "Mac OSX VM",
+                "This is my personal Mac box", "rw"));
+        assertTrue(CollectionUtils.isEqualCollection(expectedTokenBindings, toTokenBindingMocks(tokenBindings)));
+        for (DocumentModel tokenBinding : tokenBindings) {
             assertNotNull(tokenBinding.getPropertyValue("authtoken:creationDate"));
-
-            tokenBinding = tokenBindings.get(1);
-            String binding2Token = (String) tokenBinding.getPropertyValue("authtoken:token");
-            log.debug("binding2Token = " + binding2Token);
-            assertEquals(token2, binding2Token);
-            assertEquals("joe", tokenBinding.getPropertyValue("authtoken:userName"));
-            assertEquals("myFavoriteApp", tokenBinding.getPropertyValue("authtoken:applicationName"));
-            assertEquals("Windows box 32 bits", tokenBinding.getPropertyValue("authtoken:deviceId"));
-            assertEquals("This is my personal Windows box",
-                    tokenBinding.getPropertyValue("authtoken:deviceDescription"));
-            assertEquals("rw", tokenBinding.getPropertyValue("authtoken:permission"));
-            assertNotNull(tokenBinding.getPropertyValue("authtoken:creationDate"));
-
-            tokenBinding = tokenBindings.get(2);
-            String binding3Token = (String) tokenBinding.getPropertyValue("authtoken:token");
-            log.debug("binding3Token = " + binding3Token);
-            assertEquals(token1, binding3Token);
-            assertEquals("joe", tokenBinding.getPropertyValue("authtoken:userName"));
-            assertEquals("myFavoriteApp", tokenBinding.getPropertyValue("authtoken:applicationName"));
-            assertEquals("Ubuntu box 64 bits", tokenBinding.getPropertyValue("authtoken:deviceId"));
-            assertEquals("This is my personal Linux box", tokenBinding.getPropertyValue("authtoken:deviceDescription"));
-            assertEquals("rw", tokenBinding.getPropertyValue("authtoken:permission"));
-            assertNotNull(tokenBinding.getPropertyValue("authtoken:creationDate"));
-        } else {
-            log.debug("Not testing token bindings order since running on MySQL that does not support milliseconds in dates.");
         }
+    }
+
+    protected Set<TokenBindingMock> toTokenBindingMocks(DocumentModelList tokenBindings) throws ClientException {
+        Set<TokenBindingMock> tokenBindingMocks = new HashSet<TokenBindingMock>();
+        for (DocumentModel tokenBinding : tokenBindings) {
+            tokenBindingMocks.add(toTokenBindingMock(tokenBinding));
+        }
+        return tokenBindingMocks;
+    }
+
+    protected TokenBindingMock toTokenBindingMock(DocumentModel tokenBinding) throws ClientException {
+        return new TokenBindingMock((String) tokenBinding.getPropertyValue("authtoken:token"),
+                (String) tokenBinding.getPropertyValue("authtoken:userName"),
+                (String) tokenBinding.getPropertyValue("authtoken:applicationName"),
+                (String) tokenBinding.getPropertyValue("authtoken:deviceId"),
+                (String) tokenBinding.getPropertyValue("authtoken:deviceDescription"),
+                (String) tokenBinding.getPropertyValue("authtoken:permission"));
+    }
+
+    protected final class TokenBindingMock {
+
+        protected String token;
+
+        protected String userName;
+
+        protected String applicationName;
+
+        protected String deviceId;
+
+        protected String deviceDescription;
+
+        protected String permission;
+
+        public TokenBindingMock(String token, String userName, String applicationName, String deviceId,
+                String deviceDescription, String permission) {
+            this.token = token;
+            this.userName = userName;
+            this.applicationName = applicationName;
+            this.deviceId = deviceId;
+            this.deviceDescription = deviceDescription;
+            this.permission = permission;
+        }
+
+        public String getToken() {
+            return token;
+        }
+
+        public String getUserName() {
+            return userName;
+        }
+
+        public String getApplicationName() {
+            return applicationName;
+        }
+
+        public String getDeviceId() {
+            return deviceId;
+        }
+
+        public String getDeviceDescription() {
+            return deviceDescription;
+        }
+
+        public String getPermission() {
+            return permission;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 17;
+            hash = hash * 37 + token.hashCode();
+            hash = hash * 37 + userName.hashCode();
+            hash = hash * 37 + applicationName.hashCode();
+            hash = hash * 37 + deviceId.hashCode();
+            hash = hash * 37 + deviceDescription.hashCode();
+            return hash * 37 + permission.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (!(obj instanceof TokenBindingMock)) {
+                return false;
+            }
+            TokenBindingMock other = (TokenBindingMock) obj;
+            return token.equals(other.getToken()) && userName.equals(other.getUserName())
+                    && applicationName.equals(other.getApplicationName()) && deviceId.equals(other.getDeviceId())
+                    && deviceDescription.equals(other.getDeviceDescription())
+                    && permission.equals(other.getPermission());
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("(");
+            sb.append(token);
+            sb.append(", ");
+            sb.append(userName);
+            sb.append(", ");
+            sb.append(applicationName);
+            sb.append(", ");
+            sb.append(deviceId);
+            sb.append(", ");
+            sb.append(deviceDescription);
+            sb.append(", ");
+            sb.append(permission);
+            sb.append(")");
+            return sb.toString();
+        }
+
     }
 
 }
