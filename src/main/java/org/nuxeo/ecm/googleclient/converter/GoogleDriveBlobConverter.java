@@ -16,20 +16,21 @@
  */
 package org.nuxeo.ecm.googleclient.converter;
 
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.blob.ManagedBlob;
-import org.nuxeo.ecm.core.convert.api.ConversionException;
-import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
-import org.nuxeo.ecm.core.convert.extension.Converter;
-import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Map;
+
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.convert.api.ConversionException;
+import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
+import org.nuxeo.ecm.core.convert.extension.Converter;
+import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Converter that relies on {@link org.nuxeo.ecm.core.blob.BlobProvider} conversions.
@@ -45,6 +46,7 @@ public class GoogleDriveBlobConverter implements Converter {
         this.descriptor = descriptor;
     }
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         Blob srcBlob, dstBlob;
@@ -55,12 +57,12 @@ public class GoogleDriveBlobConverter implements Converter {
             throw new ConversionException("Unable to fetch Blob", e);
         }
 
-        if ((srcBlob == null) || !(srcBlob instanceof ManagedBlob)) {
+        if (srcBlob == null) {
             return null;
         }
 
         try {
-            dstBlob = convert((ManagedBlob) srcBlob);
+            dstBlob = convert(srcBlob);
         } catch (IOException e) {
             throw new ConversionException("Unable to fetch conversion", e);
         }
@@ -72,9 +74,9 @@ public class GoogleDriveBlobConverter implements Converter {
         return new SimpleCachableBlobHolder(dstBlob);
     }
 
-    protected Blob convert(ManagedBlob blob) throws IOException {
+    protected Blob convert(Blob blob) throws IOException {
         String mimetype = descriptor.getDestinationMimeType();
-        InputStream is = blob.getConvertedStream(mimetype);
-        return (is == null) ? null : Blobs.createBlob(is, mimetype);
+        InputStream is = Framework.getService(BlobManager.class).getConvertedStream(blob, mimetype);
+        return is == null ? null : Blobs.createBlob(is, mimetype);
     }
 }

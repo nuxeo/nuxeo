@@ -25,9 +25,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
-import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
+import org.nuxeo.ecm.core.blob.ExtendedBlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.model.Document;
@@ -46,7 +49,9 @@ import com.google.api.services.drive.model.File;
  *
  * @since 7.3
  */
-public class GoogleDriveBlobProvider implements BlobProvider {
+public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
+
+    private static final Log log = LogFactory.getLog(GoogleDriveBlobProvider.class);
 
     private static final String APPLICATION_NAME = "Nuxeo/0";
 
@@ -57,18 +62,17 @@ public class GoogleDriveBlobProvider implements BlobProvider {
     }
 
     @Override
-    public SimpleManagedBlob createManagedBlob(String repositoryName, BlobInfo blobInfo, Document doc)
-            throws IOException {
-        return new SimpleManagedBlob(blobInfo, this);
+    public Blob readBlob(BlobInfo blobInfo, Document doc) {
+        return new SimpleManagedBlob(blobInfo);
     }
 
     @Override
-    public BlobInfo getBlobInfo(String repositoryName, Blob blob, Document doc) {
-        throw new UnsupportedOperationException("Storing a standard blob is not supported");
+    public BlobInfo writeBlob(Blob blob, Document doc) {
+        throw new UnsupportedOperationException("Writing a blob to Google Drive is not supported");
     }
 
     @Override
-    public URI getURI(ManagedBlob blob, ManagedBlob.UsageHint usage) throws IOException {
+    public URI getURI(ManagedBlob blob, UsageHint usage) throws IOException {
         String url = null;
         File file = getFile(blob);
         switch (usage) {
@@ -97,9 +101,8 @@ public class GoogleDriveBlobProvider implements BlobProvider {
         }
         return (url != null) ? asURI(url) : null;
     }
-    
-    @Override
-    public InputStream getStream(String blobKey, URI uri) throws IOException {
+
+    protected InputStream getStream(String blobKey, URI uri) throws IOException {
         String info = getFileInfo(blobKey);
         String user = getUser(info);
         HttpResponse resp = doGet(user, uri);
@@ -107,7 +110,7 @@ public class GoogleDriveBlobProvider implements BlobProvider {
     }
 
     @Override
-    public Map<String, URI> getAvailableConversions(ManagedBlob blob, ManagedBlob.UsageHint hint) throws IOException {
+    public Map<String, URI> getAvailableConversions(ManagedBlob blob, UsageHint hint) throws IOException {
         File file = getFile(blob);
         Map<String, String> exportLinks = file.getExportLinks();
         if (exportLinks == null) {
@@ -121,8 +124,25 @@ public class GoogleDriveBlobProvider implements BlobProvider {
     }
 
     @Override
-    public URI getThumbnail(ManagedBlob blob, ManagedBlob.UsageHint hint) throws IOException {
-        return asURI(getFile(blob).getThumbnailLink());
+    public InputStream getThumbnail(ManagedBlob blob) throws IOException {
+        URI uri = asURI(getFile(blob).getThumbnailLink());
+        return getStream(blob.getKey(), uri);
+    }
+
+    @Override
+    public InputStream getStream(ManagedBlob blob) throws IOException {
+        URI uri = getURI(blob, UsageHint.STREAM);
+        return getStream(blob.getKey(), uri);
+    }
+
+    @Override
+    public InputStream getConvertedStream(ManagedBlob blob, String mimeType) throws IOException {
+        Map<String, URI> conversions = getAvailableConversions(blob, UsageHint.STREAM);
+        URI uri = conversions.get(mimeType);
+        if (uri == null) {
+            return null;
+        }
+        return getStream(blob.getKey(), uri);
     }
 
     /**
@@ -131,7 +151,7 @@ public class GoogleDriveBlobProvider implements BlobProvider {
      * @param fileInfo the file info ({email}:{fileId})
      * @return the blob
      */
-    public Blob getBlob(String fileInfo) throws IOException {
+    protected Blob getBlob(String fileInfo) throws IOException {
         String user = getUser(fileInfo);
         String fileId = getFileId(fileInfo);
         File file = getFile(user, fileId);
@@ -152,7 +172,7 @@ public class GoogleDriveBlobProvider implements BlobProvider {
             digest = file.getEtag();
         }
         blobInfo.digest = digest;
-        return new SimpleManagedBlob(blobInfo, this);
+        return new SimpleManagedBlob(blobInfo);
     }
 
     protected String getFileInfo(String key) {
@@ -205,9 +225,7 @@ public class GoogleDriveBlobProvider implements BlobProvider {
     }
 
     /**
-     * Executes a GET request with the user's credentials
-     *
-     * @return a {@link HttpResponse}
+     * Executes a GET request with the user's credentials.
      */
     protected HttpResponse doGet(String user, URI url) throws IOException {
         return getService(user).getRequestFactory().buildGetRequest(new GenericUrl(url)).execute();
@@ -218,13 +236,13 @@ public class GoogleDriveBlobProvider implements BlobProvider {
      *
      * @return the {@link URI} or null if it fails
      */
-    private URI asURI(String link) {
-        URI uri = null;
+    protected static URI asURI(String link) {
         try {
-            uri = new URI(link);
+            return new URI(link);
         } catch (URISyntaxException e) {
-            //
+            log.error("Invalid URI: " + link, e);
+            return null;
         }
-        return uri;
     }
+
 }
