@@ -42,8 +42,7 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
  */
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.platform.dublincore",
-        "org.nuxeo.ecm.core.mimetype", "org.nuxeo.ecm.platform.filemanager.api",
-        "org.nuxeo.ecm.platform.filemanager.core" })
+        "org.nuxeo.ecm.platform.filemanager.api", "org.nuxeo.ecm.platform.filemanager.core" })
 public class WebDavServerFeature extends WebEngineFeature {
 
     static boolean DEBUG = false;
