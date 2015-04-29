@@ -104,7 +104,6 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
 
             // store userinfo
             doc.setPropertyValue(configuration.getUserInfoUsernameField(), userInfo.getLogin());
-            doc.setPropertyValue(configuration.getUserInfoPasswordField(), userInfo.getPassword());
             doc.setPropertyValue(configuration.getUserInfoFirstnameField(), userInfo.getFirstName());
             doc.setPropertyValue(configuration.getUserInfoLastnameField(), userInfo.getLastName());
             doc.setPropertyValue(configuration.getUserInfoEmailField(), userInfo.getEmail());
