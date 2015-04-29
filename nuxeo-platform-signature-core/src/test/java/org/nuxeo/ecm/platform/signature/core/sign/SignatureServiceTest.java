@@ -69,16 +69,11 @@ import com.lowagie.text.pdf.PdfReader;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(user = "Administrator", init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core", //
-        "org.nuxeo.ecm.core.api", //
-        "org.nuxeo.runtime.management", //
+@Deploy({ "org.nuxeo.runtime.management", //
         "org.nuxeo.ecm.directory", //
         "org.nuxeo.ecm.directory.sql", //
         "org.nuxeo.ecm.platform.usermanager", //
         "org.nuxeo.ecm.platform.usermanager.api", //
-        "org.nuxeo.ecm.core.convert.api", //
-        "org.nuxeo.ecm.core.convert", //
-        "org.nuxeo.ecm.core.convert.plugins", //
         "org.nuxeo.ecm.platform.convert", //
         "org.nuxeo.ecm.platform.signature.core", //
         "org.nuxeo.ecm.platform.signature.core.test" })
@@ -219,7 +214,8 @@ public class SignatureServiceTest {
         SignatureServiceImpl ssi = (SignatureServiceImpl) signatureService;
 
         // sign the original PDF file
-        Blob signedBlob = signatureService.signPDF(Blobs.createBlob(origPdfFile), user, USER_KEY_PASSWORD, "test reason");
+        Blob signedBlob = signatureService.signPDF(Blobs.createBlob(origPdfFile), user, USER_KEY_PASSWORD,
+                "test reason");
         assertNotNull(signedBlob);
         // verify there are certificates in the signed file
         List<X509Certificate> certificates = ssi.getCertificates(signedBlob);
