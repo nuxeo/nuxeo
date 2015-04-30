@@ -2,8 +2,8 @@
 <fragment version="1">
   <require>org.nuxeo.ecm.platform.lang</require>
   <!--
-    Template:   nuxeo.ear/OSGI-INF/templates/faces-config.xml
-    End Result: nuxeo.ear/META-INF/faces-config.xml
+    Template:   nuxeo.war/OSGI-INF/templates/faces-config.xml
+    End Result: nuxeo.war/META-INF/faces-config.xml
   -->
   <extension target="faces-config#APPLICATION_LOCALE">
     <locale-config>
@@ -43,7 +43,6 @@
     <unzip from="${bundle.fileName}" to="/" prefix="web">
       <include>web/nuxeo.war/**</include>
     </unzip>
-
 
     <!-- Add fallback to two letters locale for browser compat -->
     <copy from="nuxeo.war/WEB-INF/classes/messages_de_DE.properties"
