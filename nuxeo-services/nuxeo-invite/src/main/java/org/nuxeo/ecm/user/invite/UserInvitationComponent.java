@@ -18,11 +18,11 @@ package org.nuxeo.ecm.user.invite;
 
 import static org.nuxeo.ecm.user.invite.RegistrationRules.FACET_REGISTRATION_CONFIGURATION;
 import static org.nuxeo.ecm.user.invite.RegistrationRules.FIELD_CONFIGURATION_NAME;
+import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod.EMAIL;
 import static org.nuxeo.ecm.user.invite.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
 import static org.nuxeo.ecm.user.invite.UserRegistrationInfo.EMAIL_FIELD;
 import static org.nuxeo.ecm.user.invite.UserRegistrationInfo.SCHEMA_NAME;
 import static org.nuxeo.ecm.user.invite.UserRegistrationInfo.USERNAME_FIELD;
-import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod.EMAIL;
 
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -64,8 +64,6 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.user.invite.UserRegistrationConfiguration;
-import org.nuxeo.ecm.user.invite.UserRegistrationException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -342,7 +340,14 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             // additionnal infos
             for (String key : additionnalInfo.keySet()) {
                 try {
-                    registrationDoc.setPropertyValue(key, additionnalInfo.get(key));
+                    if (DefaultInvitationUserFactory.PASSWORD_KEY.equals(key)) {
+                        // add the password as a transient context data
+                        registrationDoc.putContextData(DefaultInvitationUserFactory.PASSWORD_KEY,
+                                additionnalInfo.get(key));
+                    } else {
+                        registrationDoc.setPropertyValue(key, additionnalInfo.get(key));
+                    }
+
                 } catch (PropertyException e) {
                     // skip silently
                 }

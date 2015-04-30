@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.user.invite.AlreadyProcessedRegistrationException;
+import org.nuxeo.ecm.user.invite.DefaultInvitationUserFactory;
 import org.nuxeo.ecm.user.invite.UserInvitationService;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
 import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
@@ -95,7 +96,7 @@ public class UserInvitationObject extends ModuleRoot {
             Map<String, Serializable> additionalInfo = buildAdditionalInfos();
 
             // Add the entered password to the document model
-            additionalInfo.put(UserRegistrationInfo.PASSWORD_FIELD, password);
+            additionalInfo.put(DefaultInvitationUserFactory.PASSWORD_KEY, password);
             // Validate the creation of the user
             registrationData = usr.validateRegistration(requestId,
                     additionalInfo);

@@ -31,6 +31,8 @@ public class DefaultInvitationUserFactory implements InvitationUserFactory {
 
     private static final Log log = LogFactory.getLog(DefaultInvitationUserFactory.class);
 
+    public static final String PASSWORD_KEY = "invitationPassword";
+
     @Override
     public void doPostUserCreation(CoreSession session, DocumentModel registrationDoc, NuxeoPrincipal user)
             throws ClientException, UserRegistrationException {
@@ -53,8 +55,7 @@ public class DefaultInvitationUserFactory implements InvitationUserFactory {
             DocumentModel newUserDoc = userManager.getBareUserModel();
             newUserDoc.setPropertyValue(UserConfig.USERNAME_COLUMN,
                     registrationDoc.getPropertyValue(UserRegistrationInfo.USERNAME_FIELD));
-            newUserDoc.setPropertyValue(UserConfig.PASSWORD_COLUMN,
-                    registrationDoc.getPropertyValue(UserRegistrationInfo.PASSWORD_FIELD));
+            newUserDoc.setPropertyValue(UserConfig.PASSWORD_COLUMN, registrationDoc.getContextData(PASSWORD_KEY));
             newUserDoc.setPropertyValue(UserConfig.FIRSTNAME_COLUMN,
                     registrationDoc.getPropertyValue(UserRegistrationInfo.FIRSTNAME_FIELD));
             newUserDoc.setPropertyValue(UserConfig.LASTNAME_COLUMN,
