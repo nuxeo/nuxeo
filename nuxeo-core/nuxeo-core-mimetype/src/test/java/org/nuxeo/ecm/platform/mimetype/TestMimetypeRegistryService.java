@@ -32,7 +32,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.After;
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,8 +42,10 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.mimetype.service.ExtensionDescriptor;
 import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
@@ -54,19 +57,13 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.mimetype")
 public class TestMimetypeRegistryService {
 
-    private MimetypeRegistryService mimetypeRegistry;
+    @Inject
+    private MimetypeRegistry mimetypeRegistry;
 
-    @Before
-    public void setUp() {
-        mimetypeRegistry = new MimetypeRegistryService();
-    }
-
-    @After
-    public void tearDown() {
-        mimetypeRegistry = null;
-    }
+    protected MimetypeRegistryService mimetypeRegistryService;
 
     private static MimetypeEntryImpl getMimetypeSample() {
         String normalizedMimetype = "application/msword";
@@ -90,34 +87,39 @@ public class TestMimetypeRegistryService {
                 oleSupported);
     }
 
+    @Before
+    public void before() {
+        mimetypeRegistryService = ((MimetypeRegistryService) mimetypeRegistry);
+    }
+
     @Test
     public void testMimetypeRegistration() {
         MimetypeEntry mimetype = getMimetypeSample();
-        mimetypeRegistry.registerMimetype(mimetype);
+        mimetypeRegistryService.registerMimetype(mimetype);
         assertEquals(mimetypeRegistry.getMimetypeEntryByName(mimetype.getNormalized()), mimetype);
 
         // Second registration
-        mimetypeRegistry.registerMimetype(mimetype);
+        mimetypeRegistryService.registerMimetype(mimetype);
         assertEquals(mimetypeRegistry.getMimetypeEntryByName(mimetype.getNormalized()), mimetype);
 
-        mimetypeRegistry.unregisterMimetype(mimetype.getNormalized());
+        mimetypeRegistryService.unregisterMimetype(mimetype.getNormalized());
         assertNull(mimetypeRegistry.getMimetypeEntryByName(mimetype.getNormalized()));
     }
 
     @Test
     public void testGetExtensionsFromMimetype() {
         MimetypeEntry mimetype = getMimetypeSample();
-        mimetypeRegistry.registerMimetype(mimetype);
+        mimetypeRegistryService.registerMimetype(mimetype);
 
         assertEquals(mimetypeRegistry.getExtensionsFromMimetypeName(mimetype.getNormalized()), mimetype.getExtensions());
 
-        mimetypeRegistry.unregisterMimetype(mimetype.getNormalized());
+        mimetypeRegistryService.unregisterMimetype(mimetype.getNormalized());
     }
 
     @Test
     public void testGetMimetypeFromFile() throws Exception {
         MimetypeEntry mimetypeEntry = getMimetypeSample();
-        mimetypeRegistry.registerMimetype(mimetypeEntry);
+        mimetypeRegistryService.registerMimetype(mimetypeEntry);
 
         File file = FileUtils.getResourceFileFromContext("test-data/hello.doc");
 
@@ -131,7 +133,7 @@ public class TestMimetypeRegistryService {
     @Test
     public void testGetMimetypeFromStream() throws Exception {
         MimetypeEntry mimetypeEntry = getMimetypeSample();
-        mimetypeRegistry.registerMimetype(mimetypeEntry);
+        mimetypeRegistryService.registerMimetype(mimetypeEntry);
 
         InputStream istream = new FileInputStream(FileUtils.getResourceFileFromContext("test-data/hello.doc"));
 
@@ -145,7 +147,7 @@ public class TestMimetypeRegistryService {
     @Test
     public void testGetMimetypeFromBlob() throws Exception {
         MimetypeEntry mimetypeEntry = getMimetypeSample();
-        mimetypeRegistry.registerMimetype(mimetypeEntry);
+        mimetypeRegistryService.registerMimetype(mimetypeEntry);
         String mimetype = mimetypeRegistry.getMimetypeFromBlob(getWordBlob());
         assertEquals("application/msword", mimetype);
 
@@ -165,17 +167,17 @@ public class TestMimetypeRegistryService {
     public void testGetMimetypeFromFilnameAndBlobWithDefault() throws Exception {
 
         MimetypeEntry mimetypeEntry = getMimetypeSample();
-        mimetypeRegistry.registerMimetype(mimetypeEntry);
+        mimetypeRegistryService.registerMimetype(mimetypeEntry);
 
         MimetypeEntry docbook = new MimetypeEntryImpl("application/docbook+xml",
                 Arrays.asList("application/docbook+xml"), Arrays.asList("xml", "doc.xml", "docb"), "", false, false,
                 false);
-        mimetypeRegistry.registerMimetype(docbook);
+        mimetypeRegistryService.registerMimetype(docbook);
 
         ExtensionDescriptor ed = new ExtensionDescriptor("xml");
         ed.setAmbiguous(true);
         ed.setMimetype("text/xml");
-        mimetypeRegistry.registerFileExtension(ed);
+        mimetypeRegistryService.registerFileExtension(ed);
 
         // doc filename + empty file gives word mimetype
         String mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("hello.doc", Blobs.createBlob(""),
@@ -214,7 +216,7 @@ public class TestMimetypeRegistryService {
     public void testGetMimetypeEntryByMimetype() {
 
         MimetypeEntry mimetypeEntry = getMimetypeSample();
-        mimetypeRegistry.registerMimetype(mimetypeEntry);
+        mimetypeRegistryService.registerMimetype(mimetypeEntry);
 
         // Using normalized name.
         MimetypeEntry entry = mimetypeRegistry.getMimetypeEntryByMimeType("application/msword");

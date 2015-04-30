@@ -19,26 +19,38 @@
 
 package org.nuxeo.ecm.platform.mimetype.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
+
+import javax.inject.Inject;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.nuxeo.ecm.platform.mimetype.NXMimeType;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /*
  * Test the Nuxeo component and mimetype extension regisration. (int)
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class TestMimetypeRegistryServiceExtensions extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.mimetype")
+public class TestMimetypeRegistryServiceExtensions {
 
-    private MimetypeRegistryService mimetypeRegistryService;
+    @Inject
+    private MimetypeRegistry mimetypeRegistry;
 
     private MimetypeEntry wordMimeType;
 
@@ -48,19 +60,14 @@ public class TestMimetypeRegistryServiceExtensions extends NXRuntimeTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.platform.mimetype.core.tests", "nxmimetype-service.xml");
-        mimetypeRegistryService = NXMimeType.getMimetypeRegistryService();
-
-        wordMimeType = mimetypeRegistryService.getMimetypeEntryByName("application/msword");
-        pdfMimeType = mimetypeRegistryService.getMimetypeEntryByName("application/pdf");
-
-        xmlExtension = mimetypeRegistryService.extensionRegistry.get("xml");
+        wordMimeType = mimetypeRegistry.getMimetypeEntryByName("application/msword");
+        pdfMimeType = mimetypeRegistry.getMimetypeEntryByName("application/pdf");
+        xmlExtension = ((MimetypeRegistryService)mimetypeRegistry).extensionRegistry.get("xml");
     }
 
     @Test
     public void testComponentRegistration() {
-        assertNotNull(mimetypeRegistryService);
+        assertNotNull(mimetypeRegistry);
     }
 
     @Test
@@ -117,8 +124,9 @@ public class TestMimetypeRegistryServiceExtensions extends NXRuntimeTestCase {
     @Test
     public void testWordExtensions() {
         List<String> extensions = wordMimeType.getExtensions();
-        assertEquals(1, extensions.size());
+        assertEquals(2, extensions.size());
         assertTrue(extensions.contains("doc"));
+        assertTrue(extensions.contains("dot"));
     }
 
     @Test
@@ -137,13 +145,10 @@ public class TestMimetypeRegistryServiceExtensions extends NXRuntimeTestCase {
     }
 
     public void xtestRemote() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.mimetype.core.tests", "nxmimetype-service.xml");
-        MimetypeRegistry mimetypeRegistryService = Framework.getService(MimetypeRegistry.class);
-
-        wordMimeType = mimetypeRegistryService.getMimetypeEntryByName("application/msword");
+        wordMimeType = mimetypeRegistry.getMimetypeEntryByName("application/msword");
         assertEquals("application/msword", wordMimeType.getNormalized());
 
-        pdfMimeType = mimetypeRegistryService.getMimetypeEntryByName("application/pdf");
+        pdfMimeType = mimetypeRegistry.getMimetypeEntryByName("application/pdf");
         List<String> extensions = pdfMimeType.getExtensions();
         assertTrue(extensions.contains("pdf"));
     }

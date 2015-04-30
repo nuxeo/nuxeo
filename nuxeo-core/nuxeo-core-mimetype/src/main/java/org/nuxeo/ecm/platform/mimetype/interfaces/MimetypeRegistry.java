@@ -70,6 +70,11 @@ public interface MimetypeRegistry {
     String getMimetypeFromStreamWithDefault(InputStream is, String defaultMimetype) throws MimetypeDetectionException;
 
     /**
+     * Returns the mime type from a given filename.
+     */
+    String getMimetypeFromFilename(String filename);
+
+    /**
      * Returns the mime type given a file.
      *
      * @return string containing the mime type

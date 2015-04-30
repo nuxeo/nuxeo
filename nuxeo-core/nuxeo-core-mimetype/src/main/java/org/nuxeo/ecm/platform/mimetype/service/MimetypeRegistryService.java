@@ -35,6 +35,7 @@ import net.sf.jmimemagic.MagicMatch;
 import net.sf.jmimemagic.MagicMatchNotFoundException;
 import net.sf.jmimemagic.MagicParseException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
@@ -273,6 +274,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
         if (filename == null) {
             throw new MimetypeNotFoundException("filename is null");
         }
+        String extension = FilenameUtils.getExtension(filename);
         String[] parts = filename.split("\\.");
         if (parts.length < 2) {
             throw new MimetypeNotFoundException(filename + "has no extension");

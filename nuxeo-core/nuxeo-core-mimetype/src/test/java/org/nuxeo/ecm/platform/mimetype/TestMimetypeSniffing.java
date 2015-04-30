@@ -28,9 +28,18 @@ import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
+
+import javax.inject.Inject;
 
 /**
  * Test binary files sniff.
@@ -38,22 +47,13 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  * @author <a href="mailto:lg@nuxeo.com">Laurent Godard</a>
  */
-public class TestMimetypeSniffing extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.mimetype")
+public class TestMimetypeSniffing {
 
-    private MimetypeRegistryService mimetypeRegistry;
-
-    @Test
-    public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.platform.mimetype.core.tests", "nxmimetype-service.xml");
-        mimetypeRegistry = NXMimeType.getMimetypeRegistryService();
-    }
-
-    @Test
-    public void tearDown() throws Exception {
-        mimetypeRegistry = null;
-        super.tearDown();
-    }
+    @Inject
+    private MimetypeRegistry mimetypeRegistry;
 
     private static File getFileFromResource(String path) {
         // retrieves contextually the resource file and decode its path
