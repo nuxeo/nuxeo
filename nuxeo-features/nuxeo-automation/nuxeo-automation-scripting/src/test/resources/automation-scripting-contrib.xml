@@ -95,7 +95,7 @@
                 "properties" : {
                     "dc:description" : ctx.test,
                     "dc:title" : ctx.new,
-                    "dc:creator" : ctx.currentUser.name
+                    "dc:creator" : currentUser.name
                 }
             });
 

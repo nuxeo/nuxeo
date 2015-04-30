@@ -41,8 +41,10 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.context.ContextHelper;
 import org.nuxeo.ecm.automation.context.ContextService;
-import org.nuxeo.ecm.automation.core.scripting.Scripting;
+import org.nuxeo.ecm.automation.core.scripting.DateWrapper;
+import org.nuxeo.ecm.automation.core.scripting.PrincipalWrapper;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -132,16 +134,31 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
             operationContext = operationContexts.get();
             operationContext.setCoreSession(session);
         }
-        operationContext.putAll(Scripting.initBindings(operationContext));
+
+        // Injecting Automation Mapper 'automation'
         AutomationMapper automationMapper = new AutomationMapper(session, operationContext);
         engine.put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY, automationMapper);
+
+        // Inject operation context vars in 'Context'
         engine.put(AutomationScriptingConstants.AUTOMATION_CTX_KEY, automationMapper.ctx.getVars());
+        // Session injection
+        engine.put("Session", automationMapper.ctx.getCoreSession());
+        // User injection
+        PrincipalWrapper principalWrapper = new PrincipalWrapper((NuxeoPrincipal) automationMapper.ctx.getPrincipal());
+        engine.put("CurrentUser", principalWrapper);
+        engine.put("currentUser", principalWrapper);
+        // Env Properties injection
+        engine.put("Env", Framework.getProperties());
+        // DateWrapper injection
+        engine.put("CurrentDate", new DateWrapper());
+
         // Helpers injection
         ContextService contextService = Framework.getService(ContextService.class);
         Map<String, ContextHelper> helperFunctions = contextService.getHelperFunctions();
         for(String helperFunctionsId: helperFunctions.keySet()){
             engine.put(helperFunctionsId,helperFunctions.get(helperFunctionsId));
         }
+
         engine.eval(script);
     }
 
