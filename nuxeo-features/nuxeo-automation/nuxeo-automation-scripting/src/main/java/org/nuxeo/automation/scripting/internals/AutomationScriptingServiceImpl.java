@@ -87,7 +87,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     }
 
     @Override
-    public void setOperationContext(OperationContext ctx){
+    public void setOperationContext(OperationContext ctx) {
         this.operationContext = operationContexts.get();
         this.operationContext = ctx;
     }
@@ -100,7 +100,8 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     protected final ThreadLocal<ScriptEngine> engines = new ThreadLocal<ScriptEngine>() {
         @Override
         protected ScriptEngine initialValue() {
-            return Framework.getService(ScriptEngineManager.class).getEngineByName(AutomationScriptingConstants.NX_NASHORN);
+            return Framework.getService(ScriptEngineManager.class).getEngineByName(
+                    AutomationScriptingConstants.NX_NASHORN);
         }
     };
 
@@ -125,7 +126,9 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         ScriptEngine engine = engines.get();
         engine.setContext(new SimpleScriptContext());
         engine.eval(getJSWrapper());
-        if(operationContext==null){
+
+        // Initialize Operation Context
+        if (operationContext == null) {
             operationContext = operationContexts.get();
             operationContext.setCoreSession(session);
         }
