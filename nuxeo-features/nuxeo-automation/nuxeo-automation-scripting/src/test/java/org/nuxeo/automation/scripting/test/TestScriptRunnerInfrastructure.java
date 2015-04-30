@@ -323,4 +323,12 @@ public class TestScriptRunnerInfrastructure {
         }
         return buf.toString();
     }
+
+    @Test
+    public void handleDocumentListAsInput() throws OperationException {
+        OperationContext ctx = new OperationContext(session);
+        DocumentModelList result = (DocumentModelList) automationService.run(ctx, "Scripting.TestInputDocumentList", null);
+        assertNotNull(result);
+    }
+
 }

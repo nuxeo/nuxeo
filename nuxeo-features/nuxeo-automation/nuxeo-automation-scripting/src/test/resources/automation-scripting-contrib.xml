@@ -199,6 +199,26 @@
       ]]></script>
     </scriptedOperation>
 
+    <scriptedOperation id="Scripting.TestInputDocumentList">
+      <inputType>void</inputType>
+      <outputType>Documents</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+
+            var root = Repository.GetDocument(null, {
+                "value" : "/"
+            });
+
+            var children = Document.GetChildren(root, {});
+
+            Context.PushDocumentList(children, {});
+
+            return children;
+        }
+      ]]></script>
+    </scriptedOperation>
+
   </extension>
 
   <extension point="chains"
