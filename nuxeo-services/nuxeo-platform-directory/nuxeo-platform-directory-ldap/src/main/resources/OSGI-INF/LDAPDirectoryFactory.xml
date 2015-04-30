@@ -42,7 +42,11 @@
           <!-- LDAP SRV DNS resolution on _gc._tcp.example.com -->
           <ldapUrl srvPrefix="_gc._tcp">ldap:///dc=example,dc=com</ldapUrl>
 
+          <connectionTimeout>10000</connectionTimeout>
           <retries>5</retries>
+
+          <poolingEnabled>true</poolingEnabled>
+          <verifyServerCert>true</verifyServerCert>
 
           <bindDn>cn=nuxeo5,ou=applications,dc=example,dc=com</bindDn>
           <bindPassword>changeme</bindPassword>
@@ -55,8 +59,18 @@
       be replicated versions of a master server that should belong to
       the list.
 
-      The retries attribute indicates how many times the request will be retried
-      if LDAP server returns a ServiceUnavailableException (Default value is 5)
+      The connectionTimeout element specifies a connection timeout in milliseconds.
+      The default is 10000.
+
+      The retries element indicates how many times the request will be retried
+      if LDAP server returns a ServiceUnavailableException. The default is 5.
+
+      The poolingEnabled element specifies whether to use LDAP connection pooling.
+      The default is true.
+
+      The verifyServerCert element specifies whether, in SSL mode, all certificates
+      should be checked. This should only be disabled when testing with test server
+      having self-signed certificates. The default is true.
 
       The bindDn and bindPassword credentials are used by Nuxeo EP to
       access the content of the LDAP servers. It should have the read
@@ -285,7 +299,7 @@
 
 
       By default, referrals will be automatically resolved, if you don't want that behavior (since 5.9.4) you can use the followReferrals tag
-      
+
       <code>
         <directory name="groupDirectory">
            ....
@@ -293,7 +307,7 @@
            ...
         </directory>
       </code>
-      
+
     </documentation>
 
     <object
