@@ -46,6 +46,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -331,4 +332,17 @@ public class TestScriptRunnerInfrastructure {
         assertNotNull(result);
     }
 
+    @Test
+    public void handleWorkflowVariables() throws OperationException {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> wfVars = new HashMap<>();
+        Map<String, Object> nodeVars = new HashMap<>();
+        wfVars.put("var", "workflow");
+        nodeVars.put("var", "node");
+        ctx.put(Constants.VAR_WORKFLOW, wfVars);
+        ctx.put(Constants.VAR_WORKFLOW_NODE, nodeVars);
+        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestOperationWF", null);
+        assertEquals("workflow", result.getPropertyValue("dc:title"));
+        assertEquals("node", result.getPropertyValue("dc:description"));
+    }
 }

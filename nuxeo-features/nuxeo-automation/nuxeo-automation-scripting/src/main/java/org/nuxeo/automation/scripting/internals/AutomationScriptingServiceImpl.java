@@ -41,6 +41,7 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.context.ContextHelper;
 import org.nuxeo.ecm.automation.context.ContextService;
+import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.scripting.DateWrapper;
 import org.nuxeo.ecm.automation.core.scripting.PrincipalWrapper;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -151,6 +152,13 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         engine.put("Env", Framework.getProperties());
         // DateWrapper injection
         engine.put("CurrentDate", new DateWrapper());
+        // Workflow variables injection
+        if (automationMapper.ctx.get(Constants.VAR_WORKFLOW) != null) {
+            engine.put(Constants.VAR_WORKFLOW, automationMapper.ctx.get(Constants.VAR_WORKFLOW));
+        }
+        if (automationMapper.ctx.get(Constants.VAR_WORKFLOW_NODE) != null) {
+            engine.put(Constants.VAR_WORKFLOW_NODE, automationMapper.ctx.get(Constants.VAR_WORKFLOW_NODE));
+        }
 
         // Helpers injection
         ContextService contextService = Framework.getService(ContextService.class);

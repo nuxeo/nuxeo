@@ -219,6 +219,31 @@
       ]]></script>
     </scriptedOperation>
 
+    <scriptedOperation id="Scripting.TestOperationWF">
+      <inputType>Document</inputType>
+      <outputType>Document</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+
+            var root = Repository.GetDocument(null, {
+                "value" : "/"
+            });
+
+            var newDoc = Document.Create(root, {
+                "type" : "File",
+                "name" : "newDoc",
+                "properties" : {
+                    "dc:title" : ctx.WorkflowVariables.var,
+                    "dc:description" : ctx.NodeVariables.var
+                }
+            });
+
+            return newDoc;
+        }
+      ]]></script>
+    </scriptedOperation>
+
   </extension>
 
   <extension point="chains"
