@@ -31,6 +31,7 @@ import org.mvel2.MVEL;
 
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.context.ContextService;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -100,7 +101,11 @@ public class Scripting {
         // Alias
         map.put("currentUser", principalWrapper);
         map.put("Env", Framework.getProperties());
-        map.put("Fn", Functions.getInstance());
+
+        // Helpers injection
+        ContextService contextService = Framework.getService(ContextService.class);
+        map.putAll(contextService.getHelperFunctions());
+
         if (input instanceof DocumentModel) {
             DocumentWrapper documentWrapper = new DocumentWrapper(ctx.getCoreSession(), (DocumentModel) input);
             map.put("Document", documentWrapper);
