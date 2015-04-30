@@ -39,8 +39,9 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.context.ContextHelper;
+import org.nuxeo.ecm.automation.context.ContextService;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
-import org.nuxeo.ecm.automation.features.PlatformFunctions;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
 
@@ -132,7 +133,12 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         AutomationMapper automationMapper = new AutomationMapper(session, operationContext);
         engine.put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY, automationMapper);
         engine.put(AutomationScriptingConstants.AUTOMATION_CTX_KEY, automationMapper.ctx.getVars());
-        engine.put(AutomationScriptingConstants.PLATFORM_FUNCTIONS_KEY, new PlatformFunctions());
+        // Helpers injection
+        ContextService contextService = Framework.getService(ContextService.class);
+        Map<String, ContextHelper> helperFunctions = contextService.getHelperFunctions();
+        for(String helperFunctionsId: helperFunctions.keySet()){
+            engine.put(helperFunctionsId,helperFunctions.get(helperFunctionsId));
+        }
         engine.eval(script);
     }
 
