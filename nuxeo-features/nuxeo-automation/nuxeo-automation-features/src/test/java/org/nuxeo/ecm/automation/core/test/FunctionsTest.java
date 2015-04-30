@@ -12,8 +12,10 @@
 package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.security.Principal;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -22,7 +24,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.core.scripting.Functions;
+import org.nuxeo.ecm.automation.context.ContextHelper;
+import org.nuxeo.ecm.automation.context.ContextService;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.features.PlatformFunctions;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -47,6 +50,9 @@ public class FunctionsTest {
     @Inject
     CoreSession session;
 
+    @Inject
+    ContextService ctxService;
+
     OperationContext ctx;
 
     @Before
@@ -67,10 +73,12 @@ public class FunctionsTest {
 
     @Test
     public void testPrincipalWrapper() throws Exception {
-        assertEquals(Functions.getInstance(), Scripting.newExpression("Fn").eval(ctx));
-        assertEquals(Functions.getInstance().getClass(), PlatformFunctions.class);
+        Map<String, ContextHelper> contextHelperList = ctxService.getHelperFunctions();
+        PlatformFunctions functions = (PlatformFunctions) contextHelperList.get("Fn");
+        assertEquals(functions, Scripting.newExpression("Fn").eval(ctx));
+        assertTrue(functions instanceof PlatformFunctions);
 
-        NuxeoPrincipal np = ((PlatformFunctions) Functions.getInstance()).getPrincipal("Administrator");
+        NuxeoPrincipal np = (functions).getPrincipal("Administrator");
         assertEquals("Administrator", np.getName());
         assertEquals("Administrator",
                 ((Principal) Scripting.newExpression("Fn.getPrincipal(\"Administrator\")").eval(ctx)).getName());

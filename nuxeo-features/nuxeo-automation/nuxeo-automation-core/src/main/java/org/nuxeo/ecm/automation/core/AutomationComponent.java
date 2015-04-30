@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     bstefanescu
+ *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
 package org.nuxeo.ecm.automation.core;
 
@@ -37,6 +38,10 @@ import org.nuxeo.ecm.automation.ChainException;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.TypeAdapter;
+import org.nuxeo.ecm.automation.context.ContextHelperDescriptor;
+import org.nuxeo.ecm.automation.context.ContextHelperRegistry;
+import org.nuxeo.ecm.automation.context.ContextService;
+import org.nuxeo.ecm.automation.context.ContextServiceImpl;
 import org.nuxeo.ecm.automation.core.events.EventHandler;
 import org.nuxeo.ecm.automation.core.events.EventHandlerRegistry;
 import org.nuxeo.ecm.automation.core.exception.ChainExceptionFilter;
@@ -76,17 +81,28 @@ public class AutomationComponent extends DefaultComponent {
 
     public static final String XP_AUTOMATION_FILTER = "automationFilter";
 
+    public static final String XP_CONTEXT_HELPER = "contextHelpers";
+
     protected OperationServiceImpl service;
 
     protected EventHandlerRegistry handlers;
 
     protected TracerFactory tracerFactory;
 
+    public ContextHelperRegistry contextHelperRegistry;
+
+    protected ContextService contextService;
+
+    public static AutomationComponent self;
+
     @Override
     public void activate(ComponentContext context) {
         service = new OperationServiceImpl();
         tracerFactory = new TracerFactory();
         handlers = new EventHandlerRegistry(service);
+        self = this;
+        contextService = new ContextServiceImpl();
+        contextHelperRegistry = new ContextHelperRegistry();
     }
 
     protected void bindManagement() throws JMException {
@@ -162,6 +178,9 @@ public class AutomationComponent extends DefaultComponent {
             } else {
                 handlers.putEventHandler(eh);
             }
+        } else if (XP_CONTEXT_HELPER.equals(extensionPoint)) {
+            contextHelperRegistry.addContribution((ContextHelperDescriptor)
+                    contribution);
         }
     }
 
@@ -190,6 +209,9 @@ public class AutomationComponent extends DefaultComponent {
             } else {
                 handlers.removeEventHandler(eh);
             }
+        } else if (XP_CONTEXT_HELPER.equals(extensionPoint)) {
+            contextHelperRegistry.removeContribution(
+                    (ContextHelperDescriptor) contribution);
         }
     }
 
@@ -203,6 +225,9 @@ public class AutomationComponent extends DefaultComponent {
         }
         if (adapter == TracerFactory.class) {
             return adapter.cast(tracerFactory);
+        }
+        if (adapter == ContextService.class) {
+            return adapter.cast(contextService);
         }
         return null;
     }

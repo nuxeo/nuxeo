@@ -17,6 +17,7 @@
     <provide
             interface="org.nuxeo.ecm.automation.core.events.EventHandlerRegistry" />
     <provide interface="org.nuxeo.ecm.automation.core.trace.TracerFactory" />
+    <provide interface="org.nuxeo.ecm.automation.context.ContextService" />
   </service>
 
   <extension-point name="operations">
@@ -77,6 +78,19 @@
   <extension-point name="event-handlers">
     <documentation>Core Event Handlers bound to operations</documentation>
     <object class="org.nuxeo.ecm.automation.core.events.EventHandler" />
+  </extension-point>
+
+  <extension-point name="contextHelpers">
+    <documentation>
+      @since 7.3
+      @author Vladimir Pasquier (vpasquier@nuxeo.com)
+      Context helper functions contribution.
+      Example:
+      <code>
+        <contextHelper id="platformFunctions" class="org.nuxeo.ecm.automation.features.PlatformFunctions"/>
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.automation.context.ContextHelperDescriptor"/>
   </extension-point>
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"

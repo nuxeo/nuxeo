@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.nuxeo.ecm.automation.context.ContextHelper;
 
 /**
  * The functions exposed by the core library. You may want to extend this class to expose more functions under the "Fn"
@@ -22,7 +23,7 @@ import org.apache.commons.lang.StringEscapeUtils;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class CoreFunctions {
+public class CoreFunctions implements ContextHelper {
 
     public DateWrapper date(Date date) {
         return new DateWrapper(date);
