@@ -30,27 +30,23 @@ public class RegistrationRules {
 
     public static final String SCHEMA_REGISTRATION_RULES = "registrationconfiguration";
 
-    public static final String FIELD_ALLOW_USER_CREATION = SCHEMA_REGISTRATION_RULES
-            + ":" + "allowUserCreation";
+    public static final String FIELD_ALLOW_USER_CREATION = SCHEMA_REGISTRATION_RULES + ":" + "allowUserCreation";
 
-    public static final String FIELD_ALLOW_DIRECT_VALIDATION = SCHEMA_REGISTRATION_RULES
-            + ":" + "allowDirectValidationForExistingUser";
+    public static final String FIELD_ALLOW_DIRECT_VALIDATION = SCHEMA_REGISTRATION_RULES + ":"
+            + "allowDirectValidationForExistingUser";
 
-    public static final String FIELD_FORCE_RIGHT = SCHEMA_REGISTRATION_RULES
-            + ":" + "forceRightAssignment";
+    public static final String FIELD_FORCE_RIGHT = SCHEMA_REGISTRATION_RULES + ":" + "forceRightAssignment";
 
-    public static final String FIELD_CONFIGURATION_NAME = SCHEMA_REGISTRATION_RULES
-            + ":" + "name";
+    public static final String FIELD_CONFIGURATION_NAME = SCHEMA_REGISTRATION_RULES + ":" + "name";
 
-    public static final String FIELD_DISPLAY_LOCAL_TAB = SCHEMA_REGISTRATION_RULES
-            + ":" + "displayLocalRegistrationTab";
+    public static final String FIELD_DISPLAY_LOCAL_TAB = SCHEMA_REGISTRATION_RULES + ":"
+            + "displayLocalRegistrationTab";
 
     protected DocumentModel requestContainer;
 
     private static final Log log = LogFactory.getLog(RegistrationRules.class);
 
-    public RegistrationRules(DocumentModel requestContainer)
-            throws ClientException {
+    public RegistrationRules(DocumentModel requestContainer) throws ClientException {
         this.requestContainer = requestContainer;
     }
 
@@ -58,8 +54,7 @@ public class RegistrationRules {
         try {
             return (Boolean) requestContainer.getPropertyValue(FIELD_ALLOW_USER_CREATION);
         } catch (ClientException e) {
-            log.warn("Unable to fetch AllowUserCreation flag using default value: "
-                    + e.getMessage());
+            log.warn("Unable to fetch AllowUserCreation flag using default value: " + e.getMessage());
             return true;
         }
     }
@@ -68,8 +63,7 @@ public class RegistrationRules {
         try {
             return (Boolean) requestContainer.getPropertyValue(FIELD_ALLOW_DIRECT_VALIDATION);
         } catch (ClientException e) {
-            log.warn("Unable to fetch AllowDirectValidation flag using default value: "
-                    + e.getMessage());
+            log.warn("Unable to fetch AllowDirectValidation flag using default value: " + e.getMessage());
             return false;
         }
     }
@@ -78,8 +72,7 @@ public class RegistrationRules {
         try {
             return (Boolean) requestContainer.getPropertyValue(FIELD_FORCE_RIGHT);
         } catch (ClientException e) {
-            log.warn("Unable to fetch ForceRight flag using default value: "
-                    + e.getMessage());
+            log.warn("Unable to fetch ForceRight flag using default value: " + e.getMessage());
             return false;
         }
     }
@@ -88,8 +81,7 @@ public class RegistrationRules {
         try {
             return (Boolean) requestContainer.getPropertyValue(FIELD_DISPLAY_LOCAL_TAB);
         } catch (ClientException e) {
-            log.warn("Unable to fetch display local tab flag using default value: "
-                    + e.getMessage());
+            log.warn("Unable to fetch display local tab flag using default value: " + e.getMessage());
             return true;
         }
     }

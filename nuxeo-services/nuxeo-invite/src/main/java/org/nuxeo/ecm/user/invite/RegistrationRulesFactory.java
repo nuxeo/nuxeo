@@ -36,8 +36,7 @@ public class RegistrationRulesFactory implements DocumentAdapterFactory {
             try {
                 return new RegistrationRules(doc);
             } catch (ClientException e) {
-                log.warn("Unable to build RegistrationRules adapter: "
-                        + e.getMessage());
+                log.warn("Unable to build RegistrationRules adapter: " + e.getMessage());
                 log.debug(e, e);
                 return null;
             }

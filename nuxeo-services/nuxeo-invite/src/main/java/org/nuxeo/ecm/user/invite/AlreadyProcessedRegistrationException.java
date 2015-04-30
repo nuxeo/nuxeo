@@ -18,8 +18,7 @@ package org.nuxeo.ecm.user.invite;
 /**
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
  */
-public class AlreadyProcessedRegistrationException extends
-        UserRegistrationException {
+public class AlreadyProcessedRegistrationException extends UserRegistrationException {
 
     private static final long serialVersionUID = 1L;
 
