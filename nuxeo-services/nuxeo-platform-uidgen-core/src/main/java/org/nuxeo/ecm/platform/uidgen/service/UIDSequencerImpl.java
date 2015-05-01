@@ -16,6 +16,12 @@
  */
 package org.nuxeo.ecm.platform.uidgen.service;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
@@ -27,6 +33,7 @@ import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
 import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
 import org.nuxeo.ecm.platform.uidgen.ejb.UIDSequenceBean;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * This implementation uses a static persistence provider to be able to instantiate this class without passing by
@@ -39,14 +46,21 @@ public class UIDSequencerImpl implements UIDSequencer {
 
     private static volatile PersistenceProvider persistenceProvider;
 
+    protected ThreadPoolExecutor tpe = new ThreadPoolExecutor(1, 2, 10, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<Runnable>(1000));
+
+    public UIDSequencerImpl() {
+    }
+
     /**
      * Must be called when the service is no longer needed
      */
-    public static void dispose() {
+    public void dispose() {
         deactivatePersistenceProvider();
+        tpe.shutdownNow();
     }
 
-    public static PersistenceProvider getOrCreatePersistenceProvider() {
+    protected PersistenceProvider getOrCreatePersistenceProvider() {
         if (persistenceProvider == null) {
             synchronized (UIDSequencerImpl.class) {
                 if (persistenceProvider == null) {
@@ -57,7 +71,7 @@ public class UIDSequencerImpl implements UIDSequencer {
         return persistenceProvider;
     }
 
-    private static void activatePersistenceProvider() {
+    protected static void activatePersistenceProvider() {
         Thread thread = Thread.currentThread();
         ClassLoader last = thread.getContextClassLoader();
         try {
@@ -81,9 +95,61 @@ public class UIDSequencerImpl implements UIDSequencer {
         }
     }
 
+    protected class SeqRunner implements Runnable {
+
+        protected final String key;
+
+        protected int result;
+
+        protected boolean completed = false;
+
+        public SeqRunner(final String key) {
+            this.key = key;
+        }
+
+        @Override
+        public void run() {
+            TransactionHelper.startTransaction();
+            try {
+                result = doGetNext(key);
+                completed = true;
+            } finally {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+
+        }
+
+        public int getResult() {
+            return result;
+        }
+
+        public boolean isCompleted() {
+            return completed;
+        }
+
+    }
+
+    @Override
     public int getNext(final String key) {
+
+        SeqRunner runner = new SeqRunner(key);
+
+        Future<?> future = tpe.submit(runner);
+
+        try {
+            future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ClientException(e);
+        }
+
+        return runner.getResult();
+
+    }
+
+    protected int doGetNext(final String key) {
         try {
             return getOrCreatePersistenceProvider().run(true, new RunCallback<Integer>() {
+                @Override
                 public Integer runWith(EntityManager em) {
                     return getNext(em, key);
                 }
@@ -93,7 +159,7 @@ public class UIDSequencerImpl implements UIDSequencer {
         }
     }
 
-    public int getNext(EntityManager em, String key) {
+    protected int getNext(EntityManager em, String key) {
         UIDSequenceBean seq;
         try {
             seq = (UIDSequenceBean) em.createNamedQuery("UIDSequence.findByKey").setParameter("key", key).getSingleResult();

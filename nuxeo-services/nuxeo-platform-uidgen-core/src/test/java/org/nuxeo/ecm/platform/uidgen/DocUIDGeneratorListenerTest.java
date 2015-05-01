@@ -51,7 +51,10 @@ public class DocUIDGeneratorListenerTest extends UIDGeneratorTestCase {
     @Test
     public void testListener() throws ClientException {
         DocumentModel doc = createFileDocument();
+        String uid = (String)doc.getProperty("uid", "uid");
+        System.out.println(uid);
         assertNotNull(doc.getProperty("uid", "uid"));
+
     }
 
 }

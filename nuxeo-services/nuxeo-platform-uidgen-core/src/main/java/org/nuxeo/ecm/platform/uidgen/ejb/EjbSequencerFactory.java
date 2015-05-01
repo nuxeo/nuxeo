@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
 import org.nuxeo.ecm.platform.uidgen.UIDSequencerFactory;
-import org.nuxeo.ecm.platform.uidgen.service.UIDSequencerImpl;
+import org.nuxeo.ecm.platform.uidgen.service.ServiceHelper;
 
 /**
  * EJB Sequence factory. Will provide ejb based implementation UIDSequencerManager
@@ -34,13 +34,14 @@ public class EjbSequencerFactory implements UIDSequencerFactory {
 
     private static final Log log = LogFactory.getLog(EjbSequencerFactory.class);
 
+    @Override
     public UIDSequencer createUIDSequencer() {
         log.debug("create UIDSequencer ... ");
         return getSequencerManager();
     }
 
     private static UIDSequencer getSequencerManager() {
-        return new UIDSequencerImpl();
+        return ServiceHelper.getUIDGeneratorService().getAdapter(UIDSequencer.class);
     }
 
 }

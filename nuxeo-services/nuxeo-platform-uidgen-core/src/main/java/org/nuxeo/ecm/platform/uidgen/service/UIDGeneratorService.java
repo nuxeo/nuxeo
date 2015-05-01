@@ -53,15 +53,18 @@ public class UIDGeneratorService extends DefaultComponent {
 
     private final Map<String, UIDGenerator> generators = new HashMap<String, UIDGenerator>();
 
+    protected UIDSequencer sequencer;
+
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
+        sequencer = new UIDSequencerImpl();
     }
 
     @Override
     public void deactivate(ComponentContext context) {
         super.deactivate(context);
-        UIDSequencerImpl.dispose();
+        ((UIDSequencerImpl)sequencer).dispose();
     }
 
     @Override
@@ -184,7 +187,7 @@ public class UIDGeneratorService extends DefaultComponent {
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (UIDSequencer.class.isAssignableFrom(adapter)) {
-            return adapter.cast(new UIDSequencerImpl());
+            return adapter.cast(sequencer);
         }
         return null;
     }
