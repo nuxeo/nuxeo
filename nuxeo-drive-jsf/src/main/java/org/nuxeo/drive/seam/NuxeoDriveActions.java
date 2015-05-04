@@ -320,7 +320,12 @@ public class NuxeoDriveActions implements Serializable {
         }
         sb.append(DESKTOP_PACKAGE_URL_LATEST_SEGMENT);
         sb.append("/");
-        sb.append(Framework.getProperty(SERVER_VERSION_PROP_KEY));
+        String platformVersion = Framework.getProperty(SERVER_VERSION_PROP_KEY);
+        int indexOfHFSuffix = platformVersion.indexOf("-HF");
+        if (indexOfHFSuffix > -1) {
+            platformVersion = platformVersion.substring(0, indexOfHFSuffix);
+        }
+        sb.append(platformVersion);
         sb.append("/");
         return sb.toString();
     }
