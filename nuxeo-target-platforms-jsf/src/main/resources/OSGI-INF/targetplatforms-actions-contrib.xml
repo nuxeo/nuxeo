@@ -3,7 +3,7 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="TargetPlatforms" link="admin_targetplatforms.xhtml"
+    <action id="TargetPlatforms" link="/admin_targetplatforms.xhtml"
       label="label.admin.targetplatforms" order="200">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
