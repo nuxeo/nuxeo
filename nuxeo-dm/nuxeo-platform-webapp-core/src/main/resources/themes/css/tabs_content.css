@@ -311,6 +311,18 @@ author: lkemen@nuxeo.com
   border: none;
   font-size: 100% }
 
+.textBlock table,
+.note_content_block table {
+  border-collapse: unset;
+  border-color: #bbb;
+  border-spacing: initial; }
+
+.textBlock table td,
+.note_content_block table td {
+  border-color: #bbb;
+  padding: .2em .5em;
+  vertical-align: inherit; }
+
 .lockFile_block,
 .restoreFile_block {
   padding: 0 0 1em }
