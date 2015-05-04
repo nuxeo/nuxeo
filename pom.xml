@@ -12,6 +12,14 @@
     Nuxeo Enterprise Platform: The Nuxeo Language Extensions package.
   </description>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
   <repositories>
     <repository>
       <id>public</id>
