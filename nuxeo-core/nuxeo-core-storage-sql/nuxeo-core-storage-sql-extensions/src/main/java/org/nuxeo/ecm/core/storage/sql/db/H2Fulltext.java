@@ -70,7 +70,7 @@ import org.h2.util.StringUtils;
  */
 public class H2Fulltext {
 
-    private static final Version LUCENE_VERSION = Version.LUCENE_47;
+    private static final Version LUCENE_VERSION = Version.LUCENE_4_10_4;
 
     private static final Map<String, Analyzer> analyzers = new ConcurrentHashMap<String, Analyzer>();
 

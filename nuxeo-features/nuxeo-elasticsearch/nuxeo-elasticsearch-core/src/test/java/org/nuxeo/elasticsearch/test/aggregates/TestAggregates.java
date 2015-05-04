@@ -226,7 +226,7 @@ public class TestAggregates {
                 + "        \"source\" : {\n" //
                 + "          \"significant_terms\" : {\n" //
                 + "            \"field\" : \"dc:source\",\n" //
-                + "            \"minDocCount\" : 10\n" //
+                + "            \"min_doc_count\" : 10\n" //
                 + "          }\n" //
                 + "        }\n" //
                 + "      }\n" //
@@ -542,7 +542,7 @@ public class TestAggregates {
                 + "        \"source\" : {\n" //
                 + "          \"significant_terms\" : {\n" //
                 + "            \"field\" : \"prefix:foo.bar\",\n" //
-                + "            \"minDocCount\" : 10\n" //
+                + "            \"min_doc_count\" : 10\n" //
                 + "          }\n" //
                 + "        }\n" //
                 + "      }\n" //

@@ -147,8 +147,8 @@
     <jaxws-api.version>2.2.9</jaxws-api.version>
     <jaxws.version>2.2.8</jaxws.version>
     <tomcat.version>7.0.56</tomcat.version>
-    <lucene.version>4.7.2</lucene.version>
-    <elasticsearch.version>1.1.2</elasticsearch.version>
+    <lucene.version>4.10.4</lucene.version>
+    <elasticsearch.version>1.5.2</elasticsearch.version>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
     <gwt.version>2.7.0-NX1</gwt.version>
@@ -2816,7 +2816,7 @@
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy-all</artifactId>
-        <version>1.5.7</version>
+        <version>2.4.0</version>
       </dependency>
       <dependency>
         <groupId>org.mvel</groupId>
