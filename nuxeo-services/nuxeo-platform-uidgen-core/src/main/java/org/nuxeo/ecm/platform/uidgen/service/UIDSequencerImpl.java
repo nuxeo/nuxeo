@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
@@ -138,7 +139,8 @@ public class UIDSequencerImpl implements UIDSequencer {
 
         try {
             future.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {  // deals with interrupt below
+            ExceptionUtils.checkInterrupt(e);
             throw new ClientException(e);
         }
 
