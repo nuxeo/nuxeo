@@ -39,7 +39,9 @@ public class DocumentModelListCollector extends ArrayList<DocumentModel> impleme
 
     @Override
     public void collect(OperationContext ctx, DocumentModelList obj) throws OperationException {
-        addAll(obj);
+        if (obj != null) {
+            addAll(obj);
+        }
     }
 
     @Override

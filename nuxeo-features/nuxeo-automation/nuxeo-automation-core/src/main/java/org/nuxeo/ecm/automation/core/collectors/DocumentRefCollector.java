@@ -39,7 +39,9 @@ public class DocumentRefCollector extends ArrayList<DocumentRef> implements Docu
 
     @Override
     public void collect(OperationContext ctx, DocumentRef ref) throws OperationException {
-        add(ref);
+        if (ref != null) {
+            add(ref);
+        }
     }
 
     @Override
