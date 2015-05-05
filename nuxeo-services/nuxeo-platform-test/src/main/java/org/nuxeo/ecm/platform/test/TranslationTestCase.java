@@ -54,20 +54,26 @@ public class TranslationTestCase {
 
     @Test
     public void testEnFrTranslationsDiff() throws IOException {
-        Properties en = TranslationMessagesDiffer.extractProps(getEnTranslationsPath());
-        Properties fr = TranslationMessagesDiffer.extractProps(getFrTranslationsPath());
+        String enpath = getEnTranslationsPath();
+        String frpath = getFrTranslationsPath();
+        Properties en = TranslationMessagesDiffer.extractProps(enpath);
+        Properties fr = TranslationMessagesDiffer.extractProps(frpath);
         TranslationMessagesDiffer diff = new TranslationMessagesDiffer(en, fr);
         List<String> missing = diff.getMissingDestKeys();
-        assertEquals(String.format("Missing translation keys in fr file: %s", missing), 0, missing.size());
+        assertEquals(String.format("Missing translation keys in fr file: %s, en=%s, fr=%s", missing, enpath, frpath),
+                0, missing.size());
     }
 
     @Test
     public void testFrEnTranslationsDiff() throws IOException {
-        Properties en = TranslationMessagesDiffer.extractProps(getEnTranslationsPath());
-        Properties fr = TranslationMessagesDiffer.extractProps(getFrTranslationsPath());
+        String enpath = getEnTranslationsPath();
+        String frpath = getFrTranslationsPath();
+        Properties en = TranslationMessagesDiffer.extractProps(enpath);
+        Properties fr = TranslationMessagesDiffer.extractProps(frpath);
         TranslationMessagesDiffer diff = new TranslationMessagesDiffer(en, fr);
         List<String> added = diff.getAdditionalDestKeys();
-        assertEquals(String.format("Missing translation keys in en file: %s", added), 0, added.size());
+        assertEquals(String.format("Missing translation keys in en file: %s, en=%s, fr=%s", added, enpath, frpath), 0,
+                added.size());
     }
 
 }
