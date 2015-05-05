@@ -8,7 +8,7 @@ import org.nuxeo.ecm.webengine.gwt.GwtResolver.Strategy;
 @XObject("strategy")
 public class GwtWarStrategy extends GwtWarLocation {
 
-    public Strategy strategy = GwtResolver.ROOT_RESOLVER_STRATEGY;
+    public Strategy strategy;
 
     @XNode()
     void setResolver(Class<? extends Strategy> type) {
