@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OutputCollector;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentRefList;
 
@@ -38,11 +39,14 @@ public class DocumentRefCollector extends ArrayList<DocumentRef> implements Docu
     }
 
     public void collect(OperationContext ctx, DocumentRef ref) throws OperationException {
-        add(ref);
+        if(ref!=null) {
+            add(ref);
+        }
     }
 
     @Override
     public DocumentRefList getOutput() {
         return this;
     }
+
 }

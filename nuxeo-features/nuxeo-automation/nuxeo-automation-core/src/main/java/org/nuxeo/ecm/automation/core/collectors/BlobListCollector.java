@@ -16,6 +16,7 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OutputCollector;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * This implementation collect {@link Blob} objects and return them as a {@link BlobList} object.
@@ -31,11 +32,14 @@ public class BlobListCollector extends BlobList implements OutputCollector<BlobL
 
     @Override
     public void collect(OperationContext ctx, BlobList obj) throws OperationException {
-        addAll(obj);
+        if(obj!=null) {
+            addAll(obj);
+        }
     }
 
     @Override
     public BlobList getOutput() {
         return this;
     }
+
 }

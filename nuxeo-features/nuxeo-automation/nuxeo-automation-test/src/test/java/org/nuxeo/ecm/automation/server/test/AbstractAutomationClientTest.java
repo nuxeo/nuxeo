@@ -160,8 +160,15 @@ public abstract class AbstractAutomationClientTest {
         assertEquals("My Folder2", folder.getTitle());
         assertEquals("test", folder.getProperties().getString("dc:description"));
 
-        // remove folder
         session.newRequest(DeleteDocument.ID).setInput(folder).execute();
+
+        Document folder1 = (Document) session.newRequest(CreateDocument.ID).setInput(automationTestFolder).set("type",
+                "Folder").set("name", "myfolder").set("properties", "dc:title=My Folder").execute();
+        Documents folders = new Documents();
+        folders.add(folder1);
+
+        // remove folders
+        session.newRequest(DeleteDocument.ID).setInput(folders).execute();
 
         // assert document removed
         try {
