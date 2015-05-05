@@ -31,7 +31,9 @@ public class BlobListCollector extends BlobList implements OutputCollector<BlobL
 
     @Override
     public void collect(OperationContext ctx, BlobList obj) throws OperationException {
-        addAll(obj);
+        if (obj != null) {
+            addAll(obj);
+        }
     }
 
     @Override
