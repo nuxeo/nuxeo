@@ -14,7 +14,7 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.ecm.platform.lang.test;
+package org.nuxeo.ecm.rendition.web.lang.test;
 
 import org.nuxeo.ecm.platform.test.TranslationTestCase;
 
