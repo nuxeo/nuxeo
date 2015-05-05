@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.webengine.gwt;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -38,8 +37,6 @@ import org.osgi.framework.FrameworkListener;
 public class GwtBundleActivator implements BundleActivator, FrameworkListener {
 
     protected static final Log log = LogFactory.getLog(GwtBundleActivator.class);
-
-    public static final File GWT_ROOT = GwtResolver.GWT_ROOT;
 
     public static final String GWT_DEV_MODE_PROP = "nuxeo.gwt_dev_mode";
 

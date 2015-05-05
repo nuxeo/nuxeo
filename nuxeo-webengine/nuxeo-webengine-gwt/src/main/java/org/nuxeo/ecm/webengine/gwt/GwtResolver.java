@@ -7,7 +7,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.FileSystemAlreadyExistsException;
+import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
@@ -28,7 +28,7 @@ import org.nuxeo.common.Environment;
 
 public class GwtResolver {
 
-    private static final Log log = LogFactory.getLog(GwtResolver.class);
+    private final Log log = LogFactory.getLog(GwtResolver.class);
 
     public interface Strategy {
 
@@ -37,7 +37,7 @@ public class GwtResolver {
         File resolve(String path);
     }
     
-    public static File GWT_ROOT = null;
+    public final File GWT_ROOT = locateRoot();
 
     private static File locateRoot() {
 		File dir = new File(Environment.getDefault().getWeb(), "root.war/gwt");
@@ -47,7 +47,7 @@ public class GwtResolver {
 
     protected final Map<String, CompositeStrategy> strategies = new HashMap<String, CompositeStrategy>();
 
-    protected static final Strategy ROOT_RESOLVER_STRATEGY = new Strategy() {
+    protected final Strategy ROOT_RESOLVER_STRATEGY = new Strategy() {
 
         @Override
         public URI source() {
@@ -90,10 +90,6 @@ public class GwtResolver {
         }
     }
 
-    public GwtResolver() {
-        GWT_ROOT = locateRoot();
-    }
-
     public Strategy newStrategy(final URI location) throws IOException {
         final File root = install(location);
         return new Strategy() {
@@ -113,21 +109,20 @@ public class GwtResolver {
 
     protected File install(URI location) throws IOException {
         if ("jar".equals(location.getScheme())) {
-            Map<String,Object> env = Collections.emptyMap();
-            try {
-                FileSystems.newFileSystem(location, env, this.getClass().getClassLoader());
-            } catch (FileSystemAlreadyExistsException e) {
-                 log.debug(location + " already exists");
+            Map<String, Object> env = Collections.emptyMap();
+            try (FileSystem fileSystem = FileSystems.newFileSystem(location, env, this.getClass().getClassLoader());) {
+                Path path = Paths.get(location);
+                try {
+                    // it's a directory
+                    return path.toFile();
+                } catch (UnsupportedOperationException cause) {
+                    // it's a jar, we should install content
+                }
+                Files.walkFileTree(path, new TreeImporter(path, GWT_ROOT.toPath()));
+                return GWT_ROOT;
             }
-            Path path = Paths.get(location);
-            try {
-                return path.toFile();
-            } catch (UnsupportedOperationException cause) {
-                ;
-            }
-            Files.walkFileTree(path, new TreeImporter(path, GWT_ROOT.toPath()));
         }
-        return GWT_ROOT;
+        return Paths.get(location).toFile();
     }
 
     public void install(String name, Strategy strategy) {
