@@ -53,12 +53,19 @@ public class TranslationTestCase {
     }
 
     @Test
-    public void testDefaultTranslationsDiff() throws IOException {
+    public void testEnFrTranslationsDiff() throws IOException {
         Properties en = TranslationMessagesDiffer.extractProps(getEnTranslationsPath());
         Properties fr = TranslationMessagesDiffer.extractProps(getFrTranslationsPath());
         TranslationMessagesDiffer diff = new TranslationMessagesDiffer(en, fr);
         List<String> missing = diff.getMissingDestKeys();
         assertEquals(String.format("Missing translation keys in fr file: %s", missing), 0, missing.size());
+    }
+
+    @Test
+    public void testFrEnTranslationsDiff() throws IOException {
+        Properties en = TranslationMessagesDiffer.extractProps(getEnTranslationsPath());
+        Properties fr = TranslationMessagesDiffer.extractProps(getFrTranslationsPath());
+        TranslationMessagesDiffer diff = new TranslationMessagesDiffer(en, fr);
         List<String> added = diff.getAdditionalDestKeys();
         assertEquals(String.format("Missing translation keys in en file: %s", added), 0, added.size());
     }
