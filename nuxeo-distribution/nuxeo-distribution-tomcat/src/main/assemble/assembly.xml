@@ -233,8 +233,7 @@ install nuxeo-dam</echo>
     <!-- Move some libraries from nxserver to Tomcat default lib directory -->
     <move todir="${distribution.dir}/lib">
       <fileset dir="${distribution.dir}/nxserver/lib">
-        <include name="nuxeo-*" />
-        <include name="lucene-*" />
+        <include name="nuxeo-runtime-*" />
         <include name="commons-lang-*" />
         <include name="commons-lang3-*" />
         <include name="freemarker-*" />
@@ -245,8 +244,6 @@ install nuxeo-dam</echo>
         <include name="slf4j*" />
         <include name="jcl-over-slf4j*" />
         <include name="log4j-*" />
-        <include name="elasticsearch-*" />
-        <include name="lucene-*" />
       </fileset>
     </move>
     <nx:rmdups dir="${distribution.dir}/nxserver/lib" />

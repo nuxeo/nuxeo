@@ -38,8 +38,8 @@
     </antcall>
     <antcall target="copy-resources-with-jdbc-lib">
       <param name="distribution" value="templates-tomcat" />
-      <param name="h2-lib-dir" value="lib" />
-      <param name="derby-lib-dir" value="lib" />
+      <param name="h2-lib-dir" value="nxserver/lib" />
+      <param name="derby-lib-dir" value="nxserver/lib" />
     </antcall>
     <antcall target="build-resources">
       <param name="distribution" value="templates-tomcat-coreserver" />
