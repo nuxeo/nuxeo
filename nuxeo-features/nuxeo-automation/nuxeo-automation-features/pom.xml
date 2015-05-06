@@ -175,6 +175,16 @@
       <groupId>net.sf.ezmorph</groupId>
       <artifactId>ezmorph</artifactId>
     </dependency>
+    <!-- for http helpers -->
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-multipart</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-client</artifactId>
+      <scope>compile</scope>
+    </dependency>
     <!-- only for tests -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>

@@ -4,6 +4,7 @@
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
              point="contextHelpers">
     <contextHelper id="Fn" class="org.nuxeo.ecm.automation.features.PlatformFunctions"/>
+    <contextHelper id="HTTP" class="org.nuxeo.ecm.automation.features.HTTPHelper"/>
   </extension>
 
 </component>
