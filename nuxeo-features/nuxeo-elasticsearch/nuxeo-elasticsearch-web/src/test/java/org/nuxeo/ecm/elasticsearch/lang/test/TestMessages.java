@@ -14,34 +14,15 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.ecm.platform.test;
+package org.nuxeo.ecm.elasticsearch.lang.test;
 
-import java.io.IOException;
-
-import org.junit.Test;
+import org.nuxeo.ecm.platform.test.TranslationTestCase;
 
 /**
- * Basic class for messages files translations.
+ * Simple integrity tests on messages file(s).
  *
  * @since 7.3
  */
-public class TranslationTestCase extends AbstractTranslationTestCase {
-
-    /**
-     * Useful for override.
-     */
-    protected String getEnTranslationsPath() {
-        return "OSGI-INF/l10n/messages_en_US.properties";
-    }
-
-    @Test
-    public void testTranslationsLoading() throws IOException {
-        checkFormat(getEnTranslationsPath());
-    }
-
-    @Test
-    public void testTranslationsDupes() throws IOException {
-        checkDuplicates(getEnTranslationsPath());
-    }
+public class TestMessages extends TranslationTestCase {
 
 }

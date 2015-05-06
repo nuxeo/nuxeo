@@ -25,23 +25,33 @@ import org.junit.Test;
  *
  * @since 7.3
  */
-public class TranslationTestCase extends AbstractTranslationTestCase {
+public class TranslationEnFrTestCase extends TranslationTestCase {
 
     /**
      * Useful for override.
      */
-    protected String getEnTranslationsPath() {
-        return "OSGI-INF/l10n/messages_en_US.properties";
+    protected String getFrTranslationsPath() {
+        return "OSGI-INF/l10n/messages_fr_FR.properties";
     }
 
     @Test
-    public void testTranslationsLoading() throws IOException {
-        checkFormat(getEnTranslationsPath());
+    public void testTranslationsLoadingFr() throws IOException {
+        checkFormat(getFrTranslationsPath());
     }
 
     @Test
-    public void testTranslationsDupes() throws IOException {
-        checkDuplicates(getEnTranslationsPath());
+    public void testTranslationsDupesFr() throws IOException {
+        checkDuplicates(getFrTranslationsPath());
+    }
+
+    @Test
+    public void testEnFrTranslationsDiff() throws IOException {
+        checkDiff(getEnTranslationsPath(), getFrTranslationsPath());
+    }
+
+    @Test
+    public void testFrEnTranslationsDiff() throws IOException {
+        checkDiff(getFrTranslationsPath(), getEnTranslationsPath());
     }
 
 }
