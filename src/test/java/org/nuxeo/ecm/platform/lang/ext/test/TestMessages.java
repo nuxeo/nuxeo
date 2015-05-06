@@ -16,39 +16,23 @@
  */
 package org.nuxeo.ecm.platform.lang.ext.test;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.Properties;
-
-import org.junit.Test;
-import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.platform.test.TranslationMessagesDiffer;
-
-import static org.junit.Assert.assertNotNull;
+import org.nuxeo.ecm.platform.test.TranslationTestCase;
 
 /**
  * Simple integrity tests on messages file(s).
  *
  * @since 7.3
  */
-public class TestMessages {
+public class TestMessages extends TranslationTestCase {
 
-    @Test
-    public void testTranslationsLoading() throws IOException {
-        String dirpath = FileUtils.getResourcePathFromContext("web/nuxeo.war/WEB-INF/classes");
-        File dir = new File(dirpath);
-        File[] files = dir.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".properties");
-            }
-        });
+    @Override
+    protected String getEnTranslationsPath() {
+        return "crowdin/messages.properties";
+    }
 
-        for (File file : files) {
-            Properties p = TranslationMessagesDiffer.extractProps(file);
-            assertNotNull(p);
-        }
+    @Override
+    protected String getFrTranslationsPath() {
+        return "web/nuxeo.war/WEB-INF/classes/messages_fr_FR.properties";
     }
 
 }
