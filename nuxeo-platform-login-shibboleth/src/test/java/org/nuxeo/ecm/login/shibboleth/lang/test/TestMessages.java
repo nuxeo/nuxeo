@@ -30,9 +30,4 @@ public class TestMessages extends TranslationTestCase {
         return "l10n/messages_en_US.properties";
     }
 
-    @Override
-    protected String getFrTranslationsPath() {
-        return "l10n/messages_fr_FR.properties";
-    }
-
 }
