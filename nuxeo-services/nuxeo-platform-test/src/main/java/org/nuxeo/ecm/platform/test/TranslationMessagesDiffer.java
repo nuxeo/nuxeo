@@ -25,8 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import org.nuxeo.common.utils.FileUtils;
-
 /**
  * Differ for translation files.
  *
@@ -63,17 +61,9 @@ public class TranslationMessagesDiffer {
         return missing;
     }
 
-    public static Properties extractProps(String path) throws IOException {
-        String file = FileUtils.getResourcePathFromContext(path);
+    public static TranslationProperties extractProps(File file) throws IOException {
         InputStream in = new FileInputStream(file);
-        Properties props = new Properties();
-        props.load(in);
-        return props;
-    }
-
-    public static Properties extractProps(File file) throws IOException {
-        InputStream in = new FileInputStream(file);
-        Properties props = new Properties();
+        TranslationProperties props = new TranslationProperties();
         props.load(in);
         return props;
     }

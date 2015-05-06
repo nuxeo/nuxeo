@@ -17,31 +17,25 @@
 package org.nuxeo.ecm.platform.test;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * @since 7.3
  */
-public class TestTranslationMessagesDiffer extends AbstractTranslationTestCase {
+public class TestTranslationProperties extends AbstractTranslationTestCase {
 
     @Test
-    public void testDiff() throws IOException {
-        String enpath = "messages_en_US.properties";
-        String frpath = "messages_fr_FR.properties";
-        Properties en = extractProps(enpath);
-        Properties fr = extractProps(frpath);
-        TranslationMessagesDiffer diff = new TranslationMessagesDiffer(en, fr);
-        List<String> missing = diff.getMissingDestKeys();
-        assertEquals(1, missing.size());
-        assertEquals("label.onlyInFr", missing.get(0));
-        List<String> added = diff.getAdditionalDestKeys();
-        assertEquals(1, added.size());
-        assertEquals("label.onlyInEn", added.get(0));
+    public void testInvalid() throws IOException {
+        try {
+            extractProps("messages_invalid.properties");
+            fail("Should have raised IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Malformed \\uxxxx encoding.", e.getMessage());
+        }
     }
 
 }

@@ -17,20 +17,15 @@
 package org.nuxeo.ecm.platform.test;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
 
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Basic class for messages files translations.
  *
  * @since 7.3
  */
-public class TranslationTestCase {
+public class TranslationTestCase extends AbstractTranslationTestCase {
 
     /**
      * Useful for override.
@@ -48,32 +43,24 @@ public class TranslationTestCase {
 
     @Test
     public void testTranslationsLoading() throws IOException {
-        Properties en = TranslationMessagesDiffer.extractProps(getEnTranslationsPath());
-        assertNotNull(en);
+        checkFormat(getEnTranslationsPath());
+        checkFormat(getFrTranslationsPath());
+    }
+
+    @Test
+    public void testTranslationsDupes() throws IOException {
+        checkDuplicates(getEnTranslationsPath());
+        checkDuplicates(getFrTranslationsPath());
     }
 
     @Test
     public void testEnFrTranslationsDiff() throws IOException {
-        String enpath = getEnTranslationsPath();
-        String frpath = getFrTranslationsPath();
-        Properties en = TranslationMessagesDiffer.extractProps(enpath);
-        Properties fr = TranslationMessagesDiffer.extractProps(frpath);
-        TranslationMessagesDiffer diff = new TranslationMessagesDiffer(en, fr);
-        List<String> missing = diff.getMissingDestKeys();
-        assertEquals(String.format("Missing translation keys in fr file: %s, en=%s, fr=%s", missing, enpath, frpath),
-                0, missing.size());
+        checkDiff(getEnTranslationsPath(), getFrTranslationsPath());
     }
 
     @Test
     public void testFrEnTranslationsDiff() throws IOException {
-        String enpath = getEnTranslationsPath();
-        String frpath = getFrTranslationsPath();
-        Properties en = TranslationMessagesDiffer.extractProps(enpath);
-        Properties fr = TranslationMessagesDiffer.extractProps(frpath);
-        TranslationMessagesDiffer diff = new TranslationMessagesDiffer(en, fr);
-        List<String> added = diff.getAdditionalDestKeys();
-        assertEquals(String.format("Missing translation keys in en file: %s, en=%s, fr=%s", added, enpath, frpath), 0,
-                added.size());
+        checkDiff(getFrTranslationsPath(), getEnTranslationsPath());
     }
 
 }
