@@ -16,14 +16,14 @@
  */
 package org.nuxeo.ecm.platform.lang.ext.test;
 
-import org.nuxeo.ecm.platform.test.TranslationTestCase;
+import org.nuxeo.ecm.platform.test.TranslationEnFrTestCase;
 
 /**
  * Simple integrity tests on messages file(s).
  *
  * @since 7.3
  */
-public class TestMessages extends TranslationTestCase {
+public class TestMessages extends TranslationEnFrTestCase {
 
     @Override
     protected String getEnTranslationsPath() {

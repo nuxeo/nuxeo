@@ -18,6 +18,8 @@
       <supported-locale>es</supported-locale><!-- Spanish - Spain -->
       <supported-locale>es_ES</supported-locale><!-- Spanish - Spain -->
       <supported-locale>eu_ES</supported-locale><!-- Basque -->
+      <supported-locale>fr</supported-locale><!-- French - France -->
+      <supported-locale>fr_FR</supported-locale><!-- French - France -->
       <supported-locale>fr_CA</supported-locale><!-- French - Canada -->
       <supported-locale>gl_ES</supported-locale><!-- Galician -->
       <supported-locale>it_IT</supported-locale><!-- Italian - Italy -->
@@ -45,6 +47,8 @@
     </unzip>
 
     <!-- Add fallback to two letters locale for browser compat -->
+    <copy from="nuxeo.war/WEB-INF/classes/messages_fr_FR.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_fr.properties" />
     <copy from="nuxeo.war/WEB-INF/classes/messages_de_DE.properties"
         to="nuxeo.war/WEB-INF/classes/messages_de.properties"/>
     <copy from="nuxeo.war/WEB-INF/classes/messages_es_ES.properties"
