@@ -20,10 +20,6 @@
       to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
     <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_en_US.properties"
       to="nuxeo.war/WEB-INF/classes/messages_en_US.properties" addNewLine="true" />
-    <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_fr_FR.properties"
-      to="nuxeo.war/WEB-INF/classes/messages_fr_FR.properties" addNewLine="true" />
-    <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_fr_FR.properties"
-      to="nuxeo.war/WEB-INF/classes/messages_fr.properties" addNewLine="true" />
     <delete path="${bundle.fileName}.tmp" />
   </install>
 
