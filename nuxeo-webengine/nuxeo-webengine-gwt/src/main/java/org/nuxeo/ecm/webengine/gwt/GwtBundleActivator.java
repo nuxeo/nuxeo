@@ -20,8 +20,11 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import java.io.File;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -39,6 +42,8 @@ public class GwtBundleActivator implements BundleActivator, FrameworkListener {
     protected static final Log log = LogFactory.getLog(GwtBundleActivator.class);
 
     public static final String GWT_DEV_MODE_PROP = "nuxeo.gwt_dev_mode";
+
+    public static final File GWT_ROOT = new File(Environment.getDefault().getWeb(), "root.war/gwt");
 
     public static final boolean GWT_DEV_MODE = "true".equals(Framework.getProperty(GWT_DEV_MODE_PROP, "false"));
 
