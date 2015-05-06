@@ -26,6 +26,7 @@ RES=$BUNDLE/src/main/resources
 
 cp -R $JARDIR/data $RES/
 cp -R $JARDIR/OSGI-INF/extensions.xml $RES/OSGI-INF/
+# XXX do not sync the deployment fragment to impact messages.properties too, see NXS-2600
 
 # replace studio name
 find $RES -name extensions.xml -o -name '*.xsd' | while read f; do

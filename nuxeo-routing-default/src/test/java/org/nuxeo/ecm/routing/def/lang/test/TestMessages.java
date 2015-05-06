@@ -30,9 +30,4 @@ public class TestMessages extends TranslationTestCase {
         return "data/i18n/messages_en_US.properties";
     }
 
-    @Override
-    protected String getFrTranslationsPath() {
-        return "data/i18n/messages_fr_FR.properties";
-    }
-
 }
