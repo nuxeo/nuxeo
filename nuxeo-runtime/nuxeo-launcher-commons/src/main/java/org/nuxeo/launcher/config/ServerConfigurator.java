@@ -484,19 +484,6 @@ public abstract class ServerConfigurator {
     public abstract File getLogConfFile();
 
     /**
-     * Remove locks on file system (dedicated to Lucene locks)
-     *
-     * @since 5.4.2
-     */
-    public void removeExistingLocks() {
-        File lockFile = new File(getDataDir(), "h2" + File.separator + "nuxeo.lucene" + File.separator + "write.lock");
-        if (lockFile.exists()) {
-            log.info("Removing lock file " + lockFile);
-            lockFile.delete();
-        }
-    }
-
-    /**
      * @return Nuxeo config directory
      * @since 5.4.2
      */
@@ -593,7 +580,6 @@ public abstract class ServerConfigurator {
      */
     public void verifyInstallation() throws ConfigurationException {
         checkPaths();
-        removeExistingLocks();
         checkNetwork();
     }
 
