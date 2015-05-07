@@ -27,7 +27,12 @@ import org.opensaml.common.SAMLObject;
 import org.opensaml.common.binding.SAMLMessageContext;
 import org.opensaml.common.xml.SAMLConstants;
 
-import org.opensaml.saml2.core.*;
+import org.opensaml.saml2.core.Assertion;
+import org.opensaml.saml2.core.AuthnRequest;
+import org.opensaml.saml2.core.Conditions;
+import org.opensaml.saml2.core.Issuer;
+import org.opensaml.saml2.core.NameIDType;
+import org.opensaml.saml2.core.Response;
 import org.opensaml.saml2.encryption.Decrypter;
 import org.opensaml.saml2.metadata.AssertionConsumerService;
 import org.opensaml.saml2.metadata.Endpoint;
@@ -197,17 +202,8 @@ public abstract class AbstractSAMLProfile {
     }
 
     protected AuthnRequest retrieveRequest(Response response) throws SAMLException {
+        // TODO(nfgs) - Store SAML messages to validate response.getInResponseTo()
         return null;
-        /*
-         * TODO(nfgs) - Store SAML messages SAMLMessageStorage messageStorage = context.getMessageStorage(); if
-         * (messageStorage != null && response.getInResponseTo() != null) { XMLObject xmlObject =
-         * messageStorage.retrieveMessage(response.getInResponseTo()); if (xmlObject == null) {
-         * log.debug("InResponseToField doesn't correspond to sent message", response.getInResponseTo()); throw new
-         * SAMLException("InResponseToField doesn't correspond to sent message"); } else if (xmlObject instanceof
-         * AuthnRequest) { request = (AuthnRequest) xmlObject; } else {
-         * log.debug("Sent request was of different type than received response", response.getInResponseTo()); throw new
-         * SAMLException("Sent request was of different type than received response"); } }
-         */
     }
 
     public Endpoint getEndpoint() {

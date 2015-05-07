@@ -48,8 +48,17 @@ import org.opensaml.saml2.core.LogoutResponse;
 import org.opensaml.saml2.core.NameID;
 import org.opensaml.saml2.encryption.Decrypter;
 import org.opensaml.saml2.encryption.EncryptedElementTypeEncryptedKeyResolver;
-import org.opensaml.saml2.metadata.*;
-import org.opensaml.saml2.metadata.provider.*;
+import org.opensaml.saml2.metadata.EntityDescriptor;
+import org.opensaml.saml2.metadata.IDPSSODescriptor;
+import org.opensaml.saml2.metadata.RoleDescriptor;
+import org.opensaml.saml2.metadata.SPSSODescriptor;
+import org.opensaml.saml2.metadata.SingleLogoutService;
+import org.opensaml.saml2.metadata.SingleSignOnService;
+import org.opensaml.saml2.metadata.provider.AbstractMetadataProvider;
+import org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider;
+import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
+import org.opensaml.saml2.metadata.provider.MetadataProvider;
+import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.security.MetadataCredentialResolver;
 import org.opensaml.util.URLBuilder;
 import org.opensaml.ws.transport.InTransport;
@@ -260,39 +269,15 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
             context.setRelayState(requestedUrl);
         }
 
-        // Get the encoded SAML request
-        String encodedSaml = "";
-        try {
-            AuthnRequest authnRequest = sso.buildAuthRequest(request);
-            // TODO(nfgs) - This should be enough!
-            // context.setOutboundSAMLMessage(authnRequest);
-            // context.setPeerEntityEndpoint(sso.getEndpoint());
-            // TODO(nfgs) : Allow using some other binding
-            // new HTTPRedirectDeflateEncoder().encode(context);
-
-            Marshaller marshaller = Configuration.getMarshallerFactory().getMarshaller(authnRequest);
-            if (marshaller == null) {
-                log.error("Unable to marshall message, no marshaller registered " + "for message object: "
-                        + authnRequest.getElementQName());
-            }
-            Element dom = marshaller.marshall(authnRequest);
-            StringWriter buffer = new StringWriter();
-            XMLHelper.writeNode(dom, buffer);
-            encodedSaml = Base64.encodeBase64String(buffer.toString().getBytes());
-        } catch (SAMLException e) {
-            log.error("Failed to get SAML Auth request", e);
-        } catch (MarshallingException e) {
-            log.error("Encountered error marshalling message to its DOM representation", e);
-        }
-
+        // Build Uri
+        HTTPRedirectBinding binding = (HTTPRedirectBinding) getBinding(SAMLConstants.SAML2_REDIRECT_BINDING_URI);
         String loginURL = sso.getEndpoint().getLocation();
         try {
-            URLBuilder urlBuilder = new URLBuilder(loginURL);
-            urlBuilder.getQueryParams().add(new Pair<>(HTTPRedirectBinding.SAML_REQUEST, encodedSaml));
-            loginURL = urlBuilder.buildURL();
-        } catch (IllegalArgumentException e) {
-            log.error("Error while encoding URL", e);
-            return null;
+            AuthnRequest authnRequest = sso.buildAuthRequest(request);
+            context.setOutboundSAMLMessage(authnRequest);
+            loginURL = binding.buildRedirectURL(context, sso.getEndpoint().getLocation());
+        } catch (SAMLException e) {
+            log.error("Failed to build redirect URL", e);
         }
         return loginURL;
     }
@@ -374,15 +359,6 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
             //
         }
 
-        /*
-         * Tries to load peer SSL certificate from the inbound message transport using attribute X509Certificate[] chain
-         * = (X509Certificate[]) context.getInboundMessageTransport()
-         * .getAttribute(ServletRequestX509CredentialAdapter.X509_CERT_REQUEST_ATTRIBUTE); if (chain != null &&
-         * chain.length > 0) { log.debug("Found certificate chain from request {}", chain[0]); BasicX509Credential
-         * credential = new BasicX509Credential(); credential.setEntityCertificate(chain[0]);
-         * credential.setEntityCertificateChain(Arrays.asList(chain)); context.setPeerSSLCredential(credential); }
-         */
-
         // Check for a response processor for this profile
         AbstractSAMLProfile processor = getProcessor(context);
 
@@ -456,16 +432,22 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
         return profiles.get(profileId);
     }
 
-    protected SAMLBinding getBinding(InTransport transport) {
+    protected SAMLBinding getBinding(String bindingURI) {
+        for (SAMLBinding binding : bindings) {
+            if (binding.getBindingURI().equals(bindingURI)) {
+                return binding;
+            }
+        }
+        return null;
+    }
 
+    protected SAMLBinding getBinding(InTransport transport) {
         for (SAMLBinding binding : bindings) {
             if (binding.supports(transport)) {
                 return binding;
             }
         }
-
         return null;
-
     }
 
     private void populateLocalContext(SAMLMessageContext context) {
@@ -478,6 +460,12 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
         // context.setLocalEntityRoleMetadata(roleDescriptor);
 
         context.setMetadataProvider(metadataProvider);
+
+        // Set the signing key
+        keyManager = Framework.getLocalService(KeyManager.class);
+        if (getKeyManager().getSigningCredential() != null) {
+            context.setOutboundSAMLMessageSigningCredential(getKeyManager().getSigningCredential());
+        }
     }
 
     @Override
@@ -604,9 +592,9 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
     private Cookie getCookie(HttpServletRequest httpRequest, String cookieName) {
         Cookie cookies[] = httpRequest.getCookies();
         if (cookies != null) {
-            for (int i = 0; i < cookies.length; i++) {
-                if (cookieName.equals(cookies[i].getName())) {
-                    return cookies[i];
+            for (Cookie cooky : cookies) {
+                if (cookieName.equals(cooky.getName())) {
+                    return cooky;
                 }
             }
         }

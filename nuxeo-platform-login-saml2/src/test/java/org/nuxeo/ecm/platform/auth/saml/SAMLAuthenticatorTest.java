@@ -69,6 +69,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -205,6 +207,7 @@ public class SAMLAuthenticatorTest {
             }
 
             InputStream is = new ByteArrayInputStream(decodedBytes);
+            is = new InflaterInputStream(is, new Inflater(true));
 
             Document messageDoc = new BasicParserPool().parse(is);
             Element messageElem = messageDoc.getDocumentElement();
