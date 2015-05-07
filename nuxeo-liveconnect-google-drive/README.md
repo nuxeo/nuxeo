@@ -1,6 +1,37 @@
-# Nuxeo Live Connect
+# About Nuxeo Google Client
 
-Nuxeo Live Connect is a connector for cloud services.
+This module enables the use of remote Google Drive files in Nuxeo.
+
+When creating or editing a file, a new picker allows you to select a file in your Google Drive.
+
+This is a work in progress, therefore it is not yet supported by Nuxeo.
+
+# Configuration
+
+You must define in your `nuxeo.conf` a client id key:
+
+    nuxeo.google.clientid = <YOUR-CLIENT-ID>
+
+MORE INFO TBD
+
+# Requirements
+
+This module requires Java 8 and Maven 3.
+
+# Building
+ 
+Get the source code:
+
+    git clone git@github.com:nuxeo/nuxeo-google-client.git
+    cd nuxeo-google-client
+
+Build using Maven:
+
+    mvn clean install
+
+See our [Core Developer Guide](http://doc.nuxeo.com/x/B4BH) for instructions and guidelines.
+
+TODO Marketplace package
 
 # Licensing
  
