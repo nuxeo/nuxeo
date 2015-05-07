@@ -16,23 +16,18 @@
  */
 package org.nuxeo.ecm.platform.lang.ext.test;
 
-import org.nuxeo.ecm.platform.test.TranslationEnFrTestCase;
+import org.nuxeo.ecm.platform.test.TranslationTestCase;
 
 /**
  * Simple integrity tests on messages file(s).
  *
  * @since 7.3
  */
-public class TestMessages extends TranslationEnFrTestCase {
+public class TestMessages extends TranslationTestCase {
 
     @Override
     protected String getEnTranslationsPath() {
         return "crowdin/messages.properties";
-    }
-
-    @Override
-    protected String getFrTranslationsPath() {
-        return "web/nuxeo.war/WEB-INF/classes/messages_fr_FR.properties";
     }
 
 }
