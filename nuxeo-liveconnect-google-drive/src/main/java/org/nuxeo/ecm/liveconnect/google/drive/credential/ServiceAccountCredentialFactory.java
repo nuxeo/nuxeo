@@ -16,7 +16,7 @@
  *      Nelson Silva
  */
 
-package org.nuxeo.ecm.googleclient.credential;
+package org.nuxeo.ecm.liveconnect.google.drive.credential;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;

@@ -15,7 +15,7 @@
  *     Florent Guillaume
  *     Nelson Silva
  */
-package org.nuxeo.ecm.googleclient;
+package org.nuxeo.ecm.liveconnect.google.drive;
 
 import java.io.IOException;
 

@@ -15,7 +15,7 @@
  *     Florent Guillaume
  *     Nelson Silva
  */
-package org.nuxeo.ecm.googleclient;
+package org.nuxeo.ecm.liveconnect.google.drive;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +40,7 @@ import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.cache.Cache;
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.googleclient.credential.CredentialFactory;
+import org.nuxeo.ecm.liveconnect.google.drive.credential.CredentialFactory;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.GenericUrl;

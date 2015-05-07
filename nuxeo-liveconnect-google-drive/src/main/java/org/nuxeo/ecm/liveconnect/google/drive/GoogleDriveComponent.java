@@ -15,13 +15,13 @@
  *     Florent Guillaume
  *     Nelson Silva
  */
-package org.nuxeo.ecm.googleclient;
+package org.nuxeo.ecm.liveconnect.google.drive;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager;
-import org.nuxeo.ecm.googleclient.credential.CredentialFactory;
-import org.nuxeo.ecm.googleclient.credential.ServiceAccountCredentialFactory;
+import org.nuxeo.ecm.liveconnect.google.drive.credential.CredentialFactory;
+import org.nuxeo.ecm.liveconnect.google.drive.credential.ServiceAccountCredentialFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;

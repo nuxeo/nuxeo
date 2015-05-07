@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.googleclient.converters">
+<component name="org.nuxeo.ecm.liveconnect.google.drive.converters">
 
   <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
              point="converter">
 
     <!-- PDF converter for Google Drive native files -->
-    <converter name="googlePDFExport" class="org.nuxeo.ecm.googleclient.converter.GoogleDriveBlobConverter">
+    <converter name="googlePDFExport" class="org.nuxeo.ecm.liveconnect.google.drive.converter.GoogleDriveBlobConverter">
       <sourceMimeType>application/vnd.google-apps</sourceMimeType>
       <sourceMimeType>application/vnd.google-apps.document</sourceMimeType>
       <sourceMimeType>application/vnd.google-apps.presentation</sourceMimeType>
@@ -19,7 +19,7 @@
     </converter>
 
     <!-- Text converter for files supporting text export -->
-    <converter name="googleTextExport" class="org.nuxeo.ecm.googleclient.converter.GoogleDriveBlobConverter">
+    <converter name="googleTextExport" class="org.nuxeo.ecm.liveconnect.google.drive.converter.GoogleDriveBlobConverter">
       <destinationMimeType>text/plain</destinationMimeType>
       <sourceMimeType>application/vnd.google-apps.document</sourceMimeType>
       <sourceMimeType>application/vnd.google-apps.presentation</sourceMimeType>
@@ -41,7 +41,7 @@
     </converter>
 
     <!-- HTML converter for files supporting HTML export -->
-    <converter name="googleHtmlExport" class="org.nuxeo.ecm.googleclient.converter.GoogleDriveBlobConverter">
+    <converter name="googleHtmlExport" class="org.nuxeo.ecm.liveconnect.google.drive.converter.GoogleDriveBlobConverter">
       <destinationMimeType>text/html</destinationMimeType>
       <sourceMimeType>application/vnd.google-apps.document</sourceMimeType>
     </converter>

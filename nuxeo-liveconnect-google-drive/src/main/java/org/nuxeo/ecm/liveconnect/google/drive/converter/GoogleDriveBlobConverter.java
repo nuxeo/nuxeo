@@ -14,7 +14,7 @@
  * Contributors:
  *      Nelson Silva
  */
-package org.nuxeo.ecm.googleclient.converter;
+package org.nuxeo.ecm.liveconnect.google.drive.converter;
 
 import java.io.IOException;
 import java.io.InputStream;
