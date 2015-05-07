@@ -16,9 +16,12 @@
  */
 package org.nuxeo.ecm.platform.auth.saml.binding;
 
+import org.opensaml.common.SAMLException;
+import org.opensaml.common.binding.SAMLMessageContext;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.binding.decoding.HTTPRedirectDeflateDecoder;
 import org.opensaml.saml2.binding.encoding.HTTPRedirectDeflateEncoder;
+import org.opensaml.ws.message.encoder.MessageEncodingException;
 import org.opensaml.ws.transport.InTransport;
 import org.opensaml.ws.transport.OutTransport;
 import org.opensaml.ws.transport.http.HTTPInTransport;
@@ -32,12 +35,27 @@ import org.opensaml.ws.transport.http.HTTPTransport;
  */
 public class HTTPRedirectBinding extends SAMLBinding {
 
+    /**
+     * Extends {@link HTTPRedirectDeflateEncoder} to allow building the redirect URL
+     */
+    private static class DeflateEncoder extends HTTPRedirectDeflateEncoder {
+        public String buildRedirectURL(SAMLMessageContext context, String endpointURL) throws SAMLException {
+            removeSignature(context);
+            try {
+                String encodedMessage = deflateAndBase64Encode(context.getOutboundSAMLMessage());
+                return buildRedirectURL(context, endpointURL, encodedMessage);
+            } catch (MessageEncodingException e) {
+                throw new SAMLException("Failed to build redirect URL", e);
+            }
+        }
+    }
+
     public static final String SAML_REQUEST = "SAMLRequest";
 
     public static final String SAML_RESPONSE = "SAMLResponse";
 
     public HTTPRedirectBinding() {
-        super(new HTTPRedirectDeflateDecoder(), new HTTPRedirectDeflateEncoder());
+        super(new HTTPRedirectDeflateDecoder(), new DeflateEncoder());
     }
 
     @Override
@@ -49,9 +67,8 @@ public class HTTPRedirectBinding extends SAMLBinding {
     public boolean supports(InTransport transport) {
         if (transport instanceof HTTPInTransport) {
             HTTPTransport t = (HTTPTransport) transport;
-            return "GET".equalsIgnoreCase(t.getHTTPMethod()) &&
-                    (t.getParameterValue(SAML_REQUEST) != null ||
-                            t.getParameterValue(SAML_RESPONSE) != null);
+            return "GET".equalsIgnoreCase(t.getHTTPMethod())
+                && (t.getParameterValue(SAML_REQUEST) != null || t.getParameterValue(SAML_RESPONSE) != null);
         } else {
             return false;
         }
@@ -60,5 +77,9 @@ public class HTTPRedirectBinding extends SAMLBinding {
     @Override
     public boolean supports(OutTransport transport) {
         return transport instanceof HTTPOutTransport;
+    }
+
+    public String buildRedirectURL(SAMLMessageContext context, String endpointURL) throws SAMLException {
+        return ((DeflateEncoder) encoder).buildRedirectURL(context, endpointURL);
     }
 }

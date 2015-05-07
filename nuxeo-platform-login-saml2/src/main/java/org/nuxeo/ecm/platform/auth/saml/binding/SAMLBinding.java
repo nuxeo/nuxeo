@@ -31,9 +31,9 @@ import org.opensaml.ws.transport.OutTransport;
  */
 public abstract class SAMLBinding {
 
-    private MessageDecoder decoder;
+    protected MessageDecoder decoder;
 
-    private MessageEncoder encoder;
+    protected MessageEncoder encoder;
 
     public SAMLBinding(MessageDecoder decoder, MessageEncoder encoder) {
         this.decoder = decoder;
