@@ -12,15 +12,18 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nelson Silva <nelson.silva@inevo.pt> - initial API and implementation
- *     Nuxeo
+ *     Nelson Silva
+ *     André Justo
  */
 package org.nuxeo.ecm.platform.oauth2.tokens;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,19 +39,23 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
-public class OAuth2TokenStore <V extends Serializable> implements DataStore<StoredCredential> {
+/**
+ * {@link DataStore} backed by a Nuxeo Directory
+ *
+ * @since 7.3
+ */
+public class OAuth2TokenStore implements DataStore<StoredCredential> {
 
     protected static final Log log = LogFactory.getLog(OAuth2TokenStore.class);
 
     public static final String DIRECTORY_NAME = "oauth2Tokens";
 
+    public static final String KEY = "nuxeoLogin";
+
     private String serviceName;
 
-    private DataStoreFactory dataStoreFactory;
-
-    public OAuth2TokenStore(String serviceName, DataStoreFactory dataStoreFactory) {
+    public OAuth2TokenStore(String serviceName) {
         this.serviceName = serviceName;
-        this.dataStoreFactory = dataStoreFactory;
     }
 
     @Override
@@ -57,6 +64,93 @@ public class OAuth2TokenStore <V extends Serializable> implements DataStore<Stor
         return this;
     }
 
+    @Override
+    public DataStore<StoredCredential> delete(String userId) throws IOException {
+        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+        Session session = null;
+        try {
+            session = ds.open(DIRECTORY_NAME);
+            Map<String, Serializable> filter = new HashMap<>();
+            filter.put("serviceName", serviceName);
+            filter.put(KEY, userId);
+
+            DocumentModelList entries = session.query(filter);
+            for (DocumentModel entry : entries) {
+                session.deleteEntry(entry);
+            }
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public StoredCredential get(String userId) throws IOException {
+        Map<String, Serializable> filter = getFilter();
+        filter.put(KEY, userId);
+        DocumentModel entry = find(filter);
+        return entry != null ? NuxeoOAuth2Token.asCredential(entry) : null;
+    }
+
+    @Override
+    public DataStoreFactory getDataStoreFactory() {
+        return null;
+    }
+
+    public final String getId() {
+        return this.serviceName;
+    }
+
+    @Override
+    public boolean containsKey(String key) throws IOException {
+        return this.get(key) != null;
+    }
+
+    @Override
+    public boolean containsValue(StoredCredential value) throws IOException {
+        return this.values().contains(value);
+    }
+
+    @Override
+    public boolean isEmpty() throws IOException {
+        return this.size() == 0;
+    }
+
+    @Override
+    public int size() throws IOException {
+        return this.keySet().size();
+    }
+
+    @Override
+    public Set<String> keySet() throws IOException {
+        Set<String> keys = new HashSet<>();
+        DocumentModelList entries = query();
+        for (DocumentModel entry : entries) {
+            keys.add((String) entry.getProperty(NuxeoOAuth2Token.SCHEMA, KEY));
+        }
+        return keys;
+    }
+
+    @Override
+    public Collection<StoredCredential> values() throws IOException {
+        List<StoredCredential> results = new ArrayList<>();
+        DocumentModelList entries = query();
+        for (DocumentModel entry : entries) {
+            results.add(NuxeoOAuth2Token.asCredential(entry));
+        }
+        return results;
+    }
+
+    @Override
+    public DataStore<StoredCredential> clear() throws IOException {
+        return null;
+    }
+
+    /*
+     * Methods used by Nuxeo when acting as OAuth2 provider
+     */
     public void store(String userId, NuxeoOAuth2Token token) {
         token.setServiceName(serviceName);
         token.setNuxeoLogin(userId);
@@ -73,8 +167,9 @@ public class OAuth2TokenStore <V extends Serializable> implements DataStore<Stor
         filter.put("refreshToken", refreshToken);
         filter.put("serviceName", serviceName);
 
-        NuxeoOAuth2Token token = getToken(filter);
-        if (token != null) {
+        DocumentModel entry = find(filter);
+        if (entry != null) {
+            NuxeoOAuth2Token token = getTokenFromDirectoryEntry(entry);
             delete(token.getAccessToken(), clientId);
             token.refresh();
             return storeTokenAsDirectoryEntry(token);
@@ -103,66 +198,21 @@ public class OAuth2TokenStore <V extends Serializable> implements DataStore<Stor
         }
     }
 
-    @Override
-    public DataStore<StoredCredential> delete(String key) throws IOException {
-        return null;
-    }
-
-    @Override
-    public StoredCredential get(String serviceLogin) throws IOException {
-        NuxeoOAuth2Token token = getToken(serviceName, serviceLogin);
-        if (token == null) {
-            return null;
-        }
-
-        StoredCredential credential = new StoredCredential();
-        credential.setAccessToken(token.getAccessToken());
-        credential.setRefreshToken(token.getRefreshToken());
-        credential.setExpirationTimeMilliseconds(token.getExpirationTimeMilliseconds());
-        return credential;
-    }
-
+    /**
+     * Retrieve an entry by it's accessToken
+     */
     public NuxeoOAuth2Token getToken(String token) throws ClientException {
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
-        filter.put("serviceName", serviceName);
+        Map<String, Serializable> filter = getFilter();
         filter.put("accessToken", token);
 
-        return getToken(filter);
-    }
-
-    protected NuxeoOAuth2Token getToken(Map<String, Serializable> filter) throws ClientException {
-        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
-            DocumentModelList entries = session.query(filter);
-            if (entries.size() == 0) {
-                return null;
-            }
-            if (entries.size() > 1) {
-                log.error("Found several tokens");
-            }
-            return getTokenFromDirectoryEntry(entries.get(0));
-        } finally {
-            if (session != null) {
-                session.close();
-            }
+        DocumentModelList entries = query(filter);
+        if (entries.size() == 0) {
+            return null;
         }
-    }
-
-    public NuxeoOAuth2Token getToken(String serviceName, String serviceLogin) throws ClientException {
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
-        filter.put("serviceName", serviceName);
-        filter.put("serviceLogin", serviceLogin);
-
-        NuxeoOAuth2Token token = getToken(filter);
-        if (token == null) {
-            // fallback to get a token using nuxeoLogin when serviceLogin is not set
-            filter.replace("serviceLogin", null);
-            filter.put("nuxeoLogin", serviceLogin);
-            token = getToken(filter);
+        if (entries.size() > 1) {
+            log.error("Found several tokens");
         }
-        return token;
+        return getTokenFromDirectoryEntry(entries.get(0));
     }
 
     protected NuxeoOAuth2Token getTokenFromDirectoryEntry(DocumentModel entry) throws ClientException {
@@ -175,7 +225,7 @@ public class OAuth2TokenStore <V extends Serializable> implements DataStore<Stor
         try {
             session = ds.open(DIRECTORY_NAME);
 
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
             Map<String, Object> aTokenMap = aToken.toMap();
             filter.put("refreshToken", (String) aTokenMap.get("refreshToken"));
             DocumentModelList entries = session.query(filter);
@@ -200,48 +250,49 @@ public class OAuth2TokenStore <V extends Serializable> implements DataStore<Stor
         }
     }
 
-    @Override
-    public DataStoreFactory getDataStoreFactory() {
-        return dataStoreFactory;
+    /**
+     * Retrieves an entry by serviceLogin (usually the email)
+     */
+    public StoredCredential getTokenByServiceLogin(String serviceLogin) {
+        Map<String, Serializable> filter = getFilter();
+        filter.put("serviceLogin", serviceLogin);
+
+        DocumentModel entry = find(filter);
+
+        return entry != null ? NuxeoOAuth2Token.asCredential(entry) : null;
     }
 
-    @Override
-    public String getId() {
-        return serviceName;
+    protected Map<String, Serializable> getFilter() {
+        Map<String, Serializable> filter = new HashMap<>();
+        filter.put("serviceName", serviceName);
+        return filter;
     }
 
-    @Override
-    public int size() throws IOException {
-        return 0;
+    protected DocumentModelList query() throws ClientException {
+        return query(getFilter());
     }
 
-    @Override
-    public boolean isEmpty() throws IOException {
-        return false;
+    protected DocumentModel find(Map<String, Serializable> filter) {
+        DocumentModelList entries = query(filter);
+        if (entries.size() == 0) {
+            return null;
+        }
+        if (entries.size() > 1) {
+            log.error("Found several tokens");
+        }
+        return entries.get(0);
     }
 
-    @Override
-    public boolean containsKey(String key) throws IOException {
-        return false;
-    }
-
-    @Override
-    public boolean containsValue(StoredCredential value) throws IOException {
-        return false;
-    }
-
-    @Override
-    public Set<String> keySet() throws IOException {
-        return null;
-    }
-
-    @Override
-    public Collection<StoredCredential> values() throws IOException {
-        return null;
-    }
-
-    @Override
-    public DataStore<StoredCredential> clear() throws IOException {
-        return null;
+    protected DocumentModelList query(Map<String, Serializable> filter) {
+        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+        Session session = null;
+        try {
+            session = ds.open(DIRECTORY_NAME);
+            return session.query(filter);
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
     }
 }

@@ -27,8 +27,6 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
-import com.google.api.client.auth.oauth2.Credential;
-
 public class NuxeoOAuth2Token {
 
     public static final String SCHEMA = "oauth2Token";
@@ -82,6 +80,17 @@ public class NuxeoOAuth2Token {
         this.creationDate = (Calendar) entry.getProperty(SCHEMA, "creationDate");
         this.isShared = (boolean) entry.getProperty(SCHEMA, "isShared");
         this.serviceLogin = (String) entry.getProperty(SCHEMA, "serviceLogin");
+    }
+
+    public static StoredCredential asCredential(DocumentModel entry) {
+        StoredCredential credential = new StoredCredential();
+        String accessToken = (String) entry.getProperty(SCHEMA, "accessToken");
+        String refreshToken = (String) entry.getProperty(SCHEMA, "refreshToken");
+        Long expirationTimeMilliseconds = (Long) entry.getProperty(SCHEMA, "expirationTimeMilliseconds");
+        credential.setAccessToken(accessToken);
+        credential.setRefreshToken(refreshToken);
+        credential.setExpirationTimeMilliseconds(expirationTimeMilliseconds);
+        return credential;
     }
 
     public Map<String, Object> toMap() {

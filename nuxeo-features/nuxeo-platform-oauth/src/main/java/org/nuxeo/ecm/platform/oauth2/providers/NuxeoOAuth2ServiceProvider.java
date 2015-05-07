@@ -17,7 +17,6 @@
  */
 package org.nuxeo.ecm.platform.oauth2.providers;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,7 +32,6 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpExecuteInterceptor;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
-import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStoreFactory;
 import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
 
 public class NuxeoOAuth2ServiceProvider {
@@ -107,13 +105,7 @@ public class NuxeoOAuth2ServiceProvider {
     }
 
     public OAuth2TokenStore getCredentialDataStore() {
-        try {
-            return (OAuth2TokenStore) OAuth2TokenStoreFactory.getDefaultInstance().getDataStore(serviceName);
-        } catch (IOException e) {
-            // TODO: handle exception
-            e.printStackTrace();
-        }
-        return null;
+        return new OAuth2TokenStore(serviceName);
     }
 
     public String getServiceName() {
