@@ -22,17 +22,7 @@
           "summary":"Delete a workflow instance by its id",
           "notes": "Only workflow instance which you have permission to see will be returned",
           <#include "views/doc/errorresponses.ftl"/>
-        },
-        {
-          "method":"POST",
-          "nickname":"createWorkflowInstanceById",
-          "type":"workflowRequest",
-          <@params names = ["workflowRequestBody"]/>,
-          "summary":"Start a workflow instance",
-          "notes": "",
-          <#include "views/doc/errorresponses.ftl"/>
         }
-
       ]
 
     },
@@ -46,6 +36,15 @@
           "type":"workflows",
           "summary":"Get the workflow instances launched by the current user",
           "notes": "Only workflow instances launched by current user will be returned",
+          <#include "views/doc/errorresponses.ftl"/>
+        },
+        {
+          "method":"POST",
+          "nickname":"createWorkflowInstanceById",
+          "type":"workflowRequest",
+          <@params names = ["workflowRequestBody"]/>,
+          "summary":"Start a workflow instance",
+          "notes": "",
           <#include "views/doc/errorresponses.ftl"/>
         }
       ]
@@ -74,6 +73,7 @@
           "method":"GET",
           "nickname":"getDocumentWorkflow",
           "type":"workflows",
+          <@params names = ["docid"]/>,
           "summary":"Get the workflow instances launched on the given document",
           "notes": "Only workflow instances launched by current user will be returned",
           <#include "views/doc/errorresponses.ftl"/>
@@ -82,7 +82,7 @@
           "method":"POST",
           "nickname":"createWorkflowInstanceOnDocument",
           "type":"workflowRequest",
-          <@params names = ["workflowRequestBody"]/>,
+          <@params names = ["docid", "workflowRequestBody"]/>,
           "summary":"Start a workflow instance on the given document",
           "notes": "",
           <#include "views/doc/errorresponses.ftl"/>
@@ -97,6 +97,7 @@
           "method":"GET",
           "nickname":"getDocumentWorkflow",
           "type":"workflows",
+          <@params names = ["docpath"]/>,
           "summary":"Get the workflow instances launched on the given document",
           "notes": "Only workflow instances launched by current user will be returned",
           <#include "views/doc/errorresponses.ftl"/>
@@ -105,7 +106,7 @@
           "method":"POST",
           "nickname":"createWorkflowInstanceOnDocument",
           "type":"workflowRequest",
-          <@params names = ["workflowRequestBody"]/>,
+          <@params names = ["docpath", "workflowRequestBody"]/>,
           "summary":"Start a workflow instance on the given document",
           "notes": "",
           <#include "views/doc/errorresponses.ftl"/>

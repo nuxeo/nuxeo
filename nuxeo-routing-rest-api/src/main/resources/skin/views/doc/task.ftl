@@ -57,7 +57,7 @@
           "method":"GET",
           "nickname":"getDocumentTasks",
           "type":"tasks",
-          <@params names = ["taskUserIdQueryParam", "taskWorkflowInstanceIdQueryParam", "taskWorkflowModelNameQueryParam"]/>,
+          <@params names = ["docid", "taskUserIdQueryParam", "taskWorkflowInstanceIdQueryParam", "taskWorkflowModelNameQueryParam"]/>,
           "summary":"List tasks of the given document",
           "notes": "Only task instance which you have permission to see will be returned",
           <#include "views/doc/errorresponses.ftl"/>
@@ -73,7 +73,7 @@
           "method":"GET",
           "nickname":"getDocumentRelatedWorkflowTasks",
           "type":"tasks",
-          <@params names = ["taskUserIdQueryParam", "taskWorkflowInstanceIdQueryParam"]/>,
+          <@params names = ["docpath", "taskUserIdQueryParam", "taskWorkflowInstanceIdQueryParam", "taskWorkflowModelNameQueryParam"]/>,
           "summary":"List tasks of the given document",
           "notes": "Only task instance which you have permission to see will be returned",
           <#include "views/doc/errorresponses.ftl"/>
