@@ -10,7 +10,7 @@
   <xs:element name="nuxeoLogin" type="xs:string"/>
   <xs:element name="serviceLogin" type="xs:string"/>
   <xs:element name="clientId" type="xs:string"/>
-  <xs:element name="isShared" type="xs:boolean"/>
+  <xs:element name="isShared" type="xs:boolean" default="false"/>
   <xs:element name="sharedWith" type="xs:string"/>
 
   <xs:element name="expirationTimeMilliseconds" type="xs:integer"/>

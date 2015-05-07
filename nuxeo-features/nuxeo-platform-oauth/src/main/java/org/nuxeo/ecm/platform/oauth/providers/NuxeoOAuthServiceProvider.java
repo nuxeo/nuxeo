@@ -24,8 +24,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 public class NuxeoOAuthServiceProvider extends OAuthServiceProvider {
 
-    private static final long serialVersionUID = 441784782690901079L;
-
     public static final String SCHEMA = "oauthServiceProvider";
 
     protected String gadgetUrl;

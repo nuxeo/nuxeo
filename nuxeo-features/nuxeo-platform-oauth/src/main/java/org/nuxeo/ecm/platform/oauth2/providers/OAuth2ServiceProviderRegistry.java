@@ -12,16 +12,19 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nelson Silva <nelson.silva@inevo.pt> - initial API and implementation
- *     Nuxeo
+ *     Nelson Silva
  */
 package org.nuxeo.ecm.platform.oauth2.providers;
 
 import java.util.List;
 
+/**
+ * This service is used to manage OAuth2 Service Providers
+ */
 public interface OAuth2ServiceProviderRegistry {
-    NuxeoOAuth2ServiceProvider getProvider(String serviceName);
 
-    NuxeoOAuth2ServiceProvider addProvider(String serviceName, String tokenServerURL, String authorizationServerURL,
+    OAuth2ServiceProvider getProvider(String serviceName);
+
+    OAuth2ServiceProvider addProvider(String serviceName, String tokenServerURL, String authorizationServerURL,
             String clientId, String clientSecret, List<String> scopes);
 }

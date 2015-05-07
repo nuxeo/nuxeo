@@ -12,17 +12,23 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nelson Silva <nelson.silva@inevo.pt> - initial API and implementation
- *     Nuxeo
+ *     Nelson Silva
  */
 package org.nuxeo.ecm.platform.oauth2.providers;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.google.api.client.auth.oauth2.TokenResponse;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson.JacksonFactory;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.BearerToken;
@@ -34,10 +40,23 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
-public class NuxeoOAuth2ServiceProvider {
+import javax.servlet.http.HttpServletRequest;
+
+public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
 
     public static final String SCHEMA = "oauth2ServiceProvider";
+
+    /** Global instance of the HTTP transport. */
+    protected static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
+
+    /** Global instance of the JSON factory. */
+    protected static final JsonFactory JSON_FACTORY = new JacksonFactory();
+
+    public static final String CODE_URL_PARAMETER = "code";
+
+    public static final String ERROR_URL_PARAMETER = "error";
 
     protected String serviceName;
 
@@ -53,92 +72,214 @@ public class NuxeoOAuth2ServiceProvider {
 
     private List<String> scopes;
 
-    public NuxeoOAuth2ServiceProvider(Long id, String serviceName, String tokenServerURL,
-            String authorizationServerURL, String clientId, String clientSecret, List<String> scopes) {
-        this.id = id;
-        this.serviceName = serviceName;
-        this.tokenServerURL = tokenServerURL;
-        this.authorizationServerURL = authorizationServerURL;
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.scopes = scopes;
+    private boolean enabled;
+
+    protected OAuth2ServiceUserStore serviceUserStore;
+
+    protected OAuth2TokenStore tokenStore;
+
+    @Override
+    public String getAuthorizationUrl(HttpServletRequest request) {
+        return getAuthorizationCodeFlow()
+            .newAuthorizationUrl()
+            .setRedirectUri(getCallbackUrl(request))
+            .build();
     }
 
-    public static NuxeoOAuth2ServiceProvider createFromDirectoryEntry(DocumentModel entry) throws ClientException {
+    protected String getCallbackUrl(HttpServletRequest request) {
+        String serverURL = VirtualHostHelper.getBaseURL(request);
 
-        String authorizationServerURL = (String) entry.getProperty(SCHEMA, "authorizationServerURL");
-        String tokenServerURL = (String) entry.getProperty(SCHEMA, "tokenServerURL");
-        Long id = (Long) entry.getProperty(SCHEMA, "id");
-        String serviceName = (String) entry.getProperty(SCHEMA, "serviceName");
-        String clientId = (String) entry.getProperty(SCHEMA, "clientId");
-        String clientSecret = (String) entry.getProperty(SCHEMA, "clientSecret");
-        String scopes = (String) entry.getProperty(SCHEMA, "scopes");
+        if (serverURL.endsWith("/")) {
+            serverURL = serverURL.substring(0, serverURL.length() - 1);
+        }
 
-        return new NuxeoOAuth2ServiceProvider(id, serviceName, tokenServerURL, authorizationServerURL, clientId,
-                clientSecret, (List<String>) Arrays.asList(scopes.split(",")));
+        return serverURL + "/site/oauth2/" + serviceName + "/callback";
     }
 
-    protected DocumentModel asDocumentModel(DocumentModel entry) throws ClientException {
+    @Override
+    public Credential handleAuthorizationCallback(HttpServletRequest request) throws ClientException {
 
-        entry.setProperty(SCHEMA, "serviceName", serviceName);
-        entry.setProperty(SCHEMA, "authorizationServerURL", authorizationServerURL);
-        entry.setProperty(SCHEMA, "tokenServerURL", tokenServerURL);
-        entry.setProperty(SCHEMA, "clientId", clientId);
-        entry.setProperty(SCHEMA, "clientSecret", clientSecret);
-        entry.setProperty(SCHEMA, "scopes", StringUtils.join(scopes, ","));
+        // Checking if there was an error such as the user denied access
+        String error = getError(request);
+        if (error != null) {
+            throw new ClientException("There was an error: \"" + error + "\".");
+        }
 
-        return entry;
+        // Checking conditions on the "code" URL parameter
+        String code = getAuthorizationCode(request);
+        if (code == null) {
+            throw new ClientException("There is not code provided as QueryParam.");
+        }
+
+        try {
+            AuthorizationCodeFlow flow = getAuthorizationCodeFlow();
+
+            String redirectUri = getCallbackUrl(request);
+
+            TokenResponse tokenResponse = flow.newTokenRequest(code).setRedirectUri(redirectUri).execute();
+
+            // Create a unique userId to use with the credential store
+            String userId = getOrCreateServiceUser(request, tokenResponse.getAccessToken());
+
+            Credential credential = flow.createAndStoreCredential(tokenResponse, userId);
+
+            return credential;
+        } catch (IOException e) {
+            throw new ClientException("Failed to retrieve credential", e);
+        }
     }
 
-    public AuthorizationCodeFlow getAuthorizationCodeFlow(HttpTransport transport, JsonFactory jsonFactory) {
-        return getAuthorizationCodeFlow(transport, jsonFactory, NuxeoOAuth2Token.KEY_NUXEO_LOGIN);
+    /**
+     * Load a credential from the token store with the userId returned by getServiceUser() as key.
+     */
+    @Override
+    public Credential loadCredential(String user) {
+        try {
+            String userId = getServiceUserId(user);
+            return getAuthorizationCodeFlow().loadCredential(userId);
+        } catch (IOException e) {
+            throw new ClientException("Failed to load credential for " + user, e);
+        }
     }
 
-    public AuthorizationCodeFlow getAuthorizationCodeFlow(HttpTransport transport, JsonFactory jsonFactory, String key) {
+    /**
+     * Returns the userId to use for token entries.
+     * Should be overriden by subclasses wanting to rely on a different field as key.
+     */
+    protected String getServiceUserId(String key) {
+        Map<String, Serializable> filter = new HashMap<>();
+        filter.put(NuxeoOAuth2Token.KEY_NUXEO_LOGIN, key);
+        return getServiceUserStore().find(filter);
+    }
 
+    /**
+     * Retrieves or creates a service user.
+     * Should be overriden by subclasses wanting to rely on a different field as key.
+     */
+    protected String getOrCreateServiceUser(HttpServletRequest request, String accessToken) throws IOException {
+        String nuxeoLogin = request.getUserPrincipal().getName();
+        String userId = getServiceUserId(nuxeoLogin);
+        if (userId == null) {
+            userId = getServiceUserStore().store(nuxeoLogin, Collections.emptyMap());
+        }
+        return userId;
+    }
+
+    public AuthorizationCodeFlow getAuthorizationCodeFlow() {
         Credential.AccessMethod method = BearerToken.authorizationHeaderAccessMethod();
         GenericUrl tokenServerUrl = new GenericUrl(tokenServerURL);
         HttpExecuteInterceptor clientAuthentication = new ClientParametersAuthentication(clientId, clientSecret);
         String authorizationServerUrl = authorizationServerURL;
 
-        AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(method, transport, jsonFactory, tokenServerUrl,
+        return new AuthorizationCodeFlow.Builder(method, HTTP_TRANSPORT, JSON_FACTORY, tokenServerUrl,
                 clientAuthentication, clientId, authorizationServerUrl)
                 .setScopes(scopes)
-                .setCredentialDataStore(getCredentialDataStore(key))
+                .setCredentialDataStore(getCredentialDataStore())
                 .build();
-        return flow;
     }
 
-    public OAuth2TokenStore getCredentialDataStore(String key) {
-        return new OAuth2TokenStore(serviceName, key);
+    protected OAuth2ServiceUserStore getServiceUserStore() {
+        if (serviceUserStore == null) {
+            serviceUserStore = new OAuth2ServiceUserStore(serviceName);
+        }
+        return serviceUserStore;
     }
 
+    protected OAuth2TokenStore getCredentialDataStore() {
+        if (tokenStore == null) {
+            tokenStore = new OAuth2TokenStore(serviceName);
+        }
+        return tokenStore;
+    }
+
+    protected String getError(HttpServletRequest request) {
+        String error = request.getParameter(ERROR_URL_PARAMETER);
+        return StringUtils.isBlank(error) ? null : error;
+    }
+
+    // Checking conditions on the "code" URL parameter
+    protected String getAuthorizationCode(HttpServletRequest request) {
+        String code = request.getParameter(CODE_URL_PARAMETER);
+        return StringUtils.isBlank(code) ? null : code;
+    }
+    
+    @Override
     public String getServiceName() {
         return serviceName;
     }
 
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public String getTokenServerURL() {
         return tokenServerURL;
     }
 
+    @Override
     public String getClientId() {
         return clientId;
     }
 
+    @Override
     public String getClientSecret() {
         return clientSecret;
     }
 
+    @Override
     public List<String> getScopes() {
         return scopes;
     }
 
+    @Override
     public String getAuthorizationServerURL() {
         return authorizationServerURL;
     }
 
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    @Override
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public void setTokenServerURL(String tokenServerURL) {
+        this.tokenServerURL = tokenServerURL;
+    }
+
+    @Override
+    public void setAuthorizationServerURL(String authorizationServerURL) {
+        this.authorizationServerURL = authorizationServerURL;
+    }
+
+    @Override
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    @Override
+    public void setClientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
+    }
+
+    @Override
+    public void setScopes(String... scopes) {
+        this.scopes = Arrays.asList(scopes);
+    }
 }

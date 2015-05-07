@@ -50,24 +50,18 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
 
     public static final String DIRECTORY_NAME = "oauth2Tokens";
 
-    private String directoryKey;
+    public static final String ENTRY_ID = "id";
 
     private String serviceName;
 
     public OAuth2TokenStore(String serviceName) {
         this.serviceName = serviceName;
-        this.directoryKey = NuxeoOAuth2Token.KEY_NUXEO_LOGIN;
-    }
-
-    public OAuth2TokenStore(String serviceName, String key) {
-        this.serviceName = serviceName;
-        this.directoryKey = key;
     }
 
     @Override
     public DataStore<StoredCredential> set(String key, StoredCredential credential) throws IOException {
         Map<String, Serializable> filter = getFilter();
-        filter.put(directoryKey, key);
+        filter.put(ENTRY_ID, key);
         DocumentModel entry = find(filter);
 
         if (entry == null) {
@@ -86,7 +80,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
             session = ds.open(DIRECTORY_NAME);
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("serviceName", serviceName);
-            filter.put(directoryKey, key);
+            filter.put(ENTRY_ID, key);
 
             DocumentModelList entries = session.query(filter);
             for (DocumentModel entry : entries) {
@@ -103,7 +97,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
     @Override
     public StoredCredential get(String key) throws IOException {
         Map<String, Serializable> filter = getFilter();
-        filter.put(directoryKey, key);
+        filter.put(ENTRY_ID, key);
         DocumentModel entry = find(filter);
         return entry != null ? NuxeoOAuth2Token.asCredential(entry) : null;
     }
@@ -142,7 +136,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
         Set<String> keys = new HashSet<>();
         DocumentModelList entries = query();
         for (DocumentModel entry : entries) {
-            keys.add((String) entry.getProperty(NuxeoOAuth2Token.SCHEMA, directoryKey));
+            keys.add((String) entry.getProperty(NuxeoOAuth2Token.SCHEMA, ENTRY_ID));
         }
         return keys;
     }
@@ -264,18 +258,6 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
                 session.close();
             }
         }
-    }
-
-    /**
-     * Retrieves an entry by serviceLogin (usually the email)
-     */
-    public StoredCredential getTokenByServiceLogin(String serviceLogin) {
-        Map<String, Serializable> filter = getFilter();
-        filter.put("serviceLogin", serviceLogin);
-
-        DocumentModel entry = find(filter);
-
-        return entry != null ? NuxeoOAuth2Token.asCredential(entry) : null;
     }
 
     protected Map<String, Serializable> getFilter() {

@@ -12,4 +12,8 @@
         <provide interface="org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry" />
   </service>
 
+  <extension-point name="providers">
+    <object class="org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderDescriptor" />
+  </extension-point>
+
 </component>

@@ -12,8 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nelson Silva <nelson.silva@inevo.pt> - initial API and implementation
- *     Nuxeo
+ *     Nelson Silva
  */
 package org.nuxeo.ecm.platform.oauth2.tokens;
 
@@ -82,7 +81,7 @@ public class NuxeoOAuth2Token {
         this.nuxeoLogin = (String) entry.getProperty(SCHEMA, "nuxeoLogin");
         this.clientId = (String) entry.getProperty(SCHEMA, "clientId");
         this.creationDate = (Calendar) entry.getProperty(SCHEMA, "creationDate");
-        this.isShared = (boolean) entry.getProperty(SCHEMA, "isShared");
+        this.isShared = (Boolean) entry.getProperty(SCHEMA, "isShared");
         this.serviceLogin = (String) entry.getProperty(SCHEMA, "serviceLogin");
     }
 
