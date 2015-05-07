@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.api.client.auth.oauth2.StoredCredential;
 import org.apache.commons.lang.RandomStringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -66,7 +67,7 @@ public class NuxeoOAuth2Token {
         this.isShared = false;
     }
 
-    public NuxeoOAuth2Token(Credential credential) {
+    public NuxeoOAuth2Token(StoredCredential credential) {
         this(credential.getAccessToken(), credential.getRefreshToken(), credential.getExpirationTimeMilliseconds());
     }
 

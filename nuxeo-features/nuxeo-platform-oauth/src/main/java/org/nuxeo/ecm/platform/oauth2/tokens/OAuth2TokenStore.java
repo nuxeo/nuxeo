@@ -17,10 +17,16 @@
  */
 package org.nuxeo.ecm.platform.oauth2.tokens;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
+import com.google.api.client.auth.oauth2.StoredCredential;
+import com.google.api.client.util.store.DataStore;
+import com.google.api.client.util.store.DataStoreFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -30,10 +36,7 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.auth.oauth2.CredentialStore;
-
-public class OAuth2TokenStore implements CredentialStore {
+public class OAuth2TokenStore <V extends Serializable> implements DataStore<StoredCredential> {
 
     protected static final Log log = LogFactory.getLog(OAuth2TokenStore.class);
 
@@ -41,13 +44,17 @@ public class OAuth2TokenStore implements CredentialStore {
 
     private String serviceName;
 
-    public OAuth2TokenStore(String serviceName) {
+    private DataStoreFactory dataStoreFactory;
+
+    public OAuth2TokenStore(String serviceName, DataStoreFactory dataStoreFactory) {
         this.serviceName = serviceName;
+        this.dataStoreFactory = dataStoreFactory;
     }
 
     @Override
-    public void store(String userId, Credential credential) {
+    public DataStore<StoredCredential> set(String userId, StoredCredential credential) throws IOException {
         store(userId, new NuxeoOAuth2Token(credential));
+        return this;
     }
 
     public void store(String userId, NuxeoOAuth2Token token) {
@@ -97,21 +104,22 @@ public class OAuth2TokenStore implements CredentialStore {
     }
 
     @Override
-    public void delete(String userId, Credential credential) {
-        return;
+    public DataStore<StoredCredential> delete(String key) throws IOException {
+        return null;
     }
 
     @Override
-    public boolean load(String serviceLogin, Credential credential) {
+    public StoredCredential get(String serviceLogin) throws IOException {
         NuxeoOAuth2Token token = getToken(serviceName, serviceLogin);
         if (token == null) {
-            return false;
+            return null;
         }
 
+        StoredCredential credential = new StoredCredential();
         credential.setAccessToken(token.getAccessToken());
         credential.setRefreshToken(token.getRefreshToken());
         credential.setExpirationTimeMilliseconds(token.getExpirationTimeMilliseconds());
-        return true;
+        return credential;
     }
 
     public NuxeoOAuth2Token getToken(String token) throws ClientException {
@@ -190,5 +198,50 @@ public class OAuth2TokenStore implements CredentialStore {
                 session.close();
             }
         }
+    }
+
+    @Override
+    public DataStoreFactory getDataStoreFactory() {
+        return dataStoreFactory;
+    }
+
+    @Override
+    public String getId() {
+        return serviceName;
+    }
+
+    @Override
+    public int size() throws IOException {
+        return 0;
+    }
+
+    @Override
+    public boolean isEmpty() throws IOException {
+        return false;
+    }
+
+    @Override
+    public boolean containsKey(String key) throws IOException {
+        return false;
+    }
+
+    @Override
+    public boolean containsValue(StoredCredential value) throws IOException {
+        return false;
+    }
+
+    @Override
+    public Set<String> keySet() throws IOException {
+        return null;
+    }
+
+    @Override
+    public Collection<StoredCredential> values() throws IOException {
+        return null;
+    }
+
+    @Override
+    public DataStore<StoredCredential> clear() throws IOException {
+        return null;
     }
 }

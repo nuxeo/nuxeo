@@ -17,23 +17,24 @@
  */
 package org.nuxeo.ecm.platform.oauth2.providers;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.auth.oauth2.CredentialStore;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpExecuteInterceptor;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
+import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStoreFactory;
+import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
 
 public class NuxeoOAuth2ServiceProvider {
 
@@ -98,14 +99,21 @@ public class NuxeoOAuth2ServiceProvider {
         String authorizationServerUrl = authorizationServerURL;
 
         AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(method, transport, jsonFactory, tokenServerUrl,
-                clientAuthentication, clientId, authorizationServerUrl).setScopes(scopes).setCredentialStore(
-                getCredentialStore()).build();
-
+                clientAuthentication, clientId, authorizationServerUrl)
+                .setScopes(scopes)
+                .setCredentialDataStore(getCredentialDataStore())
+                .build();
         return flow;
     }
 
-    public CredentialStore getCredentialStore() {
-        return new OAuth2TokenStore(serviceName);
+    public OAuth2TokenStore getCredentialDataStore() {
+        try {
+            return (OAuth2TokenStore) OAuth2TokenStoreFactory.getDefaultInstance().getDataStore(serviceName);
+        } catch (IOException e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public String getServiceName() {

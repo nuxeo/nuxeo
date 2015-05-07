@@ -27,6 +27,7 @@ import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
 import org.nuxeo.ecm.platform.oauth2.request.TokenRequest;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
+import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStoreFactory;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoSecuredRequestWrapper;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthPreFilter;
@@ -334,6 +335,11 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
     }
 
     protected OAuth2TokenStore getTokenStore() {
-        return new OAuth2TokenStore(TOKEN_SERVICE);
+        try {
+            return (OAuth2TokenStore) OAuth2TokenStoreFactory.getDefaultInstance().getDataStore(TOKEN_SERVICE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
