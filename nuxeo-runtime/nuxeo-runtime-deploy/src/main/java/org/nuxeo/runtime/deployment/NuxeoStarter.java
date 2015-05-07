@@ -31,8 +31,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,6 +120,16 @@ public class NuxeoStarter implements ServletContextListener {
 
     protected void stop() throws BundleException {
         FrameworkLoader.stop();
+        Enumeration<Driver> drivers = DriverManager.getDrivers();
+        while (drivers.hasMoreElements()) {
+            Driver driver = drivers.nextElement();
+            try {
+                DriverManager.deregisterDriver(driver);
+                log.warn(String.format("Deregister JDBC driver: %s", driver));
+            } catch (SQLException e) {
+                log.error(String.format("Error deregistering JDBC driver %s", driver), e);
+            }
+        }
     }
 
     protected void findBundles(ServletContext servletContext) throws IOException {
