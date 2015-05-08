@@ -26,7 +26,12 @@ import org.nuxeo.runtime.api.Framework;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.core.NameIDType;
-import org.opensaml.saml2.metadata.*;
+import org.opensaml.saml2.metadata.AssertionConsumerService;
+import org.opensaml.saml2.metadata.EntityDescriptor;
+import org.opensaml.saml2.metadata.KeyDescriptor;
+import org.opensaml.saml2.metadata.NameIDFormat;
+import org.opensaml.saml2.metadata.SPSSODescriptor;
+import org.opensaml.saml2.metadata.SingleLogoutService;
 import org.opensaml.xml.Configuration;
 import org.opensaml.xml.XMLObjectBuilderFactory;
 import org.opensaml.xml.io.Marshaller;
@@ -50,7 +55,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Servlet that return local SP metadata for configuring IdPs.
+ * Servlet that returns local SP metadata for configuring IdPs.
  *
  * @since 6.0
  */
@@ -90,10 +95,8 @@ public class MetadataServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        entityBaseURL = VirtualHostHelper.getBaseURL(request) + '/' + NuxeoAuthenticationFilter.DEFAULT_START_PAGE;
-        /*
-         * id = entityId.replaceAll("[^a-zA-Z0-9-_.]", "_"); if (id.startsWith("-")) { id = "_" + id.substring(1); }
-         */
+        String baseURL = VirtualHostHelper.getBaseURL(request);
+        this.entityBaseURL = baseURL + (baseURL.endsWith("/") ? "" : "/") + NuxeoAuthenticationFilter.DEFAULT_START_PAGE;
 
         EntityDescriptor descriptor = buildEntityDescriptor();
 
