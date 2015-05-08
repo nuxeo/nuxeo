@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.oauth2.providers;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.api.client.auth.oauth2.StoredCredential;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -32,6 +33,7 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpExecuteInterceptor;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
+import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2RefreshTokenListener;
 import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
 
 public class NuxeoOAuth2ServiceProvider {
@@ -102,6 +104,38 @@ public class NuxeoOAuth2ServiceProvider {
                 .setCredentialDataStore(getCredentialDataStore())
                 .build();
         return flow;
+    }
+
+    public Credential loadCredential(AuthorizationCodeFlow flow, String serviceLogin) {
+        OAuth2TokenStore credentialDataStore = getCredentialDataStore();
+        if (credentialDataStore == null) {
+            return null;
+        }
+
+        StoredCredential stored = credentialDataStore.getTokenByServiceLogin(serviceLogin);
+        if (stored == null) {
+            return null;
+        }
+        Credential credential = newCredential(flow);
+        credential.setAccessToken(stored.getAccessToken());
+        credential.setRefreshToken(stored.getRefreshToken());
+        credential.setExpirationTimeMilliseconds(stored.getExpirationTimeMilliseconds());
+        return credential;
+    }
+
+    private Credential newCredential(AuthorizationCodeFlow flow) {
+        Credential.Builder builder = new Credential.Builder(flow.getMethod()).setTransport(flow.getTransport())
+            .setJsonFactory(flow.getJsonFactory())
+            .setTokenServerEncodedUrl(flow.getTokenServerEncodedUrl())
+            .setClientAuthentication(flow.getClientAuthentication())
+            .setRequestInitializer(flow.getRequestInitializer())
+            .setClock(flow.getClock());
+        OAuth2TokenStore credentialDataStore = getCredentialDataStore();
+        if (getCredentialDataStore() != null) {
+            builder.addRefreshListener(
+                new NuxeoOAuth2RefreshTokenListener(credentialDataStore));
+        }
+        return builder.build();
     }
 
     public OAuth2TokenStore getCredentialDataStore() {

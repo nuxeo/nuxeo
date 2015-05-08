@@ -202,4 +202,12 @@ public class NuxeoOAuth2Token {
     public void setServiceLogin(String serviceLogin) {
         this.serviceLogin = serviceLogin;
     }
+
+    public Calendar getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Calendar creationDate) {
+        this.creationDate = creationDate;
+    }
 }

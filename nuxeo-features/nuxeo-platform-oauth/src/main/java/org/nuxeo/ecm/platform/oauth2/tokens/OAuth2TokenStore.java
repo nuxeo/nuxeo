@@ -177,6 +177,27 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
         return null;
     }
 
+    public NuxeoOAuth2Token refresh(StoredCredential credential) {
+        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+        NuxeoOAuth2Token token = new NuxeoOAuth2Token(credential);
+        Session session = null;
+        try {
+            session = ds.open(DIRECTORY_NAME);
+            Map<String, Serializable> filter = new HashMap<>();
+            filter.put("refreshToken", token.getRefreshToken());
+            DocumentModel entry = find(filter);
+            entry.setProperty("oauth2Token", "accessToken", token.getAccessToken());
+            entry.setProperty("oauth2Token", "creationDate", token.getCreationDate());
+            entry.setProperty("oauth2Token", "expirationTimeMilliseconds", token.getExpirationTimeMilliseconds());
+            session.updateEntry(entry);
+            return getTokenFromDirectoryEntry(entry);
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
+
     public void delete(String token, String clientId) throws ClientException {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
         Session session = null;
@@ -224,23 +245,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
         Session session = null;
         try {
             session = ds.open(DIRECTORY_NAME);
-
-            Map<String, Serializable> filter = new HashMap<>();
-            Map<String, Object> aTokenMap = aToken.toMap();
-            filter.put("refreshToken", (String) aTokenMap.get("refreshToken"));
-            DocumentModelList entries = session.query(filter);
-            DocumentModel entry;
-
-            if (entries.isEmpty()) {
-                // add new token
-                entry = session.createEntry(aTokenMap);
-            } else {
-                // update existing token
-                entry = entries.get(0);
-                entry.setProperty("oauth2Token", "accessToken", aTokenMap.get("accessToken"));
-                entry.setProperty("oauth2Token", "creationDate", aTokenMap.get("creationDate"));
-            }
-
+            DocumentModel entry = session.createEntry(aToken.toMap());
             session.updateEntry(entry);
             return getTokenFromDirectoryEntry(entry);
         } finally {
