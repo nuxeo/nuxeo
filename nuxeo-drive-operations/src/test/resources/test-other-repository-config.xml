@@ -6,6 +6,12 @@
     <repository name="other" label="Other Repository" />
   </extension>
 
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="other">
+      <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
+    </blobprovider>
+  </extension>
+
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
     point="repository">
     <repository name="other"
@@ -17,13 +23,13 @@
       </repository>
     </repository>
   </extension>
-  
+
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
     <datasource name="jdbc/repository_other" driverClassName="org.h2.Driver">
       <property name="url">jdbc:h2:mem:other;DB_CLOSE_DELAY=-1</property>
       <property name="other">pfouh</property>
     </datasource>
   </extension>
-    
+
 
 </component>
