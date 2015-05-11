@@ -259,8 +259,7 @@ public class TestSQLRepositoryFulltextConfig {
 
     @Test
     // deploy contrib where only Note and File are not fulltext indexed
-    @LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-repository-h2-contrib.xml",
-            "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-note-not-indexable-contrib.xml" })
+    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-note-not-indexable-contrib.xml")
     public void testNotFulltextIndexableFacet() throws Exception {
         newRepository();
 

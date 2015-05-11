@@ -28,6 +28,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -39,11 +40,10 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.storage.binary.Binary;
-import org.nuxeo.ecm.core.storage.binary.BinaryBlob;
-import org.nuxeo.ecm.core.storage.binary.BinaryManager;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
-import org.nuxeo.ecm.core.storage.binary.DefaultBinaryManager;
+import org.nuxeo.ecm.core.blob.binary.Binary;
+import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
+import org.nuxeo.ecm.core.blob.binary.BinaryManager;
+import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -102,11 +102,11 @@ public class TestSQLRepositoryDirectBlob {
          * 2. Later, create and use the blob for this digest.
          */
         BinaryManager binaryManager = new DefaultBinaryManager();
-        binaryManager.initialize(new BinaryManagerDescriptor());
+        binaryManager.initialize("repo", Collections.emptyMap());
         Binary binary = binaryManager.getBinary(digest);
         assertNotNull("Missing file for digest: " + digest, binary);
         String filename = "doc.txt";
-        Blob blob = new BinaryBlob(binary, filename, "text/plain", "utf-8", binary.getDigest(), binary.getLength());
+        Blob blob = new BinaryBlob(binary, digest, filename, "text/plain", "utf-8", digest, binary.getLength());
         file.setProperty("file", "filename", filename);
         file.setProperty("file", "content", blob);
         session.saveDocument(file);
@@ -146,7 +146,7 @@ public class TestSQLRepositoryDirectBlob {
         // filesystem
         String digest = createFile();
         BinaryManager binaryManager = new DefaultBinaryManager();
-        binaryManager.initialize(new BinaryManagerDescriptor());
+        binaryManager.initialize(session.getRepositoryName(), Collections.emptyMap());
         Binary binary = binaryManager.getBinary(digest);
         assertNotNull("Missing file for digest: " + digest, binary);
 

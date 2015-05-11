@@ -10,7 +10,7 @@
  *     Florent Guillaume, jcarsique
  */
 
-package org.nuxeo.ecm.core.storage.binary;
+package org.nuxeo.ecm.core.blob.binary;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class DefaultBinaryManager extends LocalBinaryManager {
         /*
          * Now we can build the Binary.
          */
-        return new Binary(file, digest, repositoryName);
+        return new Binary(file, digest, blobProviderId);
     }
 
     /**

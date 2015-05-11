@@ -10,7 +10,7 @@
  *     Florent Guillaume, Mathieu Guillaume, jcarsique
  */
 
-package org.nuxeo.ecm.core.storage.binary;
+package org.nuxeo.ecm.core.blob.binary;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,9 +19,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
@@ -62,9 +64,10 @@ public class LocalBinaryManager extends AbstractBinaryManager {
     protected File tmpDir;
 
     @Override
-    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor) throws IOException {
-        String path = binaryManagerDescriptor.storePath;
-        if (path == null || path.trim().length() == 0) {
+    public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
+        super.initialize(blobProviderId, properties);
+        String path = properties.get(BinaryManager.PROP_PATH);
+        if (StringUtils.isBlank(path)) {
             path = DEFAULT_PATH;
         }
         path = Framework.expandVars(path);
@@ -89,7 +92,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
         // be sure FileTracker won't steal our files !
         FileEventTracker.registerProtectedPath(base.getAbsolutePath());
 
-        log.info("Repository '" + binaryManagerDescriptor.repositoryName + "' using "
+        log.info("Registering binary manager '" + blobProviderId + "' using "
                 + (this.getClass().equals(LocalBinaryManager.class) ? "" : (this.getClass().getSimpleName() + " and "))
                 + "binary store: " + base);
         storageDir = new File(base, DATA);
@@ -104,7 +107,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
     public void close() {
         if (tmpDir != null) {
             try {
-                FileUtils.deleteDirectory(tmpDir);
+                FileUtils.cleanDirectory(tmpDir);
             } catch (IOException e) {
                 throw new NuxeoException(e);
             }
@@ -122,7 +125,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
         /*
          * Now we can build the Binary.
          */
-        return new Binary(file, digest, repositoryName);
+        return new Binary(file, digest, blobProviderId);
     }
 
     @Override
@@ -136,7 +139,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
             log.warn("cannot fetch content at " + file.getPath() + " (file does not exist), check your configuration");
             return null;
         }
-        return new Binary(file, digest, repositoryName);
+        return new Binary(file, digest, blobProviderId);
     }
 
     /**

@@ -9,19 +9,19 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.binary;
+package org.nuxeo.ecm.core.blob.binary;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.storage.binary.AESBinaryManager.PARAM_KEY_ALIAS;
-import static org.nuxeo.ecm.core.storage.binary.AESBinaryManager.PARAM_KEY_PASSWORD;
-import static org.nuxeo.ecm.core.storage.binary.AESBinaryManager.PARAM_KEY_STORE_FILE;
-import static org.nuxeo.ecm.core.storage.binary.AESBinaryManager.PARAM_KEY_STORE_PASSWORD;
-import static org.nuxeo.ecm.core.storage.binary.AESBinaryManager.PARAM_KEY_STORE_TYPE;
-import static org.nuxeo.ecm.core.storage.binary.AESBinaryManager.PARAM_PASSWORD;
+import static org.nuxeo.ecm.core.blob.binary.AESBinaryManager.PARAM_KEY_ALIAS;
+import static org.nuxeo.ecm.core.blob.binary.AESBinaryManager.PARAM_KEY_PASSWORD;
+import static org.nuxeo.ecm.core.blob.binary.AESBinaryManager.PARAM_KEY_STORE_FILE;
+import static org.nuxeo.ecm.core.blob.binary.AESBinaryManager.PARAM_KEY_STORE_PASSWORD;
+import static org.nuxeo.ecm.core.blob.binary.AESBinaryManager.PARAM_KEY_STORE_TYPE;
+import static org.nuxeo.ecm.core.blob.binary.AESBinaryManager.PARAM_PASSWORD;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -33,12 +33,15 @@ import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyStore;
+import java.util.Collections;
 
 import javax.crypto.KeyGenerator;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.blob.binary.AESBinaryManager;
+import org.nuxeo.ecm.core.blob.binary.Binary;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestAESBinaryManager extends NXRuntimeTestCase {
@@ -142,10 +145,8 @@ public class TestAESBinaryManager extends NXRuntimeTestCase {
     @Test
     public void testAESBinaryManager() throws Exception {
         AESBinaryManager binaryManager = new AESBinaryManager();
-        BinaryManagerDescriptor descriptor = new BinaryManagerDescriptor();
         String options = String.format("%s=%s", PARAM_PASSWORD, "mypassword");
-        descriptor.key = options;
-        binaryManager.initialize(descriptor);
+        binaryManager.initialize("repo", Collections.singletonMap(BinaryManager.PROP_KEY, options));
 
         Binary binary = binaryManager.getBinary(CONTENT_MD5);
         assertNull(binary);

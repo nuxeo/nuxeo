@@ -16,22 +16,30 @@
  */
 package org.nuxeo.ecm.core.blob;
 
-import java.io.IOException;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.model.Document;
 
-public class FakeBlobProviderImpl implements BlobProvider {
+/**
+ * Default blob dispatcher, that uses the repository name as the blob provider.
+ *
+ * @since 7.3
+ */
+public class DefaultBlobDispatcher implements BlobDispatcher {
 
     @Override
-    public Blob readBlob(BlobInfo blobInfo, Document doc) {
-        return new SimpleManagedBlob(blobInfo);
+    public void initialize(Map<String, String> properties) {
     }
 
     @Override
-    public BlobInfo writeBlob(Blob blob, Document doc) throws IOException {
-        throw new UnsupportedOperationException("Storing a standard blob is not supported");
+    public String getBlobProvider(String repositoryName) {
+        return repositoryName;
+    }
+
+    @Override
+    public BlobDispatch getBlobProvider(Blob blob, Document doc) {
+        return new BlobDispatch(doc.getRepositoryName(), false);
     }
 
 }

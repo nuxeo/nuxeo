@@ -10,7 +10,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.binary;
+package org.nuxeo.ecm.core.blob.binary;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -32,20 +33,20 @@ public class Binary implements Serializable {
 
     protected final String digest;
 
-    protected final String repoName;
+    protected final String blobProviderId;
 
     protected transient File file;
 
     protected long length;
 
-    protected Binary(String digest, String reponame) {
-        this(null, digest, reponame);
+    protected Binary(String digest, String blobProviderId) {
+        this(null, digest, blobProviderId);
     }
 
-    public Binary(File file, String digest, String repoName) {
+    public Binary(File file, String digest, String blobProviderId) {
         this.file = file;
         this.digest = digest;
-        this.repoName = repoName;
+        this.blobProviderId = blobProviderId;
         length = -1;
     }
 
@@ -85,6 +86,18 @@ public class Binary implements Serializable {
     }
 
     /**
+     * Gets the blob provider which created this blob.
+     * <p>
+     * This is usually the repository name.
+     *
+     * @return the blob provider id
+     * @since 7.3
+     */
+    public String getBlobProviderId() {
+        return blobProviderId;
+    }
+
+    /**
      * Gets an input stream for the binary.
      *
      * @return the input stream
@@ -105,20 +118,20 @@ public class Binary implements Serializable {
 
     private void writeObject(java.io.ObjectOutputStream oos) throws IOException, ClassNotFoundException {
         oos.defaultWriteObject();
-        if (repoName == null) {
-            oos.writeObject(file);
-        }
     }
 
     private void readObject(java.io.ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
-        file = repoName == null ? (File) ois.readObject() : fetchData();
+        file = recomputeFile();
     }
 
-    protected File fetchData() {
-        BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
-        BinaryManager mgr = bms.getBinaryManager(repoName);
-        return mgr.getBinary(digest).file;
+    /**
+     * Recomputes the file attribute by getting it from a new Binary for the same digest.
+     */
+    protected File recomputeFile() {
+        BlobManager bm = Framework.getService(BlobManager.class);
+        BinaryBlobProvider bbp = (BinaryBlobProvider) bm.getBlobProvider(blobProviderId);
+        return bbp.getBinaryManager().getBinary(digest).file;
     }
 
 }

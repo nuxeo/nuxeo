@@ -15,7 +15,7 @@
  *     Stephane Lacoin
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.binary;
+package org.nuxeo.ecm.core.blob.binary;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -57,11 +58,11 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
     protected FileStorage fileStorage;
 
     @Override
-    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor) throws IOException {
-        repositoryName = binaryManagerDescriptor.repositoryName;
+    public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
+        super.initialize(blobProviderId, properties);
         descriptor = new BinaryManagerRootDescriptor();
         descriptor.digest = getDigest();
-        log.info("Repository '" + repositoryName + "' using " + getClass().getSimpleName());
+        log.info("Registering binary manager '" + blobProviderId + "' using " + getClass().getSimpleName());
     }
 
     /**
@@ -132,7 +133,7 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
             }
             // delete tmp file, not needed anymore
             tmp.delete();
-            return new Binary(cachedFile, digest, repositoryName);
+            return new Binary(cachedFile, digest, blobProviderId);
         }
 
         // send the file to storage
@@ -141,7 +142,7 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
         // register the file in the file cache if all went well
         File file = fileCache.putFile(digest, tmp);
 
-        return new Binary(file, digest, repositoryName);
+        return new Binary(file, digest, blobProviderId);
     }
 
     @Override
@@ -149,9 +150,9 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
         // Check in the cache
         File file = fileCache.getFile(digest);
         if (file == null) {
-            return new LazyBinary(digest, repositoryName, this);
+            return new LazyBinary(digest, blobProviderId, this);
         } else {
-            return new Binary(file, digest, repositoryName);
+            return new Binary(file, digest, blobProviderId);
         }
     }
 

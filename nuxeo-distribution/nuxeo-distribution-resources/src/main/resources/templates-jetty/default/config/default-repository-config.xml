@@ -5,7 +5,6 @@
     <repository name="default"
       factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <clustering enabled="${repository.clustering.enabled}" delay="${repository.clustering.delay}" />
-      <binaryStore path="${repository.binary.store}" />
       <indexing>
         <!-- for H2 (Lucene Analyzer): -->
         <fulltext analyzer="org.apache.lucene.analysis.standard.StandardAnalyzer">

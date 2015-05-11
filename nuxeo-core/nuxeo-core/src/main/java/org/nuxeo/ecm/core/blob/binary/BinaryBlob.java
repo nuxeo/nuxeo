@@ -9,7 +9,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.binary;
+package org.nuxeo.ecm.core.blob.binary;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,10 +29,17 @@ public class BinaryBlob extends AbstractBlob implements ManagedBlob, Serializabl
 
     protected final Binary binary;
 
+    /**
+     * The key, which is the binary's digest but may in addition be prefixed by a blob provider id.
+     */
+    protected final String key;
+
     protected final long length;
 
-    public BinaryBlob(Binary binary, String filename, String mimeType, String encoding, String digest, long length) {
+    public BinaryBlob(Binary binary, String key, String filename, String mimeType, String encoding, String digest,
+            long length) {
         this.binary = binary;
+        this.key = key;
         this.length = length;
         setFilename(filename);
         setMimeType(mimeType);
@@ -72,7 +79,12 @@ public class BinaryBlob extends AbstractBlob implements ManagedBlob, Serializabl
 
     @Override
     public String getKey() {
-        return binary.getDigest();
+        return key;
+    }
+
+    @Override
+    public String getProviderId() {
+        return binary.getBlobProviderId();
     }
 
     @Override

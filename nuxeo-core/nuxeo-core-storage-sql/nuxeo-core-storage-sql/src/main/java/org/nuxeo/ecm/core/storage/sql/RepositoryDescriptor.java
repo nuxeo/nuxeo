@@ -27,7 +27,6 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
-import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 
 /**
@@ -401,15 +400,6 @@ public class RepositoryDescriptor {
         return readAclMaxSize == null ? DEFAULT_READ_ACL_MAX_SIZE : readAclMaxSize.intValue();
     }
 
-    @XNode("binaryManager@class")
-    public Class<? extends BinaryManager> binaryManagerClass;
-
-    @XNode("binaryManager@key")
-    public String binaryManagerKey;
-
-    @XNode("binaryStore@path")
-    public String binaryStorePath;
-
     @XNode("usersSeparator@key")
     public String usersSeparatorKey;
 
@@ -455,9 +445,6 @@ public class RepositoryDescriptor {
         pathOptimizationsVersion = other.pathOptimizationsVersion;
         aclOptimizationsEnabled = other.aclOptimizationsEnabled;
         readAclMaxSize = other.readAclMaxSize;
-        binaryManagerClass = other.binaryManagerClass;
-        binaryManagerKey = other.binaryManagerKey;
-        binaryStorePath = other.binaryStorePath;
         usersSeparatorKey = other.usersSeparatorKey;
         xaDataSourceName = other.xaDataSourceName;
         properties = new HashMap<String, String>(other.properties);
@@ -566,15 +553,6 @@ public class RepositoryDescriptor {
         }
         if (other.readAclMaxSize != null) {
             readAclMaxSize = other.readAclMaxSize;
-        }
-        if (other.binaryManagerClass != null) {
-            binaryManagerClass = other.binaryManagerClass;
-        }
-        if (other.binaryManagerKey != null) {
-            binaryManagerKey = other.binaryManagerKey;
-        }
-        if (other.binaryStorePath != null) {
-            binaryStorePath = other.binaryStorePath;
         }
         if (other.usersSeparatorKey != null) {
             usersSeparatorKey = other.usersSeparatorKey;

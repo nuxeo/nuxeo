@@ -9,13 +9,15 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.binary;
+package org.nuxeo.ecm.core.blob.binary;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -35,14 +37,15 @@ public class LazyBinary extends Binary {
         this.cbm = cbm;
     }
 
-    // because the class is static, re-acquire the CachingBinaryManager
+    // because the class is Serializable, re-acquire the CachingBinaryManager
     protected CachingBinaryManager getCachingBinaryManager() {
         if (cbm == null) {
-            if (repoName == null) {
-                throw new UnsupportedOperationException("Cannot find binary manager, no repository name");
+            if (blobProviderId == null) {
+                throw new UnsupportedOperationException("Cannot find binary manager, no blob provider id");
             }
-            BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
-            cbm = (CachingBinaryManager) bms.getBinaryManager(repoName);
+            BlobManager bm = Framework.getService(BlobManager.class);
+            BinaryBlobProvider bbp = (BinaryBlobProvider) bm.getBlobProvider(blobProviderId);
+            cbm = (CachingBinaryManager) bbp.getBinaryManager();
         }
         return cbm;
     }

@@ -13,7 +13,6 @@ package org.nuxeo.ecm.core.storage.dbs;
 
 import static java.lang.Boolean.FALSE;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -40,10 +39,6 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
-import org.nuxeo.ecm.core.storage.binary.BinaryManager;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerService;
-import org.nuxeo.ecm.core.storage.binary.DefaultBinaryManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -67,20 +62,16 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     protected final boolean fulltextDisabled;
 
-    protected final BinaryManager binaryManager;
-
     protected final BlobManager blobManager;
 
     public DBSRepositoryBase(String repositoryName, boolean fulltextDisabled) {
         this.repositoryName = repositoryName;
         this.fulltextDisabled = fulltextDisabled;
         blobManager = Framework.getService(BlobManager.class);
-        binaryManager = newBinaryManager();
     }
 
     @Override
     public void shutdown() {
-        binaryManager.close();
     }
 
     @Override
@@ -127,23 +118,6 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     @Override
     public boolean isFulltextDisabled() {
         return fulltextDisabled;
-    }
-
-    // creates a binary manager and registers it manually, to avoid a contribution
-    // TODO do this from XML
-    public BinaryManager newBinaryManager() {
-        BinaryManager binaryManager = new DefaultBinaryManager();
-        BinaryManagerDescriptor binaryManagerDescriptor = new BinaryManagerDescriptor();
-        try {
-            binaryManagerDescriptor.repositoryName = repositoryName;
-            binaryManagerDescriptor.storePath = null; // default
-            binaryManager.initialize(binaryManagerDescriptor);
-            BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
-            bms.addBinaryManager(binaryManagerDescriptor.repositoryName, binaryManager);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return binaryManager;
     }
 
     @Override

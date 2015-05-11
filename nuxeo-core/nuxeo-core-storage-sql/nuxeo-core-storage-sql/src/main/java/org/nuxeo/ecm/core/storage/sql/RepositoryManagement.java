@@ -14,7 +14,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.Calendar;
 
-import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 
 /**
  * @author Florent Guillaume

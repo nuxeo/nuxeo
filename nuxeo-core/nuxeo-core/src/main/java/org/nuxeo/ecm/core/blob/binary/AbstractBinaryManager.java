@@ -10,7 +10,7 @@
  *     Florent Guillaume, jcarsique
  */
 
-package org.nuxeo.ecm.core.storage.binary;
+package org.nuxeo.ecm.core.blob.binary;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.api.Blob;
@@ -34,14 +35,16 @@ public abstract class AbstractBinaryManager implements BinaryManager {
 
     public static final int DEFAULT_DEPTH = 2;
 
-    protected String repositoryName;
+    protected String blobProviderId;
 
     protected BinaryManagerRootDescriptor descriptor;
 
     protected BinaryGarbageCollector garbageCollector;
 
     @Override
-    abstract public void initialize(BinaryManagerDescriptor binaryManagerDescriptor) throws IOException;
+    public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
+        this.blobProviderId = blobProviderId;
+    }
 
     /**
      * Creates a binary value from the given input stream.

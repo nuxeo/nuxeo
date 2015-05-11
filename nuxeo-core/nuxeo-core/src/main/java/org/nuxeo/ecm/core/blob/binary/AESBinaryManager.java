@@ -9,7 +9,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.binary;
+package org.nuxeo.ecm.core.blob.binary;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -29,6 +29,7 @@ import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Random;
 
 import javax.crypto.BadPaddingException;
@@ -49,9 +50,9 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * A binary manager that encrypts binaries on the filesystem using AES.
  * <p>
- * The {@link BinaryManagerDescriptor} configuration holds the keystore information to retrieve the AES key, or the
+ * The configuration holds the keystore information to retrieve the AES key, or the
  * password that is used to generate a per-file key using PBKDF2. This configuration comes from the
- * {@code <binaryManager key="...">} of the repository configuration.
+ * {@code <property name="key">...</property>} of the binary manager configuration.
  * <p>
  * The configuration has the form {@code key1=value1,key2=value2,...} where the possible keys are, for keystore use:
  * <ul>
@@ -166,10 +167,11 @@ public class AESBinaryManager extends LocalBinaryManager {
     }
 
     @Override
-    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor) throws IOException {
-        super.initialize(binaryManagerDescriptor);
+    public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
+        super.initialize(blobProviderId, properties);
         digestAlgorithm = descriptor.digest;
-        String options = binaryManagerDescriptor.key;
+        String options = properties.get(BinaryManager.PROP_KEY);
+        // TODO parse options from properties directly
         if (StringUtils.isBlank(options)) {
             throw new NuxeoException("Missing key for " + getClass().getSimpleName());
         }
@@ -308,7 +310,7 @@ public class AESBinaryManager extends LocalBinaryManager {
         InputStream nin = new BufferedInputStream(new FileInputStream(tmp));
         String digest = storeAndDigest(nin); // calls our storeAndDigest
         // return a binary on our tmp file
-        return new Binary(tmp, digest, repositoryName);
+        return new Binary(tmp, digest, blobProviderId);
     }
 
     @Override
@@ -336,7 +338,7 @@ public class AESBinaryManager extends LocalBinaryManager {
             throw new RuntimeException(e);
         }
         // return a binary on our tmp file
-        return new Binary(tmp, digest, repositoryName);
+        return new Binary(tmp, digest, blobProviderId);
     }
 
     @Override

@@ -14,7 +14,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.binary;
+package org.nuxeo.ecm.core.blob.binary;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -25,11 +25,16 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.blob.binary.Binary;
+import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestDefaultBinaryManager extends NXRuntimeTestCase {
@@ -41,7 +46,7 @@ public class TestDefaultBinaryManager extends NXRuntimeTestCase {
     @Test
     public void testDefaultBinaryManager() throws Exception {
         DefaultBinaryManager binaryManager = new DefaultBinaryManager();
-        binaryManager.initialize(new BinaryManagerDescriptor());
+        binaryManager.initialize("repo", Collections.emptyMap());
         assertEquals(0, countFiles(binaryManager.getStorageDir()));
 
         Binary binary = binaryManager.getBinary(CONTENT_MD5);
@@ -110,7 +115,7 @@ public class TestDefaultBinaryManager extends NXRuntimeTestCase {
     @Test
     public void testTemporaryCopies() throws IOException {
         DefaultBinaryManager binaryManager = new DefaultBinaryManager();
-        binaryManager.initialize(new BinaryManagerDescriptor());
+        binaryManager.initialize("repo", Collections.emptyMap());
         assertEquals(0, countFiles(binaryManager.getStorageDir()));
         FileBlob source = new FileBlob(new ByteArrayInputStream(CONTENT.getBytes("UTF-8")));
         File originalFile = source.getFile();

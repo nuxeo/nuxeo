@@ -21,11 +21,14 @@ import static org.junit.Assert.assertNotNull;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.IOUtils;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.runtime.test.runner.Features;
@@ -34,68 +37,88 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(BlobManagerFeature.class)
-@LocalDeploy("org.nuxeo.ecm.core:OSGI-INF/fake-blob-provider-component.xml")
+@LocalDeploy("org.nuxeo.ecm.core:OSGI-INF/dummy-blob-provider.xml")
 public class TestBlobManager {
 
-    private static final String FAKE = FakeBlobProviderComponent.FAKE_BLOB_PROVIDER_PREFIX;
+    private static final String DUMMY = "dummy";
 
-    Mockery mockery = new JUnit4Mockery();
+    protected Mockery mockery = new JUnit4Mockery();
 
     @Inject
     protected BlobManager blobManager;
 
     @Test
-    public void testFakeRegistration() throws Exception {
-        BlobProvider fakeBlobProvider = blobManager.getBlobProvider(FAKE);
-        assertNotNull(fakeBlobProvider);
+    public void testDummyRegistration() throws Exception {
+        BlobProvider dummyBlobProvider = blobManager.getBlobProvider(DUMMY);
+        assertNotNull(dummyBlobProvider);
     }
 
     @Test
     public void testGetSetMetadata() throws Exception {
+        // read without prefix
         BlobInfo blobInfo = new BlobInfo();
-        blobInfo.key = FAKE + ":1234";
+        blobInfo.key = "1234";
         blobInfo.mimeType = "test/type";
         blobInfo.encoding = "UTF-8";
         blobInfo.filename = "doc.ext";
         blobInfo.length = Long.valueOf(123);
         blobInfo.digest = "55667788";
-
-        final Document doc = mockery.mock(Document.class);
-        mockery.checking(new Expectations() {
-            {
-                allowing(doc).getRepositoryName();
-                will(returnValue("somerepo"));
-                //
-                // allowing(doc).getDatabaseMajorVersion();
-                // will(returnValue(9));
-                //
-                // allowing(doc).getDatabaseMinorVersion();
-                // will(returnValue(0));
-                //
-                // allowing(doc).getColumns(with(any(String.class)), with(any(String.class)), with(any(String.class)),
-                // with(any(String.class)));
-                // will(returnValue(getMockEmptyResultSet()));
-                //
-                // allowing(doc).getConnection();
-                // will(returnValue(getMockConnection()));
-            }
-        });
-        ManagedBlob blob = (ManagedBlob) blobManager.readBlob(blobInfo, doc);
+        ManagedBlob blob = (ManagedBlob) blobManager.readBlob(blobInfo, DUMMY);
         assertNotNull(blob);
-        assertEquals("fake:1234", blob.getKey());
+        assertEquals("1234", blob.getKey());
         assertEquals("test/type", blob.getMimeType());
         assertEquals("UTF-8", blob.getEncoding());
         assertEquals("doc.ext", blob.getFilename());
         assertEquals(123, blob.getLength());
         assertEquals("55667788", blob.getDigest());
 
-        BlobInfo bi = blobManager.writeBlob(blob, doc);
-        assertEquals("fake:1234", bi.key);
-        assertEquals("test/type", bi.mimeType);
-        assertEquals("UTF-8", bi.encoding);
-        assertEquals("doc.ext", bi.filename);
-        assertEquals(Long.valueOf(123), bi.length);
-        assertEquals("55667788", bi.digest);
+        // read with prefix
+        blobInfo.key = DUMMY + ":1234";
+        blob = (ManagedBlob) blobManager.readBlob(blobInfo, null);
+        assertNotNull(blob);
+        assertEquals("dummy:1234", blob.getKey());
+        assertEquals("test/type", blob.getMimeType());
+        assertEquals("UTF-8", blob.getEncoding());
+        assertEquals("doc.ext", blob.getFilename());
+        assertEquals(123, blob.getLength());
+        assertEquals("55667788", blob.getDigest());
+
+        // write
+        Document doc = mockery.mock(Document.class);
+        mockery.checking(new Expectations() {
+            {
+                allowing(doc).getRepositoryName();
+                will(returnValue(DUMMY));
+
+            }
+        });
+        String key = blobManager.writeBlob(blob, doc);
+        assertEquals("dummy:1234", key);
+    }
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.core:OSGI-INF/test-blob-dispatch.xml")
+    public void testDispatch() throws Exception {
+        // blob that's not a video gets stored on the first dummy repo
+        Blob blob = Blobs.createBlob("foo", "text/plain");
+        Document doc = mockery.mock(Document.class, "doc1");
+        String key = blobManager.writeBlob(blob, doc);
+        assertEquals("dummy:1", key);
+        // videos get stored in the second one
+        blob = Blobs.createBlob("bar", "video/mp4");
+        key = blobManager.writeBlob(blob, doc);
+        assertEquals("dummy2:1", key);
+
+        // read first one
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = "dummy:1";
+        blob = blobManager.readBlob(blobInfo, null);
+        assertEquals("foo", IOUtils.toString(blob.getStream()));
+
+        // read second one
+        blobInfo.key = "dummy2:1";
+        blob = blobManager.readBlob(blobInfo, null);
+        assertEquals("bar", IOUtils.toString(blob.getStream()));
     }
 
 }

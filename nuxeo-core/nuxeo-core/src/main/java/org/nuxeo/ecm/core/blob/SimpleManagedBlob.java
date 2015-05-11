@@ -51,6 +51,16 @@ public class SimpleManagedBlob extends AbstractBlob implements ManagedBlob {
     }
 
     @Override
+    public String getProviderId() {
+        int colon = key.indexOf(':');
+        if (colon < 0) {
+            // no prefix
+            throw new IllegalArgumentException("Invalid managed blob key: " + key);
+        }
+        return key.substring(0, colon);
+    }
+
+    @Override
     public InputStream getStream() throws IOException {
         return Framework.getService(BlobManager.class).getStream(this);
     }

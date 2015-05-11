@@ -820,7 +820,7 @@ public class DBSDocument implements Document {
         blobInfo.length = (Long) state.get(KEY_BLOB_LENGTH);
         blobInfo.key = (String) state.get(KEY_BLOB_DATA);
         try {
-            return session.getBlobManager().readBlob(blobInfo, this);
+            return session.getBlobManager().readBlob(blobInfo, getRepositoryName());
         } catch (IOException e) {
             throw new PropertyException("Cannot read property", e);
         }
@@ -828,24 +828,40 @@ public class DBSDocument implements Document {
 
     protected void writeBlobProperty(BlobProperty blobProperty, State state) throws PropertyException {
         Serializable value = blobProperty.getValueForWrite();
-        BlobInfo blobInfo;
+        String key;
+        String filename;
+        String mimeType;
+        String encoding;
+        String digest;
+        Long length;
         if (value == null) {
-            blobInfo = new BlobInfo();
+            key = null;
+            filename = null;
+            mimeType = null;
+            encoding = null;
+            digest = null;
+            length = null;
         } else if (value instanceof Blob) {
+            Blob blob = (Blob) value;
             try {
-                blobInfo = session.getBlobManager().writeBlob((Blob) value, this);
+                key = session.getBlobManager().writeBlob(blob, this);
             } catch (IOException e) {
                 throw new PropertyException("Cannot get blob info for: " + value, e);
             }
+            filename = blob.getFilename();
+            mimeType = blob.getMimeType();
+            encoding = blob.getEncoding();
+            digest = blob.getDigest();
+            length = blob.getLength() == -1 ? null : Long.valueOf(blob.getLength());
         } else {
             throw new PropertyException("Cannot write a non-Blob value: " + value);
         }
-        state.put(KEY_BLOB_DATA, blobInfo.key);
-        state.put(KEY_BLOB_NAME, blobInfo.filename);
-        state.put(KEY_BLOB_MIME_TYPE, blobInfo.mimeType);
-        state.put(KEY_BLOB_ENCODING, blobInfo.encoding);
-        state.put(KEY_BLOB_DIGEST, blobInfo.digest);
-        state.put(KEY_BLOB_LENGTH, blobInfo.length);
+        state.put(KEY_BLOB_DATA, key);
+        state.put(KEY_BLOB_NAME, filename);
+        state.put(KEY_BLOB_MIME_TYPE, mimeType);
+        state.put(KEY_BLOB_ENCODING, encoding);
+        state.put(KEY_BLOB_DIGEST, digest);
+        state.put(KEY_BLOB_LENGTH, length);
     }
 
     @Override

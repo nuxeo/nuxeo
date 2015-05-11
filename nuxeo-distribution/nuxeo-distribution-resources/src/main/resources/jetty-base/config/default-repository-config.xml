@@ -1,5 +1,12 @@
 <?xml version="1.0"?>
 <component name="default-repository-config">
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="default">
+      <class>${nuxeo.core.binarymanager}</class>
+      <property name="path">${repository.binary.store}</property>
+      <property name="key">${nuxeo.core.binarymanager_key}</property>
+    </blobprovider>
+  </extension>
   <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService"
     point="repository">
     <repository name="default" label="label.default.repository"
@@ -7,7 +14,6 @@
       <pool minPoolSize="0" maxPoolSize="20" blockingTimeoutMillis="100"
         idleTimeoutMinutes="10" />
       <clustering enabled="false" delay="1000" />
-      <binaryStore path="" />
       <noDDL>false</noDDL>
       <aclOptimizations enabled="true" />
       <pathOptimizations enabled="true" />

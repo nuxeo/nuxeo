@@ -1,5 +1,11 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.storage.sql.test.repo.repository">
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="test">
+      <class>${nuxeo.test.vcs.binary-manager}</class>
+      <property name="key">${nuxeo.test.vcs.binary-manager-key}</property>
+    </blobprovider>
+  </extension>
   <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService"
     point="repository">
     <repository name="test"

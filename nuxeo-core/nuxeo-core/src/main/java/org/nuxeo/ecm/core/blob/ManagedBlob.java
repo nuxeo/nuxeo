@@ -26,6 +26,13 @@ import org.nuxeo.ecm.core.api.Blob;
 public interface ManagedBlob extends Blob {
 
     /**
+     * Gets the id of the {@link BlobProvider} managing this blob.
+     *
+     * @return the blob provider id
+     */
+    String getProviderId();
+
+    /**
      * Gets the stored representation of this blob.
      *
      * @return the stored representation

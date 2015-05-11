@@ -14,6 +14,10 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.Arrays;
 
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobManagerComponent;
+import org.nuxeo.ecm.core.blob.BlobProviderDescriptor;
+import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
@@ -24,6 +28,8 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * @author Florent Guillaume
  */
 public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
+
+    private BlobProviderDescriptor blobProviderDescriptor;
 
     public Repository repository;
 
@@ -47,6 +53,11 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         if (initDatabase()) {
             DatabaseHelper.DATABASE.setUp();
         }
+        blobProviderDescriptor = new BlobProviderDescriptor();
+        blobProviderDescriptor.name = DatabaseHelper.DATABASE.repositoryName;
+        blobProviderDescriptor.klass = DefaultBinaryManager.class;
+        BlobManagerComponent blobManager = (BlobManagerComponent) Framework.getService(BlobManager.class);
+        blobManager.registerBlobProvider(blobProviderDescriptor);
         repository = newRepository(-1);
     }
 
@@ -77,7 +88,6 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         schemaField2.field = "tst:bignotes";
         schemaField2.type = Model.FIELD_TYPE_LARGETEXT;
         descriptor.schemaFields = Arrays.asList(schemaField1, schemaField2);
-        descriptor.binaryStorePath = "testbinaries";
         // disable fulltext because fulltext workers wouldn't have any
         // high-level repository to get a session from anyway.
         descriptor.setFulltextDisabled(true);
@@ -92,6 +102,8 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
 
     protected void closeRepository() throws Exception {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        BlobManagerComponent blobManager = (BlobManagerComponent) Framework.getService(BlobManager.class);
+        blobManager.unregisterBlobProvider(blobProviderDescriptor);
         if (repository != null) {
             repository.close();
             repository = null;

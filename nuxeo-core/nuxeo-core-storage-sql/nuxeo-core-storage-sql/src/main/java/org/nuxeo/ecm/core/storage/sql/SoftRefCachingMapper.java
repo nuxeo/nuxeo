@@ -23,10 +23,10 @@ import javax.transaction.xa.Xid;
 
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
 
 /**
  * A {@link Mapper} that uses a {@link SoftRefCachingRowMapper} for row-related operation, and delegates to the

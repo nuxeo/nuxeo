@@ -10,23 +10,34 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.binary;
+package org.nuxeo.ecm.core.blob.binary;
 
-import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 
 /**
  * A binary manager stores binaries according to their digest.
  */
-public interface BinaryManager extends Closeable {
+public interface BinaryManager {
+
+    /** In the initialization properties, the property for the store path. */
+    String PROP_PATH = "path";
+
+    /** In the initialization properties, the property for a generic key. */
+    String PROP_KEY = "key";
 
     /**
-     * Initializer.
+     * Initializes the binary manager.
+     *
+     * @param blobProviderId the blob provider id for this binary manager
+     * @param properties initialization properties
+     *
+     * @since 7.3
      */
-    void initialize(BinaryManagerDescriptor descriptor) throws IOException;
+    void initialize(String blobProviderId, Map<String, String> properties) throws IOException;
 
     /**
      * Saves the given blob into a {@link Binary}.
@@ -67,7 +78,6 @@ public interface BinaryManager extends Closeable {
     /**
      * Closes the binary manager and releases all resources and temporary objects held by it.
      */
-    @Override
     void close();
 
 }

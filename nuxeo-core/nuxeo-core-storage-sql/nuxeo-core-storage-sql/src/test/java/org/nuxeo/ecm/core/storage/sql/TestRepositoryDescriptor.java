@@ -135,21 +135,9 @@ public class TestRepositoryDescriptor {
     }
 
     @Test
-    public void testBinaryStorePath() throws Exception {
-        assertEquals("/foo/bar", desc.binaryStorePath);
-    }
-
-    @Test
-    public void testBinaryStorePathCopy() throws Exception {
-        desc = new RepositoryDescriptor(desc);
-        testBinaryStorePath();
-    }
-
-    @Test
     public void testMerge() throws Exception {
         RepositoryDescriptor desc2 = (RepositoryDescriptor) xmap.load(getResource("test-repository-descriptor2.xml"));
         desc.merge(desc2);
-        assertEquals("/foo/bar2", desc.binaryStorePath);
         assertFalse(desc.getClusteringEnabled());
         assertEquals(Arrays.asList("file1", "file2", "file3"), desc.sqlInitFiles);
         assertTrue(desc.getPathOptimizationsEnabled());

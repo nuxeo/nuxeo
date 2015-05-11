@@ -1128,30 +1128,46 @@ public class SQLSession implements Session {
         blobInfo.digest = node.getSimpleProperty(BLOB_DIGEST).getString();
         blobInfo.length = node.getSimpleProperty(BLOB_LENGTH).getLong();
         blobInfo.key = node.getSimpleProperty(BLOB_DATA).getString();
-        return blobManager.readBlob(blobInfo, doc);
+        return blobManager.readBlob(blobInfo, doc.getRepositoryName());
     }
 
     protected void writeBlobProperty(BlobProperty blobProperty, Node node, SQLDocument doc) throws StorageException,
             PropertyException {
         Serializable value = blobProperty.getValueForWrite();
-        BlobInfo blobInfo;
+        String key;
+        String filename;
+        String mimeType;
+        String encoding;
+        String digest;
+        Long length;
         if (value == null) {
-            blobInfo = new BlobInfo();
+            key = null;
+            filename = null;
+            mimeType = null;
+            encoding = null;
+            digest = null;
+            length = null;
         } else if (value instanceof Blob) {
+            Blob blob = (Blob) value;
             try {
-                blobInfo = blobManager.writeBlob((Blob) value, doc);
+                key = blobManager.writeBlob(blob, doc);
             } catch (IOException e) {
                 throw new PropertyException("Cannot get blob info for: " + value, e);
             }
+            filename = blob.getFilename();
+            mimeType = blob.getMimeType();
+            encoding = blob.getEncoding();
+            digest = blob.getDigest();
+            length = blob.getLength() == -1 ? null : Long.valueOf(blob.getLength());
         } else {
             throw new PropertyException("Cannot write a non-Blob value: " + value);
         }
-        node.getSimpleProperty(BLOB_DATA).setValue(blobInfo.key);
-        node.getSimpleProperty(BLOB_NAME).setValue(blobInfo.filename);
-        node.getSimpleProperty(BLOB_MIME_TYPE).setValue(blobInfo.mimeType);
-        node.getSimpleProperty(BLOB_ENCODING).setValue(blobInfo.encoding);
-        node.getSimpleProperty(BLOB_DIGEST).setValue(blobInfo.digest);
-        node.getSimpleProperty(BLOB_LENGTH).setValue(blobInfo.length);
+        node.getSimpleProperty(BLOB_DATA).setValue(key);
+        node.getSimpleProperty(BLOB_NAME).setValue(filename);
+        node.getSimpleProperty(BLOB_MIME_TYPE).setValue(mimeType);
+        node.getSimpleProperty(BLOB_ENCODING).setValue(encoding);
+        node.getSimpleProperty(BLOB_DIGEST).setValue(digest);
+        node.getSimpleProperty(BLOB_LENGTH).setValue(length);
     }
 
     protected static boolean isVersionWritableProperty(String name) {

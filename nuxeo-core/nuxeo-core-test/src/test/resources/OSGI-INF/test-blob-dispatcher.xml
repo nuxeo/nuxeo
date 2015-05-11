@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.blob.test-blob-dispatcher" version="1.0.0">
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobdispatcher>
+      <class>org.nuxeo.ecm.core.DummyBlobDispatcher</class>
+      <property name="providers">test test2</property>
+    </blobdispatcher>
+    <blobprovider name="test2">
+      <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
+      <property name="path">binaries2</property>
+    </blobprovider>
+  </extension>
+</component>

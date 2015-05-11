@@ -52,6 +52,9 @@ import javax.transaction.xa.Xid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -61,16 +64,17 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
+import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.binary.Binary;
-import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerService;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.ecm.core.storage.sql.jdbc.ClusterNodeHandler;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
@@ -84,6 +88,8 @@ import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 public class TestSQLBackend extends SQLBackendTestCase {
 
     private static final Log log = LogFactory.getLog(TestSQLBackend.class);
+
+    protected Mockery mockery = new JUnit4Mockery();
 
     protected boolean pathOptimizationsEnabled;
 
@@ -566,10 +572,17 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     protected void addBinary(Session session, String binstr, String name) throws Exception {
         Blob blob = Blobs.createBlob(binstr);
-        BinaryManagerService binaryManagerService = Framework.getService(BinaryManagerService.class);
-        Binary binary = binaryManagerService.getBinaryManager(session.getRepositoryName()).getBinary(blob);
-        String data = binary.getDigest();
-        session.addChildNode(session.getRootNode(), name, null, "TestDoc", false).setSimpleProperty("tst:bin", data);
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        Document doc = mockery.mock(Document.class, "document" + UUID.randomUUID().toString());
+        mockery.checking(new Expectations() {
+            {
+                allowing(doc).getRepositoryName();
+                will(returnValue(repository.getName()));
+
+            }
+        });
+        String key = blobManager.writeBlob(blob, doc);
+        session.addChildNode(session.getRootNode(), name, null, "TestDoc", false).setSimpleProperty("tst:bin", key);
     }
 
     protected BinaryManagerStatus runBinariesGC(int moreWork, Session session, boolean delete) throws Exception {

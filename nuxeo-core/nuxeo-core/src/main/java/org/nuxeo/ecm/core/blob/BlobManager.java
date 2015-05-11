@@ -69,45 +69,30 @@ public interface BlobManager {
     }
 
     /**
-     * INTERNAL - Registers a blob provider.
+     * Gets the blob provider with the given id.
      *
-     * @param prefix the blob provider prefix, or {@code null} for the default
-     * @param blobProvider the blob provider
-     */
-    void registerBlobProvider(String prefix, BlobProvider blobProvider);
-
-    /**
-     * INTERNAL - Unregisters a blob provider.
-     *
-     * @param prefix the blob provider prefix, or {@code null} for the default
-     */
-    void unregisterBlobProvider(String prefix);
-
-    /**
-     * Gets the blob provider for a given blob key.
-     *
-     * @param key the blob key
+     * @param id the blob provider id
      * @return the blob provider
      */
-    BlobProvider getBlobProvider(String key);
+    BlobProvider getBlobProvider(String id);
 
     /**
      * Reads a {@link Blob} from storage.
      *
      * @param blobInfo the blob information
-     * @param doc the document to which this blob belongs
+     * @param repositoryName the repository to which this blob belongs
      * @return a managed blob
      */
-    Blob readBlob(BlobInfo blobInfo, Document doc) throws IOException;
+    Blob readBlob(BlobInfo blobInfo, String repositoryName) throws IOException;
 
     /**
-     * Writes a {@link Blob} to storage and returns information about it.
+     * Writes a {@link Blob} to storage and returns its key.
      *
      * @param blob the blob
      * @param doc the document to which this blob belongs
-     * @return the blob information
+     * @return the blob key
      */
-    BlobInfo writeBlob(Blob blob, Document doc) throws IOException;
+    String writeBlob(Blob blob, Document doc) throws IOException;
 
     /**
      * INTERNAL - Gets an {@link InputStream} for the data of a managed blob. Used by internal implementations, regular

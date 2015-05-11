@@ -12,7 +12,6 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
@@ -27,14 +26,13 @@ import javax.resource.cci.ResourceAdapterMetaData;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
+import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.DefaultFulltextParser;
 import org.nuxeo.ecm.core.storage.FulltextParser;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.storage.binary.BinaryManager;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerService;
-import org.nuxeo.ecm.core.storage.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.storage.lock.LockManager;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
 import org.nuxeo.ecm.core.storage.sql.RepositoryBackend.MapperKind;
@@ -62,8 +60,6 @@ public class RepositoryImpl implements Repository {
     protected final RepositoryDescriptor repositoryDescriptor;
 
     protected final Class<? extends FulltextParser> fulltextParserClass;
-
-    protected final BinaryManager binaryManager;
 
     private final RepositoryBackend backend;
 
@@ -107,7 +103,6 @@ public class RepositoryImpl implements Repository {
         }
         fulltextParserClass = (Class<? extends FulltextParser>) klass;
 
-        binaryManager = createBinaryManager();
         backend = createBackend();
         repositoryUp = registry.counter(MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name,
                 "instance-up"));
@@ -153,27 +148,6 @@ public class RepositoryImpl implements Repository {
                 return getCacheMapperSize();
             }
         });
-    }
-
-    protected BinaryManager createBinaryManager() throws StorageException {
-        try {
-            Class<? extends BinaryManager> klass = repositoryDescriptor.binaryManagerClass;
-            if (klass == null) {
-                klass = DefaultBinaryManager.class;
-            }
-            BinaryManager binaryManager = klass.newInstance();
-            BinaryManagerDescriptor binaryManagerDescriptor = new BinaryManagerDescriptor();
-            binaryManagerDescriptor.repositoryName = repositoryDescriptor.name;
-            binaryManagerDescriptor.klass = klass;
-            binaryManagerDescriptor.key = repositoryDescriptor.binaryManagerKey;
-            binaryManagerDescriptor.storePath = repositoryDescriptor.binaryStorePath;
-            binaryManager.initialize(binaryManagerDescriptor);
-            BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
-            bms.addBinaryManager(repositoryDescriptor.name, binaryManager);
-            return binaryManager;
-        } catch (ReflectiveOperationException | IOException e) {
-            throw new StorageException(e);
-        }
     }
 
     protected RepositoryBackend createBackend() throws StorageException {
@@ -374,9 +348,6 @@ public class RepositoryImpl implements Repository {
         closeAllSessions();
         model = null;
         backend.shutdown();
-        binaryManager.close();
-        BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
-        bms.removeBinaryManager(repositoryDescriptor.name);
 
         registry.remove(MetricRegistry.name(RepositoryImpl.class, getName(), "cache-size"));
         registry.remove(MetricRegistry.name(PersistenceContext.class, getName(), "cache-size"));
@@ -465,6 +436,10 @@ public class RepositoryImpl implements Repository {
 
     @Override
     public BinaryGarbageCollector getBinaryGarbageCollector() {
+        BlobManager bm = Framework.getService(BlobManager.class);
+        // XXX TODO due to dispatching there may be several involved providers
+        BinaryBlobProvider bbp = (BinaryBlobProvider) bm.getBlobProvider(repositoryDescriptor.name);
+        BinaryManager binaryManager = bbp.getBinaryManager();
         return binaryManager.getGarbageCollector();
     }
 
