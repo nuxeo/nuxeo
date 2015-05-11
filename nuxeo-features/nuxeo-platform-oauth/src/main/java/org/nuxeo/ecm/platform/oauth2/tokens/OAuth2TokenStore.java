@@ -50,29 +50,43 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
 
     public static final String DIRECTORY_NAME = "oauth2Tokens";
 
-    public static final String KEY = "nuxeoLogin";
+    private String directoryKey;
 
     private String serviceName;
 
     public OAuth2TokenStore(String serviceName) {
         this.serviceName = serviceName;
+        this.directoryKey = NuxeoOAuth2Token.KEY_NUXEO_LOGIN;
+    }
+
+    public OAuth2TokenStore(String serviceName, String key) {
+        this.serviceName = serviceName;
+        this.directoryKey = key;
     }
 
     @Override
-    public DataStore<StoredCredential> set(String userId, StoredCredential credential) throws IOException {
-        store(userId, new NuxeoOAuth2Token(credential));
+    public DataStore<StoredCredential> set(String key, StoredCredential credential) throws IOException {
+        Map<String, Serializable> filter = getFilter();
+        filter.put(directoryKey, key);
+        DocumentModel entry = find(filter);
+
+        if (entry == null) {
+            store(key, new NuxeoOAuth2Token(credential));
+        } else {
+            refresh(entry, new NuxeoOAuth2Token(credential));
+        }
         return this;
     }
 
     @Override
-    public DataStore<StoredCredential> delete(String userId) throws IOException {
+    public DataStore<StoredCredential> delete(String key) throws IOException {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
         Session session = null;
         try {
             session = ds.open(DIRECTORY_NAME);
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("serviceName", serviceName);
-            filter.put(KEY, userId);
+            filter.put(directoryKey, key);
 
             DocumentModelList entries = session.query(filter);
             for (DocumentModel entry : entries) {
@@ -87,9 +101,9 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
     }
 
     @Override
-    public StoredCredential get(String userId) throws IOException {
+    public StoredCredential get(String key) throws IOException {
         Map<String, Serializable> filter = getFilter();
-        filter.put(KEY, userId);
+        filter.put(directoryKey, key);
         DocumentModel entry = find(filter);
         return entry != null ? NuxeoOAuth2Token.asCredential(entry) : null;
     }
@@ -128,7 +142,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
         Set<String> keys = new HashSet<>();
         DocumentModelList entries = query();
         for (DocumentModel entry : entries) {
-            keys.add((String) entry.getProperty(NuxeoOAuth2Token.SCHEMA, KEY));
+            keys.add((String) entry.getProperty(NuxeoOAuth2Token.SCHEMA, directoryKey));
         }
         return keys;
     }
@@ -177,16 +191,13 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
         return null;
     }
 
-    public NuxeoOAuth2Token refresh(StoredCredential credential) {
+    public NuxeoOAuth2Token refresh(DocumentModel entry, NuxeoOAuth2Token token) {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        NuxeoOAuth2Token token = new NuxeoOAuth2Token(credential);
         Session session = null;
         try {
             session = ds.open(DIRECTORY_NAME);
-            Map<String, Serializable> filter = new HashMap<>();
-            filter.put("refreshToken", token.getRefreshToken());
-            DocumentModel entry = find(filter);
             entry.setProperty("oauth2Token", "accessToken", token.getAccessToken());
+            entry.setProperty("oauth2Token", "refreshToken", token.getRefreshToken());
             entry.setProperty("oauth2Token", "creationDate", token.getCreationDate());
             entry.setProperty("oauth2Token", "expirationTimeMilliseconds", token.getExpirationTimeMilliseconds());
             session.updateEntry(entry);

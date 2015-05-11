@@ -31,6 +31,10 @@ public class NuxeoOAuth2Token {
 
     public static final String SCHEMA = "oauth2Token";
 
+    public static final String KEY_SERVICE_LOGIN = "serviceLogin";
+
+    public static final String KEY_NUXEO_LOGIN = "nuxeoLogin";
+
     protected Long id;
 
     protected String serviceName;
